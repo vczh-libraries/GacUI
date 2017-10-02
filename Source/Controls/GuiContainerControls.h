@@ -106,6 +106,8 @@ Scroll View
 			class GuiScrollView : public GuiControl, public Description<GuiScrollView>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ScrollViewTemplate)
+
+				using IEventHandler = compositions::IGuiGraphicsEventHandler;
 			protected:
 				class CommandExecutor : public Object, public IScrollViewCommandExecutor
 				{
@@ -121,6 +123,13 @@ Scroll View
 
 				Ptr<CommandExecutor>					commandExecutor;
 				bool									supressScrolling;
+				Ptr<IEventHandler>						containerBoundsChangedHandler;
+				Ptr<IEventHandler>						hScrollHandler;
+				Ptr<IEventHandler>						vScrollHandler;
+				Ptr<IEventHandler>						hWheelHandler;
+				Ptr<IEventHandler>						vWheelHandler;
+				bool									horizontalAlwaysVisible = true;
+				bool									verticalAlwaysVisible = true;
 
 				void									OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnHorizontalScroll(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

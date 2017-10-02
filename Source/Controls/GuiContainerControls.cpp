@@ -90,6 +90,22 @@ GuiTabPageList
 GuiTab
 ***********************************************************************/
 
+			void GuiTab::BeforeControlTemplateUninstalled()
+			{
+				auto ct = GetControlTemplateObject();
+				ct->SetCommands(nullptr);
+				ct->SetTabPages(nullptr);
+				ct->SetSelectedTabPage(nullptr);
+			}
+
+			void GuiTab::AfterControlTemplateInstalled(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				ct->SetCommands(commandExecutor.Obj());
+				ct->SetTabPages(tabPages.GetWrapper());
+				ct->SetSelectedTabPage(selectedPage);
+			}
+
 			GuiTab::CommandExecutor::CommandExecutor(GuiTab* _tab)
 				:tab(_tab)
 			{
@@ -109,8 +125,6 @@ GuiTab
 				, tabPages(this)
 			{
 				commandExecutor = new CommandExecutor(this);
-				controlTemplate->SetCommands(commandExecutor.Obj());
-				controlTemplate->SetTabPages(tabPages.GetWrapper());
 			}
 
 			GuiTab::~GuiTab()
@@ -149,7 +163,7 @@ GuiTab
 						tabPage->SetVisible(tabPage == selectedPage);
 					}
 				}
-				controlTemplate->SetSelectedTabPage(selectedPage);
+				GetControlTemplateObject()->SetSelectedTabPage(selectedPage);
 				SelectedPageChanged.Execute(GetNotifyEventArguments());
 				return selectedPage == value;
 			}
@@ -176,6 +190,47 @@ GuiScrollView::CommandExecutor
 GuiScrollView
 ***********************************************************************/
 
+			void GuiScrollView::BeforeControlTemplateUninstalled()
+			{
+				auto ct = GetControlTemplateObject();
+				ct->SetCommands(nullptr);
+				ct->GetInternalContainerComposition()->BoundsChanged.Detach(containerBoundsChangedHandler);
+				ct->GetHorizontalScroll()->PositionChanged.Detach(hScrollHandler);
+				ct->GetVerticalScroll()->PositionChanged.Detach(vScrollHandler);
+				ct->GetEventReceiver()->horizontalWheel.Detach(hWheelHandler);
+				ct->GetEventReceiver()->verticalWheel.Detach(vWheelHandler);
+
+				containerBoundsChangedHandler = nullptr;
+				hScrollHandler = nullptr;
+				vScrollHandler = nullptr;
+				hWheelHandler = nullptr;
+				vWheelHandler = nullptr;
+				supressScrolling = false;
+			}
+
+			void GuiScrollView::AfterControlTemplateInstalled(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				ct->SetCommands(commandExecutor.Obj());
+				containerBoundsChangedHandler = ct->GetInternalContainerComposition()->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);
+				hScrollHandler = ct->GetHorizontalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
+				vScrollHandler = ct->GetVerticalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnVerticalScroll);
+				hWheelHandler = ct->GetEventReceiver()->horizontalWheel.AttachMethod(this, &GuiScrollView::OnHorizontalWheel);
+				vWheelHandler = ct->GetEventReceiver()->verticalWheel.AttachMethod(this, &GuiScrollView::OnVerticalWheel);
+
+				if (initialize)
+				{
+					horizontalAlwaysVisible = ct->GetHorizontalAlwaysVisible();
+					verticalAlwaysVisible = ct->GetVerticalAlwaysVisible();
+				}
+				else
+				{
+					ct->SetHorizontalAlwaysVisible(horizontalAlwaysVisible);
+					ct->SetVerticalAlwaysVisible(verticalAlwaysVisible);
+				}
+				CalculateView();
+			}
+
 			void GuiScrollView::OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				CalculateView();
@@ -201,7 +256,7 @@ GuiScrollView
 			{
 				if(!supressScrolling)
 				{
-					auto scroll = controlTemplate->GetHorizontalScroll();
+					auto scroll = GetControlTemplateObject()->GetHorizontalScroll();
 					vint position = scroll->GetPosition();
 					vint move = scroll->GetSmallMove();
 					position -= move*arguments.wheel / 60;
@@ -213,7 +268,7 @@ GuiScrollView
 			{
 				if(!supressScrolling && GetVisuallyEnabled())
 				{
-					auto scroll = controlTemplate->GetVerticalScroll();
+					auto scroll = GetControlTemplateObject()->GetVerticalScroll();
 					vint position = scroll->GetPosition();
 					vint move = scroll->GetSmallMove();
 					position -= move*arguments.wheel / 60;
@@ -232,12 +287,6 @@ GuiScrollView
 				, supressScrolling(false)
 			{
 				commandExecutor = new CommandExecutor(this);
-				controlTemplate->SetCommands(commandExecutor.Obj());
-				controlTemplate->GetInternalContainerComposition()->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);
-				controlTemplate->GetHorizontalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
-				controlTemplate->GetVerticalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnVerticalScroll);
-				controlTemplate->GetEventReceiver()->horizontalWheel.AttachMethod(this, &GuiScrollView::OnHorizontalWheel);
-				controlTemplate->GetEventReceiver()->verticalWheel.AttachMethod(this, &GuiScrollView::OnVerticalWheel);
 			}
 
 			vint GuiScrollView::GetSmallMove()
@@ -262,13 +311,14 @@ GuiScrollView
 
 			void GuiScrollView::CalculateView()
 			{
+				auto ct = GetControlTemplateObject();
 				if(!supressScrolling)
 				{
 					Size fullSize = QueryFullSize();
 					while(true)
 					{
-						controlTemplate->AdjustView(fullSize);
-						controlTemplate->AdjustView(fullSize);
+						ct->AdjustView(fullSize);
+						ct->AdjustView(fullSize);
 						supressScrolling = true;
 						CallUpdateView();
 						supressScrolling = false;
@@ -277,11 +327,11 @@ GuiScrollView
 						if (fullSize == newSize)
 						{
 							vint smallMove = GetSmallMove();
-							controlTemplate->GetHorizontalScroll()->SetSmallMove(smallMove);
-							controlTemplate->GetVerticalScroll()->SetSmallMove(smallMove);
+							ct->GetHorizontalScroll()->SetSmallMove(smallMove);
+							ct->GetVerticalScroll()->SetSmallMove(smallMove);
 							Size bigMove = GetBigMove();
-							controlTemplate->GetHorizontalScroll()->SetBigMove(bigMove.x);
-							controlTemplate->GetVerticalScroll()->SetBigMove(bigMove.y);
+							ct->GetHorizontalScroll()->SetBigMove(bigMove.x);
+							ct->GetVerticalScroll()->SetBigMove(bigMove.y);
 							break;
 						}
 						else
@@ -294,16 +344,17 @@ GuiScrollView
 
 			Size GuiScrollView::GetViewSize()
 			{
-				Size viewSize=controlTemplate->GetInternalContainerComposition()->GetBounds().GetSize();
+				Size viewSize = GetControlTemplateObject()->GetInternalContainerComposition()->GetBounds().GetSize();
 				return viewSize;
 			}
 
 			Rect GuiScrollView::GetViewBounds()
 			{
+				auto ct = GetControlTemplateObject();
 				Point viewPosition=
 					Point(
-						controlTemplate->GetHorizontalScroll()->GetPosition(),
-						controlTemplate->GetVerticalScroll()->GetPosition()
+						ct->GetHorizontalScroll()->GetPosition(),
+						ct->GetVerticalScroll()->GetPosition()
 						);
 				Size viewSize=GetViewSize();
 				return Rect(viewPosition, viewSize);
@@ -311,32 +362,40 @@ GuiScrollView
 
 			GuiScroll* GuiScrollView::GetHorizontalScroll()
 			{
-				return controlTemplate->GetHorizontalScroll();
+				return GetControlTemplateObject()->GetHorizontalScroll();
 			}
 
 			GuiScroll* GuiScrollView::GetVerticalScroll()
 			{
-				return controlTemplate->GetVerticalScroll();
+				return GetControlTemplateObject()->GetVerticalScroll();
 			}
 
 			bool GuiScrollView::GetHorizontalAlwaysVisible()
 			{
-				return controlTemplate->GetHorizontalAlwaysVisible();
+				return horizontalAlwaysVisible;
 			}
 
 			void GuiScrollView::SetHorizontalAlwaysVisible(bool value)
 			{
-				controlTemplate->SetHorizontalAlwaysVisible(value);
+				if (horizontalAlwaysVisible != value)
+				{
+					horizontalAlwaysVisible = value;
+					GetControlTemplateObject()->SetHorizontalAlwaysVisible(value);
+				}
 			}
 
 			bool GuiScrollView::GetVerticalAlwaysVisible()
 			{
-				return controlTemplate->GetVerticalAlwaysVisible();
+				return verticalAlwaysVisible;
 			}
 
 			void GuiScrollView::SetVerticalAlwaysVisible(bool value)
 			{
-				controlTemplate->SetVerticalAlwaysVisible(value);
+				if (verticalAlwaysVisible != value)
+				{
+					verticalAlwaysVisible = value;
+					GetControlTemplateObject()->SetVerticalAlwaysVisible(value);
+				}
 			}
 
 /***********************************************************************
