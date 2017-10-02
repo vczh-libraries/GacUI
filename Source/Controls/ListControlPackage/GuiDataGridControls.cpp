@@ -427,7 +427,7 @@ GuiVirtualDataGrid (IDataGridContext)
 
 			templates::GuiListViewTemplate* GuiVirtualDataGrid::GetListViewControlTemplate()
 			{
-				return GetControlTemplate();
+				return GetControlTemplateObject();
 			}
 
 			description::Value GuiVirtualDataGrid::GetViewModelContext()
@@ -492,7 +492,7 @@ GuiVirtualDataGrid
 			}
 
 			GuiVirtualDataGrid::GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
-				:GuiVirtualListView(_controlTemplate, _itemProvider)
+				:GuiVirtualListView(themeName, _itemProvider)
 			{
 				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(IListViewItemView::Identifier));
 				columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(_itemProvider->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));

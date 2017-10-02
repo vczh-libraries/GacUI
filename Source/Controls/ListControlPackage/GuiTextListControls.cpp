@@ -21,9 +21,9 @@ namespace vl
 DefaultTextListItemTemplate
 ***********************************************************************/
 
-				DefaultTextListItemTemplate::BulletStyle* DefaultTextListItemTemplate::CreateBulletStyle()
+				TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultTextListItemTemplate::CreateBulletStyle()
 				{
-					return nullptr;
+					return {};
 				}
 
 				void DefaultTextListItemTemplate::OnInitialize()
@@ -40,7 +40,8 @@ DefaultTextListItemTemplate
 
 					if (auto bulletStyleController = CreateBulletStyle())
 					{
-						bulletButton = new GuiSelectableButton(bulletStyleController);
+						bulletButton = new GuiSelectableButton(theme::ThemeName::Unknown);
+						bulletButton->SetControlTemplate(bulletStyleController);
 						bulletButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						bulletButton->SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnBulletSelectedChanged);
 
@@ -133,28 +134,28 @@ DefaultTextListItemTemplate
 DefaultCheckTextListItemTemplate
 ***********************************************************************/
 
-				DefaultTextListItemTemplate::BulletStyle* DefaultCheckTextListItemTemplate::CreateBulletStyle()
+				TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultCheckTextListItemTemplate::CreateBulletStyle()
 				{
 					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
-						auto style = textList->GetControlTemplate()->GetCheckBulletTemplate();
-						if (style) return style({});
+						auto style = textList->GetControlTemplateObject()->GetCheckBulletTemplate();
+						if (style) return style;
 					}
-					return theme::GetCurrentTheme()->CreateCheckTextListItemStyle()({});
+					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::CheckTextListItem);
 				}
 
 /***********************************************************************
 DefaultRadioTextListItemTemplate
 ***********************************************************************/
 
-				DefaultTextListItemTemplate::BulletStyle* DefaultRadioTextListItemTemplate::CreateBulletStyle()
+				TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultRadioTextListItemTemplate::CreateBulletStyle()
 				{
 					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
-						auto style = textList->GetControlTemplate()->GetCheckBulletTemplate();
-						if (style) return style({});
+						auto style = textList->GetControlTemplateObject()->GetCheckBulletTemplate();
+						if (style) return style;
 					}
-					return theme::GetCurrentTheme()->CreateRadioTextListItemStyle()({});
+					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::RadioTextListItem);
 				}
 
 /***********************************************************************
@@ -295,7 +296,7 @@ GuiTextList
 				GuiSelectableListControl::OnStyleInstalled(itemIndex, style);
 				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
 				{
-					textItemStyle->SetTextColor(controlTemplate->GetTextColor());
+					textItemStyle->SetTextColor(GetControlTemplateObject()->GetTextColor());
 					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(list::ITextItemView::Identifier)))
 					{
 						textItemStyle->SetChecked(textItemView->GetChecked(itemIndex));
@@ -309,7 +310,7 @@ GuiTextList
 			}
 
 			GuiVirtualTextList::GuiVirtualTextList(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
-				:GuiSelectableListControl(_controlTemplate, _itemProvider)
+				:GuiSelectableListControl(themeName, _itemProvider)
 			{
 				ItemTemplateChanged.AttachMethod(this, &GuiVirtualTextList::OnItemTemplateChanged);
 				ItemChecked.SetAssociatedComposition(boundsComposition);
@@ -358,7 +359,7 @@ GuiTextList
 ***********************************************************************/
 
 			GuiTextList::GuiTextList(theme::ThemeName themeName)
-				:GuiVirtualTextList(_controlTemplate, new list::TextItemProvider)
+				:GuiVirtualTextList(themeName, new list::TextItemProvider)
 			{
 				items=dynamic_cast<list::TextItemProvider*>(itemProvider.Obj());
 				items->listControl=this;

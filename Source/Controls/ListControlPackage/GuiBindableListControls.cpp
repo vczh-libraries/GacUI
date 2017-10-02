@@ -158,7 +158,7 @@ GuiBindableTextList
 ***********************************************************************/
 
 			GuiBindableTextList::GuiBindableTextList(theme::ThemeName themeName)
-				:GuiVirtualTextList(_controlTemplate, new ItemSource)
+				:GuiVirtualTextList(themeName, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
 
@@ -522,7 +522,7 @@ GuiBindableListView
 ***********************************************************************/
 
 			GuiBindableListView::GuiBindableListView(theme::ThemeName themeName)
-				:GuiVirtualListView(_controlTemplate, new ItemSource)
+				:GuiVirtualListView(themeName, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
 
@@ -843,7 +843,7 @@ GuiBindableTreeView
 ***********************************************************************/
 
 			GuiBindableTreeView::GuiBindableTreeView(theme::ThemeName themeName)
-				:GuiVirtualTreeView(_controlTemplate, new ItemSource)
+				:GuiVirtualTreeView(themeName, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetNodeRootProvider());
 

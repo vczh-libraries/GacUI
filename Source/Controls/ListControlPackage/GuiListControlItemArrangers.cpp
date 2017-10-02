@@ -51,12 +51,11 @@ RangedItemArrangerBase
 					GuiSelectableButton* backgroundButton = nullptr;
 					if (listControl->GetDisplayItemBackground())
 					{
-						auto style = listControl->GetControlTemplate()->GetBackgroundTemplate();
-						if (!style)
+						backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
+						if (auto style = listControl->GetControlTemplateObject()->GetBackgroundTemplate())
 						{
-							style = theme::GetCurrentTheme()->CreateListItemBackgroundStyle();
+							backgroundButton->SetControlTemplate(style);
 						}
-						backgroundButton = new GuiSelectableButton(style({}));
 						backgroundButton->SetAutoSelection(false);
 					}
 

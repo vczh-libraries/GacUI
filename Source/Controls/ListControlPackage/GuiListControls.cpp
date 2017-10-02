@@ -580,7 +580,7 @@ GuiSelectableListControl
 			}
 
 			GuiSelectableListControl::GuiSelectableListControl(theme::ThemeName themeName, IItemProvider* _itemProvider)
-				:GuiListControl(_controlTemplate, _itemProvider, true)
+				:GuiListControl(themeName, _itemProvider, true)
 				,multiSelect(false)
 				,selectedItemIndexStart(-1)
 				,selectedItemIndexEnd(-1)

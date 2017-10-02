@@ -1,5 +1,6 @@
 #include "GuiListViewControls.h"
 #include "GuiListViewItemTemplates.h"
+#include "../Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -15,11 +16,19 @@ namespace vl
 /***********************************************************************
 GuiListViewColumnHeader
 ***********************************************************************/
+
+			void GuiListViewColumnHeader::BeforeControlTemplateUninstalled()
+			{
+			}
+
+			void GuiListViewColumnHeader::AfterControlTemplateInstalled(bool initialize)
+			{
+				GetControlTemplateObject()->SetSortingState(columnSortingState);
+			}
 			
 			GuiListViewColumnHeader::GuiListViewColumnHeader(theme::ThemeName themeName)
 				:GuiMenuButton(themeName)
 			{
-				controlTemplate->SetSortingState(columnSortingState);
 			}
 
 			GuiListViewColumnHeader::~GuiListViewColumnHeader()
@@ -38,10 +47,10 @@ GuiListViewColumnHeader
 
 			void GuiListViewColumnHeader::SetColumnSortingState(ColumnSortingState value)
 			{
-				if(columnSortingState!=value)
+				if (columnSortingState != value)
 				{
-					columnSortingState=value;
-					controlTemplate->SetSortingState(columnSortingState);
+					columnSortingState = value;
+					GetControlTemplateObject()->SetSortingState(columnSortingState);
 				}
 			}
 
@@ -50,7 +59,7 @@ GuiListViewBase
 ***********************************************************************/
 
 			GuiListViewBase::GuiListViewBase(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
-				:GuiSelectableListControl(_controlTemplate, _itemProvider)
+				:GuiSelectableListControl(themeName, _itemProvider)
 			{
 				ColumnClicked.SetAssociatedComposition(boundsComposition);
 			}
@@ -233,7 +242,8 @@ ListViewColumnItemArranger
 							}
 							for (vint i = 0; i < listViewItemView->GetColumnCount(); i++)
 							{
-								GuiListViewColumnHeader* button = new GuiListViewColumnHeader(listView->GetControlTemplate()->GetColumnHeaderTemplate()({}));
+								GuiListViewColumnHeader* button = new GuiListViewColumnHeader(theme::ThemeName::Unknown);
+								button->SetControlTemplate(listView->GetControlTemplateObject()->GetColumnHeaderTemplate());
 								button->SetText(listViewItemView->GetColumnText(i));
 								button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
 								button->SetColumnSortingState(columnItemView->GetSortingState(i));
@@ -771,7 +781,7 @@ GuiListView
 			}
 
 			GuiVirtualListView::GuiVirtualListView(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
-				:GuiListViewBase(_controlTemplate, _itemProvider)
+				:GuiListViewBase(themeName, _itemProvider)
 			{
 				SetView(ListViewView::Detail);
 			}
@@ -835,7 +845,7 @@ GuiListView
 ***********************************************************************/
 
 			GuiListView::GuiListView(theme::ThemeName themeName)
-				:GuiVirtualListView(_controlTemplate, new list::ListViewItemProvider)
+				:GuiVirtualListView(themeName, new list::ListViewItemProvider)
 			{
 				items=dynamic_cast<list::ListViewItemProvider*>(itemProvider.Obj());
 			}

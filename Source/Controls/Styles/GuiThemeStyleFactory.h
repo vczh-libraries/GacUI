@@ -84,6 +84,7 @@ namespace vl
 
 			enum class ThemeName
 			{
+				Unknown,
 #define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) CONTROL,
 				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
 #undef GUI_DEFINE_THEME_NAME

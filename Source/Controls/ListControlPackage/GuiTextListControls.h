@@ -47,13 +47,13 @@ DefaultTextListItemTemplate
 				class DefaultTextListItemTemplate : public templates::GuiTextListItemTemplate
 				{
 				protected:
-					using BulletStyle = templates::GuiSelectableButtonTemplate;
+					using BulletStyle = templates::GuiControlTemplate;
 
 					GuiSelectableButton*					bulletButton = nullptr;
 					elements::GuiSolidLabelElement*			textElement = nullptr;
 					bool									supressEdit = false;
 
-					virtual BulletStyle*					CreateBulletStyle();
+					virtual TemplateProperty<BulletStyle>	CreateBulletStyle();
 					void									OnInitialize()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -68,14 +68,14 @@ DefaultTextListItemTemplate
 				class DefaultCheckTextListItemTemplate : public DefaultTextListItemTemplate
 				{
 				protected:
-					BulletStyle*							CreateBulletStyle()override;
+					TemplateProperty<BulletStyle>			CreateBulletStyle()override;
 				public:
 				};
 
 				class DefaultRadioTextListItemTemplate : public DefaultTextListItemTemplate
 				{
 				protected:
-					BulletStyle*							CreateBulletStyle()override;
+					TemplateProperty<BulletStyle>			CreateBulletStyle()override;
 				public:
 				};
 
