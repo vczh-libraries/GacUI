@@ -96,10 +96,12 @@ GuiTab
 				ct->SetCommands(nullptr);
 				ct->SetTabPages(nullptr);
 				ct->SetSelectedTabPage(nullptr);
+				GuiControl::BeforeControlTemplateUninstalled();
 			}
 
 			void GuiTab::AfterControlTemplateInstalled(bool initialize)
 			{
+				GuiControl::AfterControlTemplateInstalled(initialize);
 				auto ct = GetControlTemplateObject();
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetTabPages(tabPages.GetWrapper());
@@ -206,10 +208,13 @@ GuiScrollView
 				hWheelHandler = nullptr;
 				vWheelHandler = nullptr;
 				supressScrolling = false;
+
+				GuiControl::BeforeControlTemplateUninstalled();
 			}
 
 			void GuiScrollView::AfterControlTemplateInstalled(bool initialize)
 			{
+				GuiControl::AfterControlTemplateInstalled(initialize);
 				auto ct = GetControlTemplateObject();
 				ct->SetCommands(commandExecutor.Obj());
 				containerBoundsChangedHandler = ct->GetInternalContainerComposition()->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);

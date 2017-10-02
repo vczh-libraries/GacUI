@@ -19,10 +19,12 @@ GuiListViewColumnHeader
 
 			void GuiListViewColumnHeader::BeforeControlTemplateUninstalled()
 			{
+				GuiMenuButton::BeforeControlTemplateUninstalled();
 			}
 
 			void GuiListViewColumnHeader::AfterControlTemplateInstalled(bool initialize)
 			{
+				GuiMenuButton::AfterControlTemplateInstalled(initialize);
 				GetControlTemplateObject()->SetSortingState(columnSortingState);
 			}
 			

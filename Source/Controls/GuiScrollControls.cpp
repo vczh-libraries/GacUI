@@ -66,10 +66,12 @@ GuiScroll
 			void GuiScroll::BeforeControlTemplateUninstalled()
 			{
 				GetControlTemplateObject()->SetCommands(nullptr);
+				GuiControl::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiScroll::AfterControlTemplateInstalled(bool initialized)
+			void GuiScroll::AfterControlTemplateInstalled(bool initialize)
 			{
+				GuiControl::AfterControlTemplateInstalled(initialize);
 				auto ct = GetControlTemplateObject();
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetPageSize(pageSize);

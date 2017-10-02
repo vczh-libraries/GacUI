@@ -557,10 +557,12 @@ GuiWindow
 
 			void GuiWindow::BeforeControlTemplateUninstalled()
 			{
+				GuiControlHost::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiWindow::AfterControlTemplateInstalled(bool initialized)
+			void GuiWindow::AfterControlTemplateInstalled(bool initialize)
 			{
+				GuiControlHost::AfterControlTemplateInstalled(initialize);
 				auto ct = GetControlTemplateObject();
 #define FIX_WINDOW_PROPERTY(VARIABLE, NAME) \
 				switch (ct->Get ## NAME ## Option()) \

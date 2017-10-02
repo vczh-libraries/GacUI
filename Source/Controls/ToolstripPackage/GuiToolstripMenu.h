@@ -151,7 +151,7 @@ Toolstrip Component
 				GuiToolstripMenu*								EnsureToolstripSubMenu();
 				/// <summary>Create the toolstrip sub menu if necessary. The created toolstrip sub menu is owned by this menu button.</summary>
 				/// <param name="subMenuTemplate">The style controller for the toolstrip sub menu. Set to null to use the default control template.</param>
-				void											CreateToolstripSubMenu(templates::GuiMenuTemplate* subMenuTemplate = nullptr);
+				void											CreateToolstripSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate);
 			};
 		}
 	}

@@ -17,10 +17,12 @@ GuiButton
 
 			void GuiButton::BeforeControlTemplateUninstalled()
 			{
+				GuiControl::BeforeControlTemplateUninstalled();
 			}
 
 			void GuiButton::AfterControlTemplateInstalled(bool initialize)
 			{
+				GuiControl::AfterControlTemplateInstalled(initialize);
 				auto ct = GetControlTemplateObject();
 				GetControlTemplateObject()->SetState(controlState);
 			}
@@ -217,10 +219,12 @@ GuiSelectableButton
 
 			void GuiSelectableButton::BeforeControlTemplateUninstalled()
 			{
+				GuiButton::BeforeControlTemplateUninstalled();
 			}
 
 			void GuiSelectableButton::AfterControlTemplateInstalled(bool initialize)
 			{
+				GuiButton;; AfterControlTemplateInstalled(initialize);
 				GetControlTemplateObject()->SetSelected(isSelected);
 			}
 
