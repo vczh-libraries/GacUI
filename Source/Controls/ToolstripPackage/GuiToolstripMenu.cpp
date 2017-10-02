@@ -92,7 +92,7 @@ GuiToolstripMenu
 			}
 
 			GuiToolstripMenu::GuiToolstripMenu(theme::ThemeName themeName, GuiControl* _owner)
-				:GuiMenu(_controlTemplate, _owner)
+				:GuiMenu(themeName, _owner)
 			{
 				sharedSizeRootComposition = new GuiSharedSizeRootComposition();
 				sharedSizeRootComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
@@ -255,16 +255,24 @@ GuiToolstripButton
 			{
 				if (!GetSubMenu())
 				{
-					CreateToolstripSubMenu();
+					CreateToolstripSubMenu({});
 				}
 				return dynamic_cast<GuiToolstripMenu*>(GetSubMenu());
 			}
 
-			void GuiToolstripButton::CreateToolstripSubMenu(templates::GuiMenuTemplate* subMenuTemplate)
+			void GuiToolstripButton::CreateToolstripSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate)
 			{
 				if (!subMenu)
 				{
-					GuiToolstripMenu* newSubMenu = new GuiToolstripMenu(subMenuTemplate ? subMenuTemplate : controlTemplate->GetSubMenuTemplate()({}), this);
+					auto newSubMenu = new GuiToolstripMenu(theme::ThemeName::Menu, this);
+					if (subMenuTemplate)
+					{
+						newSubMenu->SetControlTemplate(subMenuTemplate);
+					}
+					else
+					{
+						newSubMenu->SetControlTemplate(GetControlTemplateObject()->GetSubMenuTemplate());
+					}
 					SetSubMenu(newSubMenu, true);
 				}
 			}
