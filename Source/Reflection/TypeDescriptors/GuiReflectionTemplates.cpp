@@ -116,17 +116,7 @@ Type Declaration
 			GUI_CONTROL_TEMPLATE(GuiLabelTemplate, GuiControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiSinglelineTextBoxTemplate, GuiControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiDocumentLabelTemplate, GuiControlTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiMultilineTextBoxTemplate)
-				CLASS_MEMBER_BASE(GuiScrollViewTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiMultilineTextBoxTemplate*(), NO_PARAMETER)
-
-				GuiMultilineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditingText)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextElement)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextComposition)
-			END_CLASS_MEMBER(GuiMultilineTextBoxTemplate)
-
+			GUI_CONTROL_TEMPLATE(GuiMultilineTextBoxTemplate, GuiScrollViewTemplate)
 			GUI_CONTROL_TEMPLATE(GuiDocumentViewerTemplate, GuiScrollViewTemplate)
 			GUI_CONTROL_TEMPLATE(GuiMenuTemplate, GuiWindowTemplate)
 			GUI_CONTROL_TEMPLATE(GuiWindowTemplate, GuiControlTemplate)

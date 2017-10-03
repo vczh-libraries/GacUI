@@ -487,9 +487,6 @@ Scrollable Controls
 				elements::GuiColorizedTextElement*			textElement;
 				compositions::GuiBoundsComposition*			textComposition;
 
-				void										OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				GuiMultilineTextBoxTemplate();
 				~GuiMultilineTextBoxTemplate();
@@ -500,12 +497,6 @@ Scrollable Controls
 				F(GuiMultilineTextBoxTemplate, Color, CaretColor)\
 
 				GuiMultilineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-
-				WString										GetEditingText();
-				elements::GuiColorizedTextElement*			GetTextElement();
-				compositions::GuiGraphicsComposition*		GetTextComposition();
-
-				void										Initialize()override;
 			};
 
 			class GuiDocumentViewerTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiDocumentViewerTemplate>

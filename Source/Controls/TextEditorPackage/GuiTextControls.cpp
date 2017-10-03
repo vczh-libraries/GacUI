@@ -17,8 +17,8 @@ GuiMultilineTextBox::DefaultTextElementOperatorCallback
 
 			GuiMultilineTextBox::TextElementOperatorCallback::TextElementOperatorCallback(GuiMultilineTextBox* _textControl)
 				:GuiTextBoxCommonInterface::DefaultCallback(
-					_textControl->GetControlTemplate()->GetTextElement(),
-					_textControl->GetControlTemplate()->GetTextComposition()
+					_textControl->textElement,
+					_textControl->textComposition
 					)
 				,textControl(_textControl)
 			{
@@ -83,32 +83,57 @@ GuiMultilineTextBox::CommandExecutor
 GuiMultilineTextBox
 ***********************************************************************/
 
+			void GuiMultilineTextBox::BeforeControlTemplateUninstalled()
+			{
+				auto ct = GetControlTemplateObject();
+				ct->SetCommands(nullptr);
+				GuiScrollView::BeforeControlTemplateUninstalled();
+			}
+
+			void GuiMultilineTextBox::AfterControlTemplateInstalled(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				GuiScrollView::AfterControlTemplateInstalled(initialize);
+
+				Array<text::ColorEntry> colors(1);
+				colors[0] = ct->GetTextColor();
+				textElement->SetColors(colors);
+				textElement->SetCaretColor(ct->GetCaretColor());
+				ct->SetCommands(commandExecutor.Obj());
+			}
+
 			void GuiMultilineTextBox::CalculateViewAndSetScroll()
 			{
+				auto ct = GetControlTemplateObject();
 				CalculateView();
-				vint smallMove = controlTemplate->GetTextElement()->GetLines().GetRowHeight();
+				vint smallMove = textElement->GetLines().GetRowHeight();
 				vint bigMove = smallMove * 5;
-				controlTemplate->GetHorizontalScroll()->SetSmallMove(smallMove);
-				controlTemplate->GetHorizontalScroll()->SetBigMove(bigMove);
-				controlTemplate->GetVerticalScroll()->SetSmallMove(smallMove);
-				controlTemplate->GetVerticalScroll()->SetBigMove(bigMove);
+				ct->GetHorizontalScroll()->SetSmallMove(smallMove);
+				ct->GetHorizontalScroll()->SetBigMove(bigMove);
+				ct->GetVerticalScroll()->SetSmallMove(smallMove);
+				ct->GetVerticalScroll()->SetBigMove(bigMove);
+			}
+
+			void GuiMultilineTextBox::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				textElement->SetVisuallyEnabled(GetVisuallyEnabled());
+			}
+
+			Size GuiMultilineTextBox::QueryFullSize()
+			{
+				text::TextLines& lines = textElement->GetLines();
+				return Size(lines.GetMaxWidth() + TextMargin * 2, lines.GetMaxHeight() + TextMargin * 2);
+			}
+
+			void GuiMultilineTextBox::UpdateView(Rect viewBounds)
+			{
+				textElement->SetViewPosition(viewBounds.LeftTop() - Size(TextMargin, TextMargin));
 			}
 
 			void GuiMultilineTextBox::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
 			{
 				CalculateViewAndSetScroll();
 				GuiScrollView::OnRenderTargetChanged(renderTarget);
-			}
-
-			Size GuiMultilineTextBox::QueryFullSize()
-			{
-				text::TextLines& lines = controlTemplate->GetTextElement()->GetLines();
-				return Size(lines.GetMaxWidth() + TextMargin * 2, lines.GetMaxHeight() + TextMargin * 2);
-			}
-
-			void GuiMultilineTextBox::UpdateView(Rect viewBounds)
-			{
-				controlTemplate->GetTextElement()->SetViewPosition(viewBounds.LeftTop() - Size(TextMargin, TextMargin));
 			}
 
 			void GuiMultilineTextBox::OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
@@ -122,21 +147,21 @@ GuiMultilineTextBox
 			GuiMultilineTextBox::GuiMultilineTextBox(theme::ThemeName themeName)
 				:GuiScrollView(themeName)
 			{
+				textElement = GuiColorizedTextElement::Create();
+
+				textComposition = new GuiBoundsComposition;
+				textComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				textComposition->SetOwnedElement(textElement);
+				GetContainerComposition()->AddChild(textComposition);
+
 				callback = new TextElementOperatorCallback(this);
 				commandExecutor = new CommandExecutor(this);
 
-				controlTemplate->SetCommands(commandExecutor.Obj());
 				SetFocusableComposition(boundsComposition);
-				{
-					auto element = controlTemplate->GetTextElement();
-					Array<text::ColorEntry> colors(1);
-					colors[0] = controlTemplate->GetTextColor();
-					element->SetColors(colors);
-					element->SetCaretColor(controlTemplate->GetCaretColor());
-				}
-				Install(controlTemplate->GetTextElement(), controlTemplate->GetTextComposition(), this);
+				Install(textElement, textComposition, this);
 				SetCallback(callback.Obj());
 
+				VisuallyEnabledChanged.AttachMethod(this, &GuiMultilineTextBox::OnVisuallyEnabledChanged);
 				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiMultilineTextBox::OnBoundsMouseButtonDown);
 				boundsComposition->GetEventReceiver()->middleButtonDown.AttachMethod(this, &GuiMultilineTextBox::OnBoundsMouseButtonDown);
 				boundsComposition->GetEventReceiver()->rightButtonDown.AttachMethod(this, &GuiMultilineTextBox::OnBoundsMouseButtonDown);
@@ -148,19 +173,22 @@ GuiMultilineTextBox
 
 			const WString& GuiMultilineTextBox::GetText()
 			{
-				text = controlTemplate->GetEditingText();
+				text = textElement->GetLines().GetText();
 				return text;
 			}
 
 			void GuiMultilineTextBox::SetText(const WString& value)
 			{
-				GuiScrollView::SetText(value);
+				UnsafeSetText(value);
+				textElement->SetCaretBegin(TextPos(0, 0));
+				textElement->SetCaretEnd(TextPos(0, 0));
 				CalculateView();
 			}
 
 			void GuiMultilineTextBox::SetFont(const FontProperties& value)
 			{
-				GuiScrollView::SetFont(value);
+				GuiControl::SetFont(value);
+				textElement->SetFont(value);
 				CalculateViewAndSetScroll();
 			}
 
@@ -236,6 +264,22 @@ GuiSinglelineTextBox::DefaultTextElementOperatorCallback
 GuiSinglelineTextBox
 ***********************************************************************/
 
+			void GuiSinglelineTextBox::BeforeControlTemplateUninstalled()
+			{
+				GuiControl::BeforeControlTemplateUninstalled();
+			}
+
+			void GuiSinglelineTextBox::AfterControlTemplateInstalled(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				GuiControl::AfterControlTemplateInstalled(initialize);
+
+				Array<text::ColorEntry> colors(1);
+				colors[0] = ct->GetTextColor();
+				textElement->SetColors(colors);
+				textElement->SetCaretColor(ct->GetCaretColor());
+			}
+
 			void GuiSinglelineTextBox::RearrangeTextElement()
 			{
 				textCompositionTable->SetRowOption(
@@ -270,12 +314,6 @@ GuiSinglelineTextBox
 				textElement = GuiColorizedTextElement::Create();
 				textElement->SetFont(GetFont());
 				textElement->SetViewPosition(Point(-GuiSinglelineTextBox::TextMargin, -GuiSinglelineTextBox::TextMargin));
-				{
-					Array<text::ColorEntry> colors(1);
-					colors[0] = controlTemplate->GetTextColor();
-					textElement->SetColors(colors);
-					textElement->SetCaretColor(controlTemplate->GetCaretColor());
-				}
 
 				textCompositionTable = new GuiTableComposition;
 				textCompositionTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);

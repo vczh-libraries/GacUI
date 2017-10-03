@@ -64,7 +64,9 @@ GuiControl
 
 				if (controlTemplateObject)
 				{
+					controlTemplateObject->Initialize();
 					controlTemplateObject->SetAlignmentToParent(Margin(0, 0, 0, 0));
+
 					containerComposition->GetParent()->RemoveChild(containerComposition);
 					boundsComposition->AddChild(controlTemplateObject);
 					controlTemplateObject->GetContainerComposition()->AddChild(containerComposition);

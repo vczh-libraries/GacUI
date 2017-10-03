@@ -57,11 +57,14 @@ MultilineTextBox
 			protected:
 				Ptr<TextElementOperatorCallback>			callback;
 				Ptr<CommandExecutor>						commandExecutor;
+				elements::GuiColorizedTextElement*			textElement = nullptr;
+				compositions::GuiBoundsComposition*			textComposition = nullptr;
 
 				void										CalculateViewAndSetScroll();
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
 				Size										QueryFullSize()override;
 				void										UpdateView(Rect viewBounds)override;
+				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
