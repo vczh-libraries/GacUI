@@ -1,4 +1,5 @@
 #include "GuiMenuControls.h"
+#include "../Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -202,10 +203,36 @@ GuiMenuBar
 GuiMenuButton
 ***********************************************************************/
 
+			void GuiMenuButton::BeforeControlTemplateUninstalled()
+			{
+				auto host = GetSubMenuHost();
+				host->Clicked.Detach(hostClickedHandler);
+				host->GetBoundsComposition()->GetEventReceiver()->mouseEnter.Detach(hostMouseEnterHandler);
+				GuiSelectableButton::BeforeControlTemplateUninstalled();
+
+				hostClickedHandler = nullptr;
+				hostMouseEnterHandler = nullptr;
+			}
+
+			void GuiMenuButton::AfterControlTemplateInstalled(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				auto host = GetSubMenuHost();
+
+				GuiSelectableButton::AfterControlTemplateInstalled(initialize);
+				ct->SetSubMenuOpening(GetSubMenuOpening());
+				ct->SetImage(image);
+				ct->SetShortcutText(shortcutText);
+				ct->SetSubMenuExisting(subMenu != nullptr);
+
+				hostClickedHandler = host->Clicked.AttachMethod(this, &GuiMenuButton::OnClicked);
+				hostMouseEnterHandler = host->GetBoundsComposition()->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiMenuButton::OnMouseEnter);
+			}
+
 			GuiButton* GuiMenuButton::GetSubMenuHost()
 			{
-				GuiButton* button=controlTemplate->GetSubMenuHost();
-				return button?button:this;
+				GuiButton* button = GetControlTemplateObject()->GetSubMenuHost();
+				return button ? button : this;
 			}
 
 			void GuiMenuButton::OpenSubMenuInternal()
@@ -255,13 +282,13 @@ GuiMenuButton
 			void GuiMenuButton::OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				controlTemplate->SetSubMenuOpening(true);
+				GetControlTemplateObject()->SetSubMenuOpening(true);
 			}
 
 			void GuiMenuButton::OnSubMenuWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				controlTemplate->SetSubMenuOpening(false);
+				GetControlTemplateObject()->SetSubMenuOpening(false);
 			}
 
 			void GuiMenuButton::OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -306,8 +333,6 @@ GuiMenuButton
 				SubMenuOpeningChanged.SetAssociatedComposition(boundsComposition);
 				ImageChanged.SetAssociatedComposition(boundsComposition);
 				ShortcutTextChanged.SetAssociatedComposition(boundsComposition);
-				GetSubMenuHost()->Clicked.AttachMethod(this, &GuiMenuButton::OnClicked);
-				GetSubMenuHost()->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiMenuButton::OnMouseEnter);
 			}
 
 			GuiMenuButton::~GuiMenuButton()
@@ -325,10 +350,10 @@ GuiMenuButton
 
 			void GuiMenuButton::SetImage(Ptr<GuiImageData> value)
 			{
-				if(image!=value)
+				if (image != value)
 				{
-					image=value;
-					controlTemplate->SetImage(image);
+					image = value;
+					GetControlTemplateObject()->SetImage(image);
 					ImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -340,10 +365,10 @@ GuiMenuButton
 
 			void GuiMenuButton::SetShortcutText(const WString& value)
 			{
-				if(shortcutText!=value)
+				if (shortcutText != value)
 				{
-					shortcutText=value;
-					controlTemplate->SetShortcutText(shortcutText);
+					shortcutText = value;
+					GetControlTemplateObject()->SetShortcutText(shortcutText);
 					ShortcutTextChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -358,11 +383,12 @@ GuiMenuButton
 				return subMenu;
 			}
 
-			GuiMenu* GuiMenuButton::CreateSubMenu(templates::GuiMenuTemplate* subMenuTemplate)
+			GuiMenu* GuiMenuButton::CreateSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate)
 			{
 				if (!subMenu)
 				{
-					GuiMenu* newSubMenu = new GuiMenu(subMenuTemplate ? subMenuTemplate : controlTemplate->GetSubMenuTemplate()({}), this);
+					GuiMenu* newSubMenu = new GuiMenu(theme::ThemeName::Menu, this);
+					newSubMenu->SetControlTemplate(subMenuTemplate ? subMenuTemplate : GetControlTemplateObject()->GetSubMenuTemplate());
 					SetSubMenu(newSubMenu, true);
 				}
 				return subMenu;
@@ -384,7 +410,7 @@ GuiMenuButton
 					subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
 					subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
 				}
-				controlTemplate->SetSubMenuExisting(subMenu!=0);
+				GetControlTemplateObject()->SetSubMenuExisting(subMenu != nullptr);
 			}
 
 			void GuiMenuButton::DestroySubMenu()
@@ -397,7 +423,7 @@ GuiMenuButton
 					}
 					subMenu=0;
 					ownedSubMenu=false;
-					controlTemplate->SetSubMenuExisting(false);
+					GetControlTemplateObject()->SetSubMenuExisting(false);
 				}
 			}
 

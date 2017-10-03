@@ -131,7 +131,11 @@ MenuButton
 			class GuiMenuButton : public GuiSelectableButton, public Description<GuiMenuButton>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ToolstripButtonTemplate)
+
+				using IEventHandler = compositions::IGuiGraphicsEventHandler;
 			protected:
+				Ptr<IEventHandler>						hostClickedHandler;
+				Ptr<IEventHandler>						hostMouseEnterHandler;
 				Ptr<GuiImageData>						image;
 				WString									shortcutText;
 				GuiMenu*								subMenu;
@@ -187,7 +191,7 @@ MenuButton
 				/// <summary>Create the sub menu if necessary. The created sub menu is owned by this menu button.</summary>
 				/// <returns>The created sub menu.</returns>
 				/// <param name="subMenuTemplate">The style controller for the sub menu. Set to null to use the default control template.</param>
-				GuiMenu*								CreateSubMenu(templates::GuiMenuTemplate* subMenuTemplate = nullptr);
+				GuiMenu*								CreateSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate = {});
 				/// <summary>Associate a sub menu if there is no sub menu binded in this menu button. The associated sub menu is not owned by this menu button if the "owned" argument is set to false.</summary>
 				/// <param name="value">The sub menu to associate.</param>
 				/// <param name="owned">Set to true if the menu is expected to be owned.</param>
