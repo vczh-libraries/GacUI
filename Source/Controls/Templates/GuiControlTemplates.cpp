@@ -524,10 +524,12 @@ GuiScrollViewTemplate
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
-				horizontalScroll = new GuiScroll(GetHScrollTemplate()({}));
+				horizontalScroll = new GuiScroll(theme::ThemeName::HScroll);
+				horizontalScroll->SetControlTemplate(GetHScrollTemplate());
 				horizontalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				horizontalScroll->SetEnabled(false);
-				verticalScroll = new GuiScroll(GetVScrollTemplate()({}));
+				verticalScroll = new GuiScroll(theme::ThemeName::HScroll);
+				verticalScroll->SetControlTemplate(GetVScrollTemplate());
 				verticalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				verticalScroll->SetEnabled(false);
 
@@ -921,20 +923,24 @@ GuiDatePickerTemplate
 				GuiTableComposition* monthTable = 0;
 				GuiTableComposition* dayTable = 0;
 				{
-					listYears = new GuiTextList(GetDateTextListTemplate()({}));
+					listYears = new GuiTextList(theme::ThemeName::TextList);
+					listYears->SetControlTemplate(GetDateTextListTemplate());
 					listYears->SetHorizontalAlwaysVisible(false);
 					for (vint i = YearFirst; i <= YearLast; i++)
 					{
 						listYears->GetItems().Add(new list::TextItem(itow(i)));
 					}
-					comboYear = new GuiComboBoxListControl(GetDateComboBoxTemplate()({}), listYears);
+					comboYear = new GuiComboBoxListControl(theme::ThemeName::ComboBox, listYears);
+					comboYear->SetControlTemplate(GetDateComboBoxTemplate());
 					comboYear->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 2, 0));
 					comboYear->SelectedIndexChanged.AttachMethod(this, &GuiDatePickerTemplate::comboYearMonth_SelectedIndexChanged);
 				}
 				{
-					listMonths = new GuiTextList(GetDateTextListTemplate()({}));
+					listMonths = new GuiTextList(theme::ThemeName::TextList);
+					listMonths->SetControlTemplate(GetDateTextListTemplate());
 					listMonths->SetHorizontalAlwaysVisible(false);
-					comboMonth = new GuiComboBoxListControl(GetDateComboBoxTemplate()({}), listMonths);
+					comboMonth = new GuiComboBoxListControl(theme::ThemeName::ComboBox, listMonths);
+					comboMonth->SetControlTemplate(GetDateComboBoxTemplate());
 					comboMonth->GetBoundsComposition()->SetAlignmentToParent(Margin(2, 0, 0, 0));
 					comboMonth->SelectedIndexChanged.AttachMethod(this, &GuiDatePickerTemplate::comboYearMonth_SelectedIndexChanged);
 				}
@@ -1014,7 +1020,8 @@ GuiDatePickerTemplate
 							dayTable->AddChild(cell);
 							cell->SetSite(j + DayRowStart, i, 1, 1);
 
-							GuiSelectableButton* button = new GuiSelectableButton(GetDateButtonTemplate()({}));
+							GuiSelectableButton* button = new GuiSelectableButton(theme::ThemeName::CheckBox);
+							button->SetControlTemplate(GetDateButtonTemplate());
 							button->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 							button->SetGroupController(dayMutexController);
 							button->SelectedChanged.AttachMethod(this, &GuiDatePickerTemplate::buttonDay_SelectedChanged);
