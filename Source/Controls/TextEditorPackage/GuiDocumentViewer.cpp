@@ -209,7 +209,6 @@ GuiDocumentCommonInterface
 
 				documentElement=GuiDocumentElement::Create();
 				documentElement->SetCallback(this);
-				documentElement->SetCaretColor(caretColor);
 
 				documentComposition=new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(documentElement);
@@ -588,14 +587,7 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
-			GuiDocumentCommonInterface::GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument, Color _caretColor)
-				:baselineDocument(_baselineDocument)
-				,caretColor(_caretColor)
-				,documentElement(0)
-				,documentComposition(0)
-				,dragging(false)
-				,editMode(ViewOnly)
-				,documentControl(0)
+			GuiDocumentCommonInterface::GuiDocumentCommonInterface()
 			{
 				undoRedoProcessor=new GuiDocumentUndoRedoProcessor;
 
@@ -1108,6 +1100,20 @@ GuiDocumentCommonInterface
 GuiDocumentViewer
 ***********************************************************************/
 
+			void GuiDocumentViewer::BeforeControlTemplateUninstalled()
+			{
+				GuiScrollContainer::BeforeControlTemplateUninstalled();
+			}
+
+			void GuiDocumentViewer::AfterControlTemplateInstalled(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				GuiScrollContainer::AfterControlTemplateInstalled(initialize);
+				documentElement->SetCaretColor(ct->GetCaretColor());
+				baselineDocument = ct->GetBaselineDocument();
+				SetDocument(GetDocument());
+			}
+
 			Point GuiDocumentViewer::GetDocumentViewPosition()
 			{
 				return GetViewBounds().LeftTop();
@@ -1131,7 +1137,6 @@ GuiDocumentViewer
 
 			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName)
 				:GuiScrollContainer(themeName)
-				, GuiDocumentCommonInterface(_controlTemplate->GetBaselineDocument(), _controlTemplate->GetCaretColor())
 			{
 				SetExtendToFullWidth(true);
 				SetHorizontalAlwaysVisible(false);
@@ -1160,9 +1165,22 @@ GuiDocumentViewer
 GuiDocumentLabel
 ***********************************************************************/
 
+			void GuiDocumentLabel::BeforeControlTemplateUninstalled()
+			{
+				GuiControl::BeforeControlTemplateUninstalled();
+			}
+
+			void GuiDocumentLabel::AfterControlTemplateInstalled(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				GuiControl::AfterControlTemplateInstalled(initialize);
+				documentElement->SetCaretColor(ct->GetCaretColor());
+				baselineDocument = ct->GetBaselineDocument();
+				SetDocument(GetDocument());
+			}
+
 			GuiDocumentLabel::GuiDocumentLabel(theme::ThemeName themeName)
 				:GuiControl(themeName)
-				, GuiDocumentCommonInterface(_controlTemplate->GetBaselineDocument(), _controlTemplate->GetCaretColor())
 			{
 				GetContainerComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				SetFocusableComposition(GetBoundsComposition());

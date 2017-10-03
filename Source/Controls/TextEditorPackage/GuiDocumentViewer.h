@@ -66,14 +66,13 @@ GuiDocumentCommonInterface
 				};
 			protected:
 				Ptr<DocumentModel>							baselineDocument;
-				Color										caretColor;
 				DocumentItemMap								documentItems;
-				GuiControl*									documentControl;
-				elements::GuiDocumentElement*				documentElement;
-				compositions::GuiBoundsComposition*			documentComposition;
+				GuiControl*									documentControl = nullptr;
+				elements::GuiDocumentElement*				documentElement = nullptr;
+				compositions::GuiBoundsComposition*			documentComposition = nullptr;
 				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
-				bool										dragging;
-				EditMode									editMode;
+				bool										dragging = false;
+				EditMode									editMode = EditMode::ViewOnly;
 
 				Ptr<GuiDocumentUndoRedoProcessor>			undoRedoProcessor;
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
@@ -112,7 +111,7 @@ GuiDocumentCommonInterface
 				void										OnFinishRender()override;
 				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
 			public:
-				GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument, Color _caretColor = {});
+				GuiDocumentCommonInterface();
 				~GuiDocumentCommonInterface();
 
 				/// <summary>Active hyperlink changed event.</summary>
