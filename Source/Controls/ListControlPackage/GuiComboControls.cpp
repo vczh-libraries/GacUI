@@ -29,6 +29,18 @@ GuiComboBoxBase::CommandExecutor
 GuiComboBoxBase
 ***********************************************************************/
 
+			void GuiComboBoxBase::BeforeControlTemplateUninstalled()
+			{
+				GetControlTemplateObject()->SetCommands(nullptr);
+				GuiMenuButton::BeforeControlTemplateUninstalled();
+			}
+
+			void GuiComboBoxBase::AfterControlTemplateInstalled(bool initialize)
+			{
+				GuiMenuButton::AfterControlTemplateInstalled(initialize);
+				GetControlTemplateObject()->SetCommands(commandExecutor.Obj());
+			}
+
 			bool GuiComboBoxBase::IsAltAvailable()
 			{
 				return false;
@@ -54,8 +66,7 @@ GuiComboBoxBase
 			GuiComboBoxBase::GuiComboBoxBase(theme::ThemeName themeName)
 				:GuiMenuButton(themeName)
 			{
-				commandExecutor=new CommandExecutor(this);
-				controlTemplate->SetCommands(commandExecutor.Obj());
+				commandExecutor = new CommandExecutor(this);
 
 				CreateSubMenu();
 				SetCascadeAction(false);
@@ -70,6 +81,17 @@ GuiComboBoxBase
 /***********************************************************************
 GuiComboBoxListControl
 ***********************************************************************/
+
+			void GuiComboBoxListControl::BeforeControlTemplateUninstalled()
+			{
+				GuiComboBoxBase::BeforeControlTemplateUninstalled();
+			}
+
+			void GuiComboBoxListControl::AfterControlTemplateInstalled(bool initialize)
+			{
+				GuiComboBoxBase::AfterControlTemplateInstalled(initialize);
+				GetControlTemplateObject()->SetTextVisible(!itemStyleProperty);
+			}
 
 			bool GuiComboBoxListControl::IsAltAvailable()
 			{
@@ -184,7 +206,6 @@ GuiComboBoxListControl
 				:GuiComboBoxBase(themeName)
 				, containedListControl(_containedListControl)
 			{
-				controlTemplate->SetTextVisible(true);
 				TextChanged.AttachMethod(this, &GuiComboBoxListControl::OnTextChanged);
 				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiComboBoxListControl::OnVisuallyEnabledChanged);
@@ -220,7 +241,7 @@ GuiComboBoxListControl
 			{
 				RemoveStyleController();
 				itemStyleProperty = value;
-				controlTemplate->SetTextVisible(!itemStyleProperty);
+				GetControlTemplateObject()->SetTextVisible(!itemStyleProperty);
 				InstallStyleController(GetSelectedIndex());
 				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}

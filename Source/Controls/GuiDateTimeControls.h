@@ -42,6 +42,7 @@ DatePicker
 				};
 
 				Ptr<CommandExecutor>									commandExecutor;
+				DateTime												date;
 				WString													dateFormat;
 				Locale													dateLocale;
 

@@ -43,16 +43,32 @@ GuiDatePicker::CommandExecutor
 GuiDatePicker
 ***********************************************************************/
 
+			void GuiDatePicker::BeforeControlTemplateUninstalled()
+			{
+				auto ct = GetControlTemplateObject();
+				ct->SetCommands(nullptr);
+				GuiControl::BeforeControlTemplateUninstalled();
+			}
+
+			void GuiDatePicker::AfterControlTemplateInstalled(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				GuiControl::AfterControlTemplateInstalled(initialize);
+				ct->SetCommands(commandExecutor.Obj());
+				ct->SetDate(date);
+				ct->SetDateLocale(dateLocale);
+				UpdateText();
+			}
+
 			void GuiDatePicker::UpdateText()
 			{
-				GuiControl::SetText(dateLocale.FormatDate(dateFormat, controlTemplate->GetDate()));
+				GuiControl::SetText(dateLocale.FormatDate(dateFormat, date));
 			}
 
 			GuiDatePicker::GuiDatePicker(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
 				commandExecutor = new CommandExecutor(this);
-				controlTemplate->SetCommands(commandExecutor.Obj());
 				SetDateLocale(Locale::UserDefault());
 				SetDate(DateTime::LocalTime());
 
@@ -71,12 +87,16 @@ GuiDatePicker
 
 			const DateTime& GuiDatePicker::GetDate()
 			{
-				return controlTemplate->GetDate();
+				return date;
 			}
 
 			void GuiDatePicker::SetDate(const DateTime& value)
 			{
-				controlTemplate->SetDate(value);
+				if (date != value)
+				{
+					date = value;
+					GetControlTemplateObject()->SetDate(value);
+				}
 			}
 
 			const WString& GuiDatePicker::GetDateFormat()
@@ -105,7 +125,7 @@ GuiDatePicker
 				{
 					dateFormat=formats[0];
 				}
-				controlTemplate->SetDateLocale(dateLocale);
+				GetControlTemplateObject()->SetDateLocale(dateLocale);
 
 				UpdateText();
 				DateFormatChanged.Execute(GetNotifyEventArguments());
