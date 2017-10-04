@@ -201,7 +201,7 @@ GuiPredefinedInstanceLoadersPlugin
 				auto controlType = TypeInfoRetriver<GuiDatePicker*>::CreateTypeInfo();
 				auto createControl = MakePtr<WfNewClassExpression>();
 				createControl->type = GetTypeFromTypeInfo(controlType.Obj());
-				createControl->arguments.Add(TLoader::CreateInvokeTemplateFactoryCall(TLoader::CreateIThemeCall(L"CreateDatePickerStyle")));
+				createControl->arguments.Add(TLoader::CreateThemeName(theme::ThemeName::DatePicker));
 
 				return createControl;
 			}
@@ -249,73 +249,73 @@ GuiPredefinedInstanceLoadersPlugin
 	#ifndef VCZH_DEBUG_NO_REFLECTION
 					IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
 
-	#define ADD_TEMPLATE_CONTROL(TYPENAME, STYLE_METHOD)\
+	#define ADD_TEMPLATE_CONTROL(TYPENAME, THEME_NAME)\
 		manager->SetLoader(\
 		new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::" L ## #TYPENAME,\
-				L ## #STYLE_METHOD\
+				theme::ThemeName::THEME_NAME\
 				)\
 			)
 
-	#define ADD_TEMPLATE_CONTROL_2(TYPENAME, STYLE_METHOD, ARGUMENT_FUNCTION)\
+	#define ADD_TEMPLATE_CONTROL_2(TYPENAME, THEME_NAME, ARGUMENT_FUNCTION)\
 		manager->SetLoader(\
 		new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::" L ## #TYPENAME,\
-				L ## #STYLE_METHOD,\
+				theme::ThemeName::THEME_NAME,\
 				ARGUMENT_FUNCTION\
 				)\
 			)
 
-	#define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD)\
+	#define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, THEME_NAME)\
 		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
 		new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
-				L ## #STYLE_METHOD\
+				theme::ThemeName::THEME_NAME\
 				)\
 			)
 
-	#define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, INIT_FUNCTION)\
+	#define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, THEME_NAME, INIT_FUNCTION)\
 		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
 		new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
-				L ## #STYLE_METHOD,\
+				theme::ThemeName::THEME_NAME,\
 				INIT_FUNCTION\
 				)\
 			)
 
 					manager->SetLoader(new GuiControlInstanceLoader);
 
-					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,		CreateCustomControlStyle									);
-					ADD_TEMPLATE_CONTROL	(							GuiLabel,				CreateLabelStyle											);
-					ADD_TEMPLATE_CONTROL	(							GuiButton,				CreateButtonStyle											);
-					ADD_TEMPLATE_CONTROL	(							GuiTabPage,				CreateCustomControlStyle									);
-					ADD_TEMPLATE_CONTROL	(							GuiTab,					CreateTabStyle												);
-					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		CreateScrollViewStyle										);
-					ADD_TEMPLATE_CONTROL	(							GuiWindow,				CreateWindowStyle											);
-					ADD_TEMPLATE_CONTROL	(							GuiTextList,			CreateTextListStyle											);
-					ADD_TEMPLATE_CONTROL	(							GuiBindableTextList,	CreateTextListStyle											);
-					ADD_TEMPLATE_CONTROL	(							GuiListView,			CreateListViewStyle											);
-					ADD_TEMPLATE_CONTROL	(							GuiBindableListView,	CreateListViewStyle											);
-					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,	CreateMultilineTextBoxStyle									);
-					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	CreateSinglelineTextBoxStyle								);
-					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			CreateDatePickerStyle										);
-					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,		CreateComboBoxStyle,				CreateStandardDataPicker);
+					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,		CustomControl										);
+					ADD_TEMPLATE_CONTROL	(							GuiLabel,				Label												);
+					ADD_TEMPLATE_CONTROL	(							GuiButton,				Button												);
+					ADD_TEMPLATE_CONTROL	(							GuiTabPage,				CustomControl										);
+					ADD_TEMPLATE_CONTROL	(							GuiTab,					Tab													);
+					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		ScrollView											);
+					ADD_TEMPLATE_CONTROL	(							GuiWindow,				Window												);
+					ADD_TEMPLATE_CONTROL	(							GuiTextList,			TextList											);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableTextList,	TextList											);
+					ADD_TEMPLATE_CONTROL	(							GuiListView,			ListView											);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableListView,	ListView											);
+					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,	MultilineTextBox									);
+					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	SinglelineTextBox									);
+					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			DatePicker											);
+					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,		ComboBox,				CreateStandardDataPicker	);
 
-					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,				CreateGroupBoxStyle											);
-					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,				CreateMenuSplitterStyle										);
-					ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,		CreateMenuBarButtonStyle									);
-					ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,		CreateMenuItemButtonStyle									);
-					ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,		CreateToolstripDropdownButtonStyle							);
-					ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,		CreateToolstripSplitButtonStyle								);
-					ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,				CreateToolstripSplitterStyle								);
-					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,	CreateCheckBoxStyle											);
-					ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,	CreateRadioButtonStyle										);
-					ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,				CreateHScrollStyle											);
-					ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,				CreateVScrollStyle											);
-					ADD_VIRTUAL_CONTROL		(DocumentTextBox,			GuiDocumentLabel,		CreateDocumentTextBoxStyle									);
-					ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,				CreateHTrackerStyle,										InitializeTrackerProgressBar);
-					ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,				CreateVTrackerStyle,										InitializeTrackerProgressBar);
-					ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,				CreateProgressBarStyle,										InitializeTrackerProgressBar);
+					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,				GroupBox											);
+					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,				MenuSplitter										);
+					ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,		MenuBarButton										);
+					ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,		MenuItemButton										);
+					ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,		ToolstripDropdownButton								);
+					ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,		ToolstripSplitButton								);
+					ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,				ToolstripSplitter									);
+					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,	CheckBox											);
+					ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,	RadioButton											);
+					ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,				HScroll												);
+					ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,				VScroll												);
+					ADD_VIRTUAL_CONTROL		(DocumentTextBox,			GuiDocumentLabel,		DocumentTextBox										);
+					ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,				HTracker,				InitializeTrackerProgressBar);
+					ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,				VTracker,				InitializeTrackerProgressBar);
+					ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,				ProgressBar,			InitializeTrackerProgressBar);
 
 					LoadToolstripControls(manager);
 					LoadListControls(manager);

@@ -42,107 +42,35 @@ GuiVrtualTypeInstanceLoader
 
 			protected:
 				GlobalStringKey								typeName;
-				WString										styleMethod;
+				theme::ThemeName							themeName;
 				ArgumentFunctionType						argumentFunction;
 				InitFunctionType							initFunction;
 
 				virtual void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)
 				{
 				}
-
-				virtual void PrepareAdditionalArgumentsAfterCreation(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfBlockStatement> block)
-				{
-				}
 			public:
-
-				static Ptr<WfExpression> CreateIThemeCall(const WString& method)
+				static Ptr<WfExpression> CreateThemeName(theme::ThemeName themeName)
 				{
-					auto refPresentation = MakePtr<WfTopQualifiedExpression>();
-					refPresentation->name.value = L"presentation";
-
-					auto refTheme = MakePtr<WfChildExpression>();
-					refTheme->parent = refPresentation;
-					refTheme->name.value = L"theme";
-
-					auto refITheme = MakePtr<WfChildExpression>();
-					refITheme->parent = refTheme;
-					refITheme->name.value = L"ITheme";
-
-					auto refGetCurrentTheme = MakePtr<WfChildExpression>();
-					refGetCurrentTheme->parent = refITheme;
-					refGetCurrentTheme->name.value = L"GetCurrentTheme";
-
-					auto call = MakePtr<WfCallExpression>();
-					call->function = refGetCurrentTheme;
-
-					auto refStyleMethod = MakePtr<WfMemberExpression>();
-					refStyleMethod->parent = call;
-					refStyleMethod->name.value = method;
-
-					auto createStyle = MakePtr<WfCallExpression>();
-					createStyle->function = refStyleMethod;
-					return createStyle;
-				}
-
-				static Ptr<WfExpression> CreateInvokeTemplateFactoryCall(Ptr<WfExpression> templateFactoryExpr)
-				{
-					auto nullExpr = MakePtr<WfLiteralExpression>();
-					nullExpr->value = WfLiteralValue::Null;
-
-					auto callExpr = MakePtr<WfCallExpression>();
-					callExpr->function = templateFactoryExpr;
-					callExpr->arguments.Add(nullExpr);
-
-					return callExpr;
-				}
-
-				static Ptr<WfExpression> CreateStyleMethodArgument(const WString& method, ArgumentMap& arguments)
-				{
-					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (indexControlTemplate != -1)
-					{
-						auto refControlStyle = MakePtr<WfReferenceExpression>();
-						refControlStyle->name.value = L"<controlStyle>";
-
-						auto refCreateArgument = MakePtr<WfMemberExpression>();
-						refCreateArgument->parent = refControlStyle;
-						refCreateArgument->name.value = L"CreateArgument";
-
-						auto call = MakePtr<WfCallExpression>();
-						call->function = refCreateArgument;
-
-						return call;
-					}
-					else
-					{
-						return CreateIThemeCall(method);
-					}
 				}
 
 			public:
-				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod)
+				GuiTemplateControlInstanceLoader(const WString& _typeName, theme::ThemeName _themeName)
 					:typeName(GlobalStringKey::Get(_typeName))
-					, styleMethod(_styleMethod)
+					, themeName(_themeName)
 				{
 				}
 
-				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, WString argumentStyleMethod)
+				GuiTemplateControlInstanceLoader(const WString& _typeName, theme::ThemeName _themeName, ArgumentRawFunctionType* _argumentFunction)
 					:typeName(GlobalStringKey::Get(_typeName))
-					, styleMethod(_styleMethod)
-					, argumentFunction([argumentStyleMethod](ArgumentMap& arguments){return CreateStyleMethodArgument(argumentStyleMethod, arguments);})
-				{
-				}
-
-				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, ArgumentRawFunctionType* _argumentFunction)
-					:typeName(GlobalStringKey::Get(_typeName))
-					, styleMethod(_styleMethod)
+					, themeName(_themeName)
 					, argumentFunction(_argumentFunction)
 				{
 				}
 
-				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, InitRawFunctionType* _initFunction)
+				GuiTemplateControlInstanceLoader(const WString& _typeName, theme::ThemeName _themeName, InitRawFunctionType* _initFunction)
 					:typeName(GlobalStringKey::Get(_typeName))
-					, styleMethod(_styleMethod)
+					, themeName(_themeName)
 					, initFunction(_initFunction)
 				{
 				}
@@ -165,7 +93,6 @@ GuiVrtualTypeInstanceLoader
 					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<TemplateProperty<TTemplate>>::CreateTypeInfo());
-						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
 						return info;
 					}
 					return 0;
@@ -176,69 +103,25 @@ GuiVrtualTypeInstanceLoader
 					return typeName == typeInfo.typeName;
 				}
 
-				Ptr<workflow::WfExpression> CreateInstance_ControlTemplate(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)
-				{
-					Ptr<WfExpression> templateFactoryExpr;
-					{
-						auto index = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-						if (index != -1)
-						{
-							auto argument = arguments.GetByIndex(index)[0];
-							templateFactoryExpr = argument.expression;
-						}
-						else
-						{
-							templateFactoryExpr = CreateIThemeCall(styleMethod);
-						}
-					}
-					return CreateInvokeTemplateFactoryCall(templateFactoryExpr);
-				}
-
 				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)override
 				{
-					if (auto createStyleExpr = CreateInstance_ControlTemplate(resolvingResult, typeInfo, arguments, errors))
-					{
-						auto createControl = MakePtr<WfBaseConstructorCall>();
-						createControl->type = GetTypeFromTypeInfo(TypeInfoRetriver<TControl>::CreateTypeInfo().Obj());
-						createControl->arguments.Add(createStyleExpr);
-						return createControl;
-					}
-					return nullptr;
+					auto createControl = MakePtr<WfBaseConstructorCall>();
+					createControl->type = GetTypeFromTypeInfo(TypeInfoRetriver<TControl>::CreateTypeInfo().Obj());
+					createControl->arguments.Add(CreateThemeName(themeName));
+					return createControl;
 				}
 
 				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
 				{
 					CHECK_ERROR(CanCreate(typeInfo), L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
-					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-
-					auto createStyleExpr = CreateInstance_ControlTemplate(resolvingResult, typeInfo, arguments, errors);
-					if (!createStyleExpr)
-					{
-						return nullptr;
-					}
 				
 					auto block = MakePtr<WfBlockStatement>();
-					{
-						auto varTemplate = MakePtr<WfVariableDeclaration>();
-						varTemplate->name.value = L"<controlStyle>";
-						varTemplate->expression = createStyleExpr;
-
-						auto varStat = MakePtr<WfVariableStatement>();
-						varStat->variable = varTemplate;
-						block->statements.Add(varStat);
-					}
-
 					{
 						auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
 
 						auto createControl = MakePtr<WfNewClassExpression>();
 						createControl->type = GetTypeFromTypeInfo(controlType.Obj());
-						{
-							auto refControlStyle = MakePtr<WfReferenceExpression>();
-							refControlStyle->name.value = L"<controlStyle>";
-
-							createControl->arguments.Add(refControlStyle);
-						}
+						createControl->arguments.Add(CreateThemeName(themeName));
 
 						if (argumentFunction)
 						{
@@ -259,7 +142,6 @@ GuiVrtualTypeInstanceLoader
 						block->statements.Add(assignStat);
 					}
 
-					PrepareAdditionalArgumentsAfterCreation(resolvingResult, typeInfo, variableName, arguments, errors, block);
 					if (initFunction)
 					{
 						initFunction(variableName.ToString(), block);

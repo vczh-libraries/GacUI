@@ -168,8 +168,8 @@ GuiDocumentInstanceLoaderBase
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
 
-				GuiDocumentInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod)
-					:TBaseType(_typeName, _styleMethod)
+				GuiDocumentInstanceLoaderBase(const WString& _typeName, theme::ThemeName themeName)
+					:TBaseType(_typeName, themeName)
 				{
 				}
 
@@ -231,7 +231,7 @@ GuiDocumentViewerInstanceLoader
 			{
 			public:
 				GuiDocumentViewerInstanceLoader()
-					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentViewer>::content.typeName, L"CreateDocumentViewerStyle")
+					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentViewer>::content.typeName, theme::ThemeName::DocumentViewer)
 				{
 				}
 			};
@@ -246,7 +246,7 @@ GuiDocumentLabelInstanceLoader
 			{
 			public:
 				GuiDocumentLabelInstanceLoader()
-					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentLabel>::content.typeName, L"CreateDocumentLabelStyle")
+					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentLabel>::content.typeName, theme::ThemeName::DocumentLabel)
 				{
 				}
 			};

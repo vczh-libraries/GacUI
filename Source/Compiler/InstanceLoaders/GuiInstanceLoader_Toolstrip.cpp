@@ -71,13 +71,13 @@ GuiToolstripInstanceLoaderBase
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
 
-				GuiToolstripInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod, Ptr<WfExpression>(*_argumentFunction)(ArgumentMap&))
-					:TBaseType(_typeName, _styleMethod, _argumentFunction)
+				GuiToolstripInstanceLoaderBase(const WString& _typeName, theme::ThemeName themeName, Ptr<WfExpression>(*_argumentFunction)(ArgumentMap&))
+					:TBaseType(_typeName, themeName, _argumentFunction)
 				{
 				}
 
-				GuiToolstripInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod)
-					:TBaseType(_typeName, _styleMethod)
+				GuiToolstripInstanceLoaderBase(const WString& _typeName, theme::ThemeName themeName)
+					:TBaseType(_typeName, themeName)
 				{
 				}
 
@@ -125,7 +125,7 @@ GuiToolstripMenuInstanceLoader
 				}
 			public:
 				GuiToolstripMenuInstanceLoader()
-					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripMenu>::content.typeName, L"CreateMenuStyle", ArgumentFunction)
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripMenu>::content.typeName, theme::ThemeName::Menu, ArgumentFunction)
 				{
 				}
 			};
@@ -140,7 +140,7 @@ GuiToolstripMenuBarInstanceLoader
 			{
 			public:
 				GuiToolstripMenuBarInstanceLoader()
-					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripMenuBar>::content.typeName, L"CreateMenuBarStyle")
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripMenuBar>::content.typeName, theme::ThemeName::MenuBar)
 				{
 				}
 			};
@@ -155,7 +155,7 @@ GuiToolstripToolBarInstanceLoader
 			{
 			public:
 				GuiToolstripToolBarInstanceLoader()
-					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripToolBar>::content.typeName, L"CreateToolstripToolBarStyle")
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripToolBar>::content.typeName, theme::ThemeName::ToolstripToolBar)
 				{
 				}
 			};
@@ -173,7 +173,7 @@ GuiToolstripButtonInstanceLoader
 
 			public:
 				GuiToolstripButtonInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiToolstripButton>::content.typeName, L"CreateToolstripButtonStyle")
+					:BASE_TYPE(description::TypeInfo<GuiToolstripButton>::content.typeName, theme::ThemeName::ToolstripButton)
 				{
 					_SubMenu = GlobalStringKey::Get(L"SubMenu");
 				}

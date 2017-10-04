@@ -53,7 +53,7 @@ GuiComboBoxInstanceLoader
 				}
 			public:
 				GuiComboBoxInstanceLoader()
-					:BASE_TYPE(L"presentation::controls::GuiComboBox", L"CreateComboBoxStyle")
+					:BASE_TYPE(L"presentation::controls::GuiComboBox", theme::ThemeName::ComboBox)
 				{
 					_ListControl = GlobalStringKey::Get(L"ListControl");
 				}
@@ -100,7 +100,7 @@ GuiTreeViewInstanceLoader
 
 			public:
 				GuiTreeViewInstanceLoaderBase(bool _bindable)
-					:BASE_TYPE(description::TypeInfo<TControl>::content.typeName, L"CreateTreeViewStyle")
+					:BASE_TYPE(description::TypeInfo<TControl>::content.typeName, theme::ThemeName::TreeView)
 					, bindable(_bindable)
 				{
 					_Nodes = GlobalStringKey::Get(L"Nodes");
@@ -413,7 +413,7 @@ GuiBindableDataGridInstanceLoader
 				}
 			public:
 				GuiBindableDataGridInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::content.typeName, L"CreateListViewStyle")
+					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::content.typeName, theme::ThemeName::ListView)
 				{
 					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::content.typeName);
 					_ViewModelContext = GlobalStringKey::Get(L"ViewModelContext");
