@@ -262,7 +262,8 @@ GuiPredefinedInstanceLoadersPlugin
 		new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::" L ## #TYPENAME,\
 				theme::ThemeName::THEME_NAME,\
-				ARGUMENT_FUNCTION\
+				ARGUMENT_FUNCTION,\
+				nullptr\
 				)\
 			)
 
@@ -279,6 +280,7 @@ GuiPredefinedInstanceLoadersPlugin
 		new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 				theme::ThemeName::THEME_NAME,\
+				nullptr,\
 				INIT_FUNCTION\
 				)\
 			)

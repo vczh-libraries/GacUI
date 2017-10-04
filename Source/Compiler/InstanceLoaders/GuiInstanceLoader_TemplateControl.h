@@ -52,25 +52,27 @@ GuiVrtualTypeInstanceLoader
 			public:
 				static Ptr<WfExpression> CreateThemeName(theme::ThemeName themeName)
 				{
+					auto refExpr = MakePtr<WfReferenceExpression>();
+					switch (themeName)
+					{
+#define THEME_NAME_CASE(TEMPLATE, CONTROL) case theme::ThemeName::CONTROL: refExpr->name.value = L ## #CONTROL; break;
+						GUI_CONTROL_TEMPLATE_TYPES(THEME_NAME_CASE)
+#undef THEME_NAME_CASE
+					default:
+						CHECK_FAIL(L"GuiTemplateControlInstanceLoader::CreateThemeName()#Unknown theme name.");
+					}
+
+					auto inferExpr = MakePtr<WfInferExpression>();
+					inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<theme::ThemeName>::CreateTypeInfo().Obj());
+					inferExpr->expression = refExpr;
+					return inferExpr;
 				}
 
 			public:
-				GuiTemplateControlInstanceLoader(const WString& _typeName, theme::ThemeName _themeName)
-					:typeName(GlobalStringKey::Get(_typeName))
-					, themeName(_themeName)
-				{
-				}
-
-				GuiTemplateControlInstanceLoader(const WString& _typeName, theme::ThemeName _themeName, ArgumentRawFunctionType* _argumentFunction)
+				GuiTemplateControlInstanceLoader(const WString& _typeName, theme::ThemeName _themeName, ArgumentRawFunctionType* _argumentFunction = nullptr, InitRawFunctionType* _initFunction = nullptr)
 					:typeName(GlobalStringKey::Get(_typeName))
 					, themeName(_themeName)
 					, argumentFunction(_argumentFunction)
-				{
-				}
-
-				GuiTemplateControlInstanceLoader(const WString& _typeName, theme::ThemeName _themeName, InitRawFunctionType* _initFunction)
-					:typeName(GlobalStringKey::Get(_typeName))
-					, themeName(_themeName)
 					, initFunction(_initFunction)
 				{
 				}
@@ -113,8 +115,8 @@ GuiVrtualTypeInstanceLoader
 
 				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
 				{
-					CHECK_ERROR(CanCreate(typeInfo), L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
-				
+					CHECK_ERROR(CanCreate(typeInfo), L"GuiTemplateControlInstanceLoader::CreateInstance()#Wrong type info is provided.");
+
 					auto block = MakePtr<WfBlockStatement>();
 					{
 						auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
