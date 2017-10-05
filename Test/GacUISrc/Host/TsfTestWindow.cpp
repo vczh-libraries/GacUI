@@ -15,9 +15,13 @@ void UnitTestInGuiMain()
 #define ASSERT(x) do{if(!(x))throw 0;}while(0)
 	{
 		auto bounds = new GuiBoundsComposition;
-		auto style = new GuiControlTemplate;
-		style->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-		auto control = new GuiControl(style);
+		auto control = new GuiControl(theme::ThemeName::CustomControl);
+		control->SetControlTemplate([](const description::Value&)
+		{
+			auto style = new GuiControlTemplate;
+			style->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			return style;
+		});
 		bounds->AddChild(control->GetBoundsComposition());
 
 		volatile vint* rc1 = ReferenceCounterOperator<GuiBoundsComposition>::CreateCounter(bounds);
@@ -217,7 +221,7 @@ TsfTestWindow
 
 	public:
 		TsfTestWindow()
-			:GuiWindow(GetCurrentTheme()->CreateWindowStyle()({}))
+			:GuiWindow(theme::ThemeName::Window)
 			,clientId(0)
 		{
 			SetText(GetApplication()->GetExecutableFolder());
