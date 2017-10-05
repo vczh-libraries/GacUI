@@ -60,6 +60,16 @@ GuiListViewColumnHeader
 GuiListViewBase
 ***********************************************************************/
 
+			void GuiListViewBase::BeforeControlTemplateUninstalled()
+			{
+				GuiSelectableListControl::BeforeControlTemplateUninstalled();
+			}
+
+			void GuiListViewBase::AfterControlTemplateInstalled(bool initialize)
+			{
+				GuiSelectableListControl::AfterControlTemplateInstalled(initialize);
+			}
+
 			GuiListViewBase::GuiListViewBase(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(themeName, _itemProvider)
 			{

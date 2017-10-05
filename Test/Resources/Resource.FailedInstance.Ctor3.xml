@@ -7,8 +7,10 @@
         <att.BoundsComposition-set AlignmentToParent="Not A Margin"/>
         <Button ref.Name="self"/>
 
+        <ComboBox>
+          <att.ListControl-bind>Constructor Argument Not Bindable</att.ListControl-bind>
+        </ComboBox>
         <BindableDataGrid>
-          <att.ControlTemplate-bind>Constructor Argument Not Bindable</att.ControlTemplate-bind>
           <att.ViewModelContext-bind>Constructor Argument Not bind-Bindable</att.ViewModelContext-bind>
           <att.Text-NotExists>Binder Not Exists</att.Text-NotExists>
           <att.SelectedCell-bind>

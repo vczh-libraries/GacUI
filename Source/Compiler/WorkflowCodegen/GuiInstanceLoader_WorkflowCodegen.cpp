@@ -515,14 +515,26 @@ Workflow_GenerateInstanceClass
 			{
 				WString classNameTail;
 				Ptr<ITypeInfo> parameterTypeInfo;
-				if (auto paramTd = GetTypeDescriptor(parameter->className.ToString()))
 				{
-					parameterTypeInfo = Workflow_GetSuggestedParameterType(paramTd);
-					switch (parameterTypeInfo->GetDecorator())
+					auto paramTd = GetTypeDescriptor(parameter->className.ToString());
+					if (!paramTd)
 					{
-					case ITypeInfo::RawPtr: classNameTail = L"*"; break;
-					case ITypeInfo::SharedPtr: classNameTail = L"^"; break;
-					default:;
+						auto source = FindInstanceLoadingSource(resolvingResult.context, {}, parameter->className.ToString());
+						if (auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName))
+						{
+							paramTd = typeInfo->GetTypeDescriptor();
+						}
+					}
+
+					if (paramTd)
+					{
+						parameterTypeInfo = Workflow_GetSuggestedParameterType(paramTd);
+						switch (parameterTypeInfo->GetDecorator())
+						{
+						case ITypeInfo::RawPtr: classNameTail = L"*"; break;
+						case ITypeInfo::SharedPtr: classNameTail = L"^"; break;
+						default:;
+						}
 					}
 				}
 

@@ -58,6 +58,16 @@ IGuiMenuService
 GuiMenu
 ***********************************************************************/
 
+			void GuiMenu::BeforeControlTemplateUninstalled()
+			{
+				GuiPopup::BeforeControlTemplateUninstalled();
+			}
+
+			void GuiMenu::AfterControlTemplateInstalled(bool initialize)
+			{
+				GuiPopup::AfterControlTemplateInstalled(initialize);
+			}
+
 			IGuiMenuService* GuiMenu::GetParentMenuService()
 			{
 				return parentMenuService;
