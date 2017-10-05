@@ -629,7 +629,6 @@ GuiDefaultInstanceLoader
 								auto& propertyValue = arguments.GetByIndex(index)[0];
 								if (propertyValue.expression)
 								{
-
 									auto refValue = MakePtr<WfReferenceExpression>();
 									refValue->name.value = variableName.ToString();
 

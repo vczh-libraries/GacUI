@@ -420,7 +420,7 @@ Workflow_GenerateInstanceClass
 			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfDeclaration>>& memberDecls, GuiResourceTextPos position)
 			{
 				WString wrappedCode = L"module parse_members; class Class {\r\n" + code + L"\r\n}";
-				if(auto module = Workflow_ParseModule(precompileContext, { resolvingResult.resource }, wrappedCode, position, errors, { 1,0 }))
+				if (auto module = Workflow_ParseModule(precompileContext, { resolvingResult.resource }, wrappedCode, position, errors, { 1,0 }))
 				{
 					CopyFrom(memberDecls, module->declarations[0].Cast<WfClassDeclaration>()->declarations);
 				}
@@ -538,7 +538,16 @@ Workflow_GenerateInstanceClass
 					}
 				}
 
-				if (auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + classNameTail, parameter->classPosition, errors))
+				vint errorCount = errors.Count();
+				auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + classNameTail, parameter->classPosition, errors);
+				if (beforePrecompile && !parameterTypeInfo && errorCount == errors.Count())
+				{
+					if (!type || type.Cast<WfReferenceType>() || type.Cast<WfChildType>() || type.Cast<WfTopQualifiedType>())
+					{
+						type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + L"*", parameter->classPosition, errors);
+					}
+				}
+				if (type)
 				{
 					if (!beforePrecompile)
 					{

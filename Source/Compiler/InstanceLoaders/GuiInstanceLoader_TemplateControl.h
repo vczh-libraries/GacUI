@@ -52,7 +52,19 @@ GuiVrtualTypeInstanceLoader
 			public:
 				static Ptr<WfExpression> CreateThemeName(theme::ThemeName themeName)
 				{
-					auto refExpr = MakePtr<WfReferenceExpression>();
+					auto presentationExpr = MakePtr<WfTopQualifiedExpression>();
+					presentationExpr->name.value = L"presentation";
+
+					auto themeExpr = MakePtr<WfChildExpression>();
+					themeExpr->parent = presentationExpr;
+					themeExpr->name.value = L"theme";
+
+					auto themeNameExpr = MakePtr<WfChildExpression>();
+					themeNameExpr->parent = themeExpr;
+					themeNameExpr->name.value = L"ThemeName";
+
+					auto refExpr = MakePtr<WfChildExpression>();
+					refExpr->parent = themeNameExpr;
 					switch (themeName)
 					{
 #define THEME_NAME_CASE(TEMPLATE, CONTROL) case theme::ThemeName::CONTROL: refExpr->name.value = L ## #CONTROL; break;
@@ -61,20 +73,16 @@ GuiVrtualTypeInstanceLoader
 					default:
 						CHECK_FAIL(L"GuiTemplateControlInstanceLoader::CreateThemeName()#Unknown theme name.");
 					}
-
-					auto inferExpr = MakePtr<WfInferExpression>();
-					inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<theme::ThemeName>::CreateTypeInfo().Obj());
-					inferExpr->expression = refExpr;
-					return inferExpr;
+					return refExpr;
 				}
 
 			public:
 				GuiTemplateControlInstanceLoader(const WString& _typeName, theme::ThemeName _themeName, ArgumentRawFunctionType* _argumentFunction = nullptr, InitRawFunctionType* _initFunction = nullptr)
 					:typeName(GlobalStringKey::Get(_typeName))
 					, themeName(_themeName)
-					, argumentFunction(_argumentFunction)
-					, initFunction(_initFunction)
 				{
+					if (_argumentFunction) argumentFunction = _argumentFunction;
+					if (_initFunction) initFunction = _initFunction;
 				}
 
 				GlobalStringKey GetTypeName()override
@@ -149,6 +157,43 @@ GuiVrtualTypeInstanceLoader
 						initFunction(variableName.ToString(), block);
 					}
 					return block;
+				}
+
+				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
+				{
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					{
+						if (prop == GlobalStringKey::_ControlTemplate)
+						{
+							auto& propertyValue = arguments.GetByIndex(index)[0];
+							if (propertyValue.expression)
+							{
+								auto refValue = MakePtr<WfReferenceExpression>();
+								refValue->name.value = variableName.ToString();
+
+								auto refProp = MakePtr<WfMemberExpression>();
+								refProp->parent = refValue;
+								refProp->name.value = L"ControlTemplate";
+
+								auto assign = MakePtr<WfBinaryExpression>();
+								assign->op = WfBinaryOperator::Assign;
+								assign->first = refProp;
+								assign->second = propertyValue.expression;
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = assign;
+								block->statements.Add(stat);
+							}
+						}
+					}
+
+					if (block->statements.Count() > 0)
+					{
+						return block;
+					}
+					return nullptr;
 				}
 			};
 #endif
