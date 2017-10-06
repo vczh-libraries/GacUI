@@ -74,4 +74,12 @@
       <LabelTemplate/>
     </Instance>
   </Instance>
+
+  <Instance name="t4">
+    <Instance ref.Class="T4">
+      <Window>
+        <att.ControlTemplate>GuiButtonTemplate</att.ControlTemplate>
+      </Window>
+    </Instance>
+  </Instance>
 </Resource>
