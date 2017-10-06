@@ -98,7 +98,7 @@ Common Interface
 
 			protected:
 
-				void												Install(elements::GuiColorizedTextElement* _textElement, compositions::GuiGraphicsComposition* _textComposition, GuiControl* _textControl);
+				void												Install(elements::GuiColorizedTextElement* _textElement, compositions::GuiGraphicsComposition* _textComposition, GuiControl* _textControl, compositions::GuiGraphicsComposition* eventComposition, compositions::GuiGraphicsComposition* focusableComposition);
 				ICallback*											GetCallback();
 				void												SetCallback(ICallback* value);
 				bool												AttachTextEditCallback(Ptr<ICommonTextEditCallback> value);

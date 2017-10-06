@@ -249,8 +249,8 @@ GuiListControl
 					{
 						GuiItemMouseEventArgs redirectArguments;
 						(GuiMouseEventArgs&)redirectArguments = arguments;
-						redirectArguments.compositionSource = GetBoundsComposition();
-						redirectArguments.eventSource = GetBoundsComposition();
+						redirectArguments.compositionSource = boundsComposition;
+						redirectArguments.eventSource = boundsComposition;
 						redirectArguments.itemIndex = itemIndex;
 						itemEvent.Execute(redirectArguments);
 						arguments = redirectArguments;
@@ -267,8 +267,8 @@ GuiListControl
 					{
 						GuiItemEventArgs redirectArguments;
 						(GuiEventArgs&)redirectArguments = arguments;
-						redirectArguments.compositionSource = GetBoundsComposition();
-						redirectArguments.eventSource = GetBoundsComposition();
+						redirectArguments.compositionSource = boundsComposition;
+						redirectArguments.eventSource = boundsComposition;
 						redirectArguments.itemIndex = itemIndex;
 						itemEvent.Execute(redirectArguments);
 						arguments = redirectArguments;
@@ -446,8 +446,8 @@ GuiListControl
 			{
 				if (itemArranger)
 				{
-					Size controlSize = GetBoundsComposition()->GetBounds().GetSize();
-					Size viewSize = GetContainerComposition()->GetBounds().GetSize();
+					Size controlSize = boundsComposition->GetBounds().GetSize();
+					Size viewSize = containerComposition->GetBounds().GetSize();
 					vint x = controlSize.x - viewSize.x;
 					vint y = controlSize.y - viewSize.y;
 

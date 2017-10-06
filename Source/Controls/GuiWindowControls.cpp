@@ -667,7 +667,7 @@ GuiWindow
 				INativeWindow* window=GetCurrentController()->WindowService()->CreateNativeWindow();
 				SetNativeWindow(window);
 				GetApplication()->RegisterWindow(this);
-				ClipboardUpdated.SetAssociatedComposition(GetBoundsComposition());
+				ClipboardUpdated.SetAssociatedComposition(boundsComposition);
 			}
 
 			GuiWindow::~GuiWindow()
@@ -998,8 +998,8 @@ GuiPopup
 				:GuiPopup(themeName)
 				,temporaryContentControl(0)
 			{
-				GetContainerComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				GetContainerComposition()->SetPreferredMinSize(Size(20, 10));
+				containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->SetPreferredMinSize(Size(20, 10));
 				GetCurrentController()->CallbackService()->InstallListener(this);
 
 				WindowOpened.AttachMethod(this, &GuiTooltip::TooltipOpened);
@@ -1013,12 +1013,12 @@ GuiPopup
 
 			vint GuiTooltip::GetPreferredContentWidth()
 			{
-				return GetContainerComposition()->GetPreferredMinSize().x;
+				return containerComposition->GetPreferredMinSize().x;
 			}
 
 			void GuiTooltip::SetPreferredContentWidth(vint value)
 			{
-				GetContainerComposition()->SetPreferredMinSize(Size(value, 10));
+				containerComposition->SetPreferredMinSize(Size(value, 10));
 			}
 
 			GuiControl* GuiTooltip::GetTemporaryContentControl()
@@ -1030,7 +1030,7 @@ GuiPopup
 			{
 				if(temporaryContentControl && HasChild(temporaryContentControl))
 				{
-					GetContainerComposition()->RemoveChild(temporaryContentControl->GetBoundsComposition());
+					containerComposition->RemoveChild(temporaryContentControl->GetBoundsComposition());
 					temporaryContentControl=0;
 				}
 				temporaryContentControl=control;

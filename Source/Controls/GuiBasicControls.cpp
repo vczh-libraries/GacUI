@@ -225,6 +225,12 @@ GuiControl
 
 			GuiControl::~GuiControl()
 			{
+				// prevent a root bounds composition from notifying its dead controls
+				if (!parent)
+				{
+					NotifyFinalizeInstance(boundsComposition);
+				}
+
 				if (tooltipControl)
 				{
 					// the only legal parent is the GuiApplication::sharedTooltipWindow

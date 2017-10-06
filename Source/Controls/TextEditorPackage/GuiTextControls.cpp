@@ -149,13 +149,13 @@ GuiMultilineTextBox
 				textComposition = new GuiBoundsComposition;
 				textComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				textComposition->SetOwnedElement(textElement);
-				GetContainerComposition()->AddChild(textComposition);
+				containerComposition->AddChild(textComposition);
 
 				callback = new TextElementOperatorCallback(this);
 				commandExecutor = new CommandExecutor(this);
 
 				SetFocusableComposition(boundsComposition);
-				Install(textElement, textComposition, this);
+				Install(textElement, textComposition, this, boundsComposition, focusableComposition);
 				SetCallback(callback.Obj());
 
 				VisuallyEnabledChanged.AttachMethod(this, &GuiMultilineTextBox::OnVisuallyEnabledChanged);
@@ -317,7 +317,7 @@ GuiSinglelineTextBox
 				textCompositionTable->SetRowOption(1, GuiCellOption::AbsoluteOption(0));
 				textCompositionTable->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
 				textCompositionTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
-				GetContainerComposition()->AddChild(textCompositionTable);
+				containerComposition->AddChild(textCompositionTable);
 
 				textComposition = new GuiCellComposition;
 				textComposition->SetOwnedElement(textElement);
@@ -326,7 +326,7 @@ GuiSinglelineTextBox
 
 				callback = new TextElementOperatorCallback(this);
 				SetFocusableComposition(boundsComposition);
-				Install(textElement, textComposition, this);
+				Install(textElement, textComposition, this, boundsComposition, focusableComposition);
 				SetCallback(callback.Obj());
 
 				VisuallyEnabledChanged.AttachMethod(this, &GuiSinglelineTextBox::OnVisuallyEnabledChanged);

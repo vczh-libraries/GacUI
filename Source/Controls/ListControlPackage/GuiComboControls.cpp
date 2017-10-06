@@ -57,7 +57,7 @@ GuiComboBoxBase
 			void GuiComboBoxBase::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				Size size=GetPreferredMenuClientSize();
-				size.x=GetBoundsComposition()->GetBounds().Width();
+				size.x=boundsComposition->GetBounds().Width();
 				SetPreferredMenuClientSize(size);
 			}
 
@@ -69,7 +69,7 @@ GuiComboBoxBase
 				CreateSubMenu();
 				SetCascadeAction(false);
 
-				GetBoundsComposition()->BoundsChanged.AttachMethod(this, &GuiComboBoxBase::OnBoundsChanged);
+				boundsComposition->BoundsChanged.AttachMethod(this, &GuiComboBoxBase::OnBoundsChanged);
 			}
 
 			GuiComboBoxBase::~GuiComboBoxBase()
@@ -128,7 +128,7 @@ GuiComboBoxListControl
 								itemStyleController->SetFont(GetFont());
 								itemStyleController->SetVisuallyEnabled(GetVisuallyEnabled());
 								itemStyleController->SetAlignmentToParent(Margin(0, 0, 0, 0));
-								GetContainerComposition()->AddChild(itemStyleController);
+								containerComposition->AddChild(itemStyleController);
 							}
 						}
 					}
@@ -214,7 +214,7 @@ GuiComboBoxListControl
 
 				auto itemProvider = containedListControl->GetItemProvider();
 
-				SelectedIndexChanged.SetAssociatedComposition(GetBoundsComposition());
+				SelectedIndexChanged.SetAssociatedComposition(boundsComposition);
 
 				containedListControl->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				GetSubMenu()->GetContainerComposition()->AddChild(containedListControl->GetBoundsComposition());

@@ -225,7 +225,6 @@ TsfTestWindow
 			,clientId(0)
 		{
 			SetText(GetApplication()->GetExecutableFolder());
-			GetContainerComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			GetContainerComposition()->SetPreferredMinSize(Size(640, 480));
 			ForceCalculateSizeImmediately();
 			MoveToScreenCenter();

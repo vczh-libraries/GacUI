@@ -515,7 +515,7 @@ GuiVirtualDataGrid
 
 				SetViewToDefault();
 				ColumnClicked.AttachMethod(this, &GuiVirtualDataGrid::OnColumnClicked);
-				SelectedCellChanged.SetAssociatedComposition(GetBoundsComposition());
+				SelectedCellChanged.SetAssociatedComposition(boundsComposition);
 			}
 
 			GuiVirtualDataGrid::~GuiVirtualDataGrid()

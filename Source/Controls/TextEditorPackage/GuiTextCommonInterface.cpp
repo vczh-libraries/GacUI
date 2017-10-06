@@ -483,20 +483,25 @@ GuiTextBoxCommonInterface
 				}
 			}
 
-			void GuiTextBoxCommonInterface::Install(elements::GuiColorizedTextElement* _textElement, compositions::GuiGraphicsComposition* _textComposition, GuiControl* _textControl)
+			void GuiTextBoxCommonInterface::Install(
+				elements::GuiColorizedTextElement* _textElement,
+				compositions::GuiGraphicsComposition* _textComposition,
+				GuiControl* _textControl,
+				compositions::GuiGraphicsComposition* eventComposition,
+				compositions::GuiGraphicsComposition* focusableComposition
+			)
 			{
 				textElement=_textElement;
 				textComposition=_textComposition;
 				textControl=_textControl;
 				textComposition->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::IBeam));
-				SelectionChanged.SetAssociatedComposition(textControl->GetBoundsComposition());
-				UndoRedoChanged.SetAssociatedComposition(textControl->GetBoundsComposition());
-				ModifiedChanged.SetAssociatedComposition(textControl->GetBoundsComposition());
+				SelectionChanged.SetAssociatedComposition(eventComposition);
+				UndoRedoChanged.SetAssociatedComposition(eventComposition);
+				ModifiedChanged.SetAssociatedComposition(eventComposition);
 
 				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiTextBoxCommonInterface::InvokeUndoRedoChanged);
 				undoRedoProcessor->ModifiedChanged.Add(this, &GuiTextBoxCommonInterface::InvokeModifiedChanged);
 
-				GuiGraphicsComposition* focusableComposition=textControl->GetFocusableComposition();
 				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiTextBoxCommonInterface::OnGotFocus);
 				focusableComposition->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiTextBoxCommonInterface::OnLostFocus);
 				focusableComposition->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiTextBoxCommonInterface::OnCaretNotify);

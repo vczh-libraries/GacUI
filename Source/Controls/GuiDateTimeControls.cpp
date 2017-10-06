@@ -70,11 +70,11 @@ GuiDatePicker
 				SetDateLocale(Locale::UserDefault());
 				SetDate(DateTime::LocalTime());
 
-				DateChanged.SetAssociatedComposition(GetBoundsComposition());
-				DateNavigated.SetAssociatedComposition(GetBoundsComposition());
-				DateSelected.SetAssociatedComposition(GetBoundsComposition());
-				DateFormatChanged.SetAssociatedComposition(GetBoundsComposition());
-				DateLocaleChanged.SetAssociatedComposition(GetBoundsComposition());
+				DateChanged.SetAssociatedComposition(boundsComposition);
+				DateNavigated.SetAssociatedComposition(boundsComposition);
+				DateSelected.SetAssociatedComposition(boundsComposition);
+				DateFormatChanged.SetAssociatedComposition(boundsComposition);
+				DateLocaleChanged.SetAssociatedComposition(boundsComposition);
 
 				commandExecutor->NotifyDateChanged();
 			}

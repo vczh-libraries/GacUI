@@ -97,7 +97,7 @@ GuiToolstripMenu
 				sharedSizeRootComposition = new GuiSharedSizeRootComposition();
 				sharedSizeRootComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				sharedSizeRootComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				GetContainerComposition()->AddChild(sharedSizeRootComposition);
+				containerComposition->AddChild(sharedSizeRootComposition);
 
 				stackComposition=new GuiStackComposition;
 				stackComposition->SetDirection(GuiStackComposition::Vertical);
@@ -128,7 +128,7 @@ GuiToolstripMenuBar
 				stackComposition->SetDirection(GuiStackComposition::Horizontal);
 				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				GetContainerComposition()->AddChild(stackComposition);
+				containerComposition->AddChild(stackComposition);
 
 				toolstripItems=new GuiToolstripCollection(0, stackComposition);
 			}
@@ -153,7 +153,7 @@ GuiToolstripToolBar
 				stackComposition->SetDirection(GuiStackComposition::Horizontal);
 				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				GetContainerComposition()->AddChild(stackComposition);
+				containerComposition->AddChild(stackComposition);
 
 				toolstripItems=new GuiToolstripCollection(0, stackComposition);
 			}
