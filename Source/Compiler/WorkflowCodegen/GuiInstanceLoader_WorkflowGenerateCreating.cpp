@@ -34,6 +34,7 @@ WorkflowGenerateCreatingVisitor
 
 			IGuiInstanceLoader::ArgumentInfo GetArgumentInfo(GuiResourceTextPos attPosition, GuiValueRepr* repr)
 			{
+				IGuiInstanceLoader::PropertyInfo propertyInfo;
 				Ptr<ITypeInfo> typeInfo = nullptr;
 				bool serializable = false;
 				WString textValue;
@@ -42,7 +43,10 @@ WorkflowGenerateCreatingVisitor
 
 				if (auto text = dynamic_cast<GuiTextRepr*>(repr))
 				{
-					typeInfo = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
+					auto resolving = resolvingResult.propertyResolvings[repr];
+					propertyInfo = resolving.propertyInfo;
+					typeInfo = resolving.info->acceptableTypes[0];
+
 					serializable = true;
 					textValue = text->text;
 					textValuePosition = text->tagPosition;
@@ -51,7 +55,9 @@ WorkflowGenerateCreatingVisitor
 				{
 					if (ctor->instanceName == GlobalStringKey::Empty)
 					{
-						typeInfo = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
+						auto resolving = resolvingResult.propertyResolvings[repr];
+						propertyInfo = resolving.propertyInfo;
+						typeInfo = resolving.info->acceptableTypes[0];
 					}
 					else
 					{
@@ -73,12 +79,12 @@ WorkflowGenerateCreatingVisitor
 
 				if (serializable)
 				{
-					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(typeInfo.Obj()))
+					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(propertyInfo, typeInfo.Obj()))
 					{
-						auto typeInfoAs = deserializer->DeserializeAs(typeInfo.Obj());
+						auto typeInfoAs = deserializer->DeserializeAs(propertyInfo, typeInfo.Obj());
 						if (auto expression = Workflow_ParseTextValue(precompileContext, typeInfoAs->GetTypeDescriptor(), { resolvingResult.resource }, textValue, textValuePosition, errors))
 						{
-							argumentInfo.expression = deserializer->Deserialize(precompileContext, resolvingResult, typeInfo.Obj(), expression, textValuePosition, errors);
+							argumentInfo.expression = deserializer->Deserialize(precompileContext, resolvingResult, propertyInfo, typeInfo.Obj(), expression, textValuePosition, errors);
 						}
 					}
 					else

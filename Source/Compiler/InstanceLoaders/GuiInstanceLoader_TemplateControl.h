@@ -34,7 +34,6 @@ GuiVrtualTypeInstanceLoader
 			template<typename TControl>
 			class GuiTemplateControlInstanceLoader : public Object, public IGuiInstanceLoader
 			{
-				typedef typename TControl::ControlTemplateType		TTemplate;
 				typedef Ptr<WfExpression>							ArgumentRawFunctionType(ArgumentMap&);
 				typedef void										InitRawFunctionType(const WString&, Ptr<WfBlockStatement>);
 				typedef Func<ArgumentRawFunctionType>				ArgumentFunctionType;
@@ -90,24 +89,6 @@ GuiVrtualTypeInstanceLoader
 					return typeName;
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					if (CanCreate(typeInfo))
-					{
-						propertyNames.Add(GlobalStringKey::_ControlTemplate);
-					}
-				}
-
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
-				{
-					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<TemplateProperty<TTemplate>>::CreateTypeInfo());
-						return info;
-					}
-					return 0;
-				}
-
 				bool CanCreate(const TypeInfo& typeInfo)override
 				{
 					return typeName == typeInfo.typeName;
@@ -157,43 +138,6 @@ GuiVrtualTypeInstanceLoader
 						initFunction(variableName.ToString(), block);
 					}
 					return block;
-				}
-
-				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
-				{
-					auto block = MakePtr<WfBlockStatement>();
-
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
-					{
-						if (prop == GlobalStringKey::_ControlTemplate)
-						{
-							auto& propertyValue = arguments.GetByIndex(index)[0];
-							if (propertyValue.expression)
-							{
-								auto refValue = MakePtr<WfReferenceExpression>();
-								refValue->name.value = variableName.ToString();
-
-								auto refProp = MakePtr<WfMemberExpression>();
-								refProp->parent = refValue;
-								refProp->name.value = L"ControlTemplate";
-
-								auto assign = MakePtr<WfBinaryExpression>();
-								assign->op = WfBinaryOperator::Assign;
-								assign->first = refProp;
-								assign->second = propertyValue.expression;
-
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = assign;
-								block->statements.Add(stat);
-							}
-						}
-					}
-
-					if (block->statements.Count() > 0)
-					{
-						return block;
-					}
-					return nullptr;
 				}
 			};
 #endif

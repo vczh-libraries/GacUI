@@ -175,9 +175,9 @@ Instance Binder
 		class IGuiInstanceDeserializer : public IDescriptable, public Description<IGuiInstanceDeserializer>
 		{
 		public:
-			virtual bool							CanDeserialize(description::ITypeInfo* typeInfo) = 0;
-			virtual description::ITypeInfo*			DeserializeAs(description::ITypeInfo* typeInfo) = 0;
-			virtual Ptr<workflow::WfExpression>		Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors) = 0;
+			virtual bool							CanDeserialize(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo) = 0;
+			virtual description::ITypeInfo*			DeserializeAs(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo) = 0;
+			virtual Ptr<workflow::WfExpression>		Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors) = 0;
 		};
 
 /***********************************************************************
@@ -192,7 +192,7 @@ Instance Loader Manager
 			virtual bool							AddInstanceEventBinder(Ptr<IGuiInstanceEventBinder> binder) = 0;
 			virtual IGuiInstanceEventBinder*		GetInstanceEventBinder(GlobalStringKey bindingName) = 0;
 			virtual bool							AddInstanceDeserializer(Ptr<IGuiInstanceDeserializer> deserializer) = 0;
-			virtual IGuiInstanceDeserializer*		GetInstanceDeserializer(description::ITypeInfo* typeInfo) = 0;
+			virtual IGuiInstanceDeserializer*		GetInstanceDeserializer(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo) = 0;
 
 			virtual bool							CreateVirtualType(GlobalStringKey parentType, Ptr<IGuiInstanceLoader> loader) = 0;
 			virtual bool							SetLoader(Ptr<IGuiInstanceLoader> loader) = 0;

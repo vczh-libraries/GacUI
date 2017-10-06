@@ -113,10 +113,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf103_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf103_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ToolstripSplitArrowTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripSplitArrowTemplate());
 		}
 	}
 
@@ -1077,10 +1077,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::TabHeaderButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::TabHeaderButtonTemplate());
 		}
 	}
 
@@ -1678,10 +1678,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf188_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf188_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ToolstripSplitArrowTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripSplitArrowTemplate());
 		}
 	}
 
@@ -1982,10 +1982,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf203_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf203_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::TopScrollButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::TopScrollButtonTemplate());
 		}
 	}
 
@@ -1996,10 +1996,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf204_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf204_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::BottomScrollButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::BottomScrollButtonTemplate());
 		}
 	}
 
@@ -2010,10 +2010,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf205_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf205_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::VScrollHandleTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::VScrollHandleTemplate());
 		}
 	}
 
@@ -2215,10 +2215,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf217_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf217_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ButtonTemplate());
 		}
 	}
 
@@ -2326,10 +2326,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf223_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf223_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ButtonTemplate());
 		}
 	}
 
@@ -2340,10 +2340,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf224_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf224_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ButtonTemplate());
 		}
 	}
 
@@ -2354,10 +2354,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf225_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf225_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ButtonTemplate());
 		}
 	}
 
@@ -3320,10 +3320,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf77_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf77_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::LeftScrollButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::LeftScrollButtonTemplate());
 		}
 	}
 
@@ -3334,10 +3334,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf78_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf78_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::RightScrollButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::RightScrollButtonTemplate());
 		}
 	}
 
@@ -3348,10 +3348,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf79_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf79_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::HScrollHandleTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::HScrollHandleTemplate());
 		}
 	}
 
@@ -3571,10 +3571,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf91_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf91_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ButtonTemplate());
 		}
 	}
 
@@ -13159,12 +13159,14 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetDirection(::vl::presentation::compositions::GuiSideAlignedComposition::Direction::Left);
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf77_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		(this->__vwsn_precompile_3 = ::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf77_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition()));
@@ -13183,12 +13185,14 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetDirection(::vl::presentation::compositions::GuiSideAlignedComposition::Direction::Right);
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf78_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->__vwsn_precompile_5)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf78_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_5)->GetBoundsComposition()));
@@ -13219,12 +13223,14 @@ Class (::darkskin::HScrollTemplateConstructor)
 		}
 		(this->handle = new ::vl::presentation::compositions::GuiPartialViewComposition());
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf79_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_9 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_9 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		(this->__vwsn_precompile_10 = ::vl::__vwsn::This(this->__vwsn_precompile_9)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf79_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_9)->GetBoundsComposition()));
@@ -13379,8 +13385,7 @@ Class (::darkskin::HTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->handle)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf91_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
@@ -13388,6 +13393,9 @@ Class (::darkskin::HTrackerTemplateConstructor)
 		(this->__vwsn_precompile_7 = ::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf91_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
@@ -13728,12 +13736,14 @@ Class (::darkskin::ListViewColumnHeaderTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf103_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->buttonArrow = new ::vl::presentation::controls::GuiSelectableButton(__vwsn_controlStyle_));
+			(this->buttonArrow = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 		}
 		(this->__vwsn_precompile_9 = ::vl::__vwsn::This(this->buttonArrow)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->buttonArrow)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf103_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonArrow)->GetBoundsComposition()));
@@ -14981,8 +14991,7 @@ Class (::darkskin::TabHeaderTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiSelectableButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAutoSelection(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
@@ -14990,6 +14999,9 @@ Class (::darkskin::TabHeaderTemplateConstructor)
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition()));
@@ -15802,12 +15814,14 @@ Class (::darkskin::ToolstripSplitButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_6));
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf188_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->buttonArrow = new ::vl::presentation::controls::GuiSelectableButton(__vwsn_controlStyle_));
+			(this->buttonArrow = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 		}
 		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->buttonArrow)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->buttonArrow)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf188_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonArrow)->GetBoundsComposition()));
@@ -16295,12 +16309,14 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetDirection(::vl::presentation::compositions::GuiSideAlignedComposition::Direction::Top);
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf203_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		(this->__vwsn_precompile_3 = ::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf203_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition()));
@@ -16319,12 +16335,14 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetDirection(::vl::presentation::compositions::GuiSideAlignedComposition::Direction::Bottom);
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf204_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->__vwsn_precompile_5)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf204_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_5)->GetBoundsComposition()));
@@ -16355,12 +16373,14 @@ Class (::darkskin::VScrollTemplateConstructor)
 		}
 		(this->handle = new ::vl::presentation::compositions::GuiPartialViewComposition());
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf205_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_9 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_9 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		(this->__vwsn_precompile_10 = ::vl::__vwsn::This(this->__vwsn_precompile_9)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf205_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_9)->GetBoundsComposition()));
@@ -16515,8 +16535,7 @@ Class (::darkskin::VTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->handle)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf217_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
@@ -16524,6 +16543,9 @@ Class (::darkskin::VTrackerTemplateConstructor)
 		(this->__vwsn_precompile_7 = ::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf217_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
@@ -16740,8 +16762,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf223_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
@@ -16752,6 +16773,9 @@ Class (::darkskin::WindowTemplateConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetText(::vl::WString(L" 0 ", false));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf223_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_13)->GetBoundsComposition()));
@@ -16767,8 +16791,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(3), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf224_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_16 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_16 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
@@ -16776,6 +16799,9 @@ Class (::darkskin::WindowTemplateConstructor)
 		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->__vwsn_precompile_16)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(1); __vwsn_temp__.top = static_cast<::vl::vint32_t>(1); __vwsn_temp__.right = static_cast<::vl::vint32_t>(1); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf224_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_16)->GetBoundsComposition()));
@@ -16791,8 +16817,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(4), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
 		}
 		{
-			auto __vwsn_controlStyle_ = LAMBDA(::vl_workflow_global::__vwsnf225_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this))(::vl::reflection::description::Value());
-			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
@@ -16803,6 +16828,9 @@ Class (::darkskin::WindowTemplateConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetText(::vl::WString(L" r ", false));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf225_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition()));

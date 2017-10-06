@@ -2647,7 +2647,7 @@ Closures
 
 		__vwsnf103_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiSelectableButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf104_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__
@@ -3151,7 +3151,7 @@ Closures
 
 		__vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiSelectableButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf155_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__
@@ -3484,7 +3484,7 @@ Closures
 
 		__vwsnf188_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiSelectableButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf189_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__
@@ -3646,7 +3646,7 @@ Closures
 
 		__vwsnf203_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::VScrollTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf204_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__
@@ -3655,7 +3655,7 @@ Closures
 
 		__vwsnf204_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::VScrollTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf205_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__
@@ -3664,7 +3664,7 @@ Closures
 
 		__vwsnf205_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::VScrollTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf206_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__
@@ -3781,7 +3781,7 @@ Closures
 
 		__vwsnf217_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__(::darkskin::VTrackerTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf218_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__
@@ -3844,7 +3844,7 @@ Closures
 
 		__vwsnf223_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf224_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__
@@ -3853,7 +3853,7 @@ Closures
 
 		__vwsnf224_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf225_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__
@@ -3862,7 +3862,7 @@ Closures
 
 		__vwsnf225_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf226_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__
@@ -4429,7 +4429,7 @@ Closures
 
 		__vwsnf77_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf78_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__
@@ -4438,7 +4438,7 @@ Closures
 
 		__vwsnf78_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf79_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__
@@ -4447,7 +4447,7 @@ Closures
 
 		__vwsnf79_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf7_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__
@@ -4573,7 +4573,7 @@ Closures
 
 		__vwsnf91_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(::darkskin::HTrackerTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf92_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__

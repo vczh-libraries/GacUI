@@ -855,11 +855,11 @@ GuiInstanceLoaderManager
 				return true;
 			}
 
-			IGuiInstanceDeserializer* GetInstanceDeserializer(description::ITypeInfo* typeInfo)override
+			IGuiInstanceDeserializer* GetInstanceDeserializer(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
 			{
 				FOREACH(Ptr<IGuiInstanceDeserializer>, deserializer, deserializers)
 				{
-					if (deserializer->CanDeserialize(typeInfo))
+					if (deserializer->CanDeserialize(propertyInfo, typeInfo))
 					{
 						return deserializer.Obj();
 					}
