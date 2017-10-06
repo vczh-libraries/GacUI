@@ -43,17 +43,15 @@ GuiDatePicker::CommandExecutor
 GuiDatePicker
 ***********************************************************************/
 
-			void GuiDatePicker::BeforeControlTemplateUninstalled()
+			void GuiDatePicker::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
 				ct->SetCommands(nullptr);
-				GuiControl::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiDatePicker::AfterControlTemplateInstalled(bool initialize)
+			void GuiDatePicker::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject();
-				GuiControl::AfterControlTemplateInstalled(initialize);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetDate(date);
 				ct->SetDateLocale(dateLocale);

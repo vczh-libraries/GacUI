@@ -204,7 +204,7 @@ Window
 			/// </summary>
 			class GuiWindow : public GuiControlHost, protected compositions::IGuiAltActionHost, public AggregatableDescription<GuiWindow>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
 			protected:
 				compositions::IGuiAltActionHost*		previousAltHost;

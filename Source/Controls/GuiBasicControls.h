@@ -266,18 +266,30 @@ Basic Construction
 #define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(UNIQUE) GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_3(UNIQUE)
 #define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(__LINE__)
 
-#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, NAME) \
+#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, NAME) \
 			public: \
 				using ControlTemplateType = templates::Gui##TEMPLATE; \
-			protected: \
+			private: \
 				templates::Gui##TEMPLATE* NAME = nullptr; \
-				void BeforeControlTemplateUninstalled()override; \
-				void AfterControlTemplateInstalled(bool initialize)override; \
+				void BeforeControlTemplateUninstalled_(); \
+				void AfterControlTemplateInstalled_(bool initialize); \
+			protected: \
+				void BeforeControlTemplateUninstalled()override \
+				{\
+					BeforeControlTemplateUninstalled_(); \
+					BASE_TYPE::BeforeControlTemplateUninstalled(); \
+				}\
+				void AfterControlTemplateInstalled(bool initialize)override \
+				{\
+					BASE_TYPE::AfterControlTemplateInstalled(initialize); \
+					AfterControlTemplateInstalled_(initialize); \
+				}\
 				void CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)override \
 				{ \
 					auto ct = dynamic_cast<templates::Gui##TEMPLATE*>(value); \
 					CHECK_ERROR(ct, L"The assigned control template is not vl::presentation::templates::Gui" L ## # TEMPLATE L"."); \
-					NAME = ct;\
+					NAME = ct; \
+					BASE_TYPE::CheckAndStoreControlTemplate(value); \
 				} \
 			public: \
 				templates::Gui##TEMPLATE* GetControlTemplateObject() \
@@ -287,7 +299,7 @@ Basic Construction
 				} \
 			private: \
 
-#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE) GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME)
+#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE, BASE_TYPE) GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME)
 
 		}
 	}

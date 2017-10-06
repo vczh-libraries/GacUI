@@ -1100,15 +1100,13 @@ GuiDocumentCommonInterface
 GuiDocumentViewer
 ***********************************************************************/
 
-			void GuiDocumentViewer::BeforeControlTemplateUninstalled()
+			void GuiDocumentViewer::BeforeControlTemplateUninstalled_()
 			{
-				GuiScrollContainer::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiDocumentViewer::AfterControlTemplateInstalled(bool initialize)
+			void GuiDocumentViewer::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject();
-				GuiScrollContainer::AfterControlTemplateInstalled(initialize);
 				documentElement->SetCaretColor(ct->GetCaretColor());
 				baselineDocument = ct->GetBaselineDocument();
 				SetDocument(GetDocument());
@@ -1165,15 +1163,13 @@ GuiDocumentViewer
 GuiDocumentLabel
 ***********************************************************************/
 
-			void GuiDocumentLabel::BeforeControlTemplateUninstalled()
+			void GuiDocumentLabel::BeforeControlTemplateUninstalled_()
 			{
-				GuiControl::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiDocumentLabel::AfterControlTemplateInstalled(bool initialize)
+			void GuiDocumentLabel::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject();
-				GuiControl::AfterControlTemplateInstalled(initialize);
 				documentElement->SetCaretColor(ct->GetCaretColor());
 				baselineDocument = ct->GetBaselineDocument();
 				SetDocument(GetDocument());

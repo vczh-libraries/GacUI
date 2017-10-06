@@ -58,7 +58,7 @@ Tab Control
 			/// <summary>Represents a container with multiple named tabs.</summary>
 			class GuiTab : public GuiControl, public Description<GuiTab>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TabTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TabTemplate, GuiControl)
 				friend class GuiTabPage;
 				friend class GuiTabPageList;
 			protected:
@@ -105,7 +105,7 @@ Scroll View
 			/// <summary>A control with a vertical scroll bar and a horizontal scroll bar to perform partial viewing.</summary>
 			class GuiScrollView : public GuiControl, public Description<GuiScrollView>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ScrollViewTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ScrollViewTemplate, GuiControl)
 
 				using IEventHandler = compositions::IGuiGraphicsEventHandler;
 			protected:

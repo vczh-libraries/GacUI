@@ -83,18 +83,15 @@ GuiMultilineTextBox::CommandExecutor
 GuiMultilineTextBox
 ***********************************************************************/
 
-			void GuiMultilineTextBox::BeforeControlTemplateUninstalled()
+			void GuiMultilineTextBox::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
 				ct->SetCommands(nullptr);
-				GuiScrollView::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiMultilineTextBox::AfterControlTemplateInstalled(bool initialize)
+			void GuiMultilineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject();
-				GuiScrollView::AfterControlTemplateInstalled(initialize);
-
 				Array<text::ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);
@@ -264,16 +261,13 @@ GuiSinglelineTextBox::DefaultTextElementOperatorCallback
 GuiSinglelineTextBox
 ***********************************************************************/
 
-			void GuiSinglelineTextBox::BeforeControlTemplateUninstalled()
+			void GuiSinglelineTextBox::BeforeControlTemplateUninstalled_()
 			{
-				GuiControl::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiSinglelineTextBox::AfterControlTemplateInstalled(bool initialize)
+			void GuiSinglelineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject();
-				GuiControl::AfterControlTemplateInstalled(initialize);
-
 				Array<text::ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);

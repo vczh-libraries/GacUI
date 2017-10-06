@@ -291,14 +291,12 @@ TextItemProvider
 GuiTextList
 ***********************************************************************/
 
-			void GuiVirtualTextList::BeforeControlTemplateUninstalled()
+			void GuiVirtualTextList::BeforeControlTemplateUninstalled_()
 			{
-				GuiSelectableListControl::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiVirtualTextList::AfterControlTemplateInstalled(bool initialize)
+			void GuiVirtualTextList::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GuiSelectableListControl::AfterControlTemplateInstalled(initialize);
 			}
 
 			void GuiVirtualTextList::OnStyleInstalled(vint itemIndex, ItemStyle* style)

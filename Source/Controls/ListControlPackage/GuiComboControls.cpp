@@ -29,15 +29,13 @@ GuiComboBoxBase::CommandExecutor
 GuiComboBoxBase
 ***********************************************************************/
 
-			void GuiComboBoxBase::BeforeControlTemplateUninstalled()
+			void GuiComboBoxBase::BeforeControlTemplateUninstalled_()
 			{
 				GetControlTemplateObject()->SetCommands(nullptr);
-				GuiMenuButton::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiComboBoxBase::AfterControlTemplateInstalled(bool initialize)
+			void GuiComboBoxBase::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GuiMenuButton::AfterControlTemplateInstalled(initialize);
 				GetControlTemplateObject()->SetCommands(commandExecutor.Obj());
 			}
 

@@ -17,14 +17,12 @@ namespace vl
 GuiListViewColumnHeader
 ***********************************************************************/
 
-			void GuiListViewColumnHeader::BeforeControlTemplateUninstalled()
+			void GuiListViewColumnHeader::BeforeControlTemplateUninstalled_()
 			{
-				GuiMenuButton::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiListViewColumnHeader::AfterControlTemplateInstalled(bool initialize)
+			void GuiListViewColumnHeader::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GuiMenuButton::AfterControlTemplateInstalled(initialize);
 				GetControlTemplateObject()->SetSortingState(columnSortingState);
 			}
 			
@@ -60,14 +58,12 @@ GuiListViewColumnHeader
 GuiListViewBase
 ***********************************************************************/
 
-			void GuiListViewBase::BeforeControlTemplateUninstalled()
+			void GuiListViewBase::BeforeControlTemplateUninstalled_()
 			{
-				GuiSelectableListControl::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiListViewBase::AfterControlTemplateInstalled(bool initialize)
+			void GuiListViewBase::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GuiSelectableListControl::AfterControlTemplateInstalled(initialize);
 			}
 
 			GuiListViewBase::GuiListViewBase(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)

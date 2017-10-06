@@ -58,14 +58,12 @@ IGuiMenuService
 GuiMenu
 ***********************************************************************/
 
-			void GuiMenu::BeforeControlTemplateUninstalled()
+			void GuiMenu::BeforeControlTemplateUninstalled_()
 			{
-				GuiPopup::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiMenu::AfterControlTemplateInstalled(bool initialize)
+			void GuiMenu::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GuiPopup::AfterControlTemplateInstalled(initialize);
 			}
 
 			IGuiMenuService* GuiMenu::GetParentMenuService()
@@ -213,23 +211,21 @@ GuiMenuBar
 GuiMenuButton
 ***********************************************************************/
 
-			void GuiMenuButton::BeforeControlTemplateUninstalled()
+			void GuiMenuButton::BeforeControlTemplateUninstalled_()
 			{
 				auto host = GetSubMenuHost();
 				host->Clicked.Detach(hostClickedHandler);
 				host->GetBoundsComposition()->GetEventReceiver()->mouseEnter.Detach(hostMouseEnterHandler);
-				GuiSelectableButton::BeforeControlTemplateUninstalled();
 
 				hostClickedHandler = nullptr;
 				hostMouseEnterHandler = nullptr;
 			}
 
-			void GuiMenuButton::AfterControlTemplateInstalled(bool initialize)
+			void GuiMenuButton::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject();
 				auto host = GetSubMenuHost();
 
-				GuiSelectableButton::AfterControlTemplateInstalled(initialize);
 				ct->SetSubMenuOpening(GetSubMenuOpening());
 				ct->SetImage(image);
 				ct->SetShortcutText(shortcutText);

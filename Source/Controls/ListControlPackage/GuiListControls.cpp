@@ -136,14 +136,12 @@ GuiListControl::ItemCallback
 GuiListControl
 ***********************************************************************/
 
-			void GuiListControl::BeforeControlTemplateUninstalled()
+			void GuiListControl::BeforeControlTemplateUninstalled_()
 			{
-				GuiScrollView::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiListControl::AfterControlTemplateInstalled(bool initialize)
+			void GuiListControl::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GuiScrollView::AfterControlTemplateInstalled(initialize);
 			}
 
 			void GuiListControl::OnItemModified(vint start, vint count, vint newCount)

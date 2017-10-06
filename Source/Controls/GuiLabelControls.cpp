@@ -15,15 +15,13 @@ namespace vl
 GuiLabel
 ***********************************************************************/
 
-			void GuiLabel::BeforeControlTemplateUninstalled()
+			void GuiLabel::BeforeControlTemplateUninstalled_()
 			{
 				textColorConsisted = (textColor == GetControlTemplateObject()->GetDefaultTextColor());
-				GuiControl::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiLabel::AfterControlTemplateInstalled(bool initialize)
+			void GuiLabel::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GuiControl::AfterControlTemplateInstalled(initialize);
 				auto ct = GetControlTemplateObject();
 				if (initialize || textColorConsisted)
 				{

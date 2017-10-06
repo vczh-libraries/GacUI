@@ -26,7 +26,7 @@ Buttons
 			/// <summary>A control with 3 phases state transffering when mouse click happens.</summary>
 			class GuiButton : public GuiControl, public Description<GuiButton>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ButtonTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ButtonTemplate, GuiControl)
 			protected:
 				bool									clickOnMouseUp = true;
 				bool									mousePressing = false;
@@ -60,7 +60,7 @@ Buttons
 			/// <summary>A <see cref="GuiButton"/> with a selection state.</summary>
 			class GuiSelectableButton : public GuiButton, public Description<GuiSelectableButton>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SelectableButtonTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SelectableButtonTemplate, GuiButton)
 			public:
 				/// <summary>Selection group controller. Control the selection state of all attached button.</summary>
 				class GroupController : public GuiComponent, public Description<GroupController>

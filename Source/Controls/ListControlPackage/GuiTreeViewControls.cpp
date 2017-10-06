@@ -601,14 +601,12 @@ MemoryNodeRootProvider
 GuiVirtualTreeListControl
 ***********************************************************************/
 
-			void GuiVirtualTreeListControl::BeforeControlTemplateUninstalled()
+			void GuiVirtualTreeListControl::BeforeControlTemplateUninstalled_()
 			{
-				GuiSelectableListControl::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiVirtualTreeListControl::AfterControlTemplateInstalled(bool initialize)
+			void GuiVirtualTreeListControl::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GuiSelectableListControl::AfterControlTemplateInstalled(initialize);
 			}
 
 			void GuiVirtualTreeListControl::OnAttached(tree::INodeRootProvider* provider)

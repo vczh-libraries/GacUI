@@ -15,14 +15,12 @@ namespace vl
 GuiButton
 ***********************************************************************/
 
-			void GuiButton::BeforeControlTemplateUninstalled()
+			void GuiButton::BeforeControlTemplateUninstalled_()
 			{
-				GuiControl::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiButton::AfterControlTemplateInstalled(bool initialize)
+			void GuiButton::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GuiControl::AfterControlTemplateInstalled(initialize);
 				auto ct = GetControlTemplateObject();
 				GetControlTemplateObject()->SetState(controlState);
 			}
@@ -217,14 +215,12 @@ GuiSelectableButton::MutexGroupController
 GuiSelectableButton
 ***********************************************************************/
 
-			void GuiSelectableButton::BeforeControlTemplateUninstalled()
+			void GuiSelectableButton::BeforeControlTemplateUninstalled_()
 			{
-				GuiButton::BeforeControlTemplateUninstalled();
 			}
 
-			void GuiSelectableButton::AfterControlTemplateInstalled(bool initialize)
+			void GuiSelectableButton::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GuiButton;; AfterControlTemplateInstalled(initialize);
 				GetControlTemplateObject()->SetSelected(isSelected);
 			}
 

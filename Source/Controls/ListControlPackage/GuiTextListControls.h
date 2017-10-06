@@ -162,7 +162,7 @@ GuiVirtualTextList
 			/// <summary>Text list control in virtual mode.</summary>
 			class GuiVirtualTextList : public GuiSelectableListControl, public Description<GuiVirtualTextList>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TextListTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TextListTemplate, GuiSelectableListControl)
 			protected:
 				TextListView											view = TextListView::Unknown;
 

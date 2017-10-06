@@ -28,7 +28,7 @@ ComboBox Base
 			/// <summary>The base class of combo box control.</summary>
 			class GuiComboBoxBase : public GuiMenuButton, public Description<GuiComboBoxBase>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ComboBoxTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ComboBoxTemplate, GuiMenuButton)
 			protected:
 
 				class CommandExecutor : public Object, public virtual IComboBoxCommandExecutor

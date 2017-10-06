@@ -26,6 +26,7 @@ GuiControl
 				controlTemplateObject->SetText(text);
 				controlTemplateObject->SetFont(font);
 				controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
+				controlTemplateObject->SetFocusableComposition(focusableComposition);
 			}
 
 			void GuiControl::CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)
@@ -119,14 +120,17 @@ GuiControl
 
 			void GuiControl::UpdateVisuallyEnabled()
 			{
-				bool newValue=isEnabled && (parent==0?true:parent->GetVisuallyEnabled());
-				if(isVisuallyEnabled!=newValue)
+				bool newValue = isEnabled && (parent == 0 ? true : parent->GetVisuallyEnabled());
+				if (isVisuallyEnabled != newValue)
 				{
-					isVisuallyEnabled=newValue;
-					controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
+					isVisuallyEnabled = newValue;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
+					}
 					VisuallyEnabledChanged.Execute(GetNotifyEventArguments());
 
-					for(vint i=0;i<children.Count();i++)
+					for (vint i = 0; i < children.Count(); i++)
 					{
 						children[i]->UpdateVisuallyEnabled();
 					}
@@ -135,10 +139,13 @@ GuiControl
 
 			void GuiControl::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
 			{
-				if(focusableComposition!=value)
+				if (focusableComposition != value)
 				{
-					focusableComposition=value;
-					controlTemplateObject->SetFocusableComposition(focusableComposition);
+					focusableComposition = value;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetFocusableComposition(focusableComposition);
+					}
 				}
 			}
 
@@ -375,10 +382,13 @@ GuiControl
 
 			void GuiControl::SetText(const WString& value)
 			{
-				if(text!=value)
+				if (text != value)
 				{
-					text=value;
-					controlTemplateObject->SetText(text);
+					text = value;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetText(text);
+					}
 					TextChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -390,10 +400,13 @@ GuiControl
 
 			void GuiControl::SetFont(const FontProperties& value)
 			{
-				if(font!=value)
+				if (font != value)
 				{
-					font=value;
-					controlTemplateObject->SetFont(font);
+					font = value;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetFont(font);
+					}
 					FontChanged.Execute(GetNotifyEventArguments());
 				}
 			}

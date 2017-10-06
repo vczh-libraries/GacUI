@@ -338,7 +338,7 @@ GuiDocumentViewer
 			/// <summary>Scrollable document viewer for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentViewer : public GuiScrollContainer, public GuiDocumentCommonInterface, public Description<GuiDocumentViewer>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentViewerTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentViewerTemplate, GuiScrollContainer)
 			protected:
 
 				Point										GetDocumentViewPosition()override;
@@ -360,7 +360,7 @@ GuiDocumentViewer
 			/// <summary>Static document viewer for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentLabel : public GuiControl, public GuiDocumentCommonInterface, public Description<GuiDocumentLabel>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate, GuiControl)
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

@@ -320,7 +320,7 @@ GuiVirtualTreeListControl
 			/// <summary>Tree list control in virtual node.</summary>
 			class GuiVirtualTreeListControl : public GuiSelectableListControl, protected virtual tree::INodeProviderCallback, public Description<GuiVirtualTreeListControl>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TreeViewTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TreeViewTemplate, GuiSelectableListControl)
 			protected:
 				void								OnAttached(tree::INodeRootProvider* provider)override;
 				void								OnBeforeItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)override;

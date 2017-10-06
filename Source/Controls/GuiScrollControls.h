@@ -27,7 +27,7 @@ Scrolls
 			/// <summary>A scroll control, which represents a one dimension sub range of a whole range.</summary>
 			class GuiScroll : public GuiControl, public Description<GuiScroll>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ScrollTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ScrollTemplate, GuiControl)
 			protected:
 				class CommandExecutor : public Object, public IScrollCommandExecutor
 				{

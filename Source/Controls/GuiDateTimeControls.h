@@ -26,7 +26,7 @@ DatePicker
 			/// <summary>Date picker control that display a calendar.</summary>
 			class GuiDatePicker : public GuiControl, public Description<GuiDatePicker>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DatePickerTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DatePickerTemplate, GuiControl)
 			protected:
 				class CommandExecutor : public Object, public IDatePickerCommandExecutor
 				{

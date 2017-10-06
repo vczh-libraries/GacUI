@@ -78,7 +78,7 @@ Menu
 			/// <summary>Popup menu.</summary>
 			class GuiMenu : public GuiPopup, private IGuiMenuService, public Description<GuiMenu>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MenuTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MenuTemplate, GuiPopup)
 			private:
 				IGuiMenuService*						parentMenuService;
 
@@ -130,7 +130,7 @@ MenuButton
 			/// <summary>Menu item.</summary>
 			class GuiMenuButton : public GuiSelectableButton, public Description<GuiMenuButton>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ToolstripButtonTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ToolstripButtonTemplate, GuiSelectableButton)
 
 				using IEventHandler = compositions::IGuiGraphicsEventHandler;
 			protected:

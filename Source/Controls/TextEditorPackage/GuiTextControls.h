@@ -25,7 +25,7 @@ MultilineTextBox
 			/// <summary>Multiline text box control.</summary>
 			class GuiMultilineTextBox : public GuiScrollView, public GuiTextBoxCommonInterface, public Description<GuiMultilineTextBox>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MultilineTextBoxTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MultilineTextBoxTemplate, GuiScrollView)
 			public:
 				static const vint							TextMargin=3;
 
@@ -84,7 +84,7 @@ SinglelineTextBox
 			/// <summary>Single text box control.</summary>
 			class GuiSinglelineTextBox : public GuiControl, public GuiTextBoxCommonInterface, public Description<GuiSinglelineTextBox>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SinglelineTextBoxTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SinglelineTextBoxTemplate, GuiControl)
 			public:
 				static const vint							TextMargin=2;
 				

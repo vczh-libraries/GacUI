@@ -31,7 +31,7 @@ List Control
 			/// <summary>Represents a list control. A list control automatically read data sources and creates corresponding data item control from the item template.</summary>
 			class GuiListControl : public GuiScrollView, public Description<GuiListControl>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListControlTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListControlTemplate, GuiScrollView)
 			public:
 				class IItemProvider;
 

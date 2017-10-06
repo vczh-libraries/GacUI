@@ -21,7 +21,7 @@ namespace vl
 			///<summary>List view column header control for detailed view.</summary>
 			class GuiListViewColumnHeader : public GuiMenuButton, public Description<GuiListViewColumnHeader>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListViewColumnHeaderTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListViewColumnHeaderTemplate, GuiMenuButton)
 			protected:
 				ColumnSortingState								columnSortingState = ColumnSortingState::NotSorted;
 
@@ -44,7 +44,7 @@ namespace vl
 			/// <summary>List view base control. All list view controls inherit from this class. <see cref="list::ListViewItemStyleProviderBase"/> is suggested to be the base class of item style providers for list view control.</summary>
 			class GuiListViewBase : public GuiSelectableListControl, public Description<GuiListViewBase>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListViewTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListViewTemplate, GuiSelectableListControl)
 			public:
 				/// <summary>Create a list view base control.</summary>
 				/// <param name="_controlTemplate">The control template for this control.</param>

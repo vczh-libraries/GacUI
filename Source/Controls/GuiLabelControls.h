@@ -25,7 +25,7 @@ Label
 			/// <summary>A control to display a text.</summary>
 			class GuiLabel : public GuiControl, public Description<GuiLabel>
 			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(LabelTemplate)
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(LabelTemplate, GuiControl)
 			protected:
 				Color									textColor;
 				bool									textColorConsisted = true;
