@@ -145,6 +145,7 @@ GuiMultilineTextBox
 				:GuiScrollView(themeName)
 			{
 				textElement = GuiColorizedTextElement::Create();
+				textElement->SetFont(GetFont());
 
 				textComposition = new GuiBoundsComposition;
 				textComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
