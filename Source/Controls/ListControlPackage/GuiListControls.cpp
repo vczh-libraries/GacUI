@@ -136,6 +136,15 @@ GuiListControl::ItemCallback
 GuiListControl
 ***********************************************************************/
 
+			void GuiListControl::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiListControl::AfterControlTemplateInstalled_(bool initialize)
+			{
+				callback->ClearCache();
+			}
+
 			void GuiListControl::OnItemModified(vint start, vint count, vint newCount)
 			{
 			}
@@ -241,8 +250,8 @@ GuiListControl
 					{
 						GuiItemMouseEventArgs redirectArguments;
 						(GuiMouseEventArgs&)redirectArguments = arguments;
-						redirectArguments.compositionSource = GetBoundsComposition();
-						redirectArguments.eventSource = GetBoundsComposition();
+						redirectArguments.compositionSource = boundsComposition;
+						redirectArguments.eventSource = boundsComposition;
 						redirectArguments.itemIndex = itemIndex;
 						itemEvent.Execute(redirectArguments);
 						arguments = redirectArguments;
@@ -259,8 +268,8 @@ GuiListControl
 					{
 						GuiItemEventArgs redirectArguments;
 						(GuiEventArgs&)redirectArguments = arguments;
-						redirectArguments.compositionSource = GetBoundsComposition();
-						redirectArguments.eventSource = GetBoundsComposition();
+						redirectArguments.compositionSource = boundsComposition;
+						redirectArguments.eventSource = boundsComposition;
 						redirectArguments.itemIndex = itemIndex;
 						itemEvent.Execute(redirectArguments);
 						arguments = redirectArguments;
@@ -337,12 +346,10 @@ GuiListControl
 
 #undef DETACH_ITEM_EVENT
 
-			GuiListControl::GuiListControl(IStyleProvider* _styleProvider, IItemProvider* _itemProvider, bool acceptFocus)
-				:GuiScrollView(_styleProvider)
+			GuiListControl::GuiListControl(theme::ThemeName themeName, IItemProvider* _itemProvider, bool acceptFocus)
+				:GuiScrollView(themeName)
 				, itemProvider(_itemProvider)
 			{
-				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
-
 				FontChanged.AttachMethod(this, &GuiListControl::OnFontChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
 
@@ -385,11 +392,6 @@ GuiListControl
 				callback->ClearCache();
 				itemStyleProperty = {};
 				itemArranger = nullptr;
-			}
-
-			GuiListControl::IStyleProvider*	 GuiListControl::GetListControlStyleProvider()
-			{
-				return styleProvider;
 			}
 
 			GuiListControl::IItemProvider* GuiListControl::GetItemProvider()
@@ -445,8 +447,8 @@ GuiListControl
 			{
 				if (itemArranger)
 				{
-					Size controlSize = GetBoundsComposition()->GetBounds().GetSize();
-					Size viewSize = GetContainerComposition()->GetBounds().GetSize();
+					Size controlSize = boundsComposition->GetBounds().GetSize();
+					Size viewSize = containerComposition->GetBounds().GetSize();
 					vint x = controlSize.x - viewSize.x;
 					vint y = controlSize.y - viewSize.y;
 
@@ -586,8 +588,8 @@ GuiSelectableListControl
 				}
 			}
 
-			GuiSelectableListControl::GuiSelectableListControl(IStyleProvider* _styleProvider, IItemProvider* _itemProvider)
-				:GuiListControl(_styleProvider, _itemProvider, true)
+			GuiSelectableListControl::GuiSelectableListControl(theme::ThemeName themeName, IItemProvider* _itemProvider)
+				:GuiListControl(themeName, _itemProvider, true)
 				,multiSelect(false)
 				,selectedItemIndexStart(-1)
 				,selectedItemIndexEnd(-1)

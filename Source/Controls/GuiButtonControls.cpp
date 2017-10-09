@@ -15,6 +15,16 @@ namespace vl
 GuiButton
 ***********************************************************************/
 
+			void GuiButton::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiButton::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				GetControlTemplateObject()->SetState(controlState);
+			}
+
 			void GuiButton::OnParentLineChanged()
 			{
 				GuiControl::OnParentLineChanged();
@@ -59,7 +69,7 @@ GuiButton
 				if (controlState != newControlState)
 				{
 					controlState = newControlState;
-					styleController->Transfer(controlState);
+					GetControlTemplateObject()->SetState(controlState);
 				}
 			}
 
@@ -120,22 +130,16 @@ GuiButton
 				}
 			}
 
-			GuiButton::GuiButton(IStyleController* _styleController)
-				:GuiControl(_styleController)
-				,styleController(_styleController)
-				,clickOnMouseUp(true)
-				,mousePressing(false)
-				,mouseHoving(false)
-				,controlState(ButtonState::Normal)
+			GuiButton::GuiButton(theme::ThemeName themeName)
+				:GuiControl(themeName)
 			{
 				Clicked.SetAssociatedComposition(boundsComposition);
-				styleController->Transfer(ButtonState::Normal);
 				SetFocusableComposition(boundsComposition);
 
-				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiButton::OnLeftButtonDown);
-				GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiButton::OnLeftButtonUp);
-				GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiButton::OnMouseEnter);
-				GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiButton::OnMouseLeave);
+				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiButton::OnLeftButtonDown);
+				boundsComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiButton::OnLeftButtonUp);
+				boundsComposition->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiButton::OnMouseEnter);
+				boundsComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiButton::OnMouseLeave);
 			}
 
 			GuiButton::~GuiButton()
@@ -211,6 +215,15 @@ GuiSelectableButton::MutexGroupController
 GuiSelectableButton
 ***********************************************************************/
 
+			void GuiSelectableButton::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiSelectableButton::AfterControlTemplateInstalled_(bool initialize)
+			{
+				GetControlTemplateObject()->SetSelected(isSelected);
+			}
+
 			void GuiSelectableButton::OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if(autoSelection)
@@ -219,19 +232,14 @@ GuiSelectableButton
 				}
 			}
 
-			GuiSelectableButton::GuiSelectableButton(IStyleController* _styleController)
-				:GuiButton(_styleController)
-				,styleController(_styleController)
-				,groupController(0)
-				,autoSelection(true)
-				,isSelected(false)
+			GuiSelectableButton::GuiSelectableButton(theme::ThemeName themeName)
+				:GuiButton(themeName)
 			{
 				GroupControllerChanged.SetAssociatedComposition(boundsComposition);
 				AutoSelectionChanged.SetAssociatedComposition(boundsComposition);
 				SelectedChanged.SetAssociatedComposition(boundsComposition);
 
 				Clicked.AttachMethod(this, &GuiSelectableButton::OnClicked);
-				styleController->SetSelected(isSelected);
 			}
 			
 			GuiSelectableButton::~GuiSelectableButton()
@@ -282,11 +290,11 @@ GuiSelectableButton
 
 			void GuiSelectableButton::SetSelected(bool value)
 			{
-				if(isSelected!=value)
+				if (isSelected != value)
 				{
-					isSelected=value;
-					styleController->SetSelected(isSelected);
-					if(groupController)
+					isSelected = value;
+					GetControlTemplateObject()->SetSelected(isSelected);
+					if (groupController)
 					{
 						groupController->OnSelectedChanged(this);
 					}

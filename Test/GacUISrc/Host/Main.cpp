@@ -51,10 +51,10 @@ namespace autocomplete_grammar
 
 void GuiMain_GrammarIntellisense()
 {
-	GuiWindow window(GetCurrentTheme()->CreateWindowStyle());
+	GuiWindow window(theme::ThemeName::Window);
 	window.GetContainerComposition()->SetPreferredMinSize(Size(600, 480));
 	{
-		auto textBox = g::NewMultilineTextBox();
+		auto textBox = new GuiMultilineTextBox(theme::ThemeName::MultilineTextBox);
 		autocomplete_grammar::InstallTextBox(textBox);
 		textBox->GetBoundsComposition()->SetAlignmentToParent(Margin(5, 5, 5, 5));
 		window.AddChild(textBox);

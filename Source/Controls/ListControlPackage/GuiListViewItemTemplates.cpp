@@ -72,7 +72,6 @@ BigIconListViewItemTemplate
 
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
-						auto styleProvider = listView->GetListViewStyleProvider();
 						auto itemIndex = GetIndex();
 						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 						{
@@ -86,7 +85,7 @@ BigIconListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(styleProvider->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
 						}
 					}
 
@@ -151,7 +150,6 @@ SmallIconListViewItemTemplate
 
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
-						auto styleProvider = listView->GetListViewStyleProvider();
 						auto itemIndex = GetIndex();
 						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 						{
@@ -165,7 +163,7 @@ SmallIconListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(styleProvider->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
 						}
 					}
 
@@ -229,7 +227,6 @@ ListListViewItemTemplate
 
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
-						auto styleProvider = listView->GetListViewStyleProvider();
 						auto itemIndex = GetIndex();
 						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 						{
@@ -243,7 +240,7 @@ ListListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(styleProvider->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
 						}
 					}
 
@@ -339,7 +336,6 @@ TileListViewItemTemplate
 
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
-						auto styleProvider = listView->GetListViewStyleProvider();
 						auto itemIndex = GetIndex();
 						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 						{
@@ -353,7 +349,7 @@ TileListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(styleProvider->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
 
 							vint dataColumnCount = view->GetDataColumnCount();
 							ResetTextTable(dataColumnCount + 1);
@@ -362,7 +358,7 @@ TileListViewItemTemplate
 							{
 								dataTexts[i] = CreateTextElement(i + 1);
 								dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
-								dataTexts[i]->SetColor(styleProvider->GetSecondaryTextColor());
+								dataTexts[i]->SetColor(listView->GetControlTemplateObject()->GetSecondaryTextColor());
 							}
 						}
 					}
@@ -455,7 +451,6 @@ InformationListViewItemTemplate
 
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
-						auto styleProvider = listView->GetListViewStyleProvider();
 						auto itemIndex = GetIndex();
 						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 						{
@@ -469,8 +464,8 @@ InformationListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(styleProvider->GetPrimaryTextColor());
-							bottomLine->SetColor(styleProvider->GetItemSeparatorColor());
+							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+							bottomLine->SetColor(listView->GetControlTemplateObject()->GetItemSeparatorColor());
 
 							vint dataColumnCount = view->GetDataColumnCount();
 							columnTexts.Resize(dataColumnCount);
@@ -506,7 +501,7 @@ InformationListViewItemTemplate
 
 									columnTexts[i] = GuiSolidLabelElement::Create();
 									columnTexts[i]->SetText(view->GetColumnText(view->GetDataColumn(i) + 1) + L": ");
-									columnTexts[i]->SetColor(styleProvider->GetSecondaryTextColor());
+									columnTexts[i]->SetColor(listView->GetControlTemplateObject()->GetSecondaryTextColor());
 									cell->SetOwnedElement(columnTexts[i]);
 								}
 								{
@@ -517,7 +512,7 @@ InformationListViewItemTemplate
 									dataTexts[i]= GuiSolidLabelElement::Create();
 									dataTexts[i]->SetEllipse(true);
 									dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
-									dataTexts[i]->SetColor(styleProvider->GetPrimaryTextColor());
+									dataTexts[i]->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
 									cell->SetOwnedElement(dataTexts[i]);
 								}
 							}
@@ -612,7 +607,6 @@ DetailListViewItemTemplate
 
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
-						auto styleProvider = listView->GetListViewStyleProvider();
 						auto itemIndex = GetIndex();
 						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 						{
@@ -626,7 +620,7 @@ DetailListViewItemTemplate
 								image->SetImage(0);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(styleProvider->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
 
 							vint columnCount = view->GetColumnCount() - 1;
 							subItems.Resize(columnCount);
@@ -643,7 +637,7 @@ DetailListViewItemTemplate
 								subItems[i]->SetFont(text->GetFont());
 								subItems[i]->SetEllipse(true);
 								subItems[i]->SetText(view->GetSubItem(itemIndex, i));
-								subItems[i]->SetColor(styleProvider->GetSecondaryTextColor());
+								subItems[i]->SetColor(listView->GetControlTemplateObject()->GetSecondaryTextColor());
 								cell->SetOwnedElement(subItems[i]);
 							}
 							OnColumnChanged();

@@ -28,17 +28,7 @@ ComboBox Base
 			/// <summary>The base class of combo box control.</summary>
 			class GuiComboBoxBase : public GuiMenuButton, public Description<GuiComboBoxBase>
 			{
-			public:				
-				/// <summary>Style controller interface for <see cref="GuiComboBoxBase"/>.</summary>
-				class IStyleController : public virtual GuiMenuButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the command executor is changed.</summary>
-					/// <param name="value">The command executor.</param>
-					virtual void							SetCommandExecutor(IComboBoxCommandExecutor* value)=0;
-					/// <summary>Notify that an item is selected.</summary>
-					virtual void							OnItemSelected()=0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ComboBoxTemplate, GuiMenuButton)
 			protected:
 
 				class CommandExecutor : public Object, public virtual IComboBoxCommandExecutor
@@ -54,7 +44,6 @@ ComboBox Base
 				};
 
 				Ptr<CommandExecutor>						commandExecutor;
-				IStyleController*							styleController;
 				
 				bool										IsAltAvailable()override;
 				IGuiMenuService::Direction					GetSubMenuDirection()override;
@@ -62,8 +51,8 @@ ComboBox Base
 				void										OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiComboBoxBase(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiComboBoxBase(theme::ThemeName themeName);
 				~GuiComboBoxBase();
 
 				/// <summary>Item selected event.</summary>
@@ -80,21 +69,14 @@ ComboBox with GuiListControl
 			public:
 				using ItemStyleProperty = TemplateProperty<templates::GuiTemplate>;
 
-				/// <summary>Style controller interface for <see cref="GuiComboBoxListControl"/>.</summary>
-				class IStyleController : public virtual GuiComboBoxBase::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Indicate that if the combo box need to display text.</summary>
-					/// <param name="value">Set to true to display text.</param>
-					virtual void							SetTextVisible(bool value) = 0;
-				};
-
 			protected:
-				IStyleController*							styleController = nullptr;
 				GuiSelectableListControl*					containedListControl = nullptr;
 				ItemStyleProperty							itemStyleProperty;
 				templates::GuiTemplate*						itemStyleController = nullptr;
 
+
+				void										BeforeControlTemplateUninstalled()override;
+				void										AfterControlTemplateInstalled(bool initialize)override;
 				bool										IsAltAvailable()override;
 				void										OnActiveAlt()override;
 				void										RemoveStyleController();
@@ -107,9 +89,9 @@ ComboBox with GuiListControl
 				void										OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller and a list control that will be put in the popup control to show all items.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_containedListControl">The list controller.</param>
-				GuiComboBoxListControl(IStyleController* _styleController, GuiSelectableListControl* _containedListControl);
+				GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl);
 				~GuiComboBoxListControl();
 				
 				/// <summary>Style provider changed event.</summary>

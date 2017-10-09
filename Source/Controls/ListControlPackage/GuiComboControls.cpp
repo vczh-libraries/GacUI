@@ -29,6 +29,16 @@ GuiComboBoxBase::CommandExecutor
 GuiComboBoxBase
 ***********************************************************************/
 
+			void GuiComboBoxBase::BeforeControlTemplateUninstalled_()
+			{
+				GetControlTemplateObject()->SetCommands(nullptr);
+			}
+
+			void GuiComboBoxBase::AfterControlTemplateInstalled_(bool initialize)
+			{
+				GetControlTemplateObject()->SetCommands(commandExecutor.Obj());
+			}
+
 			bool GuiComboBoxBase::IsAltAvailable()
 			{
 				return false;
@@ -41,28 +51,25 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::SelectItem()
 			{
-				styleController->OnItemSelected();
 				ItemSelected.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiComboBoxBase::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				Size size=GetPreferredMenuClientSize();
-				size.x=GetBoundsComposition()->GetBounds().Width();
+				size.x=boundsComposition->GetBounds().Width();
 				SetPreferredMenuClientSize(size);
 			}
 
-			GuiComboBoxBase::GuiComboBoxBase(IStyleController* _styleController)
-				:GuiMenuButton(_styleController)
+			GuiComboBoxBase::GuiComboBoxBase(theme::ThemeName themeName)
+				:GuiMenuButton(themeName)
 			{
-				commandExecutor=new CommandExecutor(this);
-				styleController=dynamic_cast<IStyleController*>(GetStyleController());
-				styleController->SetCommandExecutor(commandExecutor.Obj());
+				commandExecutor = new CommandExecutor(this);
 
 				CreateSubMenu();
 				SetCascadeAction(false);
 
-				GetBoundsComposition()->BoundsChanged.AttachMethod(this, &GuiComboBoxBase::OnBoundsChanged);
+				boundsComposition->BoundsChanged.AttachMethod(this, &GuiComboBoxBase::OnBoundsChanged);
 			}
 
 			GuiComboBoxBase::~GuiComboBoxBase()
@@ -72,6 +79,17 @@ GuiComboBoxBase
 /***********************************************************************
 GuiComboBoxListControl
 ***********************************************************************/
+
+			void GuiComboBoxListControl::BeforeControlTemplateUninstalled()
+			{
+				GuiComboBoxBase::BeforeControlTemplateUninstalled();
+			}
+
+			void GuiComboBoxListControl::AfterControlTemplateInstalled(bool initialize)
+			{
+				GuiComboBoxBase::AfterControlTemplateInstalled(initialize);
+				GetControlTemplateObject()->SetTextVisible(!itemStyleProperty);
+			}
 
 			bool GuiComboBoxListControl::IsAltAvailable()
 			{
@@ -110,7 +128,7 @@ GuiComboBoxListControl
 								itemStyleController->SetFont(GetFont());
 								itemStyleController->SetVisuallyEnabled(GetVisuallyEnabled());
 								itemStyleController->SetAlignmentToParent(Margin(0, 0, 0, 0));
-								GetContainerComposition()->AddChild(itemStyleController);
+								containerComposition->AddChild(itemStyleController);
 							}
 						}
 					}
@@ -182,12 +200,10 @@ GuiComboBoxListControl
 				SelectedIndexChanged.Execute(GetNotifyEventArguments());
 			}
 
-			GuiComboBoxListControl::GuiComboBoxListControl(IStyleController* _styleController, GuiSelectableListControl* _containedListControl)
-				:GuiComboBoxBase(_styleController)
-				, styleController(_styleController)
+			GuiComboBoxListControl::GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl)
+				:GuiComboBoxBase(themeName)
 				, containedListControl(_containedListControl)
 			{
-				styleController->SetTextVisible(true);
 				TextChanged.AttachMethod(this, &GuiComboBoxListControl::OnTextChanged);
 				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiComboBoxListControl::OnVisuallyEnabledChanged);
@@ -198,7 +214,7 @@ GuiComboBoxListControl
 
 				auto itemProvider = containedListControl->GetItemProvider();
 
-				SelectedIndexChanged.SetAssociatedComposition(GetBoundsComposition());
+				SelectedIndexChanged.SetAssociatedComposition(boundsComposition);
 
 				containedListControl->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				GetSubMenu()->GetContainerComposition()->AddChild(containedListControl->GetBoundsComposition());
@@ -223,7 +239,7 @@ GuiComboBoxListControl
 			{
 				RemoveStyleController();
 				itemStyleProperty = value;
-				styleController->SetTextVisible(!itemStyleProperty);
+				GetControlTemplateObject()->SetTextVisible(!itemStyleProperty);
 				InstallStyleController(GetSelectedIndex());
 				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}

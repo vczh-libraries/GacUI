@@ -187,17 +187,14 @@ GuiApplication
 
 				if(!sharedTooltipControl)
 				{
-					GuiWindow::IStyleController* tooltipStyle = 0;
+					sharedTooltipControl = new GuiTooltip(theme::ThemeName::Tooltip);
 					if (ownerWindow)
 					{
-						tooltipStyle = dynamic_cast<GuiWindow::IStyleController*>(ownerWindow->GetStyleController())->CreateTooltipStyle();
+						if (auto tooltipStyle = ownerWindow->GetControlTemplateObject()->GetTooltipTemplate())
+						{
+							sharedTooltipControl->SetControlTemplate(tooltipStyle);
+						}
 					}
-					if (!tooltipStyle)
-					{
-						tooltipStyle = GetCurrentTheme()->CreateTooltipStyle();
-					}
-
-					sharedTooltipControl=new GuiTooltip(tooltipStyle);
 					sharedTooltipControl->GetBoundsComposition()->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiApplication::TooltipMouseEnter);
 					sharedTooltipControl->GetBoundsComposition()->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiApplication::TooltipMouseLeave);
 				}

@@ -25,31 +25,20 @@ MultilineTextBox
 			/// <summary>Multiline text box control.</summary>
 			class GuiMultilineTextBox : public GuiScrollView, public GuiTextBoxCommonInterface, public Description<GuiMultilineTextBox>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MultilineTextBoxTemplate, GuiScrollView)
 			public:
 				static const vint							TextMargin=3;
 
-				class StyleController : public GuiScrollView::StyleController, public Description<StyleController>
+				class CommandExecutor : public Object, public ITextBoxCommandExecutor
 				{
 				protected:
-					elements::GuiColorizedTextElement*			textElement;
-					compositions::GuiBoundsComposition*			textComposition;
-					GuiMultilineTextBox*						textBox;
-					Ptr<GuiTextBoxCommonInterface::ICallback>	defaultCallback;
+					GuiMultilineTextBox*					textBox;
 
 				public:
-					StyleController(GuiScrollView::IStyleProvider* styleProvider);
-					~StyleController();
+					CommandExecutor(GuiMultilineTextBox* _textBox);
+					~CommandExecutor();
 
-					void									Initialize(GuiMultilineTextBox* control);
-					elements::GuiColorizedTextElement*		GetTextElement();
-					compositions::GuiGraphicsComposition*	GetTextComposition();
-					void									SetViewPosition(Point value);
-					void									SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-
-					WString									GetText();
-					void									SetText(const WString& value)override;
-					void									SetFont(const FontProperties& value)override;
-					void									SetVisuallyEnabled(bool value)override;
+					void									UnsafeSetText(const WString& value)override;
 				};
 
 			protected:
@@ -57,7 +46,6 @@ MultilineTextBox
 				{
 				protected:
 					GuiMultilineTextBox*					textControl;
-					StyleController*						textController;
 				public:
 					TextElementOperatorCallback(GuiMultilineTextBox* _textControl);
 
@@ -67,17 +55,21 @@ MultilineTextBox
 				};
 
 			protected:
-				StyleController*							styleController;
+				Ptr<TextElementOperatorCallback>			callback;
+				Ptr<CommandExecutor>						commandExecutor;
+				elements::GuiColorizedTextElement*			textElement = nullptr;
+				compositions::GuiBoundsComposition*			textComposition = nullptr;
 
 				void										CalculateViewAndSetScroll();
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
 				Size										QueryFullSize()override;
 				void										UpdateView(Rect viewBounds)override;
+				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
-				GuiMultilineTextBox(GuiMultilineTextBox::IStyleProvider* styleProvider);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiMultilineTextBox(theme::ThemeName themeName);
 				~GuiMultilineTextBox();
 
 				const WString&								GetText()override;
@@ -92,58 +84,13 @@ SinglelineTextBox
 			/// <summary>Single text box control.</summary>
 			class GuiSinglelineTextBox : public GuiControl, public GuiTextBoxCommonInterface, public Description<GuiSinglelineTextBox>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SinglelineTextBoxTemplate, GuiControl)
 			public:
-				static const vint							TextMargin=3;
-				
-				/// <summary>Style controller interface for <see cref="GuiSinglelineTextBox"/>.</summary>
-				class IStyleProvider : public virtual GuiControl::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Create a background in the specified background container composition.</summary>
-					/// <returns>The container composition. If the style does not have a inner composition to be the container composition, just return the background argument.</returns>
-					/// <param name="background">The background container composition.</param>
-					virtual compositions::GuiGraphicsComposition*		InstallBackground(compositions::GuiBoundsComposition* background)=0;
-				};
-
-				class StyleController : public Object, public GuiControl::IStyleController, public Description<StyleController>
-				{
-				protected:
-					Ptr<IStyleProvider>							styleProvider;
-					compositions::GuiBoundsComposition*			boundsComposition;
-					compositions::GuiGraphicsComposition*		containerComposition;
-
-					GuiSinglelineTextBox*						textBox;
-					elements::GuiColorizedTextElement*			textElement;
-					compositions::GuiTableComposition*			textCompositionTable;
-					compositions::GuiCellComposition*			textComposition;
-					Ptr<GuiTextBoxCommonInterface::ICallback>	defaultCallback;
-
-				public:
-					StyleController(IStyleProvider* _styleProvider);
-					~StyleController();
-
-					void									SetTextBox(GuiSinglelineTextBox* control);
-					void									RearrangeTextElement();
-					compositions::GuiBoundsComposition*		GetBoundsComposition();
-					compositions::GuiGraphicsComposition*	GetContainerComposition();
-					void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
-
-					WString									GetText();
-					void									SetText(const WString& value);
-					void									SetFont(const FontProperties& value);
-					void									SetVisuallyEnabled(bool value);
-
-					elements::GuiColorizedTextElement*		GetTextElement();
-					compositions::GuiGraphicsComposition*	GetTextComposition();
-					void									SetViewPosition(Point value);
-				};
+				static const vint							TextMargin=2;
 				
 			protected:
 				class TextElementOperatorCallback : public GuiTextBoxCommonInterface::DefaultCallback, public Description<TextElementOperatorCallback>
 				{
-				protected:
-					GuiSinglelineTextBox*					textControl;
-					StyleController*						textController;
 				public:
 					TextElementOperatorCallback(GuiSinglelineTextBox* _textControl);
 
@@ -152,20 +99,27 @@ SinglelineTextBox
 					void									ScrollToView(Point point)override;
 					vint									GetTextMargin()override;
 				};
+
 			protected:
-				StyleController*							styleController;
+				Ptr<TextElementOperatorCallback>			callback;
+				elements::GuiColorizedTextElement*			textElement = nullptr;
+				compositions::GuiTableComposition*			textCompositionTable = nullptr;
+				compositions::GuiCellComposition*			textComposition = nullptr;
 				
+				void										RearrangeTextElement();
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
+				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
-				GuiSinglelineTextBox(GuiSinglelineTextBox::IStyleProvider* styleProvider);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiSinglelineTextBox(theme::ThemeName themeName);
 				~GuiSinglelineTextBox();
 
 				const WString&								GetText()override;
 				void										SetText(const WString& value)override;
 				void										SetFont(const FontProperties& value)override;
+
 				/// <summary>
 				/// Get the password mode displaying character.
 				/// </summary>

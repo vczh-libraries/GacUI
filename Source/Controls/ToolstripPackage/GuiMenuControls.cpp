@@ -1,4 +1,5 @@
 #include "GuiMenuControls.h"
+#include "../Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -56,6 +57,14 @@ IGuiMenuService
 /***********************************************************************
 GuiMenu
 ***********************************************************************/
+
+			void GuiMenu::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiMenu::AfterControlTemplateInstalled_(bool initialize)
+			{
+			}
 
 			IGuiMenuService* GuiMenu::GetParentMenuService()
 			{
@@ -118,10 +127,10 @@ GuiMenu
 				}
 			}
 
-			GuiMenu::GuiMenu(IStyleController* _styleController, GuiControl* _owner)
-				:GuiPopup(_styleController)
-				,owner(_owner)
-				,parentMenuService(0)
+			GuiMenu::GuiMenu(theme::ThemeName themeName, GuiControl* _owner)
+				:GuiPopup(themeName)
+				, owner(_owner)
+				, parentMenuService(0)
 			{
 				GetNativeWindow()->SetAlwaysPassFocusToParent(true);
 				UpdateMenuService();
@@ -177,8 +186,8 @@ GuiMenuBar
 				return true;
 			}
 
-			GuiMenuBar::GuiMenuBar(GuiControl::IStyleController* _styleController)
-				:GuiControl(_styleController)
+			GuiMenuBar::GuiMenuBar(theme::ThemeName themeName)
+				:GuiControl(themeName)
 			{
 			}
 
@@ -202,10 +211,34 @@ GuiMenuBar
 GuiMenuButton
 ***********************************************************************/
 
+			void GuiMenuButton::BeforeControlTemplateUninstalled_()
+			{
+				auto host = GetSubMenuHost();
+				host->Clicked.Detach(hostClickedHandler);
+				host->GetBoundsComposition()->GetEventReceiver()->mouseEnter.Detach(hostMouseEnterHandler);
+
+				hostClickedHandler = nullptr;
+				hostMouseEnterHandler = nullptr;
+			}
+
+			void GuiMenuButton::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				auto host = GetSubMenuHost();
+
+				ct->SetSubMenuOpening(GetSubMenuOpening());
+				ct->SetImage(image);
+				ct->SetShortcutText(shortcutText);
+				ct->SetSubMenuExisting(subMenu != nullptr);
+
+				hostClickedHandler = host->Clicked.AttachMethod(this, &GuiMenuButton::OnClicked);
+				hostMouseEnterHandler = host->GetBoundsComposition()->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiMenuButton::OnMouseEnter);
+			}
+
 			GuiButton* GuiMenuButton::GetSubMenuHost()
 			{
-				GuiButton* button=styleController->GetSubMenuHost();
-				return button?button:this;
+				GuiButton* button = GetControlTemplateObject()->GetSubMenuHost();
+				return button ? button : this;
 			}
 
 			void GuiMenuButton::OpenSubMenuInternal()
@@ -255,13 +288,13 @@ GuiMenuButton
 			void GuiMenuButton::OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				styleController->SetSubMenuOpening(true);
+				GetControlTemplateObject()->SetSubMenuOpening(true);
 			}
 
 			void GuiMenuButton::OnSubMenuWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				styleController->SetSubMenuOpening(false);
+				GetControlTemplateObject()->SetSubMenuOpening(false);
 			}
 
 			void GuiMenuButton::OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -295,9 +328,8 @@ GuiMenuButton
 				return ownerMenuService?ownerMenuService->GetPreferredDirection():IGuiMenuService::Horizontal;
 			}
 
-			GuiMenuButton::GuiMenuButton(IStyleController* _styleController)
-				:GuiSelectableButton(_styleController)
-				,styleController(_styleController)
+			GuiMenuButton::GuiMenuButton(theme::ThemeName themeName)
+				:GuiSelectableButton(themeName)
 				,subMenu(0)
 				,ownedSubMenu(false)
 				,ownerMenuService(0)
@@ -307,8 +339,6 @@ GuiMenuButton
 				SubMenuOpeningChanged.SetAssociatedComposition(boundsComposition);
 				ImageChanged.SetAssociatedComposition(boundsComposition);
 				ShortcutTextChanged.SetAssociatedComposition(boundsComposition);
-				GetSubMenuHost()->Clicked.AttachMethod(this, &GuiMenuButton::OnClicked);
-				GetSubMenuHost()->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiMenuButton::OnMouseEnter);
 			}
 
 			GuiMenuButton::~GuiMenuButton()
@@ -326,10 +356,10 @@ GuiMenuButton
 
 			void GuiMenuButton::SetImage(Ptr<GuiImageData> value)
 			{
-				if(image!=value)
+				if (image != value)
 				{
-					image=value;
-					styleController->SetImage(image);
+					image = value;
+					GetControlTemplateObject()->SetImage(image);
 					ImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -341,10 +371,10 @@ GuiMenuButton
 
 			void GuiMenuButton::SetShortcutText(const WString& value)
 			{
-				if(shortcutText!=value)
+				if (shortcutText != value)
 				{
-					shortcutText=value;
-					styleController->SetShortcutText(shortcutText);
+					shortcutText = value;
+					GetControlTemplateObject()->SetShortcutText(shortcutText);
 					ShortcutTextChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -359,11 +389,12 @@ GuiMenuButton
 				return subMenu;
 			}
 
-			GuiMenu* GuiMenuButton::CreateSubMenu(GuiMenu::IStyleController* subMenuStyleController)
+			GuiMenu* GuiMenuButton::CreateSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate)
 			{
-				if(!subMenu)
+				if (!subMenu)
 				{
-					GuiMenu* newSubMenu=new GuiMenu(subMenuStyleController?subMenuStyleController:styleController->CreateSubMenuStyleController(), this);
+					GuiMenu* newSubMenu = new GuiMenu(theme::ThemeName::Menu, this);
+					newSubMenu->SetControlTemplate(subMenuTemplate ? subMenuTemplate : GetControlTemplateObject()->GetSubMenuTemplate());
 					SetSubMenu(newSubMenu, true);
 				}
 				return subMenu;
@@ -385,7 +416,7 @@ GuiMenuButton
 					subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
 					subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
 				}
-				styleController->SetSubMenuExisting(subMenu!=0);
+				GetControlTemplateObject()->SetSubMenuExisting(subMenu != nullptr);
 			}
 
 			void GuiMenuButton::DestroySubMenu()
@@ -398,7 +429,7 @@ GuiMenuButton
 					}
 					subMenu=0;
 					ownedSubMenu=false;
-					styleController->SetSubMenuExisting(false);
+					GetControlTemplateObject()->SetSubMenuExisting(false);
 				}
 			}
 

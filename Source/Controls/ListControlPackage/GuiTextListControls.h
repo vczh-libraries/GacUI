@@ -47,13 +47,13 @@ DefaultTextListItemTemplate
 				class DefaultTextListItemTemplate : public templates::GuiTextListItemTemplate
 				{
 				protected:
-					using BulletStyle = GuiSelectableButton::IStyleController;
+					using BulletStyle = templates::GuiControlTemplate;
 
 					GuiSelectableButton*					bulletButton = nullptr;
 					elements::GuiSolidLabelElement*			textElement = nullptr;
 					bool									supressEdit = false;
 
-					virtual BulletStyle*					CreateBulletStyle();
+					virtual TemplateProperty<BulletStyle>	CreateBulletStyle();
 					void									OnInitialize()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -68,14 +68,14 @@ DefaultTextListItemTemplate
 				class DefaultCheckTextListItemTemplate : public DefaultTextListItemTemplate
 				{
 				protected:
-					BulletStyle*							CreateBulletStyle()override;
+					TemplateProperty<BulletStyle>			CreateBulletStyle()override;
 				public:
 				};
 
 				class DefaultRadioTextListItemTemplate : public DefaultTextListItemTemplate
 				{
 				protected:
-					BulletStyle*							CreateBulletStyle()override;
+					TemplateProperty<BulletStyle>			CreateBulletStyle()override;
 				public:
 				};
 
@@ -162,40 +162,21 @@ GuiVirtualTextList
 			/// <summary>Text list control in virtual mode.</summary>
 			class GuiVirtualTextList : public GuiSelectableListControl, public Description<GuiVirtualTextList>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiVirtualTreeView"/>.</summary>
-				class IStyleProvider : public virtual GuiSelectableListControl::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Get the text color.</summary>
-					/// <returns>The text color.</returns>
-					virtual Color										GetTextColor()=0;
-					/// <summary>Create a style controller for displaying a check box in front of a text item.</summary>
-					/// <returns>The created style controller for displaying a check box in front of a text item.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateCheckBulletStyle() = 0;
-					/// <summary>Create a style controller for displaying a radio button in front of a text item.</summary>
-					/// <returns>The created style controller for displaying a radio button in front of a text item.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateRadioBulletStyle() = 0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TextListTemplate, GuiSelectableListControl)
 			protected:
-				IStyleProvider*											styleProvider;
 				TextListView											view = TextListView::Unknown;
 
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualTextList(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualTextList(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
 
 				/// <summary>Item checked changed event.</summary>
 				compositions::GuiItemNotifyEvent						ItemChecked;
-				
-				/// <summary>Get the style provider for this control.</summary>
-				/// <returns>The style provider for this control.</returns>
-				IStyleProvider*											GetTextListStyleProvider();
 
 				/// <summary>Get the current view.</summary>
 				/// <returns>The current view. After [M:vl.presentation.controls.GuiListControl.SetItemTemplate] is called, the current view is reset to Unknown.</returns>
@@ -216,8 +197,8 @@ GuiTextList
 				list::TextItemProvider*									items;
 			public:
 				/// <summary>Create a Text list control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
-				GuiTextList(IStyleProvider* _styleProvider);
+				/// <param name="_controlTemplate">The control template for this control.</param>
+				GuiTextList(theme::ThemeName themeName);
 				~GuiTextList();
 
 				/// <summary>Get all text items.</summary>

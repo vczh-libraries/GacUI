@@ -21,24 +21,14 @@ namespace vl
 			///<summary>List view column header control for detailed view.</summary>
 			class GuiListViewColumnHeader : public GuiMenuButton, public Description<GuiListViewColumnHeader>
 			{
-			public:
-				/// <summary>Style provider for <see cref="GuiListViewColumnHeader"/>.</summary>
-				class IStyleController : public virtual GuiMenuButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Notify that the column sorting state is changed.</summary>
-					/// <param name="value">The new column sorting state.</param>
-					virtual void								SetColumnSortingState(ColumnSortingState value)=0;
-				};
-
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListViewColumnHeaderTemplate, GuiMenuButton)
 			protected:
-				IStyleController*								styleController = nullptr;
 				ColumnSortingState								columnSortingState = ColumnSortingState::NotSorted;
 
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiListViewColumnHeader(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiListViewColumnHeader(theme::ThemeName themeName);
 				~GuiListViewColumnHeader();
 
 				bool											IsAltAvailable()override;
@@ -54,41 +44,16 @@ namespace vl
 			/// <summary>List view base control. All list view controls inherit from this class. <see cref="list::ListViewItemStyleProviderBase"/> is suggested to be the base class of item style providers for list view control.</summary>
 			class GuiListViewBase : public GuiSelectableListControl, public Description<GuiListViewBase>
 			{
-			public:
-				/// <summary>Style provider for <see cref="GuiListViewBase"/>.</summary>
-				class IStyleProvider : public virtual GuiSelectableListControl::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Create a style controller for a column header.</summary>
-					/// <returns>The created style controller for a column header.</returns>
-					virtual GuiListViewColumnHeader::IStyleController*	CreateColumnStyle()=0;
-					/// <summary>Get the primary text color.</summary>
-					/// <returns>The primary text color.</returns>
-					virtual Color										GetPrimaryTextColor()=0;
-					/// <summary>Get the secondary text color.</summary>
-					/// <returns>The secondary text color.</returns>
-					virtual Color										GetSecondaryTextColor()=0;
-					/// <summary>Get the item peparator text color.</summary>
-					/// <returns>The item peparator text color.</returns>
-					virtual Color										GetItemSeparatorColor()=0;
-				};
-
-			protected:
-				IStyleProvider*									styleProvider;
-
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListViewTemplate, GuiSelectableListControl)
 			public:
 				/// <summary>Create a list view base control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiListViewBase(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiListViewBase(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiListViewBase();
 
 				/// <summary>Column clicked event.</summary>
 				compositions::GuiItemNotifyEvent				ColumnClicked;
-				
-				/// <summary>Get the associated style provider.</summary>
-				/// <returns>The style provider.</returns>
-				IStyleProvider*									GetListViewStyleProvider();
 			};
 
 /***********************************************************************
@@ -206,7 +171,6 @@ ListViewColumnItemArranger
 					};
 
 					GuiListViewBase*							listView = nullptr;
-					GuiListViewBase::IStyleProvider*			styleProvider = nullptr;
 					IListViewItemView*							listViewItemView = nullptr;
 					IColumnItemView*							columnItemView = nullptr;
 					Ptr<ColumnItemViewCallback>					columnItemViewCallback;
@@ -486,9 +450,9 @@ GuiVirtualListView
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a list view control in virtual mode.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualListView(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualListView(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualListView();
 
 				/// <summary>Get the current view.</summary>
@@ -510,8 +474,8 @@ GuiListView
 				list::ListViewItemProvider*								items;
 			public:
 				/// <summary>Create a list view control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
-				GuiListView(IStyleProvider* _styleProvider);
+				/// <param name="_controlTemplate">The control template for this control.</param>
+				GuiListView(theme::ThemeName themeName);
 				~GuiListView();
 				
 				/// <summary>Get all list view items.</summary>

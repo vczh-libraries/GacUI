@@ -25,25 +25,15 @@ Label
 			/// <summary>A control to display a text.</summary>
 			class GuiLabel : public GuiControl, public Description<GuiLabel>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiLabel"/>.</summary>
-				class IStyleController : virtual public GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Get the default text color.</summary>
-					/// <returns>The default text color.</returns>
-					virtual Color						GetDefaultTextColor() = 0;
-					/// <summary>Called when the text color changed.</summary>
-					/// <param name="value">The new text color.</param>
-					virtual void						SetTextColor(Color value) = 0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(LabelTemplate, GuiControl)
 			protected:
 				Color									textColor;
-				IStyleController*						styleController;
+				bool									textColorConsisted = true;
+
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiLabel(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiLabel(theme::ThemeName themeName);
 				~GuiLabel();
 
 				/// <summary>Get the text color.</summary>

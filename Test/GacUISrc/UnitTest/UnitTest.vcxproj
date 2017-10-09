@@ -170,8 +170,10 @@
     <Text Include="..\..\Resources\Resource.FailedInstance.Control.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor1.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml.txt" />
+    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor2_r.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml.txt" />
+    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor5.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedScript.Properties.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedScript.Workflow.xml.txt" />
     <Text Include="..\..\Resources\Resource.NotExists.xml.txt" />
@@ -185,6 +187,8 @@
     <Xml Include="..\..\Resources\Resource.FailedInstance.Control.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor1.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml" />
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor2_r.xml" />
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor2_s.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor5.xml" />

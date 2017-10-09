@@ -420,7 +420,7 @@ Workflow_GenerateInstanceClass
 			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfDeclaration>>& memberDecls, GuiResourceTextPos position)
 			{
 				WString wrappedCode = L"module parse_members; class Class {\r\n" + code + L"\r\n}";
-				if(auto module = Workflow_ParseModule(precompileContext, { resolvingResult.resource }, wrappedCode, position, errors, { 1,0 }))
+				if (auto module = Workflow_ParseModule(precompileContext, { resolvingResult.resource }, wrappedCode, position, errors, { 1,0 }))
 				{
 					CopyFrom(memberDecls, module->declarations[0].Cast<WfClassDeclaration>()->declarations);
 				}
@@ -515,18 +515,39 @@ Workflow_GenerateInstanceClass
 			{
 				WString classNameTail;
 				Ptr<ITypeInfo> parameterTypeInfo;
-				if (auto paramTd = GetTypeDescriptor(parameter->className.ToString()))
 				{
-					parameterTypeInfo = Workflow_GetSuggestedParameterType(paramTd);
-					switch (parameterTypeInfo->GetDecorator())
+					auto paramTd = GetTypeDescriptor(parameter->className.ToString());
+					if (!paramTd)
 					{
-					case ITypeInfo::RawPtr: classNameTail = L"*"; break;
-					case ITypeInfo::SharedPtr: classNameTail = L"^"; break;
-					default:;
+						auto source = FindInstanceLoadingSource(resolvingResult.context, {}, parameter->className.ToString());
+						if (auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName))
+						{
+							paramTd = typeInfo->GetTypeDescriptor();
+						}
+					}
+
+					if (paramTd)
+					{
+						parameterTypeInfo = Workflow_GetSuggestedParameterType(paramTd);
+						switch (parameterTypeInfo->GetDecorator())
+						{
+						case ITypeInfo::RawPtr: classNameTail = L"*"; break;
+						case ITypeInfo::SharedPtr: classNameTail = L"^"; break;
+						default:;
+						}
 					}
 				}
 
-				if (auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + classNameTail, parameter->classPosition, errors))
+				vint errorCount = errors.Count();
+				auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + classNameTail, parameter->classPosition, errors);
+				if (beforePrecompile && !parameterTypeInfo && errorCount == errors.Count())
+				{
+					if (!type || type.Cast<WfReferenceType>() || type.Cast<WfChildType>() || type.Cast<WfTopQualifiedType>())
+					{
+						type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + L"*", parameter->classPosition, errors);
+					}
+				}
+				if (type)
 				{
 					if (!beforePrecompile)
 					{

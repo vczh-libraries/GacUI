@@ -26,104 +26,31 @@ DatePicker
 			/// <summary>Date picker control that display a calendar.</summary>
 			class GuiDatePicker : public GuiControl, public Description<GuiDatePicker>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiDatePicker"/>.</summary>
-				class IStyleProvider : public virtual GuiControl::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Create a style for date button for choosing "day".</summary>
-					/// <returns>The created style.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateDateButtonStyle()=0;
-					/// <summary>Create a text list for candidate "year" and "month".</summary>
-					/// <returns>The created control.</returns>
-					virtual GuiTextList*								CreateTextList()=0;
-					/// <summary>Create a combo box style for "year" and "month".</summary>
-					/// <returns>The created style.</returns>
-					virtual GuiComboBoxListControl::IStyleController*	CreateComboBoxStyle()=0;
-
-					/// <summary>Get the color for background.</summary>
-					/// <returns>The color.</returns>
-					virtual Color										GetBackgroundColor()=0;
-					/// <summary>Get the color for "day" that in the current month.</summary>
-					/// <returns>The color.</returns>
-					virtual Color										GetPrimaryTextColor()=0;
-					/// <summary>Get the color for "day" that not in the current month.</summary>
-					/// <returns>The color.</returns>
-					virtual Color										GetSecondaryTextColor()=0;
-				};
-
-				/// <summary>Style controller for <see cref="GuiDatePicker"/>.</summary>
-				class StyleController : public Object, public virtual GuiControl::IStyleController, public Description<StyleController>
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DatePickerTemplate, GuiControl)
+			protected:
+				class CommandExecutor : public Object, public IDatePickerCommandExecutor
 				{
 				protected:
-					static const vint									DaysOfWeek=7;
-					static const vint									DayRows=6;
-					static const vint									DayRowStart=2;
-					static const vint									YearFirst=1900;
-					static const vint									YearLast=2099;
-
-					IStyleProvider*										styleProvider;
 					GuiDatePicker*										datePicker;
-					DateTime											currentDate;
-					Locale												dateLocale;
-					compositions::GuiTableComposition*					boundsComposition;
-					bool												preventComboEvent;
-					bool												preventButtonEvent;
-
-					GuiComboBoxListControl*								comboYear;
-					GuiTextList*										listYears;
-					GuiComboBoxListControl*								comboMonth;
-					GuiTextList*										listMonths;
-					collections::Array<elements::GuiSolidLabelElement*>	labelDaysOfWeek;
-					collections::Array<GuiSelectableButton*>			buttonDays;
-					collections::Array<elements::GuiSolidLabelElement*>	labelDays;
-					collections::Array<DateTime>						dateDays;
-					Ptr<GuiSelectableButton::GroupController>			dayMutexController;
-
-					void												SetDay(const DateTime& day, vint& index, bool currentMonth);
-					void												DisplayMonth(vint year, vint month);
-					void												SelectDay(vint day);
-					void												comboYearMonth_SelectedIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												buttonDay_SelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
-					/// <summary>Create a style controller with a specified style provider.</summary>
-					/// <param name="_styleProvider">The style provider.</param>
-					StyleController(IStyleProvider* _styleProvider);
-					~StyleController();
+					CommandExecutor(GuiDatePicker* _datePicker);
+					~CommandExecutor();
 
-					compositions::GuiBoundsComposition*					GetBoundsComposition()override;
-					compositions::GuiGraphicsComposition*				GetContainerComposition()override;
-					void												SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-					void												SetText(const WString& value)override;
-					void												SetFont(const FontProperties& value)override;
-					void												SetVisuallyEnabled(bool value)override;
-					
-					/// <summary>Set the data picker that owns this style controller.</summary>
-					/// <param name="_datePicker">The date picker.</param>
-					void												SetDatePicker(GuiDatePicker* _datePicker);
-					/// <summary>Set the locale to display texts.</summary>
-					/// <param name="_dateLocale">The locale.</param>
-					void												SetDateLocale(const Locale& _dateLocale);
-					/// <summary>Get the displayed date.</summary>
-					/// <returns>The date.</returns>
-					const DateTime&										GetDate();
-					/// <summary>Display a date.</summary>
-					/// <param name="value">The date.</param>
-					/// <param name="forceUpdate">Set to true to refill all data in the control whatever cached or not.</param>
-					void												SetDate(const DateTime& value, bool forceUpdate=false);
+					void												NotifyDateChanged()override;
+					void												NotifyDateNavigated()override;
+					void												NotifyDateSelected()override;
 				};
 
-			protected:
-				StyleController*										styleController;
+				Ptr<CommandExecutor>									commandExecutor;
+				DateTime												date;
 				WString													dateFormat;
 				Locale													dateLocale;
 
 				void													UpdateText();
-				void													NotifyDateChanged();
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_styleProvider">The style provider.</param>
-				GuiDatePicker(IStyleProvider* _styleProvider);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiDatePicker(theme::ThemeName themeName);
 				~GuiDatePicker();
 
 				/// <summary>Date changed event.</summary>
@@ -178,9 +105,9 @@ DateComboBox
 				void													datePicker_DateSelected(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_styleController">The style provider.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_datePicker">The date picker control to show in the popup.</param>
-				GuiDateComboBox(IStyleController* _styleController, GuiDatePicker* _datePicker);
+				GuiDateComboBox(theme::ThemeName themeName, GuiDatePicker* _datePicker);
 				~GuiDateComboBox();
 				
 				/// <summary>Selected data changed event.</summary>

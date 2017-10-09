@@ -237,15 +237,16 @@ GuiGraphicsHost
 
 					count = currentActiveAltActions.Count();
 					auto window = dynamic_cast<GuiWindow*>(currentAltHost->GetAltComposition()->GetRelatedControlHost());
-					auto windowStyle = dynamic_cast<GuiWindow::IStyleController*>(window->GetStyleController());
 					for (vint i = 0; i < count; i++)
 					{
 						auto key = currentActiveAltActions.Keys()[i];
 						auto composition = currentActiveAltActions.Values()[i]->GetAltComposition();
 
-						auto labelStyle = windowStyle->CreateShortcutKeyStyle();
-						if (!labelStyle)labelStyle = GetCurrentTheme()->CreateShortcutKeyStyle();
-						auto label = new GuiLabel(labelStyle);
+						auto label = new GuiLabel(theme::ThemeName::ShortcutKey);
+						if (auto labelStyle = window->GetControlTemplateObject()->GetShortcutKeyTemplate())
+						{
+							label->SetControlTemplate(labelStyle);
+						}
 						label->SetText(key);
 						composition->AddChild(label->GetBoundsComposition());
 						currentActiveAltTitles.Add(key, label);

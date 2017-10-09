@@ -37,7 +37,7 @@ namespace vl
 GuiComboBoxInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiComboBoxListControl, GuiComboBoxTemplate_StyleProvider, GuiComboBoxTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiComboBoxListControl>
 			class GuiComboBoxInstanceLoader : public BASE_TYPE
 			{
 			protected:
@@ -53,7 +53,7 @@ GuiComboBoxInstanceLoader
 				}
 			public:
 				GuiComboBoxInstanceLoader()
-					:BASE_TYPE(L"presentation::controls::GuiComboBox", L"CreateComboBoxStyle")
+					:BASE_TYPE(L"presentation::controls::GuiComboBox", theme::ThemeName::ComboBox)
 				{
 					_ListControl = GlobalStringKey::Get(L"ListControl");
 				}
@@ -90,7 +90,7 @@ GuiComboBoxInstanceLoader
 GuiTreeViewInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<TControl, GuiTreeViewTemplate_StyleProvider, GuiTreeViewTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<TControl>
 			template<typename TControl>
 			class GuiTreeViewInstanceLoaderBase : public BASE_TYPE
 			{
@@ -100,7 +100,7 @@ GuiTreeViewInstanceLoader
 
 			public:
 				GuiTreeViewInstanceLoaderBase(bool _bindable)
-					:BASE_TYPE(description::TypeInfo<TControl>::content.typeName, L"CreateTreeViewStyle")
+					:BASE_TYPE(description::TypeInfo<TControl>::content.typeName, theme::ThemeName::TreeView)
 					, bindable(_bindable)
 				{
 					_Nodes = GlobalStringKey::Get(L"Nodes");
@@ -390,7 +390,7 @@ GuiTreeNodeInstanceLoader
 GuiBindableDataGridInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableDataGrid, GuiListViewTemplate_StyleProvider, GuiListViewTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableDataGrid>
 			class GuiBindableDataGridInstanceLoader : public BASE_TYPE
 			{
 			protected:
@@ -413,7 +413,7 @@ GuiBindableDataGridInstanceLoader
 				}
 			public:
 				GuiBindableDataGridInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::content.typeName, L"CreateListViewStyle")
+					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::content.typeName, theme::ThemeName::ListView)
 				{
 					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::content.typeName);
 					_ViewModelContext = GlobalStringKey::Get(L"ViewModelContext");

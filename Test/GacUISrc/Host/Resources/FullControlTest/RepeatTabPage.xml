@@ -85,22 +85,28 @@
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.Pages>
             <TabPage Text="RepeatStack" Alt="S">
-              <RepeatStack ref.Name="repeatStack" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                <att.Direction>Vertical</att.Direction>
-                <att.Padding>5</att.Padding>
-                <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
-                <att.ItemTemplate>demo::RepeatItemTemplate</att.ItemTemplate>
-                <att.ItemSource-eval>self.itemsToBind</att.ItemSource-eval>
-              </RepeatStack>
+              <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <RepeatStack ref.Name="repeatStack" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <att.Direction>Vertical</att.Direction>
+                  <att.Padding>5</att.Padding>
+                  <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
+                  <att.ItemTemplate>demo::RepeatItemTemplate</att.ItemTemplate>
+                  <att.ItemSource-eval>self.itemsToBind</att.ItemSource-eval>
+                </RepeatStack>
+              </ScrollContainer>
             </TabPage>
             <TabPage Text="RepeatFlow" Alt="F">
-              <RepeatFlow ref.Name="repeatFlow" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                <att.RowPadding>5</att.RowPadding>
-                <att.ColumnPadding>5</att.ColumnPadding>
-                <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
-                <att.ItemTemplate>demo::RepeatItemTemplate</att.ItemTemplate>
-                <att.ItemSource-eval>self.itemsToBind</att.ItemSource-eval>
-              </RepeatFlow>
+              <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <RepeatFlow ref.Name="repeatFlow" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <att.RowPadding>5</att.RowPadding>
+                  <att.ColumnPadding>5</att.ColumnPadding>
+                  <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
+                  <att.ItemTemplate>demo::RepeatItemTemplate</att.ItemTemplate>
+                  <att.ItemSource-eval>self.itemsToBind</att.ItemSource-eval>
+                </RepeatFlow>
+              </ScrollContainer>
             </TabPage>
           </att.Pages>
         </Tab>

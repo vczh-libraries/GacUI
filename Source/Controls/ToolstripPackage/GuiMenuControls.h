@@ -78,6 +78,7 @@ Menu
 			/// <summary>Popup menu.</summary>
 			class GuiMenu : public GuiPopup, private IGuiMenuService, public Description<GuiMenu>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MenuTemplate, GuiPopup)
 			private:
 				IGuiMenuService*						parentMenuService;
 
@@ -95,9 +96,9 @@ Menu
 				void									OnWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
-				GuiMenu(IStyleController* _styleController, GuiControl* _owner);
+				GuiMenu(theme::ThemeName themeName, GuiControl* _owner);
 				~GuiMenu();
 
 				/// <summary>Update the reference to the parent <see cref="IGuiMenuService"/>. This function is not required to call outside the menu or menu item control.</summary>
@@ -115,8 +116,8 @@ Menu
 				bool									IsSubMenuActivatedByMouseDown()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiMenuBar(GuiControl::IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiMenuBar(theme::ThemeName themeName);
 				~GuiMenuBar();
 				
 				IDescriptable*							QueryService(const WString& identifier)override;
@@ -129,32 +130,12 @@ MenuButton
 			/// <summary>Menu item.</summary>
 			class GuiMenuButton : public GuiSelectableButton, public Description<GuiMenuButton>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiMenuButton"/>.</summary>
-				class IStyleController : public virtual GuiSelectableButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Create a style controller for the sub menu.</summary>
-					/// <returns>The style controller for the sub menu.</returns>
-					virtual GuiMenu::IStyleController*	CreateSubMenuStyleController()=0;
-					/// <summary>Notify that the sub menu is created or destroyed.</summary>
-					/// <param name="value">Set to true if the sub menu is created.</param>
-					virtual void						SetSubMenuExisting(bool value)=0;
-					/// <summary>Notify that the sub menu is opened or closed.</summary>
-					/// <param name="value">Set to true if the sub menu is opened.</param>
-					virtual void						SetSubMenuOpening(bool value)=0;
-					/// <summary>Get the button control that is expected to be associated with a sub menu.</summary>
-					/// <returns>The button control that is expected to be associated with a sub menu. Returns null means that the sub menu will be directly associated to the menu button.</returns>
-					virtual GuiButton*					GetSubMenuHost()=0;
-					/// <summary>Notify that the image for the menu button is changed.</summary>
-					/// <param name="value">The image for the menu button.</param>
-					virtual void						SetImage(Ptr<GuiImageData> value)=0;
-					/// <summary>Notify that the shortcut key text for the menu button is changed.</summary>
-					/// <param name="value">The shortcut key text for the menu button.</param>
-					virtual void						SetShortcutText(const WString& value)=0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ToolstripButtonTemplate, GuiSelectableButton)
+
+				using IEventHandler = compositions::IGuiGraphicsEventHandler;
 			protected:
-				IStyleController*						styleController;
+				Ptr<IEventHandler>						hostClickedHandler;
+				Ptr<IEventHandler>						hostMouseEnterHandler;
 				Ptr<GuiImageData>						image;
 				WString									shortcutText;
 				GuiMenu*								subMenu;
@@ -177,8 +158,8 @@ MenuButton
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiMenuButton(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiMenuButton(theme::ThemeName themeName);
 				~GuiMenuButton();
 
 				/// <summary>Sub menu opening changed event.</summary>
@@ -209,8 +190,8 @@ MenuButton
 				GuiMenu*								GetSubMenu();
 				/// <summary>Create the sub menu if necessary. The created sub menu is owned by this menu button.</summary>
 				/// <returns>The created sub menu.</returns>
-				/// <param name="subMenuStyleController">The style controller for the sub menu. If this argument is null, it will call <see cref="IStyleController::CreateSubMenuStyleController"/> for a style controller.</param>
-				GuiMenu*								CreateSubMenu(GuiMenu::IStyleController* subMenuStyleController=0);
+				/// <param name="subMenuTemplate">The style controller for the sub menu. Set to null to use the default control template.</param>
+				GuiMenu*								CreateSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate = {});
 				/// <summary>Associate a sub menu if there is no sub menu binded in this menu button. The associated sub menu is not owned by this menu button if the "owned" argument is set to false.</summary>
 				/// <param name="value">The sub menu to associate.</param>
 				/// <param name="owned">Set to true if the menu is expected to be owned.</param>

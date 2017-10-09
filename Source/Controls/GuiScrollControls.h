@@ -27,24 +27,7 @@ Scrolls
 			/// <summary>A scroll control, which represents a one dimension sub range of a whole range.</summary>
 			class GuiScroll : public GuiControl, public Description<GuiScroll>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiScroll"/>.</summary>
-				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the command executor is changed.</summary>
-					/// <param name="value">The command executor.</param>
-					virtual void						SetCommandExecutor(IScrollCommandExecutor* value)=0;
-					/// <summary>Called when the total size is changed.</summary>
-					/// <param name="value">The total size.</param>
-					virtual void						SetTotalSize(vint value)=0;
-					/// <summary>Called when the page size is changed.</summary>
-					/// <param name="value">The page size.</param>
-					virtual void						SetPageSize(vint value)=0;
-					/// <summary>Called when the position is changed.</summary>
-					/// <param name="value">The position.</param>
-					virtual void						SetPosition(vint value)=0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ScrollTemplate, GuiControl)
 			protected:
 				class CommandExecutor : public Object, public IScrollCommandExecutor
 				{
@@ -64,17 +47,16 @@ Scrolls
 					void								SetPosition(vint value)override;
 				};
 
-				IStyleController*						styleController;
 				Ptr<CommandExecutor>					commandExecutor;
-				vint									totalSize;
-				vint									pageSize;
-				vint									position;
-				vint									smallMove;
-				vint									bigMove;
+				vint									totalSize = 100;
+				vint									pageSize = 10;
+				vint									position = 0;
+				vint									smallMove = 1;
+				vint									bigMove = 10;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiScroll(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiScroll(theme::ThemeName themeName);
 				~GuiScroll();
 				
 				/// <summary>Total size changed event.</summary>

@@ -203,13 +203,17 @@ GuiDocumentCommonInterface
 				return false;
 			}
 
-			void GuiDocumentCommonInterface::InstallDocumentViewer(GuiControl* _sender, compositions::GuiGraphicsComposition* _container)
+			void GuiDocumentCommonInterface::InstallDocumentViewer(
+				GuiControl* _sender,
+				compositions::GuiGraphicsComposition* _container,
+				compositions::GuiGraphicsComposition* eventComposition,
+				compositions::GuiGraphicsComposition* focusableComposition
+				)
 			{
 				documentControl=_sender;
 
 				documentElement=GuiDocumentElement::Create();
 				documentElement->SetCallback(this);
-				documentElement->SetCaretColor(caretColor);
 
 				documentComposition=new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(documentElement);
@@ -223,21 +227,22 @@ GuiDocumentCommonInterface
 				documentComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
 
 				_sender->FontChanged.AttachMethod(this, &GuiDocumentCommonInterface::OnFontChanged);
-				_sender->GetFocusableComposition()->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiDocumentCommonInterface::OnCaretNotify);
-				_sender->GetFocusableComposition()->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnGotFocus);
-				_sender->GetFocusableComposition()->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnLostFocus);
-				_sender->GetFocusableComposition()->GetEventReceiver()->keyDown.AttachMethod(this, &GuiDocumentCommonInterface::OnKeyDown);
-				_sender->GetFocusableComposition()->GetEventReceiver()->charInput.AttachMethod(this, &GuiDocumentCommonInterface::OnCharInput);
+				focusableComposition->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiDocumentCommonInterface::OnCaretNotify);
+				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnGotFocus);
+				focusableComposition->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnLostFocus);
+				focusableComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiDocumentCommonInterface::OnKeyDown);
+				focusableComposition->GetEventReceiver()->charInput.AttachMethod(this, &GuiDocumentCommonInterface::OnCharInput);
 
 				undoRedoProcessor->Setup(documentElement, documentComposition);
-				ActiveHyperlinkChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
-				ActiveHyperlinkExecuted.SetAssociatedComposition(_sender->GetBoundsComposition());
-				SelectionChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
-				UndoRedoChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
-				ModifiedChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
+				ActiveHyperlinkChanged.SetAssociatedComposition(eventComposition);
+				ActiveHyperlinkExecuted.SetAssociatedComposition(eventComposition);
+				SelectionChanged.SetAssociatedComposition(eventComposition);
+				UndoRedoChanged.SetAssociatedComposition(eventComposition);
+				ModifiedChanged.SetAssociatedComposition(eventComposition);
 
 				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiDocumentCommonInterface::InvokeUndoRedoChanged);
 				undoRedoProcessor->ModifiedChanged.Add(this, &GuiDocumentCommonInterface::InvokeModifiedChanged);
+				SetDocument(new DocumentModel);
 			}
 
 			void GuiDocumentCommonInterface::SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package)
@@ -588,14 +593,7 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
-			GuiDocumentCommonInterface::GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument, Color _caretColor)
-				:baselineDocument(_baselineDocument)
-				,caretColor(_caretColor)
-				,documentElement(0)
-				,documentComposition(0)
-				,dragging(false)
-				,editMode(ViewOnly)
-				,documentControl(0)
+			GuiDocumentCommonInterface::GuiDocumentCommonInterface()
 			{
 				undoRedoProcessor=new GuiDocumentUndoRedoProcessor;
 
@@ -622,12 +620,16 @@ GuiDocumentCommonInterface
 				SetActiveHyperlink(0);
 				ClearUndoRedo();
 				NotifyModificationSaved();
-				if(value->paragraphs.Count()==0)
+
+				if (value)
 				{
-					value->paragraphs.Add(new DocumentParagraphRun);
+					if (value->paragraphs.Count() == 0)
+					{
+						value->paragraphs.Add(new DocumentParagraphRun);
+					}
+					MergeBaselineAndDefaultFont(value);
 				}
 
-				MergeBaselineAndDefaultFont(value);
 				documentElement->SetDocument(value);
 			}
 
@@ -1108,6 +1110,21 @@ GuiDocumentCommonInterface
 GuiDocumentViewer
 ***********************************************************************/
 
+			void GuiDocumentViewer::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiDocumentViewer::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				baselineDocument = ct->GetBaselineDocument();
+				if (documentElement)
+				{
+					documentElement->SetCaretColor(ct->GetCaretColor());
+					SetDocument(GetDocument());
+				}
+			}
+
 			Point GuiDocumentViewer::GetDocumentViewPosition()
 			{
 				return GetViewBounds().LeftTop();
@@ -1129,15 +1146,13 @@ GuiDocumentViewer
 				GetVerticalScroll()->SetPosition(viewBounds.y1+offset);
 			}
 
-			GuiDocumentViewer::GuiDocumentViewer(GuiDocumentViewer::IStyleProvider* styleProvider)
-				:GuiScrollContainer(styleProvider)
-				, GuiDocumentCommonInterface(styleProvider->GetBaselineDocument(), styleProvider->GetCaretColor())
+			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName)
+				:GuiScrollContainer(themeName)
 			{
 				SetExtendToFullWidth(true);
 				SetHorizontalAlwaysVisible(false);
-				SetFocusableComposition(GetBoundsComposition());
-				InstallDocumentViewer(this, GetContainerComposition());
-				SetDocument(new DocumentModel);
+				SetFocusableComposition(boundsComposition);
+				InstallDocumentViewer(this, containerComposition, boundsComposition, focusableComposition);
 			}
 
 			GuiDocumentViewer::~GuiDocumentViewer()
@@ -1160,14 +1175,26 @@ GuiDocumentViewer
 GuiDocumentLabel
 ***********************************************************************/
 
-			GuiDocumentLabel::GuiDocumentLabel(GuiDocumentLabel::IStyleController* styleController)
-				:GuiControl(styleController)
-				, GuiDocumentCommonInterface(styleController->GetBaselineDocument(), styleController->GetCaretColor())
+			void GuiDocumentLabel::BeforeControlTemplateUninstalled_()
 			{
-				GetContainerComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				SetFocusableComposition(GetBoundsComposition());
-				InstallDocumentViewer(this, GetContainerComposition());
-				SetDocument(new DocumentModel);
+			}
+
+			void GuiDocumentLabel::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				baselineDocument = ct->GetBaselineDocument();
+				if (documentElement)
+				{
+					documentElement->SetCaretColor(ct->GetCaretColor());
+					SetDocument(GetDocument());
+				}
+			}
+
+			GuiDocumentLabel::GuiDocumentLabel(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
+				SetFocusableComposition(boundsComposition);
+				InstallDocumentViewer(this, containerComposition, boundsComposition, focusableComposition);
 			}
 
 			GuiDocumentLabel::~GuiDocumentLabel()

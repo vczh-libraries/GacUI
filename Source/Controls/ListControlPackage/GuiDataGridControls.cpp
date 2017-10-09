@@ -425,9 +425,9 @@ GuiVirtualDataGrid (Editor)
 GuiVirtualDataGrid (IDataGridContext)
 ***********************************************************************/
 
-			GuiListViewBase::IStyleProvider* GuiVirtualDataGrid::GetListViewStyleProvider()
+			templates::GuiListViewTemplate* GuiVirtualDataGrid::GetListViewControlTemplate()
 			{
-				return GuiVirtualListView::GetListViewStyleProvider();
+				return GetControlTemplateObject();
 			}
 
 			description::Value GuiVirtualDataGrid::GetViewModelContext()
@@ -491,8 +491,8 @@ GuiVirtualDataGrid
 				}
 			}
 
-			GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider)
-				:GuiVirtualListView(_styleProvider, _itemProvider)
+			GuiVirtualDataGrid::GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
+				:GuiVirtualListView(themeName, _itemProvider)
 			{
 				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(IListViewItemView::Identifier));
 				columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(_itemProvider->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));
@@ -509,13 +509,13 @@ GuiVirtualDataGrid
 					defaultSubColumnVisualizerFactory = MakePtr<DataVisualizerFactory>(cellBorderProperty, subFactory);
 				}
 
-				CHECK_ERROR(listViewItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleProvider*, GuiListControl::IItemProvider*)#Missing IListViewItemView from item provider.");
-				CHECK_ERROR(columnItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleProvider*, GuiListControl::IItemProvider*)#Missing ListViewColumnItemArranger::IColumnItemView from item provider.");
-				CHECK_ERROR(dataGridView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleProvider*, GuiListControl::IItemProvider*)#Missing IDataGridView from item provider.");
+				CHECK_ERROR(listViewItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleController*, GuiListControl::IItemProvider*)#Missing IListViewItemView from item provider.");
+				CHECK_ERROR(columnItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleController*, GuiListControl::IItemProvider*)#Missing ListViewColumnItemArranger::IColumnItemView from item provider.");
+				CHECK_ERROR(dataGridView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleController*, GuiListControl::IItemProvider*)#Missing IDataGridView from item provider.");
 
 				SetViewToDefault();
 				ColumnClicked.AttachMethod(this, &GuiVirtualDataGrid::OnColumnClicked);
-				SelectedCellChanged.SetAssociatedComposition(GetBoundsComposition());
+				SelectedCellChanged.SetAssociatedComposition(boundsComposition);
 			}
 
 			GuiVirtualDataGrid::~GuiVirtualDataGrid()

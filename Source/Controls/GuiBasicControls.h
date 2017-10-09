@@ -16,6 +16,10 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace theme
+		{
+			enum class ThemeName;
+		}
 
 		namespace controls
 		{
@@ -33,95 +37,39 @@ Basic Construction
 			class GuiControl : public Object, protected compositions::IGuiAltAction, public Description<GuiControl>
 			{
 				friend class compositions::GuiGraphicsComposition;
-				typedef collections::List<GuiControl*>		ControlList;
-			public:
-				/// <summary>
-				/// Represents a style for a control. A style is something like a skin, but contains some default action handlers.
-				/// </summary>
-				class IStyleController : public virtual IDescriptable, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Get the bounds composition. A bounds composition represents all visible contents of a control.</summary>
-					/// <returns>The bounds composition.</returns>
-					virtual compositions::GuiBoundsComposition*		GetBoundsComposition()=0;
-					/// <summary>Get the container composition. A container composition is where to place all bounds compositions for child controls.</summary>
-					/// <returns>The container composition.</returns>
-					virtual compositions::GuiGraphicsComposition*	GetContainerComposition()=0;
-					/// <summary>Set the focusable composition. A focusable composition is the composition to be focused when the control is focused.</summary>
-					/// <param name="value">The focusable composition.</param>
-					virtual void									SetFocusableComposition(compositions::GuiGraphicsComposition* value)=0;
-					/// <summary>Set the text to display on the control.</summary>
-					/// <param name="value">The text to display.</param>
-					virtual void									SetText(const WString& value)=0;
-					/// <summary>Set the font to render the text.</summary>
-					/// <param name="value">The font to render the text.</param>
-					virtual void									SetFont(const FontProperties& value)=0;
-					/// <summary>Set the enableing state to affect the rendering of the control.</summary>
-					/// <param name="value">The enableing state.</param>
-					virtual void									SetVisuallyEnabled(bool value)=0;
-				};
 
-				/// <summary>
-				/// An empty style for <see cref="GuiControl"/>.
-				/// </summary>
-				class EmptyStyleController : public Object, public virtual IStyleController, public Description<EmptyStyleController>
-				{
-				protected:
-					compositions::GuiBoundsComposition*				boundsComposition;
-				public:
-					EmptyStyleController();
-					~EmptyStyleController();
+				using ControlList = collections::List<GuiControl*>;
+				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
+			private:
+				theme::ThemeName						controlThemeName;
+				ControlTemplatePropertyType				controlTemplate;
+				templates::GuiControlTemplate*			controlTemplateObject = nullptr;
 
-					compositions::GuiBoundsComposition*				GetBoundsComposition()override;
-					compositions::GuiGraphicsComposition*			GetContainerComposition()override;
-					void											SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-					void											SetText(const WString& value)override;
-					void											SetFont(const FontProperties& value)override;
-					void											SetVisuallyEnabled(bool value)override;
-				};
-
-				/// <summary>
-				/// A style provider is a callback interface for some control that already provides a style controller, but the controller need callbacks to create sub compositions or handle actions.
-				/// </summary>
-				class IStyleProvider : public virtual IDescriptable, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Called when a style provider is associated with a style controller.</summary>
-					/// <param name="controller">The style controller that is associated.</param>
-					virtual void								AssociateStyleController(IStyleController* controller)=0;
-					/// <summary>Set the focusable composition. A focusable composition is the composition to be focused when the control is focused.</summary>
-					/// <param name="value">The focusable composition.</param>
-					virtual void								SetFocusableComposition(compositions::GuiGraphicsComposition* value)=0;
-					/// <summary>Set the text to display on the control.</summary>
-					/// <param name="value">The text to display.</param>
-					virtual void								SetText(const WString& value)=0;
-					/// <summary>Set the font to render the text.</summary>
-					/// <param name="value">The font to render the text.</param>
-					virtual void								SetFont(const FontProperties& value)=0;
-					/// <summary>Set the enableing state to affect the rendering of the control.</summary>
-					/// <param name="value">The enableing state.</param>
-					virtual void								SetVisuallyEnabled(bool value)=0;
-				};
 			protected:
-				Ptr<IStyleController>							styleController;
-				compositions::GuiBoundsComposition*				boundsComposition;
-				compositions::GuiGraphicsComposition*			focusableComposition;
-				compositions::GuiGraphicsEventReceiver*			eventReceiver;
+				compositions::GuiBoundsComposition*		boundsComposition = nullptr;
+				compositions::GuiBoundsComposition*		containerComposition = nullptr;
+				compositions::GuiGraphicsComposition*	focusableComposition = nullptr;
+				compositions::GuiGraphicsEventReceiver*	eventReceiver = nullptr;
 
-				bool									isEnabled;
-				bool									isVisuallyEnabled;
-				bool									isVisible;
+				bool									isEnabled = true;
+				bool									isVisuallyEnabled = true;
+				bool									isVisible = true;
 				WString									alt;
 				WString									text;
 				FontProperties							font;
-				compositions::IGuiAltActionHost*		activatingAltHost;
+				compositions::IGuiAltActionHost*		activatingAltHost = nullptr;
 
-				GuiControl*								parent;
+				GuiControl*								parent = nullptr;
 				ControlList								children;
 				description::Value						tag;
-				GuiControl*								tooltipControl;
-				vint									tooltipWidth;
+				GuiControl*								tooltipControl = nullptr;
+				vint									tooltipWidth = 0;
 
+				virtual void							BeforeControlTemplateUninstalled();
+				virtual void							AfterControlTemplateInstalled(bool initialize);
+				virtual void							CheckAndStoreControlTemplate(templates::GuiControlTemplate* value);
+				virtual void							EnsureControlTemplateExists();
+				virtual void							RebuildControlTemplate();
 				virtual void							OnChildInserted(GuiControl* control);
 				virtual void							OnChildRemoved(GuiControl* control);
 				virtual void							OnParentChanged(GuiControl* oldParent, GuiControl* newParent);
@@ -140,11 +88,15 @@ Basic Construction
 				static bool								SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
 
 			public:
+				using ControlTemplateType = templates::GuiControlTemplate;
+
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiControl(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
 
+				/// <summary>Control template changed event. This event will be raised when the control template is changed.</summary>
+				compositions::GuiNotifyEvent			ControlTemplateChanged;
 				/// <summary>Render target changed event. This event will be raised when the render target of the control is changed.</summary>
 				compositions::GuiNotifyEvent			RenderTargetChanged;
 				/// <summary>Visible event. This event will be raised when the visibility state of the control is changed.</summary>
@@ -166,9 +118,15 @@ Basic Construction
 				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
 				/// <returns>The created argument.</returns>
 				compositions::GuiEventArgs				GetNotifyEventArguments();
+				/// <summary>Get the associated control template.</summary>
+				/// <returns>The control template.</returns>
+				ControlTemplatePropertyType				GetControlTemplate();
+				/// <summary>Set the associated control template.</summary>
+				/// <param name="value">The control template.</param>
+				void									SetControlTemplate(const ControlTemplatePropertyType& value);
 				/// <summary>Get the associated style controller.</summary>
 				/// <returns>The associated style controller.</returns>
-				IStyleController*						GetStyleController();
+				templates::GuiControlTemplate*			GetControlTemplateObject();
 				/// <summary>Get the bounds composition for the control. The value is from <see cref="IStyleController::GetBoundsComposition"/>.</summary>
 				/// <returns>The bounds composition.</returns>
 				compositions::GuiBoundsComposition*		GetBoundsComposition();
@@ -178,9 +136,6 @@ Basic Construction
 				/// <summary>Get the focusable composition for the control. A focusable composition is the composition to be focused when the control is focused.</summary>
 				/// <returns>The focusable composition.</returns>
 				compositions::GuiGraphicsComposition*	GetFocusableComposition();
-				/// <summary>Get the event receiver from the bounds composition.</summary>
-				/// <returns>The event receiver.</returns>
-				compositions::GuiGraphicsEventReceiver*	GetEventReceiver();
 				/// <summary>Get the parent control.</summary>
 				/// <returns>The parent control.</returns>
 				GuiControl*								GetParent();
@@ -286,8 +241,8 @@ Basic Construction
 			{
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiCustomControl(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiCustomControl(theme::ThemeName themeName);
 				~GuiCustomControl();
 			};
 
@@ -306,6 +261,50 @@ Basic Construction
 				{
 				}
 			};
+
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_3(UNIQUE) controlTemplateObject ## UNIQUE
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(UNIQUE) GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_3(UNIQUE)
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(__LINE__)
+
+#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, NAME) \
+			public: \
+				using ControlTemplateType = templates::Gui##TEMPLATE; \
+			private: \
+				templates::Gui##TEMPLATE* NAME = nullptr; \
+				void BeforeControlTemplateUninstalled_(); \
+				void AfterControlTemplateInstalled_(bool initialize); \
+			protected: \
+				void BeforeControlTemplateUninstalled()override \
+				{\
+					BeforeControlTemplateUninstalled_(); \
+					BASE_TYPE::BeforeControlTemplateUninstalled(); \
+				}\
+				void AfterControlTemplateInstalled(bool initialize)override \
+				{\
+					BASE_TYPE::AfterControlTemplateInstalled(initialize); \
+					AfterControlTemplateInstalled_(initialize); \
+				}\
+				void CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)override \
+				{ \
+					auto ct = dynamic_cast<templates::Gui##TEMPLATE*>(value); \
+					CHECK_ERROR(ct, L"The assigned control template is not vl::presentation::templates::Gui" L ## # TEMPLATE L"."); \
+					NAME = ct; \
+					BASE_TYPE::CheckAndStoreControlTemplate(value); \
+				} \
+				bool HasControlTemplateObject() \
+				{ \
+					return NAME != nullptr; \
+				} \
+			public: \
+				templates::Gui##TEMPLATE* GetControlTemplateObject() \
+				{ \
+					EnsureControlTemplateExists(); \
+					return NAME; \
+				} \
+			private: \
+
+#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE, BASE_TYPE) GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME)
+
 		}
 	}
 }

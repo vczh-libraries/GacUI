@@ -131,9 +131,9 @@ GuiBindableTextList
 
 			public:
 				/// <summary>Create a bindable Text list control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name = "_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
-				GuiBindableTextList(IStyleProvider* _styleProvider);
+				GuiBindableTextList(theme::ThemeName themeName);
 				~GuiBindableTextList();
 				
 				/// <summary>Text property name changed event.</summary>
@@ -244,8 +244,8 @@ GuiBindableListView
 
 			public:
 				/// <summary>Create a bindable List view control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
-				GuiBindableListView(IStyleProvider* _styleProvider);
+				/// <param name="_controlTemplate">The control template for this control.</param>
+				GuiBindableListView(theme::ThemeName themeName);
 				~GuiBindableListView();
 
 				/// <summary>Get all data columns indices in columns.</summary>
@@ -375,8 +375,8 @@ GuiBindableTreeView
 
 			public:
 				/// <summary>Create a bindable Tree view control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
-				GuiBindableTreeView(IStyleProvider* _styleProvider);
+				/// <param name="_controlTemplate">The control template for this control.</param>
+				GuiBindableTreeView(theme::ThemeName themeName);
 				~GuiBindableTreeView();
 				
 				/// <summary>Text property name changed event.</summary>

@@ -106,9 +106,9 @@ WorkflowReferenceNamesVisitor
 				ITypeDescriptor* td = nullptr;
 				{
 					auto typeInfo = candidate.info->acceptableTypes[0];
-					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(typeInfo.Obj()))
+					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(propertyInfo, typeInfo.Obj()))
 					{
-						td = deserializer->DeserializeAs(typeInfo.Obj())->GetTypeDescriptor();
+						td = deserializer->DeserializeAs(propertyInfo, typeInfo.Obj())->GetTypeDescriptor();
 					}
 					else
 					{

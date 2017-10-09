@@ -63,14 +63,22 @@ GuiScroll::CommandExecutor
 GuiScroll
 ***********************************************************************/
 
-			GuiScroll::GuiScroll(IStyleController* _styleController)
-				:GuiControl(_styleController)
-				,styleController(_styleController)
-				,totalSize(100)
-				,pageSize(10)
-				,position(0)
-				,smallMove(1)
-				,bigMove(10)
+			void GuiScroll::BeforeControlTemplateUninstalled_()
+			{
+				GetControlTemplateObject()->SetCommands(nullptr);
+			}
+
+			void GuiScroll::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				ct->SetCommands(commandExecutor.Obj());
+				ct->SetPageSize(pageSize);
+				ct->SetTotalSize(totalSize);
+				ct->SetPosition(position);
+			}
+
+			GuiScroll::GuiScroll(theme::ThemeName themeName)
+				:GuiControl(themeName)
 			{
 				TotalSizeChanged.SetAssociatedComposition(boundsComposition);
 				PageSizeChanged.SetAssociatedComposition(boundsComposition);
@@ -78,11 +86,7 @@ GuiScroll
 				SmallMoveChanged.SetAssociatedComposition(boundsComposition);
 				BigMoveChanged.SetAssociatedComposition(boundsComposition);
 
-				commandExecutor=new CommandExecutor(this);
-				styleController->SetCommandExecutor(commandExecutor.Obj());
-				styleController->SetPageSize(pageSize);
-				styleController->SetTotalSize(totalSize);
-				styleController->SetPosition(position);
+				commandExecutor = new CommandExecutor(this);
 			}
 
 			GuiScroll::~GuiScroll()
@@ -107,7 +111,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					styleController->SetTotalSize(totalSize);
+					GetControlTemplateObject()->SetTotalSize(totalSize);
 					TotalSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -126,7 +130,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					styleController->SetPageSize(pageSize);
+					GetControlTemplateObject()->SetPageSize(pageSize);
 					PageSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -147,7 +151,7 @@ GuiScroll
 				if(position!=newPosition)
 				{
 					position=newPosition;
-					styleController->SetPosition(position);
+					GetControlTemplateObject()->SetPosition(position);
 					PositionChanged.Execute(GetNotifyEventArguments());
 				}
 			}

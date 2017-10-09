@@ -456,18 +456,17 @@ text::TextLines
 
 				void TextLines::ClearMeasurement()
 				{
-					for(vint i=0;i<lines.Count();i++)
+					for (vint i = 0; i < lines.Count(); i++)
 					{
-						lines[i].availableOffsetCount=0;
+						lines[i].availableOffsetCount = 0;
 					}
-					if(charMeasurer)
+
+					tabWidth = tabSpaceCount * (charMeasurer ? charMeasurer->MeasureWidth(L' ') : 1);
+					if (tabWidth == 0)
 					{
-						tabWidth=tabSpaceCount*charMeasurer->MeasureWidth(L' ');
+						tabWidth = 1;
 					}
-					if(tabWidth==0)
-					{
-						tabWidth=1;
-					}
+
 					if (ownerElement)
 					{
 						ownerElement->InvokeOnElementStateChanged();
@@ -504,7 +503,7 @@ text::TextLines
 						vint width=0;
 						if(passwordChar)
 						{
-							width=charMeasurer->MeasureWidth(passwordChar);
+							width = charMeasurer ? charMeasurer->MeasureWidth(passwordChar) : 1;
 						}
 						else if(c==L'\t')
 						{
@@ -512,7 +511,7 @@ text::TextLines
 						}
 						else
 						{
-							width=charMeasurer->MeasureWidth(line.text[i]);
+							width = charMeasurer ? charMeasurer->MeasureWidth(line.text[i]) : 1;
 						}
 						offset+=width;
 						att.rightOffset=(int)offset;
@@ -537,7 +536,7 @@ text::TextLines
 
 				vint TextLines::GetRowHeight()
 				{
-					return charMeasurer->GetRowHeight();
+					return charMeasurer ? charMeasurer->GetRowHeight() : 1;
 				}
 
 				vint TextLines::GetMaxWidth()
@@ -556,12 +555,12 @@ text::TextLines
 
 				vint TextLines::GetMaxHeight()
 				{
-					return lines.Count()*charMeasurer->GetRowHeight();
+					return lines.Count() * GetRowHeight();
 				}
 
 				TextPos TextLines::GetTextPosFromPoint(Point point)
 				{
-					vint h=charMeasurer->GetRowHeight();
+					vint h = GetRowHeight();
 					if(point.y<0)
 					{
 						point.y=0;
@@ -606,7 +605,7 @@ text::TextLines
 				{
 					if(IsAvailable(pos))
 					{
-						vint y=pos.row*charMeasurer->GetRowHeight();
+						vint y = pos.row * GetRowHeight();
 						if(pos.column==0)
 						{
 							return Point(0, y);
@@ -633,7 +632,7 @@ text::TextLines
 					}
 					else
 					{
-						vint h=charMeasurer->GetRowHeight();
+						vint h = GetRowHeight();
 						TextLine& line=lines[pos.row];
 						if(pos.column==line.dataLength)
 						{

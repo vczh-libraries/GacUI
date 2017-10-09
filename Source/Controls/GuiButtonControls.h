@@ -26,21 +26,12 @@ Buttons
 			/// <summary>A control with 3 phases state transffering when mouse click happens.</summary>
 			class GuiButton : public GuiControl, public Description<GuiButton>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiButton"/>.</summary>
-				class IStyleController : virtual public GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the control state changed.</summary>
-					/// <param name="value">The new control state.</param>
-					virtual void						Transfer(ButtonState value) = 0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ButtonTemplate, GuiControl)
 			protected:
-				IStyleController*						styleController;
-				bool									clickOnMouseUp;
-				bool									mousePressing;
-				bool									mouseHoving;
-				ButtonState								controlState;
+				bool									clickOnMouseUp = true;
+				bool									mousePressing = false;
+				bool									mouseHoving = false;
+				ButtonState								controlState = ButtonState::Normal;
 
 				void									OnParentLineChanged()override;
 				void									OnActiveAlt()override;
@@ -51,8 +42,8 @@ Buttons
 				void									OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiButton(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiButton(theme::ThemeName themeName);
 				~GuiButton();
 
 				/// <summary>Mouse click event.</summary>
@@ -69,16 +60,8 @@ Buttons
 			/// <summary>A <see cref="GuiButton"/> with a selection state.</summary>
 			class GuiSelectableButton : public GuiButton, public Description<GuiSelectableButton>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SelectableButtonTemplate, GuiButton)
 			public:
-				/// <summary>Style controller interface for <see cref="GuiSelectableButton"/>.</summary>
-				class IStyleController : public virtual GuiButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the selection state changed.</summary>
-					/// <param name="value">The new control state.</param>
-					virtual void						SetSelected(bool value) = 0;
-				};
-
 				/// <summary>Selection group controller. Control the selection state of all attached button.</summary>
 				class GroupController : public GuiComponent, public Description<GroupController>
 				{
@@ -112,16 +95,15 @@ Buttons
 				};
 
 			protected:
-				IStyleController*						styleController;
-				GroupController*						groupController;
-				bool									autoSelection;
-				bool									isSelected;
+				GroupController*						groupController = nullptr;
+				bool									autoSelection = true;
+				bool									isSelected = false;
 
 				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiSelectableButton(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiSelectableButton(theme::ThemeName themeName);
 				~GuiSelectableButton();
 
 				/// <summary>Group controller changed event.</summary>

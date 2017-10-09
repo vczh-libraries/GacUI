@@ -629,7 +629,6 @@ GuiDefaultInstanceLoader
 								auto& propertyValue = arguments.GetByIndex(index)[0];
 								if (propertyValue.expression)
 								{
-
 									auto refValue = MakePtr<WfReferenceExpression>();
 									refValue->name.value = variableName.ToString();
 
@@ -856,11 +855,11 @@ GuiInstanceLoaderManager
 				return true;
 			}
 
-			IGuiInstanceDeserializer* GetInstanceDeserializer(description::ITypeInfo* typeInfo)override
+			IGuiInstanceDeserializer* GetInstanceDeserializer(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
 			{
 				FOREACH(Ptr<IGuiInstanceDeserializer>, deserializer, deserializers)
 				{
-					if (deserializer->CanDeserialize(typeInfo))
+					if (deserializer->CanDeserialize(propertyInfo, typeInfo))
 					{
 						return deserializer.Obj();
 					}
@@ -990,5 +989,33 @@ GuiInstanceLoaderManager
 			}
 		};
 		GUI_REGISTER_PLUGIN(GuiInstanceLoaderManager)
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+		void SplitBySemicolon(const WString& input, collections::List<WString>& fragments)
+		{
+			const wchar_t* attValue = input.Buffer();
+			while(*attValue)
+			{
+				// split the value by ';'
+				const wchar_t* attSemicolon = wcschr(attValue, L';');
+				WString pattern;
+				if(attSemicolon)
+				{
+					pattern = WString(attValue, vint(attSemicolon - attValue));
+					attValue = attSemicolon + 1;
+				}
+				else
+				{
+					vint len = wcslen(attValue);
+					pattern = WString(attValue, len);
+					attValue += len;
+				}
+
+				fragments.Add(pattern);
+			}
+		}
 	}
 }

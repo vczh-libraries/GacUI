@@ -58,8 +58,8 @@ Control Host
 				void											Destroying()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiControlHost(GuiControl::IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiControlHost(theme::ThemeName themeName);
 				~GuiControlHost();
 				
 				/// <summary>Window got focus event.</summary>
@@ -204,125 +204,18 @@ Window
 			/// </summary>
 			class GuiWindow : public GuiControlHost, protected compositions::IGuiAltActionHost, public AggregatableDescription<GuiWindow>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
-			public:
-				/// <summary>Style controller interface for <see cref="GuiWindow"/>.</summary>
-				class IStyleController : virtual public GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the style controller is attached to the window.</summary>
-					/// <param name="_window">The window.</param>
-					virtual void						AttachWindow(GuiWindow* _window)=0;
-					/// <summary>Initialize visual properties of the window. This callback is for some window template that don't need the standard window border.</summary>
-					virtual void						InitializeNativeWindowProperties()=0;
-					/// <summary>
-					/// Update the size state.
-					/// </summary>
-					/// <param name="value">The new border size.</param>
-					virtual void						SetSizeState(INativeWindow::WindowSizeState value)=0;
-					/// <summary>
-					/// Test is the maximize box visible.
-					/// </summary>
-					/// <returns>Returns true if the maximize box is visible.</returns>
-					virtual bool						GetMaximizedBox()=0;
-					/// <summary>
-					/// Make the maximize box visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the maximize box visible.</param>
-					virtual void						SetMaximizedBox(bool visible)=0;
-					/// <summary>
-					/// Test is the minimize box visible.
-					/// </summary>
-					/// <returns>Returns true if the minimize box is visible.</returns>
-					virtual bool						GetMinimizedBox()=0;
-					/// <summary>
-					/// Make the minimize box visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the minimize box visible.</param>
-					virtual void						SetMinimizedBox(bool visible)=0;
-					/// <summary>
-					/// Test is the border visible.
-					/// </summary>
-					/// <returns>Returns true if the border is visible.</returns>
-					virtual bool						GetBorder()=0;
-					/// <summary>
-					/// Make the border visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the border visible.</param>
-					virtual void						SetBorder(bool visible)=0;
-					/// <summary>
-					/// Test is the size box visible.
-					/// </summary>
-					/// <returns>Returns true if the size box is visible.</returns>
-					virtual bool						GetSizeBox()=0;
-					/// <summary>
-					/// Make the size box visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the size box visible.</param>
-					virtual void						SetSizeBox(bool visible)=0;
-					/// <summary>
-					/// Test is the icon visible.
-					/// </summary>
-					/// <returns>Returns true if the icon is visible.</returns>
-					virtual bool						GetIconVisible()=0;
-					/// <summary>
-					/// Make the icon visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the icon visible.</param>
-					virtual void						SetIconVisible(bool visible)=0;
-					/// <summary>
-					/// Test is the title bar visible.
-					/// </summary>
-					/// <returns>Returns true if the title bar is visible.</returns>
-					virtual bool						GetTitleBar()=0;
-					/// <summary>
-					/// Make the title bar visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the title bar visible.</param>
-					virtual void						SetTitleBar(bool visible)=0;
-					/// <summary>
-					/// Create a control style for tooltip control.
-					/// </summary>
-					/// <returns>Returns the control style. Returns null for default control style.</returns>
-					virtual IStyleController*			CreateTooltipStyle() = 0;
-					/// <summary>
-					/// Create a control style for shortcut key label control.
-					/// </summary>
-					/// <returns>Returns the control style. Returns null for default control style.</returns>
-					virtual GuiLabel::IStyleController*	CreateShortcutKeyStyle() = 0;
-				};
-				
-				/// <summary>Style controller with default behavior for <see cref="GuiWindow"/>.</summary>
-				class DefaultBehaviorStyleController : virtual public IStyleController
-				{
-				protected:
-					GuiWindow*							window;
-				public:
-					DefaultBehaviorStyleController();
-					~DefaultBehaviorStyleController();
-
-					void								AttachWindow(GuiWindow* _window)override;
-					void								InitializeNativeWindowProperties()override;
-					void								SetSizeState(INativeWindow::WindowSizeState value)override;
-					bool								GetMaximizedBox()override;
-					void								SetMaximizedBox(bool visible)override;
-					bool								GetMinimizedBox()override;
-					void								SetMinimizedBox(bool visible)override;
-					bool								GetBorder()override;
-					void								SetBorder(bool visible)override;
-					bool								GetSizeBox()override;
-					void								SetSizeBox(bool visible)override;
-					bool								GetIconVisible()override;
-					void								SetIconVisible(bool visible)override;
-					bool								GetTitleBar()override;
-					void								SetTitleBar(bool visible)override;
-					IStyleController*					CreateTooltipStyle()override;
-					GuiLabel::IStyleController*			CreateShortcutKeyStyle()override;
-				};
 			protected:
-				IStyleController*						styleController;
 				compositions::IGuiAltActionHost*		previousAltHost;
+				bool									hasMaximizedBox = true;
+				bool									hasMinimizedBox = true;
+				bool									hasBorder = true;
+				bool									hasSizeBox = true;
+				bool									isIconVisible = true;
+				bool									hasTitleBar = true;
 				
+				void									SyncNativeWindowProperties();
 				void									Moved()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
@@ -335,8 +228,8 @@ Window
 				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiWindow(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiWindow(theme::ThemeName themeName);
 				~GuiWindow();
 
 				IDescriptable*							QueryService(const WString& identifier)override;
@@ -441,8 +334,8 @@ Window
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiPopup(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiPopup(theme::ThemeName themeName);
 				~GuiPopup();
 
 				/// <summary>Test will the whole popup window be in the screen if the popup's left-top position is set to a specified value.</summary>
@@ -479,8 +372,8 @@ Window
 				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiTooltip(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiTooltip(theme::ThemeName themeName);
 				~GuiTooltip();
 
 				/// <summary>Get the preferred content width.</summary>

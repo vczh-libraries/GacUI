@@ -66,14 +66,13 @@ GuiDocumentCommonInterface
 				};
 			protected:
 				Ptr<DocumentModel>							baselineDocument;
-				Color										caretColor;
 				DocumentItemMap								documentItems;
-				GuiControl*									documentControl;
-				elements::GuiDocumentElement*				documentElement;
-				compositions::GuiBoundsComposition*			documentComposition;
+				GuiControl*									documentControl = nullptr;
+				elements::GuiDocumentElement*				documentElement = nullptr;
+				compositions::GuiBoundsComposition*			documentComposition = nullptr;
 				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
-				bool										dragging;
-				EditMode									editMode;
+				bool										dragging = false;
+				EditMode									editMode = EditMode::ViewOnly;
 
 				Ptr<GuiDocumentUndoRedoProcessor>			undoRedoProcessor;
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
@@ -84,7 +83,7 @@ GuiDocumentCommonInterface
 				void										UpdateCaretPoint();
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(vint code, bool shift, bool ctrl);
-				void										InstallDocumentViewer(GuiControl* _sender, compositions::GuiGraphicsComposition* _container);
+				void										InstallDocumentViewer(GuiControl* _sender, compositions::GuiGraphicsComposition* _container, compositions::GuiGraphicsComposition* eventComposition, compositions::GuiGraphicsComposition* focusableComposition);
 				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package);
 				void										ActivateActiveHyperlink(bool activate);
 				void										AddShortcutCommand(vint key, const Func<void()>& eventHandler);
@@ -112,7 +111,7 @@ GuiDocumentCommonInterface
 				void										OnFinishRender()override;
 				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
 			public:
-				GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument, Color _caretColor = {});
+				GuiDocumentCommonInterface();
 				~GuiDocumentCommonInterface();
 
 				/// <summary>Active hyperlink changed event.</summary>
@@ -339,26 +338,15 @@ GuiDocumentViewer
 			/// <summary>Scrollable document viewer for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentViewer : public GuiScrollContainer, public GuiDocumentCommonInterface, public Description<GuiDocumentViewer>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiDocumentViewer"/>.</summary>
-				class IStyleProvider : public virtual GuiScrollContainer::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Get a baseline document for customize default styles.</summary>
-					/// <returns>The baseline document.</returns>
-					virtual Ptr<DocumentModel>				GetBaselineDocument() = 0;
-					/// <summary>Get the caret color.</summary>
-					/// <returns>The caret color.</returns>
-					virtual Color							GetCaretColor() = 0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentViewerTemplate, GuiScrollContainer)
 			protected:
 
 				Point										GetDocumentViewPosition()override;
 				void										EnsureRectVisible(Rect bounds)override;
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
-				GuiDocumentViewer(GuiDocumentViewer::IStyleProvider* styleProvider);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiDocumentViewer(theme::ThemeName themeName);
 				~GuiDocumentViewer();
 
 				const WString&								GetText()override;
@@ -372,22 +360,11 @@ GuiDocumentViewer
 			/// <summary>Static document viewer for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentLabel : public GuiControl, public GuiDocumentCommonInterface, public Description<GuiDocumentLabel>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiDocumentLabel"/>.</summary>
-				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Get a baseline document for customize default styles.</summary>
-					/// <returns>The baseline document.</returns>
-					virtual Ptr<DocumentModel>				GetBaselineDocument() = 0;
-					/// <summary>Get the caret color.</summary>
-					/// <returns>The caret color.</returns>
-					virtual Color							GetCaretColor() = 0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate, GuiControl)
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="styleController">The style controller.</param>
-				GuiDocumentLabel(GuiDocumentLabel::IStyleController* styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiDocumentLabel(theme::ThemeName themeName);
 				~GuiDocumentLabel();
 				
 				const WString&								GetText()override;

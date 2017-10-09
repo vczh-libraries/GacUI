@@ -601,6 +601,14 @@ MemoryNodeRootProvider
 GuiVirtualTreeListControl
 ***********************************************************************/
 
+			void GuiVirtualTreeListControl::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiVirtualTreeListControl::AfterControlTemplateInstalled_(bool initialize)
+			{
+			}
+
 			void GuiVirtualTreeListControl::OnAttached(tree::INodeRootProvider* provider)
 			{
 			}
@@ -676,8 +684,8 @@ GuiVirtualTreeListControl
 				}
 			}
 
-			GuiVirtualTreeListControl::GuiVirtualTreeListControl(IStyleProvider* _styleProvider, Ptr<tree::INodeRootProvider> _nodeRootProvider)
-				:GuiSelectableListControl(_styleProvider, new tree::NodeItemProvider(_nodeRootProvider))
+			GuiVirtualTreeListControl::GuiVirtualTreeListControl(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider)
+				:GuiSelectableListControl(themeName, new tree::NodeItemProvider(_nodeRootProvider))
 			{
 				nodeItemProvider = dynamic_cast<tree::NodeItemProvider*>(GetItemProvider());
 				nodeItemView = dynamic_cast<tree::INodeItemView*>(GetItemProvider()->RequestView(tree::INodeItemView::Identifier));
@@ -890,13 +898,13 @@ GuiVirtualTreeView
 				GuiVirtualTreeListControl::OnItemCollapsed(node);
 				SetStyleExpanding(node, false);
 			}
-
+			
 			void GuiVirtualTreeView::OnStyleInstalled(vint itemIndex, ItemStyle* style)
 			{
 				GuiVirtualTreeListControl::OnStyleInstalled(itemIndex, style);
 				if (auto treeItemStyle = dynamic_cast<templates::GuiTreeItemTemplate*>(style))
 				{
-					treeItemStyle->SetTextColor(styleProvider->GetTextColor());
+					treeItemStyle->SetTextColor(GetControlTemplateObject()->GetTextColor());
 
 					if (treeViewItemView)
 					{
@@ -921,10 +929,9 @@ GuiVirtualTreeView
 				}
 			}
 
-			GuiVirtualTreeView::GuiVirtualTreeView(IStyleProvider* _styleProvider, Ptr<tree::INodeRootProvider> _nodeRootProvider)
-				:GuiVirtualTreeListControl(_styleProvider, _nodeRootProvider)
+			GuiVirtualTreeView::GuiVirtualTreeView(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider)
+				:GuiVirtualTreeListControl(themeName, _nodeRootProvider)
 			{
-				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
 				treeViewItemView = dynamic_cast<tree::ITreeViewItemView*>(GetNodeRootProvider()->RequestView(tree::ITreeViewItemView::Identifier));
 				SetStyleAndArranger(
 					[](const Value&) { return new tree::DefaultTreeItemTemplate; },
@@ -936,17 +943,12 @@ GuiVirtualTreeView
 			{
 			}
 
-			GuiVirtualTreeView::IStyleProvider* GuiVirtualTreeView::GetTreeViewStyleProvider()
-			{
-				return styleProvider;
-			}
-
 /***********************************************************************
 GuiTreeView
 ***********************************************************************/
 
-			GuiTreeView::GuiTreeView(IStyleProvider* _styleProvider)
-				:GuiVirtualTreeView(_styleProvider, new tree::TreeViewItemRootProvider)
+			GuiTreeView::GuiTreeView(theme::ThemeName themeName)
+				:GuiVirtualTreeView(themeName, new tree::TreeViewItemRootProvider)
 			{
 				nodes = nodeItemProvider->GetRoot().Cast<tree::TreeViewItemRootProvider>();
 			}
@@ -1008,19 +1010,17 @@ DefaultTreeItemTemplate
 						cell->SetSite(0, 1, 3, 1);
 						cell->SetPreferredMinSize(Size(16, 16));
 
-						GuiSelectableButton::IStyleController* expandingStyle = nullptr;
+						expandingButton = new GuiSelectableButton(theme::ThemeName::TreeItemExpander);
 						if (auto treeView = dynamic_cast<GuiVirtualTreeView*>(listControl))
 						{
-							expandingStyle = treeView->GetTreeViewStyleProvider()->CreateItemExpandingDecorator();
-							if (!expandingStyle)
+							if (auto expanderStyle = treeView->GetControlTemplateObject()->GetExpandingDecoratorTemplate())
 							{
-								expandingStyle = theme::GetCurrentTheme()->CreateTreeItemExpanderStyle();
+								expandingButton->SetControlTemplate(expanderStyle);
 							}
 						}
-						expandingButton = new GuiSelectableButton(expandingStyle);
 						expandingButton->SetAutoSelection(false);
 						expandingButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						expandingButton->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);
+						expandingButton->GetBoundsComposition()->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);
 						expandingButton->Clicked.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonClicked);
 						cell->AddChild(expandingButton->GetBoundsComposition());
 					}

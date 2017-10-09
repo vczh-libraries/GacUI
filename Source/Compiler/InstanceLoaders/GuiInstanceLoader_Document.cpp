@@ -168,8 +168,8 @@ GuiDocumentInstanceLoaderBase
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
 
-				GuiDocumentInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod)
-					:TBaseType(_typeName, _styleMethod)
+				GuiDocumentInstanceLoaderBase(const WString& _typeName, theme::ThemeName themeName)
+					:TBaseType(_typeName, themeName)
 				{
 				}
 
@@ -226,12 +226,12 @@ GuiDocumentInstanceLoaderBase
 GuiDocumentViewerInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentViewer, GuiDocumentViewerTemplate_StyleProvider, GuiDocumentViewerTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentViewer>
 			class GuiDocumentViewerInstanceLoader : public GuiDocumentInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
 				GuiDocumentViewerInstanceLoader()
-					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentViewer>::content.typeName, L"CreateDocumentViewerStyle")
+					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentViewer>::content.typeName, theme::ThemeName::DocumentViewer)
 				{
 				}
 			};
@@ -241,12 +241,12 @@ GuiDocumentViewerInstanceLoader
 GuiDocumentLabelInstanceLoader
 ***********************************************************************/
 		
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentLabel, GuiDocumentLabelTemplate_StyleProvider, GuiDocumentLabelTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentLabel>
 			class GuiDocumentLabelInstanceLoader : public GuiDocumentInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
 				GuiDocumentLabelInstanceLoader()
-					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentLabel>::content.typeName, L"CreateDocumentLabelStyle")
+					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentLabel>::content.typeName, theme::ThemeName::DocumentLabel)
 				{
 				}
 			};

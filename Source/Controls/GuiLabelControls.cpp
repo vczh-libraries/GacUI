@@ -15,12 +15,27 @@ namespace vl
 GuiLabel
 ***********************************************************************/
 
-			GuiLabel::GuiLabel(IStyleController* _styleController)
-				:GuiControl(_styleController)
-				,styleController(_styleController)
+			void GuiLabel::BeforeControlTemplateUninstalled_()
 			{
-				textColor=styleController->GetDefaultTextColor();
-				styleController->SetTextColor(textColor);
+				textColorConsisted = (textColor == GetControlTemplateObject()->GetDefaultTextColor());
+			}
+
+			void GuiLabel::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				if (initialize || textColorConsisted)
+				{
+					SetTextColor(ct->GetDefaultTextColor());
+				}
+				else
+				{
+					ct->SetTextColor(textColor);
+				}
+			}
+
+			GuiLabel::GuiLabel(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
 			}
 
 			GuiLabel::~GuiLabel()
@@ -34,10 +49,10 @@ GuiLabel
 
 			void GuiLabel::SetTextColor(Color value)
 			{
-				if(textColor!=value)
+				if (textColor != value)
 				{
-					textColor=value;
-					styleController->SetTextColor(textColor);
+					textColor = value;
+					GetControlTemplateObject()->SetTextColor(textColor);
 				}
 			}
 		}

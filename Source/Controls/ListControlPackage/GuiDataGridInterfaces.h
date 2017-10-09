@@ -32,7 +32,7 @@ Datagrid Interfaces
 				{
 				public:
 					virtual GuiListControl::IItemProvider*				GetItemProvider() = 0;
-					virtual GuiListViewBase::IStyleProvider*			GetListViewStyleProvider() = 0;
+					virtual templates::GuiListViewTemplate*				GetListViewControlTemplate() = 0;
 					virtual description::Value							GetViewModelContext() = 0;
 					virtual void										RequestSaveData() = 0;
 				};
@@ -43,8 +43,7 @@ Datagrid Interfaces
 				public:
 					/// <summary>Create a data visualizer.</summary>
 					/// <returns>The created data visualizer.</returns>
-					/// <param name="font">The font for the list view control.</param>
-					/// <param name="styleProvider">The style provider for the list view control.</param>
+					/// <param name="IDataGridContext">Context information of the data grid.</param>
 					virtual Ptr<IDataVisualizer>						CreateVisualizer(IDataGridContext* dataGridContext) = 0;
 				};
 

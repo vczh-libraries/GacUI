@@ -1,5 +1,6 @@
 #include "GuiBasicControls.h"
 #include "GuiApplication.h"
+#include "Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -13,48 +14,66 @@ namespace vl
 			using namespace reflection::description;
 
 /***********************************************************************
-GuiControl::EmptyStyleController
-***********************************************************************/
-
-			GuiControl::EmptyStyleController::EmptyStyleController()
-			{
-				boundsComposition = new GuiBoundsComposition;
-				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-			}
-
-			GuiControl::EmptyStyleController::~EmptyStyleController()
-			{
-			}
-
-			compositions::GuiBoundsComposition* GuiControl::EmptyStyleController::GetBoundsComposition()
-			{
-				return boundsComposition;
-			}
-
-			compositions::GuiGraphicsComposition* GuiControl::EmptyStyleController::GetContainerComposition()
-			{
-				return boundsComposition;
-			}
-
-			void GuiControl::EmptyStyleController::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
-			{
-			}
-
-			void GuiControl::EmptyStyleController::SetText(const WString& value)
-			{
-			}
-
-			void GuiControl::EmptyStyleController::SetFont(const FontProperties& value)
-			{
-			}
-
-			void GuiControl::EmptyStyleController::SetVisuallyEnabled(bool value)
-			{
-			}
-
-/***********************************************************************
 GuiControl
 ***********************************************************************/
+
+			void GuiControl::BeforeControlTemplateUninstalled()
+			{
+			}
+
+			void GuiControl::AfterControlTemplateInstalled(bool initialize)
+			{
+				controlTemplateObject->SetText(text);
+				controlTemplateObject->SetFont(font);
+				controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
+				controlTemplateObject->SetFocusableComposition(focusableComposition);
+			}
+
+			void GuiControl::CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)
+			{
+				controlTemplateObject = value;
+			}
+
+			void GuiControl::EnsureControlTemplateExists()
+			{
+				if (!controlTemplateObject)
+				{
+					RebuildControlTemplate();
+				}
+			}
+
+			void GuiControl::RebuildControlTemplate()
+			{
+				bool initialize = controlTemplateObject == nullptr;
+				if (controlTemplateObject)
+				{
+					BeforeControlTemplateUninstalled();
+					containerComposition->GetParent()->RemoveChild(containerComposition);
+					boundsComposition->AddChild(containerComposition);
+					SafeDeleteComposition(controlTemplateObject);
+					controlTemplateObject = nullptr;
+				}
+
+				if (controlTemplate)
+				{
+					CheckAndStoreControlTemplate(controlTemplate({}));
+				}
+				else
+				{
+					CheckAndStoreControlTemplate(theme::GetCurrentTheme()->CreateStyle(controlThemeName)({}));
+				}
+
+				if (controlTemplateObject)
+				{
+					controlTemplateObject->Initialize();
+					controlTemplateObject->SetAlignmentToParent(Margin(0, 0, 0, 0));
+
+					containerComposition->GetParent()->RemoveChild(containerComposition);
+					boundsComposition->AddChild(controlTemplateObject);
+					controlTemplateObject->GetContainerComposition()->AddChild(containerComposition);
+					AfterControlTemplateInstalled(initialize);
+				}
+			}
 
 			void GuiControl::OnChildInserted(GuiControl* control)
 			{
@@ -101,14 +120,17 @@ GuiControl
 
 			void GuiControl::UpdateVisuallyEnabled()
 			{
-				bool newValue=isEnabled && (parent==0?true:parent->GetVisuallyEnabled());
-				if(isVisuallyEnabled!=newValue)
+				bool newValue = isEnabled && (parent == 0 ? true : parent->GetVisuallyEnabled());
+				if (isVisuallyEnabled != newValue)
 				{
-					isVisuallyEnabled=newValue;
-					styleController->SetVisuallyEnabled(isVisuallyEnabled);
+					isVisuallyEnabled = newValue;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
+					}
 					VisuallyEnabledChanged.Execute(GetNotifyEventArguments());
 
-					for(vint i=0;i<children.Count();i++)
+					for (vint i = 0; i < children.Count(); i++)
 					{
 						children[i]->UpdateVisuallyEnabled();
 					}
@@ -117,10 +139,13 @@ GuiControl
 
 			void GuiControl::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
 			{
-				if(focusableComposition!=value)
+				if (focusableComposition != value)
 				{
-					focusableComposition=value;
-					styleController->SetFocusableComposition(focusableComposition);
+					focusableComposition = value;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetFocusableComposition(focusableComposition);
+					}
 				}
 			}
 
@@ -170,62 +195,61 @@ GuiControl
 				return true;
 			}
 
-			GuiControl::GuiControl(IStyleController* _styleController)
-				:styleController(_styleController)
-				,boundsComposition(_styleController->GetBoundsComposition())
-				,focusableComposition(0)
-				,eventReceiver(_styleController->GetBoundsComposition()->GetEventReceiver())
-				,isEnabled(true)
-				,isVisuallyEnabled(true)
-				,isVisible(true)
-				,activatingAltHost(0)
-				,parent(0)
-				,tooltipControl(0)
-				,tooltipWidth(50)
+			GuiControl::GuiControl(theme::ThemeName themeName)
+				:controlThemeName(themeName)
 			{
-				boundsComposition->SetAssociatedControl(this);
-				RenderTargetChanged.SetAssociatedComposition(boundsComposition);
-				VisibleChanged.SetAssociatedComposition(boundsComposition);
-				EnabledChanged.SetAssociatedComposition(boundsComposition);
-				VisuallyEnabledChanged.SetAssociatedComposition(boundsComposition);
-				AltChanged.SetAssociatedComposition(boundsComposition);
-				TextChanged.SetAssociatedComposition(boundsComposition);
-				FontChanged.SetAssociatedComposition(boundsComposition);
+				{
+					boundsComposition = new GuiBoundsComposition;
+					boundsComposition->SetAssociatedControl(this);
+					boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
-				font=GetCurrentController()->ResourceService()->GetDefaultFont();
-				styleController->SetFont(font);
-				styleController->SetText(text);
-				styleController->SetVisuallyEnabled(isVisuallyEnabled);
-				
+					containerComposition = new GuiBoundsComposition;
+					containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					containerComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+
+					boundsComposition->AddChild(containerComposition);
+				}
+				{
+					ControlTemplateChanged.SetAssociatedComposition(boundsComposition);
+					RenderTargetChanged.SetAssociatedComposition(boundsComposition);
+					VisibleChanged.SetAssociatedComposition(boundsComposition);
+					EnabledChanged.SetAssociatedComposition(boundsComposition);
+					VisuallyEnabledChanged.SetAssociatedComposition(boundsComposition);
+					AltChanged.SetAssociatedComposition(boundsComposition);
+					TextChanged.SetAssociatedComposition(boundsComposition);
+					FontChanged.SetAssociatedComposition(boundsComposition);
+				}
+				font = GetCurrentController()->ResourceService()->GetDefaultFont();
 				sharedPtrDestructorProc = &GuiControl::SharedPtrDestructorProc;
 			}
 
 			GuiControl::~GuiControl()
 			{
-				if(tooltipControl)
+				// prevent a root bounds composition from notifying its dead controls
+				if (!parent)
+				{
+					NotifyFinalizeInstance(boundsComposition);
+				}
+
+				if (tooltipControl)
 				{
 					// the only legal parent is the GuiApplication::sharedTooltipWindow
-					if(tooltipControl->GetBoundsComposition()->GetParent())
+					if (tooltipControl->GetBoundsComposition()->GetParent())
 					{
 						tooltipControl->GetBoundsComposition()->GetParent()->RemoveChild(tooltipControl->GetBoundsComposition());
 					}
 					delete tooltipControl;
 				}
-				if(parent || !styleController)
+
+				for (vint i = 0; i < children.Count(); i++)
 				{
-					for(vint i=0;i<children.Count();i++)
-					{
-						delete children[i];
-					}
+					delete children[i];
 				}
-				else
+				children.Clear();
+
+				// let the root control of a control tree delete the whole composition tree
+				if (!parent)
 				{
-					for(vint i=children.Count()-1;i>=0;i--)
-					{
-						GuiControl* child=children[i];
-						child->GetBoundsComposition()->GetParent()->RemoveChild(child->GetBoundsComposition());
-						delete child;
-					}
 					delete boundsComposition;
 				}
 			}
@@ -235,29 +259,40 @@ GuiControl
 				return GuiEventArgs(boundsComposition);
 			}
 
-			GuiControl::IStyleController* GuiControl::GetStyleController()
+			GuiControl::ControlTemplatePropertyType GuiControl::GetControlTemplate()
 			{
-				return styleController.Obj();
+				return controlTemplate;
+			}
+
+			void GuiControl::SetControlTemplate(const ControlTemplatePropertyType& value)
+			{
+				controlTemplate = value;
+				RebuildControlTemplate();
+				ControlTemplateChanged.Execute(GetNotifyEventArguments());
+			}
+
+			templates::GuiControlTemplate* GuiControl::GetControlTemplateObject()
+			{
+				EnsureControlTemplateExists();
+				return controlTemplateObject;
 			}
 
 			compositions::GuiBoundsComposition* GuiControl::GetBoundsComposition()
 			{
+				EnsureControlTemplateExists();
 				return boundsComposition;
 			}
 
 			compositions::GuiGraphicsComposition* GuiControl::GetContainerComposition()
 			{
-				return styleController->GetContainerComposition();
+				EnsureControlTemplateExists();
+				return containerComposition;
 			}
 
 			compositions::GuiGraphicsComposition* GuiControl::GetFocusableComposition()
 			{
+				EnsureControlTemplateExists();
 				return focusableComposition;
-			}
-
-			compositions::GuiGraphicsEventReceiver* GuiControl::GetEventReceiver()
-			{
-				return eventReceiver;
 			}
 
 			GuiControl* GuiControl::GetParent()
@@ -353,10 +388,13 @@ GuiControl
 
 			void GuiControl::SetText(const WString& value)
 			{
-				if(text!=value)
+				if (text != value)
 				{
-					text=value;
-					styleController->SetText(text);
+					text = value;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetText(text);
+					}
 					TextChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -368,10 +406,13 @@ GuiControl
 
 			void GuiControl::SetFont(const FontProperties& value)
 			{
-				if(font!=value)
+				if (font != value)
 				{
-					font=value;
-					styleController->SetFont(font);
+					font = value;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetFont(font);
+					}
 					FontChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -459,8 +500,8 @@ GuiControl
 GuiCustomControl
 ***********************************************************************/
 
-			GuiCustomControl::GuiCustomControl(IStyleController* _styleController)
-				:GuiControl(_styleController)
+			GuiCustomControl::GuiCustomControl(theme::ThemeName themeName)
+				:GuiControl(themeName)
 			{
 			}
 

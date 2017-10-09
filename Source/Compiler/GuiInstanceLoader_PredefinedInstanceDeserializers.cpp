@@ -64,12 +64,12 @@ GuiTemplatePropertyDeserializer
 				stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
 			}
 
-			bool CanDeserialize(description::ITypeInfo* typeInfo)override
+			bool CanDeserialize(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
 			{
 				return IsTemplatePropertyType(typeInfo) || IsDataVisualizerFactoryType(typeInfo) || IsDataEditorFactoryType(typeInfo);
 			}
 
-			description::ITypeInfo* DeserializeAs(description::ITypeInfo* typeInfo)override
+			description::ITypeInfo* DeserializeAs(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
 			{
 				return stringType.Obj();
 			}
@@ -130,14 +130,15 @@ GuiTemplatePropertyDeserializer
 			static Ptr<WfExpression> CreateTemplateFactory(
 				types::ResolvingResult& resolvingResult,
 				List<ITypeDescriptor*>& controlTemplateTds,
-				ITypeInfo* templateType,
+				ITypeInfo* returnTemplateType,
+				ITypeInfo* expectedTemplateType,
 				GuiResourceTextPos tagPosition,
 				GuiResourceError::List& errors
 				)
 			{
 				auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
 				funcCreateTemplate->anonymity = WfFunctionAnonymity::Anonymous;
-				funcCreateTemplate->returnType = GetTypeFromTypeInfo(templateType);
+				funcCreateTemplate->returnType = GetTypeFromTypeInfo(returnTemplateType);
 
 				auto argViewModel = MakePtr<WfFunctionArgument>();
 				argViewModel->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
@@ -150,13 +151,13 @@ GuiTemplatePropertyDeserializer
 				ITypeDescriptor* stopControlTemplateTd = nullptr;
 				FOREACH(ITypeDescriptor*, controlTemplateTd, controlTemplateTds)
 				{
-					if (!controlTemplateTd->CanConvertTo(templateType->GetTypeDescriptor()))
+					if (!controlTemplateTd->CanConvertTo(expectedTemplateType->GetTypeDescriptor()))
 					{
 						errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
 							L"Precompile: Type \"" +
 							controlTemplateTd->GetTypeName() +
 							L"\" cannot be used here because it requires \"" +
-							templateType->GetTypeDescriptor()->GetTypeName() +
+							expectedTemplateType->GetTypeDescriptor()->GetTypeName() +
 							L"\" or its derived classes."));
 					}
 
@@ -288,7 +289,7 @@ GuiTemplatePropertyDeserializer
 				{
 					List<ITypeDescriptor*> tds;
 					tds.Add(controlTemplateTd);
-					auto refFactory = CreateTemplateFactory(resolvingResult, tds, templateType.Obj(), tagPosition, errors);
+					auto refFactory = CreateTemplateFactory(resolvingResult, tds, templateType.Obj(), templateType.Obj(), tagPosition, errors);
 					auto createStyle = MakePtr<WfNewClassExpression>();
 					createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::DataVisualizerFactory>>::CreateTypeInfo().Obj());
 					createStyle->arguments.Add(refFactory);
@@ -316,14 +317,22 @@ GuiTemplatePropertyDeserializer
 			)
 			{
 				auto templateType = TypeInfoRetriver<GuiGridEditorTemplate*>::CreateTypeInfo();
-				auto refFactory = CreateTemplateFactory(resolvingResult, controlTemplateTds, templateType.Obj(), tagPosition, errors);
+				auto refFactory = CreateTemplateFactory(resolvingResult, controlTemplateTds, templateType.Obj(), templateType.Obj(), tagPosition, errors);
 				auto createStyle = MakePtr<WfNewClassExpression>();
 				createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::DataEditorFactory>>::CreateTypeInfo().Obj());
 				createStyle->arguments.Add(refFactory);
 				return createStyle;
 			}
 
-			Ptr<workflow::WfExpression> Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
+			Ptr<workflow::WfExpression> Deserialize(
+				GuiResourcePrecompileContext& precompileContext,
+				types::ResolvingResult& resolvingResult,
+				const IGuiInstanceLoader::PropertyInfo& propertyInfo,
+				description::ITypeInfo* typeInfo,
+				Ptr<workflow::WfExpression> valueExpression,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+				)override
 			{
 				auto stringExpr = valueExpression.Cast<WfStringExpression>();
 
@@ -340,8 +349,33 @@ GuiTemplatePropertyDeserializer
 				}
 				else
 				{
-					auto templateType = typeInfo->GetElementType()->GetGenericArgument(0);
-					return CreateTemplateFactory(resolvingResult, tds, templateType, tagPosition, errors);
+					auto returnTemplateType = typeInfo->GetElementType()->GetGenericArgument(0);
+					auto expectedTemplateType = returnTemplateType;
+					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
+					{
+						auto td = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor();
+						if (td != nullptr && td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+						{
+							auto methodGroup = td->GetMethodGroupByName(L"GetControlTemplateObject", true);
+							vint count = methodGroup->GetMethodCount();
+							for (vint i = 0; i < count; i++)
+							{
+								auto methodInfo = methodGroup->GetMethod(i);
+								if (methodInfo->GetParameterCount() == 0)
+								{
+									auto returnType = methodInfo->GetReturn();
+									if (returnType->GetDecorator() == ITypeInfo::RawPtr)
+									{
+										if (returnType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiControlTemplate>()))
+										{
+											expectedTemplateType = returnType;
+										}
+									}
+								}
+							}
+						}
+					}
+					return CreateTemplateFactory(resolvingResult, tds, returnTemplateType, expectedTemplateType, tagPosition, errors);
 				}
 			}
 		};
@@ -403,17 +437,25 @@ GuiItemPropertyDeserializer
 				stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
 			}
 
-			bool CanDeserialize(description::ITypeInfo* typeInfo)override
+			bool CanDeserialize(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
 			{
 				return IsItemPropertyType(typeInfo) || IsWritableItemPropertyType(typeInfo);
 			}
 
-			description::ITypeInfo* DeserializeAs(description::ITypeInfo* typeInfo)override
+			description::ITypeInfo* DeserializeAs(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
 			{
 				return stringType.Obj();
 			}
 
-			Ptr<workflow::WfExpression> Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
+			Ptr<workflow::WfExpression> Deserialize(
+				GuiResourcePrecompileContext& precompileContext,
+				types::ResolvingResult& resolvingResult,
+				const IGuiInstanceLoader::PropertyInfo& propertyInfo,
+				description::ITypeInfo* typeInfo,
+				Ptr<workflow::WfExpression> valueExpression,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+				)override
 			{
 				auto stringExpr = valueExpression.Cast<WfStringExpression>();
 				Ptr<WfExpression> propertyExpression;
@@ -611,18 +653,26 @@ GuiDataProcessorDeserializer
 				stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
 			}
 
-			bool CanDeserialize(description::ITypeInfo* typeInfo)override
+			bool CanDeserialize(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
 			{
 				return typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataFilter>()
 					|| typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataSorter>();
 			}
 
-			description::ITypeInfo* DeserializeAs(description::ITypeInfo* typeInfo)override
+			description::ITypeInfo* DeserializeAs(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
 			{
 				return stringType.Obj();
 			}
 
-			Ptr<workflow::WfExpression> Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
+			Ptr<workflow::WfExpression> Deserialize(
+				GuiResourcePrecompileContext& precompileContext,
+				types::ResolvingResult& resolvingResult,
+				const IGuiInstanceLoader::PropertyInfo& propertyInfo,
+				description::ITypeInfo* typeInfo,
+				Ptr<workflow::WfExpression> valueExpression,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+				)override
 			{
 				auto stringExpr = valueExpression.Cast<WfStringExpression>();
 				Ptr<WfExpression> propertyExpression;

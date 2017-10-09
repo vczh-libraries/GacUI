@@ -13,9 +13,13 @@ namespace vl
 GuiTextBoxAutoCompleteBase::TextListControlProvider
 ***********************************************************************/
 
-			GuiTextBoxAutoCompleteBase::TextListControlProvider::TextListControlProvider(GuiTextList::IStyleProvider* styleProvider)
+			GuiTextBoxAutoCompleteBase::TextListControlProvider::TextListControlProvider(TemplateProperty<templates::GuiTextListTemplate> controlTemplate)
 			{
-				autoCompleteList = new GuiTextList(styleProvider ? styleProvider : theme::GetCurrentTheme()->CreateTextListStyle());
+				autoCompleteList = new GuiTextList(theme::ThemeName::TextList);
+				if (controlTemplate)
+				{
+					autoCompleteList->SetControlTemplate(controlTemplate);
+				}
 				autoCompleteList->SetHorizontalAlwaysVisible(false);
 				autoCompleteList->SetVerticalAlwaysVisible(false);
 			}
@@ -71,9 +75,9 @@ GuiTextBoxAutoCompleteBase
 
 			GuiTextBoxAutoCompleteBase::GuiTextBoxAutoCompleteBase(Ptr<IAutoCompleteControlProvider> _autoCompleteControlProvider)
 				:element(0)
-				,elementModifyLock(0)
-				,ownerComposition(0)
-				,autoCompleteControlProvider(_autoCompleteControlProvider)
+				, elementModifyLock(0)
+				, ownerComposition(0)
+				, autoCompleteControlProvider(_autoCompleteControlProvider)
 			{
 				if (!autoCompleteControlProvider)
 				{
@@ -81,7 +85,7 @@ GuiTextBoxAutoCompleteBase
 				}
 				autoCompleteControlProvider->GetAutoCompleteControl()->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
-				autoCompletePopup = new GuiPopup(theme::GetCurrentTheme()->CreateMenuStyle());
+				autoCompletePopup = new GuiPopup(theme::ThemeName::Menu);
 				autoCompletePopup->AddChild(autoCompleteControlProvider->GetAutoCompleteControl());
 			}
 
