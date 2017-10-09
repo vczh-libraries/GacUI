@@ -257,9 +257,12 @@ Type List (Templates)
 			F(presentation::controls::ButtonState)\
 			F(presentation::controls::ColumnSortingState)\
 			F(presentation::templates::BoolOption)\
+			F(presentation::controls::ITextBoxCommandExecutor)\
 			F(presentation::controls::IComboBoxCommandExecutor)\
 			F(presentation::controls::IScrollCommandExecutor)\
 			F(presentation::controls::ITabCommandExecutor)\
+			F(presentation::controls::IDatePickerCommandExecutor)\
+			F(presentation::controls::IScrollViewCommandExecutor)\
 			F(presentation::controls::GuiComponent)\
 			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::templates::GuiTemplate)\
@@ -278,6 +281,7 @@ Type List (Templates)
 			F(presentation::templates::GuiComboBoxTemplate)\
 			F(presentation::templates::GuiScrollTemplate)\
 			F(presentation::templates::GuiScrollViewTemplate)\
+			F(presentation::templates::GuiListControlTemplate)\
 			F(presentation::templates::GuiTextListTemplate)\
 			F(presentation::templates::GuiListViewTemplate)\
 			F(presentation::templates::GuiTreeViewTemplate)\
@@ -290,27 +294,6 @@ Type List (Templates)
 			F(presentation::templates::GuiGridCellTemplate)\
 			F(presentation::templates::GuiGridVisualizerTemplate)\
 			F(presentation::templates::GuiGridEditorTemplate)\
-			F(presentation::templates::GuiControlTemplate_StyleProvider)\
-			F(presentation::templates::GuiLabelTemplate_StyleProvider)\
-			F(presentation::templates::GuiSinglelineTextBoxTemplate_StyleProvider)\
-			F(presentation::templates::GuiDocumentLabelTemplate_StyleProvider)\
-			F(presentation::templates::GuiMultilineTextBoxTemplate_StyleProvider)\
-			F(presentation::templates::GuiDocumentViewerTemplate_StyleProvider)\
-			F(presentation::templates::GuiMenuTemplate_StyleProvider)\
-			F(presentation::templates::GuiWindowTemplate_StyleProvider)\
-			F(presentation::templates::GuiButtonTemplate_StyleProvider)\
-			F(presentation::templates::GuiSelectableButtonTemplate_StyleProvider)\
-			F(presentation::templates::GuiToolstripButtonTemplate_StyleProvider)\
-			F(presentation::templates::GuiListViewColumnHeaderTemplate_StyleProvider)\
-			F(presentation::templates::GuiComboBoxTemplate_StyleProvider)\
-			F(presentation::templates::GuiDatePickerTemplate_StyleProvider)\
-			F(presentation::templates::GuiDateComboBoxTemplate_StyleProvider)\
-			F(presentation::templates::GuiScrollTemplate_StyleProvider)\
-			F(presentation::templates::GuiScrollViewTemplate_StyleProvider)\
-			F(presentation::templates::GuiTextListTemplate_StyleProvider)\
-			F(presentation::templates::GuiListViewTemplate_StyleProvider)\
-			F(presentation::templates::GuiTreeViewTemplate_StyleProvider)\
-			F(presentation::templates::GuiTabTemplate_StyleProvider)\
 
 /***********************************************************************
 Type List (Controls)
@@ -318,6 +301,7 @@ Type List (Controls)
 
 #define GUIREFLECTIONCONTROLS_TYPELIST(F)\
 			F(presentation::controls::GuiApplication)\
+			F(presentation::theme::ThemeName)\
 			F(presentation::theme::ITheme)\
 			F(presentation::theme::ThemeTemplates)\
 			F(presentation::controls::GuiDialogBase)\
@@ -328,32 +312,22 @@ Type List (Controls)
 			F(presentation::controls::GuiOpenFileDialog)\
 			F(presentation::controls::GuiSaveFileDialog)\
 			F(presentation::controls::GuiControl)\
-			F(presentation::controls::GuiControl::IStyleController)\
-			F(presentation::controls::GuiControl::IStyleProvider)\
 			F(presentation::controls::GuiCustomControl)\
 			F(presentation::controls::GuiLabel)\
-			F(presentation::controls::GuiLabel::IStyleController)\
 			F(presentation::controls::GuiButton)\
-			F(presentation::controls::GuiButton::IStyleController)\
 			F(presentation::controls::GuiSelectableButton)\
-			F(presentation::controls::GuiSelectableButton::IStyleController)\
 			F(presentation::controls::GuiSelectableButton::GroupController)\
 			F(presentation::controls::GuiSelectableButton::MutexGroupController)\
 			F(presentation::controls::GuiScroll)\
-			F(presentation::controls::GuiScroll::IStyleController)\
 			F(presentation::controls::GuiTabPage)\
 			F(presentation::controls::GuiTab)\
-			F(presentation::controls::GuiTab::IStyleController)\
 			F(presentation::controls::GuiScrollView)\
-			F(presentation::controls::GuiScrollView::IStyleProvider)\
 			F(presentation::controls::GuiScrollContainer)\
 			F(presentation::controls::GuiControlHost)\
 			F(presentation::controls::GuiWindow)\
-			F(presentation::controls::GuiWindow::IStyleController)\
 			F(presentation::controls::GuiPopup)\
 			F(presentation::controls::GuiTooltip)\
 			F(presentation::controls::GuiListControl)\
-			F(presentation::controls::GuiListControl::IStyleProvider)\
 			F(presentation::controls::GuiListControl::IItemProviderCallback)\
 			F(presentation::controls::GuiListControl::IItemArrangerCallback)\
 			F(presentation::controls::GuiListControl::IItemProvider)\
@@ -368,12 +342,9 @@ Type List (Controls)
 			F(presentation::controls::list::TextItem)\
 			F(presentation::controls::TextListView)\
 			F(presentation::controls::GuiVirtualTextList)\
-			F(presentation::controls::GuiVirtualTextList::IStyleProvider)\
 			F(presentation::controls::GuiTextList)\
 			F(presentation::controls::GuiListViewColumnHeader)\
-			F(presentation::controls::GuiListViewColumnHeader::IStyleController)\
 			F(presentation::controls::GuiListViewBase)\
-			F(presentation::controls::GuiListViewBase::IStyleProvider)\
 			F(presentation::controls::list::IListViewItemView)\
 			F(presentation::controls::list::ListViewColumnItemArranger)\
 			F(presentation::controls::list::ListViewColumnItemArranger::IColumnItemViewCallback)\
@@ -388,7 +359,6 @@ Type List (Controls)
 			F(presentation::controls::GuiMenu)\
 			F(presentation::controls::GuiMenuBar)\
 			F(presentation::controls::GuiMenuButton)\
-			F(presentation::controls::GuiMenuButton::IStyleController)\
 			F(presentation::controls::tree::INodeProviderCallback)\
 			F(presentation::controls::tree::INodeProvider)\
 			F(presentation::controls::tree::INodeRootProvider)\
@@ -401,12 +371,9 @@ Type List (Controls)
 			F(presentation::controls::tree::TreeViewItem)\
 			F(presentation::controls::tree::TreeViewItemRootProvider)\
 			F(presentation::controls::GuiVirtualTreeView)\
-			F(presentation::controls::GuiVirtualTreeView::IStyleProvider)\
 			F(presentation::controls::GuiTreeView)\
 			F(presentation::controls::GuiComboBoxBase)\
-			F(presentation::controls::GuiComboBoxBase::IStyleController)\
 			F(presentation::controls::GuiComboBoxListControl)\
-			F(presentation::controls::GuiComboBoxListControl::IStyleController)\
 			F(presentation::controls::GuiToolstripCommand)\
 			F(presentation::controls::GuiToolstripMenu)\
 			F(presentation::controls::GuiToolstripMenuBar)\
@@ -416,13 +383,10 @@ Type List (Controls)
 			F(presentation::controls::GuiDocumentCommonInterface)\
 			F(presentation::controls::GuiDocumentCommonInterface::EditMode)\
 			F(presentation::controls::GuiDocumentViewer)\
-			F(presentation::controls::GuiDocumentViewer::IStyleProvider)\
 			F(presentation::controls::GuiDocumentLabel)\
-			F(presentation::controls::GuiDocumentLabel::IStyleController)\
 			F(presentation::controls::GuiTextBoxCommonInterface)\
 			F(presentation::controls::GuiMultilineTextBox)\
 			F(presentation::controls::GuiSinglelineTextBox)\
-			F(presentation::controls::GuiSinglelineTextBox::IStyleProvider)\
 			F(presentation::controls::list::IDataGridContext)\
 			F(presentation::controls::list::IDataVisualizerFactory)\
 			F(presentation::controls::list::IDataVisualizer)\
@@ -439,7 +403,6 @@ Type List (Controls)
 			F(presentation::controls::list::HyperlinkVisualizerTemplate)\
 			F(presentation::controls::list::CellBorderVisualizerTemplate)\
 			F(presentation::controls::GuiDatePicker)\
-			F(presentation::controls::GuiDatePicker::IStyleProvider)\
 			F(presentation::controls::GuiDateComboBox)\
 			F(presentation::controls::GuiBindableTextList)\
 			F(presentation::controls::GuiBindableListView)\
@@ -1050,9 +1013,9 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetItemProvider);
 				}
 
-				presentation::controls::GuiListViewBase::IStyleProvider* GetListViewStyleProvider()override
+				presentation::templates::GuiListViewTemplate* GetListViewControlTemplate()override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetListViewStyleProvider);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetListViewControlTemplate);
 				}
 
 				presentation::description::Value GetViewModelContext()override

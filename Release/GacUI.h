@@ -7967,10 +7967,14 @@ namespace vl
 	{
 		namespace controls
 		{
+			class GuiSelectableButton;
 			class GuiListControl;
+			class GuiComboBoxListControl;
+			class GuiTextList;
 			class GuiControlHost;
 			class GuiCustomControl;
 			class GuiTabPage;
+			class GuiScroll;
 
 			/// <summary>The visual state for button.</summary>
 			enum class ButtonState
@@ -7992,6 +7996,15 @@ namespace vl
 				Ascending,
 				/// <summary>Descending.</summary>
 				Descending,
+			};
+
+			/// <summary>A command executor for the combo box to change the control state.</summary>
+			class ITextBoxCommandExecutor : public virtual IDescriptable, public Description<ITextBoxCommandExecutor>
+			{
+			public:
+				/// <summary>Override the text content in the control.</summary>
+				/// <param name="value">The new text content.</param>
+				virtual void						UnsafeSetText(const WString& value) = 0;
 			};
 
 			/// <summary>A command executor for the combo box to change the control state.</summary>
@@ -8033,6 +8046,26 @@ namespace vl
 				/// <summary>Select a tab page.</summary>
 				/// <param name="index">The specified position for the tab page.</param>
 				virtual void						ShowTab(vint index) = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IDatePickerCommandExecutor : public virtual IDescriptable, public Description<IDatePickerCommandExecutor>
+			{
+			public:
+				/// <summary>Called when the date has been changed.</summary>
+				virtual void						NotifyDateChanged() = 0;
+				/// <summary>Called when navigated to a date.</summary>
+				virtual void						NotifyDateNavigated() = 0;
+				/// <summary>Called when selected a date.</summary>
+				virtual void						NotifyDateSelected() = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IScrollViewCommandExecutor : public virtual IDescriptable, public Description<IScrollViewCommandExecutor>
+			{
+			public:
+				/// <summary>Called when the size of the content has been changed.</summary>
+				virtual void						CalculateView() = 0;
 			};
 
 			class GuiInstanceRootObject;
@@ -8160,6 +8193,8 @@ Control Template
 			public:
 				GuiControlTemplate();
 				~GuiControlTemplate();
+
+				virtual void				Initialize();
 				
 #define GuiControlTemplate_PROPERTIES(F)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition)\
@@ -8167,6 +8202,10 @@ Control Template
 
 				GuiControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
+
+/***********************************************************************
+Basic Controls
+***********************************************************************/
 
 			class GuiLabelTemplate :public GuiControlTemplate, public AggregatableDescription<GuiLabelTemplate>
 			{
@@ -8207,12 +8246,9 @@ Control Template
 				GuiDocumentLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiMenuTemplate : public GuiControlTemplate, public AggregatableDescription<GuiMenuTemplate>
-			{
-			public:
-				GuiMenuTemplate();
-				~GuiMenuTemplate();
-			};
+/***********************************************************************
+Window
+***********************************************************************/
 
 			enum class BoolOption
 			{
@@ -8243,10 +8279,26 @@ Control Template
 				F(GuiWindowTemplate, bool, CustomizedBorder)\
 				F(GuiWindowTemplate, bool, Maximized)\
 				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate)\
-				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate)
+				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate)\
+				F(GuiWindowTemplate, bool, CustomFrameEnabled)
 
 				GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
+
+			class GuiMenuTemplate : public GuiWindowTemplate, public AggregatableDescription<GuiMenuTemplate>
+			{
+			public:
+				GuiMenuTemplate();
+				~GuiMenuTemplate();
+
+#define GuiMenuTemplate_PROPERTIES(F)
+
+				GuiMenuTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+/***********************************************************************
+Button Controls
+***********************************************************************/
 
 			class GuiButtonTemplate : public GuiControlTemplate, public AggregatableDescription<GuiButtonTemplate>
 			{
@@ -8271,6 +8323,10 @@ Control Template
 
 				GuiSelectableButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
+
+/***********************************************************************
+Toolstrip Controls
+***********************************************************************/
 
 			class GuiToolstripButtonTemplate : public GuiSelectableButtonTemplate, public AggregatableDescription<GuiToolstripButtonTemplate>
 			{
@@ -8314,6 +8370,10 @@ Control Template
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
+/***********************************************************************
+Scroll Controls
+***********************************************************************/
+
 			class GuiScrollTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollTemplate>
 			{
 			public:
@@ -8329,8 +8389,22 @@ Control Template
 				GuiScrollTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
+/***********************************************************************
+Scrollable Controls
+***********************************************************************/
+
 			class GuiScrollViewTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollViewTemplate>
 			{
+			protected:
+				controls::GuiScroll*					horizontalScroll = nullptr;
+				controls::GuiScroll*					verticalScroll = nullptr;
+				compositions::GuiTableComposition*		tableComposition = nullptr;
+				compositions::GuiCellComposition*		containerCellComposition = nullptr;
+				compositions::GuiBoundsComposition*		containerComposition = nullptr;
+				bool									horizontalAlwaysVisible = true;
+				bool									verticalAlwaysVisible = true;
+
+				void									UpdateTable();
 			public:
 				GuiScrollViewTemplate();
 				~GuiScrollViewTemplate();
@@ -8339,17 +8413,35 @@ Control Template
 				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, HScrollTemplate)\
 				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, VScrollTemplate)\
 				F(GuiScrollViewTemplate, vint, DefaultScrollSize)\
+				F(GuiScrollViewTemplate, controls::IScrollViewCommandExecutor*, Commands)\
 
 				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+
+				void									AdjustView(Size fullSize);
+
+				controls::GuiScroll*					GetHorizontalScroll();
+				controls::GuiScroll*					GetVerticalScroll();
+
+				bool									GetHorizontalAlwaysVisible();
+				void									SetHorizontalAlwaysVisible(bool value);
+				bool									GetVerticalAlwaysVisible();
+				void									SetVerticalAlwaysVisible(bool value);
+
+				void									Initialize()override;
 			};
 
 			class GuiMultilineTextBoxTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiMultilineTextBoxTemplate>
 			{
+			protected:
+				elements::GuiColorizedTextElement*			textElement;
+				compositions::GuiBoundsComposition*			textComposition;
+
 			public:
 				GuiMultilineTextBoxTemplate();
 				~GuiMultilineTextBoxTemplate();
 
 #define GuiMultilineTextBoxTemplate_PROPERTIES(F)\
+				F(GuiMultilineTextBoxTemplate, controls::ITextBoxCommandExecutor*, Commands)\
 				F(GuiMultilineTextBoxTemplate, elements::text::ColorEntry, TextColor)\
 				F(GuiMultilineTextBoxTemplate, Color, CaretColor)\
 
@@ -8369,7 +8461,23 @@ Control Template
 				GuiDocumentViewerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiTextListTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiTextListTemplate>
+/***********************************************************************
+List Controls
+***********************************************************************/
+
+			class GuiListControlTemplate : public GuiScrollViewTemplate, public Description<GuiListControlTemplate>
+			{
+			public:
+				GuiListControlTemplate();
+				~GuiListControlTemplate();
+
+#define GuiListControlTemplate_PROPERTIES(F)\
+				F(GuiListControlTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
+
+				GuiListControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+			class GuiTextListTemplate : public GuiListControlTemplate, public AggregatableDescription<GuiTextListTemplate>
 			{
 			public:
 				GuiTextListTemplate();
@@ -8377,21 +8485,19 @@ Control Template
 
 #define GuiTextListTemplate_PROPERTIES(F)\
 				F(GuiTextListTemplate, Color, TextColor)\
-				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
 				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, CheckBulletTemplate)\
 				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, RadioBulletTemplate)\
 
 				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiListViewTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiListViewTemplate>
+			class GuiListViewTemplate : public GuiListControlTemplate, public AggregatableDescription<GuiListViewTemplate>
 			{
 			public:
 				GuiListViewTemplate();
 				~GuiListViewTemplate();
 
 #define GuiListViewTemplate_PROPERTIES(F)\
-				F(GuiListViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
 				F(GuiListViewTemplate, TemplateProperty<GuiListViewColumnHeaderTemplate>, ColumnHeaderTemplate)\
 				F(GuiListViewTemplate, Color, PrimaryTextColor)\
 				F(GuiListViewTemplate, Color, SecondaryTextColor)\
@@ -8400,19 +8506,22 @@ Control Template
 				GuiListViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiTreeViewTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiTreeViewTemplate>
+			class GuiTreeViewTemplate : public GuiListControlTemplate, public AggregatableDescription<GuiTreeViewTemplate>
 			{
 			public:
 				GuiTreeViewTemplate();
 				~GuiTreeViewTemplate();
 
 #define GuiTreeViewTemplate_PROPERTIES(F)\
-				F(GuiTreeViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
 				F(GuiTreeViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, ExpandingDecoratorTemplate)\
 				F(GuiTreeViewTemplate, Color, TextColor)\
 
 				GuiTreeViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
+
+/***********************************************************************
+Tab Controls
+***********************************************************************/
 
 			class GuiTabTemplate : public GuiControlTemplate, public AggregatableDescription<GuiTabTemplate>
 			{
@@ -8428,13 +8537,48 @@ Control Template
 				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
+/***********************************************************************
+Date Controls
+***********************************************************************/
+
 			class GuiDatePickerTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDatePickerTemplate>
 			{
+			protected:
+				static const vint									DaysOfWeek = 7;
+				static const vint									DayRows = 6;
+				static const vint									DayRowStart = 2;
+				static const vint									YearFirst = 1900;
+				static const vint									YearLast = 2099;
+
+				DateTime											currentDate;
+				Locale												dateLocale;
+				bool												preventComboEvent;
+				bool												preventButtonEvent;
+
+				controls::GuiComboBoxListControl*					comboYear;
+				controls::GuiTextList*								listYears;
+				controls::GuiComboBoxListControl*					comboMonth;
+				controls::GuiTextList*								listMonths;
+				collections::Array<elements::GuiSolidLabelElement*>	labelDaysOfWeek;
+				collections::Array<controls::GuiSelectableButton*>	buttonDays;
+				collections::Array<elements::GuiSolidLabelElement*>	labelDays;
+				collections::Array<DateTime>						dateDays;
+
+				void												SetDay(const DateTime& day, vint& index, bool currentMonth);
+				void												DisplayMonth(vint year, vint month);
+				void												SelectDay(vint day);
+
+				void												comboYearMonth_SelectedIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												buttonDay_SelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												UpdateData(const DateTime& value, bool forceUpdate);
+
 			public:
 				GuiDatePickerTemplate();
 				~GuiDatePickerTemplate();
 
 #define GuiDatePickerTemplate_PROPERTIES(F)\
+				F(GuiDatePickerTemplate, controls::IDatePickerCommandExecutor*, Commands)\
 				F(GuiDatePickerTemplate, TemplateProperty<GuiSelectableButtonTemplate>, DateButtonTemplate)\
 				F(GuiDatePickerTemplate, TemplateProperty<GuiTextListTemplate>, DateTextListTemplate)\
 				F(GuiDatePickerTemplate, TemplateProperty<GuiComboBoxTemplate>, DateComboBoxTemplate)\
@@ -8443,6 +8587,16 @@ Control Template
 				F(GuiDatePickerTemplate, Color, SecondaryTextColor)\
 
 				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+
+				compositions::GuiNotifyEvent						DateLocaleChanged;
+				compositions::GuiNotifyEvent						DateChanged;
+
+				const Locale&										GetDateLocale();
+				void												SetDateLocale(const Locale& value);
+				const DateTime&										GetDate();
+				void												SetDate(const DateTime& value);
+
+				void												Initialize()override;
 			};
 
 			class GuiDateComboBoxTemplate : public GuiComboBoxTemplate, public AggregatableDescription<GuiDateComboBoxTemplate>
@@ -8970,6 +9124,10 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace theme
+		{
+			enum class ThemeName;
+		}
 
 		namespace controls
 		{
@@ -8987,95 +9145,39 @@ Basic Construction
 			class GuiControl : public Object, protected compositions::IGuiAltAction, public Description<GuiControl>
 			{
 				friend class compositions::GuiGraphicsComposition;
-				typedef collections::List<GuiControl*>		ControlList;
-			public:
-				/// <summary>
-				/// Represents a style for a control. A style is something like a skin, but contains some default action handlers.
-				/// </summary>
-				class IStyleController : public virtual IDescriptable, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Get the bounds composition. A bounds composition represents all visible contents of a control.</summary>
-					/// <returns>The bounds composition.</returns>
-					virtual compositions::GuiBoundsComposition*		GetBoundsComposition()=0;
-					/// <summary>Get the container composition. A container composition is where to place all bounds compositions for child controls.</summary>
-					/// <returns>The container composition.</returns>
-					virtual compositions::GuiGraphicsComposition*	GetContainerComposition()=0;
-					/// <summary>Set the focusable composition. A focusable composition is the composition to be focused when the control is focused.</summary>
-					/// <param name="value">The focusable composition.</param>
-					virtual void									SetFocusableComposition(compositions::GuiGraphicsComposition* value)=0;
-					/// <summary>Set the text to display on the control.</summary>
-					/// <param name="value">The text to display.</param>
-					virtual void									SetText(const WString& value)=0;
-					/// <summary>Set the font to render the text.</summary>
-					/// <param name="value">The font to render the text.</param>
-					virtual void									SetFont(const FontProperties& value)=0;
-					/// <summary>Set the enableing state to affect the rendering of the control.</summary>
-					/// <param name="value">The enableing state.</param>
-					virtual void									SetVisuallyEnabled(bool value)=0;
-				};
 
-				/// <summary>
-				/// An empty style for <see cref="GuiControl"/>.
-				/// </summary>
-				class EmptyStyleController : public Object, public virtual IStyleController, public Description<EmptyStyleController>
-				{
-				protected:
-					compositions::GuiBoundsComposition*				boundsComposition;
-				public:
-					EmptyStyleController();
-					~EmptyStyleController();
+				using ControlList = collections::List<GuiControl*>;
+				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
+			private:
+				theme::ThemeName						controlThemeName;
+				ControlTemplatePropertyType				controlTemplate;
+				templates::GuiControlTemplate*			controlTemplateObject = nullptr;
 
-					compositions::GuiBoundsComposition*				GetBoundsComposition()override;
-					compositions::GuiGraphicsComposition*			GetContainerComposition()override;
-					void											SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-					void											SetText(const WString& value)override;
-					void											SetFont(const FontProperties& value)override;
-					void											SetVisuallyEnabled(bool value)override;
-				};
-
-				/// <summary>
-				/// A style provider is a callback interface for some control that already provides a style controller, but the controller need callbacks to create sub compositions or handle actions.
-				/// </summary>
-				class IStyleProvider : public virtual IDescriptable, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Called when a style provider is associated with a style controller.</summary>
-					/// <param name="controller">The style controller that is associated.</param>
-					virtual void								AssociateStyleController(IStyleController* controller)=0;
-					/// <summary>Set the focusable composition. A focusable composition is the composition to be focused when the control is focused.</summary>
-					/// <param name="value">The focusable composition.</param>
-					virtual void								SetFocusableComposition(compositions::GuiGraphicsComposition* value)=0;
-					/// <summary>Set the text to display on the control.</summary>
-					/// <param name="value">The text to display.</param>
-					virtual void								SetText(const WString& value)=0;
-					/// <summary>Set the font to render the text.</summary>
-					/// <param name="value">The font to render the text.</param>
-					virtual void								SetFont(const FontProperties& value)=0;
-					/// <summary>Set the enableing state to affect the rendering of the control.</summary>
-					/// <param name="value">The enableing state.</param>
-					virtual void								SetVisuallyEnabled(bool value)=0;
-				};
 			protected:
-				Ptr<IStyleController>							styleController;
-				compositions::GuiBoundsComposition*				boundsComposition;
-				compositions::GuiGraphicsComposition*			focusableComposition;
-				compositions::GuiGraphicsEventReceiver*			eventReceiver;
+				compositions::GuiBoundsComposition*		boundsComposition = nullptr;
+				compositions::GuiBoundsComposition*		containerComposition = nullptr;
+				compositions::GuiGraphicsComposition*	focusableComposition = nullptr;
+				compositions::GuiGraphicsEventReceiver*	eventReceiver = nullptr;
 
-				bool									isEnabled;
-				bool									isVisuallyEnabled;
-				bool									isVisible;
+				bool									isEnabled = true;
+				bool									isVisuallyEnabled = true;
+				bool									isVisible = true;
 				WString									alt;
 				WString									text;
 				FontProperties							font;
-				compositions::IGuiAltActionHost*		activatingAltHost;
+				compositions::IGuiAltActionHost*		activatingAltHost = nullptr;
 
-				GuiControl*								parent;
+				GuiControl*								parent = nullptr;
 				ControlList								children;
 				description::Value						tag;
-				GuiControl*								tooltipControl;
-				vint									tooltipWidth;
+				GuiControl*								tooltipControl = nullptr;
+				vint									tooltipWidth = 0;
 
+				virtual void							BeforeControlTemplateUninstalled();
+				virtual void							AfterControlTemplateInstalled(bool initialize);
+				virtual void							CheckAndStoreControlTemplate(templates::GuiControlTemplate* value);
+				virtual void							EnsureControlTemplateExists();
+				virtual void							RebuildControlTemplate();
 				virtual void							OnChildInserted(GuiControl* control);
 				virtual void							OnChildRemoved(GuiControl* control);
 				virtual void							OnParentChanged(GuiControl* oldParent, GuiControl* newParent);
@@ -9094,11 +9196,15 @@ Basic Construction
 				static bool								SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
 
 			public:
+				using ControlTemplateType = templates::GuiControlTemplate;
+
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiControl(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
 
+				/// <summary>Control template changed event. This event will be raised when the control template is changed.</summary>
+				compositions::GuiNotifyEvent			ControlTemplateChanged;
 				/// <summary>Render target changed event. This event will be raised when the render target of the control is changed.</summary>
 				compositions::GuiNotifyEvent			RenderTargetChanged;
 				/// <summary>Visible event. This event will be raised when the visibility state of the control is changed.</summary>
@@ -9120,9 +9226,15 @@ Basic Construction
 				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
 				/// <returns>The created argument.</returns>
 				compositions::GuiEventArgs				GetNotifyEventArguments();
+				/// <summary>Get the associated control template.</summary>
+				/// <returns>The control template.</returns>
+				ControlTemplatePropertyType				GetControlTemplate();
+				/// <summary>Set the associated control template.</summary>
+				/// <param name="value">The control template.</param>
+				void									SetControlTemplate(const ControlTemplatePropertyType& value);
 				/// <summary>Get the associated style controller.</summary>
 				/// <returns>The associated style controller.</returns>
-				IStyleController*						GetStyleController();
+				templates::GuiControlTemplate*			GetControlTemplateObject();
 				/// <summary>Get the bounds composition for the control. The value is from <see cref="IStyleController::GetBoundsComposition"/>.</summary>
 				/// <returns>The bounds composition.</returns>
 				compositions::GuiBoundsComposition*		GetBoundsComposition();
@@ -9132,9 +9244,6 @@ Basic Construction
 				/// <summary>Get the focusable composition for the control. A focusable composition is the composition to be focused when the control is focused.</summary>
 				/// <returns>The focusable composition.</returns>
 				compositions::GuiGraphicsComposition*	GetFocusableComposition();
-				/// <summary>Get the event receiver from the bounds composition.</summary>
-				/// <returns>The event receiver.</returns>
-				compositions::GuiGraphicsEventReceiver*	GetEventReceiver();
 				/// <summary>Get the parent control.</summary>
 				/// <returns>The parent control.</returns>
 				GuiControl*								GetParent();
@@ -9240,8 +9349,8 @@ Basic Construction
 			{
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiCustomControl(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiCustomControl(theme::ThemeName themeName);
 				~GuiCustomControl();
 			};
 
@@ -9260,6 +9369,50 @@ Basic Construction
 				{
 				}
 			};
+
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_3(UNIQUE) controlTemplateObject ## UNIQUE
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(UNIQUE) GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_3(UNIQUE)
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(__LINE__)
+
+#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, NAME) \
+			public: \
+				using ControlTemplateType = templates::Gui##TEMPLATE; \
+			private: \
+				templates::Gui##TEMPLATE* NAME = nullptr; \
+				void BeforeControlTemplateUninstalled_(); \
+				void AfterControlTemplateInstalled_(bool initialize); \
+			protected: \
+				void BeforeControlTemplateUninstalled()override \
+				{\
+					BeforeControlTemplateUninstalled_(); \
+					BASE_TYPE::BeforeControlTemplateUninstalled(); \
+				}\
+				void AfterControlTemplateInstalled(bool initialize)override \
+				{\
+					BASE_TYPE::AfterControlTemplateInstalled(initialize); \
+					AfterControlTemplateInstalled_(initialize); \
+				}\
+				void CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)override \
+				{ \
+					auto ct = dynamic_cast<templates::Gui##TEMPLATE*>(value); \
+					CHECK_ERROR(ct, L"The assigned control template is not vl::presentation::templates::Gui" L ## # TEMPLATE L"."); \
+					NAME = ct; \
+					BASE_TYPE::CheckAndStoreControlTemplate(value); \
+				} \
+				bool HasControlTemplateObject() \
+				{ \
+					return NAME != nullptr; \
+				} \
+			public: \
+				templates::Gui##TEMPLATE* GetControlTemplateObject() \
+				{ \
+					EnsureControlTemplateExists(); \
+					return NAME; \
+				} \
+			private: \
+
+#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE, BASE_TYPE) GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME)
+
 		}
 	}
 }
@@ -9296,21 +9449,12 @@ Buttons
 			/// <summary>A control with 3 phases state transffering when mouse click happens.</summary>
 			class GuiButton : public GuiControl, public Description<GuiButton>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiButton"/>.</summary>
-				class IStyleController : virtual public GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the control state changed.</summary>
-					/// <param name="value">The new control state.</param>
-					virtual void						Transfer(ButtonState value) = 0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ButtonTemplate, GuiControl)
 			protected:
-				IStyleController*						styleController;
-				bool									clickOnMouseUp;
-				bool									mousePressing;
-				bool									mouseHoving;
-				ButtonState								controlState;
+				bool									clickOnMouseUp = true;
+				bool									mousePressing = false;
+				bool									mouseHoving = false;
+				ButtonState								controlState = ButtonState::Normal;
 
 				void									OnParentLineChanged()override;
 				void									OnActiveAlt()override;
@@ -9321,8 +9465,8 @@ Buttons
 				void									OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiButton(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiButton(theme::ThemeName themeName);
 				~GuiButton();
 
 				/// <summary>Mouse click event.</summary>
@@ -9339,16 +9483,8 @@ Buttons
 			/// <summary>A <see cref="GuiButton"/> with a selection state.</summary>
 			class GuiSelectableButton : public GuiButton, public Description<GuiSelectableButton>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SelectableButtonTemplate, GuiButton)
 			public:
-				/// <summary>Style controller interface for <see cref="GuiSelectableButton"/>.</summary>
-				class IStyleController : public virtual GuiButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the selection state changed.</summary>
-					/// <param name="value">The new control state.</param>
-					virtual void						SetSelected(bool value) = 0;
-				};
-
 				/// <summary>Selection group controller. Control the selection state of all attached button.</summary>
 				class GroupController : public GuiComponent, public Description<GroupController>
 				{
@@ -9382,16 +9518,15 @@ Buttons
 				};
 
 			protected:
-				IStyleController*						styleController;
-				GroupController*						groupController;
-				bool									autoSelection;
-				bool									isSelected;
+				GroupController*						groupController = nullptr;
+				bool									autoSelection = true;
+				bool									isSelected = false;
 
 				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiSelectableButton(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiSelectableButton(theme::ThemeName themeName);
 				~GuiSelectableButton();
 
 				/// <summary>Group controller changed event.</summary>
@@ -9788,25 +9923,15 @@ Label
 			/// <summary>A control to display a text.</summary>
 			class GuiLabel : public GuiControl, public Description<GuiLabel>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiLabel"/>.</summary>
-				class IStyleController : virtual public GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Get the default text color.</summary>
-					/// <returns>The default text color.</returns>
-					virtual Color						GetDefaultTextColor() = 0;
-					/// <summary>Called when the text color changed.</summary>
-					/// <param name="value">The new text color.</param>
-					virtual void						SetTextColor(Color value) = 0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(LabelTemplate, GuiControl)
 			protected:
 				Color									textColor;
-				IStyleController*						styleController;
+				bool									textColorConsisted = true;
+
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiLabel(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiLabel(theme::ThemeName themeName);
 				~GuiLabel();
 
 				/// <summary>Get the text color.</summary>
@@ -9853,24 +9978,7 @@ Scrolls
 			/// <summary>A scroll control, which represents a one dimension sub range of a whole range.</summary>
 			class GuiScroll : public GuiControl, public Description<GuiScroll>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiScroll"/>.</summary>
-				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the command executor is changed.</summary>
-					/// <param name="value">The command executor.</param>
-					virtual void						SetCommandExecutor(IScrollCommandExecutor* value)=0;
-					/// <summary>Called when the total size is changed.</summary>
-					/// <param name="value">The total size.</param>
-					virtual void						SetTotalSize(vint value)=0;
-					/// <summary>Called when the page size is changed.</summary>
-					/// <param name="value">The page size.</param>
-					virtual void						SetPageSize(vint value)=0;
-					/// <summary>Called when the position is changed.</summary>
-					/// <param name="value">The position.</param>
-					virtual void						SetPosition(vint value)=0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ScrollTemplate, GuiControl)
 			protected:
 				class CommandExecutor : public Object, public IScrollCommandExecutor
 				{
@@ -9890,17 +9998,16 @@ Scrolls
 					void								SetPosition(vint value)override;
 				};
 
-				IStyleController*						styleController;
 				Ptr<CommandExecutor>					commandExecutor;
-				vint									totalSize;
-				vint									pageSize;
-				vint									position;
-				vint									smallMove;
-				vint									bigMove;
+				vint									totalSize = 100;
+				vint									pageSize = 10;
+				vint									position = 0;
+				vint									smallMove = 1;
+				vint									bigMove = 10;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiScroll(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiScroll(theme::ThemeName themeName);
 				~GuiScroll();
 				
 				/// <summary>Total size changed event.</summary>
@@ -9991,15 +10098,14 @@ Tab Control
 			class GuiTabPage : public GuiCustomControl, public AggregatableDescription<GuiTabPage>
 			{
 				friend class GuiTabPageList;
-				friend class GuiTab;
 			protected:
 				GuiTab*											tab = nullptr;
 
 				bool											IsAltAvailable()override;
 			public:
 				/// <summary>Create a tab page control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiTabPage(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiTabPage(theme::ThemeName themeName);
 				~GuiTabPage();
 
 				GuiTab*											GetOwnerTab();
@@ -10021,24 +10127,8 @@ Tab Control
 			/// <summary>Represents a container with multiple named tabs.</summary>
 			class GuiTab : public GuiControl, public Description<GuiTab>
 			{
-				friend class GuiTabPage;
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TabTemplate, GuiControl)
 				friend class GuiTabPageList;
-			public:
-				
-				/// <summary>Style controller interface for <see cref="GuiTab"/>.</summary>
-				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the command executor is changed.</summary>
-					/// <param name="value">The command executor.</param>
-					virtual void								SetCommandExecutor(ITabCommandExecutor* value) = 0;
-					/// <summary>Called when the tab page list is changed.</summary>
-					/// <param name="value">The tab page list.</param>
-					virtual void								SetTabPages(Ptr<reflection::description::IValueObservableList> value) = 0;
-					/// <summary>Render a tab header at the specified position as selected.</summary>
-					/// <param name="index">The specified position.</param>
-					virtual void								SetSelectedTabPage(GuiTabPage* value) = 0;
-				};
 			protected:
 				class CommandExecutor : public Object, public ITabCommandExecutor
 				{
@@ -10052,13 +10142,12 @@ Tab Control
 				};
 
 				Ptr<CommandExecutor>							commandExecutor;
-				IStyleController*								styleController = nullptr;
 				GuiTabPageList									tabPages;
 				GuiTabPage*										selectedPage = nullptr;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiTab(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiTab(theme::ThemeName themeName);
 				~GuiTab();
 
 				/// <summary>Selected page changed event.</summary>
@@ -10084,92 +10173,30 @@ Scroll View
 			/// <summary>A control with a vertical scroll bar and a horizontal scroll bar to perform partial viewing.</summary>
 			class GuiScrollView : public GuiControl, public Description<GuiScrollView>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiScrollView"/>.</summary>
-				class IStyleProvider : public virtual GuiControl::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Create a control style for the horizontal scroll bar.</summary>
-					/// <returns>The created control style for the horizontal scroll bar.</returns>
-					virtual GuiScroll::IStyleController*			CreateHorizontalScrollStyle()=0;
-					/// <summary>Create a control style for the vertical scroll bar.</summary>
-					/// <returns>The created control style for the vertical scroll bar.</returns>
-					virtual GuiScroll::IStyleController*			CreateVerticalScrollStyle()=0;
-					/// <summary>Get the default scroll size for scroll bars, width for vertical, height for horizontal.</summary>
-					/// <returns>The default scroll size.</returns>
-					virtual vint									GetDefaultScrollSize()=0;
-					/// <summary>Called when the control begins to initialize. The control pass the bounds composition, and the style provider can put background compositions and elements on it, and return a container composition to contain content and scroll bars.</summary>
-					/// <returns>A container composition to contain content and scroll bars</returns>
-					/// <param name="boundsComposition">The bounds composition to install background.</param>
-					virtual compositions::GuiGraphicsComposition*	InstallBackground(compositions::GuiBoundsComposition* boundsComposition)=0;
-				};
-				
-				/// <summary>Style controller for <see cref="GuiScrollView"/>.</summary>
-				class StyleController : public Object, public GuiControl::IStyleController, public Description<StyleController>
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ScrollViewTemplate, GuiControl)
+
+				using IEventHandler = compositions::IGuiGraphicsEventHandler;
+			protected:
+				class CommandExecutor : public Object, public IScrollViewCommandExecutor
 				{
 				protected:
-					Ptr<IStyleProvider>						styleProvider;
-					GuiScrollView*							scrollView;
-					GuiScroll*								horizontalScroll;
-					GuiScroll*								verticalScroll;
-					compositions::GuiBoundsComposition*		boundsComposition;
-					compositions::GuiTableComposition*		tableComposition;
-					compositions::GuiCellComposition*		containerCellComposition;
-					compositions::GuiBoundsComposition*		containerComposition;
-					bool									horizontalAlwaysVisible;
-					bool									verticalAlwaysVisible;
+					GuiScrollView*						scrollView;
 
-					void									UpdateTable();
 				public:
-					/// <summary>Create a style controller with a specified style provider.</summary>
-					/// <param name="_styleProvider">The style provider.</param>
-					StyleController(IStyleProvider* _styleProvider);
-					~StyleController();
+					CommandExecutor(GuiScrollView* _scrollView);
+					~CommandExecutor();
 
-					/// <summary>Called when the style controller is attched to a <see cref="GuiScrollView"/>.</summary>
-					/// <param name="_scrollView">The scroll view control that attached to.</param>
-					void									SetScrollView(GuiScrollView* _scrollView);
-					/// <summary>Called when the view size of the scroll view changed. Scroll bars will be adjusted.</summary>
-					/// <param name="fullSize">The view size.</param>
-					void									AdjustView(Size fullSize);
-					/// <summary>Get the attached style provider.</summary>
-					/// <returns>The attached style provider.</returns>
-					IStyleProvider*							GetStyleProvider();
-
-					/// <summary>Get the horizontal scroll control.</summary>
-					/// <returns>The horizontal scroll control.</returns>
-					GuiScroll*								GetHorizontalScroll();
-					/// <summary>Get the vertical scroll control.</summary>
-					/// <returns>The vertical scroll control.</returns>
-					GuiScroll*								GetVerticalScroll();
-
-					compositions::GuiTableComposition*		GetInternalTableComposition();
-					compositions::GuiBoundsComposition*		GetInternalContainerComposition();
-
-					/// <summary>Test is the horizontal scroll bar always visible even the content doesn't exceed the view bounds.</summary>
-					/// <returns>Returns true if the horizontal scroll bar always visible even the content doesn't exceed the view bounds</returns>
-					bool									GetHorizontalAlwaysVisible();
-					/// <summary>Set is the horizontal scroll bar always visible even the content doesn't exceed the view bounds.</summary>
-					/// <param name="value">Set to true if the horizontal scroll bar always visible even the content doesn't exceed the view bounds</param>
-					void									SetHorizontalAlwaysVisible(bool value);
-					/// <summary>Test is the vertical scroll bar always visible even the content doesn't exceed the view bounds.</summary>
-					/// <returns>Returns true if the vertical scroll bar always visible even the content doesn't exceed the view bounds</returns>
-					bool									GetVerticalAlwaysVisible();
-					/// <summary>Set is the vertical scroll bar always visible even the content doesn't exceed the view bounds.</summary>
-					/// <param name="value">Set to true if the vertical scroll bar always visible even the content doesn't exceed the view bounds</param>
-					void									SetVerticalAlwaysVisible(bool value);
-
-					compositions::GuiBoundsComposition*		GetBoundsComposition()override;
-					compositions::GuiGraphicsComposition*	GetContainerComposition()override;
-					void									SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-					void									SetText(const WString& value)override;
-					void									SetFont(const FontProperties& value)override;
-					void									SetVisuallyEnabled(bool value)override;
+					void								CalculateView()override;
 				};
-			protected:
 
-				StyleController*						styleController;
+				Ptr<CommandExecutor>					commandExecutor;
 				bool									supressScrolling;
+				Ptr<IEventHandler>						hScrollHandler;
+				Ptr<IEventHandler>						vScrollHandler;
+				Ptr<IEventHandler>						hWheelHandler;
+				Ptr<IEventHandler>						vWheelHandler;
+				bool									horizontalAlwaysVisible = true;
+				bool									verticalAlwaysVisible = true;
 
 				void									OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnHorizontalScroll(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -10177,7 +10204,6 @@ Scroll View
 				void									OnHorizontalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnVerticalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									CallUpdateView();
-				void									Initialize();
 
 				/// <summary>Calculate the full size of the content.</summary>
 				/// <returns>The full size of the content.</returns>
@@ -10192,13 +10218,10 @@ Scroll View
 				/// <returns>The big move of the scroll bar.</returns>
 				virtual Size							GetBigMove();
 				
-				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiScrollView(StyleController* _styleController);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
-				GuiScrollView(IStyleProvider* styleProvider);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiScrollView(theme::ThemeName themeName);
 				~GuiScrollView();
 
 				virtual void							SetFont(const FontProperties& value);
@@ -10235,42 +10258,16 @@ Scroll View
 			/// <summary>A control container with a vertical scroll bar and a horizontal scroll bar to perform partial viewing. When controls are added, removed, moved or resized, the scroll bars will adjust automatically.</summary>
 			class GuiScrollContainer : public GuiScrollView, public Description<GuiScrollContainer>
 			{
-			public:
-				/// <summary>Style controller for <see cref="GuiScrollContainer"/>.</summary>
-				class StyleController : public GuiScrollView::StyleController, public Description<StyleController>
-				{
-				protected:
-					compositions::GuiBoundsComposition*		controlContainerComposition;
-					bool									extendToFullWidth;
-				public:
-					/// <summary>Create a style controller with a specified style provider.</summary>
-					/// <param name="styleProvider">The style provider.</param>
-					StyleController(GuiScrollView::IStyleProvider* styleProvider);
-					~StyleController();
-
-					compositions::GuiGraphicsComposition*	GetContainerComposition()override;
-					/// <summary>Update sub controls using a specified left-top position of the view bounds.</summary>
-					/// <param name="leftTop">The specified left-top position of the view bounds.</param>
-					void									MoveContainer(Point leftTop);
-
-					/// <summary>Test does the content container always extend its width to fill the scroll container.</summary>
-					/// <returns>Return true if the content container always extend its width to fill the scroll container.</returns>
-					bool									GetExtendToFullWidth();
-					/// <summary>Set does the content container always extend its width to fill the scroll container.</summary>
-					/// <param name="value">Set to true if the content container always extend its width to fill the scroll container.</param>
-					void									SetExtendToFullWidth(bool value);
-				};
-
 			protected:
-				StyleController*						styleController;
+				bool									extendToFullWidth = false;
+				bool									extendToFullHeight = false;
 
-				void									OnControlContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				Size									QueryFullSize()override;
 				void									UpdateView(Rect viewBounds)override;
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
-				GuiScrollContainer(GuiScrollContainer::IStyleProvider* styleProvider);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiScrollContainer(theme::ThemeName themeName);
 				~GuiScrollContainer();
 				
 				/// <summary>Test does the content container always extend its width to fill the scroll container.</summary>
@@ -10279,6 +10276,13 @@ Scroll View
 				/// <summary>Set does the content container always extend its width to fill the scroll container.</summary>
 				/// <param name="value">Set to true if the content container always extend its width to fill the scroll container.</param>
 				void									SetExtendToFullWidth(bool value);
+
+				/// <summary>Test does the content container always extend its height to fill the scroll container.</summary>
+				/// <returns>Return true if the content container always extend its height to fill the scroll container.</returns>
+				bool									GetExtendToFullHeight();
+				/// <summary>Set does the content container always extend its height to fill the scroll container.</summary>
+				/// <param name="value">Set to true if the content container always extend its height to fill the scroll container.</param>
+				void									SetExtendToFullHeight(bool value);
 			};
 		}
 	}
@@ -10348,8 +10352,8 @@ Control Host
 				void											Destroying()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiControlHost(GuiControl::IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiControlHost(theme::ThemeName themeName);
 				~GuiControlHost();
 				
 				/// <summary>Window got focus event.</summary>
@@ -10494,125 +10498,18 @@ Window
 			/// </summary>
 			class GuiWindow : public GuiControlHost, protected compositions::IGuiAltActionHost, public AggregatableDescription<GuiWindow>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
-			public:
-				/// <summary>Style controller interface for <see cref="GuiWindow"/>.</summary>
-				class IStyleController : virtual public GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the style controller is attached to the window.</summary>
-					/// <param name="_window">The window.</param>
-					virtual void						AttachWindow(GuiWindow* _window)=0;
-					/// <summary>Initialize visual properties of the window. This callback is for some window template that don't need the standard window border.</summary>
-					virtual void						InitializeNativeWindowProperties()=0;
-					/// <summary>
-					/// Update the size state.
-					/// </summary>
-					/// <param name="value">The new border size.</param>
-					virtual void						SetSizeState(INativeWindow::WindowSizeState value)=0;
-					/// <summary>
-					/// Test is the maximize box visible.
-					/// </summary>
-					/// <returns>Returns true if the maximize box is visible.</returns>
-					virtual bool						GetMaximizedBox()=0;
-					/// <summary>
-					/// Make the maximize box visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the maximize box visible.</param>
-					virtual void						SetMaximizedBox(bool visible)=0;
-					/// <summary>
-					/// Test is the minimize box visible.
-					/// </summary>
-					/// <returns>Returns true if the minimize box is visible.</returns>
-					virtual bool						GetMinimizedBox()=0;
-					/// <summary>
-					/// Make the minimize box visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the minimize box visible.</param>
-					virtual void						SetMinimizedBox(bool visible)=0;
-					/// <summary>
-					/// Test is the border visible.
-					/// </summary>
-					/// <returns>Returns true if the border is visible.</returns>
-					virtual bool						GetBorder()=0;
-					/// <summary>
-					/// Make the border visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the border visible.</param>
-					virtual void						SetBorder(bool visible)=0;
-					/// <summary>
-					/// Test is the size box visible.
-					/// </summary>
-					/// <returns>Returns true if the size box is visible.</returns>
-					virtual bool						GetSizeBox()=0;
-					/// <summary>
-					/// Make the size box visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the size box visible.</param>
-					virtual void						SetSizeBox(bool visible)=0;
-					/// <summary>
-					/// Test is the icon visible.
-					/// </summary>
-					/// <returns>Returns true if the icon is visible.</returns>
-					virtual bool						GetIconVisible()=0;
-					/// <summary>
-					/// Make the icon visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the icon visible.</param>
-					virtual void						SetIconVisible(bool visible)=0;
-					/// <summary>
-					/// Test is the title bar visible.
-					/// </summary>
-					/// <returns>Returns true if the title bar is visible.</returns>
-					virtual bool						GetTitleBar()=0;
-					/// <summary>
-					/// Make the title bar visible or invisible.
-					/// </summary>
-					/// <param name="visible">True to make the title bar visible.</param>
-					virtual void						SetTitleBar(bool visible)=0;
-					/// <summary>
-					/// Create a control style for tooltip control.
-					/// </summary>
-					/// <returns>Returns the control style. Returns null for default control style.</returns>
-					virtual IStyleController*			CreateTooltipStyle() = 0;
-					/// <summary>
-					/// Create a control style for shortcut key label control.
-					/// </summary>
-					/// <returns>Returns the control style. Returns null for default control style.</returns>
-					virtual GuiLabel::IStyleController*	CreateShortcutKeyStyle() = 0;
-				};
-				
-				/// <summary>Style controller with default behavior for <see cref="GuiWindow"/>.</summary>
-				class DefaultBehaviorStyleController : virtual public IStyleController
-				{
-				protected:
-					GuiWindow*							window;
-				public:
-					DefaultBehaviorStyleController();
-					~DefaultBehaviorStyleController();
-
-					void								AttachWindow(GuiWindow* _window)override;
-					void								InitializeNativeWindowProperties()override;
-					void								SetSizeState(INativeWindow::WindowSizeState value)override;
-					bool								GetMaximizedBox()override;
-					void								SetMaximizedBox(bool visible)override;
-					bool								GetMinimizedBox()override;
-					void								SetMinimizedBox(bool visible)override;
-					bool								GetBorder()override;
-					void								SetBorder(bool visible)override;
-					bool								GetSizeBox()override;
-					void								SetSizeBox(bool visible)override;
-					bool								GetIconVisible()override;
-					void								SetIconVisible(bool visible)override;
-					bool								GetTitleBar()override;
-					void								SetTitleBar(bool visible)override;
-					IStyleController*					CreateTooltipStyle()override;
-					GuiLabel::IStyleController*			CreateShortcutKeyStyle()override;
-				};
 			protected:
-				IStyleController*						styleController;
 				compositions::IGuiAltActionHost*		previousAltHost;
+				bool									hasMaximizedBox = true;
+				bool									hasMinimizedBox = true;
+				bool									hasBorder = true;
+				bool									hasSizeBox = true;
+				bool									isIconVisible = true;
+				bool									hasTitleBar = true;
 				
+				void									SyncNativeWindowProperties();
 				void									Moved()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
@@ -10625,8 +10522,8 @@ Window
 				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiWindow(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiWindow(theme::ThemeName themeName);
 				~GuiWindow();
 
 				IDescriptable*							QueryService(const WString& identifier)override;
@@ -10731,8 +10628,8 @@ Window
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiPopup(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiPopup(theme::ThemeName themeName);
 				~GuiPopup();
 
 				/// <summary>Test will the whole popup window be in the screen if the popup's left-top position is set to a specified value.</summary>
@@ -10769,8 +10666,8 @@ Window
 				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiTooltip(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiTooltip(theme::ThemeName themeName);
 				~GuiTooltip();
 
 				/// <summary>Get the preferred content width.</summary>
@@ -11047,20 +10944,12 @@ List Control
 			/// <summary>Represents a list control. A list control automatically read data sources and creates corresponding data item control from the item template.</summary>
 			class GuiListControl : public GuiScrollView, public Description<GuiListControl>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListControlTemplate, GuiScrollView)
 			public:
 				class IItemProvider;
 
 				using ItemStyle = templates::GuiListItemTemplate;
 				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
-
-				/// <summary>Style provider interface for <see cref="GuiListControl"/>.</summary>
-				class IStyleProvider : public virtual GuiScrollView::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Create a style controller for an item background. The selection state is used to render the selection state of an item.</summary>
-					/// <returns>The created style controller for an item background.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateItemBackground() = 0;
-				};
 
 				//-----------------------------------------------------------
 				// Callback Interfaces
@@ -11251,7 +11140,6 @@ List Control
 				// State management
 				//-----------------------------------------------------------
 
-				IStyleProvider*									styleProvider;
 				Ptr<ItemCallback>								callback;
 				Ptr<IItemProvider>								itemProvider;
 				ItemStyleProperty								itemStyleProperty;
@@ -11304,10 +11192,10 @@ List Control
 				void											DetachItemEvents(ItemStyle* style);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_styleProvider">The style provider.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
 				/// <param name="acceptFocus">Set to true if the list control is allowed to have a keyboard focus.</param>
-				GuiListControl(IStyleProvider* _styleProvider, IItemProvider* _itemProvider, bool acceptFocus=false);
+				GuiListControl(theme::ThemeName themeName, IItemProvider* _itemProvider, bool acceptFocus=false);
 				~GuiListControl();
 
 				/// <summary>Style provider changed event.</summary>
@@ -11344,9 +11232,6 @@ List Control
 				/// <summary>Item mouse leave event.</summary>
 				compositions::GuiItemNotifyEvent				ItemMouseLeave;
 
-				/// <summary>Get the style provider for this control.</summary>
-				/// <returns>The style provider for this control.</returns>
-				IStyleProvider*											GetListControlStyleProvider();
 				/// <summary>Get the item provider.</summary>
 				/// <returns>The item provider.</returns>
 				virtual IItemProvider*							GetItemProvider();
@@ -11413,9 +11298,9 @@ Selectable List Control
 				void											OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_styleProvider">The style provider.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
-				GuiSelectableListControl(IStyleProvider* _styleProvider, IItemProvider* _itemProvider);
+				GuiSelectableListControl(theme::ThemeName themeName, IItemProvider* _itemProvider);
 				~GuiSelectableListControl();
 
 				/// <summary>Selection changed event.</summary>
@@ -11732,13 +11617,13 @@ DefaultTextListItemTemplate
 				class DefaultTextListItemTemplate : public templates::GuiTextListItemTemplate
 				{
 				protected:
-					using BulletStyle = GuiSelectableButton::IStyleController;
+					using BulletStyle = templates::GuiControlTemplate;
 
 					GuiSelectableButton*					bulletButton = nullptr;
 					elements::GuiSolidLabelElement*			textElement = nullptr;
 					bool									supressEdit = false;
 
-					virtual BulletStyle*					CreateBulletStyle();
+					virtual TemplateProperty<BulletStyle>	CreateBulletStyle();
 					void									OnInitialize()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -11753,14 +11638,14 @@ DefaultTextListItemTemplate
 				class DefaultCheckTextListItemTemplate : public DefaultTextListItemTemplate
 				{
 				protected:
-					BulletStyle*							CreateBulletStyle()override;
+					TemplateProperty<BulletStyle>			CreateBulletStyle()override;
 				public:
 				};
 
 				class DefaultRadioTextListItemTemplate : public DefaultTextListItemTemplate
 				{
 				protected:
-					BulletStyle*							CreateBulletStyle()override;
+					TemplateProperty<BulletStyle>			CreateBulletStyle()override;
 				public:
 				};
 
@@ -11847,40 +11732,21 @@ GuiVirtualTextList
 			/// <summary>Text list control in virtual mode.</summary>
 			class GuiVirtualTextList : public GuiSelectableListControl, public Description<GuiVirtualTextList>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiVirtualTreeView"/>.</summary>
-				class IStyleProvider : public virtual GuiSelectableListControl::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Get the text color.</summary>
-					/// <returns>The text color.</returns>
-					virtual Color										GetTextColor()=0;
-					/// <summary>Create a style controller for displaying a check box in front of a text item.</summary>
-					/// <returns>The created style controller for displaying a check box in front of a text item.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateCheckBulletStyle() = 0;
-					/// <summary>Create a style controller for displaying a radio button in front of a text item.</summary>
-					/// <returns>The created style controller for displaying a radio button in front of a text item.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateRadioBulletStyle() = 0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TextListTemplate, GuiSelectableListControl)
 			protected:
-				IStyleProvider*											styleProvider;
 				TextListView											view = TextListView::Unknown;
 
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualTextList(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualTextList(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
 
 				/// <summary>Item checked changed event.</summary>
 				compositions::GuiItemNotifyEvent						ItemChecked;
-				
-				/// <summary>Get the style provider for this control.</summary>
-				/// <returns>The style provider for this control.</returns>
-				IStyleProvider*											GetTextListStyleProvider();
 
 				/// <summary>Get the current view.</summary>
 				/// <returns>The current view. After [M:vl.presentation.controls.GuiListControl.SetItemTemplate] is called, the current view is reset to Unknown.</returns>
@@ -11901,8 +11767,8 @@ GuiTextList
 				list::TextItemProvider*									items;
 			public:
 				/// <summary>Create a Text list control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
-				GuiTextList(IStyleProvider* _styleProvider);
+				/// <param name="_controlTemplate">The control template for this control.</param>
+				GuiTextList(theme::ThemeName themeName);
 				~GuiTextList();
 
 				/// <summary>Get all text items.</summary>
@@ -12243,6 +12109,7 @@ GuiVirtualTreeListControl
 			/// <summary>Tree list control in virtual node.</summary>
 			class GuiVirtualTreeListControl : public GuiSelectableListControl, protected virtual tree::INodeProviderCallback, public Description<GuiVirtualTreeListControl>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TreeViewTemplate, GuiSelectableListControl)
 			protected:
 				void								OnAttached(tree::INodeRootProvider* provider)override;
 				void								OnBeforeItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)override;
@@ -12259,9 +12126,9 @@ GuiVirtualTreeListControl
 				void								OnNodeLeftButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiNodeMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a tree list control in virtual mode.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_nodeRootProvider">The node root provider for this control.</param>
-				GuiVirtualTreeListControl(IStyleProvider* _styleProvider, Ptr<tree::INodeRootProvider> _nodeRootProvider);
+				GuiVirtualTreeListControl(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider);
 				~GuiVirtualTreeListControl();
 
 				/// <summary>Node left mouse button down event.</summary>
@@ -12378,20 +12245,7 @@ GuiVirtualTreeView
 			/// <summary>Tree view control in virtual mode.</summary>
 			class GuiVirtualTreeView : public GuiVirtualTreeListControl, public Description<GuiVirtualTreeView>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiVirtualTreeView"/>.</summary>
-				class IStyleProvider : public virtual GuiVirtualTreeListControl::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Create a style controller for an item expanding decorator. The selection state is used to render the expanding state of a node</summary>
-					/// <returns>The created style controller for an item expanding decorator.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateItemExpandingDecorator()=0;
-					/// <summary>Get the text color.</summary>
-					/// <returns>The text color.</returns>
-					virtual Color										GetTextColor()=0;
-				};
 			protected:
-				IStyleProvider*											styleProvider = nullptr;
 				tree::ITreeViewItemView*								treeViewItemView = nullptr;
 
 				templates::GuiTreeItemTemplate*							GetStyleFromNode(tree::INodeProvider* node);
@@ -12403,14 +12257,10 @@ GuiVirtualTreeView
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 			public:
 				/// <summary>Create a tree view control in virtual mode. A [T:vl.presentation.controls.tree.TreeViewNodeItemStyleProvider] is created as a node item style provider by default.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_nodeRootProvider">The node root provider for this control.</param>
-				GuiVirtualTreeView(IStyleProvider* _styleProvider, Ptr<tree::INodeRootProvider> _nodeRootProvider);
+				GuiVirtualTreeView(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider);
 				~GuiVirtualTreeView();
-
-				/// <summary>Get the style provider for this control.</summary>
-				/// <returns>The style provider for this control.</returns>
-				IStyleProvider*											GetTreeViewStyleProvider();
 			};
 
 /***********************************************************************
@@ -12424,8 +12274,8 @@ GuiTreeView
 				Ptr<tree::TreeViewItemRootProvider>						nodes;
 			public:
 				/// <summary>Create a tree view control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
-				GuiTreeView(IStyleProvider* _styleProvider);
+				/// <param name="_controlTemplate">The control template for this control.</param>
+				GuiTreeView(theme::ThemeName themeName);
 				~GuiTreeView();
 
 				/// <summary>Get the <see cref="tree::TreeViewItemRootProvider"/> as a node root providerl.</summary>
@@ -12683,7 +12533,7 @@ GuiTextBoxAutoCompleteBase
 					GuiTextList*									autoCompleteList;
 
 				public:
-					TextListControlProvider(GuiTextList::IStyleProvider* styleProvider = nullptr);
+					TextListControlProvider(TemplateProperty<templates::GuiTextListTemplate> controlTemplate = {});
 					~TextListControlProvider();
 
 					GuiControl*										GetAutoCompleteControl()override;
@@ -13152,14 +13002,13 @@ GuiDocumentCommonInterface
 				};
 			protected:
 				Ptr<DocumentModel>							baselineDocument;
-				Color										caretColor;
 				DocumentItemMap								documentItems;
-				GuiControl*									documentControl;
-				elements::GuiDocumentElement*				documentElement;
-				compositions::GuiBoundsComposition*			documentComposition;
+				GuiControl*									documentControl = nullptr;
+				elements::GuiDocumentElement*				documentElement = nullptr;
+				compositions::GuiBoundsComposition*			documentComposition = nullptr;
 				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
-				bool										dragging;
-				EditMode									editMode;
+				bool										dragging = false;
+				EditMode									editMode = EditMode::ViewOnly;
 
 				Ptr<GuiDocumentUndoRedoProcessor>			undoRedoProcessor;
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
@@ -13170,7 +13019,7 @@ GuiDocumentCommonInterface
 				void										UpdateCaretPoint();
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(vint code, bool shift, bool ctrl);
-				void										InstallDocumentViewer(GuiControl* _sender, compositions::GuiGraphicsComposition* _container);
+				void										InstallDocumentViewer(GuiControl* _sender, compositions::GuiGraphicsComposition* _container, compositions::GuiGraphicsComposition* eventComposition, compositions::GuiGraphicsComposition* focusableComposition);
 				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package);
 				void										ActivateActiveHyperlink(bool activate);
 				void										AddShortcutCommand(vint key, const Func<void()>& eventHandler);
@@ -13198,7 +13047,7 @@ GuiDocumentCommonInterface
 				void										OnFinishRender()override;
 				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
 			public:
-				GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument, Color _caretColor = {});
+				GuiDocumentCommonInterface();
 				~GuiDocumentCommonInterface();
 
 				/// <summary>Active hyperlink changed event.</summary>
@@ -13425,26 +13274,15 @@ GuiDocumentViewer
 			/// <summary>Scrollable document viewer for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentViewer : public GuiScrollContainer, public GuiDocumentCommonInterface, public Description<GuiDocumentViewer>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiDocumentViewer"/>.</summary>
-				class IStyleProvider : public virtual GuiScrollContainer::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Get a baseline document for customize default styles.</summary>
-					/// <returns>The baseline document.</returns>
-					virtual Ptr<DocumentModel>				GetBaselineDocument() = 0;
-					/// <summary>Get the caret color.</summary>
-					/// <returns>The caret color.</returns>
-					virtual Color							GetCaretColor() = 0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentViewerTemplate, GuiScrollContainer)
 			protected:
 
 				Point										GetDocumentViewPosition()override;
 				void										EnsureRectVisible(Rect bounds)override;
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
-				GuiDocumentViewer(GuiDocumentViewer::IStyleProvider* styleProvider);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiDocumentViewer(theme::ThemeName themeName);
 				~GuiDocumentViewer();
 
 				const WString&								GetText()override;
@@ -13458,22 +13296,11 @@ GuiDocumentViewer
 			/// <summary>Static document viewer for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentLabel : public GuiControl, public GuiDocumentCommonInterface, public Description<GuiDocumentLabel>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiDocumentLabel"/>.</summary>
-				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Get a baseline document for customize default styles.</summary>
-					/// <returns>The baseline document.</returns>
-					virtual Ptr<DocumentModel>				GetBaselineDocument() = 0;
-					/// <summary>Get the caret color.</summary>
-					/// <returns>The caret color.</returns>
-					virtual Color							GetCaretColor() = 0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate, GuiControl)
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="styleController">The style controller.</param>
-				GuiDocumentLabel(GuiDocumentLabel::IStyleController* styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiDocumentLabel(theme::ThemeName themeName);
 				~GuiDocumentLabel();
 				
 				const WString&								GetText()override;
@@ -13585,7 +13412,7 @@ Common Interface
 
 			protected:
 
-				void												Install(elements::GuiColorizedTextElement* _textElement, compositions::GuiGraphicsComposition* _textComposition, GuiControl* _textControl);
+				void												Install(elements::GuiColorizedTextElement* _textElement, compositions::GuiGraphicsComposition* _textComposition, GuiControl* _textControl, compositions::GuiGraphicsComposition* eventComposition, compositions::GuiGraphicsComposition* focusableComposition);
 				ICallback*											GetCallback();
 				void												SetCallback(ICallback* value);
 				bool												AttachTextEditCallback(Ptr<ICommonTextEditCallback> value);
@@ -13789,31 +13616,20 @@ MultilineTextBox
 			/// <summary>Multiline text box control.</summary>
 			class GuiMultilineTextBox : public GuiScrollView, public GuiTextBoxCommonInterface, public Description<GuiMultilineTextBox>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MultilineTextBoxTemplate, GuiScrollView)
 			public:
 				static const vint							TextMargin=3;
 
-				class StyleController : public GuiScrollView::StyleController, public Description<StyleController>
+				class CommandExecutor : public Object, public ITextBoxCommandExecutor
 				{
 				protected:
-					elements::GuiColorizedTextElement*			textElement;
-					compositions::GuiBoundsComposition*			textComposition;
-					GuiMultilineTextBox*						textBox;
-					Ptr<GuiTextBoxCommonInterface::ICallback>	defaultCallback;
+					GuiMultilineTextBox*					textBox;
 
 				public:
-					StyleController(GuiScrollView::IStyleProvider* styleProvider);
-					~StyleController();
+					CommandExecutor(GuiMultilineTextBox* _textBox);
+					~CommandExecutor();
 
-					void									Initialize(GuiMultilineTextBox* control);
-					elements::GuiColorizedTextElement*		GetTextElement();
-					compositions::GuiGraphicsComposition*	GetTextComposition();
-					void									SetViewPosition(Point value);
-					void									SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-
-					WString									GetText();
-					void									SetText(const WString& value)override;
-					void									SetFont(const FontProperties& value)override;
-					void									SetVisuallyEnabled(bool value)override;
+					void									UnsafeSetText(const WString& value)override;
 				};
 
 			protected:
@@ -13821,7 +13637,6 @@ MultilineTextBox
 				{
 				protected:
 					GuiMultilineTextBox*					textControl;
-					StyleController*						textController;
 				public:
 					TextElementOperatorCallback(GuiMultilineTextBox* _textControl);
 
@@ -13831,17 +13646,21 @@ MultilineTextBox
 				};
 
 			protected:
-				StyleController*							styleController;
+				Ptr<TextElementOperatorCallback>			callback;
+				Ptr<CommandExecutor>						commandExecutor;
+				elements::GuiColorizedTextElement*			textElement = nullptr;
+				compositions::GuiBoundsComposition*			textComposition = nullptr;
 
 				void										CalculateViewAndSetScroll();
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
 				Size										QueryFullSize()override;
 				void										UpdateView(Rect viewBounds)override;
+				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
-				GuiMultilineTextBox(GuiMultilineTextBox::IStyleProvider* styleProvider);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiMultilineTextBox(theme::ThemeName themeName);
 				~GuiMultilineTextBox();
 
 				const WString&								GetText()override;
@@ -13856,58 +13675,13 @@ SinglelineTextBox
 			/// <summary>Single text box control.</summary>
 			class GuiSinglelineTextBox : public GuiControl, public GuiTextBoxCommonInterface, public Description<GuiSinglelineTextBox>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SinglelineTextBoxTemplate, GuiControl)
 			public:
-				static const vint							TextMargin=3;
-				
-				/// <summary>Style controller interface for <see cref="GuiSinglelineTextBox"/>.</summary>
-				class IStyleProvider : public virtual GuiControl::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Create a background in the specified background container composition.</summary>
-					/// <returns>The container composition. If the style does not have a inner composition to be the container composition, just return the background argument.</returns>
-					/// <param name="background">The background container composition.</param>
-					virtual compositions::GuiGraphicsComposition*		InstallBackground(compositions::GuiBoundsComposition* background)=0;
-				};
-
-				class StyleController : public Object, public GuiControl::IStyleController, public Description<StyleController>
-				{
-				protected:
-					Ptr<IStyleProvider>							styleProvider;
-					compositions::GuiBoundsComposition*			boundsComposition;
-					compositions::GuiGraphicsComposition*		containerComposition;
-
-					GuiSinglelineTextBox*						textBox;
-					elements::GuiColorizedTextElement*			textElement;
-					compositions::GuiTableComposition*			textCompositionTable;
-					compositions::GuiCellComposition*			textComposition;
-					Ptr<GuiTextBoxCommonInterface::ICallback>	defaultCallback;
-
-				public:
-					StyleController(IStyleProvider* _styleProvider);
-					~StyleController();
-
-					void									SetTextBox(GuiSinglelineTextBox* control);
-					void									RearrangeTextElement();
-					compositions::GuiBoundsComposition*		GetBoundsComposition();
-					compositions::GuiGraphicsComposition*	GetContainerComposition();
-					void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
-
-					WString									GetText();
-					void									SetText(const WString& value);
-					void									SetFont(const FontProperties& value);
-					void									SetVisuallyEnabled(bool value);
-
-					elements::GuiColorizedTextElement*		GetTextElement();
-					compositions::GuiGraphicsComposition*	GetTextComposition();
-					void									SetViewPosition(Point value);
-				};
+				static const vint							TextMargin=2;
 				
 			protected:
 				class TextElementOperatorCallback : public GuiTextBoxCommonInterface::DefaultCallback, public Description<TextElementOperatorCallback>
 				{
-				protected:
-					GuiSinglelineTextBox*					textControl;
-					StyleController*						textController;
 				public:
 					TextElementOperatorCallback(GuiSinglelineTextBox* _textControl);
 
@@ -13916,20 +13690,27 @@ SinglelineTextBox
 					void									ScrollToView(Point point)override;
 					vint									GetTextMargin()override;
 				};
+
 			protected:
-				StyleController*							styleController;
+				Ptr<TextElementOperatorCallback>			callback;
+				elements::GuiColorizedTextElement*			textElement = nullptr;
+				compositions::GuiTableComposition*			textCompositionTable = nullptr;
+				compositions::GuiCellComposition*			textComposition = nullptr;
 				
+				void										RearrangeTextElement();
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
+				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
-				GuiSinglelineTextBox(GuiSinglelineTextBox::IStyleProvider* styleProvider);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiSinglelineTextBox(theme::ThemeName themeName);
 				~GuiSinglelineTextBox();
 
 				const WString&								GetText()override;
 				void										SetText(const WString& value)override;
 				void										SetFont(const FontProperties& value)override;
+
 				/// <summary>
 				/// Get the password mode displaying character.
 				/// </summary>
@@ -14586,6 +14367,7 @@ Menu
 			/// <summary>Popup menu.</summary>
 			class GuiMenu : public GuiPopup, private IGuiMenuService, public Description<GuiMenu>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MenuTemplate, GuiPopup)
 			private:
 				IGuiMenuService*						parentMenuService;
 
@@ -14603,9 +14385,9 @@ Menu
 				void									OnWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
-				GuiMenu(IStyleController* _styleController, GuiControl* _owner);
+				GuiMenu(theme::ThemeName themeName, GuiControl* _owner);
 				~GuiMenu();
 
 				/// <summary>Update the reference to the parent <see cref="IGuiMenuService"/>. This function is not required to call outside the menu or menu item control.</summary>
@@ -14623,8 +14405,8 @@ Menu
 				bool									IsSubMenuActivatedByMouseDown()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiMenuBar(GuiControl::IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiMenuBar(theme::ThemeName themeName);
 				~GuiMenuBar();
 				
 				IDescriptable*							QueryService(const WString& identifier)override;
@@ -14637,32 +14419,12 @@ MenuButton
 			/// <summary>Menu item.</summary>
 			class GuiMenuButton : public GuiSelectableButton, public Description<GuiMenuButton>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiMenuButton"/>.</summary>
-				class IStyleController : public virtual GuiSelectableButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Create a style controller for the sub menu.</summary>
-					/// <returns>The style controller for the sub menu.</returns>
-					virtual GuiMenu::IStyleController*	CreateSubMenuStyleController()=0;
-					/// <summary>Notify that the sub menu is created or destroyed.</summary>
-					/// <param name="value">Set to true if the sub menu is created.</param>
-					virtual void						SetSubMenuExisting(bool value)=0;
-					/// <summary>Notify that the sub menu is opened or closed.</summary>
-					/// <param name="value">Set to true if the sub menu is opened.</param>
-					virtual void						SetSubMenuOpening(bool value)=0;
-					/// <summary>Get the button control that is expected to be associated with a sub menu.</summary>
-					/// <returns>The button control that is expected to be associated with a sub menu. Returns null means that the sub menu will be directly associated to the menu button.</returns>
-					virtual GuiButton*					GetSubMenuHost()=0;
-					/// <summary>Notify that the image for the menu button is changed.</summary>
-					/// <param name="value">The image for the menu button.</param>
-					virtual void						SetImage(Ptr<GuiImageData> value)=0;
-					/// <summary>Notify that the shortcut key text for the menu button is changed.</summary>
-					/// <param name="value">The shortcut key text for the menu button.</param>
-					virtual void						SetShortcutText(const WString& value)=0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ToolstripButtonTemplate, GuiSelectableButton)
+
+				using IEventHandler = compositions::IGuiGraphicsEventHandler;
 			protected:
-				IStyleController*						styleController;
+				Ptr<IEventHandler>						hostClickedHandler;
+				Ptr<IEventHandler>						hostMouseEnterHandler;
 				Ptr<GuiImageData>						image;
 				WString									shortcutText;
 				GuiMenu*								subMenu;
@@ -14685,8 +14447,8 @@ MenuButton
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiMenuButton(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiMenuButton(theme::ThemeName themeName);
 				~GuiMenuButton();
 
 				/// <summary>Sub menu opening changed event.</summary>
@@ -14717,8 +14479,8 @@ MenuButton
 				GuiMenu*								GetSubMenu();
 				/// <summary>Create the sub menu if necessary. The created sub menu is owned by this menu button.</summary>
 				/// <returns>The created sub menu.</returns>
-				/// <param name="subMenuStyleController">The style controller for the sub menu. If this argument is null, it will call <see cref="IStyleController::CreateSubMenuStyleController"/> for a style controller.</param>
-				GuiMenu*								CreateSubMenu(GuiMenu::IStyleController* subMenuStyleController=0);
+				/// <param name="subMenuTemplate">The style controller for the sub menu. Set to null to use the default control template.</param>
+				GuiMenu*								CreateSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate = {});
 				/// <summary>Associate a sub menu if there is no sub menu binded in this menu button. The associated sub menu is not owned by this menu button if the "owned" argument is set to false.</summary>
 				/// <param name="value">The sub menu to associate.</param>
 				/// <param name="owned">Set to true if the menu is expected to be owned.</param>
@@ -14780,24 +14542,14 @@ namespace vl
 			///<summary>List view column header control for detailed view.</summary>
 			class GuiListViewColumnHeader : public GuiMenuButton, public Description<GuiListViewColumnHeader>
 			{
-			public:
-				/// <summary>Style provider for <see cref="GuiListViewColumnHeader"/>.</summary>
-				class IStyleController : public virtual GuiMenuButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Notify that the column sorting state is changed.</summary>
-					/// <param name="value">The new column sorting state.</param>
-					virtual void								SetColumnSortingState(ColumnSortingState value)=0;
-				};
-
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListViewColumnHeaderTemplate, GuiMenuButton)
 			protected:
-				IStyleController*								styleController = nullptr;
 				ColumnSortingState								columnSortingState = ColumnSortingState::NotSorted;
 
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiListViewColumnHeader(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiListViewColumnHeader(theme::ThemeName themeName);
 				~GuiListViewColumnHeader();
 
 				bool											IsAltAvailable()override;
@@ -14813,41 +14565,16 @@ namespace vl
 			/// <summary>List view base control. All list view controls inherit from this class. <see cref="list::ListViewItemStyleProviderBase"/> is suggested to be the base class of item style providers for list view control.</summary>
 			class GuiListViewBase : public GuiSelectableListControl, public Description<GuiListViewBase>
 			{
-			public:
-				/// <summary>Style provider for <see cref="GuiListViewBase"/>.</summary>
-				class IStyleProvider : public virtual GuiSelectableListControl::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Create a style controller for a column header.</summary>
-					/// <returns>The created style controller for a column header.</returns>
-					virtual GuiListViewColumnHeader::IStyleController*	CreateColumnStyle()=0;
-					/// <summary>Get the primary text color.</summary>
-					/// <returns>The primary text color.</returns>
-					virtual Color										GetPrimaryTextColor()=0;
-					/// <summary>Get the secondary text color.</summary>
-					/// <returns>The secondary text color.</returns>
-					virtual Color										GetSecondaryTextColor()=0;
-					/// <summary>Get the item peparator text color.</summary>
-					/// <returns>The item peparator text color.</returns>
-					virtual Color										GetItemSeparatorColor()=0;
-				};
-
-			protected:
-				IStyleProvider*									styleProvider;
-
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListViewTemplate, GuiSelectableListControl)
 			public:
 				/// <summary>Create a list view base control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiListViewBase(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiListViewBase(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiListViewBase();
 
 				/// <summary>Column clicked event.</summary>
 				compositions::GuiItemNotifyEvent				ColumnClicked;
-				
-				/// <summary>Get the associated style provider.</summary>
-				/// <returns>The style provider.</returns>
-				IStyleProvider*									GetListViewStyleProvider();
 			};
 
 /***********************************************************************
@@ -14965,7 +14692,6 @@ ListViewColumnItemArranger
 					};
 
 					GuiListViewBase*							listView = nullptr;
-					GuiListViewBase::IStyleProvider*			styleProvider = nullptr;
 					IListViewItemView*							listViewItemView = nullptr;
 					IColumnItemView*							columnItemView = nullptr;
 					Ptr<ColumnItemViewCallback>					columnItemViewCallback;
@@ -15245,9 +14971,9 @@ GuiVirtualListView
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a list view control in virtual mode.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualListView(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualListView(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualListView();
 
 				/// <summary>Get the current view.</summary>
@@ -15269,8 +14995,8 @@ GuiListView
 				list::ListViewItemProvider*								items;
 			public:
 				/// <summary>Create a list view control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
-				GuiListView(IStyleProvider* _styleProvider);
+				/// <param name="_controlTemplate">The control template for this control.</param>
+				GuiListView(theme::ThemeName themeName);
 				~GuiListView();
 				
 				/// <summary>Get all list view items.</summary>
@@ -15322,17 +15048,7 @@ ComboBox Base
 			/// <summary>The base class of combo box control.</summary>
 			class GuiComboBoxBase : public GuiMenuButton, public Description<GuiComboBoxBase>
 			{
-			public:				
-				/// <summary>Style controller interface for <see cref="GuiComboBoxBase"/>.</summary>
-				class IStyleController : public virtual GuiMenuButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the command executor is changed.</summary>
-					/// <param name="value">The command executor.</param>
-					virtual void							SetCommandExecutor(IComboBoxCommandExecutor* value)=0;
-					/// <summary>Notify that an item is selected.</summary>
-					virtual void							OnItemSelected()=0;
-				};
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ComboBoxTemplate, GuiMenuButton)
 			protected:
 
 				class CommandExecutor : public Object, public virtual IComboBoxCommandExecutor
@@ -15348,7 +15064,6 @@ ComboBox Base
 				};
 
 				Ptr<CommandExecutor>						commandExecutor;
-				IStyleController*							styleController;
 				
 				bool										IsAltAvailable()override;
 				IGuiMenuService::Direction					GetSubMenuDirection()override;
@@ -15356,8 +15071,8 @@ ComboBox Base
 				void										OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiComboBoxBase(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiComboBoxBase(theme::ThemeName themeName);
 				~GuiComboBoxBase();
 
 				/// <summary>Item selected event.</summary>
@@ -15374,21 +15089,14 @@ ComboBox with GuiListControl
 			public:
 				using ItemStyleProperty = TemplateProperty<templates::GuiTemplate>;
 
-				/// <summary>Style controller interface for <see cref="GuiComboBoxListControl"/>.</summary>
-				class IStyleController : public virtual GuiComboBoxBase::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Indicate that if the combo box need to display text.</summary>
-					/// <param name="value">Set to true to display text.</param>
-					virtual void							SetTextVisible(bool value) = 0;
-				};
-
 			protected:
-				IStyleController*							styleController = nullptr;
 				GuiSelectableListControl*					containedListControl = nullptr;
 				ItemStyleProperty							itemStyleProperty;
 				templates::GuiTemplate*						itemStyleController = nullptr;
 
+
+				void										BeforeControlTemplateUninstalled()override;
+				void										AfterControlTemplateInstalled(bool initialize)override;
 				bool										IsAltAvailable()override;
 				void										OnActiveAlt()override;
 				void										RemoveStyleController();
@@ -15401,9 +15109,9 @@ ComboBox with GuiListControl
 				void										OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller and a list control that will be put in the popup control to show all items.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_containedListControl">The list controller.</param>
-				GuiComboBoxListControl(IStyleController* _styleController, GuiSelectableListControl* _containedListControl);
+				GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl);
 				~GuiComboBoxListControl();
 				
 				/// <summary>Style provider changed event.</summary>
@@ -15471,104 +15179,31 @@ DatePicker
 			/// <summary>Date picker control that display a calendar.</summary>
 			class GuiDatePicker : public GuiControl, public Description<GuiDatePicker>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiDatePicker"/>.</summary>
-				class IStyleProvider : public virtual GuiControl::IStyleProvider, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Create a style for date button for choosing "day".</summary>
-					/// <returns>The created style.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateDateButtonStyle()=0;
-					/// <summary>Create a text list for candidate "year" and "month".</summary>
-					/// <returns>The created control.</returns>
-					virtual GuiTextList*								CreateTextList()=0;
-					/// <summary>Create a combo box style for "year" and "month".</summary>
-					/// <returns>The created style.</returns>
-					virtual GuiComboBoxListControl::IStyleController*	CreateComboBoxStyle()=0;
-
-					/// <summary>Get the color for background.</summary>
-					/// <returns>The color.</returns>
-					virtual Color										GetBackgroundColor()=0;
-					/// <summary>Get the color for "day" that in the current month.</summary>
-					/// <returns>The color.</returns>
-					virtual Color										GetPrimaryTextColor()=0;
-					/// <summary>Get the color for "day" that not in the current month.</summary>
-					/// <returns>The color.</returns>
-					virtual Color										GetSecondaryTextColor()=0;
-				};
-
-				/// <summary>Style controller for <see cref="GuiDatePicker"/>.</summary>
-				class StyleController : public Object, public virtual GuiControl::IStyleController, public Description<StyleController>
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DatePickerTemplate, GuiControl)
+			protected:
+				class CommandExecutor : public Object, public IDatePickerCommandExecutor
 				{
 				protected:
-					static const vint									DaysOfWeek=7;
-					static const vint									DayRows=6;
-					static const vint									DayRowStart=2;
-					static const vint									YearFirst=1900;
-					static const vint									YearLast=2099;
-
-					IStyleProvider*										styleProvider;
 					GuiDatePicker*										datePicker;
-					DateTime											currentDate;
-					Locale												dateLocale;
-					compositions::GuiTableComposition*					boundsComposition;
-					bool												preventComboEvent;
-					bool												preventButtonEvent;
-
-					GuiComboBoxListControl*								comboYear;
-					GuiTextList*										listYears;
-					GuiComboBoxListControl*								comboMonth;
-					GuiTextList*										listMonths;
-					collections::Array<elements::GuiSolidLabelElement*>	labelDaysOfWeek;
-					collections::Array<GuiSelectableButton*>			buttonDays;
-					collections::Array<elements::GuiSolidLabelElement*>	labelDays;
-					collections::Array<DateTime>						dateDays;
-					Ptr<GuiSelectableButton::GroupController>			dayMutexController;
-
-					void												SetDay(const DateTime& day, vint& index, bool currentMonth);
-					void												DisplayMonth(vint year, vint month);
-					void												SelectDay(vint day);
-					void												comboYearMonth_SelectedIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												buttonDay_SelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
-					/// <summary>Create a style controller with a specified style provider.</summary>
-					/// <param name="_styleProvider">The style provider.</param>
-					StyleController(IStyleProvider* _styleProvider);
-					~StyleController();
+					CommandExecutor(GuiDatePicker* _datePicker);
+					~CommandExecutor();
 
-					compositions::GuiBoundsComposition*					GetBoundsComposition()override;
-					compositions::GuiGraphicsComposition*				GetContainerComposition()override;
-					void												SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-					void												SetText(const WString& value)override;
-					void												SetFont(const FontProperties& value)override;
-					void												SetVisuallyEnabled(bool value)override;
-					
-					/// <summary>Set the data picker that owns this style controller.</summary>
-					/// <param name="_datePicker">The date picker.</param>
-					void												SetDatePicker(GuiDatePicker* _datePicker);
-					/// <summary>Set the locale to display texts.</summary>
-					/// <param name="_dateLocale">The locale.</param>
-					void												SetDateLocale(const Locale& _dateLocale);
-					/// <summary>Get the displayed date.</summary>
-					/// <returns>The date.</returns>
-					const DateTime&										GetDate();
-					/// <summary>Display a date.</summary>
-					/// <param name="value">The date.</param>
-					/// <param name="forceUpdate">Set to true to refill all data in the control whatever cached or not.</param>
-					void												SetDate(const DateTime& value, bool forceUpdate=false);
+					void												NotifyDateChanged()override;
+					void												NotifyDateNavigated()override;
+					void												NotifyDateSelected()override;
 				};
 
-			protected:
-				StyleController*										styleController;
+				Ptr<CommandExecutor>									commandExecutor;
+				DateTime												date;
 				WString													dateFormat;
 				Locale													dateLocale;
 
 				void													UpdateText();
-				void													NotifyDateChanged();
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_styleProvider">The style provider.</param>
-				GuiDatePicker(IStyleProvider* _styleProvider);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiDatePicker(theme::ThemeName themeName);
 				~GuiDatePicker();
 
 				/// <summary>Date changed event.</summary>
@@ -15623,9 +15258,9 @@ DateComboBox
 				void													datePicker_DateSelected(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_styleController">The style provider.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_datePicker">The date picker control to show in the popup.</param>
-				GuiDateComboBox(IStyleController* _styleController, GuiDatePicker* _datePicker);
+				GuiDateComboBox(theme::ThemeName themeName, GuiDatePicker* _datePicker);
 				~GuiDateComboBox();
 				
 				/// <summary>Selected data changed event.</summary>
@@ -15684,7 +15319,7 @@ Datagrid Interfaces
 				{
 				public:
 					virtual GuiListControl::IItemProvider*				GetItemProvider() = 0;
-					virtual GuiListViewBase::IStyleProvider*			GetListViewStyleProvider() = 0;
+					virtual templates::GuiListViewTemplate*				GetListViewControlTemplate() = 0;
 					virtual description::Value							GetViewModelContext() = 0;
 					virtual void										RequestSaveData() = 0;
 				};
@@ -15695,8 +15330,7 @@ Datagrid Interfaces
 				public:
 					/// <summary>Create a data visualizer.</summary>
 					/// <returns>The created data visualizer.</returns>
-					/// <param name="font">The font for the list view control.</param>
-					/// <param name="styleProvider">The style provider for the list view control.</param>
+					/// <param name="IDataGridContext">Context information of the data grid.</param>
 					virtual Ptr<IDataVisualizer>						CreateVisualizer(IDataGridContext* dataGridContext) = 0;
 				};
 
@@ -16219,16 +15853,15 @@ GuiVirtualDataGrid
 				void													OnColumnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 
 			public:
-
-				GuiListViewBase::IStyleProvider*						GetListViewStyleProvider()override;
+				templates::GuiListViewTemplate*							GetListViewControlTemplate()override;
 				description::Value										GetViewModelContext()override;
 				void													RequestSaveData()override;
 
 			public:
 				/// <summary>Create a data grid control in virtual mode.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualDataGrid(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualDataGrid();
 
 				/// <summary>Selected cell changed event.</summary>
@@ -16687,9 +16320,9 @@ GuiBindableDataGrid
 
 			public:
 				/// <summary>Create a bindable Data grid control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_viewModelContext">The view mode context, which will be passed to every visualizers and editors in this grid.</param>
-				GuiBindableDataGrid(IStyleProvider* _styleProvider, const description::Value& _viewModelContext = description::Value());
+				GuiBindableDataGrid(theme::ThemeName themeName, const description::Value& _viewModelContext = description::Value());
 				~GuiBindableDataGrid();
 
 				/// <summary>Get all data columns indices in columns.</summary>
@@ -16880,9 +16513,9 @@ GuiBindableTextList
 
 			public:
 				/// <summary>Create a bindable Text list control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name = "_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
-				GuiBindableTextList(IStyleProvider* _styleProvider);
+				GuiBindableTextList(theme::ThemeName themeName);
 				~GuiBindableTextList();
 				
 				/// <summary>Text property name changed event.</summary>
@@ -16993,8 +16626,8 @@ GuiBindableListView
 
 			public:
 				/// <summary>Create a bindable List view control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
-				GuiBindableListView(IStyleProvider* _styleProvider);
+				/// <param name="_controlTemplate">The control template for this control.</param>
+				GuiBindableListView(theme::ThemeName themeName);
 				~GuiBindableListView();
 
 				/// <summary>Get all data columns indices in columns.</summary>
@@ -17124,8 +16757,8 @@ GuiBindableTreeView
 
 			public:
 				/// <summary>Create a bindable Tree view control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
-				GuiBindableTreeView(IStyleProvider* _styleProvider);
+				/// <param name="_controlTemplate">The control template for this control.</param>
+				GuiBindableTreeView(theme::ThemeName themeName);
 				~GuiBindableTreeView();
 				
 				/// <summary>Text property name changed event.</summary>
@@ -17342,84 +16975,6 @@ Toolstrip Item Collection
 			};
 
 /***********************************************************************
-Toolstrip Builder Facade
-***********************************************************************/
-
-			class GuiToolstripButton;
-
-			/// <summary>Toolstrip builder.</summary>
-			class GuiToolstripBuilder : public Object
-			{
-				friend class GuiToolstripMenu;
-				friend class GuiToolstripMenuBar;
-				friend class GuiToolstripToolBar;
-			protected:
-				enum Environment
-				{
-					Menu,
-					MenuBar,
-					ToolBar,
-				};
-
-				Environment									environment;
-				GuiToolstripCollection*						toolstripItems;
-				GuiToolstripBuilder*						previousBuilder;
-				theme::ITheme*								theme;
-				GuiToolstripButton*							lastCreatedButton;
-				
-				GuiToolstripBuilder(Environment _environment, GuiToolstripCollection* _toolstripItems);
-			public:
-				~GuiToolstripBuilder();
-
-				/// <summary>Create a button.</summary>
-				/// <returns>The current builder for continuing builder actions.</returns>
-				/// <param name="image">The image for the created control.</param>
-				/// <param name="text">The text for the created control.</param>
-				/// <param name="result">The created control.</param>
-				GuiToolstripBuilder*						Button(Ptr<GuiImageData> image, const WString& text, GuiToolstripButton** result=0);
-				/// <summary>Create a button.</summary>
-				/// <returns>The current builder for continuing builder actions.</returns>
-				/// <param name="command">The command for the created control.</param>
-				/// <param name="result">The created control.</param>
-				GuiToolstripBuilder*						Button(GuiToolstripCommand* command, GuiToolstripButton** result=0);
-				/// <summary>Create a dropdown button.</summary>
-				/// <returns>The current builder for continuing builder actions.</returns>
-				/// <param name="image">The image for the created control.</param>
-				/// <param name="text">The text for the created control.</param>
-				/// <param name="result">The created control.</param>
-				GuiToolstripBuilder*						DropdownButton(Ptr<GuiImageData> image, const WString& text, GuiToolstripButton** result=0);
-				/// <summary>Create a dropdown button.</summary>
-				/// <returns>The current builder for continuing builder actions.</returns>
-				/// <param name="command">The command for the created control.</param>
-				/// <param name="result">The created control.</param>
-				GuiToolstripBuilder*						DropdownButton(GuiToolstripCommand* command, GuiToolstripButton** result=0);
-				/// <summary>Create a split button.</summary>
-				/// <returns>The current builder for continuing builder actions.</returns>
-				/// <param name="image">The image for the created control.</param>
-				/// <param name="text">The text for the created control.</param>
-				/// <param name="result">The created control.</param>
-				GuiToolstripBuilder*						SplitButton(Ptr<GuiImageData> image, const WString& text, GuiToolstripButton** result=0);
-				/// <summary>Create a split button.</summary>
-				/// <returns>The current builder for continuing builder actions.</returns>
-				/// <param name="command">The command for the created control.</param>
-				/// <param name="result">The created control.</param>
-				GuiToolstripBuilder*						SplitButton(GuiToolstripCommand* command, GuiToolstripButton** result=0);
-				/// <summary>Create a splitter.</summary>
-				/// <returns>The current builder for continuing builder actions.</returns>
-				GuiToolstripBuilder*						Splitter();
-				/// <summary>Install a control.</summary>
-				/// <returns>The current builder for continuing builder actions.</returns>
-				/// <param name="control">The control to install.</param>
-				GuiToolstripBuilder*						Control(GuiControl* control);
-				/// <summary>Begin create sub menu.</summary>
-				/// <returns>The builder of the last created control's sub menu for continuing builder actions.</returns>
-				GuiToolstripBuilder*						BeginSubMenu();
-				/// <summary>End create sub menu.</summary>
-				/// <returns>The parent builder for continuing builder actions.</returns>
-				GuiToolstripBuilder*						EndSubMenu();
-			};
-
-/***********************************************************************
 Toolstrip Container
 ***********************************************************************/
 
@@ -17430,23 +16985,18 @@ Toolstrip Container
 				compositions::GuiSharedSizeRootComposition*	sharedSizeRootComposition;
 				compositions::GuiStackComposition*			stackComposition;
 				Ptr<GuiToolstripCollection>					toolstripItems;
-				Ptr<GuiToolstripBuilder>					builder;
 
 				void										UpdateLayout()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
-				GuiToolstripMenu(IStyleController* _styleController, GuiControl* _owner);
+				GuiToolstripMenu(theme::ThemeName themeName, GuiControl* _owner);
 				~GuiToolstripMenu();
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
 				/// <returns>All managed child controls.</returns>
 				GuiToolstripCollection&						GetToolstripItems();
-				/// <summary>Get the builder facade.</summary>
-				/// <returns>The builder facade.</returns>
-				/// <param name="themeObject">The theme to use. If this argument is null, the current theme will be used.</param>
-				GuiToolstripBuilder*						GetBuilder(theme::ITheme* themeObject=0);
 			};
 
 			/// <summary>Toolstrip menu bar.</summary>
@@ -17455,21 +17005,16 @@ Toolstrip Container
 			protected:
 				compositions::GuiStackComposition*			stackComposition;
 				Ptr<GuiToolstripCollection>					toolstripItems;
-				Ptr<GuiToolstripBuilder>					builder;
 
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiToolstripMenuBar(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiToolstripMenuBar(theme::ThemeName themeName);
 				~GuiToolstripMenuBar();
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
 				/// <returns>All managed child controls.</returns>
 				GuiToolstripCollection&						GetToolstripItems();
-				/// <summary>Get the builder facade.</summary>
-				/// <returns>The builder facade.</returns>
-				/// <param name="themeObject">The theme to use. If this argument is null, the current theme will be used.</param>
-				GuiToolstripBuilder*						GetBuilder(theme::ITheme* themeObject=0);
 			};
 
 			/// <summary>Toolstrip tool bar.</summary>
@@ -17478,21 +17023,16 @@ Toolstrip Container
 			protected:
 				compositions::GuiStackComposition*			stackComposition;
 				Ptr<GuiToolstripCollection>					toolstripItems;
-				Ptr<GuiToolstripBuilder>					builder;
 
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiToolstripToolBar(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiToolstripToolBar(theme::ThemeName themeName);
 				~GuiToolstripToolBar();
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
 				/// <returns>All managed child controls.</returns>
 				GuiToolstripCollection&						GetToolstripItems();
-				/// <summary>Get the builder facade.</summary>
-				/// <returns>The builder facade.</returns>
-				/// <param name="themeObject">The theme to use. If this argument is null, the current theme will be used.</param>
-				GuiToolstripBuilder*						GetBuilder(theme::ITheme* themeObject=0);
 			};
 
 /***********************************************************************
@@ -17511,8 +17051,8 @@ Toolstrip Component
 				void											OnCommandDescriptionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiToolstripButton(IStyleController* _styleController);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiToolstripButton(theme::ThemeName themeName);
 				~GuiToolstripButton();
 
 				/// <summary>Get the attached <see cref="GuiToolstripCommand"/>.</summary>
@@ -17530,8 +17070,8 @@ Toolstrip Component
 				/// <returns>The toolstrip sub menu.</returns>
 				GuiToolstripMenu*								EnsureToolstripSubMenu();
 				/// <summary>Create the toolstrip sub menu if necessary. The created toolstrip sub menu is owned by this menu button.</summary>
-				/// <param name="subMenuStyleController">The style controller for the toolstrip sub menu. If this argument is null, it will call <see cref="IStyleController::CreateSubMenuStyleController"/> for a style controller.</param>
-				void											CreateToolstripSubMenu(GuiToolstripMenu::IStyleController* subMenuStyleController=0);
+				/// <param name="subMenuTemplate">The style controller for the toolstrip sub menu. Set to null to use the default control template.</param>
+				void											CreateToolstripSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate);
 			};
 		}
 	}
@@ -17576,134 +17116,61 @@ namespace vl
 	{
 		namespace theme
 		{
+#define GUI_CONTROL_TEMPLATE_TYPES(F) \
+			F(WindowTemplate,				Window) \
+			F(ControlTemplate,				CustomControl) \
+			F(WindowTemplate,				Tooltip) \
+			F(LabelTemplate,				Label) \
+			F(LabelTemplate,				ShortcutKey) \
+			F(ScrollViewTemplate,			ScrollView) \
+			F(ControlTemplate,				GroupBox) \
+			F(TabTemplate,					Tab) \
+			F(ComboBoxTemplate,				ComboBox) \
+			F(MultilineTextBoxTemplate,		MultilineTextBox) \
+			F(SinglelineTextBoxTemplate,	SinglelineTextBox) \
+			F(DocumentViewerTemplate,		DocumentViewer) \
+			F(DocumentLabelTemplate,		DocumentLabel) \
+			F(DocumentLabelTemplate,		DocumentTextBox) \
+			F(ListViewTemplate,				ListView) \
+			F(TreeViewTemplate,				TreeView) \
+			F(TextListTemplate,				TextList) \
+			F(SelectableButtonTemplate,		ListItemBackground) \
+			F(SelectableButtonTemplate,		TreeItemExpander) \
+			F(SelectableButtonTemplate,		CheckTextListItem) \
+			F(SelectableButtonTemplate,		RadioTextListItem) \
+			F(MenuTemplate,					Menu) \
+			F(ControlTemplate,				MenuBar) \
+			F(ControlTemplate,				MenuSplitter) \
+			F(ToolstripButtonTemplate,		MenuBarButton) \
+			F(ToolstripButtonTemplate,		MenuItemButton) \
+			F(ControlTemplate,				ToolstripToolBar) \
+			F(ToolstripButtonTemplate,		ToolstripButton) \
+			F(ToolstripButtonTemplate,		ToolstripDropdownButton) \
+			F(ToolstripButtonTemplate,		ToolstripSplitButton) \
+			F(ControlTemplate,				ToolstripSplitter) \
+			F(ButtonTemplate,				Button) \
+			F(SelectableButtonTemplate,		CheckBox) \
+			F(SelectableButtonTemplate,		RadioButton) \
+			F(DatePickerTemplate,			DatePicker) \
+			F(ScrollTemplate,				HScroll) \
+			F(ScrollTemplate,				VScroll) \
+			F(ScrollTemplate,				HTracker) \
+			F(ScrollTemplate,				VTracker) \
+			F(ScrollTemplate,				ProgressBar) \
+
+			enum class ThemeName
+			{
+				Unknown,
+#define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) CONTROL,
+				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
+#undef GUI_DEFINE_THEME_NAME
+			};
+
 			/// <summary>Theme interface. A theme creates appropriate style controllers or style providers for default controls. Call [M:vl.presentation.theme.GetCurrentTheme] to access this interface.</summary>
 			class ITheme : public virtual IDescriptable, public Description<ITheme>
 			{
 			public:
-				/// <summary>Create a style for window.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiWindow::IStyleController*								CreateWindowStyle()=0;
-				/// <summary>Create a style for a user customizable control.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiCustomControl::IStyleController*						CreateCustomControlStyle() = 0;
-				/// <summary>Create a style for tooltip.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiTooltip::IStyleController*								CreateTooltipStyle()=0;
-				/// <summary>Create a style for label.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiLabel::IStyleController*								CreateLabelStyle()=0;
-				/// <summary>Create a style for label displaying Alt-combined shortcut key.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiLabel::IStyleController*								CreateShortcutKeyStyle()=0;
-				/// <summary>Create a style for scrollable control containers.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiScrollContainer::IStyleProvider*						CreateScrollContainerStyle()=0;
-				/// <summary>Create a style for group box.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiControl::IStyleController*								CreateGroupBoxStyle()=0;
-				/// <summary>Create a style for tab.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiTab::IStyleController*									CreateTabStyle()=0;
-				/// <summary>Create a style for combo box.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiComboBoxListControl::IStyleController*					CreateComboBoxStyle()=0;
-				/// <summary>Create a style for multiline text box.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiScrollView::IStyleProvider*							CreateMultilineTextBoxStyle()=0;
-				/// <summary>Create a style for singleline text box.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiSinglelineTextBox::IStyleProvider*						CreateTextBoxStyle()=0;
-				/// <summary>Create a style for document viewer.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiDocumentViewer::IStyleProvider*						CreateDocumentViewerStyle()=0;
-				/// <summary>Create a style for document label.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiDocumentLabel::IStyleController*						CreateDocumentLabelStyle()=0;
-				/// <summary>Create a style for document text box.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiDocumentLabel::IStyleController*						CreateDocumentTextBoxStyle()=0;
-				/// <summary>Create a style for list view.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiListView::IStyleProvider*								CreateListViewStyle()=0;
-				/// <summary>Create a style for tree view.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiTreeView::IStyleProvider*								CreateTreeViewStyle()=0;
-				/// <summary>Create a style for selectable list control item background.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiSelectableButton::IStyleController*					CreateListItemBackgroundStyle()=0;
-				/// <summary>Create a style for tree list control item expander.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiSelectableButton::IStyleController*					CreateTreeItemExpanderStyle()=0;
-				
-				/// <summary>Create a style for menu.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiToolstripMenu::IStyleController*						CreateMenuStyle()=0;
-				/// <summary>Create a style for menu bar.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiToolstripMenuBar::IStyleController*					CreateMenuBarStyle()=0;
-				/// <summary>Create a style for menu splitter.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiControl::IStyleController*								CreateMenuSplitterStyle()=0;
-				/// <summary>Create a style for menu bar button.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiToolstripButton::IStyleController*						CreateMenuBarButtonStyle()=0;
-				/// <summary>Create a style for menu button.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiToolstripButton::IStyleController*						CreateMenuItemButtonStyle()=0;
-				/// <summary>Create a style for toolbar.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiToolstripToolBar::IStyleController*					CreateToolBarStyle()=0;
-				/// <summary>Create a style for toolbar button.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiToolstripButton::IStyleController*						CreateToolBarButtonStyle()=0;
-				/// <summary>Create a style for toolbar dropdown button.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiToolstripButton::IStyleController*						CreateToolBarDropdownButtonStyle()=0;
-				/// <summary>Create a style for toolbar split button.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiToolstripButton::IStyleController*						CreateToolBarSplitButtonStyle()=0;
-				/// <summary>Create a style for toolbar.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiControl::IStyleController*								CreateToolBarSplitterStyle()=0;
-				
-				/// <summary>Create a style for button.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiButton::IStyleController*								CreateButtonStyle()=0;
-				/// <summary>Create a style for check box.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiSelectableButton::IStyleController*					CreateCheckBoxStyle()=0;
-				/// <summary>Create a style for radio button.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiSelectableButton::IStyleController*					CreateRadioButtonStyle()=0;
-				/// <summary>Create a style for date picker.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiDatePicker::IStyleProvider*							CreateDatePickerStyle()=0;
-				
-				/// <summary>Create a style for horizontal scroll.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiScroll::IStyleController*								CreateHScrollStyle()=0;
-				/// <summary>Create a style for vertical scroll.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiScroll::IStyleController*								CreateVScrollStyle()=0;
-				/// <summary>Create a style for horizontal tracker.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiScroll::IStyleController*								CreateHTrackerStyle()=0;
-				/// <summary>Create a style for vertical tracker.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiScroll::IStyleController*								CreateVTrackerStyle()=0;
-				/// <summary>Create a style for progress bar.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiScroll::IStyleController*								CreateProgressBarStyle()=0;
-				
-				/// <summary>Create a style for text list.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiVirtualTextList::IStyleProvider*						CreateTextListStyle()=0;
-				/// <summary>Create a style for check text list item.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiSelectableButton::IStyleController*					CreateCheckTextListItemStyle()=0;
-				/// <summary>Create a style for radio text list item.</summary>
-				/// <returns>The created style.</returns>
-				virtual controls::GuiSelectableButton::IStyleController*					CreateRadioTextListItemStyle()=0;
+				virtual TemplateProperty<templates::GuiControlTemplate>				CreateStyle(ThemeName themeName) = 0;
 			};
 
 			class Theme;
@@ -17719,46 +17186,9 @@ namespace vl
 			public:
 				~ThemeTemplates();
 
-				TemplateProperty<templates::GuiWindowTemplate>						window;
-				TemplateProperty<templates::GuiControlTemplate>						customControl;
-				TemplateProperty<templates::GuiWindowTemplate>						tooltip;
-				TemplateProperty<templates::GuiLabelTemplate>						label;
-				TemplateProperty<templates::GuiLabelTemplate>						shortcutKey;
-				TemplateProperty<templates::GuiScrollViewTemplate>					scrollView;
-				TemplateProperty<templates::GuiControlTemplate>						groupBox;
-				TemplateProperty<templates::GuiTabTemplate>							tab;
-				TemplateProperty<templates::GuiComboBoxTemplate>					comboBox;
-				TemplateProperty<templates::GuiMultilineTextBoxTemplate>			multilineTextBox;
-				TemplateProperty<templates::GuiSinglelineTextBoxTemplate>			singlelineTextBox;
-				TemplateProperty<templates::GuiDocumentViewerTemplate>				documentViewer;
-				TemplateProperty<templates::GuiDocumentLabelTemplate>				documentLabel;
-				TemplateProperty<templates::GuiDocumentLabelTemplate>				documentTextBox;
-				TemplateProperty<templates::GuiListViewTemplate>					listView;
-				TemplateProperty<templates::GuiTreeViewTemplate>					treeView;
-				TemplateProperty<templates::GuiTextListTemplate>					textList;
-				TemplateProperty<templates::GuiSelectableButtonTemplate>			listItemBackground;
-				TemplateProperty<templates::GuiSelectableButtonTemplate>			treeItemExpander;
-				TemplateProperty<templates::GuiSelectableButtonTemplate>			checkTextListItem;
-				TemplateProperty<templates::GuiSelectableButtonTemplate>			radioTextListItem;
-				TemplateProperty<templates::GuiMenuTemplate>						menu;
-				TemplateProperty<templates::GuiControlTemplate>						menuBar;
-				TemplateProperty<templates::GuiControlTemplate>						menuSplitter;
-				TemplateProperty<templates::GuiToolstripButtonTemplate>				menuBarButton;
-				TemplateProperty<templates::GuiToolstripButtonTemplate>				menuItemButton;
-				TemplateProperty<templates::GuiControlTemplate>						toolBar;
-				TemplateProperty<templates::GuiToolstripButtonTemplate>				toolBarButton;
-				TemplateProperty<templates::GuiToolstripButtonTemplate>				toolBarDropdownButton;
-				TemplateProperty<templates::GuiToolstripButtonTemplate>				toolBarSplitButton;
-				TemplateProperty<templates::GuiControlTemplate>						toolBarSplitter;
-				TemplateProperty<templates::GuiButtonTemplate>						button;
-				TemplateProperty<templates::GuiSelectableButtonTemplate>			checkBox;
-				TemplateProperty<templates::GuiSelectableButtonTemplate>			radioButton;
-				TemplateProperty<templates::GuiDatePickerTemplate>					datePicker;
-				TemplateProperty<templates::GuiScrollTemplate>						hScroll;
-				TemplateProperty<templates::GuiScrollTemplate>						vScroll;
-				TemplateProperty<templates::GuiScrollTemplate>						hTracker;
-				TemplateProperty<templates::GuiScrollTemplate>						vTracker;
-				TemplateProperty<templates::GuiScrollTemplate>						progressBar;
+#define GUI_DEFINE_ITEM_PROPERTY(TEMPLATE, CONTROL) TemplateProperty<templates::Gui##TEMPLATE> CONTROL;
+				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_ITEM_PROPERTY)
+#undef GUI_DEFINE_ITEM_PROPERTY
 			};
 
 			/// <summary>Get the current theme style factory object. The default theme is [T:vl.presentation.win7.Win7Theme]. Call [M:vl.presentation.theme.SetCurrentTheme] to change the default theme.</summary>
@@ -17774,533 +17204,6 @@ namespace vl
 			/// <returns>The registered object. Returns null if it does not exist.</returns>
 			/// <param name="name">The name of the theme.</param>
 			extern Ptr<ThemeTemplates>			UnregisterTheme(const WString& name);
-
-			namespace g
-			{
-				/// <summary>Create a window.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiWindow*						NewWindow();
-				/// <summary>Create a user customizable control.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiCustomControl*				NewCustomControl();
-				/// <summary>Create a label.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiLabel*						NewLabel();
-				/// <summary>Create a scroll container.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiScrollContainer*			NewScrollContainer();
-				/// <summary>Create a group box.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiControl*					NewGroupBox();
-				/// <summary>Create a tab.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiTab*						NewTab();
-				/// <summary>Create a tab page.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiTabPage*					NewTabPage();
-				/// <summary>Create a combo box.</summary>
-				/// <returns>The created control.</returns>
-				/// <param name="containedListControl">A list control to put in the popup control to show all items.</param>
-				extern controls::GuiComboBoxListControl*		NewComboBox(controls::GuiSelectableListControl* containedListControl);
-				/// <summary>Create a multiline text box.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiMultilineTextBox*			NewMultilineTextBox();
-				/// <summary>Create a singline text box.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiSinglelineTextBox*			NewTextBox();
-				/// <summary>Create a document viewer.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiDocumentViewer*				NewDocumentViewer();
-				/// <summary>Create a document label.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiDocumentLabel*				NewDocumentLabel();
-				/// <summary>Create a document label.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiDocumentLabel*				NewDocumentTextBox();
-				/// <summary>Create a list view.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiListView*					NewListView();
-				/// <summary>Create a tree view.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiTreeView*					NewTreeView();
-
-				/// <summary>Create a menu.</summary>
-				/// <returns>The created control.</returns>
-				/// <param name="owner">The owner menu item of the parent menu.</param>
-				extern controls::GuiToolstripMenu*				NewMenu(controls::GuiControl* owner);
-				/// <summary>Create a menu bar.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiToolstripMenuBar*			NewMenuBar();
-				/// <summary>Create a menu splitter.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiControl*					NewMenuSplitter();
-				/// <summary>Create a menu bar button.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiToolstripButton*			NewMenuBarButton();
-				/// <summary>Create a menu item button.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiToolstripButton*			NewMenuItemButton();
-				/// <summary>Create a toolbar.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiToolstripToolBar*			NewToolBar();
-				/// <summary>Create a toolbar button.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiToolstripButton*			NewToolBarButton();
-				/// <summary>Create a toolbar dropdown button.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiToolstripButton*			NewToolBarDropdownButton();
-				/// <summary>Create a toolbar split button.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiToolstripButton*			NewToolBarSplitButton();
-				/// <summary>Create a toolbar splitter.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiControl*					NewToolBarSplitter();
-
-				/// <summary>Create a button.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiButton*						NewButton();
-				/// <summary>Create a check box.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiSelectableButton*			NewCheckBox();
-				/// <summary>Create a radio box.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiSelectableButton*			NewRadioButton();
-				/// <summary>Create a date picker.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiDatePicker*					NewDatePicker();
-				/// <summary>Create a date combo box.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiDateComboBox*				NewDateComboBox();
-
-				/// <summary>Create a horizontal scroll.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiScroll*						NewHScroll();
-				/// <summary>Create a vertical scroll.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiScroll*						NewVScroll();
-				/// <summary>Create a horizontal tracker (slide bar).</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiScroll*						NewHTracker();
-				/// <summary>Create a vertical tracker (slide bar).</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiScroll*						NewVTracker();
-				/// <summary>Create a progress bar.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiScroll*						NewProgressBar();
-
-				/// <summary>Create a text list.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiTextList*					NewTextList();
-			}
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\CONTROLS\TEMPLATES\GUICONTROLTEMPLATESTYLES.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Template System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATESTYLES
-#define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATESTYLES
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace templates
-		{
-#pragma warning(push)
-#pragma warning(disable:4250)
-
-/***********************************************************************
-Control Template
-***********************************************************************/
-
-			class GuiControlTemplate_StyleProvider
-				: public Object
-				, public virtual controls::GuiControl::IStyleController
-				, public virtual controls::GuiControl::IStyleProvider
-				, public Description<GuiControlTemplate_StyleProvider>
-			{
-			protected:
-				controls::GuiControl::IStyleController*							associatedStyleController;
-				GuiControlTemplate*												controlTemplate;
-
-			public:
-				GuiControlTemplate_StyleProvider(TemplateProperty<GuiControlTemplate> factory, description::Value viewModel = description::Value());
-				~GuiControlTemplate_StyleProvider();
-
-				compositions::GuiBoundsComposition*								GetBoundsComposition()override;
-				compositions::GuiGraphicsComposition*							GetContainerComposition()override;
-				void															AssociateStyleController(controls::GuiControl::IStyleController* controller)override;
-				void															SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-				void															SetText(const WString& value)override;
-				void															SetFont(const FontProperties& value)override;
-				void															SetVisuallyEnabled(bool value)override;
-			};
-
-			class GuiLabelTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public controls::GuiLabel::IStyleController
-				, public Description<GuiLabelTemplate_StyleProvider>
-			{
-			protected:
-				GuiLabelTemplate*												controlTemplate;
-
-			public:
-				GuiLabelTemplate_StyleProvider(TemplateProperty<GuiLabelTemplate> factory);
-				~GuiLabelTemplate_StyleProvider();
-
-				Color															GetDefaultTextColor()override;
-				void															SetTextColor(Color value)override;
-			};
-
-			class GuiSinglelineTextBoxTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiSinglelineTextBox::IStyleProvider
-				, public Description<GuiSinglelineTextBoxTemplate_StyleProvider>
-			{
-			protected:
-				GuiSinglelineTextBoxTemplate*									controlTemplate;
-				
-			public:
-				GuiSinglelineTextBoxTemplate_StyleProvider(TemplateProperty<GuiSinglelineTextBoxTemplate> factory);
-				~GuiSinglelineTextBoxTemplate_StyleProvider();
-				
-				void															SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-				compositions::GuiGraphicsComposition*							InstallBackground(compositions::GuiBoundsComposition* boundsComposition)override;
-			};
-
-			class GuiDocumentLabelTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiDocumentLabel::IStyleController
-				, public Description<GuiDocumentLabelTemplate_StyleProvider>
-			{
-			protected:
-				GuiDocumentLabelTemplate*										controlTemplate;
-				
-			public:
-				GuiDocumentLabelTemplate_StyleProvider(TemplateProperty<GuiDocumentLabelTemplate> factory);
-				~GuiDocumentLabelTemplate_StyleProvider();
-				
-				Ptr<DocumentModel>												GetBaselineDocument()override;
-				Color															GetCaretColor()override;
-			};
-
-			class GuiMenuTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public controls::GuiWindow::DefaultBehaviorStyleController
-				, public Description<GuiMenuTemplate_StyleProvider>
-			{
-			public:
-				GuiMenuTemplate_StyleProvider(TemplateProperty<GuiMenuTemplate> factory);
-				~GuiMenuTemplate_StyleProvider();
-			};
-
-			class GuiWindowTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public controls::GuiWindow::IStyleController
-				, public Description<GuiWindowTemplate_StyleProvider>
-			{
-			protected:
-				GuiWindowTemplate*												controlTemplate;
-				controls::GuiWindow*											window;
-
-			public:
-				GuiWindowTemplate_StyleProvider(TemplateProperty<GuiWindowTemplate> factory);
-				~GuiWindowTemplate_StyleProvider();
-
-				void															AttachWindow(controls::GuiWindow* _window)override;
-				void															InitializeNativeWindowProperties()override;
-				void															SetSizeState(INativeWindow::WindowSizeState value)override;
-				bool															GetMaximizedBox()override;
-				void															SetMaximizedBox(bool visible)override;
-				bool															GetMinimizedBox()override;
-				void															SetMinimizedBox(bool visible)override;
-				bool															GetBorder()override;
-				void															SetBorder(bool visible)override;
-				bool															GetSizeBox()override;
-				void															SetSizeBox(bool visible)override;
-				bool															GetIconVisible()override;
-				void															SetIconVisible(bool visible)override;
-				bool															GetTitleBar()override;
-				void															SetTitleBar(bool visible)override;
-				controls::GuiWindow::IStyleController*							CreateTooltipStyle()override;
-				controls::GuiLabel::IStyleController*							CreateShortcutKeyStyle()override;
-			};
-
-			class GuiButtonTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiButton::IStyleController
-				, public Description<GuiButtonTemplate_StyleProvider>
-			{
-			protected:
-				GuiButtonTemplate*												controlTemplate;
-
-			public:
-				GuiButtonTemplate_StyleProvider(TemplateProperty<GuiButtonTemplate> factory);
-				~GuiButtonTemplate_StyleProvider();
-
-				void															Transfer(controls::ButtonState value)override;
-			};
-
-			class GuiSelectableButtonTemplate_StyleProvider
-				: public GuiButtonTemplate_StyleProvider
-				, public virtual controls::GuiSelectableButton::IStyleController
-				, public Description<GuiSelectableButtonTemplate_StyleProvider>
-			{
-			protected:
-				GuiSelectableButtonTemplate*									controlTemplate;
-
-			public:
-				GuiSelectableButtonTemplate_StyleProvider(TemplateProperty<GuiSelectableButtonTemplate> factory);
-				~GuiSelectableButtonTemplate_StyleProvider();
-
-				void															SetSelected(bool value)override;
-			};
-
-			class GuiToolstripButtonTemplate_StyleProvider
-				: public GuiSelectableButtonTemplate_StyleProvider
-				, public virtual controls::GuiMenuButton::IStyleController
-				, public Description<GuiToolstripButtonTemplate_StyleProvider>
-			{
-			protected:
-				GuiToolstripButtonTemplate*										controlTemplate;
-
-			public:
-				GuiToolstripButtonTemplate_StyleProvider(TemplateProperty<GuiToolstripButtonTemplate> factory);
-				~GuiToolstripButtonTemplate_StyleProvider();
-				
-				controls::GuiMenu::IStyleController*							CreateSubMenuStyleController()override;
-				void															SetSubMenuExisting(bool value)override;
-				void															SetSubMenuOpening(bool value)override;
-				controls::GuiButton*											GetSubMenuHost()override;
-				void															SetImage(Ptr<GuiImageData> value)override;
-				void															SetShortcutText(const WString& value)override;
-			};
-
-			class GuiListViewColumnHeaderTemplate_StyleProvider
-				: public GuiToolstripButtonTemplate_StyleProvider
-				, public virtual controls::GuiListViewColumnHeader::IStyleController
-				, public Description<GuiListViewColumnHeaderTemplate_StyleProvider>
-			{
-			protected:
-				GuiListViewColumnHeaderTemplate*								controlTemplate;
-
-			public:
-				GuiListViewColumnHeaderTemplate_StyleProvider(TemplateProperty<GuiListViewColumnHeaderTemplate> factory);
-				~GuiListViewColumnHeaderTemplate_StyleProvider();
-
-				void															SetColumnSortingState(controls::ColumnSortingState value)override;
-			};
-
-			class GuiComboBoxTemplate_StyleProvider
-				: public GuiToolstripButtonTemplate_StyleProvider
-				, public virtual controls::GuiComboBoxListControl::IStyleController
-				, public Description<GuiComboBoxTemplate_StyleProvider>
-			{
-			protected:
-				GuiComboBoxTemplate*											controlTemplate;
-
-			public:
-				GuiComboBoxTemplate_StyleProvider(TemplateProperty<GuiComboBoxTemplate> factory);
-				~GuiComboBoxTemplate_StyleProvider();
-				
-				void															SetCommandExecutor(controls::IComboBoxCommandExecutor* value)override;
-				void															OnItemSelected()override;
-				void															SetTextVisible(bool value)override;
-			};
-
-			class GuiScrollTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiScroll::IStyleController
-				, public Description<GuiScrollTemplate_StyleProvider>
-			{
-			protected:
-				GuiScrollTemplate*												controlTemplate;
-
-			public:
-				GuiScrollTemplate_StyleProvider(TemplateProperty<GuiScrollTemplate> factory);
-				~GuiScrollTemplate_StyleProvider();
-
-				void															SetCommandExecutor(controls::IScrollCommandExecutor* value)override;
-				void															SetTotalSize(vint value)override;
-				void															SetPageSize(vint value)override;
-				void															SetPosition(vint value)override;
-			};
-
-			class GuiScrollViewTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiScrollView::IStyleProvider
-				, public Description<GuiScrollViewTemplate_StyleProvider>
-			{
-			protected:
-				GuiScrollViewTemplate*											controlTemplate;
-				
-			public:
-				GuiScrollViewTemplate_StyleProvider(TemplateProperty<GuiScrollViewTemplate> factory);
-				~GuiScrollViewTemplate_StyleProvider();
-				
-				controls::GuiScroll::IStyleController*							CreateHorizontalScrollStyle()override;
-				controls::GuiScroll::IStyleController*							CreateVerticalScrollStyle()override;
-				vint															GetDefaultScrollSize()override;
-				compositions::GuiGraphicsComposition*							InstallBackground(compositions::GuiBoundsComposition* boundsComposition)override;
-			};
-
-			class GuiMultilineTextBoxTemplate_StyleProvider
-				: public GuiScrollViewTemplate_StyleProvider
-				, public Description<GuiMultilineTextBoxTemplate_StyleProvider>
-			{
-			protected:
-				GuiMultilineTextBoxTemplate*									controlTemplate;
-				
-			public:
-				GuiMultilineTextBoxTemplate_StyleProvider(TemplateProperty<GuiMultilineTextBoxTemplate> factory);
-				~GuiMultilineTextBoxTemplate_StyleProvider();
-				
-				void															SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-			};
-
-			class GuiDocumentViewerTemplate_StyleProvider
-				: public GuiScrollViewTemplate_StyleProvider
-				, public virtual controls::GuiDocumentViewer::IStyleProvider
-				, public Description<GuiDocumentViewerTemplate_StyleProvider>
-			{
-			protected:
-				GuiDocumentViewerTemplate*										controlTemplate;
-				
-			public:
-				GuiDocumentViewerTemplate_StyleProvider(TemplateProperty<GuiDocumentViewerTemplate> factory);
-				~GuiDocumentViewerTemplate_StyleProvider();
-				
-				Ptr<DocumentModel>												GetBaselineDocument()override;
-				Color															GetCaretColor()override;
-			};
-
-			class GuiTextListTemplate_StyleProvider
-				: public GuiScrollViewTemplate_StyleProvider
-				, public virtual controls::GuiVirtualTextList::IStyleProvider
-				, public Description<GuiTextListTemplate_StyleProvider>
-			{
-			protected:
-				GuiTextListTemplate*											controlTemplate;
-
-			public:
-				GuiTextListTemplate_StyleProvider(TemplateProperty<GuiTextListTemplate> factory);
-				~GuiTextListTemplate_StyleProvider();
-				
-				Color															GetTextColor()override;
-				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
-				controls::GuiSelectableButton::IStyleController*				CreateCheckBulletStyle()override;
-				controls::GuiSelectableButton::IStyleController*				CreateRadioBulletStyle()override;
-			};
-
-			class GuiListViewTemplate_StyleProvider
-				: public GuiScrollViewTemplate_StyleProvider
-				, public virtual controls::GuiListViewBase::IStyleProvider
-				, public Description<GuiListViewTemplate_StyleProvider>
-			{
-			protected:
-				GuiListViewTemplate*											controlTemplate;
-				
-			public:
-				GuiListViewTemplate_StyleProvider(TemplateProperty<GuiListViewTemplate> factory);
-				~GuiListViewTemplate_StyleProvider();
-				
-				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
-				controls::GuiListViewColumnHeader::IStyleController*			CreateColumnStyle()override;
-				Color															GetPrimaryTextColor()override;
-				Color															GetSecondaryTextColor()override;
-				Color															GetItemSeparatorColor()override;
-			};
-
-			class GuiTreeViewTemplate_StyleProvider
-				: public GuiScrollViewTemplate_StyleProvider
-				, public virtual controls::GuiVirtualTreeView::IStyleProvider
-				, public Description<GuiTreeViewTemplate_StyleProvider>
-			{
-			protected:
-				GuiTreeViewTemplate*											controlTemplate;
-				
-			public:
-				GuiTreeViewTemplate_StyleProvider(TemplateProperty<GuiTreeViewTemplate> factory);
-				~GuiTreeViewTemplate_StyleProvider();
-				
-				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
-				controls::GuiSelectableButton::IStyleController*				CreateItemExpandingDecorator()override;
-				Color															GetTextColor()override;
-			};
-
-			class GuiTabTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiTab::IStyleController
-				, public Description<GuiTabTemplate_StyleProvider>
-			{
-			protected:
-				GuiTabTemplate*													controlTemplate;
-
-			public:
-				GuiTabTemplate_StyleProvider(TemplateProperty<GuiTabTemplate> factory);
-				~GuiTabTemplate_StyleProvider();
-
-				void															SetCommandExecutor(controls::ITabCommandExecutor* value)override;
-				void															SetTabPages(Ptr<reflection::description::IValueObservableList> value)override;
-				void															SetSelectedTabPage(controls::GuiTabPage* value)override;
-			};
-
-			class GuiDatePickerTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiDatePicker::IStyleProvider
-				, public Description<GuiDatePickerTemplate_StyleProvider>
-			{
-			protected:
-				GuiDatePickerTemplate*											controlTemplate;
-
-			public:
-				GuiDatePickerTemplate_StyleProvider(TemplateProperty<GuiDatePickerTemplate> factory);
-				~GuiDatePickerTemplate_StyleProvider();
-
-				controls::GuiSelectableButton::IStyleController*				CreateDateButtonStyle()override;
-				GuiTextListTemplate_StyleProvider*								CreateTextListStyle();
-				controls::GuiTextList*											CreateTextList()override;
-				controls::GuiComboBoxListControl::IStyleController*				CreateComboBoxStyle()override;
-				Color															GetBackgroundColor()override;
-				Color															GetPrimaryTextColor()override;
-				Color															GetSecondaryTextColor()override;
-			};
-
-			class GuiDateComboBoxTemplate_StyleProvider
-				: public GuiComboBoxTemplate_StyleProvider
-				, public Description<GuiDateComboBoxTemplate_StyleProvider>
-			{
-			protected:
-				GuiDateComboBoxTemplate*										controlTemplate;
-
-			public:
-				GuiDateComboBoxTemplate_StyleProvider(TemplateProperty<GuiDateComboBoxTemplate> factory);
-				~GuiDateComboBoxTemplate_StyleProvider();
-
-				controls::GuiDatePicker*										CreateArgument();
-				controls::GuiDatePicker::IStyleProvider*						CreateDatePickerStyle();
-			};
-
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-
-			extern void												SplitBySemicolon(const WString& input, collections::List<WString>& fragments);
-
-#pragma warning(pop)
 		}
 	}
 }

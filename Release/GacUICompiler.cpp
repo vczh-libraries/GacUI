@@ -457,3540 +457,6 @@ GuiInstanceSharedScript
 }
 
 /***********************************************************************
-.\INSTANCEQUERY\GUIINSTANCEQUERY.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		using namespace collections;
-
-/***********************************************************************
-ExecuteQueryVisitor
-***********************************************************************/
-
-		class ExecuteQueryVisitor : public Object, public GuiIqQuery::IVisitor
-		{
-		public:
-			Ptr<GuiInstanceContext>				context;
-			List<Ptr<GuiConstructorRepr>>&		input;
-			List<Ptr<GuiConstructorRepr>>&		output;
-
-			ExecuteQueryVisitor(Ptr<GuiInstanceContext> _context, List<Ptr<GuiConstructorRepr>>& _input, List<Ptr<GuiConstructorRepr>>& _output)
-				:context(_context), input(_input), output(_output)
-			{
-			}
-
-			static bool TestCtor(GuiIqPrimaryQuery* node, GlobalStringKey attribute, Ptr<GuiConstructorRepr> ctor)
-			{
-				if (node->attributeNameOption == GuiIqNameOption::Specified && node->attributeName.value != attribute.ToString())
-				{
-					return false;
-				}
-				if (node->typeNameOption == GuiIqNameOption::Specified && node->typeName.value != ctor->typeName.ToString())
-				{
-					return false;
-				}
-				if (node->referenceName.value != L"")
-				{
-					bool instanceName = ctor->instanceName != GlobalStringKey::Empty && node->referenceName.value == ctor->instanceName.ToString();
-					bool styleName = ctor->styleName && node->referenceName.value == ctor->styleName.Value();
-					return instanceName || styleName;
-				}
-				return true;
-			}
-
-			void Traverse(GuiIqPrimaryQuery* node, Ptr<GuiAttSetterRepr> setter)
-			{
-				if (setter)
-				{
-					FOREACH_INDEXER(GlobalStringKey, attribute, index, setter->setters.Keys())
-					{
-						auto setterValue = setter->setters.Values()[index];
-						FOREACH(Ptr<GuiValueRepr>, value, setterValue->values)
-						{
-							if (auto ctor = value.Cast<GuiConstructorRepr>())
-							{
-								if (TestCtor(node, attribute, ctor))
-								{
-									output.Add(ctor);
-								}
-							}
-							if (node->childOption == GuiIqChildOption::Indirect)
-							{
-								if (auto setter = value.Cast<GuiAttSetterRepr>())
-								{
-									Traverse(node, setter);
-								}
-							}
-						}
-					}
-				}
-				else
-				{
-					if (TestCtor(node, GlobalStringKey::Empty, context->instance))
-					{
-						output.Add(context->instance);
-					}
-					if (node->childOption == GuiIqChildOption::Indirect)
-					{
-						Traverse(node, context->instance);
-					}
-				}
-			}
-
-			void Visit(GuiIqPrimaryQuery* node)override
-			{
-				auto inputExists = &input;
-				if (inputExists)
-				{
-					FOREACH(Ptr<GuiConstructorRepr>, setter, input)
-					{
-						Traverse(node, setter);
-					}
-				}
-				else
-				{
-					Traverse(node, 0);
-				}
-			}
-
-			void Visit(GuiIqCascadeQuery* node)override
-			{
-				List<Ptr<GuiConstructorRepr>> temp;
-				ExecuteQuery(node->parent, context, input, temp);
-				ExecuteQuery(node->child, context, temp, output);
-			}
-
-			void Visit(GuiIqSetQuery* node)override
-			{
-				List<Ptr<GuiConstructorRepr>> first, second;
-				ExecuteQuery(node->first, context, input, first);
-				ExecuteQuery(node->second, context, input, second);
-
-				switch (node->op)
-				{
-				case GuiIqBinaryOperator::ExclusiveOr:
-					CopyFrom(output, From(first).Except(second).Union(From(second).Except(second)));
-					break;
-				case GuiIqBinaryOperator::Intersect:
-					CopyFrom(output, From(first).Intersect(second));
-					break;
-				case GuiIqBinaryOperator::Union:
-					CopyFrom(output, From(first).Union(second));
-					break;
-				case GuiIqBinaryOperator::Substract:
-					CopyFrom(output, From(first).Except(second));
-					break;
-				}
-			}
-		};
-
-/***********************************************************************
-ExecuteQuery
-***********************************************************************/
-
-		void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& input, collections::List<Ptr<GuiConstructorRepr>>& output)
-		{
-			ExecuteQueryVisitor visitor(context, input, output);
-			query->Accept(&visitor);
-		}
-
-		void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& output)
-		{
-			ExecuteQuery(query, context, *(List<Ptr<GuiConstructorRepr>>*)0, output);
-		}
-
-/***********************************************************************
-ApplyStyle
-***********************************************************************/
-
-		void ApplyStyleInternal(Ptr<GuiAttSetterRepr> src, Ptr<GuiAttSetterRepr> dst)
-		{
-			FOREACH_INDEXER(GlobalStringKey, attribute, srcIndex, src->setters.Keys())
-			{
-				auto srcValue = src->setters.Values()[srcIndex];
-				vint dstIndex = dst->setters.Keys().IndexOf(attribute);
-				if (dstIndex == -1)
-				{
-					dst->setters.Add(attribute, srcValue);
-				}
-				else
-				{
-					auto dstValue = dst->setters.Values()[dstIndex];
-					if (srcValue->binding == dstValue->binding)
-					{
-						if (srcValue->binding == GlobalStringKey::_Set)
-						{
-							ApplyStyleInternal(srcValue->values[0].Cast<GuiAttSetterRepr>(), dstValue->values[0].Cast<GuiAttSetterRepr>());
-						}
-						else
-						{
-							CopyFrom(dstValue->values, srcValue->values, true);
-						}
-					}
-				}
-			}
-
-			FOREACH_INDEXER(GlobalStringKey, eventName, srcIndex, src->eventHandlers.Keys())
-			{
-				if (!dst->eventHandlers.Keys().Contains(eventName))
-				{
-					auto srcValue = src->eventHandlers.Values()[srcIndex];
-					dst->eventHandlers.Add(eventName, srcValue);
-				}
-			}
-
-			FOREACH_INDEXER(GlobalStringKey, varName, srcIndex, src->environmentVariables.Keys())
-			{
-				if (!dst->environmentVariables.Keys().Contains(varName))
-				{
-					auto srcValue = src->environmentVariables.Values()[srcIndex];
-					dst->environmentVariables.Add(varName, srcValue);
-				}
-			}
-		}
-
-		void ApplyStyle(Ptr<GuiInstanceStyle> style, Ptr<GuiConstructorRepr> ctor)
-		{
-			ApplyStyleInternal(style->setter->Clone().Cast<GuiAttSetterRepr>(), ctor);
-		}
-
-/***********************************************************************
-GuiIqPrint
-***********************************************************************/
-
-		class GuiIqPrintVisitor : public Object, public GuiIqQuery::IVisitor
-		{
-		public:
-			stream::StreamWriter&				writer;
-
-			GuiIqPrintVisitor(stream::StreamWriter& _writer)
-				:writer(_writer)
-			{
-			}
-
-			void Visit(GuiIqPrimaryQuery* node)override
-			{
-				switch (node->childOption)
-				{
-				case GuiIqChildOption::Direct:
-					writer.WriteString(L"/");
-					break;
-				case GuiIqChildOption::Indirect:
-					writer.WriteString(L"//");
-					break;
-				}
-
-				if (node->attributeNameOption == GuiIqNameOption::Specified)
-				{
-					writer.WriteChar(L'@');
-					writer.WriteString(node->attributeName.value);
-					writer.WriteChar(L':');
-				}
-
-				if (node->typeNameOption == GuiIqNameOption::Specified)
-				{
-					writer.WriteString(node->typeName.value);
-				}
-				else
-				{
-					writer.WriteChar(L'*');
-				}
-
-				if (node->referenceName.value != L"")
-				{
-					writer.WriteChar(L'.');
-					writer.WriteString(node->referenceName.value);
-				}
-			}
-
-			void Visit(GuiIqCascadeQuery* node)override
-			{
-				node->parent->Accept(this);
-				node->child->Accept(this);
-			}
-
-			void Visit(GuiIqSetQuery* node)override
-			{
-				writer.WriteChar(L'(');
-				node->first->Accept(this);
-				switch (node->op)
-				{
-				case GuiIqBinaryOperator::ExclusiveOr:
-					writer.WriteString(L" ^ ");
-					break;
-				case GuiIqBinaryOperator::Intersect:
-					writer.WriteString(L" * ");
-					break;
-				case GuiIqBinaryOperator::Union:
-					writer.WriteString(L" + ");
-					break;
-				case GuiIqBinaryOperator::Substract:
-					writer.WriteString(L" - ");
-					break;
-				}
-				node->second->Accept(this);
-				writer.WriteChar(L')');
-			}
-		};
-
-		void GuiIqPrint(Ptr<GuiIqQuery> query, stream::StreamWriter& writer)
-		{
-			GuiIqPrintVisitor visitor(writer);
-			query->Accept(&visitor);
-		}
-	}
-}
-
-
-/***********************************************************************
-.\INSTANCEQUERY\GUIINSTANCEQUERY_AST.CPP
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parser::GuiInstanceQuery_Parser.parser.txt
-
-This file is generated by: Vczh Parser Generator
-***********************************************************************/
-
-
-namespace vl
-{
-	namespace presentation
-	{
-/***********************************************************************
-Visitor Pattern Implementation
-***********************************************************************/
-
-		void GuiIqPrimaryQuery::Accept(GuiIqQuery::IVisitor* visitor)
-		{
-			visitor->Visit(this);
-		}
-
-		void GuiIqCascadeQuery::Accept(GuiIqQuery::IVisitor* visitor)
-		{
-			visitor->Visit(this);
-		}
-
-		void GuiIqSetQuery::Accept(GuiIqQuery::IVisitor* visitor)
-		{
-			visitor->Visit(this);
-		}
-
-	}
-}
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			using namespace vl::presentation;
-
-#define PARSING_TOKEN_FIELD(NAME)\
-			CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(get_##NAME, NO_PARAMETER, vl::WString(ClassType::*)(), [](ClassType* node) { return node->NAME.value; }, L"*", L"*")\
-			CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(set_##NAME, { L"value" }, void(ClassType::*)(const vl::WString&), [](ClassType* node, const vl::WString& value) { node->NAME.value = value; }, L"*", L"*")\
-			CLASS_MEMBER_PROPERTY_REFERENCETEMPLATE(NAME, get_##NAME, set_##NAME, L"$This->$Name.value")\
-
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqQuery, presentation::GuiIqQuery)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqNameOption, presentation::GuiIqNameOption)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqChildOption, presentation::GuiIqChildOption)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqPrimaryQuery, presentation::GuiIqPrimaryQuery)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqCascadeQuery, presentation::GuiIqCascadeQuery)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqBinaryOperator, presentation::GuiIqBinaryOperator)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqSetQuery, presentation::GuiIqSetQuery)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqQuery::IVisitor, presentation::GuiIqQuery::IVisitor)
-
-			BEGIN_CLASS_MEMBER(GuiIqQuery)
-				CLASS_MEMBER_METHOD_OVERLOAD(Accept, {L"visitor"}, void(GuiIqQuery::*)(GuiIqQuery::IVisitor* visitor))
-			END_CLASS_MEMBER(GuiIqQuery)
-
-			BEGIN_ENUM_ITEM(GuiIqNameOption)
-				ENUM_ITEM_NAMESPACE(GuiIqNameOption)
-				ENUM_NAMESPACE_ITEM(Specified)
-				ENUM_NAMESPACE_ITEM(Any)
-			END_ENUM_ITEM(GuiIqNameOption)
-
-			BEGIN_ENUM_ITEM(GuiIqChildOption)
-				ENUM_ITEM_NAMESPACE(GuiIqChildOption)
-				ENUM_NAMESPACE_ITEM(Direct)
-				ENUM_NAMESPACE_ITEM(Indirect)
-			END_ENUM_ITEM(GuiIqChildOption)
-
-			BEGIN_CLASS_MEMBER(GuiIqPrimaryQuery)
-				CLASS_MEMBER_BASE(GuiIqQuery)
-
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<GuiIqPrimaryQuery>(), NO_PARAMETER)
-
-				CLASS_MEMBER_FIELD(childOption)
-				CLASS_MEMBER_FIELD(attributeNameOption)
-				PARSING_TOKEN_FIELD(attributeName)
-				CLASS_MEMBER_FIELD(typeNameOption)
-				PARSING_TOKEN_FIELD(typeName)
-				PARSING_TOKEN_FIELD(referenceName)
-			END_CLASS_MEMBER(GuiIqPrimaryQuery)
-
-			BEGIN_CLASS_MEMBER(GuiIqCascadeQuery)
-				CLASS_MEMBER_BASE(GuiIqQuery)
-
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<GuiIqCascadeQuery>(), NO_PARAMETER)
-
-				CLASS_MEMBER_FIELD(parent)
-				CLASS_MEMBER_FIELD(child)
-			END_CLASS_MEMBER(GuiIqCascadeQuery)
-
-			BEGIN_ENUM_ITEM(GuiIqBinaryOperator)
-				ENUM_ITEM_NAMESPACE(GuiIqBinaryOperator)
-				ENUM_NAMESPACE_ITEM(ExclusiveOr)
-				ENUM_NAMESPACE_ITEM(Intersect)
-				ENUM_NAMESPACE_ITEM(Union)
-				ENUM_NAMESPACE_ITEM(Substract)
-			END_ENUM_ITEM(GuiIqBinaryOperator)
-
-			BEGIN_CLASS_MEMBER(GuiIqSetQuery)
-				CLASS_MEMBER_BASE(GuiIqQuery)
-
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<GuiIqSetQuery>(), NO_PARAMETER)
-
-				CLASS_MEMBER_FIELD(first)
-				CLASS_MEMBER_FIELD(second)
-				CLASS_MEMBER_FIELD(op)
-			END_CLASS_MEMBER(GuiIqSetQuery)
-
-			BEGIN_INTERFACE_MEMBER(GuiIqQuery::IVisitor)
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(GuiIqQuery::IVisitor::*)(GuiIqPrimaryQuery* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(GuiIqQuery::IVisitor::*)(GuiIqCascadeQuery* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(GuiIqQuery::IVisitor::*)(GuiIqSetQuery* node))
-			END_INTERFACE_MEMBER(GuiIqQuery)
-
-#undef PARSING_TOKEN_FIELD
-
-			class GuiIqTypeLoader : public vl::Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)
-				{
-					ADD_TYPE_INFO(vl::presentation::GuiIqQuery)
-					ADD_TYPE_INFO(vl::presentation::GuiIqNameOption)
-					ADD_TYPE_INFO(vl::presentation::GuiIqChildOption)
-					ADD_TYPE_INFO(vl::presentation::GuiIqPrimaryQuery)
-					ADD_TYPE_INFO(vl::presentation::GuiIqCascadeQuery)
-					ADD_TYPE_INFO(vl::presentation::GuiIqBinaryOperator)
-					ADD_TYPE_INFO(vl::presentation::GuiIqSetQuery)
-					ADD_TYPE_INFO(vl::presentation::GuiIqQuery::IVisitor)
-				}
-
-				void Unload(ITypeManager* manager)
-				{
-				}
-			};
-#endif
-
-			bool GuiIqLoadTypes()
-			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				ITypeManager* manager=GetGlobalTypeManager();
-				if(manager)
-				{
-					Ptr<ITypeLoader> loader=new GuiIqTypeLoader;
-					return manager->AddTypeLoader(loader);
-				}
-#endif
-				return false;
-			}
-		}
-	}
-}
-
-
-/***********************************************************************
-.\INSTANCEQUERY\GUIINSTANCEQUERY_PARSER.CPP
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parser::GuiInstanceQuery_Parser.parser.txt
-
-This file is generated by: Vczh Parser Generator
-***********************************************************************/
-
-
-namespace vl
-{
-	namespace presentation
-	{
-/***********************************************************************
-ParserText
-***********************************************************************/
-
-const wchar_t parserTextBuffer[] = 
-L"\r\n" L""
-L"\r\n" L"class Query"
-L"\r\n" L"{"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"enum NameOption"
-L"\r\n" L"{"
-L"\r\n" L"\tSpecified,"
-L"\r\n" L"\tAny,"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"enum ChildOption"
-L"\r\n" L"{"
-L"\r\n" L"\tDirect,"
-L"\r\n" L"\tIndirect,"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class PrimaryQuery : Query"
-L"\r\n" L"{"
-L"\r\n" L"\tChildOption\t\tchildOption;"
-L"\r\n" L"\tNameOption\t\tattributeNameOption;"
-L"\r\n" L"\ttoken\t\t\tattributeName;"
-L"\r\n" L"\tNameOption\t\ttypeNameOption;"
-L"\r\n" L"\ttoken\t\t\ttypeName;"
-L"\r\n" L"\ttoken\t\t\treferenceName;"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class CascadeQuery : Query"
-L"\r\n" L"{"
-L"\r\n" L"\tQuery\t\t\tparent;"
-L"\r\n" L"\tQuery\t\t\tchild;"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"enum BinaryOperator"
-L"\r\n" L"{"
-L"\r\n" L"\tExclusiveOr,"
-L"\r\n" L"\tIntersect,"
-L"\r\n" L"\tUnion,"
-L"\r\n" L"\tSubstract,"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class SetQuery : Query"
-L"\r\n" L"{"
-L"\r\n" L"\tQuery\t\t\tfirst;"
-L"\r\n" L"\tQuery\t\t\tsecond;"
-L"\r\n" L"\tBinaryOperator\top;"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"token INDIRECT = \"////\";"
-L"\r\n" L"token DIRECT = \"//\";"
-L"\r\n" L"token NAME = \"[a-zA-Z_][a-zA-Z0-9]*\";"
-L"\r\n" L"token WILDCARD = \"/*\";"
-L"\r\n" L"token OPEN = \"/(\";"
-L"\r\n" L"token CLOSE = \"/)\";"
-L"\r\n" L"token XOR = \"/^\";"
-L"\r\n" L"token INTERSECT = \"/*\";"
-L"\r\n" L"token UNION = \"/+\";"
-L"\r\n" L"token SUBSTRACT = \"-\";"
-L"\r\n" L"token ATTRIBUTE = \"@\";"
-L"\r\n" L"token COLON = \":\";"
-L"\r\n" L"token DOT = \".\";"
-L"\r\n" L""
-L"\r\n" L"discardtoken SPACE = \"/s+\";"
-L"\r\n" L""
-L"\r\n" L"rule PrimaryQuery QPrimaryFragment"
-L"\r\n" L"\t=\t("
-L"\r\n" L"\t\t\t(NAME : typeName with {typeNameOption=\"Specified\"})"
-L"\r\n" L"\t\t\t| (\"*\" with {typeNameOption=\"Any\"})"
-L"\r\n" L"\t\t)"
-L"\r\n" L"\t\t[\".\" NAME : referenceName] as PrimaryQuery"
-L"\r\n" L"\t;"
-L"\r\n" L""
-L"\r\n" L"rule PrimaryQuery QPrimaryAttributed"
-L"\r\n" L"\t= !QPrimaryFragment with {attributeNameOption=\"Any\"}"
-L"\r\n" L"\t= \"@\" [NAME : attributeName] \":\" !QPrimaryFragment with {attributeNameOption=\"Specified\"}"
-L"\r\n" L"\t;"
-L"\r\n" L""
-L"\r\n" L"rule PrimaryQuery QPrimary"
-L"\r\n" L"\t= (\"/\" with {childOption=\"Direct\"}) !QPrimaryAttributed"
-L"\r\n" L"\t= (\"//\" with {childOption=\"Indirect\"}) !QPrimaryAttributed"
-L"\r\n" L"\t= \"(\" !QueryRoot \")\""
-L"\r\n" L"\t;"
-L"\r\n" L""
-L"\r\n" L"rule Query Query0"
-L"\r\n" L"\t= !QPrimary"
-L"\r\n" L"\t= Query0 : parent QPrimary : child as CascadeQuery;"
-L"\r\n" L""
-L"\r\n" L"rule Query Query1"
-L"\r\n" L"\t= !Query0"
-L"\r\n" L"\t= Query1 : first \"^\" Query0 : second as SetQuery with {op=\"ExclusiveOr\"}"
-L"\r\n" L"\t= Query1 : first \"*\" Query0 : second as SetQuery with {op=\"Intersect\"}"
-L"\r\n" L"\t;"
-L"\r\n" L"\t"
-L"\r\n" L"rule Query Query2"
-L"\r\n" L"\t= !Query1"
-L"\r\n" L"\t= Query2 : first \"+\" Query1 : second as SetQuery with {op=\"Union\"}"
-L"\r\n" L"\t= Query2 : first \"-\" Query1 : second as SetQuery with {op=\"Substract\"}"
-L"\r\n" L"\t;"
-L"\r\n" L""
-L"\r\n" L"rule Query QueryRoot"
-L"\r\n" L"\t= !Query2"
-L"\r\n" L"\t;"
-;
-
-		vl::WString GuiIqGetParserTextBuffer()
-		{
-			return parserTextBuffer;
-		}
-
-/***********************************************************************
-SerializedTable
-***********************************************************************/
-
-const vint parserBufferLength = 5788; // 27819 bytes before compressing
-const vint parserBufferBlock = 1024;
-const vint parserBufferRemain = 668;
-const vint parserBufferRows = 6;
-const char* parserBuffer[] = {
-"\x00\x00\x81\x81\x84\x02\x81\x80\x07\x82\x00\x87\x80\x83\x21\x33\x3B\x31\x30\x64\x65\x11\x35\x35\x32\x39\x3D\x7F\x18\x99\x98\x8A\x85\x84\x8C\x28\x39\x69\x6D\x21\x36\x83\x8D\x8B\x8A\x8D\x19\x85\x08\x80\x0A\x90\x81\x92\x8B\x28\x99\x88\x0B\x93\x98\x83\x29\x32\x74\x2F\xA7\x91\x9B\x03\x94\x8E\x81\x1C\x8C\x8E\x90\x82\x8C\x8A\x8B\x96\x05\xC8\xA3\x28\x39\x34\x34\x33\x98\x1B\xBE\x81\x82\xAF\x81\x8A\x9C\x03\x2B\xD8\x80\x90\x33\x95\x32\x36\x3A\x50\xFF\x7F\x86\x81\x87\x8D\x91\x91\x79\x3A\x8D\x0B\x9B\xB0\x81\x30\x3A\x74\x20\xA2\x35\x34\x3D\x32\x27\x30\x6D\x65\x21\xA3\xB9\x85\xB0\x90\x91\x24\xC6\xB9\x33\x0B\x94\xC2\xB6\xB8\x72\xF4\xB6\xB8\xB5\x37\x24\x38\x3A\x69\x6F\x2E\x3B\xB2\xA8\x82\xB2\xC0\x69\x82\xFD\x88\x8B\xC8\x03\xA5\xA6\x64\x0E\xD0\xD2\xC4\xC8\x86\x8F\xBF\x68\xEA\xAC\xA1\x82\x3D\x32\x33\x8A\x5E\xE3\x0B\xD9\xB5\xD5\x8E\xBF\xB3\x81\xA6\xB5\x85\x8B\xDC\x39\x3C\x38\xB3\xFA\x90\xBC\xB0\x07\xD0\xDD\xCC\x26\x8E\x2B\x8A\xE0\x86\xDC\xE1\xBB\x79\xA2\xD1\xD3\xC0\xAB\xDE\x81\xDD\x37\xB9\x82\xC8\xA2\x80\xA6\x33\x34\x72\x73\x20\xB5\xE4\x99\x81\xEC\x9D\x02\x2B\xA9\xE0\x8F\x30\x39\xB0\xEB\x01\xD8\xF8\x97\xA9\xA9\x83\x39\x32\x63\x12\xCF\xB0\xA1\x0B\x97\x17\x95\xFD\x6B\x42\x83\x4A\x61\x61\x53\x80\x81\x05\xB1\x47\x80\x42\x09\x8A\x8B\x82\x40\x0D\xA8\x40\x7C\x40\xBB\x49\x1E\x10\x11\x49\x12\x15\x13\x10\x54\x04\x48\x42\x87\x00\x2F\x02\x8B\x7F\x08\xB1\x4A\x55\x41\x27\x98\x8A\x84\x87\xEB\x45\x4D\x8A\x88\x01\x25\x88\x48\x88\x02\x60\x8E\x11\x10\x4D\x05\x15\x07\x4A\x3B\x80\x4B\x15\x18\x2D\x3A\x11\x11\x0B\x5A\x1F\x1D\x17\x8F\x41\x83\x9A\x14\x0C\x2D\x39\x0D\x16\x0A\x2D\x90\x84\x78\x42\xBB\x57\x19\x10\x13\x44\x03\x11\x12\x14\x44\x11\x91\x43\x8B\x2A\x03\x02\x8E\x46\x34\x83\x41\x43\x13\x50\x05\x1E\x12\x97\x00\x6F\x88\x09\x99\x00\x61\x5C\x75\x40\x48\x43\x1C\x13\x13\x53\x05\x1C\x98\x00\x2F\xA9\x03\x9D\x9C\x50\x62\x98\x42\xA0\x00\x18\x1F\x12\x14\x7B\xAF\x8E\x17\x89\x52\xB1\x49\x03\x4A\x8F\x80\x46\x84\x15\x45\x12\x19\x9C\x8B\xEA\x41\x4F\x0A\x0A\x07\x23\x99\x4B\x4A\x48\x55\x1E\x11\x12\x4F\x2B\x99\xA4\x40\x2F\x2B\x03\x84\x00\x61\x51\xA5\x42\xAB\x53\x15\x12\x13\x14\x54\x12\x11\x10\x87\x31\x88\x49\xAC\x00\x2D\x2E\xAD\xA0\x4A\xBE\x81\x4E\xA9\x10\x54\x35\xA9\x12\x10\x55\x14\xAB\xAE\x40\xBB\x80\x1A\x02\xA7\x18\x7F\x9C\x4B\x54\x4F\x37\x9E\x13\xB2\x01\x7B\xAA\x0D\x67\xBF\x9A\x44\xA2\x40\x84\x84\x1F\x10\x15\xD8\x80\x4B\xAE\x0B\xC4\x61\x55\xBB\xB4\x08\x48\x53\x14\x14\xB7\x85\x1F\xB5\x40\x84\xAF\x03\x1F\x0A\x6D\x45\x41\x58\x89\x28\xB5\x7E\x4A\x60\x32\x10\x0B\x4A\xC0\xFF\xA6\x42\x0E\x0B\x52\x2F\x1F\x18\x1D\x53\x34\x13\x48\x1D\xDC\x81\x4D\x64\x10\x20\x24\x0C\x0E\x4E\x32\x3E\x0C\xA1\x40\x27\x98\xC4\x70\x47\x18\xEE\x0D\xC3\xC3\xCF\x88\x45\xC8\x00\x14\xD7\xC0\xC2\x0F\xAB\xBB\x61\x17\x65\x68\x67\xC2\x43\xC9\x2F\xE8\x66\x46\x0B\x31\x15\x2B\x4A\xCE\x00\x57\xC0\xCE\x45\x3E\x3A\x00\x08\x0A\x20\x22\x0F\x0A\x08\x14\xF7\x19\x18\x1D\x68\x20\x0B\x1C\x08\x9F\x4E\x52\x76\x64\x20\x3D\x05\xD0\x11\xE0\x78\x74\x1E\x08\x20\x3D\x10\x09\x0A\x20\x21\x05\xCF\x71\x41\x08\x69\x1B\x5C\x75\x64\x1D\x02\x02\x3E\xF6\xC9\x1D\xD0\x43\xC5\xD2\x88\xD2\x20\x0A\xDC\xD2\xD3\x50\xCC\x52\xD7\x63\xD3\x55\xD5\xD1\x12\x6E\x24\x19\xD7\x18\x5B\xDD\xDF\xD5\xD8\x63\xD8\x65\xD9\x5C\x67\xCA\x64\x19\xCB\x01\x49\xE1\xCF\x4A\x34\xFF\xC9\x1E\x0B\x32\x1F\x0B\x4A\xE6\x3D\xD2\xE0\xD2\xD0\x22\x28\x04\xDE\xD8\x82\x49\xCB\xC1\xD1\x29\x22\x04\xC1\x41\xAB\xDE\xE9\x1E\x11\x72\x21\x17\x19\x5E\x5F\x52\x0B\x4A\xED\x2E\x56\xE0\xEE\xEC\xB4\xF4\x18\xCD\x2A\x2B\x40\xFD\xE6\xEE\xB1\xF3\xEE\x54\x1D\x70\xC4\xD4\xD3\x8D\x39\xA0\x02\xD2\x73\xC1\x75\xDB\xD1\xD3\x4F\xD0\xF0\x75\x63\x7C\xD4\xD6\xD6\x08\x53\x00\x73\x19\x1A\xDF\x65\x14\x18\xD7\x5E\xE0\xDC\x1D\xDC\x22\x2A\x0C\xD6\xDD\xD4\xE0\x06\xF4\x63\x53\xEE\x1E\xDE\x08\x41\x2E\x19\x1C\xF9\x87\xE9\x04\xC7\x16\x45\xEE\x0C\xD4\xF3\x45\x0E\x78\x08\x2D\x3F\x35\xD6\x2E\x0A\x36\xD7\x60\x05\x17\x20\x0D\x20\x10\x16\x72\x27\xAB\x62\x21\xEB\x44\x7C\x77\xE3\x78\x75\x20\x17\x8E\x77\xEE\x46\x7F\x2A\xCC\x42\x7D\x20\x1F\x8D\x6F\x71\x1B\x8D\x77\xE4\x71\x68\x80\x02\x8F\x7D\x5E\x52\x77\x6F\xEA\x7F\x31\x38\xF1\x73\x7D\xF7\x78\x30\x7D\x34\x22\x78\x7F\xE6\x68\x7E\xFA\x2C\x8D\x7C\x15\x98\x7B\x34\xF2\x7B\x79\xFD\x77\x76\x70",
-"\xB0\x7A\x78\x04\xFC\x62\x06\xFF\x20\x08\x84\xA1\x44\x80\x36\x07\x91\x7B\x02\x8D\x8F\x80\xC1\x17\x82\x20\x19\x96\x73\xE2\x09\x39\x6C\x0A\x2B\x26\x8B\xB9\x6E\x6F\x16\x8D\x79\x6C\xCC\x74\x0B\x25\x67\x83\x7A\x18\xE6\x68\x6C\xF1\x70\x68\x69\x74\x7C\x7D\x13\x8C\x8C\x8C\xC5\x09\x83\x81\x22\x1A\x04\xD7\x62\x64\x82\x0E\xB4\x0C\x87\x78\x6F\x2C\xE3\x6D\x87\x7B\x18\x9B\x7B\x86\xDF\x61\x7F\xF8\x5D\x61\x83\x80\x13\x86\x6D\x24\x96\x83\xED\x11\x7D\x8F\xDE\x6E\x03\x06\x1F\x82\x21\x08\x9A\x85\x79\x12\x82\x6A\x79\x4C\x98\x45\x00\xCF\x7F\x85\x04\xAC\x78\x6F\x3E\x86\x91\xD1\x08\x95\x87\x1B\x85\x88\x04\xE7\x64\x69\xFA\x6B\x73\x7A\x54\xA5\x90\x7E\xD9\x61\x89\xD1\x43\x88\x87\xC3\x49\x8E\x7F\x14\x73\x8F\x13\x86\x88\x80\xC6\x0A\x84\x81\x73\x0E\x82\xDB\x10\x83\x60\x4A\x90\x95\x93\xC7\x78\x03\x4A\x52\x91\x8D\x11\x90\x9D\x83\xA6\x74\x0D\x11\x01\x7D\x47\x82\x1D\x9E\x62\x9C\x95\x83\x57\x3E\x00\x04\x20\x17\x89\x20\x59\x8B\x8F\x20\x8E\x70\x8D\x82\x2D\x9E\x75\x63\x8D\x8C\x19\x38\x63\x19\x95\x35\x9A\x8D\x64\x75\x8D\xDA\x70\x6C\x8F\x67\xA2\x9C\x0E\x49\x75\x97\xD3\x02\x9C\x8A\x18\xB9\x93\x7E\xBC\x9D\x6B\xDA\x22\x8A\x70\x7D\xAE\x88\x74\x40\x1C\x6A\x1C\xA2\x92\x80\x82\xA4\x8A\x8A\x45\x7A\x8C\xE2\x15\x97\x79\x80\xAD\x84\x8E\xEB\x95\x2D\x21\x87\xA7\x90\xEF\x6D\x93\x91\x7D\x07\x9C\x40\x69\x99\x9F\x90\xA2\x7D\x9D\x02\x2F\x9E\x16\x8E\xA3\x9E\x1A\x29\x8D\x20\x37\xAC\xA0\x5A\x71\x9E\x71\x37\x91\xA0\x89\xA1\x8D\x7A\xD0\x16\xA4\x90\x63\xB8\x8A\x8F\x14\x7D\x9E\x35\xFF\x90\x91\x81\x8E\xA3\xA4\x40\x92\x86\x49\x8A\x94\x7C\x95\x80\x04\xA5\x0D\xAE\xA4\x19\x30\xA1\x20\x99\xAA\x9D\xA0\xF3\x93\x07\x4D\x82\x29\xA6\x78\xB4\xA6\xA7\x12\xA1\xAB\x28\xA0\xA5\xA1\x3B\x94\x61\x8F\x7B\x81\x9E\x1F\xCD\xAC\xAD\x8B\x90\xAD\x6F\x25\xB4\x84\x55\x8C\x9D\x99\x6A\x98\x31\x92\xB5\x73\x92\x5F\xE8\x20\xB0\xDF\x75\x01\x93\x01\x3B\x90\x47\xE3\x9F\x93\x13\x94\xA4\x94\xCF\x26\x9B\x29\xAE\x81\xB3\xE8\x24\xA3\x95\x53\xB6\x84\x4A\x87\x71\x97\xA2\x7B\x83\xB2\xEE\x77\x96\x65\xD1\xA2\x88\xFB\x7D\x90\x6C\xBF\x9F\x7F\x63\x83\x8E\x34\x28\x85\x9B\x85\x53\x89\x99\x15\xA6\x20\x08\xC8\x43\xB6\x22\x32\x61\x21\xE5\x6E\x67\x92\x5B\x2B\x26\xB7\xF8\x98\x32\x09\xC6\x64\x97\x8F\x91\x69\x34\x97\xA2\x04\xD6\x2D\x34\x71\x5E\x8A\xA9\xAB\x60\xA0\x0B\x42\xAE\x73\xB9\xB9\x74\xAF\xB8\xAA\x82\x04\xE0\x02\x7C\xB9\xC2\x65\x7B\xA3\x5F\xB7\xA0\x19\x52\xBC\x6C\xEA\xA0\x72\x74\x88\x65\x76\xC2\x7F\x82\x05\xD4\x66\x9A\xB0\x00\x06\xAE\x56\x9A\x0B\x24\xFA\xB7\xB1\x0F\x3C\xA5\x8D\x36\xDB\x94\x0D\x0B\x2B\x26\xBF\x00\x20\x9F\x4C\xDA\xA4\x9D\xDA\xA5\x3F\xBE\x8D\x80\x23\x23\xC7\x38\x61\xF5\xBC\xB9\x5F\x02\x39\x5E\x80\xEE\x65\xC1\x8D\x40\x25\x63\x82\x30\x06\x6D\xF1\xB9\xC3\x4B\x91\x0B\x25\x1F\xDD\x71\x86\xF0\x6A\x26\x18\x02\x84\x2B\x06\x9F\x8E\xEB\x02\x87\xB8\x64\xA0\x04\x2A\x44\x3A\x24\x79\xAA\x66\x24\x18\x3C\x9E\x75\x40\x16\xC0\x00\x18\xC5\xC7\x0D\xE5\xC0\x73\x3B\x0B\x25\x90\xA2\xC5\xC6\x12\xD9\xC7\xC4\x5D\x3F\x28\x08\x2B\xC2\x69\x16\xCD\x80\xC6\x56\x22\x31\x8E\xFE\x5C\xC3\x1E\xC7\xC5\xCA\x16\x30\x04\xCE\x43\xC5\x20\x2E\xF4\xC1\xCB\x46\xD5\xC4\x92\xA9\xC4\x62\x26\xF9\x68\x34\x2E\xD0\xC9\x51\x26\x2A\xC6\x1E\xD9\xCC\x39\x05\x30\xCF\x8F\xFB\xB1\x71\x88\x40\x25\x33\xE0\x83\xC5\x39\xED\xC1\x72\xC1\x31\x06\xC7\x7E\xCE\x04\x0D\x3E\x1B\x24\x42\xC4\xCE\x22\x31\x01\xCC\xA2\x82\x8F\x3B\xF0\x2C\xBB\x87\x25\xC2\x83\x7D\x79\x31\x70\x17\xE7\x3A\x30\x74\xAD\x3F\xFC\x00\x75\x2F\xF0\x1A\x6C\x7C\x33\xDA\x25\xA2\xC2\x64\x75\x1A\xE1\xD6\xCF\x8A\xD9\x0D\x0C\x0C\xD0\x3C\xF1\x05\x6E\x0B\x5C\x71\xD2\xD0\x13\xDA\x3E\x4B\xF3\x38\xD3\xA0\xBA\xD3\xF6\x45\x08\x0F\x31\x2C\x0D\x0E\x73\x09\x0E\x1D\x0D\x32\x0E\x50\xFC\xCD\x60\x88\xC0\xD2\x49\x31\x07\x92\x55\x2B\x26\xD9\x87\xCA\xD5\xAA\xAB\xD2\x69\x46\xEE\xD2\x04\xB0\xCB\xCB\x91\xB3\xD8\x3F\x5A\xCD\x87\xD2\xB4\xB9\xD0\x1C\x73\x7C\xD6\x5F\xC0\xDA\xD8\xC4\xC4\x7F\x74\xA8\xD2\x68\x51\xEC\xD6\xD1\x9E\xB1\xD7\xB6\xA0\x04\xD7\x4A\xDF\xDF\xD6\xE1\xD9\xD7\xB8\xDB\x7C\xD3\x8A\x13\xD6\xBB\xC7\xD8\xC9\x1E\x32\x0A\xD8\x8B\x07\x61\x06\xB8\x0B\x25\xC2\xD1\xD9\x62\x52\xE2\xD7\xD4\x06\x69\xD6\x0C\x6F\xD7\xDB\x15\x32\xDB\xD9\x92\xDD\xDA\xBD\xC9\x90\xDC\x8B\x22\xDB\x7E\x55\x0E\x0F\x74\x20\xDB\xDD\x88\xED\xD8\x60\x14\xEC\xBD\x0B\x17\xEB\xD0\x6E",
-"\xD4\xD4\x0C\xB6\xDA\x3A\x49\x1F\xE7\x91\x3A\x22\x0A\x3C\xB1\x6D\xB9\xD7\x53\xC8\x20\x37\xC3\xE5\xE0\x03\xE2\xD0\x29\x2B\x23\xE8\x86\xD2\xE1\xE5\x45\x6B\xE6\xB6\x98\xEE\xE4\x6F\xDC\xE0\xDF\x16\x3E\xA1\xFB\x3A\xDB\x94\x9B\xF8\xE1\x0C\x3A\xFD\x0D\xC9\x86\xE7\xE9\x6A\xED\xD4\xBD\x16\xEB\xE9\xCB\xF4\xDA\xE2\x98\xF7\xDA\xE6\x51\xF4\xE5\xD1\x21\xE3\xE5\xAE\x41\xE2\xD4\x40\xEC\xD9\x0C\x50\xD5\x20\xBA\xDF\xCA\xDA\x27\xEC\xE8\x08\x56\xD0\xA1\x78\xE2\xE9\x0F\x26\xCD\xEB\xC6\xA0\x0D\xE3\x3C\x2A\xEA\xBB\x5F\x3E\xDF\xA7\x8A\xA5\xBC\x76\xFF\xEC\xDA\x7B\xFF\xEB\x5B\xD9\xD2\xD6\xB2\xEF\xE1\xE6\x3A\x27\xF1\xB9\xBF\xD1\xD9\x61\xCF\x0D\xD8\x6E\xF4\xCA\xA8\xF0\xC2\x20\x39\xC1\xD4\xCE\x64\x16\xCC\x00\x78\xC7\xEF\x44\xFB\xCA\xF4\x00\x60\xEB\xC1\x32\x05\xE9\x82\x35\xF7\xEE\x0D\xFF\xEF\xC4\xDE\xEE\xD1\xB7\xA1\xEE\xDD\x82\xE6\xEF\xD3\xE8\xE6\xF0\x7D\xE0\xE2\xE4\x92\x2A\xDD\xE3\xA6\xEA\xF7\x94\xEF\xAA\xE9\xC0\xF6\xF2\xD3\x84\xF0\xEB\xE2\xC2\xA0\x04\x54\xFC\x7A\xD5\xF1\x28\xEA\x80\xF0\xF6\x60\xA4\xE1\x22\xE9\x86\x6D\xC1\x85\x7C\xBA\xF5\xAC\xF8\x61\x81\xC1\x50\x20\x57\x7A\x21\x9B\xE8\xFD\xCE\x49\x59\x98\x67\x6E\x82\x25\x9B\x77\xF9\x9B\x8D\x80\x6C\xE7\x7E\x48\xDA\xD5\x71\x78\x39\x74\x72\x10\x76\x72\x6A\xD3\x68\x74\xD8\x64\x37\x95\x75\x6F\xC2\x74\x7D\xC4\x7A\x79\xBD\x6C\x79\xE8\x6F\x79\xCA\x7D\x7A\x07\x8C\x7B\xD7\x6A\x3E\x65\x63\x6F\x0C\x88\x79\xB8\x67\x7D\xD9\x7D\x6F\x9E\x69\x75\x6F\x71\x7B\x57\x61\x32\x33\x05\x7B\x02\x17\x7B\xEA\x79\x77\x06\x78\x80\x2B\x7B\x81\x7A\x7D\x81\x67\x79\x79\xC6\x75\x73\x37\x7C\x7D\x59\x7B\x75\x03\x7D\x75\x91\x70\x6F\x22\x06\x71\x32\x83\x76\x34\x83\x7C\x36\x80\x82\xFB\x6B\x76\xC8\x7E\x06\xE4\x3C\x7E\x00\x0E\x7E\xEA\x5B\x30\x01\x25\x10\x53\x8F\x7E\xEB\x55\x7E\xDA\x41\x38\xE1\x70\x10\x70\x69\x67\xF3\x7B\x5E\x05\x6E\x63\x96\x39\x5B\x00\x1B\x5B\x0C\x64\x03\x9C\x35\x10\x69\x8A\x53\x9F\x35\x34\xE8\x55\x6A\x16\x19\x4D\x6F\x59\x3A\x4E\x80\x85\x5F\x8B\x30\x86\x15\x10\x79\x86\x85\x0B\x38\x85\x23\x32\x07\x74\x0B\x85\x00\x00\x67\x14\x3E\x85\x71\x80\x86\x75\x82\x7F\x87\x8B\x30\x0F\x0B\x12\x8D\x8F\x7F\xF4\x7F\x87\x74\x00\x61\x01\x19\x2F\x29\x3C\x87\xC8\x32\x86\x6E\x36\x55\x58\x58\x16\x7E\x8E\x30\x80\x84\x89\x00\x16\x89\x15\x3C\x86\x6F\x3A\x89\xC7\x12\x88\x72\x66\x39\x22\x30\x8A\x74\x0F\x31\x01\x17\x89\x96\x3A\x31\xDF\x79\x65\x09\x60\x00\xAD\x3D\x61\xD9\x42\x89\xF1\x70\x10\x85\x87\x77\x36\x65\x82\x35\x60\x8B\xFF\x7A\x65\x92\x84\x86\x00\x07\x32\x97\x83\x62\xC2\x88\x68\xB7\x89\x8B\xCB\x6F\x89\x0F\x3D\x8B\x28\x35\x8A\x06\x8D\x8C\xAA\x64\x8C\x02\x7C\x6C\xC7\x84\x39\xB1\x80\x02\x16\x8F\x8C\xCE\x4B\x54\x7E\x46\x5F\x05\x16\x8E\x72\x56\x49\xBB\x8E\x8A\xF6\x71\x10\xDD\x4F\x8B\xE9\x87\x3C\x3E\x02\x8E\xF7\x55\x58\x16\x0B\x12\xF7\x85\x8F\xD7\x4E\x3B\x92\x8C\x55\x00\x1D\x4E\xB2\x8E\x4F\x7E\x4E\x03\x9C\x83\x8E\xD0\x52\x5E\x1C\x0B\x12\x09\x97\x5F\xF9\x52\x3E\xD2\x80\x88\x00\x65\x10\x11\x90\x8F\x03\x60\x56\x04\x90\x5F\xF2\x50\x56\xD4\x45\x10\x1B\x99\x91\xE2\x5D\x8A\x0F\x39\x8F\x05\x12\x92\x01\x9D\x52\x16\x94\x8F\xF1\x5B\x58\x74\x05\x90\xFA\x8F\x4F\x82\x68\x58\x00\x1A\x58\x02\x9E\x49\x71\x3B\x3C\xAB\x5E\x43\x74\x59\x4A\xC9\x5C\x4A\x7B\x5F\x5D\x9D\x53\x4B\x39\x92\x5A\x3F\x48\x57\xBB\x46\x5A\xAF\x48\x5A\xFD\x3A\x5A\x42\x5C\x5A\x05\x41\x1B\x18\x54\x45\xCB\x42\x65\x2C\x99\x92\xE1\x52\x4F\xFE\x80\x00\x5E\x56\x92\x1F\x95\x03\xF7\x45\x10\x5D\x96\x8A\x0D\x94\x06\x68\x50\x54\x73\x44\x54\x76\x46\x54\x19\x51\x57\x2A\x94\x57\x66\x92\x52\xB8\x44\x5A\x98\x5A\x57\x9A\x54\x72\xE5\x55\x91\xE2\x57\x63\x6B\x90\x5A\x6D\x96\x50\x70\x94\x3F\x46\x9D\x07\x40\x0D\x29\x3D\x75\x8B\x03\x72\x2D\x48\x1A\x13\x0F\x2D\x2D\x19\x19\x88\x90\x8B\x5E\x86\x9A\x88\x79\x02\x20\x21\x00\x2D\xFF\x08\x8A\x98\x1A\x8D\xB3\x56\x11\x02\x23\x02\x94\x98\x8D\x30\x0F\x98\xFF\x72\x20\x25\x0D\x99\x84\x91\x03\xA0\x92\x70\x02\x27\x02\x94\x98\x92\xF1\x8F\x15\x98\x91\x95\x26\x12\x20\x29\x04\x99\x53\x9E\x91\xF2\x4F\x9A\xC7\x18\x98\x2B\x1B\x02\x94\x9F\x01\xF3\x2C\x2A\xEB\x2F\x0F\x02\x2B\x2E\x89\x95\x9C\xC6\x91\x27\xC1\x90\x27\x7C\x27\x9C\x2B\x1A\x9C\xD2\x24\x9C\xC6\x98\x8D\x32\x02\x2D\x28\x0C\x9C\x83\x97\x9D\xDB\x82\x2D\x26\x06\x9D\xFE\x7D\x9D\x25\x6A\x9C\x02\x24\x8D\xD8\x59\x4B\x1B\x6B\x5D\x83\x34\x07\x96\x98\x16",
-"\xFF\x01\x9C\xD2\x2B\x27\xC7\x9E\x9C\x2B\x10\x9D\xC5\x92\x9D\xD4\x9C\x9D\x02\x18\x8D\xA6\x9B\x12\xDB\x96\x9F\x17\x64\x98\x30\x00\x9E\x2B\x12\x9E\x7A\x38\x5C\x40\x41\x70\xCB\x5A\x35\xE9\x9A\x99\xC0\x94\x20\xAB\x2F\x9B\xCC\x9E\xA0\xCF\x9C\x9F\xFD\x98\x9D\x18\x35\x9F\x12\xA8\x9F\xDA\x92\xA1\x3B\x6E\x9F\xC5\x9B\x9E\x04\x2A\x63\x00\xA5\x9C\x10\xA7\x2A\xFC\x99\xA0\x79\x02\x2D\x2C\x0A\xA1\xB5\x96\x97\xF2\x42\x9F\xBC\x17\x65\x3E\x42\x20\xAC\x9A\x92\x1E\xAC\x20\x82\x99\x14\x1A\xAB\x27\xED\x9A\xA1\x26\xA8\xA2\x2A\xA8\x91\x2C\xAE\x38\x0C\x21\x9C\x82\x8A\x63\xC7\x9B\x2E\x3B\xA2\xA1\x26\xA3\xA4\x04\x2A\x9C\xEE\x91\x9D\xA0\x2B\x12\x0E\xA7\x9C\x3D\xAB\x12\x22\x0A\xA1\x8C\x92\x70\xD9\x41\xA1\x17\xA4\x98\xD3\x9B\x12\xD5\x9D\xA5\x14\xAE\x67\x19\xA2\xA6\xDE\x99\x61\x21\xA5\x10\x02\xA0\x1A\xF1\x35\x9E\x81\x37\x9E\x26\xA5\xA3\xFA\x29\xA4\xFC\x9A\x63\xD2\x23\xA5\xC6\x95\xA5\x08\x17\xA5\x12\xA9\xA5\x98\x8C\xA5\x75\xAE\xA5\x16\xA1\xA8\x63\xAB\x6C\x65\xA4\xA8\x67\xA5\x63\x69\xA2\x10\x6B\xAB\x37\x05\xA4\x65\x07\xA4\x38\x4B\xAB\xA0\x0C\x2D\xA0\x1A\xA7\x9A\xE0\x2C\xA3\x27\x86\x39\xD2\x2C\xA7\xFC\x9E\xA7\x51\x84\x07\x80\xA6\x9F\xF4\x90\xA6\x1A\xA8\xA1\xFA\x97\xAA\x1C\xA2\x20\x72\xA0\x21\xEB\x2B\x2A\xC7\x9F\xA4\xC5\x98\x9B\x98\x1A\x9B\x08\x13\xA3\x33\x97\x3C\x8B\xA2\x7E\xCB\x11\x10\x3A\x90\x44\x59\xAC\x93\x9A\x58\xAB\xE4\x8D\x3B\xFF\x0B\x27\xC7\xA0\x29\xCA\xAC\xA4\x1F\x24\xA2\xAE\xA1\xA5\x08\x18\xAC\xAF\xA2\xA5\x04\x2B\x2E\xEB\x29\x86\xCF\xA8\x10\x4E\x82\x8A\x94\xA6\x1B\x08\x1E\x01\xD5\xAB\x1A\xDF\xA1\xAE\x08\x17\xA3\x02\x1D\x01\xE4\xA5\x10\xC8\x88\xAE\xBA\x2B\x12\x29\xAD\x2E\x1A\xA4\xAB\xA9\x12\x18\x32\xAD\x57\x54\x95\xAC\xBA\xA6\x9C\xAA\x8E\xAB\x42\x91\x3F\xC1\xA9\x59\xE2\x34\xAC\x7F\x5B\x8F\x3A\x6F\xAE\xFC\x92\xB0\x84\x5B\x8F\x78\xA2\xA1\x2B\xA5\x95\x8E\x3B\xAB\x00\x19\x87\x02\x19\x87\x7B\x97\x57\x92\x1E\xA0\x84\x23\x44\x0D\xBA\x95\xF2\x49\xAC\xDA\xAB\xAC\xFA\x26\xAD\x9B\x39\xAE\x40\x1B\x12\xE0\xAC\xAC\xAF\x22\xAE\x21\xBA\xB2\x02\x17\xB2\x2B\xB5\xAE\x2B\x1C\xAE\x2F\xBA\xAE\x31\xB4\xB2\x66\x21\xAD\x36\xB0\x10\x74\xA9\xAD\x2F\xA3\x28\xF1\x9E\x8D\xF0\xA2\xA1\xF2\xA9\x1B\x0A\xA7\xAB\xF6\xAD\x9A\x74\x00\xB1\x83\x8D\xAB\xCD\x1D\xAF\xB9\x4F\xAF\x72\x91\xB0\x47\xBA\x92\x3A\x68\x8C\xC7\x98\xB0\x16\x15\x58\x0B\xBC\x9F\x1B\xB7\x90\xF2\x4A\xB4\x12\xB1\x10\x14\xBF\x54\x6F\x93\x1D\x50\xB9\x48\x9A\x5D\xB5\x3B\x54\x53\x89\x9D\xAA\x01\x1F\x0F\xB7\x86\xAE\xD9\x29\xB3\x1B\xA6\x1A\xC6\x9B\x2E\x4A\xBB\xAF\x4D\xB5\x59\x43\x92\x19\x67\xB7\x52\x58\xBF\x3A\xFB\x8D\xAD\x3C\xB7\x1D\x39\xA1\xAF\x95\x10\x00\x99\x91\x99\xF6\xA2\x41\x06\x99\xB0\xFF\x49\xB7\x4C\xB0\x00\xBF\xA3\x1D\x18\xB1\x10\x43\x41\xB8\x85\x5E\xB1\xFA\x2B\x27\x59\xA5\xB8\xC2\x2C\xB2\x6F\xBB\x2E\xDC\xAE\xB2\xA0\xBD\x17\xE3\xA8\xB2\x02\x12\xB7\x00\x12\xB3\xA7\xB9\x8C\x35\xBA\xBA\x73\xB8\x10\x19\x04\xB7\x4E\xA4\xB7\x3B\xB3\xBA\x57\x69\xA9\xED\xA8\x10\x06\xBD\x1D\x88\xB6\xB7\x96\x10\x9B\x45\xBC\x3A\x53\xB9\xAB\x5F\x12\xB9\x08\x10\x67\x95\xB7\xB1\xD4\xA0\x10\x99\xB7\xBC\xF8\xAF\x15\x05\xBA\xA1\x9A\xBA\xB0\x1A\xA2\x20\x6A\xB6\x11\x61\x90\xB6\x85\x11\x10\x15\xB5\xB6\xCE\xBE\xB3\xD0\xB6\x3F\xDB\xB8\x5F\x34\x5C\xB9\x02\x1F\xB9\xBA\xBD\xBB\x05\x1B\x01\x74\xBB\xAD\x74\xB4\x1C\xA6\xBD\xBE\x05\x15\xBA\x74\xBC\xBA\x00\x0E\xBA\xF6\xB3\x33\xB1\xB3\xB3\x35\x2E\xAC\xFD\xB4\x27\x02\xC8\x9C\xBB\xB4\x2F\x3F\xB6\x32\xD0\xAC\x9F\x43\xB8\x1C\xC5\xBE\xB8\x46\xBD\x92\x7E\x4A\xBC\x71\x6C\xAF\x7C\xB1\x3F\x97\xB5\xBE\x79\x07\xBD\xFF\x45\xB5\xD6\xB2\xBD\x03\xBF\x4F\x5B\xB6\x9F\xE7\xBD\xBD\xC6\x91\xB6\x11\xB0\xBE\x64\xB3\x5A\x66\xB0\xB2\xC2\xA2\x3E\x25\xCC\xB6\x0F\x2E\xB6\x71\x21\xB7\x09\xC0\xC0\x1C\x39\xB8\x0F\x28\xB7\xFA\xA3\xB9\xCD\xBE\x06\x19\xC0\x00\xD1\xB1\xC1\xF7\xA1\xC2\x7E\x42\xBB\x71\x2A\x63\xAA\x77\xA4\x37\xCF\x20\xDC\xA9\x2F\xE1\xB9\x17\xDA\xB0\xA4\x0E\xB9\x36\xAC\xA1\x9C\x8F\x84\xB3\xD9\xBD\xB6\xC1\x9A\x63\xC4\x1C\xC4\xEE\xBE\xC4\x2A\xB3\x4C\x4E\x97\x3D\xF5\xA4\xC4\x48\xBB\xC5\x03\xC6\xC0\xCB\xBA\xC6\x38\xC1\x27\x7B\x2C\xAD\xC3\x95\xC0\xCB\x98\x9D\x02\x12\xAB\x89\x91\xC3\x5A\x53\xC2\xDC\x93\xA9\xD6\x94\xC3\xAC\x20\xA2\x87\xB1\xB4\x5A\xCC\xB5\x54\xCC\xB1\x8E\x3E\xA2\x86\xB4\x25\x16\xC1\x1C\x67\xC6\xBC\x12\xC6\xAC\xC1\x9A\xBF\xD2",
-"\x20\xC6\x38\xAA\xC0\x0C\xB7\xC8\x5E\xB2\xA4\x1A\xA0\xC8\xFF\x09\xC5\xFE\xBE\xC6\x6F\xC4\xB8\xF1\x1A\xA1\x8A\xCB\x20\x0D\xC6\xAB\x90\xCB\xCA\x48\xBA\xBE\x6F\xBE\xB9\x77\xBE\xAE\xCD\x91\xBC\xDE\xAA\xB8\xC4\xBC\xB8\x44\xC0\xC1\x45\xC0\xB9\x7E\x45\xBD\x12\xAC\xC1\x7E\x4C\xC7\xD6\x9A\xC7\x60\x5E\xBD\x08\x13\xB6\x2E\x56\xB1\x40\xCF\xBC\x42\xC6\xBE\x9A\xCB\xB6\x5A\x5E\xCA\xED\x71\xCB\x98\xC5\x10\x4A\xB2\x20\xA9\xC4\xAF\x8D\xBE\x48\x8F\xB9\xB5\x04\xB0\xB4\x07\xB0\xC2\xBC\xCD\x3B\xC2\xCC\x9C\xC4\xC2\x5E\xC6\xCA\x87\x2A\xC9\xCC\xE2\xBE\x06\x7F\xBA\x48\xE7\xC2\x4F\xC6\x9E\xC9\xEB\x20\xCA\x6E\xC2\xCD\xAC\x2B\x27\xB7\x83\xC7\x08\x1B\x9F\x2E\x24\x65\x02\x1E\xCF\xF6\x96\xA2\xE5\xC7\x9C\x9E\x98\xCF\x53\x8B\xC3\xF0\x57\xC7\x00\xD8\x4E\x9A\xAC\xC8\xF7\x57\xCA\x3A\xBB\xC0\xC7\x52\x20\x9E\x92\xCA\xFC\x94\xCF\xDF\xB8\xD1\xF9\xC4\x20\x7B\x27\x95\x3A\x60\xC8\xEB\x20\xBF\x48\xCF\x84\xA2\xBC\xC6\xB5\xCD\xB2\x74\xB8\xBF\x25\xDA\xBF\xFC\xB8\xD2\xA1\xC5\x10\x2F\xD0\x00\xEB\x21\xA6\xFF\xC6\xC7\x01\x16\xD3\xA4\xAE\x9F\x05\xD0\xA5\x85\xA8\x68\xF8\xCD\x8E\x13\xA3\xCA\xD7\xA1\xBF\x27\xD4\xCA\xA8\xB5\x10\xF5\xB0\xD3\x95\x86\xB2\xF9\xBF\xBF\xAF\xBB\xAE\x4D\xC1\x10\x33\xDB\x27\x3A\x63\xD3\x06\xDE\x9F\x12\xD5\xB7\xDD\x9C\x80\x16\xD5\x9A\x9E\xCE\xA0\x56\x5E\xA0\x80\xC7\xBB\x25\xD9\xBB\x4C\xD4\x21\xCC\xCF\x20\x7B\x2A\xBF\x02\xDC\x9D\x9E\x9B\xD5\x01\x78\x62\xC7\x3F\xD5\x3F\xD0\x78\x1D\xA1\x9C\xEB\x28\xC2\xCC\x9B\xD5\xD8\xC9\xB8\x6A\x6A\xCA\xF7\x9E\x9F\xF8\xC8\xCF\x20\xD4\xB7\x23\xD6\xD4\x08\x1C\xAD\x80\xC4\xBF\x2B\xDE\xD4\x2D\xD0\xD5\x6B\xC0\xBB\x08\x13\xD3\x35\xDB\xD6\xDC\x9A\x8D\x81\xDA\xCD\x38\xD3\xD4\x25\x6A\x63\x3A\xD0\xD7\x3C\xDC\xD1\x5C\xD3\xD8\xFF\x71\x03\x41\xDD\xD0\x69\xD0\x00\x2C\xD4\xD4\x23\xB5\xD2\xF2\xB5\xD2\x8E\xD1\xD9\x95\xD4\xB7\x52\xD1\xC6\x54\xD8\xD9\xD6\x9A\xD9\x0D\x15\x15\x6B\x6F\xC0\x39\xC7\xD7\x30\x07\xD5\xAA\xA2\xDC\x72\xD4\x65\x5E\xDA\xDA\x5C\xD2\x6A\x61\xDB\xD0\x08\xC5\xD2\x66\xD3\xCA\x68\xD8\xD4\x00\x06\xA9\x22\xA4\xCB\x25\xBB\x10\xBD\xD1\x63\x9C\xDD\x9D\xA6\xD2\x70\x30\x0E\xD6\xC5\xD9\xA8\x59\x67\xDC\xD8\x94\xD7\x5F\x16\xD7\xE4\xD8\xD7\xC7\x9E\xC9\xD1\xD6\x9F\x3A\xAE\xDC\xD6\x9E\x99\x4A\xBD\xA8\x04\xA3\x1D\x6E\xAC\x5D\x08\xAB\xA9\x6E\x3E\xC9\xD3\xD1\xAB\x0B\xC8\x45\xE3\xDF\xDD\xDF\x96\x9C\xF6\xD1\x3F\x06\xA0\xA7\xFC\xD7\x1C\xAB\xD5\x99\xBA\xDD\xD7\x01\xEE\xD0\x66\xA4\xE0\x19\x6A\xC6\x1A\xD4\xBB\xA4\xD5\xD8\x7B\x21\x91\x01\xC5\xD2\x89\xD0\xDB\x47\xDD\xD8\x90\xD3\xCA\xAD\xDC\x2C\x23\xEC\xD0\x9D\xD0\x00\x4B\xDC\x9C\xF8\x96\xDE\x5D\xD5\x76\xEA\xD4\xE1\x06\x38\xCF\x22\x9D\xE1\xAE\xD8\x10\x24\xD3\xCA\xB1\xD3\xCA\xB3\xD4\xE2\x27\xE3\xBB\x05\x1B\x2E\x56\xD3\xD5\xF3\xD5\x9A\x3D\xD3\x9F\x5E\xAD\xDC\x08\x1B\x91\x28\xE3\xCA\x2E\xD6\xDB\x92\xD7\x20\x6D\xD6\xAA\x13\xE1\xDC\xDB\x8B\xD5\xA7\x9C\x77\x31\xE6\xE5\xA2\x69\xD7\x74\xB5\xBB\x1C\xDA\xE1\xFF\x53\xCB\x1E\xEB\x12\x39\xEF\xBA\x3B\xEF\xBA\x3D\xEF\xBA\x25\xE0\xE4\x2A\xD8\xB3\x29\xEB\xE2\x59\xD7\xD7\x31\x0E\xE2\xDF\xD9\xDC\x29\xEE\x73\x32\x04\xE3\x64\xE7\xE3\x6A\x8A\xD8\xF7\xB3\xBF\x3F\xEB\xDA\x6D\xE6\x2E\x44\xE5\xC7\xDE\xDE\xE6\xA2\xD4\xE7\x47\xE9\x98\xD2\x9A\xE4\x1C\x94\xC7\x80\xCF\xE4\x25\xD7\xDB\x89\x93\xE5\x08\x11\xDA\x45\xE4\xE7\x58\xEB\xC0\x5A\xEA\xDC\x3E\x71\x03\x5E\xE5\xD2\x67\xE7\xCF\xC1\x9B\x27\x0B\x97\xD3\x7E\xE2\x10\xD8\xA3\xD9\x69\xEA\xE8\x00\x1E\xA9\x4D\xEF\xDD\x02\x12\xEB\x8B\xEB\xDE\x32\x0D\xE8\x0F\x20\xAA\x77\x80\x16\xC1\x9E\xA0\xE6\x83\xEB\x93\xDB\xE6\x93\xD5\xE8\x03\x28\xE9\x41\xE3\xE0\x5C\xE0\x30\x9D\xE4\xC8\x9F\xE9\xE7\x90\x92\x03\xA3\xE3\xCA\xA5\xE6\xE1\xA7\xEA\x90\x92\xE2\xB2\x08\x1D\xEA\xAB\xDF\xEA\x86\xEB\xA7\x74\xCA\x63\xB6\xEB\xE9\xB8\xEA\xEB\x0B\x2C\xEB\x8B\x8E\xEB\x04\x20\xEC\xD9\xEA\xC3\x01\x1B\xE2\x80\xC6\xEC\x02\x28\xEC\x26\xE5\xE5\x9E\xDC\xEC\xC6\x99\xE5\x5F\x7B\xE5\xF7\xE6\x30\xF6\x9E\xC9\x94\xEC\x9F\x78\xCF\x20\x1B\x65\x78\xFC\xEB\xDC\x7E\x6A\xB4\x89\x21\x10\xED\x19\xA5\x22\x8F\x6F\xF8\x9D\xE0\x96\xE0\xDF\x0F\xDD\xB3\x00\x06\xF0\xA0\xE0\x99\x31\x0A\xF0\x24\xAD\x1E\xD4\x8B\x79\xE7\x6E\x79\x72\x01\xF1\xA4\xD3\xD9\x62\x13\xE8\xCC\x93\xF0\x0B\x25\xF0\xD5\x77\xF0\x7A\xEC\xF1\x70\xE0\x00\xED\x17\x9A\x6C\x72\x19\x8F\xE1\x9C\xF2\xE6\x9C\x2A\xF7\x20\x2C\xF4\x7C\x2E\xF1",
-"\xED\x30\xFA\xEA\x0D\xFE\xC2\xDB\x79\x73\x74\x02\x9D\x19\xDA\xD7\xAF\xD8\xD1\x9E\xCB\x27\x20\x04\xCD\x05\x1E\xA0\x43\xE4\xBE\x9F\xA0\xB2\x98\x86\xEE\x3C\xFB\xE0\x98\x1F\xC7\xC9\x94\xC7\xC7\x93\xA2\xB5\xD6\xEF\x08\xF6\xA8\xA9\xA2\xF6\x3E\x7F\x9F\x06\xE1\xA0\x01\x13\x9E\x40\x49\xDF\x0A\xE0\xD1\xBB\xC0\x13\xEC\x9E\xF5\xC6\x90\xF6\x32\xDA\xEC\xFD\xE8\x68\x87\xAB\xD3\xC2\xD5\xDF\x6A\xF0\x10\x6C\xF3\x1D\x09\xED\x5D\x93\xAE\xC9\xD6\xD2\xF0\x11\xED\xBA\x78\xF3\xF6\x7A\xF5\xF6\x88\xA2\xE3\x59\x63\xC3\x5D\xF1\xF3\xF6\x90\x9F\xA9\xBF\xF8\xCB\xE6\x30\x83\xAC\xF7\xEB\xD9\x9F\xFD\xCB\xF8\x67\xFE\xF7\x9C\x1B\xF6\x03\xAD\xA6\x57\x66\x9E\x84\xFA\xF5\xEA\x93\xF7\x94\xFC\x9D\x96\xFA\xD4\xA0\xF1\xED\x9B\xF7\xEB\x90\xFA\x6A\x7B\xF4\xFB\x99\xF9\x65\xA2\xFA\xA6\xA4\xFC\xA6\xB9\x43\xF8\xFB\xD0\xF7\xAE\x3D\xE0\x87\xF6\x9F\x76\xFF\xE6\x98\xF9\xF7\x85\x94\xE5\xC9\xFC\xF8\xB6\xFE\xF8\x9C\xF5\xFB\x30\x05\xF2\x0D\xEE\xED\x25\xFE\xC9\x02\x23\xEE\xD4\xF2\xF9\x4D\xA4\xF7\xC5\x98\xA9\x01\x1A\xFD\xC7\x98\xEE\x79\x0B\xA5\x87\xE3\xE7\xB8\xE3\xFB\xE4\xE5\xFB\x9E\xF5\x10\x6F\xDB\xFE\xB9\xF0\x78\xBB\xFC\xA8\xBD\xFE\xA8\xF8\xD7\xFA\x6F\xA9\xFA\xC2\xF6\x39\xFE\xDE\xFD\x89\x90\xFE\xB1\x70\x4B\x56\x7B\x50\x53\xAA\x38\x7E\xF2\x7F\x52\x99\x71\xF6\x67\x6D\xDB\x70\xFF\x4A\x7C\xDA\x65\x4E\x07\x77\xF7\x50\x55\xB7\x76\xF1\x43\x7C\x75\x6E\x70\x54\x7D\xF2\x49\x7C\x00\x02\xFE\x46\x4C\xF9\x66\x7F\xB8\x6D\x01\x8E\x7E\x04\x85\x10\x1A\x74\x8B\x65\x4D\x0C\x87\x04\x82\x6F\x2B\x64\x20\x02\x10\x09\x1B\x7E\xCC\x4E\xBD\x7E\x7E\x85\x6D\xAC\x10\x83\xDF\x7E\x0C\xA5\x7C\x3C\x78\x7E\xFD\x62\xA9\x2A\x7E\xDC\x64\x10\xFF\x68\xEA\x76\x71\x07\x11\x01\x8F\x54\x76\x51\x54\xE8\x4E\x07\x8C\x5C\xC3\x7F\xE0\x57\x7D\x70\x42\x10\xEF\x78\x06\x87\x10\x19\x8D\xFA\x56\x4D\x7C\x7F\x7C\x66\x78\x32\x4F\x81\xC4\x45\x04\xF7\x7C\xDC\x68\x7D\xC1\x7D\x02\xBC\x7E\xD6\x7A\xEA\x14\x78\x21\x61\x68\x0A\x80\xBC\x73\x7E\x89\x15\xFF\x77\x6E\xCD\x73\x80\xFA\x7A\x0C\xAE\x1A\xE2\x7D\x04\xC2\x80\x01\x78\x82\xCD\x7F\xEC\x6C\x80\x06\x12\x20\x26\x82\x14\x9B\x83\xFA\x17\xBD\x5C\x4F\xE3\x79\xD3\x69\x82\xA8\x29\x81\xE8\x7A\xFA\x6B\x83\x3B\x3D\x06\xA6\x7F\x17\x99\x7F\x61\x83\x91\x71\x7B\x8B\x04\x06\xC2\x76\x75\x44\x84\x00\x0E\x0F\xBE\x69\xCE\x78\x08\x9B\x86\x22\x89\x7B\xA3\x78\xF0\x79\x80\x23\x8D\x9D\x48\x81\xE1\x61\x4E\xC5\x7C\x3B\x57\x83\x12\x86\x08\xE4\x50\xF4\x66\x80\xCE\x7B\xFA\x74\x5A\xE1\x4B\x12\x2A\x03\x1F\x8D\x6F\x5D\x65\xCF\x76\x4E\x6D\x79\x98\x1B\x31\x8C\x5B\x66\x0A\x35\x9B\x42\x5D\x7F\x20\xF0\x1B\x80\xF5\x78\x7E\xB2\x67\x16\x93\x76\x08\x12\xC8\x12\x53\x2A\x82\x08\xBF\x5C\x3B\x71\x67\x44\x69\xA7\x30\x52\x50\x4F\x64\xBA\x65\x95\x53\x64\x63\x86\x07\x93\x6A\xEF\x5F\x51\x08\x0D\x13\x5C\x5E\x19\x6F\xBA\x7F\x05\x91\x4A\x86\xA2\x60",
-};
-
-		void GuiIqGetParserBuffer(vl::stream::MemoryStream& stream)
-		{
-			vl::stream::MemoryStream compressedStream;
-			for (vint i = 0; i < parserBufferRows; i++)
-			{
-				vint size = i == parserBufferRows - 1 ? parserBufferRemain : parserBufferBlock;
-				compressedStream.Write((void*)parserBuffer[i], size);
-			}
-			compressedStream.SeekFromBegin(0);
-			vl::stream::LzwDecoder decoder;
-			vl::stream::DecoderStream decoderStream(compressedStream, decoder);
-			vl::collections::Array<vl::vuint8_t> buffer(65536);
-			while (true)
-			{
-				vl::vint size = decoderStream.Read(&buffer[0], 65536);
-				if (size == 0) break;
-				stream.Write(&buffer[0], size);
-			}
-			stream.SeekFromBegin(0);
-		}
-/***********************************************************************
-Unescaping Function Foward Declarations
-***********************************************************************/
-
-/***********************************************************************
-Parsing Tree Conversion Driver Implementation
-***********************************************************************/
-
-		class GuiIqTreeConverter : public vl::parsing::ParsingTreeConverter
-		{
-		public:
-			using vl::parsing::ParsingTreeConverter::SetMember;
-
-			bool SetMember(GuiIqNameOption& member, vl::Ptr<vl::parsing::ParsingTreeNode> node, const TokenList& tokens)
-			{
-				vl::Ptr<vl::parsing::ParsingTreeToken> token=node.Cast<vl::parsing::ParsingTreeToken>();
-				if(token)
-				{
-					if(token->GetValue()==L"Specified") { member=GuiIqNameOption::Specified; return true; }
-					else if(token->GetValue()==L"Any") { member=GuiIqNameOption::Any; return true; }
-					else { member=GuiIqNameOption::Specified; return false; }
-				}
-				member=GuiIqNameOption::Specified;
-				return false;
-			}
-
-			bool SetMember(GuiIqChildOption& member, vl::Ptr<vl::parsing::ParsingTreeNode> node, const TokenList& tokens)
-			{
-				vl::Ptr<vl::parsing::ParsingTreeToken> token=node.Cast<vl::parsing::ParsingTreeToken>();
-				if(token)
-				{
-					if(token->GetValue()==L"Direct") { member=GuiIqChildOption::Direct; return true; }
-					else if(token->GetValue()==L"Indirect") { member=GuiIqChildOption::Indirect; return true; }
-					else { member=GuiIqChildOption::Direct; return false; }
-				}
-				member=GuiIqChildOption::Direct;
-				return false;
-			}
-
-			bool SetMember(GuiIqBinaryOperator& member, vl::Ptr<vl::parsing::ParsingTreeNode> node, const TokenList& tokens)
-			{
-				vl::Ptr<vl::parsing::ParsingTreeToken> token=node.Cast<vl::parsing::ParsingTreeToken>();
-				if(token)
-				{
-					if(token->GetValue()==L"ExclusiveOr") { member=GuiIqBinaryOperator::ExclusiveOr; return true; }
-					else if(token->GetValue()==L"Intersect") { member=GuiIqBinaryOperator::Intersect; return true; }
-					else if(token->GetValue()==L"Union") { member=GuiIqBinaryOperator::Union; return true; }
-					else if(token->GetValue()==L"Substract") { member=GuiIqBinaryOperator::Substract; return true; }
-					else { member=GuiIqBinaryOperator::ExclusiveOr; return false; }
-				}
-				member=GuiIqBinaryOperator::ExclusiveOr;
-				return false;
-			}
-
-			void Fill(vl::Ptr<GuiIqQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
-			{
-			}
-
-			void Fill(vl::Ptr<GuiIqPrimaryQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
-			{
-				SetMember(tree->childOption, obj->GetMember(L"childOption"), tokens);
-				SetMember(tree->attributeNameOption, obj->GetMember(L"attributeNameOption"), tokens);
-				SetMember(tree->attributeName, obj->GetMember(L"attributeName"), tokens);
-				SetMember(tree->typeNameOption, obj->GetMember(L"typeNameOption"), tokens);
-				SetMember(tree->typeName, obj->GetMember(L"typeName"), tokens);
-				SetMember(tree->referenceName, obj->GetMember(L"referenceName"), tokens);
-			}
-
-			void Fill(vl::Ptr<GuiIqCascadeQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
-			{
-				SetMember(tree->parent, obj->GetMember(L"parent"), tokens);
-				SetMember(tree->child, obj->GetMember(L"child"), tokens);
-			}
-
-			void Fill(vl::Ptr<GuiIqSetQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
-			{
-				SetMember(tree->first, obj->GetMember(L"first"), tokens);
-				SetMember(tree->second, obj->GetMember(L"second"), tokens);
-				SetMember(tree->op, obj->GetMember(L"op"), tokens);
-			}
-
-			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ConvertClass(vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)override
-			{
-				if(obj->GetType()==L"PrimaryQuery")
-				{
-					vl::Ptr<GuiIqPrimaryQuery> tree = new GuiIqPrimaryQuery;
-					vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
-					Fill(tree, obj, tokens);
-					Fill(tree.Cast<GuiIqQuery>(), obj, tokens);
-					return tree;
-				}
-				else if(obj->GetType()==L"CascadeQuery")
-				{
-					vl::Ptr<GuiIqCascadeQuery> tree = new GuiIqCascadeQuery;
-					vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
-					Fill(tree, obj, tokens);
-					Fill(tree.Cast<GuiIqQuery>(), obj, tokens);
-					return tree;
-				}
-				else if(obj->GetType()==L"SetQuery")
-				{
-					vl::Ptr<GuiIqSetQuery> tree = new GuiIqSetQuery;
-					vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
-					Fill(tree, obj, tokens);
-					Fill(tree.Cast<GuiIqQuery>(), obj, tokens);
-					return tree;
-				}
-				else 
-					return 0;
-			}
-		};
-
-		vl::Ptr<vl::parsing::ParsingTreeCustomBase> GuiIqConvertParsingTreeNode(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
-		{
-			GuiIqTreeConverter converter;
-			vl::Ptr<vl::parsing::ParsingTreeCustomBase> tree;
-			converter.SetMember(tree, node, tokens);
-			return tree;
-		}
-
-/***********************************************************************
-Parsing Tree Conversion Implementation
-***********************************************************************/
-
-		vl::Ptr<GuiIqPrimaryQuery> GuiIqPrimaryQuery::Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
-		{
-			return GuiIqConvertParsingTreeNode(node, tokens).Cast<GuiIqPrimaryQuery>();
-		}
-
-		vl::Ptr<GuiIqCascadeQuery> GuiIqCascadeQuery::Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
-		{
-			return GuiIqConvertParsingTreeNode(node, tokens).Cast<GuiIqCascadeQuery>();
-		}
-
-		vl::Ptr<GuiIqSetQuery> GuiIqSetQuery::Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
-		{
-			return GuiIqConvertParsingTreeNode(node, tokens).Cast<GuiIqSetQuery>();
-		}
-
-/***********************************************************************
-Parser Function
-***********************************************************************/
-
-		vl::Ptr<vl::parsing::ParsingTreeNode> GuiIqParseAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex)
-		{
-			vl::parsing::tabling::ParsingState state(input, table, codeIndex);
-			state.Reset(L"QueryRoot");
-			vl::Ptr<vl::parsing::tabling::ParsingGeneralParser> parser=vl::parsing::tabling::CreateStrictParser(table);
-			vl::Ptr<vl::parsing::ParsingTreeNode> node=parser->Parse(state, errors);
-			return node;
-		}
-
-		vl::Ptr<vl::parsing::ParsingTreeNode> GuiIqParseAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex)
-		{
-			vl::collections::List<vl::Ptr<vl::parsing::ParsingError>> errors;
-			return GuiIqParseAsParsingTreeNode(input, table, errors, codeIndex);
-		}
-
-		vl::Ptr<GuiIqQuery> GuiIqParse(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex)
-		{
-			vl::parsing::tabling::ParsingState state(input, table, codeIndex);
-			state.Reset(L"QueryRoot");
-			vl::Ptr<vl::parsing::tabling::ParsingGeneralParser> parser=vl::parsing::tabling::CreateStrictParser(table);
-			vl::Ptr<vl::parsing::ParsingTreeNode> node=parser->Parse(state, errors);
-			if(node && errors.Count()==0)
-			{
-				return GuiIqConvertParsingTreeNode(node, state.GetTokens()).Cast<GuiIqQuery>();
-			}
-			return 0;
-		}
-
-		vl::Ptr<GuiIqQuery> GuiIqParse(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex)
-		{
-			vl::collections::List<vl::Ptr<vl::parsing::ParsingError>> errors;
-			return GuiIqParse(input, table, errors, codeIndex);
-		}
-
-/***********************************************************************
-Table Generation
-***********************************************************************/
-
-		vl::Ptr<vl::parsing::tabling::ParsingTable> GuiIqLoadTable()
-		{
-			vl::stream::MemoryStream stream;
-			GuiIqGetParserBuffer(stream);
-			vl::Ptr<vl::parsing::tabling::ParsingTable> table=new vl::parsing::tabling::ParsingTable(stream);
-			table->Initialize();
-			return table;
-		}
-
-	}
-}
-
-
-/***********************************************************************
-.\GUIINSTANCELOADER.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		using namespace collections;
-		using namespace parsing;
-		using namespace parsing::xml;
-		using namespace parsing::tabling;
-		using namespace controls;
-		using namespace regex;
-		using namespace reflection::description;
-		using namespace stream;
-		using namespace workflow;
-		using namespace workflow::analyzer;
-		using namespace workflow::typeimpl;
-
-/***********************************************************************
-GuiInstancePropertyInfo
-***********************************************************************/
-
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Unsupported()
-		{
-			return new GuiInstancePropertyInfo;
-		}
-
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Assign(Ptr<description::ITypeInfo> typeInfo)
-		{
-			auto info = MakePtr<GuiInstancePropertyInfo>();
-			info->support = SupportAssign;
-			if (typeInfo) info->acceptableTypes.Add(typeInfo);
-			return info;
-		}
-
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::AssignWithParent(Ptr<description::ITypeInfo> typeInfo)
-		{
-			auto info = Assign(typeInfo);
-			info->mergability = MergeWithParent;
-			return info;
-		}
-
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Collection(Ptr<description::ITypeInfo> typeInfo)
-		{
-			auto info = Assign(typeInfo);
-			info->support = SupportCollection;
-			return info;
-		}
-
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::CollectionWithParent(Ptr<description::ITypeInfo> typeInfo)
-		{
-			auto info = Collection(typeInfo);
-			info->mergability = MergeWithParent;
-			return info;
-		}
-
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Set(Ptr<description::ITypeInfo> typeInfo)
-		{
-			auto info = MakePtr<GuiInstancePropertyInfo>();
-			info->support = SupportSet;
-			if (typeInfo) info->acceptableTypes.Add(typeInfo);
-			return info;
-		}
-
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Array(Ptr<description::ITypeInfo> typeInfo)
-		{
-			auto info = MakePtr<GuiInstancePropertyInfo>();
-			info->support = SupportArray;
-			if (typeInfo) info->acceptableTypes.Add(typeInfo);
-			return info;
-		}
-
-/***********************************************************************
-IGuiInstanceLoader
-***********************************************************************/
-
-		void IGuiInstanceLoader::ClearReflectionCache()
-		{
-		}
-
-		void IGuiInstanceLoader::GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
-		{
-		}
-
-		void IGuiInstanceLoader::GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
-		{
-		}
-
-		void IGuiInstanceLoader::GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)
-		{
-		}
-
-		Ptr<GuiInstancePropertyInfo> IGuiInstanceLoader::GetPropertyType(const PropertyInfo& propertyInfo)
-		{
-			return nullptr;
-		}
-
-		bool IGuiInstanceLoader::CanCreate(const TypeInfo& typeInfo)
-		{
-			return false;
-		}
-
-		Ptr<workflow::WfBaseConstructorCall> IGuiInstanceLoader::CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)
-		{
-			CHECK_FAIL(L"IGuiInstanceLoader::CreateControlTemplateArgument(types::ResolvingResult&, const TypeInfo&, Ptr<workflow::WfExpression>, collections::List<WString>&)#This function is not implemented.");
-		}
-
-		Ptr<workflow::WfStatement> IGuiInstanceLoader::InitializeRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors)
-		{
-			return nullptr;
-		}
-
-		Ptr<workflow::WfStatement> IGuiInstanceLoader::CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)
-		{
-			CHECK_FAIL(L"IGuiInstanceLoader::CreateInstance(types::ResolvingResult&, const TypeInfo&, GlobalStringKey, ArgumentMap&, collections::List<WString>&)#This function is not implemented.");
-		}
-
-		Ptr<workflow::WfStatement> IGuiInstanceLoader::AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
-		{
-			CHECK_FAIL(L"IGuiInstanceLoader::AssignParameters(types::ResolvingResult&, const TypeInfo&, GlobalStringKey, ArgumentMap&, collections::List<WString>&)#This function is not implemented.");
-		}
-
-		Ptr<workflow::WfExpression> IGuiInstanceLoader::GetParameter(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
-		{
-			CHECK_FAIL(L"IGuiInstanceLoader::GetParameter(types::ResolvingResult&, const PropertyInfo&, GlobalStringKey, collections::List<WString>&)#This function is not implemented.");
-		}
-
-/***********************************************************************
-GuiInstanceContext::ElementName Parser
-***********************************************************************/
-
-		class GuiInstanceContextElementNameParser : public Object, public IGuiParser<GuiInstanceContext::ElementName>
-		{
-			typedef GuiInstanceContext::ElementName			ElementName;
-		public:
-			Regex						regexElementName;
-
-			GuiInstanceContextElementNameParser()
-				:regexElementName(L"((<namespaceName>[a-zA-Z_]/w*):)?((<category>[a-zA-Z_]/w*).)?(<name>[a-zA-Z_]/w*)(-(<binding>[a-zA-Z_]/w*))?")
-			{
-			}
-
-			Ptr<ElementName> ParseInternal(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
-			{
-				Ptr<RegexMatch> match = regexElementName.MatchHead(text);
-				if (!match || match->Result().Length() != text.Length())
-				{
-					errors.Add(MakePtr<ParsingError>(L"Failed to parse an element name \"" + text + L"\"."));
-					return nullptr;
-				}
-
-				Ptr<ElementName> elementName = new ElementName;
-				if (match->Groups().Keys().Contains(L"namespaceName"))
-				{
-					elementName->namespaceName = match->Groups()[L"namespaceName"][0].Value();
-				}
-				if (match->Groups().Keys().Contains(L"category"))
-				{
-					elementName->category = match->Groups()[L"category"][0].Value();
-				}
-				if (match->Groups().Keys().Contains(L"name"))
-				{
-					elementName->name = match->Groups()[L"name"][0].Value();
-				}
-				if (match->Groups().Keys().Contains(L"binding"))
-				{
-					elementName->binding = match->Groups()[L"binding"][0].Value();
-				}
-				return elementName;
-			}
-		};
-
-/***********************************************************************
-GuiDefaultInstanceLoader
-***********************************************************************/
-
-#define CTOR_PARAM_PREFIX\
-		static const wchar_t Prefix[] = L"<ctor-parameter>";\
-		static const vint PrefixLength = (vint)sizeof(Prefix) / sizeof(*Prefix) - 1;\
-
-#define CTOR_PARAM_NAME(NAME) (NAME).Right((NAME).Length() - PrefixLength)
-
-		class GuiDefaultInstanceLoader : public Object, public IGuiInstanceLoader
-		{
-		protected:
-			typedef Tuple<ITypeDescriptor*, GlobalStringKey>				FieldKey;
-			typedef Tuple<Ptr<GuiInstancePropertyInfo>, IPropertyInfo*>		PropertyType;
-
-			Dictionary<FieldKey, PropertyType>								propertyTypes;
-			Dictionary<ITypeDescriptor*, IMethodInfo*>						defaultConstructors;
-			Dictionary<ITypeDescriptor*, IMethodInfo*>						instanceConstructors;
-		public:
-			IMethodInfo* GetDefaultConstructor(ITypeDescriptor* typeDescriptor)
-			{
-				IMethodInfo* ctor = nullptr;
-				vint index = defaultConstructors.Keys().IndexOf(typeDescriptor);
-				if (index == -1)
-				{
-					if (auto ctors = typeDescriptor->GetConstructorGroup())
-					{
-						vint count = ctors->GetMethodCount();
-						for (vint i = 0; i < count; i++)
-						{
-							IMethodInfo* method = ctors->GetMethod(i);
-							if (method->GetParameterCount() == 0)
-							{
-								ctor = method;
-								break;
-							}
-						}
-					}
-					defaultConstructors.Add(typeDescriptor, ctor);
-				}
-				else
-				{
-					ctor = defaultConstructors.Values()[index];
-				}
-				return ctor;
-			}
-
-			IMethodInfo* GetInstanceConstructor(ITypeDescriptor* typeDescriptor)
-			{
-				CTOR_PARAM_PREFIX
-					
-				IMethodInfo* ctor = nullptr;
-				vint index = instanceConstructors.Keys().IndexOf(typeDescriptor);
-				if (index == -1)
-				{
-					if (dynamic_cast<WfClass*>(typeDescriptor))
-					{
-						if (auto group = typeDescriptor->GetConstructorGroup())
-						{
-							if (group->GetMethodCount() == 1)
-							{
-								auto method = group->GetMethod(0);
-								vint count = method->GetParameterCount();
-								for (vint i = 0; i < count; i++)
-								{
-									const auto& name = method->GetParameter(i)->GetName();
-									if (name.Length() <= PrefixLength || name.Left(PrefixLength) != Prefix)
-									{
-										goto FINISHED;
-									}
-
-									if (!typeDescriptor->GetPropertyByName(CTOR_PARAM_NAME(name), false))
-									{
-										goto FINISHED;
-									}
-								}
-								ctor = method;
-							}
-						}
-					}
-				FINISHED:
-					instanceConstructors.Add(typeDescriptor, ctor);
-				}
-				else
-				{
-					ctor = instanceConstructors.Values()[index];
-				}
-				return ctor;
-			}
-
-			GlobalStringKey GetTypeName()override
-			{
-				return GlobalStringKey::Empty;
-			}
-
-			void ClearReflectionCache()override
-			{
-				propertyTypes.Clear();
-				defaultConstructors.Clear();
-				instanceConstructors.Clear();
-			}
-
-			//***********************************************************************************
-
-			ITypeInfo* ProcessGenericType(ITypeInfo* propType, bool& readableList, bool& writableList, bool& collectionType)
-			{
-				readableList = false;
-				writableList = false;
-				collectionType = false;
-				if (propType->GetDecorator() == ITypeInfo::SharedPtr && propType->GetElementType()->GetDecorator() == ITypeInfo::Generic)
-				{
-					auto genericType = propType->GetElementType();
-					if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
-					{
-						readableList = true;
-						writableList = true;
-						collectionType = true;
-						return genericType->GetGenericArgument(0);
-					}
-					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
-					{
-						readableList = true;
-						writableList = true;
-						collectionType = true;
-						return genericType->GetGenericArgument(0);
-					}
-					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerator>())
-					{
-						collectionType = true;
-						return genericType->GetGenericArgument(0);
-					}
-					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
-					{
-						readableList = true;
-						collectionType = true;
-						return genericType->GetGenericArgument(0);
-					}
-					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>())
-					{
-						readableList = true;
-						collectionType = true;
-						return genericType->GetGenericArgument(0);
-					}
-					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyDictionary>())
-					{
-						collectionType = true;
-						return nullptr;
-					}
-					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
-					{
-						collectionType = true;
-						return nullptr;
-					}
-				}
-				return propType;
-			}
-
-			ITypeInfo* GetPropertyReflectionTypeInfo(const PropertyInfo& propertyInfo, GuiInstancePropertyInfo::Support& support)
-			{
-				support = GuiInstancePropertyInfo::NotSupport;
-				IPropertyInfo* prop = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyInfo.propertyName.ToString(), true);
-				if (prop)
-				{
-					ITypeInfo* propType = prop->GetReturn();
-					bool readableList = false;
-					bool writableList = false;
-					bool collectionType = false;
-					auto propValueType = ProcessGenericType(propType, readableList, writableList, collectionType);
-
-					if (prop->IsWritable())
-					{
-						if (collectionType)
-						{
-							if (readableList)
-							{
-								support = GuiInstancePropertyInfo::SupportArray;
-								return propValueType;
-							}
-						}
-						else
-						{
-							support = GuiInstancePropertyInfo::SupportAssign;
-							return propValueType;
-						}
-					}
-					else if (prop->IsReadable())
-					{
-						if (collectionType)
-						{
-							if (writableList)
-							{
-								support = GuiInstancePropertyInfo::SupportCollection;
-								return propValueType;
-							}
-						}
-						else
-						{
-							if (propType->GetDecorator() == ITypeInfo::SharedPtr || propType->GetDecorator() == ITypeInfo::RawPtr)
-							{
-								if (propType->GetElementType()->GetDecorator() != ITypeInfo::Generic)
-								{
-									support = GuiInstancePropertyInfo::SupportSet;
-									return propValueType;
-								}
-							}
-						}
-					}
-				}
-				return nullptr;
-			}
-
-			void CollectPropertyNames(const TypeInfo& typeInfo, ITypeDescriptor* typeDescriptor, collections::List<GlobalStringKey>& propertyNames)
-			{
-				vint propertyCount = typeDescriptor->GetPropertyCount();
-				for (vint i = 0; i < propertyCount; i++)
-				{
-					GlobalStringKey propertyName = GlobalStringKey::Get(typeDescriptor->GetProperty(i)->GetName());
-					if (!propertyNames.Contains(propertyName))
-					{
-						auto info = GetPropertyType(PropertyInfo(typeInfo, propertyName));
-						if (info && info->support != GuiInstancePropertyInfo::NotSupport)
-						{
-							propertyNames.Add(propertyName);
-						}
-					}
-				}
-
-				vint parentCount = typeDescriptor->GetBaseTypeDescriptorCount();
-				for (vint i = 0; i < parentCount; i++)
-				{
-					CollectPropertyNames(typeInfo, typeDescriptor->GetBaseTypeDescriptor(i), propertyNames);
-				}
-			}
-
-			//***********************************************************************************
-
-			void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
-				if (CanCreate(typeInfo))
-				{
-					CTOR_PARAM_PREFIX
-
-					if (auto ctor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor()))
-					{
-						vint count = ctor->GetParameterCount();
-						for (vint i = 0; i < count; i++)
-						{
-							const auto& name = ctor->GetParameter(i)->GetName();
-							propertyNames.Add(GlobalStringKey::Get(CTOR_PARAM_NAME(name)));
-						}
-					}
-				}
-			}
-
-			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
-				GetRequiredPropertyNames(typeInfo, propertyNames);
-				CollectPropertyNames(typeInfo, typeInfo.typeInfo->GetTypeDescriptor(), propertyNames);
-			}
-
-			PropertyType GetPropertyTypeCached(const PropertyInfo& propertyInfo)
-			{
-				CTOR_PARAM_PREFIX
-
-				FieldKey key(propertyInfo.typeInfo.typeInfo->GetTypeDescriptor(), propertyInfo.propertyName);
-				vint index = propertyTypes.Keys().IndexOf(key);
-				if (index == -1)
-				{
-					GuiInstancePropertyInfo::Support support = GuiInstancePropertyInfo::NotSupport;
-					if (ITypeInfo* propType = GetPropertyReflectionTypeInfo(propertyInfo, support))
-					{
-						Ptr<GuiInstancePropertyInfo> result = new GuiInstancePropertyInfo;
-						result->support = support;
-						result->acceptableTypes.Add(CopyTypeInfo(propType));
-
-						if (auto ctor = GetInstanceConstructor(propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()))
-						{
-							vint count = ctor->GetParameterCount();
-							for (vint i = 0; i < count; i++)
-							{
-								const auto& name = ctor->GetParameter(i)->GetName();
-								if (CTOR_PARAM_NAME(name) == propertyInfo.propertyName.ToString())
-								{
-									result->usage = GuiInstancePropertyInfo::ConstructorArgument;
-									result->bindability = GuiInstancePropertyInfo::Bindable;
-								}
-							}
-						}
-
-						IPropertyInfo* prop = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyInfo.propertyName.ToString(), true);
-						PropertyType value(result, prop);
-						propertyTypes.Add(key, value);
-						return value;
-					}
-					else
-					{
-						PropertyType value(GuiInstancePropertyInfo::Unsupported(), 0);
-						propertyTypes.Add(key, value);
-						return value;
-					}
-				}
-				else
-				{
-					return propertyTypes.Values()[index];
-				}
-			}
-
-			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
-			{
-				return GetPropertyTypeCached(propertyInfo).f0;
-			}
-
-			//***********************************************************************************
-
-			bool CanCreate(const TypeInfo& typeInfo)override
-			{
-				return
-					GetDefaultConstructor(typeInfo.typeInfo->GetTypeDescriptor()) != nullptr ||
-					GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor()) != nullptr;
-			}
-
-			Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
-			{
-				CTOR_PARAM_PREFIX
-				auto defaultCtor = GetDefaultConstructor(typeInfo.typeInfo->GetTypeDescriptor());
-				auto instanceCtor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor());
-
-				auto create = MakePtr<WfNewClassExpression>();
-				if (defaultCtor)
-				{
-					create->type = GetTypeFromTypeInfo(defaultCtor->GetReturn());
-				}
-				else
-				{
-					create->type = GetTypeFromTypeInfo(instanceCtor->GetReturn());
-
-					vint count = instanceCtor->GetParameterCount();
-					for (vint i = 0; i < count; i++)
-					{
-						const auto& name = instanceCtor->GetParameter(i)->GetName();
-						auto key = GlobalStringKey::Get(CTOR_PARAM_NAME(name));
-
-						vint index = arguments.Keys().IndexOf(key);
-						if (index == -1)
-						{
-							return nullptr;
-						}
-						else
-						{
-							create->arguments.Add(arguments.GetByIndex(index)[0].expression);
-						}
-					}
-				}
-
-				auto refValue = MakePtr<WfReferenceExpression>();
-				refValue->name.value = variableName.ToString();
-
-				auto assign = MakePtr<WfBinaryExpression>();
-				assign->op = WfBinaryOperator::Assign;
-				assign->first = refValue;
-				assign->second = create;
-
-				auto stat = MakePtr<WfExpressionStatement>();
-				stat->expression = assign;
-				return stat;
-			}
-
-			Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
-			{
-				auto block = MakePtr<WfBlockStatement>();
-
-				FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
-				{
-					PropertyType propertyType = GetPropertyTypeCached(PropertyInfo(typeInfo, prop));
-					if (propertyType.f1)
-					{
-						switch (propertyType.f0->support)
-						{
-						case GuiInstancePropertyInfo::SupportCollection:
-							{
-								const auto& values = arguments.GetByIndex(index);
-								if (values.Count() > 0)
-								{
-									{
-										auto refValue = MakePtr<WfReferenceExpression>();
-										refValue->name.value = variableName.ToString();
-
-										auto refProp = MakePtr<WfMemberExpression>();
-										refProp->parent = refValue;
-										refProp->name.value = prop.ToString();
-
-										auto varDesc = MakePtr<WfVariableDeclaration>();
-										varDesc->name.value = L"<collection>";
-										varDesc->expression = refProp;
-
-										auto stat = MakePtr<WfVariableStatement>();
-										stat->variable = varDesc;
-										block->statements.Add(stat);
-									}
-
-									for (vint i = 0; i < values.Count(); i++)
-									{
-										auto refCollection = MakePtr<WfReferenceExpression>();
-										refCollection->name.value = L"<collection>";
-
-										auto refAdd = MakePtr<WfMemberExpression>();
-										refAdd->parent = refCollection;
-										refAdd->name.value = L"Add";
-
-										auto call = MakePtr<WfCallExpression>();
-										call->function = refAdd;
-										call->arguments.Add(values[i].expression);
-
-										auto stat = MakePtr<WfExpressionStatement>();
-										stat->expression = call;
-										block->statements.Add(stat);
-									}
-								}
-							}
-							break;
-						case GuiInstancePropertyInfo::SupportArray:
-							{
-								auto refArray = MakePtr<WfConstructorExpression>();
-								FOREACH(ArgumentInfo, item, arguments.GetByIndex(index))
-								{
-									auto argument = MakePtr<WfConstructorArgument>();
-									argument->key = item.expression;
-									refArray->arguments.Add(argument);
-								}
-
-								auto refValue = MakePtr<WfReferenceExpression>();
-								refValue->name.value = variableName.ToString();
-
-								auto refProp = MakePtr<WfMemberExpression>();
-								refProp->parent = refValue;
-								refProp->name.value = prop.ToString();
-
-								auto assign = MakePtr<WfBinaryExpression>();
-								assign->op = WfBinaryOperator::Assign;
-								assign->first = refProp;
-								assign->second = refArray;
-
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = assign;
-								block->statements.Add(stat);
-							}
-							break;
-						case GuiInstancePropertyInfo::SupportAssign:
-							{
-								auto& propertyValue = arguments.GetByIndex(index)[0];
-								if (propertyValue.expression)
-								{
-
-									auto refValue = MakePtr<WfReferenceExpression>();
-									refValue->name.value = variableName.ToString();
-
-									auto refProp = MakePtr<WfMemberExpression>();
-									refProp->parent = refValue;
-									refProp->name.value = prop.ToString();
-
-									auto assign = MakePtr<WfBinaryExpression>();
-									assign->op = WfBinaryOperator::Assign;
-									assign->first = refProp;
-									assign->second = propertyValue.expression;
-
-									auto stat = MakePtr<WfExpressionStatement>();
-									stat->expression = assign;
-									block->statements.Add(stat);
-								}
-							}
-							break;
-						default:
-							errors.Add(GuiResourceError({ resolvingResult.resource }, attPosition,
-								L"Precompile: Property \"" +
-								prop.ToString() +
-								L"\" of type \"" +
-								typeInfo.typeName.ToString() +
-								L"\" is not assignable."));
-						}
-					}
-				}
-
-				if (block->statements.Count() > 0)
-				{
-					return block;
-				}
-				return nullptr;
-			}
-
-			Ptr<workflow::WfExpression> GetParameter(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
-			{
-				auto refValue = MakePtr<WfReferenceExpression>();
-				refValue->name.value = variableName.ToString();
-
-				auto refProp = MakePtr<WfMemberExpression>();
-				refProp->parent = refValue;
-				refProp->name.value = propertyInfo.propertyName.ToString();
-
-				return refProp;
-			}
-		};
-#undef CTOR_PARAM_NAME
-#undef CTOR_PARAM_PREFIX
-
-/***********************************************************************
-GuiInstanceLoaderManager
-***********************************************************************/
-
-		IGuiInstanceLoaderManager* instanceLoaderManager = 0;
-
-		IGuiInstanceLoaderManager* GetInstanceLoaderManager()
-		{
-			return instanceLoaderManager;
-		}
-
-		class GuiInstanceLoaderManager : public Object, public IGuiInstanceLoaderManager, public IGuiPlugin
-		{
-		protected:
-			typedef Dictionary<GlobalStringKey, Ptr<IGuiInstanceBinder>>				BinderMap;
-			typedef Dictionary<GlobalStringKey, Ptr<IGuiInstanceEventBinder>>			EventBinderMap;
-			typedef List<Ptr<IGuiInstanceDeserializer>>									DeserializerList;
-
-			struct VirtualTypeInfo
-			{
-				GlobalStringKey						typeName;
-				ITypeDescriptor*					typeDescriptor = nullptr;
-				GlobalStringKey						parentTypeName;				// for virtual type only
-				Ptr<IGuiInstanceLoader>				loader;
-
-				List<ITypeDescriptor*>				parentTypes;				// all direct or indirect base types that does not has a type info
-				List<VirtualTypeInfo*>				parentTypeInfos;			// type infos for all registered direct or indirect base types
-			};
-
-			typedef Dictionary<GlobalStringKey, Ptr<VirtualTypeInfo>>		VirtualTypeInfoMap;
-
-			Ptr<IGuiInstanceLoader>					rootLoader;
-			BinderMap								binders;
-			EventBinderMap							eventBinders;
-			DeserializerList						deserializers;
-			VirtualTypeInfoMap						typeInfos;
-
-			bool IsTypeExists(GlobalStringKey name)
-			{
-				return GetGlobalTypeManager()->GetTypeDescriptor(name.ToString()) != 0 || typeInfos.Keys().Contains(name);
-			}
-
-			void FindParentTypeInfos(Ptr<VirtualTypeInfo> typeInfo, ITypeDescriptor* searchType)
-			{
-				if (searchType != typeInfo->typeDescriptor)
-				{
-					vint index = typeInfos.Keys().IndexOf(GlobalStringKey::Get(searchType->GetTypeName()));
-					if (index == -1)
-					{
-						typeInfo->parentTypes.Add(searchType);
-					}
-					else
-					{
-						typeInfo->parentTypeInfos.Add(typeInfos.Values()[index].Obj());
-						return;
-					}
-				}
-
-				vint count = searchType->GetBaseTypeDescriptorCount();
-				for (vint i = 0; i < count; i++)
-				{
-					ITypeDescriptor* baseType = searchType->GetBaseTypeDescriptor(i);
-					FindParentTypeInfos(typeInfo, baseType);
-				}
-			}
-
-			void FillParentTypeInfos(Ptr<VirtualTypeInfo> typeInfo)
-			{
-				if (typeInfo->parentTypeName != GlobalStringKey::Empty)
-				{
-					typeInfo->typeDescriptor = nullptr;
-				}
-				typeInfo->parentTypes.Clear();
-				typeInfo->parentTypeInfos.Clear();
-
-				ITypeDescriptor* searchType = typeInfo->typeDescriptor;
-				if (!searchType)
-				{
-					vint index = typeInfos.Keys().IndexOf(typeInfo->parentTypeName);
-					if (index == -1)
-					{
-						searchType = GetGlobalTypeManager()->GetTypeDescriptor(typeInfo->parentTypeName.ToString());
-						typeInfo->typeDescriptor = searchType;
-						typeInfo->parentTypes.Add(searchType);
-					}
-					else
-					{
-						VirtualTypeInfo* parentTypeInfo = typeInfos.Values()[index].Obj();
-						typeInfo->typeDescriptor = parentTypeInfo->typeDescriptor;
-						typeInfo->parentTypeInfos.Add(parentTypeInfo);
-						return;
-					}
-				}
-
-				if (searchType)
-				{
-					FindParentTypeInfos(typeInfo, searchType);
-				}
-			}
-
-			IGuiInstanceLoader* GetLoaderFromType(ITypeDescriptor* typeDescriptor)
-			{
-				vint index = typeInfos.Keys().IndexOf(GlobalStringKey::Get(typeDescriptor->GetTypeName()));
-				if (index == -1)
-				{
-					vint count = typeDescriptor->GetBaseTypeDescriptorCount();
-					for (vint i = 0; i < count; i++)
-					{
-						ITypeDescriptor* baseType = typeDescriptor->GetBaseTypeDescriptor(i);
-						IGuiInstanceLoader* loader = GetLoaderFromType(baseType);
-						if (loader) return loader;
-					}
-					return 0;
-				}
-				else
-				{
-					return typeInfos.Values()[index]->loader.Obj();
-				}
-			}
-		public:
-			GuiInstanceLoaderManager()
-			{
-				rootLoader = new GuiDefaultInstanceLoader;
-			}
-
-			GUI_PLUGIN_NAME(GacUI_Instance)
-			{
-				GUI_PLUGIN_DEPEND(GacUI_Parser);
-			}
-
-			void Load()override
-			{
-				instanceLoaderManager = this;
-				IGuiParserManager* manager = GetParserManager();
-				manager->SetParser(L"INSTANCE-ELEMENT-NAME", new GuiInstanceContextElementNameParser);
-			}
-
-			void Unload()override
-			{
-				instanceLoaderManager = nullptr;
-			}
-
-			bool AddInstanceBinder(Ptr<IGuiInstanceBinder> binder)override
-			{
-				if (binders.Keys().Contains(binder->GetBindingName())) return false;
-				binders.Add(binder->GetBindingName(), binder);
-				return true;
-			}
-
-			IGuiInstanceBinder* GetInstanceBinder(GlobalStringKey bindingName)override
-			{
-				vint index = binders.Keys().IndexOf(bindingName);
-				return index == -1 ? nullptr : binders.Values()[index].Obj();
-			}
-
-			bool AddInstanceEventBinder(Ptr<IGuiInstanceEventBinder> binder)override
-			{
-				if (eventBinders.Keys().Contains(binder->GetBindingName())) return false;
-				eventBinders.Add(binder->GetBindingName(), binder);
-				return true;
-			}
-
-			IGuiInstanceEventBinder* GetInstanceEventBinder(GlobalStringKey bindingName)override
-			{
-				vint index = eventBinders.Keys().IndexOf(bindingName);
-				return index == -1 ? nullptr : eventBinders.Values()[index].Obj();
-			}
-
-			bool AddInstanceDeserializer(Ptr<IGuiInstanceDeserializer> deserializer)override
-			{
-				if (deserializers.Contains(deserializer.Obj())) return false;
-				deserializers.Add(deserializer);
-				return true;
-			}
-
-			IGuiInstanceDeserializer* GetInstanceDeserializer(description::ITypeInfo* typeInfo)override
-			{
-				FOREACH(Ptr<IGuiInstanceDeserializer>, deserializer, deserializers)
-				{
-					if (deserializer->CanDeserialize(typeInfo))
-					{
-						return deserializer.Obj();
-					}
-				}
-				return nullptr;
-			}
-
-			bool CreateVirtualType(GlobalStringKey parentType, Ptr<IGuiInstanceLoader> loader)override
-			{
-				if (IsTypeExists(loader->GetTypeName()) || !IsTypeExists(parentType)) return false;
-
-				Ptr<VirtualTypeInfo> typeInfo = new VirtualTypeInfo;
-				typeInfo->typeName = loader->GetTypeName();
-				typeInfo->parentTypeName = parentType;
-				typeInfo->loader = loader;
-				typeInfos.Add(loader->GetTypeName(), typeInfo);
-				FillParentTypeInfos(typeInfo);
-
-				return true;
-			}
-
-			bool SetLoader(Ptr<IGuiInstanceLoader> loader)override
-			{
-				vint index = typeInfos.Keys().IndexOf(loader->GetTypeName());
-				if (index != -1) return false;
-
-				ITypeDescriptor* typeDescriptor = GetGlobalTypeManager()->GetTypeDescriptor(loader->GetTypeName().ToString());
-				if (typeDescriptor == 0) return false;
-
-				Ptr<VirtualTypeInfo> typeInfo = new VirtualTypeInfo;
-				typeInfo->typeName = loader->GetTypeName();
-				typeInfo->typeDescriptor = typeDescriptor;
-				typeInfo->loader = loader;
-				typeInfos.Add(typeInfo->typeName, typeInfo);
-				FillParentTypeInfos(typeInfo);
-
-				FOREACH(Ptr<VirtualTypeInfo>, derived, typeInfos.Values())
-				{
-					if (derived->parentTypes.Contains(typeInfo->typeDescriptor))
-					{
-						FillParentTypeInfos(derived);
-					}
-				}
-
-				return true;
-			}
-
-			IGuiInstanceLoader* GetLoader(GlobalStringKey typeName)override
-			{
-				vint index = typeInfos.Keys().IndexOf(typeName);
-				if (index != -1)
-				{
-					return typeInfos.Values()[index]->loader.Obj();
-				}
-
-				ITypeDescriptor* typeDescriptor = GetGlobalTypeManager()->GetTypeDescriptor(typeName.ToString());
-				if (typeDescriptor)
-				{
-					IGuiInstanceLoader* loader = GetLoaderFromType(typeDescriptor);
-					return loader ? loader : rootLoader.Obj();
-				}
-				return 0;
-			}
-
-			IGuiInstanceLoader* GetParentLoader(IGuiInstanceLoader* loader)override
-			{
-				vint index = typeInfos.Keys().IndexOf(loader->GetTypeName());
-				if (index != -1)
-				{
-					Ptr<VirtualTypeInfo> typeInfo = typeInfos.Values()[index];
-					if (typeInfo->parentTypeInfos.Count() > 0)
-					{
-						return typeInfo->parentTypeInfos[0]->loader.Obj();
-					}
-					return rootLoader.Obj();
-				}
-				return 0;
-			}
-
-			Ptr<description::ITypeInfo> GetTypeInfoForType(GlobalStringKey typeName)override
-			{
-				vint index = typeInfos.Keys().IndexOf(typeName);
-				auto td = index == -1
-					? GetGlobalTypeManager()->GetTypeDescriptor(typeName.ToString())
-					: typeInfos.Values()[index]->typeDescriptor;
-				if (!td) return nullptr;
-
-				if (auto ctor = td->GetConstructorGroup())
-				{
-					return CopyTypeInfo(ctor->GetMethod(0)->GetReturn());
-				}
-				else
-				{
-					return MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal));
-				}
-			}
-
-			void GetVirtualTypes(collections::List<GlobalStringKey>& typeNames)override
-			{
-				for (vint i = 0; i < typeInfos.Count(); i++)
-				{
-					if (typeInfos.Values()[i]->parentTypeName != GlobalStringKey::Empty)
-					{
-						typeNames.Add(typeInfos.Keys()[i]);
-					}
-				}
-			}
-
-			GlobalStringKey GetParentTypeForVirtualType(GlobalStringKey virtualType)override
-			{
-				vint index = typeInfos.Keys().IndexOf(virtualType);
-				if (index != -1)
-				{
-					auto typeInfo = typeInfos.Values()[index];
-					return typeInfo->parentTypeName;
-				}
-				return GlobalStringKey::Empty;
-			}
-
-			void ClearReflectionCache()override
-			{
-				rootLoader->ClearReflectionCache();
-				FOREACH(Ptr<VirtualTypeInfo>, info, typeInfos.Values())
-				{
-					info->loader->ClearReflectionCache();
-				}
-			}
-		};
-		GUI_REGISTER_PLUGIN(GuiInstanceLoaderManager)
-	}
-}
-
-
-/***********************************************************************
-.\GUIINSTANCELOADER_PREDEFINEDINSTANCEBINDERS.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		using namespace collections;
-		using namespace reflection::description;
-		using namespace parsing;
-		using namespace workflow;
-		using namespace workflow::analyzer;
-		using namespace workflow::runtime;
-		using namespace controls;
-		using namespace stream;
-
-/***********************************************************************
-GuiResourceInstanceBinder (uri)
-***********************************************************************/
-
-		class GuiResourceInstanceBinder : public Object, public IGuiInstanceBinder
-		{
-		public:
-			GlobalStringKey GetBindingName()override
-			{
-				return GlobalStringKey::_Uri;
-			}
-
-			bool ApplicableToConstructorArgument()override
-			{
-				return true;
-			}
-
-			bool RequirePropertyExist()override
-			{
-				return false;
-			}
-
-			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
-			{
-				WString protocol, path;
-				if (!IsResourceUrl(code, protocol, path))
-				{
-					errors.Add(GuiResourceError({ resolvingResult.resource }, position, L"Precompile: \"" + code + L"\" is not a valid resource uri."));
-					return nullptr;
-				}
-				else
-				{
-					return Workflow_GetUriProperty(precompileContext, resolvingResult, loader, prop, propInfo, protocol, path, position, errors);
-				}
-			}
-			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
-			{
-				WString protocol, path;
-				if (!IsResourceUrl(code, protocol, path))
-				{
-					errors.Add(GuiResourceError({ resolvingResult.resource }, position, L"Precompile: \"" + code + L"\" is not a valid resource uri."));
-					return nullptr;
-				}
-				else
-				{
-					return Workflow_InstallUriProperty(precompileContext, resolvingResult, variableName, loader, prop, propInfo, protocol, path, position, errors);
-				}
-			}
-		};
-
-/***********************************************************************
-GuiReferenceInstanceBinder (ref)
-***********************************************************************/
-
-		class GuiReferenceInstanceBinder : public Object, public IGuiInstanceBinder
-		{
-		public:
-			GlobalStringKey GetBindingName()override
-			{
-				return GlobalStringKey::_Ref;
-			}
-
-			bool ApplicableToConstructorArgument()override
-			{
-				return false;
-			}
-
-			bool RequirePropertyExist()override
-			{
-				return false;
-			}
-
-			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
-			{
-				CHECK_FAIL(L"GuiReferenceInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
-			}
-			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
-			{
-				auto expression = MakePtr<WfReferenceExpression>();
-				expression->name.value = code;
-				return Workflow_InstallEvalProperty(precompileContext, resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
-			}
-		};
-
-/***********************************************************************
-GuiEvalInstanceBinder (eval)
-***********************************************************************/
-
-		class GuiEvalInstanceBinder : public Object, public IGuiInstanceBinder
-		{
-		public:
-			GlobalStringKey GetBindingName()override
-			{
-				return GlobalStringKey::_Eval;
-			}
-
-			bool ApplicableToConstructorArgument()override
-			{
-				return true;
-			}
-
-			bool RequirePropertyExist()override
-			{
-				return false;
-			}
-
-			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
-			{
-				return Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, position, errors);
-			}
-			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
-			{
-				if(auto expression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, position, errors))
-				{
-					return Workflow_InstallEvalProperty(precompileContext, resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
-				}
-				return nullptr;
-			}
-		};
-
-/***********************************************************************
-GuiBindInstanceBinder (bind)
-***********************************************************************/
-
-		class GuiBindInstanceBinder : public Object, public IGuiInstanceBinder
-		{
-		public:
-			GlobalStringKey GetBindingName()override
-			{
-				return GlobalStringKey::_Bind;
-			}
-
-			bool ApplicableToConstructorArgument()override
-			{
-				return false;
-			}
-
-			bool RequirePropertyExist()override
-			{
-				return true;
-			}
-
-			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
-			{
-				CHECK_FAIL(L"GuiBindInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
-			}
-			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
-			{
-				if(auto expression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, position, errors))
-				{
-					auto inferExpr = MakePtr<WfInferExpression>();
-					inferExpr->expression = expression;
-					inferExpr->type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
-
-					auto bindExpr = MakePtr<WfBindExpression>();
-					bindExpr->expression = inferExpr;
-
-					return Workflow_InstallBindProperty(precompileContext, resolvingResult, variableName, propertyInfo, bindExpr);
-				}
-				return nullptr;
-			}
-		};
-
-/***********************************************************************
-GuiFormatInstanceBinder (format)
-***********************************************************************/
-
-		class GuiFormatInstanceBinder : public Object, public IGuiInstanceBinder
-		{
-		public:
-			GlobalStringKey GetBindingName()override
-			{
-				return GlobalStringKey::_Format;
-			}
-
-			bool ApplicableToConstructorArgument()override
-			{
-				return false;
-			}
-
-			bool RequirePropertyExist()override
-			{
-				return true;
-			}
-
-			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
-			{
-				CHECK_FAIL(L"GuiFormatInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
-			}
-			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
-			{
-				if (auto expression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, L"bind($\"" + code + L"\")", position, errors, { 0,7 })) // bind($"
-				{
-					return Workflow_InstallBindProperty(precompileContext, resolvingResult, variableName, propertyInfo, expression);
-				}
-				return nullptr;
-			}
-		};
-
-/***********************************************************************
-GuiEvalInstanceEventBinder (eval)
-***********************************************************************/
-
-		class GuiEvalInstanceEventBinder : public Object, public IGuiInstanceEventBinder
-		{
-		public:
-			GlobalStringKey GetBindingName()override
-			{
-				return GlobalStringKey::_Eval;
-			}
-			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
-			{
-				bool coroutine = false;
-				{
-					auto reading = code.Buffer();
-					while (true)
-					{
-						switch (*reading)
-						{
-						case ' ':
-						case '\t':
-						case '\r':
-						case '\n':
-							reading++;
-							break;
-						default:
-							goto BEGIN_TESTING;
-						}
-					}
-				BEGIN_TESTING:
-					coroutine = *reading == '$';
-				}
-
-				auto parseFunction = coroutine ? &Workflow_ParseCoProviderStatement : &Workflow_ParseStatement;
-				if (auto statement = parseFunction(precompileContext, { resolvingResult.resource }, code, position, errors, { 0,0 }))
-				{
-					return Workflow_InstallEvalEvent(precompileContext, resolvingResult, variableName, eventInfo, statement);
-				}
-				return nullptr;
-			}
-		};
-
-/***********************************************************************
-GuiPredefinedInstanceBindersPlugin
-***********************************************************************/
-
-		class GuiPredefinedInstanceBindersPlugin : public Object, public IGuiPlugin
-		{
-		public:
-
-			GUI_PLUGIN_NAME(GacUI_Compiler_ParsersAndBinders)
-			{
-				GUI_PLUGIN_DEPEND(GacUI_Parser);
-				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
-				GUI_PLUGIN_DEPEND(GacUI_Instance);
-				GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
-			}
-
-			void Load()override
-			{
-				WfLoadTypes();
-				GuiIqLoadTypes();
-				{
-					IGuiParserManager* manager = GetParserManager();
-					manager->SetParsingTable(L"WORKFLOW", &WfLoadTable);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-TYPE", &WfParseType);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-EXPRESSION", &WfParseExpression);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-STATEMENT", &WfParseStatement);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-COPROVIDER-STATEMENT", &WfParseCoProviderStatement);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-DECLARATION", &WfParseDeclaration);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-MODULE", &WfParseModule);
-					manager->SetParsingTable(L"INSTANCE-QUERY", &GuiIqLoadTable);
-					manager->SetTableParser(L"INSTANCE-QUERY", L"INSTANCE-QUERY", &GuiIqParse);
-				}
-				{
-					IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
-
-					manager->AddInstanceBinder(new GuiResourceInstanceBinder);
-					manager->AddInstanceBinder(new GuiReferenceInstanceBinder);
-					manager->AddInstanceBinder(new GuiEvalInstanceBinder);
-					manager->AddInstanceEventBinder(new GuiEvalInstanceEventBinder);
-					manager->AddInstanceBinder(new GuiBindInstanceBinder);
-					manager->AddInstanceBinder(new GuiFormatInstanceBinder);
-				}
-			}
-
-			void Unload()override
-			{
-			}
-		};
-		GUI_REGISTER_PLUGIN(GuiPredefinedInstanceBindersPlugin)
-	}
-}
-
-
-/***********************************************************************
-.\GUIINSTANCELOADER_PREDEFINEDINSTANCEDESERIALIZERS.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		using namespace collections;
-		using namespace reflection::description;
-		using namespace workflow;
-		using namespace workflow::analyzer;
-		using namespace controls;
-		using namespace controls::list;
-		using namespace templates;
-
-/***********************************************************************
-GuiTemplatePropertyDeserializer
-***********************************************************************/
-
-		class GuiTemplatePropertyDeserializer : public Object, public IGuiInstanceDeserializer
-		{
-		protected:
-			Ptr<ITypeInfo>						stringType;
-
-			bool IsTemplatePropertyType(ITypeInfo* propType)
-			{
-				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
-				{
-					auto genericType = propType->GetElementType();
-					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 2)
-					{
-						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
-						{
-							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>())
-							{
-								auto returnType = genericType->GetGenericArgument(0);
-								if (returnType->GetDecorator() == ITypeInfo::RawPtr)
-								{
-									if (returnType->GetElementType()->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiTemplate>()))
-									{
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-				return false;
-			}
-
-			bool IsDataVisualizerFactoryType(ITypeInfo* propType)
-			{
-				return propType->GetDecorator() == ITypeInfo::SharedPtr && propType->GetTypeDescriptor() == description::GetTypeDescriptor<list::IDataVisualizerFactory>();
-			}
-
-			bool IsDataEditorFactoryType(ITypeInfo* propType)
-			{
-				return propType->GetDecorator() == ITypeInfo::SharedPtr && propType->GetTypeDescriptor() == description::GetTypeDescriptor<list::IDataEditorFactory>();
-			}
-
-		public:
-			GuiTemplatePropertyDeserializer()
-			{
-				stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
-			}
-
-			bool CanDeserialize(description::ITypeInfo* typeInfo)override
-			{
-				return IsTemplatePropertyType(typeInfo) || IsDataVisualizerFactoryType(typeInfo) || IsDataEditorFactoryType(typeInfo);
-			}
-
-			description::ITypeInfo* DeserializeAs(description::ITypeInfo* typeInfo)override
-			{
-				return stringType.Obj();
-			}
-
-			static void GetItemTemplateType(
-				types::ResolvingResult& resolvingResult,
-				WString typeNamesString,
-				List<ITypeDescriptor*>& tds,
-				GuiResourceTextPos tagPosition,
-				GuiResourceError::List& errors
-				)
-			{
-				List<WString> typeNames;
-				SplitBySemicolon(typeNamesString, typeNames);
-				if (typeNames.Count() == 0)
-				{
-					errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
-						L"Precompile: Template list \"" +
-						typeNamesString +
-						L"\" cannot be empty."));
-				}
-
-				FOREACH(WString, controlTemplateName, typeNames)
-				{
-					auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
-					if (!controlTemplateTd)
-					{
-						auto index = INVLOC.FindFirst(controlTemplateName, L":", Locale::None);
-						GlobalStringKey namespaceName;
-						auto typeName = controlTemplateName;
-						if (index.key != -1)
-						{
-							namespaceName = GlobalStringKey::Get(controlTemplateName.Left(index.key));
-							typeName = controlTemplateName.Right(controlTemplateName.Length() - index.key - index.value);
-						}
-
-						auto source = FindInstanceLoadingSource(resolvingResult.context, namespaceName, typeName);
-						if (auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName))
-						{
-							controlTemplateTd = typeInfo->GetTypeDescriptor();
-						}
-					}
-					if (controlTemplateTd)
-					{
-						tds.Add(controlTemplateTd);
-					}
-					else
-					{
-						errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
-							L"Precompile: Type \"" +
-							controlTemplateName +
-							L"\" does not exist."));
-						continue;
-					}
-				}
-			}
-
-			static Ptr<WfExpression> CreateTemplateFactory(
-				types::ResolvingResult& resolvingResult,
-				List<ITypeDescriptor*>& controlTemplateTds,
-				ITypeInfo* templateType,
-				GuiResourceTextPos tagPosition,
-				GuiResourceError::List& errors
-				)
-			{
-				auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
-				funcCreateTemplate->anonymity = WfFunctionAnonymity::Anonymous;
-				funcCreateTemplate->returnType = GetTypeFromTypeInfo(templateType);
-
-				auto argViewModel = MakePtr<WfFunctionArgument>();
-				argViewModel->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
-				argViewModel->name.value = L"<viewModel>";
-				funcCreateTemplate->arguments.Add(argViewModel);
-
-				auto block = MakePtr<WfBlockStatement>();
-				funcCreateTemplate->statement = block;
-
-				ITypeDescriptor* stopControlTemplateTd = nullptr;
-				FOREACH(ITypeDescriptor*, controlTemplateTd, controlTemplateTds)
-				{
-					if (!controlTemplateTd->CanConvertTo(templateType->GetTypeDescriptor()))
-					{
-						errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
-							L"Precompile: Type \"" +
-							controlTemplateTd->GetTypeName() +
-							L"\" cannot be used here because it requires \"" +
-							templateType->GetTypeDescriptor()->GetTypeName() +
-							L"\" or its derived classes."));
-					}
-
-					if (stopControlTemplateTd)
-					{
-						errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
-							L"Precompile: Type \"" +
-							controlTemplateTd->GetTypeName() +
-							L"\" will never be tried, because \"" +
-							stopControlTemplateTd->GetTypeName() +
-							L"\", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice."));
-						continue;
-					}
-
-					ITypeInfo* viewModelType = nullptr;
-					{
-						auto ctors = controlTemplateTd->GetConstructorGroup();
-						if (!ctors || ctors->GetMethodCount() != 1)
-						{
-							errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
-								L"Precompile: To use type \"" +
-								controlTemplateTd->GetTypeName() +
-								L"\" as a control template or item template, it should have exactly one constructor."));
-							continue;
-						}
-
-						auto ctor = ctors->GetMethod(0);
-						if (ctor->GetParameterCount() > 1)
-						{
-							errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
-								L"Precompile: To use type \"" +
-								controlTemplateTd->GetTypeName() +
-								L"\" as a control template or item template, its constructor cannot have more than one parameter."));
-							continue;
-						}
-
-						if (ctor->GetParameterCount() != 0)
-						{
-							viewModelType = ctor->GetParameter(0)->GetType();
-						}
-					}
-
-					if (!viewModelType)
-					{
-						stopControlTemplateTd = controlTemplateTd;
-					}
-
-					auto subBlock = MakePtr<WfBlockStatement>();
-					block->statements.Add(subBlock);
-
-					Ptr<ITypeInfo> controlTemplateType;
-					{
-						auto elementType = MakePtr<TypeDescriptorTypeInfo>(controlTemplateTd, TypeInfoHint::Normal);
-						auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
-
-						controlTemplateType = pointerType;
-					}
-
-					Ptr<WfBlockStatement> returnStatBlock;
-					if (viewModelType)
-					{
-						auto refViewModel = MakePtr<WfReferenceExpression>();
-						refViewModel->name.value = L"<viewModel>";
-
-						auto condition = MakePtr<WfTypeTestingExpression>();
-						condition->test = WfTypeTesting::IsType;
-						condition->expression = refViewModel;
-						condition->type = GetTypeFromTypeInfo(viewModelType);
-
-						auto ifStat = MakePtr<WfIfStatement>();
-						subBlock->statements.Add(ifStat);
-						ifStat->expression = condition;
-
-						returnStatBlock = MakePtr<WfBlockStatement>();
-						ifStat->trueBranch = returnStatBlock;
-					}
-					else
-					{
-						returnStatBlock = subBlock;
-					}
-
-					{
-						auto createControlTemplate = MakePtr<WfNewClassExpression>();
-						createControlTemplate->type = GetTypeFromTypeInfo(controlTemplateType.Obj());
-						if (viewModelType)
-						{
-							auto refViewModel = MakePtr<WfReferenceExpression>();
-							refViewModel->name.value = L"<viewModel>";
-
-							auto cast = MakePtr<WfTypeCastingExpression>();
-							cast->strategy = WfTypeCastingStrategy::Strong;
-							cast->expression = refViewModel;
-							cast->type = GetTypeFromTypeInfo(viewModelType);
-							createControlTemplate->arguments.Add(cast);
-						}
-
-						auto returnStat = MakePtr<WfReturnStatement>();
-						returnStat->expression = createControlTemplate;
-						returnStatBlock->statements.Add(returnStat);
-					}
-				}
-
-				if (!stopControlTemplateTd)
-				{
-					auto value = MakePtr<WfStringExpression>();
-					value->value.value = L"Cannot find a matched control template to create.";
-
-					auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
-					raiseStat->expression = value;
-
-					block->statements.Add(raiseStat);
-				}
-
-				auto expr = MakePtr<WfFunctionExpression>();
-				expr->function = funcCreateTemplate;
-				return expr;
-			}
-
-			static Ptr<WfExpression> CreateDataVisualizerFactory(
-				types::ResolvingResult& resolvingResult,
-				List<ITypeDescriptor*>& controlTemplateTds,
-				GuiResourceTextPos tagPosition,
-				GuiResourceError::List& errors
-			)
-			{
-				auto templateType = TypeInfoRetriver<GuiGridVisualizerTemplate*>::CreateTypeInfo();
-				Ptr<WfExpression> previousFactory;
-				FOREACH_INDEXER(ITypeDescriptor*, controlTemplateTd, index, controlTemplateTds)
-				{
-					List<ITypeDescriptor*> tds;
-					tds.Add(controlTemplateTd);
-					auto refFactory = CreateTemplateFactory(resolvingResult, tds, templateType.Obj(), tagPosition, errors);
-					auto createStyle = MakePtr<WfNewClassExpression>();
-					createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::DataVisualizerFactory>>::CreateTypeInfo().Obj());
-					createStyle->arguments.Add(refFactory);
-
-					if (index > 0)
-					{
-						createStyle->arguments.Add(previousFactory);
-					}
-					else
-					{
-						auto nullExpr = MakePtr<WfLiteralExpression>();
-						nullExpr->value = WfLiteralValue::Null;
-						createStyle->arguments.Add(nullExpr);
-					}
-					previousFactory = createStyle;
-				}
-				return previousFactory;
-			}
-
-			static Ptr<WfExpression> CreateDataEditorFactory(
-				types::ResolvingResult& resolvingResult,
-				List<ITypeDescriptor*>& controlTemplateTds,
-				GuiResourceTextPos tagPosition,
-				GuiResourceError::List& errors
-			)
-			{
-				auto templateType = TypeInfoRetriver<GuiGridEditorTemplate*>::CreateTypeInfo();
-				auto refFactory = CreateTemplateFactory(resolvingResult, controlTemplateTds, templateType.Obj(), tagPosition, errors);
-				auto createStyle = MakePtr<WfNewClassExpression>();
-				createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::DataEditorFactory>>::CreateTypeInfo().Obj());
-				createStyle->arguments.Add(refFactory);
-				return createStyle;
-			}
-
-			Ptr<workflow::WfExpression> Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
-			{
-				auto stringExpr = valueExpression.Cast<WfStringExpression>();
-
-				List<ITypeDescriptor*> tds;
-				GetItemTemplateType(resolvingResult, stringExpr->value.value, tds, tagPosition, errors);
-
-				if (IsDataVisualizerFactoryType(typeInfo))
-				{
-					return CreateDataVisualizerFactory(resolvingResult, tds, tagPosition, errors);
-				}
-				else if (IsDataEditorFactoryType(typeInfo))
-				{
-					return CreateDataEditorFactory(resolvingResult, tds, tagPosition, errors);
-				}
-				else
-				{
-					auto templateType = typeInfo->GetElementType()->GetGenericArgument(0);
-					return CreateTemplateFactory(resolvingResult, tds, templateType, tagPosition, errors);
-				}
-			}
-		};
-
-/***********************************************************************
-GuiItemPropertyDeserializer
-***********************************************************************/
-
-		class GuiItemPropertyDeserializer : public Object, public IGuiInstanceDeserializer
-		{
-		protected:
-			Ptr<ITypeInfo>						stringType;
-
-			bool IsItemPropertyType(ITypeInfo* propType)
-			{
-				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
-				{
-					auto genericType = propType->GetElementType();
-					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 2)
-					{
-						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
-						{
-							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>())
-							{
-								return true;
-							}
-						}
-					}
-				}
-				return false;
-			}
-
-			bool IsWritableItemPropertyType(ITypeInfo* propType)
-			{
-				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
-				{
-					auto genericType = propType->GetElementType();
-					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 4)
-					{
-						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
-						{
-							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>()
-								&& genericType->GetGenericArgument(3)->GetTypeDescriptor() == description::GetTypeDescriptor<bool>())
-							{
-								if (IsSameType(genericType->GetGenericArgument(0), genericType->GetGenericArgument(2)))
-								{
-									return true;
-								}
-							}
-						}
-					}
-				}
-				return false;
-			}
-
-		public:
-			GuiItemPropertyDeserializer()
-			{
-				stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
-			}
-
-			bool CanDeserialize(description::ITypeInfo* typeInfo)override
-			{
-				return IsItemPropertyType(typeInfo) || IsWritableItemPropertyType(typeInfo);
-			}
-
-			description::ITypeInfo* DeserializeAs(description::ITypeInfo* typeInfo)override
-			{
-				return stringType.Obj();
-			}
-
-			Ptr<workflow::WfExpression> Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
-			{
-				auto stringExpr = valueExpression.Cast<WfStringExpression>();
-				Ptr<WfExpression> propertyExpression;
-				{
-					propertyExpression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, stringExpr->value.value, tagPosition, errors);
-					if (!propertyExpression)
-					{
-						return nullptr;
-					}
-				};
-
-				vint indexItemType = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemType"));
-				if (indexItemType == -1)
-				{
-					auto error
-						= L"Precompile: env.ItemType must be specified before deserializing \""
-						+ stringExpr->value.value
-						+ L"\" to value of type \""
-						+ typeInfo->GetTypeFriendlyName()
-						+ L"\".";
-					errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition, error));
-					return nullptr;
-				}
-
-				Ptr<WfType> itemType;
-				{
-					const auto& values = resolvingResult.envVars.GetByIndex(indexItemType);
-					auto itemTypeValue = values[values.Count() - 1];
-
-					itemType = Workflow_ParseType(precompileContext, { resolvingResult.resource }, itemTypeValue->value, itemTypeValue->valuePosition, errors);
-					if (!itemType)
-					{
-						return nullptr;
-					}
-				};
-
-				vint indexItemName = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemName"));
-				WString itemName(L"item", false);
-				if (indexItemName != -1)
-				{
-					const auto& values = resolvingResult.envVars.GetByIndex(indexItemName);
-					itemName = values[values.Count() - 1]->value;
-				}
-
-				if (auto refExpr = propertyExpression.Cast<WfReferenceExpression>())
-				{
-					if (refExpr->name.value != itemName)
-					{
-						auto refItem = MakePtr<WfReferenceExpression>();
-						refItem->name.value = itemName;
-
-						auto member = MakePtr<WfMemberExpression>();
-						member->parent = refItem;
-						member->name.value = refExpr->name.value;
-
-						propertyExpression = member;
-					}
-				}
-
-				bool isWritableItemProperty = IsWritableItemPropertyType(typeInfo);
-
-				auto funcDecl = MakePtr<WfFunctionDeclaration>();
-				ITypeInfo* acceptValueType = nullptr;
-				funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
-				{
-					auto genericType = typeInfo->GetElementType();
-					funcDecl->returnType = GetTypeFromTypeInfo(genericType->GetGenericArgument(0));
-					{
-						auto argument = MakePtr<WfFunctionArgument>();
-						argument->name.value = L"<item>";
-						argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(1));
-						funcDecl->arguments.Add(argument);
-					}
-
-					if (isWritableItemProperty)
-					{
-						{
-							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<value>";
-							argument->type = GetTypeFromTypeInfo((acceptValueType = genericType->GetGenericArgument(2)));
-							funcDecl->arguments.Add(argument);
-						}
-						{
-							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<update>";
-							argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(3));
-							funcDecl->arguments.Add(argument);
-						}
-					}
-				}
-
-				auto funcBlock = MakePtr<WfBlockStatement>();
-				funcDecl->statement = funcBlock;
-
-				{
-					auto refItem = MakePtr<WfReferenceExpression>();
-					refItem->name.value = L"<item>";
-
-					auto refCast = MakePtr<WfTypeCastingExpression>();
-					refCast->strategy = WfTypeCastingStrategy::Strong;
-					refCast->type = itemType;
-					refCast->expression = refItem;
-
-					auto varDecl = MakePtr<WfVariableDeclaration>();
-					varDecl->name.value = itemName;
-					varDecl->expression = refCast;
-
-					auto varStat = MakePtr<WfVariableStatement>();
-					varStat->variable = varDecl;
-					funcBlock->statements.Add(varStat);
-				}
-
-				Ptr<WfReturnStatement> returnStat;
-				{
-					returnStat = MakePtr<WfReturnStatement>();
-					returnStat->expression = propertyExpression;
-				}
-
-				if (isWritableItemProperty)
-				{
-					auto ifStat = MakePtr<WfIfStatement>();
-					funcBlock->statements.Add(ifStat);
-					{
-						auto refUpdate = MakePtr<WfReferenceExpression>();
-						refUpdate->name.value = L"<update>";
-
-						ifStat->expression = refUpdate;
-					}
-					{
-						auto block = MakePtr<WfBlockStatement>();
-						ifStat->trueBranch = block;
-
-						{
-							auto refValue = MakePtr<WfReferenceExpression>();
-							refValue->name.value = L"<value>";
-
-							auto assignExpr = MakePtr<WfBinaryExpression>();
-							assignExpr->op = WfBinaryOperator::Assign;
-							assignExpr->first = CopyExpression(propertyExpression);
-
-							if (acceptValueType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
-							{
-								auto castExpr = MakePtr<WfExpectedTypeCastExpression>();
-								castExpr->strategy = WfTypeCastingStrategy::Strong;
-								castExpr->expression = refValue;
-								assignExpr->second = castExpr;
-							}
-							else
-							{
-								assignExpr->second = refValue;
-							}
-
-							auto stat = MakePtr<WfExpressionStatement>();
-							stat->expression = assignExpr;
-							block->statements.Add(stat);
-						}
-						{
-							auto returnStat = MakePtr<WfReturnStatement>();
-							block->statements.Add(returnStat);
-
-							auto returnType = typeInfo->GetElementType()->GetGenericArgument(0);
-							returnStat->expression = CreateDefaultValue(returnType);
-						}
-					}
-					{
-						auto block = MakePtr<WfBlockStatement>();
-						ifStat->falseBranch = block;
-
-						block->statements.Add(returnStat);
-					}
-				}
-				else
-				{
-					funcBlock->statements.Add(returnStat);
-				}
-
-				auto funcExpr = MakePtr<WfFunctionExpression>();
-				funcExpr->function = funcDecl;
-				return funcExpr;
-			}
-		};
-
-/***********************************************************************
-GuiDataProcessorDeserializer
-***********************************************************************/
-
-		class GuiDataProcessorDeserializer : public Object, public IGuiInstanceDeserializer
-		{
-		protected:
-			Ptr<ITypeInfo>						stringType;
-
-		public:
-			GuiDataProcessorDeserializer()
-			{
-				stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
-			}
-
-			bool CanDeserialize(description::ITypeInfo* typeInfo)override
-			{
-				return typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataFilter>()
-					|| typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataSorter>();
-			}
-
-			description::ITypeInfo* DeserializeAs(description::ITypeInfo* typeInfo)override
-			{
-				return stringType.Obj();
-			}
-
-			Ptr<workflow::WfExpression> Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
-			{
-				auto stringExpr = valueExpression.Cast<WfStringExpression>();
-				Ptr<WfExpression> propertyExpression;
-				{
-					propertyExpression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, stringExpr->value.value, tagPosition, errors);
-					if (!propertyExpression)
-					{
-						return nullptr;
-					}
-				};
-
-				vint indexItemType = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemType"));
-				if (indexItemType == -1)
-				{
-					auto error
-						= L"Precompile: env.ItemType must be specified before deserializing \""
-						+ stringExpr->value.value
-						+ L"\" to value of type \""
-						+ typeInfo->GetTypeFriendlyName()
-						+ L"\".";
-					errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition, error));
-					return nullptr;
-				}
-
-				Ptr<WfType> itemType;
-				{
-					const auto& values = resolvingResult.envVars.GetByIndex(indexItemType);
-					auto itemTypeValue = values[values.Count() - 1];
-
-					itemType = Workflow_ParseType(precompileContext, { resolvingResult.resource }, itemTypeValue->value, itemTypeValue->valuePosition, errors);
-					if (!itemType)
-					{
-						return nullptr;
-					}
-				};
-
-				auto newExpr = MakePtr<WfNewInterfaceExpression>();
-				newExpr->type = GetTypeFromTypeInfo(typeInfo);
-				{
-					auto decl = MakePtr<WfFunctionDeclaration>();
-					newExpr->declarations.Add(decl);
-					decl->classMember = MakePtr<WfClassMember>();
-					decl->classMember->kind = WfClassMemberKind::Override;
-					decl->name.value = L"SetCallback";
-					decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
-					{
-						auto argument = MakePtr<WfFunctionArgument>();
-						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<IDataProcessorCallback*>::CreateTypeInfo().Obj());
-						argument->name.value = L"value";
-						decl->arguments.Add(argument);
-					}
-
-					auto block = MakePtr<WfBlockStatement>();
-					decl->statement = block;
-				}
-				{
-					auto decl = MakePtr<WfFunctionDeclaration>();
-					newExpr->declarations.Add(decl);
-					decl->classMember = MakePtr<WfClassMember>();
-					decl->classMember->kind = WfClassMemberKind::Override;
-
-					List<WString> argumentNames;
-					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataFilter>())
-					{
-						decl->name.value = L"Filter";
-						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
-						argumentNames.Add(L"<row>");
-					}
-					else
-					{
-						decl->name.value = L"Compare";
-						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
-						argumentNames.Add(L"<row1>");
-						argumentNames.Add(L"<row2>");
-					}
-
-					FOREACH(WString, name, argumentNames)
-					{
-						auto argument = MakePtr<WfFunctionArgument>();
-						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
-						argument->name.value = name;
-						decl->arguments.Add(argument);
-					}
-
-					auto block = MakePtr<WfBlockStatement>();
-					decl->statement = block;
-
-					auto inferExpr = MakePtr<WfInferExpression>();
-					inferExpr->expression = propertyExpression;
-					{
-						auto funcType = MakePtr<WfFunctionType>();
-						inferExpr->type = funcType;
-
-						funcType->result = CopyType(decl->returnType);
-						for (vint i = 0; i < decl->arguments.Count(); i++)
-						{
-							funcType->arguments.Add(CopyType(itemType));
-						}
-					}
-
-					auto callExpr = MakePtr<WfCallExpression>();
-					callExpr->function = inferExpr;
-					FOREACH_INDEXER(WString, name, index, argumentNames)
-					{
-						auto refExpr = MakePtr<WfReferenceExpression>();
-						refExpr->name.value = name;
-
-						auto castExpr = MakePtr<WfTypeCastingExpression>();
-						castExpr->strategy = WfTypeCastingStrategy::Strong;
-						castExpr->type = (index == 0 ? itemType : CopyType(itemType));
-						castExpr->expression = refExpr;
-
-						callExpr->arguments.Add(castExpr);
-					}
-
-					auto stat = MakePtr<WfReturnStatement>();
-					stat->expression = callExpr;
-					block->statements.Add(stat);
-				}
-				return newExpr;
-			}
-		};
-
-/***********************************************************************
-GuiPredefinedInstanceDeserializersPlugin
-***********************************************************************/
-
-		class GuiPredefinedInstanceDeserializersPlugin : public Object, public IGuiPlugin
-		{
-		public:
-
-			GUI_PLUGIN_NAME(GacUI_Instance_Deserializers)
-			{
-				GUI_PLUGIN_DEPEND(GacUI_Instance);
-			}
-
-			void Load()override
-			{
-				IGuiInstanceLoaderManager* manager = GetInstanceLoaderManager();
-				manager->AddInstanceDeserializer(new GuiTemplatePropertyDeserializer);
-				manager->AddInstanceDeserializer(new GuiItemPropertyDeserializer);
-				manager->AddInstanceDeserializer(new GuiDataProcessorDeserializer);
-			}
-
-			void Unload()override
-			{
-			}
-		};
-		GUI_REGISTER_PLUGIN(GuiPredefinedInstanceDeserializersPlugin)
-	}
-}
-
-
-/***********************************************************************
-.\GUIINSTANCELOADER_PREDEFINEDTYPERESOLVERS.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		using namespace parsing;
-		using namespace parsing::xml;
-		using namespace workflow;
-		using namespace workflow::analyzer;
-		using namespace workflow::emitter;
-		using namespace workflow::runtime;
-		using namespace reflection::description;
-		using namespace collections;
-		using namespace stream;
-
-		using namespace controls;
-
-		class WorkflowVirtualScriptPositionVisitor : public traverse_visitor::ModuleVisitor
-		{
-		public:
-			GuiResourcePrecompileContext&						context;
-			Ptr<types::ScriptPosition>							sp;
-
-			WorkflowVirtualScriptPositionVisitor(GuiResourcePrecompileContext& _context)
-				:context(_context)
-			{
-				sp = Workflow_GetScriptPosition(context);
-			}
-
-			void Visit(WfVirtualExpression* node)override
-			{
-				traverse_visitor::ExpressionVisitor::Visit(node);
-				vint index = sp->nodePositions.Keys().IndexOf(node);
-				if (index != -1)
-				{
-					auto record = sp->nodePositions.Values()[index];
-					Workflow_RecordScriptPosition(context, record.position, node->expandedExpression, record.availableAfter);
-				}
-			}
-
-			void Visit(WfVirtualStatement* node)override
-			{
-				traverse_visitor::StatementVisitor::Visit(node);
-				vint index = sp->nodePositions.Keys().IndexOf(node);
-				if (index != -1)
-				{
-					auto record = sp->nodePositions.Values()[index];
-					Workflow_RecordScriptPosition(context, record.position, node->expandedStatement, record.availableAfter);
-				}
-			}
-
-			void Visit(WfVirtualDeclaration* node)override
-			{
-				traverse_visitor::DeclarationVisitor::Visit(node);
-				vint index = sp->nodePositions.Keys().IndexOf(node);
-				if (index != -1)
-				{
-					auto record = sp->nodePositions.Values()[index];
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
-					{
-						Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
-					}
-				}
-			}
-		};
-
-		Ptr<GuiInstanceCompiledWorkflow> Workflow_GetModule(GuiResourcePrecompileContext& context, const WString& path)
-		{
-			return context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
-		}
-
-		void Workflow_AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType, GuiResourceTextPos tagPosition)
-		{
-			auto compiled = Workflow_GetModule(context, path);
-			if (!compiled)
-			{
-				compiled = new GuiInstanceCompiledWorkflow;
-				compiled->type = assemblyType;
-				context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
-			}
-			else
-			{
-				CHECK_ERROR(compiled->type == assemblyType, L"Workflow_AddModule(GuiResourcePrecompiledContext&, const WString&, GuiInstanceCompiledWorkflow::AssemblyType)#Unexpected assembly type.");
-			}
-
-			if (compiled)
-			{
-				GuiInstanceCompiledWorkflow::ModuleRecord record;
-				record.module = module;
-				record.position = tagPosition;
-				record.shared = assemblyType == GuiInstanceCompiledWorkflow::Shared;
-				compiled->modules.Add(record);
-			}
-		}
-
-		void Workflow_GenerateAssembly(GuiResourcePrecompileContext& context, const WString& path, GuiResourceError::List& errors, bool keepMetadata, IWfCompilerCallback* compilerCallback)
-		{
-			auto compiled = Workflow_GetModule(context, path);
-			if (!compiled)
-			{
-				return;
-			}
-
-			if (!compiled->assembly)
-			{
-				List<WString> codes;
-				auto manager = Workflow_GetSharedManager();
-				manager->Clear(false, true);
-
-				auto addCode = [&codes](TextReader& reader)
-				{
-					vint row = 0;
-					WString code;
-					while (!reader.IsEnd())
-					{
-						auto rowHeader = itow(++row);
-						while (rowHeader.Length() < 6)
-						{
-							rowHeader = L" " + rowHeader;
-						}
-						code += rowHeader + L" : " + reader.ReadLine() + L"\r\n";
-					}
-					codes.Add(code);
-				};
-
-				for (vint i = 0; i < compiled->modules.Count(); i++)
-				{
-					manager->AddModule(compiled->modules[i].module);
-				}
-
-				if (manager->errors.Count() == 0)
-				{
-					manager->Rebuild(true, compilerCallback);
-				}
-
-				if (manager->errors.Count() == 0)
-				{
-					compiled->assembly = GenerateAssembly(manager, compilerCallback);
-					compiled->Initialize(true);
-				}
-				else
-				{
-					WorkflowVirtualScriptPositionVisitor visitor(context);
-					for (vint i = 0; i < compiled->modules.Count(); i++)
-					{
-						auto module = compiled->modules[i];
-						visitor.VisitField(module.module.Obj());
-						Workflow_RecordScriptPosition(context, module.position, module.module);
-					}
-
-					auto sp = Workflow_GetScriptPosition(context);
-					for (vint i = 0; i < manager->errors.Count(); i++)
-					{
-						auto error = manager->errors[i];
-						errors.Add({ sp->nodePositions[error->parsingTree].computedPosition, error->errorMessage });
-					}
-				}
-
-				if (keepMetadata)
-				{
-					compiled->metadata = Workflow_TransferSharedManager();
-				}
-				else
-				{
-					manager->Clear(false, true);
-				}
-			}
-		}
-
-/***********************************************************************
-Shared Script Type Resolver (Script)
-***********************************************************************/
-
-#define Path_Shared				L"Workflow/Shared"
-#define Path_TemporaryClass		L"Workflow/TemporaryClass"
-#define Path_InstanceClass		L"Workflow/InstanceClass"
-
-		class GuiResourceSharedScriptTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_Precompile
-			, private IGuiResourceTypeResolver_IndirectLoad
-		{
-		public:
-			WString GetType()override
-			{
-				return L"Script";
-			}
-
-			bool XmlSerializable()override
-			{
-				return true;
-			}
-
-			bool StreamSerializable()override
-			{
-				return false;
-			}
-
-			WString GetPreloadType()override
-			{
-				return L"Xml";
-			}
-
-			bool IsDelayLoad()override
-			{
-				return false;
-			}
-
-			vint GetMaxPassIndex()override
-			{
-				return Workflow_Max;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
-			{
-				switch (passIndex)
-				{
-				case Workflow_Collect:
-					return PerResource;
-				case Workflow_Compile:
-					return PerPass;
-				default:
-					return NotSupported;
-				}
-			}
-
-			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
-			{
-				switch (context.passIndex)
-				{
-				case Workflow_Collect:
-					{
-						if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
-						{
-							if (obj->language == L"Workflow")
-							{
-								if (auto module = Workflow_ParseModule(context, obj->codePosition.originalLocation, obj->code, obj->codePosition, errors))
-								{
-									Workflow_AddModule(context, Path_Shared, module, GuiInstanceCompiledWorkflow::Shared, obj->codePosition);
-								}
-							}
-						}
-					}
-					break;
-				}
-			}
-
-			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
-			{
-				switch (context.passIndex)
-				{
-				case Workflow_Compile:
-					Workflow_GenerateAssembly(context, Path_Shared, errors, false, context.compilerCallback);
-					break;
-				}
-			}
-
-			IGuiResourceTypeResolver_Precompile* Precompile()override
-			{
-				return this;
-			}
-
-			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
-			{
-				return this;
-			}
-
-			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
-			{
-				if (auto obj = content.Cast<GuiInstanceSharedScript>())
-				{
-					return obj->SaveToXml();
-				}
-				return nullptr;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
-			{
-				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
-				if (xml)
-				{
-					auto schema = GuiInstanceSharedScript::LoadFromXml(resource, xml, errors);
-					return schema;
-				}
-				return 0;
-			}
-		};
-
-/***********************************************************************
-Instance Type Resolver (Instance)
-***********************************************************************/
-
-		class GuiResourceInstanceTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_Precompile
-			, private IGuiResourceTypeResolver_IndirectLoad
-		{
-		public:
-			WString GetType()override
-			{
-				return L"Instance";
-			}
-
-			bool XmlSerializable()override
-			{
-				return true;
-			}
-
-			bool StreamSerializable()override
-			{
-				return false;
-			}
-
-			WString GetPreloadType()override
-			{
-				return L"Xml";
-			}
-
-			bool IsDelayLoad()override
-			{
-				return false;
-			}
-
-			vint GetMaxPassIndex()override
-			{
-				return Instance_Max;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
-			{
-				switch (passIndex)
-				{
-				case Instance_CollectInstanceTypes:
-				case Instance_CollectEventHandlers:
-				case Instance_GenerateInstanceClass:
-					return PerResource;
-				case Instance_CompileInstanceTypes:
-				case Instance_CompileEventHandlers:
-				case Instance_CompileInstanceClass:
-					return PerPass;
-				default:
-					return NotSupported;
-				}
-			}
-
-#define ENSURE_ASSEMBLY_EXISTS(PATH)\
-			if (auto compiled = Workflow_GetModule(context, PATH))\
-			{\
-				if (!compiled->assembly)\
-				{\
-					break;\
-				}\
-			}\
-			else\
-			{\
-				break;\
-			}\
-
-#define UNLOAD_ASSEMBLY(PATH)\
-			if (auto compiled = Workflow_GetModule(context, PATH))\
-			{\
-				compiled->context = nullptr;\
-			}\
-
-#define DELETE_ASSEMBLY(PATH)\
-			if (auto compiled = Workflow_GetModule(context, PATH))\
-			{\
-				compiled->context = nullptr;\
-				compiled->assembly = nullptr;\
-			}\
-
-			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
-			{
-				switch (context.passIndex)
-				{
-				case Instance_CollectEventHandlers:
-					ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
-				case Instance_CollectInstanceTypes:
-					{
-						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
-						{
-							if (obj->className == L"")
-							{
-								errors.Add(GuiResourceError({ resource }, obj->tagPosition,
-									L"Precompile: Instance \"" +
-									(obj->instance->typeNamespace == GlobalStringKey::Empty
-										? obj->instance->typeName.ToString()
-										: obj->instance->typeNamespace.ToString() + L":" + obj->instance->typeName.ToString()
-										) +
-									L"\" should have the class name specified in the ref.Class attribute."));
-							}
-
-							obj->ApplyStyles(resource, context.resolver, errors);
-
-							types::ResolvingResult resolvingResult;
-							resolvingResult.resource = resource;
-							resolvingResult.context = obj;
-							if (auto module = Workflow_GenerateInstanceClass(context, L"<instance>" + obj->className, resolvingResult, errors, context.passIndex))
-							{
-								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass, obj->tagPosition);
-							}
-
-							if (context.passIndex == Instance_CollectInstanceTypes)
-							{
-								auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
-								if (!record)
-								{
-									record = MakePtr<GuiResourceClassNameRecord>();
-									context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
-								}
-								record->classNames.Add(obj->className);
-							}
-						}
-					}
-					break;
-				case Instance_GenerateInstanceClass:
-					{
-						ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
-						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
-						{
-							vint previousErrorCount = errors.Count();
-
-							types::ResolvingResult resolvingResult;
-							resolvingResult.resource = resource;
-							resolvingResult.context = obj;
-							resolvingResult.rootTypeInfo = Workflow_CollectReferences(context, resolvingResult, errors);
-
-							if (errors.Count() == previousErrorCount)
-							{
-								if (auto ctorModule = Workflow_PrecompileInstanceContext(context, L"<constructor>" + obj->className, resolvingResult, errors))
-								{
-									if (auto instanceModule = Workflow_GenerateInstanceClass(context, L"<instance>" + obj->className, resolvingResult, errors, context.passIndex))
-									{
-										Workflow_AddModule(context, Path_InstanceClass, ctorModule, GuiInstanceCompiledWorkflow::InstanceClass, obj->tagPosition);
-										Workflow_AddModule(context, Path_InstanceClass, instanceModule, GuiInstanceCompiledWorkflow::InstanceClass, obj->tagPosition);
-									}
-								}
-							}
-						}
-					}
-					break;
-				}
-			}
-
-			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
-			{
-				WString path;
-				switch (context.passIndex)
-				{
-				case Instance_CompileInstanceTypes:
-					DELETE_ASSEMBLY(Path_Shared)
-					path = Path_TemporaryClass;
-					break;
-				case Instance_CompileEventHandlers:
-					DELETE_ASSEMBLY(Path_TemporaryClass)
-					path = Path_TemporaryClass;
-					break;
-				case Instance_CompileInstanceClass:
-					UNLOAD_ASSEMBLY(Path_TemporaryClass)
-					path = Path_InstanceClass;
-					break;
-				default:
-					return;
-				}
-
-				auto sharedCompiled = Workflow_GetModule(context, Path_Shared);
-				auto compiled = Workflow_GetModule(context, path);
-				if (sharedCompiled && compiled)
-				{
-					CopyFrom(
-						compiled->modules,
-						From(sharedCompiled->modules)
-							.Where([](const GuiInstanceCompiledWorkflow::ModuleRecord& module)
-							{
-								return module.shared;
-							}),
-						true
-					);
-				}
-
-				switch (context.passIndex)
-				{
-				case Instance_CompileInstanceTypes:
-					Workflow_GenerateAssembly(context, path, errors, false, context.compilerCallback);
-					compiled->modules.Clear();
-					break;
-				case Instance_CompileEventHandlers:
-					Workflow_GenerateAssembly(context, path, errors, false, context.compilerCallback);
-					break;
-				case Instance_CompileInstanceClass:
-					Workflow_GenerateAssembly(context, path, errors, true, context.compilerCallback);
-					break;
-				default:;
-				}
-				Workflow_ClearScriptPosition(context);
-				GetInstanceLoaderManager()->ClearReflectionCache();
-			}
-
-#undef DELETE_ASSEMBLY
-#undef UNLOAD_ASSEMBLY
-#undef ENSURE_ASSEMBLY_EXISTS
-
-			IGuiResourceTypeResolver_Precompile* Precompile()override
-			{
-				return this;
-			}
-
-			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
-			{
-				return this;
-			}
-
-			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
-			{
-				if (auto obj = content.Cast<GuiInstanceContext>())
-				{
-					return obj->SaveToXml();
-				}
-				return 0;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
-			{
-				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
-				if (xml)
-				{
-					Ptr<GuiInstanceContext> context = GuiInstanceContext::LoadFromXml(resource, xml, errors);
-					return context;
-				}
-				return 0;
-			}
-		};
-
-#undef Path_Shared
-#undef Path_TemporaryClass
-#undef Path_InstanceClass
-
-/***********************************************************************
-Instance Style Type Resolver (InstanceStyle)
-***********************************************************************/
-
-		class GuiResourceInstanceStyleResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_IndirectLoad
-		{
-		public:
-			WString GetType()override
-			{
-				return L"InstanceStyle";
-			}
-
-			bool XmlSerializable()override
-			{
-				return true;
-			}
-
-			bool StreamSerializable()override
-			{
-				return false;
-			}
-
-			WString GetPreloadType()override
-			{
-				return L"Xml";
-			}
-
-			bool IsDelayLoad()override
-			{
-				return false;
-			}
-
-			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
-			{
-				return this;
-			}
-
-			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
-			{
-				if (auto obj = content.Cast<GuiInstanceStyleContext>())
-				{
-					return obj->SaveToXml();
-				}
-				return 0;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
-			{
-				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
-				if (xml)
-				{
-					auto context = GuiInstanceStyleContext::LoadFromXml(resource, xml, errors);
-					return context;
-				}
-				return 0;
-			}
-		};
-
-/***********************************************************************
-Plugin
-***********************************************************************/
-
-		class GuiCompilerTypeResolversPlugin : public Object, public IGuiPlugin
-		{
-		public:
-
-			GUI_PLUGIN_NAME(GacUI_Compiler_InstanceTypeResolvers)
-			{
-				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
-			}
-
-			void Load()override
-			{
-				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
-				manager->SetTypeResolver(new GuiResourceInstanceStyleResolver);
-				manager->SetTypeResolver(new GuiResourceSharedScriptTypeResolver);
-			}
-
-			void Unload()override
-			{
-			}
-		};
-		GUI_REGISTER_PLUGIN(GuiCompilerTypeResolversPlugin)
-	}
-}
-
-
-/***********************************************************************
 .\GUIINSTANCEREPRESENTATION.CPP
 ***********************************************************************/
 
@@ -4991,6 +1457,3617 @@ GuiInstanceStyleContext
 }
 
 /***********************************************************************
+.\INSTANCEQUERY\GUIINSTANCEQUERY.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+
+/***********************************************************************
+ExecuteQueryVisitor
+***********************************************************************/
+
+		class ExecuteQueryVisitor : public Object, public GuiIqQuery::IVisitor
+		{
+		public:
+			Ptr<GuiInstanceContext>				context;
+			List<Ptr<GuiConstructorRepr>>&		input;
+			List<Ptr<GuiConstructorRepr>>&		output;
+
+			ExecuteQueryVisitor(Ptr<GuiInstanceContext> _context, List<Ptr<GuiConstructorRepr>>& _input, List<Ptr<GuiConstructorRepr>>& _output)
+				:context(_context), input(_input), output(_output)
+			{
+			}
+
+			static bool TestCtor(GuiIqPrimaryQuery* node, GlobalStringKey attribute, Ptr<GuiConstructorRepr> ctor)
+			{
+				if (node->attributeNameOption == GuiIqNameOption::Specified && node->attributeName.value != attribute.ToString())
+				{
+					return false;
+				}
+				if (node->typeNameOption == GuiIqNameOption::Specified && node->typeName.value != ctor->typeName.ToString())
+				{
+					return false;
+				}
+				if (node->referenceName.value != L"")
+				{
+					bool instanceName = ctor->instanceName != GlobalStringKey::Empty && node->referenceName.value == ctor->instanceName.ToString();
+					bool styleName = ctor->styleName && node->referenceName.value == ctor->styleName.Value();
+					return instanceName || styleName;
+				}
+				return true;
+			}
+
+			void Traverse(GuiIqPrimaryQuery* node, Ptr<GuiAttSetterRepr> setter)
+			{
+				if (setter)
+				{
+					FOREACH_INDEXER(GlobalStringKey, attribute, index, setter->setters.Keys())
+					{
+						auto setterValue = setter->setters.Values()[index];
+						FOREACH(Ptr<GuiValueRepr>, value, setterValue->values)
+						{
+							if (auto ctor = value.Cast<GuiConstructorRepr>())
+							{
+								if (TestCtor(node, attribute, ctor))
+								{
+									output.Add(ctor);
+								}
+							}
+							if (node->childOption == GuiIqChildOption::Indirect)
+							{
+								if (auto setter = value.Cast<GuiAttSetterRepr>())
+								{
+									Traverse(node, setter);
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					if (TestCtor(node, GlobalStringKey::Empty, context->instance))
+					{
+						output.Add(context->instance);
+					}
+					if (node->childOption == GuiIqChildOption::Indirect)
+					{
+						Traverse(node, context->instance);
+					}
+				}
+			}
+
+			void Visit(GuiIqPrimaryQuery* node)override
+			{
+				auto inputExists = &input;
+				if (inputExists)
+				{
+					FOREACH(Ptr<GuiConstructorRepr>, setter, input)
+					{
+						Traverse(node, setter);
+					}
+				}
+				else
+				{
+					Traverse(node, 0);
+				}
+			}
+
+			void Visit(GuiIqCascadeQuery* node)override
+			{
+				List<Ptr<GuiConstructorRepr>> temp;
+				ExecuteQuery(node->parent, context, input, temp);
+				ExecuteQuery(node->child, context, temp, output);
+			}
+
+			void Visit(GuiIqSetQuery* node)override
+			{
+				List<Ptr<GuiConstructorRepr>> first, second;
+				ExecuteQuery(node->first, context, input, first);
+				ExecuteQuery(node->second, context, input, second);
+
+				switch (node->op)
+				{
+				case GuiIqBinaryOperator::ExclusiveOr:
+					CopyFrom(output, From(first).Except(second).Union(From(second).Except(second)));
+					break;
+				case GuiIqBinaryOperator::Intersect:
+					CopyFrom(output, From(first).Intersect(second));
+					break;
+				case GuiIqBinaryOperator::Union:
+					CopyFrom(output, From(first).Union(second));
+					break;
+				case GuiIqBinaryOperator::Substract:
+					CopyFrom(output, From(first).Except(second));
+					break;
+				}
+			}
+		};
+
+/***********************************************************************
+ExecuteQuery
+***********************************************************************/
+
+		void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& input, collections::List<Ptr<GuiConstructorRepr>>& output)
+		{
+			ExecuteQueryVisitor visitor(context, input, output);
+			query->Accept(&visitor);
+		}
+
+		void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& output)
+		{
+			ExecuteQuery(query, context, *(List<Ptr<GuiConstructorRepr>>*)0, output);
+		}
+
+/***********************************************************************
+ApplyStyle
+***********************************************************************/
+
+		void ApplyStyleInternal(Ptr<GuiAttSetterRepr> src, Ptr<GuiAttSetterRepr> dst)
+		{
+			FOREACH_INDEXER(GlobalStringKey, attribute, srcIndex, src->setters.Keys())
+			{
+				auto srcValue = src->setters.Values()[srcIndex];
+				vint dstIndex = dst->setters.Keys().IndexOf(attribute);
+				if (dstIndex == -1)
+				{
+					dst->setters.Add(attribute, srcValue);
+				}
+				else
+				{
+					auto dstValue = dst->setters.Values()[dstIndex];
+					if (srcValue->binding == dstValue->binding)
+					{
+						if (srcValue->binding == GlobalStringKey::_Set)
+						{
+							ApplyStyleInternal(srcValue->values[0].Cast<GuiAttSetterRepr>(), dstValue->values[0].Cast<GuiAttSetterRepr>());
+						}
+						else
+						{
+							CopyFrom(dstValue->values, srcValue->values, true);
+						}
+					}
+				}
+			}
+
+			FOREACH_INDEXER(GlobalStringKey, eventName, srcIndex, src->eventHandlers.Keys())
+			{
+				if (!dst->eventHandlers.Keys().Contains(eventName))
+				{
+					auto srcValue = src->eventHandlers.Values()[srcIndex];
+					dst->eventHandlers.Add(eventName, srcValue);
+				}
+			}
+
+			FOREACH_INDEXER(GlobalStringKey, varName, srcIndex, src->environmentVariables.Keys())
+			{
+				if (!dst->environmentVariables.Keys().Contains(varName))
+				{
+					auto srcValue = src->environmentVariables.Values()[srcIndex];
+					dst->environmentVariables.Add(varName, srcValue);
+				}
+			}
+		}
+
+		void ApplyStyle(Ptr<GuiInstanceStyle> style, Ptr<GuiConstructorRepr> ctor)
+		{
+			ApplyStyleInternal(style->setter->Clone().Cast<GuiAttSetterRepr>(), ctor);
+		}
+
+/***********************************************************************
+GuiIqPrint
+***********************************************************************/
+
+		class GuiIqPrintVisitor : public Object, public GuiIqQuery::IVisitor
+		{
+		public:
+			stream::StreamWriter&				writer;
+
+			GuiIqPrintVisitor(stream::StreamWriter& _writer)
+				:writer(_writer)
+			{
+			}
+
+			void Visit(GuiIqPrimaryQuery* node)override
+			{
+				switch (node->childOption)
+				{
+				case GuiIqChildOption::Direct:
+					writer.WriteString(L"/");
+					break;
+				case GuiIqChildOption::Indirect:
+					writer.WriteString(L"//");
+					break;
+				}
+
+				if (node->attributeNameOption == GuiIqNameOption::Specified)
+				{
+					writer.WriteChar(L'@');
+					writer.WriteString(node->attributeName.value);
+					writer.WriteChar(L':');
+				}
+
+				if (node->typeNameOption == GuiIqNameOption::Specified)
+				{
+					writer.WriteString(node->typeName.value);
+				}
+				else
+				{
+					writer.WriteChar(L'*');
+				}
+
+				if (node->referenceName.value != L"")
+				{
+					writer.WriteChar(L'.');
+					writer.WriteString(node->referenceName.value);
+				}
+			}
+
+			void Visit(GuiIqCascadeQuery* node)override
+			{
+				node->parent->Accept(this);
+				node->child->Accept(this);
+			}
+
+			void Visit(GuiIqSetQuery* node)override
+			{
+				writer.WriteChar(L'(');
+				node->first->Accept(this);
+				switch (node->op)
+				{
+				case GuiIqBinaryOperator::ExclusiveOr:
+					writer.WriteString(L" ^ ");
+					break;
+				case GuiIqBinaryOperator::Intersect:
+					writer.WriteString(L" * ");
+					break;
+				case GuiIqBinaryOperator::Union:
+					writer.WriteString(L" + ");
+					break;
+				case GuiIqBinaryOperator::Substract:
+					writer.WriteString(L" - ");
+					break;
+				}
+				node->second->Accept(this);
+				writer.WriteChar(L')');
+			}
+		};
+
+		void GuiIqPrint(Ptr<GuiIqQuery> query, stream::StreamWriter& writer)
+		{
+			GuiIqPrintVisitor visitor(writer);
+			query->Accept(&visitor);
+		}
+	}
+}
+
+
+/***********************************************************************
+.\INSTANCEQUERY\GUIINSTANCEQUERY_AST.CPP
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Parser::GuiInstanceQuery_Parser.parser.txt
+
+This file is generated by: Vczh Parser Generator
+***********************************************************************/
+
+
+namespace vl
+{
+	namespace presentation
+	{
+/***********************************************************************
+Visitor Pattern Implementation
+***********************************************************************/
+
+		void GuiIqPrimaryQuery::Accept(GuiIqQuery::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
+		void GuiIqCascadeQuery::Accept(GuiIqQuery::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
+		void GuiIqSetQuery::Accept(GuiIqQuery::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
+	}
+}
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			using namespace vl::presentation;
+
+#define PARSING_TOKEN_FIELD(NAME)\
+			CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(get_##NAME, NO_PARAMETER, vl::WString(ClassType::*)(), [](ClassType* node) { return node->NAME.value; }, L"*", L"*")\
+			CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(set_##NAME, { L"value" }, void(ClassType::*)(const vl::WString&), [](ClassType* node, const vl::WString& value) { node->NAME.value = value; }, L"*", L"*")\
+			CLASS_MEMBER_PROPERTY_REFERENCETEMPLATE(NAME, get_##NAME, set_##NAME, L"$This->$Name.value")\
+
+			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqQuery, presentation::GuiIqQuery)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqNameOption, presentation::GuiIqNameOption)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqChildOption, presentation::GuiIqChildOption)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqPrimaryQuery, presentation::GuiIqPrimaryQuery)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqCascadeQuery, presentation::GuiIqCascadeQuery)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqBinaryOperator, presentation::GuiIqBinaryOperator)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqSetQuery, presentation::GuiIqSetQuery)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqQuery::IVisitor, presentation::GuiIqQuery::IVisitor)
+
+			BEGIN_CLASS_MEMBER(GuiIqQuery)
+				CLASS_MEMBER_METHOD_OVERLOAD(Accept, {L"visitor"}, void(GuiIqQuery::*)(GuiIqQuery::IVisitor* visitor))
+			END_CLASS_MEMBER(GuiIqQuery)
+
+			BEGIN_ENUM_ITEM(GuiIqNameOption)
+				ENUM_ITEM_NAMESPACE(GuiIqNameOption)
+				ENUM_NAMESPACE_ITEM(Specified)
+				ENUM_NAMESPACE_ITEM(Any)
+			END_ENUM_ITEM(GuiIqNameOption)
+
+			BEGIN_ENUM_ITEM(GuiIqChildOption)
+				ENUM_ITEM_NAMESPACE(GuiIqChildOption)
+				ENUM_NAMESPACE_ITEM(Direct)
+				ENUM_NAMESPACE_ITEM(Indirect)
+			END_ENUM_ITEM(GuiIqChildOption)
+
+			BEGIN_CLASS_MEMBER(GuiIqPrimaryQuery)
+				CLASS_MEMBER_BASE(GuiIqQuery)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<GuiIqPrimaryQuery>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(childOption)
+				CLASS_MEMBER_FIELD(attributeNameOption)
+				PARSING_TOKEN_FIELD(attributeName)
+				CLASS_MEMBER_FIELD(typeNameOption)
+				PARSING_TOKEN_FIELD(typeName)
+				PARSING_TOKEN_FIELD(referenceName)
+			END_CLASS_MEMBER(GuiIqPrimaryQuery)
+
+			BEGIN_CLASS_MEMBER(GuiIqCascadeQuery)
+				CLASS_MEMBER_BASE(GuiIqQuery)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<GuiIqCascadeQuery>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(parent)
+				CLASS_MEMBER_FIELD(child)
+			END_CLASS_MEMBER(GuiIqCascadeQuery)
+
+			BEGIN_ENUM_ITEM(GuiIqBinaryOperator)
+				ENUM_ITEM_NAMESPACE(GuiIqBinaryOperator)
+				ENUM_NAMESPACE_ITEM(ExclusiveOr)
+				ENUM_NAMESPACE_ITEM(Intersect)
+				ENUM_NAMESPACE_ITEM(Union)
+				ENUM_NAMESPACE_ITEM(Substract)
+			END_ENUM_ITEM(GuiIqBinaryOperator)
+
+			BEGIN_CLASS_MEMBER(GuiIqSetQuery)
+				CLASS_MEMBER_BASE(GuiIqQuery)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<GuiIqSetQuery>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(first)
+				CLASS_MEMBER_FIELD(second)
+				CLASS_MEMBER_FIELD(op)
+			END_CLASS_MEMBER(GuiIqSetQuery)
+
+			BEGIN_INTERFACE_MEMBER(GuiIqQuery::IVisitor)
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(GuiIqQuery::IVisitor::*)(GuiIqPrimaryQuery* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(GuiIqQuery::IVisitor::*)(GuiIqCascadeQuery* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(GuiIqQuery::IVisitor::*)(GuiIqSetQuery* node))
+			END_INTERFACE_MEMBER(GuiIqQuery)
+
+#undef PARSING_TOKEN_FIELD
+
+			class GuiIqTypeLoader : public vl::Object, public ITypeLoader
+			{
+			public:
+				void Load(ITypeManager* manager)
+				{
+					ADD_TYPE_INFO(vl::presentation::GuiIqQuery)
+					ADD_TYPE_INFO(vl::presentation::GuiIqNameOption)
+					ADD_TYPE_INFO(vl::presentation::GuiIqChildOption)
+					ADD_TYPE_INFO(vl::presentation::GuiIqPrimaryQuery)
+					ADD_TYPE_INFO(vl::presentation::GuiIqCascadeQuery)
+					ADD_TYPE_INFO(vl::presentation::GuiIqBinaryOperator)
+					ADD_TYPE_INFO(vl::presentation::GuiIqSetQuery)
+					ADD_TYPE_INFO(vl::presentation::GuiIqQuery::IVisitor)
+				}
+
+				void Unload(ITypeManager* manager)
+				{
+				}
+			};
+#endif
+
+			bool GuiIqLoadTypes()
+			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				ITypeManager* manager=GetGlobalTypeManager();
+				if(manager)
+				{
+					Ptr<ITypeLoader> loader=new GuiIqTypeLoader;
+					return manager->AddTypeLoader(loader);
+				}
+#endif
+				return false;
+			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\INSTANCEQUERY\GUIINSTANCEQUERY_PARSER.CPP
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Parser::GuiInstanceQuery_Parser.parser.txt
+
+This file is generated by: Vczh Parser Generator
+***********************************************************************/
+
+
+namespace vl
+{
+	namespace presentation
+	{
+/***********************************************************************
+ParserText
+***********************************************************************/
+
+const wchar_t parserTextBuffer[] = 
+L"\r\n" L""
+L"\r\n" L"class Query"
+L"\r\n" L"{"
+L"\r\n" L"}"
+L"\r\n" L""
+L"\r\n" L"enum NameOption"
+L"\r\n" L"{"
+L"\r\n" L"\tSpecified,"
+L"\r\n" L"\tAny,"
+L"\r\n" L"}"
+L"\r\n" L""
+L"\r\n" L"enum ChildOption"
+L"\r\n" L"{"
+L"\r\n" L"\tDirect,"
+L"\r\n" L"\tIndirect,"
+L"\r\n" L"}"
+L"\r\n" L""
+L"\r\n" L"class PrimaryQuery : Query"
+L"\r\n" L"{"
+L"\r\n" L"\tChildOption\t\tchildOption;"
+L"\r\n" L"\tNameOption\t\tattributeNameOption;"
+L"\r\n" L"\ttoken\t\t\tattributeName;"
+L"\r\n" L"\tNameOption\t\ttypeNameOption;"
+L"\r\n" L"\ttoken\t\t\ttypeName;"
+L"\r\n" L"\ttoken\t\t\treferenceName;"
+L"\r\n" L"}"
+L"\r\n" L""
+L"\r\n" L"class CascadeQuery : Query"
+L"\r\n" L"{"
+L"\r\n" L"\tQuery\t\t\tparent;"
+L"\r\n" L"\tQuery\t\t\tchild;"
+L"\r\n" L"}"
+L"\r\n" L""
+L"\r\n" L"enum BinaryOperator"
+L"\r\n" L"{"
+L"\r\n" L"\tExclusiveOr,"
+L"\r\n" L"\tIntersect,"
+L"\r\n" L"\tUnion,"
+L"\r\n" L"\tSubstract,"
+L"\r\n" L"}"
+L"\r\n" L""
+L"\r\n" L"class SetQuery : Query"
+L"\r\n" L"{"
+L"\r\n" L"\tQuery\t\t\tfirst;"
+L"\r\n" L"\tQuery\t\t\tsecond;"
+L"\r\n" L"\tBinaryOperator\top;"
+L"\r\n" L"}"
+L"\r\n" L""
+L"\r\n" L"token INDIRECT = \"////\";"
+L"\r\n" L"token DIRECT = \"//\";"
+L"\r\n" L"token NAME = \"[a-zA-Z_][a-zA-Z0-9]*\";"
+L"\r\n" L"token WILDCARD = \"/*\";"
+L"\r\n" L"token OPEN = \"/(\";"
+L"\r\n" L"token CLOSE = \"/)\";"
+L"\r\n" L"token XOR = \"/^\";"
+L"\r\n" L"token INTERSECT = \"/*\";"
+L"\r\n" L"token UNION = \"/+\";"
+L"\r\n" L"token SUBSTRACT = \"-\";"
+L"\r\n" L"token ATTRIBUTE = \"@\";"
+L"\r\n" L"token COLON = \":\";"
+L"\r\n" L"token DOT = \".\";"
+L"\r\n" L""
+L"\r\n" L"discardtoken SPACE = \"/s+\";"
+L"\r\n" L""
+L"\r\n" L"rule PrimaryQuery QPrimaryFragment"
+L"\r\n" L"\t=\t("
+L"\r\n" L"\t\t\t(NAME : typeName with {typeNameOption=\"Specified\"})"
+L"\r\n" L"\t\t\t| (\"*\" with {typeNameOption=\"Any\"})"
+L"\r\n" L"\t\t)"
+L"\r\n" L"\t\t[\".\" NAME : referenceName] as PrimaryQuery"
+L"\r\n" L"\t;"
+L"\r\n" L""
+L"\r\n" L"rule PrimaryQuery QPrimaryAttributed"
+L"\r\n" L"\t= !QPrimaryFragment with {attributeNameOption=\"Any\"}"
+L"\r\n" L"\t= \"@\" [NAME : attributeName] \":\" !QPrimaryFragment with {attributeNameOption=\"Specified\"}"
+L"\r\n" L"\t;"
+L"\r\n" L""
+L"\r\n" L"rule PrimaryQuery QPrimary"
+L"\r\n" L"\t= (\"/\" with {childOption=\"Direct\"}) !QPrimaryAttributed"
+L"\r\n" L"\t= (\"//\" with {childOption=\"Indirect\"}) !QPrimaryAttributed"
+L"\r\n" L"\t= \"(\" !QueryRoot \")\""
+L"\r\n" L"\t;"
+L"\r\n" L""
+L"\r\n" L"rule Query Query0"
+L"\r\n" L"\t= !QPrimary"
+L"\r\n" L"\t= Query0 : parent QPrimary : child as CascadeQuery;"
+L"\r\n" L""
+L"\r\n" L"rule Query Query1"
+L"\r\n" L"\t= !Query0"
+L"\r\n" L"\t= Query1 : first \"^\" Query0 : second as SetQuery with {op=\"ExclusiveOr\"}"
+L"\r\n" L"\t= Query1 : first \"*\" Query0 : second as SetQuery with {op=\"Intersect\"}"
+L"\r\n" L"\t;"
+L"\r\n" L"\t"
+L"\r\n" L"rule Query Query2"
+L"\r\n" L"\t= !Query1"
+L"\r\n" L"\t= Query2 : first \"+\" Query1 : second as SetQuery with {op=\"Union\"}"
+L"\r\n" L"\t= Query2 : first \"-\" Query1 : second as SetQuery with {op=\"Substract\"}"
+L"\r\n" L"\t;"
+L"\r\n" L""
+L"\r\n" L"rule Query QueryRoot"
+L"\r\n" L"\t= !Query2"
+L"\r\n" L"\t;"
+;
+
+		vl::WString GuiIqGetParserTextBuffer()
+		{
+			return parserTextBuffer;
+		}
+
+/***********************************************************************
+SerializedTable
+***********************************************************************/
+
+const vint parserBufferLength = 5817; // 27819 bytes before compressing
+const vint parserBufferBlock = 1024;
+const vint parserBufferRemain = 697;
+const vint parserBufferRows = 6;
+const char* parserBuffer[] = {
+"\x00\x00\x81\x81\x84\x02\x81\x80\x07\x82\x00\x87\x80\x83\x21\x33\x3B\x31\x30\x64\x65\x11\x35\x35\x32\x39\x3D\x7F\x18\x99\x98\x8A\x85\x84\x8C\x28\x39\x69\x6D\x21\x36\x83\x8D\x8B\x8A\x8D\x19\x85\x08\x80\x0A\x90\x81\x92\x8B\x28\x99\x88\x0B\x93\x98\x83\x29\x32\x74\x2F\xA7\x91\x9B\x03\x94\x8E\x81\x1C\x8C\x8E\x90\x82\x8C\x8A\x8B\x96\x05\xC8\xA3\x28\x39\x34\x34\x33\x98\x1B\xBE\x81\x82\xAF\x81\x8A\x9C\x03\x2B\xD8\x80\x90\x33\x95\x32\x36\x3A\x50\xFF\x7F\x86\x81\x87\x8D\x91\x91\x79\x3A\x8D\x0B\x9B\xB0\x81\x30\x3A\x74\x20\xA2\x35\x34\x3D\x32\x27\x30\x6D\x65\x21\xA3\xB9\x85\xB0\x90\x91\x24\xC6\xB9\x33\x0B\x94\xC2\xB6\xB8\x72\xF4\xB6\xB8\xB5\x37\x24\x38\x3A\x69\x6F\x2E\x3B\xB2\xA8\x82\xB2\xC0\x69\x82\xFD\x88\x8B\xC8\x03\xA5\xA6\x64\x0E\xD0\xD2\xC4\xC8\x86\x8F\xBF\x68\xEA\xAC\xA1\x82\x3D\x32\x33\x8A\x5E\xE3\x0B\xD9\xB5\xD5\x8E\xBF\xB3\x81\xA6\xB5\x85\x8B\xDC\x39\x3C\x38\xB3\xFA\x90\xBC\xB0\x07\xD0\xDD\xCC\x26\x8E\x2B\x8A\xE0\x86\xDC\xE1\xBB\x79\xA2\xD1\xD3\xC0\xAB\xDE\x81\xDD\x37\xB9\x82\xC8\xA2\x80\xA6\x33\x34\x72\x73\x20\xB5\xE4\x99\x81\xEC\x9D\x02\x2B\xA9\xE0\x8F\x30\x39\xB0\xEB\x01\xD8\xF8\x97\xA9\xA9\x83\x39\x32\x63\x12\xCF\xB0\xA1\x0B\x97\x17\x95\xFD\x6B\x42\x83\x4A\x61\x61\x53\x80\x81\x05\xB1\x47\x80\x42\x09\x8A\x8B\x82\x40\x0D\xA8\x40\x7C\x40\xBB\x49\x1E\x10\x11\x49\x12\x15\x13\x10\x54\x04\x48\x42\x87\x00\x2F\x02\x8B\x7F\x08\xB1\x4A\x55\x41\x27\x98\x8A\x84\x87\xEB\x45\x4D\x8A\x88\x01\x25\x88\x48\x88\x02\x60\x8E\x11\x10\x4D\x05\x15\x07\x4A\x3B\x80\x4B\x15\x18\x2D\x3A\x11\x11\x0B\x5A\x1F\x1D\x17\x8F\x41\x83\x9A\x14\x0C\x2D\x39\x0D\x16\x0A\x2D\x90\x84\x78\x42\xBB\x57\x19\x10\x13\x44\x03\x11\x12\x14\x44\x11\x91\x43\x8B\x2A\x03\x02\x8E\x46\x34\x83\x41\x43\x13\x50\x05\x1E\x12\x97\x00\x6F\x88\x09\x99\x00\x61\x5C\x75\x40\x48\x43\x1C\x13\x13\x53\x05\x1C\x98\x00\x2F\xA9\x03\x9D\x9C\x50\x62\x98\x42\xA0\x00\x18\x1F\x12\x14\x7B\xAF\x8E\x17\x89\x52\xB1\x49\x03\x4A\x8F\x80\x46\x84\x15\x45\x12\x19\x9C\x8B\xEA\x41\x4F\x0A\x0A\x07\x23\x99\x4B\x4A\x48\x55\x1E\x11\x12\x4F\x2B\x99\xA4\x40\x2F\x2B\x03\x84\x00\x61\x51\xA5\x42\xAB\x53\x15\x12\x13\x14\x54\x12\x11\x10\x87\x31\x88\x49\xAC\x00\x2D\x2E\xAD\xA0\x4A\xBE\x81\x4E\xA9\x10\x54\x35\xA9\x12\x10\x55\x14\xAB\xAE\x40\xBB\x80\x1A\x02\xA7\x18\x7F\x9C\x4B\x54\x4F\x37\x9E\x13\xB2\x01\x7B\xAA\x0D\x67\xBF\x9A\x44\xA2\x40\x84\x84\x1F\x10\x15\xD8\x80\x4B\xAE\x0B\xC4\x61\x55\xBB\xB4\x08\x48\x53\x14\x14\xB7\x85\x1F\xB5\x40\x84\xAF\x03\x1F\x0A\x6D\x45\x41\x58\x89\x05\x50\x0B\x4A\xBF\x2E\x57\x68\x5A\x11\x72\x21\x17\x19\x5E\x5F\x5A\x0B\x4A\xC2\x01\xE8\x66\x44\xC1\x06\xC8\xC4\x1E\x0B\x52\x2F\x1F\x18\x1D\x53\x34\x13\x48\x1D\x3D\x85\x4D\xC4\x10\x20\x24\x0C\x0D\x14\x02\xCF\xC5\xC3\xC1\x5E\x74\x1E\x0C\xC0\xFD\x81\x44\xCA\xC3\x79\x10\xC8\xCB\x57\x16\x2B\x45\xCD\xC3\xC7\x72\xC2\xC6\x0B\x19\xDB\xC4\x07\x4A\x3F\xC0\x40\xCB\xC8\x25\xF1\xC7\xCA\xC4\x2B\xFF\xBE\xC9\xD1\x3A\xE9\xC2\x07\x4A\x4F\xF8\xC8\x65\xD3\x5F\x6E\x01\x0D\x2A\x2B\x58\xD0\x40\xD1\x30\xD4\xDA\xCA\x0E\x20\x28\x01\xD8\x08\x37\xB9\x80\x08\xD8\xCE\x41\x70\x0B\x1D\x69\x34\x18\x18\x08\x7B\x20\x09\xD8\x74\x8D\x4F\x63\x74\x08\x3D\x20\x02\x0B\x14\xC0\x63\x19\x1B\x77\x65\x24\x12\x08\x08\x7D\x20\x09\x08\x08\x7C\x23\xD2\x0A\x0A\x83\xEC\xDE\xD8\xDC\x72\xFF\x61\x72\x74\x92\x78\xDA\xDD\x10\x6E\x39\x13\xE1\xE1\x87\xE9\x00\xCB\x16\x7A\xEE\x03\xE1\xD9\x45\x27\xD0\x09\x6B\xAF\x6D\x6E\x1A\x6C\x74\xE0\x0D\x14\x08\x0D\x60\x05\xD2\x4E\x2C\xC2\x4C\xCB\xCB\x39\xC7\xDE\xD0\xD4\x4B\xDD\xDA\xED\xD5\x32\x1A\xD5\x42\xF0\x5C\xF9\xE1\xC5\xCA\x3E\x20\xD2\xDA\xD8\xA4\xE6\xE3\xDC\x63\x6B\xED\xDF\xD9\xDC\xCF\xD1\x76\xDD\xE5\x79\xFB\xDD\xDF\xDF\x69\x01\xEB\xE6\xE1\x88\xCA\xEC\xE1\xF4\x8F\xD4\xF2\xE4\xDD\x94\xEE\x16\xE6\x08\x98\xDA\xE4\xE0\xF8\x9E\xE0\x00\xEA\x08\xA2\xE4\xD8\x8D\xE9\x60\xE8\xE0\x6F\xEA\x6A\xEF\xE1\xEF\xEC\x82\x35\x75\x40\x37\x7C\x69\xDF\x74\x09\x6A\x05\x28\x80\xEE\x53\x66\x80\x17\x33\x02\x78\x02\x24\x7B\x02\x83\x66\x81\xE4\x63\x6C\x79\xF7\x6E\x7B\xF9\x50\x7E\x71\xE9\x51\x77\x39\x8C\x29\x7F\xFA\x7C\x68\x3E\xEE\x5E\x7F\x7D\x87\x69\x72\xD8\x0B\x7D\x70\xE9\x50\x75\x7A\x75\x63\x36\xFA\x59\x7D\x7D\xEF\x5D\x72\x7E\xA1\x62\x04\xC8\x4D\x79\x7E\xD7\x3B\x7C\x75\xD0\x7E\x7F\x1C\x32\x70\x66",
+"\xDA\x4A\x6A\x6A\x14\x87\x7B\x57\x18\x0B\x24\x26\x88\x8E\x64\x4A\x93\x61\xC5\x17\x65\x08\x37\x24\x0D\x63\x02\x3D\x62\xC8\x13\x80\x8B\x99\x6A\x60\x04\x40\x08\x82\x40\x0A\x85\x69\x20\x08\x31\x0D\x73\x35\x2C\x19\x41\x65\x20\x36\x9C\x89\x0F\x66\x91\x2C\x1A\x8A\x34\x0C\xAB\x43\x1B\x25\x77\x9B\x6B\x1B\xF1\x89\x30\x35\x96\x81\x04\x6F\x9E\x68\xC8\x1D\x80\x73\xB7\x32\x89\x8D\x93\x77\x7B\x0C\x97\x79\x73\xCD\x4D\x02\x01\xC5\x78\x30\x1F\xF3\x8E\x8E\xB0\x7A\x83\x70\xA0\x7C\x84\xEC\x67\x88\x91\xD6\x6F\x72\x04\x3A\x03\x70\x20\x85\x81\x8B\x41\xAE\x81\x6E\x86\x9D\x8D\x22\xB2\x83\x85\xED\x40\x72\x70\x84\x62\x80\x40\x04\x8E\x77\x28\xA2\x89\x20\x64\x95\x96\x17\xAE\x05\x06\x08\x81\x22\x82\xA4\x9E\x8A\x05\xCB\x76\x7E\xB3\x68\x6B\x83\x79\x24\x7E\x07\xB0\x82\x85\xEC\x64\x86\x6F\xAF\x96\x85\xF8\x2B\x83\x7C\x42\xA6\x78\x84\xD6\x6C\x94\x0D\x8D\x98\x84\xF0\x73\x7D\x7E\x9A\x9A\x7E\xEA\x40\x89\x98\x21\x84\x8F\x38\x3A\x21\x8C\xEF\x4F\x80\x8E\x4E\xB4\x8C\x61\x05\x30\x9F\x1E\xEE\x9A\x8C\x8A\x56\x64\x0E\x55\x84\x0F\x05\x2B\x2B\x9E\x80\x1B\x8D\x8C\xF4\x81\x72\x0F\x60\x8B\x55\xDD\x2F\x8F\x59\x08\x28\xA0\x00\x6F\x8E\x80\x5B\x2B\x26\xA1\x7A\x85\x6B\x30\xFA\x62\x45\x16\xA5\x78\x04\x9F\x2E\x29\x33\xFA\x69\x08\x2B\xA0\x38\x3F\x74\x12\x9B\x28\xB0\x63\x92\x44\xA4\x08\x08\x8F\x91\x90\x5A\x13\xA2\x05\x17\x16\xA6\x83\x19\xA1\x36\x22\xEB\x74\x09\x8F\xA3\x09\xA4\xDD\x83\xA7\x71\x25\xA4\x8E\x94\x90\x97\x8D\x16\x82\x04\x0A\x22\x9A\x27\x29\xB4\x0A\x6F\x29\x1A\x84\xA3\x01\x27\x44\x9D\x30\x05\xA0\x2E\x62\x30\x0C\x56\x61\x0B\x95\x15\xAA\x8F\x52\xBF\x8F\x1B\xBE\xA3\x65\xAC\xA0\x6E\xA9\xA6\x7C\x2A\xEA\x47\xAF\x8C\xD3\x71\xA0\x76\x43\x94\x28\x51\x69\x9B\xA8\x80\x0D\xAA\xAA\x50\xAE\x26\x54\x8E\x8B\x07\x95\x35\xA8\xAB\x26\x30\x06\x05\xE0\xA0\x6C\xB1\xA9\x60\x04\x65\xA0\x6F\x59\xB1\x7A\xAC\xAB\x02\x30\x08\x71\xAB\xA1\xD1\x32\x90\x00\x5A\x87\x3E\x9E\x54\x96\x89\xBE\x02\x29\x5F\x7F\xB0\x63\xA0\x40\x0D\xAC\x00\x6F\xA9\xAF\xC4\x8E\xAE\x05\x32\x17\xAD\x41\x22\xBD\xAB\xBC\xBB\xAA\xAA\x61\xBD\x2B\x57\x20\x61\xB0\x8C\x8C\x2E\x29\x68\xA0\x05\x61\xC5\x26\x24\xCD\x9C\xB6\x22\x30\x0C\x39\x41\x3A\xBF\xB2\xA3\xB9\x9C\x5B\x01\x3D\x33\x16\xD9\xA0\x8C\xDB\x91\xAE\x24\x31\x1E\xB2\x60\x31\x0E\x04\x1A\x3E\x13\x25\xCF\xB8\xAE\x45\x31\x07\xB4\xE4\xA6\x77\x3B\xE1\x27\xAA\x08\x5E\x03\x70\xBE\xA0\x07\x3E\xF9\x36\x89\x6C\xE7\x32\x30\x65\x90\x75\x3D\xEB\x65\x08\x1E\x63\x0C\x0D\x3A\x33\x09\x0D\x76\x0D\x32\x1C\x1B\x7C\xAA\x9D\x14\xB8\x6C\x80\x92\xA9\x7D\xCB\xB5\xBB\xE9\x97\xB8\x3C\xE2\x3A\x6F\xF8\x5E\xB0\xBC\xFD\x23\xBB\x3E\xE5\xB6\x98\x08\x68\xB9\x7B\x8E\xB5\x29\x3C\x20\xB4\xBE\x71\xF2\xA8\xB8\xE5\x88\xBE\x81\xAA\x0B\x25\x86\xD2\xB9\x0F\xFB\x80\xB3\xB9\xFF\xB9\xBA\xDE\x5C\xBF\xC3\xBC\xA6\x75\xC0\xE2\xB1\x74\x79\xA6\x26\x95\x8B\x8C\xC2\x6F\xEA\xAC\xBE\x7B\xF0\xB2\xBE\x47\xBF\xA4\xBF\x5F\xA0\xC4\xD8\x58\xB1\xC0\x16\xA5\xC0\xB7\x27\xD8\x3E\x81\xAA\xC8\xC0\x16\xE6\xB9\x6E\x2F\xC2\x06\x83\x95\x20\xBC\x9C\xBD\x0E\xB3\x45\x6A\xA2\x40\x0A\xAC\xA1\x18\x15\x13\x25\x57\xD1\xA3\x65\xCA\x74\xA2\x97\xAD\xC0\xA6\xAF\xB2\xA6\x36\x9C\xAE\xA3\xD6\x37\xA2\xA4\xF3\x87\x90\x1D\xA9\xA0\xA8\x2E\xED\xA2\x87\x47\xCE\xB4\x68\x1B\xA2\x05\x9A\xA6\xCE\xC9\xE0\x7A\xA6\x24\x81\xA4\x0C\x28\xF0\x62\xCA\x01\x34\xC9\xD1\x20\xBF\x03\x95\x05\xD2\xCB\xC7\x21\xAB\x50\xA0\x69\xBE\x93\x06\xA8\xA9\x22\x13\xC3\x42\xCB\xB6\xC3\xE9\x96\x6B\xC3\x05\x38\xD1\x69\xD3\xBD\xBF\x0E\xE1\xC2\x3C\x20\x7E\xC4\x81\xC2\xC9\xC5\x21\xAB\xC6\x22\x71\xC9\xCB\x92\x90\xC7\xCC\xC2\x6C\xC8\xC7\x3F\xDE\xD3\x8E\x80\xC4\x0F\x50\xE4\xC3\xD4\xE1\xA4\x0F\x81\xDA\x36\x25\x54\xF0\x09\xBD\xEB\xAD\xBF\x7B\xF1\xBF\x09\xF9\x84\x72\xD2\xF6\xBA\xB6\x40\x3C\xBB\xB8\xC8\xB8\x9E\x8A\xC0\xA0\x22\x70\x9B\xDD\xC2\xCC\x88\xDA\x30\x32\x15\xD1\x1E\x32\x0D\xB8\x5C\x2B\x26\xDB\x1C\xD2\x05\xA7\xB2\x0F\xD2\xED\xAB\x05\xBB\x3A\xDF\xB8\xA9\xBA\xD4\xC8\x5E\xE8\xD2\xC1\x49\xD5\x0A\x1B\x53\x34\xBF\x57\xE6\x22\xDC\x39\xD7\xDD\xB9\xFA\x6D\x04\x74\xD6\xB8\x6C\x28\xCC\xDE\xA9\xC5\xCF\xDD\x53\x8B\xC7\xD7\xCE\x95\x0E\x18\x62\x35\x61\x56\xFD\x0B\xBF\xF7\xDA\xAB\x72\x99\xB5\x3E\x0A\xD6\x21\xDB\xE5\x36\xE3\xB6\x8E\x84\x15\x95\x1D\xE1\xDC\xE3\xDB\xDE\x08\x7D\xD1\xD7\x18\x01\xC9\xD7\xBB\xC9\x9E\xAF\xA3\x8A\xE0\x86",
+"\xE1\x0E\xE1\xF6\xD7\xE1\xC8\xB3\xD2\xC4\x11\x27\xDD\xE4\x27\xE3\xCB\xC0\xEE\xD9\x0F\x2F\xE7\xB8\xE1\x7A\x72\xDC\xBD\x84\x77\x96\x80\x39\x93\xA7\x7C\xCC\x8E\x40\x6E\x80\xA0\x35\xF5\x9A\x06\x74\x0B\x25\xD4\x88\xDB\xCE\xA7\xC2\xA6\x92\x40\x10\xCD\x26\x99\x80\x6D\x54\x94\x95\x7F\x7A\x61\x94\x08\x7A\xC9\x88\x2F\xB1\xCE\xEB\x9D\x81\x87\x4C\xCE\x9E\x95\xEE\x70\x95\x0F\xD7\xD5\xC1\xC6\x93\xD7\xC2\x19\x18\xD2\x20\x9A\xD6\xBD\xA7\xA6\xE4\xE7\x1E\xDC\xBC\xB5\xA8\xA0\xE3\xBA\xA9\xE9\xC0\x83\xC9\xC9\xC6\xC2\xD4\xC5\xB1\xB6\xC4\xDA\x0F\xF6\xBA\xE4\x8C\x60\xF2\x89\x82\xF8\xE5\x76\xFA\x23\xE5\x0D\xDF\x28\x93\x91\xC7\xD9\x8A\xF4\xEF\xE2\xDA\xDC\xD9\x0C\x1F\xE5\x20\xD2\xD4\xD8\xDF\xB1\xC4\xDD\xDF\xB5\xDC\xDE\x7F\xFE\xBC\xF2\x3A\xE0\x07\xA9\xF9\x08\xF2\xBD\x53\x0D\xE5\x71\x2F\xE6\x93\xB1\xEB\xDB\x99\xE0\x04\xC7\xAC\xF6\xE6\xEB\xB2\xDA\xDD\xCA\xFB\xE7\xF2\xF0\xC0\xEA\x08\x42\xE2\x33\xCD\x71\xEF\xE2\xCA\xC1\x20\xB3\xF7\xDE\xD9\xDF\xAB\x23\xDA\x3A\x22\xDC\x18\xC1\x50\x20\x57\x45\xAF\x9E\xD1\xC0\x01\x67\x5F\xF7\x62\xAB\x58\x89\x20\x1D\x74\xDA\x51\x92\xE7\xDE\x75\x88\x27\xE8\x55\xEA\x97\x1A\xC0\x6D\x76\xA4\xD6\xED\x8E\x34\x13\xE9\x41\x7A\xFA\xA4\x8B\x3C\xA5\x92\x7A\x39\x75\x38\x4A\x49\x68\x7A\x18\x9E\x41\x76\x70\x64\x76\x5D\x42\x31\x67\x71\x50\xE8\x3B\x76\xB6\x7D\x76\x27\x4D\x07\x45\x70\x00\xF0\x78\x16\xFF\x71\x38\x4A\x71\x10\x4C\x74\x52\x7C\x6E\x40\xFA\x72\x10\xFC\x79\x66\xF2\x71\x54\x02\x8B\x75\xC6\x4B\x49\x56\x7E\x49\xA1\x62\x76\x0A\x86\x34\x51\x4D\x80\x2B\x8A\x76\x63\x6A\x3D\x25\x41\x4D\x9D\x78\x10\xB7\x5B\x6D\xA1\x70\x5A\xA4\x72\x10\xA6\x79\x7D\xBE\x70\x7C\xAD\x72\x79\xAF\x75\x7C\xB1\x73\x7B\xB5\x7B\x37\xB8\x7D\x70\xBB\x77\x63\x11\x79\x6F\x17\x72\x72\xE7\x66\x84\xC4\x71\x70\x84\x7D\x6B\xC9\x7B\x3E\xCC\x7E\x06\x9B\x3C\x7D\x00\x0E\x7D\x82\x16\x54\x01\x25\x10\x65\x84\x7E\x52\x47\x4F\xF9\x41\x7D\x00\x1A\x5B\xC3\x5E\x68\xF7\x48\x59\x7E\x67\x1C\x80\x60\x10\x82\x60\x33\xCD\x57\x68\x05\x1A\x87\xFD\x79\x07\x8A\x64\x54\x63\x87\x4F\xA1\x69\x54\xCF\x79\x07\x30\x0C\x58\xB7\x33\x57\x46\x5D\x33\x72\x04\x07\xE1\x7D\x19\x20\x3F\x86\xB8\x5E\x03\x85\x80\x03\xC4\x1C\x11\x9F\x5C\x88\x74\x05\x87\x00\x0A\x50\x43\x3E\x54\x94\x8E\x79\xF6\x58\x88\xC7\x56\x69\x8B\x8A\x31\x8D\x8F\x88\x01\x11\x89\x8D\x71\x8A\x3A\x85\x8A\x1D\x67\x89\xB0\x8C\x5C\x9A\x8C\x89\x9E\x80\x02\xAD\x85\x88\x32\x04\x8A\x1A\x7C\x6D\xA7\x8B\x31\xAA\x82\x34\x21\x37\x7A\xAE\x88\x22\xB0\x82\x03\xB2\x8D\x8B\x3C\x38\x8A\x9B\x8B\x12\xB7\x84\x8C\x60\x82\x86\x70\x87\x31\x86\x15\x10\xD5\x88\x86\xCE\x6A\x89\x6C\x80\x00\xBA\x5C\x8A\x68\x8E\x03\xD1\x80\x8B\x46\x5F\x00\x2B\x14\x8E\x1A\x76\x54\xCB\x8B\x31\x93\x51\x10\xF9\x2F\x89\x81\x87\x31\x3E\x05\x81\x17\x8E\x7F\x7C\x6C\x01\x2B\x16\x8F\xEC\x49\x81\x75\x4F\x8B\x8D\x8D\x4F\x05\x1E\x8F\xDE\x8D\x74\x25\x82\x8F\xF5\x71\x7F\x5F\x74\x06\x4E\x45\x10\x09\x94\x82\x07\x99\x8E\x8D\x87\x33\x05\x10\x91\x9F\x82\x90\x07\x9E\x03\x73\x88\x19\x04\x9C\x4E\xD9\x8C\x8C\xEB\x80\x10\xED\x83\x8C\x40\x57\x91\x68\x1B\x8D\xBC\x53\x68\x9A\x89\x8C\x00\x03\x91\x97\x5C\x8B\x8A\x5A\x4B\x12\x39\x91\x2D\x96\x3C\xBB\x44\x03\xBE\x40\x10\xC0\x4E\x92\xC8\x3C\x65\x18\x49\x82\x30\x41\x67\xCC\x40\x81\x36\x80\x4D\x6E\x72\x4D\x2A\x42\x60\x2F\x5F\x42\xC8\x41\x43\x77\x3B\x4D\xEE\x3C\x39\xDE\x49\x43\xC5\x48\x3F\xA7\x3E\x43\xE3\x40\x76\xFF\x35\x44\x87\x50\x93\x0C\x96\x52\x1B\x80\x10\x1D\x86\x7F\xF2\x7C\x4B\x79\x45\x10\x63\x9D\x87\xFA\x86\x82\x98\x41\x95\xA6\x35\x80\x75\x17\x80\xA0\x44\x54\xC1\x4C\x80\x0A\x6C\x96\xAB\x4B\x94\x11\x87\x83\x43\x94\x38\xF5\x54\x91\x26\x5A\x55\x71\x9F\x57\x73\x9E\x80\x34\x86\x97\xEC\x3C\x4D\x0F\x7D\x29\x08\x1C\x92\x81\x46\x40\x28\x90\x40\x26\x1F\x20\xDD\x29\x11\x95\x82\x2D\x48\x1A\x13\x02\x21\x02\xD0\x2F\x0F\x85\x81\x03\x94\x90\x8B\x02\x23\x02\x99\x9A\x8B\x9D\x9A\x71\x02\x25\x02\x99\x91\x8E\xE7\x87\x4F\xA3\x9F\x79\x79\x02\x20\x27\x09\x99\x5A\x9C\x97\x74\x4D\x98\x58\x9F\x98\x2B\x19\x02\x99\x92\x92\x16\x14\x9B\xE8\x42\x18\x02\x2B\x02\x99\x9F\x01\xF3\x2C\x2A\xEB\x2F\x0F\x02\x2B\x2E\x90\x99\x9C\xCA\x90\x21\xC5\x9A\x59\x7B\x2B\x9C\xEB\x28\x9C\x73\x77\x1D\x01\x10\x43\x02\x2A\x98\x7F\x9F\x15\xFF\x05\x9C\x88\x95\x10\xC3\x9B\x9C\xE0\x91\x27\xC5\x9B\x2E\xD2\x2B\x9C\xCF\x9A\x9C\xBC\x98\x19",
+"\x96\x97\x44\x2D\x3C\x4E\x5E\x30\x27\x03\x24\x92\xD5\x99\x94\xE9\x38\x9A\x00\x0F\x4C\x26\x44\x06\xD8\x98\x93\xDA\x9B\x27\xFF\x0B\x27\x9A\x50\x86\xDB\x9B\x12\xF0\x95\x86\xCC\x90\x2A\x00\x24\x20\xEB\x2B\x2A\x15\x83\xA0\x08\x1D\x91\x00\x0E\x01\x0A\xA5\x19\x05\x12\xA1\x0C\x2B\x2E\xDD\x92\x10\x09\x97\xA0\x09\x5D\x44\x13\xAA\x2B\xF4\x77\xA1\x90\x23\xA2\x20\xA8\x10\x2A\x08\xA0\xE1\x90\x14\x14\xAE\x98\x16\x17\x9D\xEC\x9B\x98\x51\x40\x9F\x02\x22\x9F\xCD\x14\x9F\x8A\x46\x9F\xF8\x9F\x4A\xFB\x92\x93\x12\x3A\x59\x27\xA9\xA2\x03\x4F\xA2\xD9\x94\x07\xDF\x90\xA4\x63\x4B\x4E\x31\x96\x90\x26\x52\xA3\x85\x1D\xA4\x87\x13\x83\xD9\x43\x1D\xDF\x94\x28\xED\x31\x9B\x1E\x87\x7F\xFF\x9E\x79\x02\x12\xA0\xEB\x24\x1C\x16\xAA\x2F\xEB\x20\xA1\x5F\xAC\xA1\x05\x1C\x89\x1B\xA1\x10\x0E\xA5\x10\xEB\x2A\x87\x64\xAB\xA5\x24\xA0\xA6\x2B\x19\xA1\x01\x17\xA6\xE2\x94\xA0\x09\xA2\xA2\xED\x27\xA7\x70\xA4\x25\x48\xAC\x2C\xF7\x88\xA2\x46\xA9\x9E\xA9\x1E\x9B\xEC\x96\x3B\x05\x95\x76\x12\x3C\xA4\x08\x14\xA3\x00\x0F\x93\x32\x48\xA3\x12\x8A\x9F\x42\xAC\x9F\x74\x0A\x59\xF8\x86\xA4\x3B\xAC\x40\x51\x45\xA4\x46\xA6\x74\x48\xAB\x95\x74\x4A\xA8\xD6\x8E\xA4\x00\x04\x97\x0F\x8F\xA8\x6F\xA9\xA3\x6E\x76\xA5\x60\x97\x90\x90\x99\xA6\x10\x2C\x58\xF0\x93\x9E\x5A\xA1\x10\x72\xA7\x20\xEB\x22\xAA\xCB\x6B\x1C\xF3\x98\x4D\x4A\x92\x19\x90\xA8\x97\x81\x39\xA9\x88\xA9\x32\xC4\x9F\xA1\x49\x1D\xA9\x7C\x2A\xAC\x82\xA9\x1B\x2D\xA5\xA8\x41\xAE\x9E\x06\x4A\xAB\xD2\x7C\xAB\x35\xAE\xAB\xE9\x33\xA5\x01\x1D\x3E\xC4\xAB\x80\x29\x39\xA5\x0C\x20\xA0\x6F\xAD\xA6\xD9\x2B\x30\xC8\xAE\xA6\x08\x1C\xA5\x71\xAE\xA1\x78\xA5\xA6\xEC\xAB\xA7\xB6\x18\x10\x63\xA8\xA6\x61\xAB\x12\xF3\xA5\xA7\x1F\x2A\xA7\xE4\xA0\x10\xD2\x26\xA0\xF4\xA3\x9D\xB8\x4B\x12\xEB\x2F\xA3\xC9\xAD\xA9\xCD\xA8\x1C\xCF\xA9\x98\x93\xAC\xA3\x29\x34\xAD\x6D\x86\xAD\x8D\xA6\xA3\x32\x4A\xAD\x00\x1C\xAD\x0B\xBA\xA9\x5E\x4E\xA3\xCA\xAD\xAD\x30\x8E\x45\x9C\xAD\xA9\xAC\xAA\xA4\xA1\xAA\x9C\xD5\x82\x10\xD5\x86\xAA\x83\x92\x19\x14\xB0\x00\x55\xAF\xA9\xB2\x9A\x46\xE0\xA6\x8C\xE9\xA7\xAE\xE5\xA6\x1A\x34\xBE\x91\xF6\xA7\xB3\x61\x83\xAE\xFF\xA6\xB3\xF2\xAA\xB3\xB7\xA0\x00\x74\xA7\xAC\x1D\xA8\x10\x43\xB0\xAB\x66\x28\x10\xFE\xA8\xAF\x05\xB6\x86\x3A\xBC\xA0\x02\xBF\xA7\x79\xA6\xB0\x2B\xA5\x9B\x09\xBD\x9E\x58\xB0\xA3\x5E\x4E\xB0\xDC\x80\xB1\x8E\xA2\xA5\x2B\x14\xA5\x99\x3C\xB1\x5E\x36\xA9\x1B\xB7\xB1\xC5\xAF\x15\x1F\xB6\xA4\x21\xB8\x81\x7C\x6C\xB5\x25\xB1\x10\x27\xB2\x98\x51\xA0\xAC\xA9\xA1\xA9\x6D\xB4\x8F\xF7\x7F\xAA\xC5\x92\xAB\x51\xBD\xAE\x02\x1A\x59\x41\xB7\x9C\x76\xA9\x9C\x8C\xAF\xB5\x2A\xB1\xB6\xDB\xA3\xB6\x68\xBE\xAD\x5F\x10\xB8\x68\xA2\xB8\xCA\xA1\x9D\xCA\x90\xA1\xF9\x22\x4E\xB1\x11\x1C\x2E\xAA\xB0\xD2\xA1\x45\xCA\xA0\xAF\xFB\xA0\x00\xAB\x2F\xB9\x48\xB1\x27\x7B\x20\x86\x84\xBA\xB4\xA7\x22\xB3\x4E\xB0\xB2\x2E\xB7\xA5\xF2\x7B\xB6\x40\xAA\x9B\xAD\x99\x9C\xA5\xB4\xB4\x4D\xB0\xA4\xD2\x99\x9C\x07\xBB\x9E\x9C\xB9\xB5\x43\xA1\xB3\x10\x22\xAE\xC9\x93\xB0\x85\xB1\xA8\x55\xBD\x9B\xB6\x9F\xBB\x86\xAD\xB9\x19\xBB\x12\x04\xB0\xA4\x64\xB6\x40\xB2\xB9\xA2\x79\xBD\x4E\xF7\x70\xB7\xA4\xA8\xB2\x75\xBE\x06\x2B\xBD\xB2\xEF\x77\xA8\x7A\xB2\x7F\xC2\xBC\x54\xCA\x9B\x2E\x97\xA5\x23\xCC\xA9\xBC\xEA\x94\xA8\xCC\xB1\xAD\x49\xA9\xB6\x95\xA2\xB5\x98\xAD\xB8\x1D\xB2\x31\xD5\xB1\x9E\xD7\xBA\x8F\xDA\xB8\x10\x73\xB0\xA5\xBF\xAE\x06\xC1\xA2\x94\x81\x3B\xBF\x7C\x6F\xB9\x02\x27\xBB\xB7\xB4\x1C\xA4\xBE\x9F\x7B\x2C\x89\xA9\xB5\x10\x22\x0B\xBA\x81\xBB\x12\x13\xCD\xA9\xB4\xB9\xBF\xE0\x95\x89\xE5\xB2\x6D\xE7\xBB\x1A\x08\x14\xBC\x05\x10\xA1\xCB\x94\xBB\xBB\xB9\xBB\x74\x21\x10\x31\x52\x20\x95\x8A\x9C\x0A\xCB\x2E\xDB\x8D\xC0\x04\x2B\x27\xE6\x8C\xBA\xA1\xB6\x9F\xA1\xB2\xA6\x3A\xBB\xA6\x3A\xBE\xA5\x40\xBF\xAE\xA1\xB6\xA6\x7F\xB5\x10\x24\x04\xC1\xE6\xB8\x10\x45\xCD\xA9\x95\x8A\xC1\xCB\x9B\x99\x1D\xCD\x58\xB5\xAC\xB4\x7E\xA8\x10\xF0\x47\xC3\x3C\xB2\xC5\x64\x1F\xB3\x90\xB8\xB3\x5A\xC0\xBA\xB6\xA0\xC4\x3D\xBE\xAE\x46\xB3\xC4\x1A\xA6\xC4\x6E\x50\xC6\xE1\x95\x89\x27\xC5\xC1\xAF\x80\x10\x01\x7C\xC2\xA2\x8B\x5C\x0A\xCF\x9D\x10\xAF\x9D\xB7\xB5\xA0\x3A\xBD\xAF\x4F\xBD\xA7\x0B\x2B\x27\x41\xB7\xC1\x46\xAA\xC6\xCA\x92\x69\x7E\x5F\xB8\x51\xCB\x59\xB0\x80\x03\xB6\xB4\xAB\x8B\xA3\xB9\xEB\xBE\xB3\x00\x03\x5B\xBE\xB6\xC3\x47",
+"\xCC\x9A\x30\x0F\xC4\x4F\xC5\xC3\x6C\xCE\xC5\xE6\x21\xA2\x9C\xCB\xB3\x33\xBB\xC5\xC5\x19\xB3\xA2\xCA\xC3\xA2\xC1\xB4\x47\xBB\x2E\x42\xC5\xA2\x44\xCA\xB8\x54\xB0\xC9\x92\xCE\xBE\x94\xC7\xC6\x1A\x70\x03\x9A\x59\xC4\x81\xC1\xC7\x79\x5C\xC4\x83\xCA\xCB\xD3\x5F\xC4\x8C\x5A\x59\xB7\xBB\x2E\x55\xC1\xC6\xE8\xAF\x2A\x3D\xC4\xCA\x9F\xC6\xCA\x9F\xC8\xCA\x3A\xBB\xCA\x6A\xA8\xC6\x00\x0C\xCB\x90\xCA\xA2\x0B\x1D\x10\x55\x14\x5B\x57\xBB\xC9\x9B\xCE\x54\x9A\x53\xB4\x4D\xCE\xCB\x86\x8B\xC6\x95\xCB\xC9\x6F\xC7\xC8\x3B\x81\x03\x73\xC0\xC2\xDE\x9A\xB3\x78\xC2\xCA\x7A\xC2\xCA\x50\xB9\x9C\xD4\xC1\xAF\xF6\xC1\xCB\xCB\xB3\xCB\x88\xC5\xCB\x7F\xCA\xAC\x82\xC9\x9C\x84\xCA\x5A\x21\x8C\xCD\x95\xCE\x54\x08\xC3\x20\x0A\xCF\xCE\x46\xAB\x27\xD2\x24\xC2\xBD\xCD\xC6\x96\xCC\xB5\xC1\x8E\x19\x61\x69\x3E\x89\x5D\x51\x64\x06\x53\x74\x04\xBB\x0A\xC1\xCF\x0B\xD0\xA8\x94\x5E\xCF\xE2\xC0\x03\x12\xD7\x7D\x2A\xC5\xD1\x8A\x42\x69\x76\x60\x52\xB4\xB8\xC5\x71\x23\xCF\x46\xA4\x9E\xEC\xC0\xA4\x2D\xC8\xC0\x2F\xCE\xC9\x07\xD6\xBA\x33\xCC\x23\xC7\xB1\xBA\x3C\xC2\xCA\x38\xC6\xCC\x59\xC5\xA1\x3A\xBC\xCC\x53\xC5\x10\x26\x06\xC6\xFB\xC8\xD4\x22\xD0\xD1\xF6\x55\xCF\x0F\x2A\x8B\x4F\xC0\x91\xEA\xB2\xCA\xC4\xCA\xB3\x41\xDE\xD2\xA3\xCD\xC5\x39\xCA\xCC\x47\xD2\x10\xF7\xAB\xAC\x10\xD0\xD6\x4D\xDC\xBA\xF6\x54\xCE\xB4\xCC\xBA\xE7\xC3\xD6\x05\xD8\x6D\xEB\xCE\xBF\x4A\xD7\xBB\xCE\xC2\xCA\xD0\xCF\x20\x7E\xCB\x12\xB8\xC4\xD3\xE2\xC1\x03\x68\xDC\x2E\x4D\xB0\x7C\x70\xCE\xD4\xCB\x5B\xC8\x3A\xBD\x95\x36\xDE\xC0\x3C\xD9\xAF\x56\xD6\xAE\x40\xD7\xC5\xB8\xB6\xCD\x44\xD5\xCA\x5E\xD5\xB3\x4C\xD1\xC2\x87\xC9\xD4\x4A\xCB\xD7\x50\xDB\x20\x52\xDB\x27\x54\xD9\xB4\x9F\xCF\xD3\x9F\xC9\xD5\x8F\xD3\xD4\x64\xD2\xD9\x5C\xD4\xD9\xA7\xDE\x22\x87\xC1\xD6\xE1\xC2\xD8\xC8\x5D\xD7\x92\x6B\xD6\xFA\xCB\x83\x32\x0F\xD6\xA3\xA6\xD9\xA7\xC2\xCD\xB7\xB5\xD7\x7D\xCB\xAE\x48\xC5\xD6\xDD\xCB\x5C\x7D\xDB\x9A\x80\xD8\xCE\xB3\x89\xA2\x0A\xCE\x9C\xCA\xAF\x9D\x1E\xD3\xBB\x73\x7F\x46\xD2\x21\xBD\xD6\xBF\xBA\xAD\xA6\x52\x7D\xD9\x58\xD6\x90\xAD\xB3\x42\xBE\xF7\xBF\xAD\xDC\x9E\xCA\x1F\xD3\xB5\xAD\xB6\xA4\xB4\xB3\xDD\xCA\xA6\xC0\x7B\xBF\xC9\xFF\x0B\x8D\xFE\x8A\xBB\x20\xD1\x10\x4B\xB0\x9E\x2D\xDC\xDE\x0A\xDA\xD7\xE4\xD7\xA4\x18\xC1\xDD\x45\x32\x2D\x28\x0A\xAC\xF6\x98\x86\xD2\x28\xD9\xB9\xC0\xDB\x17\x72\x2D\x79\xD9\xA2\x9B\x92\x2D\x80\xC8\xDF\x66\xD2\x55\x25\xDC\x19\x27\xD3\x67\x8A\x47\xD1\x65\x6C\xD2\xFC\xD0\x33\x1D\xDA\xAF\x0A\xE1\xDF\x9E\xAB\xDF\x7C\xAC\x4E\xFE\xD0\xE0\x6F\xA2\xE0\x2B\x14\xE0\x0E\xE3\xDC\xF7\x68\xE0\xC2\xDD\xD6\xC8\x5C\xE0\x2D\xE9\xD6\x4E\x51\xE1\x05\x1D\x19\x31\x59\x3E\x2A\xDA\xD1\xF5\xDA\xC0\x30\xD0\xA4\xAB\x9A\xDF\xE6\xD9\xE1\xC7\x13\xE2\x9D\xA1\xE0\xEF\x84\x07\x03\xE1\xE3\x4B\xD9\x7D\x2C\xE9\xD9\x06\xED\x61\x30\xEE\xE4\x0F\xE9\x57\x2E\xC1\xDE\x63\xCD\xA9\xE7\x99\x9C\x89\x53\x7B\x81\xD3\xE5\xD3\x5C\xB5\x89\x21\x10\xED\x16\x9F\xAB\x6D\x64\x9B\x9A\xD5\xFF\x0E\xDB\xE1\x99\xE5\x90\x9B\xE5\x04\x75\xBB\x6C\xD2\xE3\xCB\x50\xE6\xAB\xBD\x1E\x13\xD8\x78\x33\x64\x6C\x72\x07\xE6\xCA\xA7\xD3\x54\xC9\xD3\xA1\xBF\xC4\x1B\x01\xD7\x94\xB8\x10\x6C\xA2\xD4\xDD\x7E\xD8\xEB\x2F\xDF\xBA\xDA\xCF\x8C\xE5\xE0\x5E\xEB\x6D\x9B\xD7\x20\x46\xE3\x8D\x60\x15\x9C\xDF\x99\x01\x84\xE4\xA1\xAB\xDD\xD5\xA9\xD7\x20\x77\xD8\x10\x28\xED\xE1\x4F\xE2\x03\xC5\xD0\xA8\xC7\xD1\xE7\x4B\xE8\x6D\x84\xD2\xCA\xC5\xC7\xD0\x0A\xCB\x27\x83\xED\xE8\x3E\xD6\x68\x58\xDA\xE8\x2B\x1F\xE8\x02\x12\xC2\x02\x1A\xEB\xA4\xE1\xE9\x32\x03\xE9\x03\x25\xE9\x16\x16\x54\xB8\xD2\x10\x9A\xE4\xEB\x88\xEB\xD5\x91\xDB\xCC\x93\xD0\xEA\xC0\xD5\xD9\x90\xEA\xE2\x17\x77\xEA\xE4\xD9\xEA\xB5\xD7\x8C\xCA\xDD\x9C\x2B\x1D\x01\x8E\xCC\xCA\x0F\x26\xB9\x01\x1C\xBD\x65\x02\x20\xEA\xD2\x7F\x09\xC5\x9C\x9A\xC1\x10\xE9\xB0\xE8\x81\xE7\xDF\x29\xAE\xDC\xD2\xCF\xDA\x91\xEC\x99\x16\xCA\xE4\x3B\x84\xD2\xCA\x93\xD1\x37\xE5\xE1\x73\x78\xD1\x3A\xE2\xE4\x98\x1B\xE1\xAA\xBD\xA9\xF2\xE7\xE5\xD3\xEE\xE2\xD3\x51\xE5\x09\xF2\xE7\x79\x54\xE3\x02\x16\xE3\x28\xD2\x43\x39\xE7\x67\x3B\xE5\x9C\x3D\xE9\xA2\x0C\xD3\xEF\x0F\xD5\xEF\x0C\xF9\xE2\x0A\xF6\x88\x40\xAA\xC0\x3E\xC8\xE5\xCA\xAE\xE6\x3C\x7D\xE5\xD4\xEB\x6D\x74\xED\xE8\xED\x1B\x9A\x5D\x82\xD5\xC5\x96\xD4\x1A\xF7\xF2\x73\x7C\xE5\xC8\xDD\x8B\x2D\xFC\xDA\xEC\x10\x07\x38\xAD",
+"\x84\xBA\x7A\x8B\x46\xAE\xE7\x7B\x8E\xEE\x68\xEB\x27\x20\x0F\xC1\xE1\xBA\xEC\x69\xD0\xE4\x40\xA4\xEC\x79\x06\x54\xC2\xE2\x20\xF5\xD1\x9E\xCB\xDA\xD4\xE6\x9E\xE1\x00\x0D\xEE\xFA\xB6\xDD\x22\xBA\x46\xD9\xD3\x77\xDB\xDF\xBE\xDD\xDE\xBC\x12\x3A\xC0\x41\xB2\xEC\x32\xD8\x10\x5C\xF0\x9E\xE7\xEE\xAA\x7D\xEA\xEE\xF4\xB6\xF4\xCB\xEF\x0F\xF0\xE1\x9E\xF0\x92\x2D\xAE\xDD\xF1\x2B\xF2\x03\x4D\xED\xF0\xAB\xEF\xE2\xF7\xE2\xE5\x2B\xFA\xEF\xC9\x9C\xEF\x13\xF3\x1D\x16\xE9\xD1\x16\xF2\xF0\x68\x14\xF0\xE5\xD0\xA4\x79\xFF\xEC\x1B\xC2\xCE\x7E\xF8\xD7\xF8\xE3\x8B\x1F\xFF\xEB\x85\xF0\xF1\xC1\x53\xE1\x1A\x59\xD2\x9E\x7B\xD2\x37\x57\xF1\x04\x29\xF1\xE1\x97\xF0\xCD\xE0\xF2\x0E\xF7\xE0\x98\xF4\xF8\x21\xF6\xEF\x08\x1D\xE0\x9C\xF1\xF2\x8A\xC4\xF7\x68\xE4\xDA\x74\xFA\xC0\x02\x24\xFB\xB8\xFD\xEA\xFA\x27\xF7\xE0\x9B\xF1\xB3\xF9\xF9\xB5\xCE\xF9\x1E\xC0\x10\xFD\xE2\x43\x8B\xF1\xF0\x21\xE1\xBF\x30\x15\x9C\xCF\xD5\xF3\xF9\xD1\x10\xBE\xF5\xF9\x4F\xE6\xF8\x90\x98\xF8\x14\xE4\xF1\xA3\xFE\xFC\xBC\x1E\xDD\x68\xE8\xFA\xE0\x9B\xF6\x12\xC6\xFC\x96\xC9\xEE\x04\x22\x20\x09\xEF\xFB\x7C\xB4\x20\xC2\xFB\x9C\xAA\xF2\x10\xED\xF8\xFD\x1E\xF3\xF8\x80\xF9\xEF\xC8\xF2\x7E\xA0\xF2\x66\x8A\xFF\xEF\x17\x75\xF4\x4E\x7D\xE8\x74\x20\x53\x7D\xEA\x7A\x7A\xF5\x7C\xDE\x6B\x78\xD9\x77\xFE\x30\x7D\xEB\x66\x44\xFB\x7A\xE2\x5D\x7F\xE9\x05\xF1\x18\x73\xF3\x6F\x23\xE3\x7C\x8F\x6B\x72\x04\x88\xFE\x76\x2F\xE6\x69\x63\x23\x6A\xFD\x4C\x10\x01\x13\xEA\x6E\x7F\x83\x09\x68\x1C\x70\xEF\x5A\x7B\x12\x86\xFF\x7D\x7B\xDF\x6C\x7D\x81\x7B\xE1\x78\x7E\x18\x8A\xFF\x7B\x76\x49\x6A\x7E\x89\x7A\x32\x0D\x7F\xC6\x77\x01\xC5\x18\xE4\x62\x08\xF3\x6B\x39\x53\x7C\x51\x7D\x01\xD8\x37\x0B\x95\x7D\x0F\x84\x01\x82\x09\xEB\x7A\x00\xB6\x7D\x04\x9D\x7F\x38\x77\xFB\x7C\x81\xF0\x7C\x4E\x19\x83\xD2\x66\x52\xF3\x79\x20\x2C\x81\x26\x8F\x00\x97\x7D\x70\x6E\x80\x31\x80\xCA\x73\x80\x24\x81\x06\xB7\x7E\x28\x66\x4E\xB9\x76\x04\x8B\x4E\x14\x85\xF0\x46\x53\x8F\x61\x08\xBE\x71\x3C\x50\x7A\xA3\x29\xE4\x60\x82\x6D\x67\x82\x20\x87\xC9\x4A\x82\xEB\x75\x04\x8F\x7A\x0D\x92\x70\x38\x83\x02\xBA\x80\x00\x8C\xF8\x16\x80\x15\x90\x7E\x17\x0A\xFA\x69\x80\xF0\x4F\x06\x80\x09\x1C\x80\x4F\x73\x82\x35\x67\x71\x3E\x8E\xFA\x5F\x81\xFE\x7A\x7C\x63\x81\x0F\x91\x74\xED\x7F\x20\x5C\x7D\xE8\x7E\x7E\x10\x6C\xF4\x5B\x69\x01\x85\xBB\x3C\x72\x06\x80\x4F\x43\x85\x20\x0F\x85\xE5\x41\x09\x97\x19\x1D\x97\x84\xBD\x40\x0F\xAD\x81\xD8\x7F\x01\xB3\x87\x03\x86\x83\xEC\x6A\x40\x14\x6E\x35\x87\x02\xDC\x74\xD3\x63\x7E\x5A\x7B\x17\xAE\x7A\xAF\x7E\xB6\x77\x3D\xD8\x6F\x7E\x63\x78\x6B\x4D\x5E\x44\x8E\x35\x68\x7A\x78\x70\x6F\xD5\x78\x20\x02\x87\xE5\x4F\xF6\x26\x2B\x19\x8E\x6F\xBF\x7C\xF7\x6B\x08\x16\x0C\x0B\xC0\x7C\x84\x11\x7F\x4A\x7D\x20\x0F\x83\x40\x8F\x09\xFF\x7F\xF3\x60\x78\x53\x84\x3A\x6C\x27\x1F\x82\xDF\x5F\x76\x38\x9F\x83\x35\x70\x0A\xA2\x7D\x50\x80\xFE\x6A\x84\x22\x96\x82\x09\x25\x1B\xA6\x80",
+};
+
+		void GuiIqGetParserBuffer(vl::stream::MemoryStream& stream)
+		{
+			vl::stream::MemoryStream compressedStream;
+			for (vint i = 0; i < parserBufferRows; i++)
+			{
+				vint size = i == parserBufferRows - 1 ? parserBufferRemain : parserBufferBlock;
+				compressedStream.Write((void*)parserBuffer[i], size);
+			}
+			compressedStream.SeekFromBegin(0);
+			vl::stream::LzwDecoder decoder;
+			vl::stream::DecoderStream decoderStream(compressedStream, decoder);
+			vl::collections::Array<vl::vuint8_t> buffer(65536);
+			while (true)
+			{
+				vl::vint size = decoderStream.Read(&buffer[0], 65536);
+				if (size == 0) break;
+				stream.Write(&buffer[0], size);
+			}
+			stream.SeekFromBegin(0);
+		}
+/***********************************************************************
+Unescaping Function Foward Declarations
+***********************************************************************/
+
+/***********************************************************************
+Parsing Tree Conversion Driver Implementation
+***********************************************************************/
+
+		class GuiIqTreeConverter : public vl::parsing::ParsingTreeConverter
+		{
+		public:
+			using vl::parsing::ParsingTreeConverter::SetMember;
+
+			bool SetMember(GuiIqNameOption& member, vl::Ptr<vl::parsing::ParsingTreeNode> node, const TokenList& tokens)
+			{
+				vl::Ptr<vl::parsing::ParsingTreeToken> token=node.Cast<vl::parsing::ParsingTreeToken>();
+				if(token)
+				{
+					if(token->GetValue()==L"Specified") { member=GuiIqNameOption::Specified; return true; }
+					else if(token->GetValue()==L"Any") { member=GuiIqNameOption::Any; return true; }
+					else { member=GuiIqNameOption::Specified; return false; }
+				}
+				member=GuiIqNameOption::Specified;
+				return false;
+			}
+
+			bool SetMember(GuiIqChildOption& member, vl::Ptr<vl::parsing::ParsingTreeNode> node, const TokenList& tokens)
+			{
+				vl::Ptr<vl::parsing::ParsingTreeToken> token=node.Cast<vl::parsing::ParsingTreeToken>();
+				if(token)
+				{
+					if(token->GetValue()==L"Direct") { member=GuiIqChildOption::Direct; return true; }
+					else if(token->GetValue()==L"Indirect") { member=GuiIqChildOption::Indirect; return true; }
+					else { member=GuiIqChildOption::Direct; return false; }
+				}
+				member=GuiIqChildOption::Direct;
+				return false;
+			}
+
+			bool SetMember(GuiIqBinaryOperator& member, vl::Ptr<vl::parsing::ParsingTreeNode> node, const TokenList& tokens)
+			{
+				vl::Ptr<vl::parsing::ParsingTreeToken> token=node.Cast<vl::parsing::ParsingTreeToken>();
+				if(token)
+				{
+					if(token->GetValue()==L"ExclusiveOr") { member=GuiIqBinaryOperator::ExclusiveOr; return true; }
+					else if(token->GetValue()==L"Intersect") { member=GuiIqBinaryOperator::Intersect; return true; }
+					else if(token->GetValue()==L"Union") { member=GuiIqBinaryOperator::Union; return true; }
+					else if(token->GetValue()==L"Substract") { member=GuiIqBinaryOperator::Substract; return true; }
+					else { member=GuiIqBinaryOperator::ExclusiveOr; return false; }
+				}
+				member=GuiIqBinaryOperator::ExclusiveOr;
+				return false;
+			}
+
+			void Fill(vl::Ptr<GuiIqQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
+			{
+			}
+
+			void Fill(vl::Ptr<GuiIqPrimaryQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
+			{
+				SetMember(tree->childOption, obj->GetMember(L"childOption"), tokens);
+				SetMember(tree->attributeNameOption, obj->GetMember(L"attributeNameOption"), tokens);
+				SetMember(tree->attributeName, obj->GetMember(L"attributeName"), tokens);
+				SetMember(tree->typeNameOption, obj->GetMember(L"typeNameOption"), tokens);
+				SetMember(tree->typeName, obj->GetMember(L"typeName"), tokens);
+				SetMember(tree->referenceName, obj->GetMember(L"referenceName"), tokens);
+			}
+
+			void Fill(vl::Ptr<GuiIqCascadeQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
+			{
+				SetMember(tree->parent, obj->GetMember(L"parent"), tokens);
+				SetMember(tree->child, obj->GetMember(L"child"), tokens);
+			}
+
+			void Fill(vl::Ptr<GuiIqSetQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
+			{
+				SetMember(tree->first, obj->GetMember(L"first"), tokens);
+				SetMember(tree->second, obj->GetMember(L"second"), tokens);
+				SetMember(tree->op, obj->GetMember(L"op"), tokens);
+			}
+
+			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ConvertClass(vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)override
+			{
+				if(obj->GetType()==L"PrimaryQuery")
+				{
+					vl::Ptr<GuiIqPrimaryQuery> tree = new GuiIqPrimaryQuery;
+					vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
+					Fill(tree, obj, tokens);
+					Fill(tree.Cast<GuiIqQuery>(), obj, tokens);
+					return tree;
+				}
+				else if(obj->GetType()==L"CascadeQuery")
+				{
+					vl::Ptr<GuiIqCascadeQuery> tree = new GuiIqCascadeQuery;
+					vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
+					Fill(tree, obj, tokens);
+					Fill(tree.Cast<GuiIqQuery>(), obj, tokens);
+					return tree;
+				}
+				else if(obj->GetType()==L"SetQuery")
+				{
+					vl::Ptr<GuiIqSetQuery> tree = new GuiIqSetQuery;
+					vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
+					Fill(tree, obj, tokens);
+					Fill(tree.Cast<GuiIqQuery>(), obj, tokens);
+					return tree;
+				}
+				else 
+					return 0;
+			}
+		};
+
+		vl::Ptr<vl::parsing::ParsingTreeCustomBase> GuiIqConvertParsingTreeNode(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
+		{
+			GuiIqTreeConverter converter;
+			vl::Ptr<vl::parsing::ParsingTreeCustomBase> tree;
+			converter.SetMember(tree, node, tokens);
+			return tree;
+		}
+
+/***********************************************************************
+Parsing Tree Conversion Implementation
+***********************************************************************/
+
+		vl::Ptr<GuiIqPrimaryQuery> GuiIqPrimaryQuery::Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
+		{
+			return GuiIqConvertParsingTreeNode(node, tokens).Cast<GuiIqPrimaryQuery>();
+		}
+
+		vl::Ptr<GuiIqCascadeQuery> GuiIqCascadeQuery::Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
+		{
+			return GuiIqConvertParsingTreeNode(node, tokens).Cast<GuiIqCascadeQuery>();
+		}
+
+		vl::Ptr<GuiIqSetQuery> GuiIqSetQuery::Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
+		{
+			return GuiIqConvertParsingTreeNode(node, tokens).Cast<GuiIqSetQuery>();
+		}
+
+/***********************************************************************
+Parser Function
+***********************************************************************/
+
+		vl::Ptr<vl::parsing::ParsingTreeNode> GuiIqParseAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex)
+		{
+			vl::parsing::tabling::ParsingState state(input, table, codeIndex);
+			state.Reset(L"QueryRoot");
+			vl::Ptr<vl::parsing::tabling::ParsingGeneralParser> parser=vl::parsing::tabling::CreateStrictParser(table);
+			vl::Ptr<vl::parsing::ParsingTreeNode> node=parser->Parse(state, errors);
+			return node;
+		}
+
+		vl::Ptr<vl::parsing::ParsingTreeNode> GuiIqParseAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex)
+		{
+			vl::collections::List<vl::Ptr<vl::parsing::ParsingError>> errors;
+			return GuiIqParseAsParsingTreeNode(input, table, errors, codeIndex);
+		}
+
+		vl::Ptr<GuiIqQuery> GuiIqParse(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex)
+		{
+			vl::parsing::tabling::ParsingState state(input, table, codeIndex);
+			state.Reset(L"QueryRoot");
+			vl::Ptr<vl::parsing::tabling::ParsingGeneralParser> parser=vl::parsing::tabling::CreateStrictParser(table);
+			vl::Ptr<vl::parsing::ParsingTreeNode> node=parser->Parse(state, errors);
+			if(node && errors.Count()==0)
+			{
+				return GuiIqConvertParsingTreeNode(node, state.GetTokens()).Cast<GuiIqQuery>();
+			}
+			return 0;
+		}
+
+		vl::Ptr<GuiIqQuery> GuiIqParse(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex)
+		{
+			vl::collections::List<vl::Ptr<vl::parsing::ParsingError>> errors;
+			return GuiIqParse(input, table, errors, codeIndex);
+		}
+
+/***********************************************************************
+Table Generation
+***********************************************************************/
+
+		vl::Ptr<vl::parsing::tabling::ParsingTable> GuiIqLoadTable()
+		{
+			vl::stream::MemoryStream stream;
+			GuiIqGetParserBuffer(stream);
+			vl::Ptr<vl::parsing::tabling::ParsingTable> table=new vl::parsing::tabling::ParsingTable(stream);
+			table->Initialize();
+			return table;
+		}
+
+	}
+}
+
+
+/***********************************************************************
+.\GUIINSTANCELOADER.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+		using namespace parsing;
+		using namespace parsing::xml;
+		using namespace parsing::tabling;
+		using namespace controls;
+		using namespace regex;
+		using namespace reflection::description;
+		using namespace stream;
+		using namespace workflow;
+		using namespace workflow::analyzer;
+		using namespace workflow::typeimpl;
+
+/***********************************************************************
+GuiInstancePropertyInfo
+***********************************************************************/
+
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Unsupported()
+		{
+			return new GuiInstancePropertyInfo;
+		}
+
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Assign(Ptr<description::ITypeInfo> typeInfo)
+		{
+			auto info = MakePtr<GuiInstancePropertyInfo>();
+			info->support = SupportAssign;
+			if (typeInfo) info->acceptableTypes.Add(typeInfo);
+			return info;
+		}
+
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::AssignWithParent(Ptr<description::ITypeInfo> typeInfo)
+		{
+			auto info = Assign(typeInfo);
+			info->mergability = MergeWithParent;
+			return info;
+		}
+
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Collection(Ptr<description::ITypeInfo> typeInfo)
+		{
+			auto info = Assign(typeInfo);
+			info->support = SupportCollection;
+			return info;
+		}
+
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::CollectionWithParent(Ptr<description::ITypeInfo> typeInfo)
+		{
+			auto info = Collection(typeInfo);
+			info->mergability = MergeWithParent;
+			return info;
+		}
+
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Set(Ptr<description::ITypeInfo> typeInfo)
+		{
+			auto info = MakePtr<GuiInstancePropertyInfo>();
+			info->support = SupportSet;
+			if (typeInfo) info->acceptableTypes.Add(typeInfo);
+			return info;
+		}
+
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Array(Ptr<description::ITypeInfo> typeInfo)
+		{
+			auto info = MakePtr<GuiInstancePropertyInfo>();
+			info->support = SupportArray;
+			if (typeInfo) info->acceptableTypes.Add(typeInfo);
+			return info;
+		}
+
+/***********************************************************************
+IGuiInstanceLoader
+***********************************************************************/
+
+		void IGuiInstanceLoader::ClearReflectionCache()
+		{
+		}
+
+		void IGuiInstanceLoader::GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
+		{
+		}
+
+		void IGuiInstanceLoader::GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
+		{
+		}
+
+		void IGuiInstanceLoader::GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)
+		{
+		}
+
+		Ptr<GuiInstancePropertyInfo> IGuiInstanceLoader::GetPropertyType(const PropertyInfo& propertyInfo)
+		{
+			return nullptr;
+		}
+
+		bool IGuiInstanceLoader::CanCreate(const TypeInfo& typeInfo)
+		{
+			return false;
+		}
+
+		Ptr<workflow::WfBaseConstructorCall> IGuiInstanceLoader::CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)
+		{
+			CHECK_FAIL(L"IGuiInstanceLoader::CreateControlTemplateArgument(types::ResolvingResult&, const TypeInfo&, Ptr<workflow::WfExpression>, collections::List<WString>&)#This function is not implemented.");
+		}
+
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::InitializeRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors)
+		{
+			return nullptr;
+		}
+
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)
+		{
+			CHECK_FAIL(L"IGuiInstanceLoader::CreateInstance(types::ResolvingResult&, const TypeInfo&, GlobalStringKey, ArgumentMap&, collections::List<WString>&)#This function is not implemented.");
+		}
+
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
+		{
+			CHECK_FAIL(L"IGuiInstanceLoader::AssignParameters(types::ResolvingResult&, const TypeInfo&, GlobalStringKey, ArgumentMap&, collections::List<WString>&)#This function is not implemented.");
+		}
+
+		Ptr<workflow::WfExpression> IGuiInstanceLoader::GetParameter(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
+		{
+			CHECK_FAIL(L"IGuiInstanceLoader::GetParameter(types::ResolvingResult&, const PropertyInfo&, GlobalStringKey, collections::List<WString>&)#This function is not implemented.");
+		}
+
+/***********************************************************************
+GuiInstanceContext::ElementName Parser
+***********************************************************************/
+
+		class GuiInstanceContextElementNameParser : public Object, public IGuiParser<GuiInstanceContext::ElementName>
+		{
+			typedef GuiInstanceContext::ElementName			ElementName;
+		public:
+			Regex						regexElementName;
+
+			GuiInstanceContextElementNameParser()
+				:regexElementName(L"((<namespaceName>[a-zA-Z_]/w*):)?((<category>[a-zA-Z_]/w*).)?(<name>[a-zA-Z_]/w*)(-(<binding>[a-zA-Z_]/w*))?")
+			{
+			}
+
+			Ptr<ElementName> ParseInternal(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
+			{
+				Ptr<RegexMatch> match = regexElementName.MatchHead(text);
+				if (!match || match->Result().Length() != text.Length())
+				{
+					errors.Add(MakePtr<ParsingError>(L"Failed to parse an element name \"" + text + L"\"."));
+					return nullptr;
+				}
+
+				Ptr<ElementName> elementName = new ElementName;
+				if (match->Groups().Keys().Contains(L"namespaceName"))
+				{
+					elementName->namespaceName = match->Groups()[L"namespaceName"][0].Value();
+				}
+				if (match->Groups().Keys().Contains(L"category"))
+				{
+					elementName->category = match->Groups()[L"category"][0].Value();
+				}
+				if (match->Groups().Keys().Contains(L"name"))
+				{
+					elementName->name = match->Groups()[L"name"][0].Value();
+				}
+				if (match->Groups().Keys().Contains(L"binding"))
+				{
+					elementName->binding = match->Groups()[L"binding"][0].Value();
+				}
+				return elementName;
+			}
+		};
+
+/***********************************************************************
+GuiDefaultInstanceLoader
+***********************************************************************/
+
+#define CTOR_PARAM_PREFIX\
+		static const wchar_t Prefix[] = L"<ctor-parameter>";\
+		static const vint PrefixLength = (vint)sizeof(Prefix) / sizeof(*Prefix) - 1;\
+
+#define CTOR_PARAM_NAME(NAME) (NAME).Right((NAME).Length() - PrefixLength)
+
+		class GuiDefaultInstanceLoader : public Object, public IGuiInstanceLoader
+		{
+		protected:
+			typedef Tuple<ITypeDescriptor*, GlobalStringKey>				FieldKey;
+			typedef Tuple<Ptr<GuiInstancePropertyInfo>, IPropertyInfo*>		PropertyType;
+
+			Dictionary<FieldKey, PropertyType>								propertyTypes;
+			Dictionary<ITypeDescriptor*, IMethodInfo*>						defaultConstructors;
+			Dictionary<ITypeDescriptor*, IMethodInfo*>						instanceConstructors;
+		public:
+			IMethodInfo* GetDefaultConstructor(ITypeDescriptor* typeDescriptor)
+			{
+				IMethodInfo* ctor = nullptr;
+				vint index = defaultConstructors.Keys().IndexOf(typeDescriptor);
+				if (index == -1)
+				{
+					if (auto ctors = typeDescriptor->GetConstructorGroup())
+					{
+						vint count = ctors->GetMethodCount();
+						for (vint i = 0; i < count; i++)
+						{
+							IMethodInfo* method = ctors->GetMethod(i);
+							if (method->GetParameterCount() == 0)
+							{
+								ctor = method;
+								break;
+							}
+						}
+					}
+					defaultConstructors.Add(typeDescriptor, ctor);
+				}
+				else
+				{
+					ctor = defaultConstructors.Values()[index];
+				}
+				return ctor;
+			}
+
+			IMethodInfo* GetInstanceConstructor(ITypeDescriptor* typeDescriptor)
+			{
+				CTOR_PARAM_PREFIX
+					
+				IMethodInfo* ctor = nullptr;
+				vint index = instanceConstructors.Keys().IndexOf(typeDescriptor);
+				if (index == -1)
+				{
+					if (dynamic_cast<WfClass*>(typeDescriptor))
+					{
+						if (auto group = typeDescriptor->GetConstructorGroup())
+						{
+							if (group->GetMethodCount() == 1)
+							{
+								auto method = group->GetMethod(0);
+								vint count = method->GetParameterCount();
+								for (vint i = 0; i < count; i++)
+								{
+									const auto& name = method->GetParameter(i)->GetName();
+									if (name.Length() <= PrefixLength || name.Left(PrefixLength) != Prefix)
+									{
+										goto FINISHED;
+									}
+
+									if (!typeDescriptor->GetPropertyByName(CTOR_PARAM_NAME(name), false))
+									{
+										goto FINISHED;
+									}
+								}
+								ctor = method;
+							}
+						}
+					}
+				FINISHED:
+					instanceConstructors.Add(typeDescriptor, ctor);
+				}
+				else
+				{
+					ctor = instanceConstructors.Values()[index];
+				}
+				return ctor;
+			}
+
+			GlobalStringKey GetTypeName()override
+			{
+				return GlobalStringKey::Empty;
+			}
+
+			void ClearReflectionCache()override
+			{
+				propertyTypes.Clear();
+				defaultConstructors.Clear();
+				instanceConstructors.Clear();
+			}
+
+			//***********************************************************************************
+
+			ITypeInfo* ProcessGenericType(ITypeInfo* propType, bool& readableList, bool& writableList, bool& collectionType)
+			{
+				readableList = false;
+				writableList = false;
+				collectionType = false;
+				if (propType->GetDecorator() == ITypeInfo::SharedPtr && propType->GetElementType()->GetDecorator() == ITypeInfo::Generic)
+				{
+					auto genericType = propType->GetElementType();
+					if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
+					{
+						readableList = true;
+						writableList = true;
+						collectionType = true;
+						return genericType->GetGenericArgument(0);
+					}
+					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
+					{
+						readableList = true;
+						writableList = true;
+						collectionType = true;
+						return genericType->GetGenericArgument(0);
+					}
+					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerator>())
+					{
+						collectionType = true;
+						return genericType->GetGenericArgument(0);
+					}
+					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
+					{
+						readableList = true;
+						collectionType = true;
+						return genericType->GetGenericArgument(0);
+					}
+					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>())
+					{
+						readableList = true;
+						collectionType = true;
+						return genericType->GetGenericArgument(0);
+					}
+					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyDictionary>())
+					{
+						collectionType = true;
+						return nullptr;
+					}
+					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
+					{
+						collectionType = true;
+						return nullptr;
+					}
+				}
+				return propType;
+			}
+
+			ITypeInfo* GetPropertyReflectionTypeInfo(const PropertyInfo& propertyInfo, GuiInstancePropertyInfo::Support& support)
+			{
+				support = GuiInstancePropertyInfo::NotSupport;
+				IPropertyInfo* prop = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyInfo.propertyName.ToString(), true);
+				if (prop)
+				{
+					ITypeInfo* propType = prop->GetReturn();
+					bool readableList = false;
+					bool writableList = false;
+					bool collectionType = false;
+					auto propValueType = ProcessGenericType(propType, readableList, writableList, collectionType);
+
+					if (prop->IsWritable())
+					{
+						if (collectionType)
+						{
+							if (readableList)
+							{
+								support = GuiInstancePropertyInfo::SupportArray;
+								return propValueType;
+							}
+						}
+						else
+						{
+							support = GuiInstancePropertyInfo::SupportAssign;
+							return propValueType;
+						}
+					}
+					else if (prop->IsReadable())
+					{
+						if (collectionType)
+						{
+							if (writableList)
+							{
+								support = GuiInstancePropertyInfo::SupportCollection;
+								return propValueType;
+							}
+						}
+						else
+						{
+							if (propType->GetDecorator() == ITypeInfo::SharedPtr || propType->GetDecorator() == ITypeInfo::RawPtr)
+							{
+								if (propType->GetElementType()->GetDecorator() != ITypeInfo::Generic)
+								{
+									support = GuiInstancePropertyInfo::SupportSet;
+									return propValueType;
+								}
+							}
+						}
+					}
+				}
+				return nullptr;
+			}
+
+			void CollectPropertyNames(const TypeInfo& typeInfo, ITypeDescriptor* typeDescriptor, collections::List<GlobalStringKey>& propertyNames)
+			{
+				vint propertyCount = typeDescriptor->GetPropertyCount();
+				for (vint i = 0; i < propertyCount; i++)
+				{
+					GlobalStringKey propertyName = GlobalStringKey::Get(typeDescriptor->GetProperty(i)->GetName());
+					if (!propertyNames.Contains(propertyName))
+					{
+						auto info = GetPropertyType(PropertyInfo(typeInfo, propertyName));
+						if (info && info->support != GuiInstancePropertyInfo::NotSupport)
+						{
+							propertyNames.Add(propertyName);
+						}
+					}
+				}
+
+				vint parentCount = typeDescriptor->GetBaseTypeDescriptorCount();
+				for (vint i = 0; i < parentCount; i++)
+				{
+					CollectPropertyNames(typeInfo, typeDescriptor->GetBaseTypeDescriptor(i), propertyNames);
+				}
+			}
+
+			//***********************************************************************************
+
+			void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			{
+				if (CanCreate(typeInfo))
+				{
+					CTOR_PARAM_PREFIX
+
+					if (auto ctor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor()))
+					{
+						vint count = ctor->GetParameterCount();
+						for (vint i = 0; i < count; i++)
+						{
+							const auto& name = ctor->GetParameter(i)->GetName();
+							propertyNames.Add(GlobalStringKey::Get(CTOR_PARAM_NAME(name)));
+						}
+					}
+				}
+			}
+
+			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			{
+				GetRequiredPropertyNames(typeInfo, propertyNames);
+				CollectPropertyNames(typeInfo, typeInfo.typeInfo->GetTypeDescriptor(), propertyNames);
+			}
+
+			PropertyType GetPropertyTypeCached(const PropertyInfo& propertyInfo)
+			{
+				CTOR_PARAM_PREFIX
+
+				FieldKey key(propertyInfo.typeInfo.typeInfo->GetTypeDescriptor(), propertyInfo.propertyName);
+				vint index = propertyTypes.Keys().IndexOf(key);
+				if (index == -1)
+				{
+					GuiInstancePropertyInfo::Support support = GuiInstancePropertyInfo::NotSupport;
+					if (ITypeInfo* propType = GetPropertyReflectionTypeInfo(propertyInfo, support))
+					{
+						Ptr<GuiInstancePropertyInfo> result = new GuiInstancePropertyInfo;
+						result->support = support;
+						result->acceptableTypes.Add(CopyTypeInfo(propType));
+
+						if (auto ctor = GetInstanceConstructor(propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()))
+						{
+							vint count = ctor->GetParameterCount();
+							for (vint i = 0; i < count; i++)
+							{
+								const auto& name = ctor->GetParameter(i)->GetName();
+								if (CTOR_PARAM_NAME(name) == propertyInfo.propertyName.ToString())
+								{
+									result->usage = GuiInstancePropertyInfo::ConstructorArgument;
+									result->bindability = GuiInstancePropertyInfo::Bindable;
+								}
+							}
+						}
+
+						IPropertyInfo* prop = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyInfo.propertyName.ToString(), true);
+						PropertyType value(result, prop);
+						propertyTypes.Add(key, value);
+						return value;
+					}
+					else
+					{
+						PropertyType value(GuiInstancePropertyInfo::Unsupported(), 0);
+						propertyTypes.Add(key, value);
+						return value;
+					}
+				}
+				else
+				{
+					return propertyTypes.Values()[index];
+				}
+			}
+
+			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+			{
+				return GetPropertyTypeCached(propertyInfo).f0;
+			}
+
+			//***********************************************************************************
+
+			bool CanCreate(const TypeInfo& typeInfo)override
+			{
+				return
+					GetDefaultConstructor(typeInfo.typeInfo->GetTypeDescriptor()) != nullptr ||
+					GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor()) != nullptr;
+			}
+
+			Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
+			{
+				CTOR_PARAM_PREFIX
+				auto defaultCtor = GetDefaultConstructor(typeInfo.typeInfo->GetTypeDescriptor());
+				auto instanceCtor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor());
+
+				auto create = MakePtr<WfNewClassExpression>();
+				if (defaultCtor)
+				{
+					create->type = GetTypeFromTypeInfo(defaultCtor->GetReturn());
+				}
+				else
+				{
+					create->type = GetTypeFromTypeInfo(instanceCtor->GetReturn());
+
+					vint count = instanceCtor->GetParameterCount();
+					for (vint i = 0; i < count; i++)
+					{
+						const auto& name = instanceCtor->GetParameter(i)->GetName();
+						auto key = GlobalStringKey::Get(CTOR_PARAM_NAME(name));
+
+						vint index = arguments.Keys().IndexOf(key);
+						if (index == -1)
+						{
+							return nullptr;
+						}
+						else
+						{
+							create->arguments.Add(arguments.GetByIndex(index)[0].expression);
+						}
+					}
+				}
+
+				auto refValue = MakePtr<WfReferenceExpression>();
+				refValue->name.value = variableName.ToString();
+
+				auto assign = MakePtr<WfBinaryExpression>();
+				assign->op = WfBinaryOperator::Assign;
+				assign->first = refValue;
+				assign->second = create;
+
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = assign;
+				return stat;
+			}
+
+			Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
+			{
+				auto block = MakePtr<WfBlockStatement>();
+
+				FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+				{
+					PropertyType propertyType = GetPropertyTypeCached(PropertyInfo(typeInfo, prop));
+					if (propertyType.f1)
+					{
+						switch (propertyType.f0->support)
+						{
+						case GuiInstancePropertyInfo::SupportCollection:
+							{
+								const auto& values = arguments.GetByIndex(index);
+								if (values.Count() > 0)
+								{
+									{
+										auto refValue = MakePtr<WfReferenceExpression>();
+										refValue->name.value = variableName.ToString();
+
+										auto refProp = MakePtr<WfMemberExpression>();
+										refProp->parent = refValue;
+										refProp->name.value = prop.ToString();
+
+										auto varDesc = MakePtr<WfVariableDeclaration>();
+										varDesc->name.value = L"<collection>";
+										varDesc->expression = refProp;
+
+										auto stat = MakePtr<WfVariableStatement>();
+										stat->variable = varDesc;
+										block->statements.Add(stat);
+									}
+
+									for (vint i = 0; i < values.Count(); i++)
+									{
+										auto refCollection = MakePtr<WfReferenceExpression>();
+										refCollection->name.value = L"<collection>";
+
+										auto refAdd = MakePtr<WfMemberExpression>();
+										refAdd->parent = refCollection;
+										refAdd->name.value = L"Add";
+
+										auto call = MakePtr<WfCallExpression>();
+										call->function = refAdd;
+										call->arguments.Add(values[i].expression);
+
+										auto stat = MakePtr<WfExpressionStatement>();
+										stat->expression = call;
+										block->statements.Add(stat);
+									}
+								}
+							}
+							break;
+						case GuiInstancePropertyInfo::SupportArray:
+							{
+								auto refArray = MakePtr<WfConstructorExpression>();
+								FOREACH(ArgumentInfo, item, arguments.GetByIndex(index))
+								{
+									auto argument = MakePtr<WfConstructorArgument>();
+									argument->key = item.expression;
+									refArray->arguments.Add(argument);
+								}
+
+								auto refValue = MakePtr<WfReferenceExpression>();
+								refValue->name.value = variableName.ToString();
+
+								auto refProp = MakePtr<WfMemberExpression>();
+								refProp->parent = refValue;
+								refProp->name.value = prop.ToString();
+
+								auto assign = MakePtr<WfBinaryExpression>();
+								assign->op = WfBinaryOperator::Assign;
+								assign->first = refProp;
+								assign->second = refArray;
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = assign;
+								block->statements.Add(stat);
+							}
+							break;
+						case GuiInstancePropertyInfo::SupportAssign:
+							{
+								auto& propertyValue = arguments.GetByIndex(index)[0];
+								if (propertyValue.expression)
+								{
+									auto refValue = MakePtr<WfReferenceExpression>();
+									refValue->name.value = variableName.ToString();
+
+									auto refProp = MakePtr<WfMemberExpression>();
+									refProp->parent = refValue;
+									refProp->name.value = prop.ToString();
+
+									auto assign = MakePtr<WfBinaryExpression>();
+									assign->op = WfBinaryOperator::Assign;
+									assign->first = refProp;
+									assign->second = propertyValue.expression;
+
+									auto stat = MakePtr<WfExpressionStatement>();
+									stat->expression = assign;
+									block->statements.Add(stat);
+								}
+							}
+							break;
+						default:
+							errors.Add(GuiResourceError({ resolvingResult.resource }, attPosition,
+								L"Precompile: Property \"" +
+								prop.ToString() +
+								L"\" of type \"" +
+								typeInfo.typeName.ToString() +
+								L"\" is not assignable."));
+						}
+					}
+				}
+
+				if (block->statements.Count() > 0)
+				{
+					return block;
+				}
+				return nullptr;
+			}
+
+			Ptr<workflow::WfExpression> GetParameter(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
+			{
+				auto refValue = MakePtr<WfReferenceExpression>();
+				refValue->name.value = variableName.ToString();
+
+				auto refProp = MakePtr<WfMemberExpression>();
+				refProp->parent = refValue;
+				refProp->name.value = propertyInfo.propertyName.ToString();
+
+				return refProp;
+			}
+		};
+#undef CTOR_PARAM_NAME
+#undef CTOR_PARAM_PREFIX
+
+/***********************************************************************
+GuiInstanceLoaderManager
+***********************************************************************/
+
+		IGuiInstanceLoaderManager* instanceLoaderManager = 0;
+
+		IGuiInstanceLoaderManager* GetInstanceLoaderManager()
+		{
+			return instanceLoaderManager;
+		}
+
+		class GuiInstanceLoaderManager : public Object, public IGuiInstanceLoaderManager, public IGuiPlugin
+		{
+		protected:
+			typedef Dictionary<GlobalStringKey, Ptr<IGuiInstanceBinder>>				BinderMap;
+			typedef Dictionary<GlobalStringKey, Ptr<IGuiInstanceEventBinder>>			EventBinderMap;
+			typedef List<Ptr<IGuiInstanceDeserializer>>									DeserializerList;
+
+			struct VirtualTypeInfo
+			{
+				GlobalStringKey						typeName;
+				ITypeDescriptor*					typeDescriptor = nullptr;
+				GlobalStringKey						parentTypeName;				// for virtual type only
+				Ptr<IGuiInstanceLoader>				loader;
+
+				List<ITypeDescriptor*>				parentTypes;				// all direct or indirect base types that does not has a type info
+				List<VirtualTypeInfo*>				parentTypeInfos;			// type infos for all registered direct or indirect base types
+			};
+
+			typedef Dictionary<GlobalStringKey, Ptr<VirtualTypeInfo>>		VirtualTypeInfoMap;
+
+			Ptr<IGuiInstanceLoader>					rootLoader;
+			BinderMap								binders;
+			EventBinderMap							eventBinders;
+			DeserializerList						deserializers;
+			VirtualTypeInfoMap						typeInfos;
+
+			bool IsTypeExists(GlobalStringKey name)
+			{
+				return GetGlobalTypeManager()->GetTypeDescriptor(name.ToString()) != 0 || typeInfos.Keys().Contains(name);
+			}
+
+			void FindParentTypeInfos(Ptr<VirtualTypeInfo> typeInfo, ITypeDescriptor* searchType)
+			{
+				if (searchType != typeInfo->typeDescriptor)
+				{
+					vint index = typeInfos.Keys().IndexOf(GlobalStringKey::Get(searchType->GetTypeName()));
+					if (index == -1)
+					{
+						typeInfo->parentTypes.Add(searchType);
+					}
+					else
+					{
+						typeInfo->parentTypeInfos.Add(typeInfos.Values()[index].Obj());
+						return;
+					}
+				}
+
+				vint count = searchType->GetBaseTypeDescriptorCount();
+				for (vint i = 0; i < count; i++)
+				{
+					ITypeDescriptor* baseType = searchType->GetBaseTypeDescriptor(i);
+					FindParentTypeInfos(typeInfo, baseType);
+				}
+			}
+
+			void FillParentTypeInfos(Ptr<VirtualTypeInfo> typeInfo)
+			{
+				if (typeInfo->parentTypeName != GlobalStringKey::Empty)
+				{
+					typeInfo->typeDescriptor = nullptr;
+				}
+				typeInfo->parentTypes.Clear();
+				typeInfo->parentTypeInfos.Clear();
+
+				ITypeDescriptor* searchType = typeInfo->typeDescriptor;
+				if (!searchType)
+				{
+					vint index = typeInfos.Keys().IndexOf(typeInfo->parentTypeName);
+					if (index == -1)
+					{
+						searchType = GetGlobalTypeManager()->GetTypeDescriptor(typeInfo->parentTypeName.ToString());
+						typeInfo->typeDescriptor = searchType;
+						typeInfo->parentTypes.Add(searchType);
+					}
+					else
+					{
+						VirtualTypeInfo* parentTypeInfo = typeInfos.Values()[index].Obj();
+						typeInfo->typeDescriptor = parentTypeInfo->typeDescriptor;
+						typeInfo->parentTypeInfos.Add(parentTypeInfo);
+						return;
+					}
+				}
+
+				if (searchType)
+				{
+					FindParentTypeInfos(typeInfo, searchType);
+				}
+			}
+
+			IGuiInstanceLoader* GetLoaderFromType(ITypeDescriptor* typeDescriptor)
+			{
+				vint index = typeInfos.Keys().IndexOf(GlobalStringKey::Get(typeDescriptor->GetTypeName()));
+				if (index == -1)
+				{
+					vint count = typeDescriptor->GetBaseTypeDescriptorCount();
+					for (vint i = 0; i < count; i++)
+					{
+						ITypeDescriptor* baseType = typeDescriptor->GetBaseTypeDescriptor(i);
+						IGuiInstanceLoader* loader = GetLoaderFromType(baseType);
+						if (loader) return loader;
+					}
+					return 0;
+				}
+				else
+				{
+					return typeInfos.Values()[index]->loader.Obj();
+				}
+			}
+		public:
+			GuiInstanceLoaderManager()
+			{
+				rootLoader = new GuiDefaultInstanceLoader;
+			}
+
+			GUI_PLUGIN_NAME(GacUI_Instance)
+			{
+				GUI_PLUGIN_DEPEND(GacUI_Parser);
+			}
+
+			void Load()override
+			{
+				instanceLoaderManager = this;
+				IGuiParserManager* manager = GetParserManager();
+				manager->SetParser(L"INSTANCE-ELEMENT-NAME", new GuiInstanceContextElementNameParser);
+			}
+
+			void Unload()override
+			{
+				instanceLoaderManager = nullptr;
+			}
+
+			bool AddInstanceBinder(Ptr<IGuiInstanceBinder> binder)override
+			{
+				if (binders.Keys().Contains(binder->GetBindingName())) return false;
+				binders.Add(binder->GetBindingName(), binder);
+				return true;
+			}
+
+			IGuiInstanceBinder* GetInstanceBinder(GlobalStringKey bindingName)override
+			{
+				vint index = binders.Keys().IndexOf(bindingName);
+				return index == -1 ? nullptr : binders.Values()[index].Obj();
+			}
+
+			bool AddInstanceEventBinder(Ptr<IGuiInstanceEventBinder> binder)override
+			{
+				if (eventBinders.Keys().Contains(binder->GetBindingName())) return false;
+				eventBinders.Add(binder->GetBindingName(), binder);
+				return true;
+			}
+
+			IGuiInstanceEventBinder* GetInstanceEventBinder(GlobalStringKey bindingName)override
+			{
+				vint index = eventBinders.Keys().IndexOf(bindingName);
+				return index == -1 ? nullptr : eventBinders.Values()[index].Obj();
+			}
+
+			bool AddInstanceDeserializer(Ptr<IGuiInstanceDeserializer> deserializer)override
+			{
+				if (deserializers.Contains(deserializer.Obj())) return false;
+				deserializers.Add(deserializer);
+				return true;
+			}
+
+			IGuiInstanceDeserializer* GetInstanceDeserializer(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
+			{
+				FOREACH(Ptr<IGuiInstanceDeserializer>, deserializer, deserializers)
+				{
+					if (deserializer->CanDeserialize(propertyInfo, typeInfo))
+					{
+						return deserializer.Obj();
+					}
+				}
+				return nullptr;
+			}
+
+			bool CreateVirtualType(GlobalStringKey parentType, Ptr<IGuiInstanceLoader> loader)override
+			{
+				if (IsTypeExists(loader->GetTypeName()) || !IsTypeExists(parentType)) return false;
+
+				Ptr<VirtualTypeInfo> typeInfo = new VirtualTypeInfo;
+				typeInfo->typeName = loader->GetTypeName();
+				typeInfo->parentTypeName = parentType;
+				typeInfo->loader = loader;
+				typeInfos.Add(loader->GetTypeName(), typeInfo);
+				FillParentTypeInfos(typeInfo);
+
+				return true;
+			}
+
+			bool SetLoader(Ptr<IGuiInstanceLoader> loader)override
+			{
+				vint index = typeInfos.Keys().IndexOf(loader->GetTypeName());
+				if (index != -1) return false;
+
+				ITypeDescriptor* typeDescriptor = GetGlobalTypeManager()->GetTypeDescriptor(loader->GetTypeName().ToString());
+				if (typeDescriptor == 0) return false;
+
+				Ptr<VirtualTypeInfo> typeInfo = new VirtualTypeInfo;
+				typeInfo->typeName = loader->GetTypeName();
+				typeInfo->typeDescriptor = typeDescriptor;
+				typeInfo->loader = loader;
+				typeInfos.Add(typeInfo->typeName, typeInfo);
+				FillParentTypeInfos(typeInfo);
+
+				FOREACH(Ptr<VirtualTypeInfo>, derived, typeInfos.Values())
+				{
+					if (derived->parentTypes.Contains(typeInfo->typeDescriptor))
+					{
+						FillParentTypeInfos(derived);
+					}
+				}
+
+				return true;
+			}
+
+			IGuiInstanceLoader* GetLoader(GlobalStringKey typeName)override
+			{
+				vint index = typeInfos.Keys().IndexOf(typeName);
+				if (index != -1)
+				{
+					return typeInfos.Values()[index]->loader.Obj();
+				}
+
+				ITypeDescriptor* typeDescriptor = GetGlobalTypeManager()->GetTypeDescriptor(typeName.ToString());
+				if (typeDescriptor)
+				{
+					IGuiInstanceLoader* loader = GetLoaderFromType(typeDescriptor);
+					return loader ? loader : rootLoader.Obj();
+				}
+				return 0;
+			}
+
+			IGuiInstanceLoader* GetParentLoader(IGuiInstanceLoader* loader)override
+			{
+				vint index = typeInfos.Keys().IndexOf(loader->GetTypeName());
+				if (index != -1)
+				{
+					Ptr<VirtualTypeInfo> typeInfo = typeInfos.Values()[index];
+					if (typeInfo->parentTypeInfos.Count() > 0)
+					{
+						return typeInfo->parentTypeInfos[0]->loader.Obj();
+					}
+					return rootLoader.Obj();
+				}
+				return 0;
+			}
+
+			Ptr<description::ITypeInfo> GetTypeInfoForType(GlobalStringKey typeName)override
+			{
+				vint index = typeInfos.Keys().IndexOf(typeName);
+				auto td = index == -1
+					? GetGlobalTypeManager()->GetTypeDescriptor(typeName.ToString())
+					: typeInfos.Values()[index]->typeDescriptor;
+				if (!td) return nullptr;
+
+				if (auto ctor = td->GetConstructorGroup())
+				{
+					return CopyTypeInfo(ctor->GetMethod(0)->GetReturn());
+				}
+				else
+				{
+					return MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal));
+				}
+			}
+
+			void GetVirtualTypes(collections::List<GlobalStringKey>& typeNames)override
+			{
+				for (vint i = 0; i < typeInfos.Count(); i++)
+				{
+					if (typeInfos.Values()[i]->parentTypeName != GlobalStringKey::Empty)
+					{
+						typeNames.Add(typeInfos.Keys()[i]);
+					}
+				}
+			}
+
+			GlobalStringKey GetParentTypeForVirtualType(GlobalStringKey virtualType)override
+			{
+				vint index = typeInfos.Keys().IndexOf(virtualType);
+				if (index != -1)
+				{
+					auto typeInfo = typeInfos.Values()[index];
+					return typeInfo->parentTypeName;
+				}
+				return GlobalStringKey::Empty;
+			}
+
+			void ClearReflectionCache()override
+			{
+				rootLoader->ClearReflectionCache();
+				FOREACH(Ptr<VirtualTypeInfo>, info, typeInfos.Values())
+				{
+					info->loader->ClearReflectionCache();
+				}
+			}
+		};
+		GUI_REGISTER_PLUGIN(GuiInstanceLoaderManager)
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+		void SplitBySemicolon(const WString& input, collections::List<WString>& fragments)
+		{
+			const wchar_t* attValue = input.Buffer();
+			while(*attValue)
+			{
+				// split the value by ';'
+				const wchar_t* attSemicolon = wcschr(attValue, L';');
+				WString pattern;
+				if(attSemicolon)
+				{
+					pattern = WString(attValue, vint(attSemicolon - attValue));
+					attValue = attSemicolon + 1;
+				}
+				else
+				{
+					vint len = wcslen(attValue);
+					pattern = WString(attValue, len);
+					attValue += len;
+				}
+
+				fragments.Add(pattern);
+			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\GUIINSTANCELOADER_PREDEFINEDINSTANCEBINDERS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+		using namespace reflection::description;
+		using namespace parsing;
+		using namespace workflow;
+		using namespace workflow::analyzer;
+		using namespace workflow::runtime;
+		using namespace controls;
+		using namespace stream;
+
+/***********************************************************************
+GuiResourceInstanceBinder (uri)
+***********************************************************************/
+
+		class GuiResourceInstanceBinder : public Object, public IGuiInstanceBinder
+		{
+		public:
+			GlobalStringKey GetBindingName()override
+			{
+				return GlobalStringKey::_Uri;
+			}
+
+			bool ApplicableToConstructorArgument()override
+			{
+				return true;
+			}
+
+			bool RequirePropertyExist()override
+			{
+				return false;
+			}
+
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			{
+				WString protocol, path;
+				if (!IsResourceUrl(code, protocol, path))
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, position, L"Precompile: \"" + code + L"\" is not a valid resource uri."));
+					return nullptr;
+				}
+				else
+				{
+					return Workflow_GetUriProperty(precompileContext, resolvingResult, loader, prop, propInfo, protocol, path, position, errors);
+				}
+			}
+			
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			{
+				WString protocol, path;
+				if (!IsResourceUrl(code, protocol, path))
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, position, L"Precompile: \"" + code + L"\" is not a valid resource uri."));
+					return nullptr;
+				}
+				else
+				{
+					return Workflow_InstallUriProperty(precompileContext, resolvingResult, variableName, loader, prop, propInfo, protocol, path, position, errors);
+				}
+			}
+		};
+
+/***********************************************************************
+GuiReferenceInstanceBinder (ref)
+***********************************************************************/
+
+		class GuiReferenceInstanceBinder : public Object, public IGuiInstanceBinder
+		{
+		public:
+			GlobalStringKey GetBindingName()override
+			{
+				return GlobalStringKey::_Ref;
+			}
+
+			bool ApplicableToConstructorArgument()override
+			{
+				return false;
+			}
+
+			bool RequirePropertyExist()override
+			{
+				return false;
+			}
+
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			{
+				CHECK_FAIL(L"GuiReferenceInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
+			}
+			
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			{
+				auto expression = MakePtr<WfReferenceExpression>();
+				expression->name.value = code;
+				return Workflow_InstallEvalProperty(precompileContext, resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
+			}
+		};
+
+/***********************************************************************
+GuiEvalInstanceBinder (eval)
+***********************************************************************/
+
+		class GuiEvalInstanceBinder : public Object, public IGuiInstanceBinder
+		{
+		public:
+			GlobalStringKey GetBindingName()override
+			{
+				return GlobalStringKey::_Eval;
+			}
+
+			bool ApplicableToConstructorArgument()override
+			{
+				return true;
+			}
+
+			bool RequirePropertyExist()override
+			{
+				return false;
+			}
+
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			{
+				return Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, position, errors);
+			}
+			
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			{
+				if(auto expression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, position, errors))
+				{
+					return Workflow_InstallEvalProperty(precompileContext, resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
+				}
+				return nullptr;
+			}
+		};
+
+/***********************************************************************
+GuiBindInstanceBinder (bind)
+***********************************************************************/
+
+		class GuiBindInstanceBinder : public Object, public IGuiInstanceBinder
+		{
+		public:
+			GlobalStringKey GetBindingName()override
+			{
+				return GlobalStringKey::_Bind;
+			}
+
+			bool ApplicableToConstructorArgument()override
+			{
+				return false;
+			}
+
+			bool RequirePropertyExist()override
+			{
+				return true;
+			}
+
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			{
+				CHECK_FAIL(L"GuiBindInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
+			}
+			
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			{
+				if(auto expression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, position, errors))
+				{
+					auto inferExpr = MakePtr<WfInferExpression>();
+					inferExpr->expression = expression;
+					inferExpr->type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+
+					auto bindExpr = MakePtr<WfBindExpression>();
+					bindExpr->expression = inferExpr;
+
+					return Workflow_InstallBindProperty(precompileContext, resolvingResult, variableName, propertyInfo, bindExpr);
+				}
+				return nullptr;
+			}
+		};
+
+/***********************************************************************
+GuiFormatInstanceBinder (format)
+***********************************************************************/
+
+		class GuiFormatInstanceBinder : public Object, public IGuiInstanceBinder
+		{
+		public:
+			GlobalStringKey GetBindingName()override
+			{
+				return GlobalStringKey::_Format;
+			}
+
+			bool ApplicableToConstructorArgument()override
+			{
+				return false;
+			}
+
+			bool RequirePropertyExist()override
+			{
+				return true;
+			}
+
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			{
+				CHECK_FAIL(L"GuiFormatInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
+			}
+			
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			{
+				if (auto expression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, L"bind($\"" + code + L"\")", position, errors, { 0,7 })) // bind($"
+				{
+					return Workflow_InstallBindProperty(precompileContext, resolvingResult, variableName, propertyInfo, expression);
+				}
+				return nullptr;
+			}
+		};
+
+/***********************************************************************
+GuiEvalInstanceEventBinder (eval)
+***********************************************************************/
+
+		class GuiEvalInstanceEventBinder : public Object, public IGuiInstanceEventBinder
+		{
+		public:
+			GlobalStringKey GetBindingName()override
+			{
+				return GlobalStringKey::_Eval;
+			}
+			
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			{
+				bool coroutine = false;
+				{
+					auto reading = code.Buffer();
+					while (true)
+					{
+						switch (*reading)
+						{
+						case ' ':
+						case '\t':
+						case '\r':
+						case '\n':
+							reading++;
+							break;
+						default:
+							goto BEGIN_TESTING;
+						}
+					}
+				BEGIN_TESTING:
+					coroutine = *reading == '$';
+				}
+
+				auto parseFunction = coroutine ? &Workflow_ParseCoProviderStatement : &Workflow_ParseStatement;
+				if (auto statement = parseFunction(precompileContext, { resolvingResult.resource }, code, position, errors, { 0,0 }))
+				{
+					return Workflow_InstallEvalEvent(precompileContext, resolvingResult, variableName, eventInfo, statement);
+				}
+				return nullptr;
+			}
+		};
+
+/***********************************************************************
+GuiPredefinedInstanceBindersPlugin
+***********************************************************************/
+
+		class GuiPredefinedInstanceBindersPlugin : public Object, public IGuiPlugin
+		{
+		public:
+
+			GUI_PLUGIN_NAME(GacUI_Compiler_ParsersAndBinders)
+			{
+				GUI_PLUGIN_DEPEND(GacUI_Parser);
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
+				GUI_PLUGIN_DEPEND(GacUI_Instance);
+				GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
+			}
+
+			void Load()override
+			{
+				WfLoadTypes();
+				GuiIqLoadTypes();
+				{
+					IGuiParserManager* manager = GetParserManager();
+					manager->SetParsingTable(L"WORKFLOW", &WfLoadTable);
+					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-TYPE", &WfParseType);
+					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-EXPRESSION", &WfParseExpression);
+					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-STATEMENT", &WfParseStatement);
+					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-COPROVIDER-STATEMENT", &WfParseCoProviderStatement);
+					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-DECLARATION", &WfParseDeclaration);
+					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-MODULE", &WfParseModule);
+					manager->SetParsingTable(L"INSTANCE-QUERY", &GuiIqLoadTable);
+					manager->SetTableParser(L"INSTANCE-QUERY", L"INSTANCE-QUERY", &GuiIqParse);
+				}
+				{
+					IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
+
+					manager->AddInstanceBinder(new GuiResourceInstanceBinder);
+					manager->AddInstanceBinder(new GuiReferenceInstanceBinder);
+					manager->AddInstanceBinder(new GuiEvalInstanceBinder);
+					manager->AddInstanceEventBinder(new GuiEvalInstanceEventBinder);
+					manager->AddInstanceBinder(new GuiBindInstanceBinder);
+					manager->AddInstanceBinder(new GuiFormatInstanceBinder);
+				}
+			}
+
+			void Unload()override
+			{
+			}
+		};
+		GUI_REGISTER_PLUGIN(GuiPredefinedInstanceBindersPlugin)
+	}
+}
+
+
+/***********************************************************************
+.\GUIINSTANCELOADER_PREDEFINEDINSTANCEDESERIALIZERS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+		using namespace reflection::description;
+		using namespace workflow;
+		using namespace workflow::analyzer;
+		using namespace controls;
+		using namespace controls::list;
+		using namespace templates;
+
+/***********************************************************************
+GuiTemplatePropertyDeserializer
+***********************************************************************/
+
+		class GuiTemplatePropertyDeserializer : public Object, public IGuiInstanceDeserializer
+		{
+		protected:
+			Ptr<ITypeInfo>						stringType;
+
+			bool IsTemplatePropertyType(ITypeInfo* propType)
+			{
+				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					auto genericType = propType->GetElementType();
+					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 2)
+					{
+						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+						{
+							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>())
+							{
+								auto returnType = genericType->GetGenericArgument(0);
+								if (returnType->GetDecorator() == ITypeInfo::RawPtr)
+								{
+									if (returnType->GetElementType()->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiTemplate>()))
+									{
+										return true;
+									}
+								}
+							}
+						}
+					}
+				}
+				return false;
+			}
+
+			bool IsDataVisualizerFactoryType(ITypeInfo* propType)
+			{
+				return propType->GetDecorator() == ITypeInfo::SharedPtr && propType->GetTypeDescriptor() == description::GetTypeDescriptor<list::IDataVisualizerFactory>();
+			}
+
+			bool IsDataEditorFactoryType(ITypeInfo* propType)
+			{
+				return propType->GetDecorator() == ITypeInfo::SharedPtr && propType->GetTypeDescriptor() == description::GetTypeDescriptor<list::IDataEditorFactory>();
+			}
+
+		public:
+			GuiTemplatePropertyDeserializer()
+			{
+				stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
+			}
+
+			bool CanDeserialize(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
+			{
+				return IsTemplatePropertyType(typeInfo) || IsDataVisualizerFactoryType(typeInfo) || IsDataEditorFactoryType(typeInfo);
+			}
+
+			description::ITypeInfo* DeserializeAs(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
+			{
+				return stringType.Obj();
+			}
+
+			static void GetItemTemplateType(
+				types::ResolvingResult& resolvingResult,
+				WString typeNamesString,
+				List<ITypeDescriptor*>& tds,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+				)
+			{
+				List<WString> typeNames;
+				SplitBySemicolon(typeNamesString, typeNames);
+				if (typeNames.Count() == 0)
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
+						L"Precompile: Template list \"" +
+						typeNamesString +
+						L"\" cannot be empty."));
+				}
+
+				FOREACH(WString, controlTemplateName, typeNames)
+				{
+					auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
+					if (!controlTemplateTd)
+					{
+						auto index = INVLOC.FindFirst(controlTemplateName, L":", Locale::None);
+						GlobalStringKey namespaceName;
+						auto typeName = controlTemplateName;
+						if (index.key != -1)
+						{
+							namespaceName = GlobalStringKey::Get(controlTemplateName.Left(index.key));
+							typeName = controlTemplateName.Right(controlTemplateName.Length() - index.key - index.value);
+						}
+
+						auto source = FindInstanceLoadingSource(resolvingResult.context, namespaceName, typeName);
+						if (auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName))
+						{
+							controlTemplateTd = typeInfo->GetTypeDescriptor();
+						}
+					}
+					if (controlTemplateTd)
+					{
+						tds.Add(controlTemplateTd);
+					}
+					else
+					{
+						errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
+							L"Precompile: Type \"" +
+							controlTemplateName +
+							L"\" does not exist."));
+						continue;
+					}
+				}
+			}
+
+			static Ptr<WfExpression> CreateTemplateFactory(
+				types::ResolvingResult& resolvingResult,
+				List<ITypeDescriptor*>& controlTemplateTds,
+				ITypeInfo* returnTemplateType,
+				ITypeInfo* expectedTemplateType,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+				)
+			{
+				auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
+				funcCreateTemplate->anonymity = WfFunctionAnonymity::Anonymous;
+				funcCreateTemplate->returnType = GetTypeFromTypeInfo(returnTemplateType);
+
+				auto argViewModel = MakePtr<WfFunctionArgument>();
+				argViewModel->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
+				argViewModel->name.value = L"<viewModel>";
+				funcCreateTemplate->arguments.Add(argViewModel);
+
+				auto block = MakePtr<WfBlockStatement>();
+				funcCreateTemplate->statement = block;
+
+				ITypeDescriptor* stopControlTemplateTd = nullptr;
+				FOREACH(ITypeDescriptor*, controlTemplateTd, controlTemplateTds)
+				{
+					if (!controlTemplateTd->CanConvertTo(expectedTemplateType->GetTypeDescriptor()))
+					{
+						errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
+							L"Precompile: Type \"" +
+							controlTemplateTd->GetTypeName() +
+							L"\" cannot be used here because it requires \"" +
+							expectedTemplateType->GetTypeDescriptor()->GetTypeName() +
+							L"\" or its derived classes."));
+					}
+
+					if (stopControlTemplateTd)
+					{
+						errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
+							L"Precompile: Type \"" +
+							controlTemplateTd->GetTypeName() +
+							L"\" will never be tried, because \"" +
+							stopControlTemplateTd->GetTypeName() +
+							L"\", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice."));
+						continue;
+					}
+
+					ITypeInfo* viewModelType = nullptr;
+					{
+						auto ctors = controlTemplateTd->GetConstructorGroup();
+						if (!ctors || ctors->GetMethodCount() != 1)
+						{
+							errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
+								L"Precompile: To use type \"" +
+								controlTemplateTd->GetTypeName() +
+								L"\" as a control template or item template, it should have exactly one constructor."));
+							continue;
+						}
+
+						auto ctor = ctors->GetMethod(0);
+						if (ctor->GetParameterCount() > 1)
+						{
+							errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
+								L"Precompile: To use type \"" +
+								controlTemplateTd->GetTypeName() +
+								L"\" as a control template or item template, its constructor cannot have more than one parameter."));
+							continue;
+						}
+
+						if (ctor->GetParameterCount() != 0)
+						{
+							viewModelType = ctor->GetParameter(0)->GetType();
+						}
+					}
+
+					if (!viewModelType)
+					{
+						stopControlTemplateTd = controlTemplateTd;
+					}
+
+					auto subBlock = MakePtr<WfBlockStatement>();
+					block->statements.Add(subBlock);
+
+					Ptr<ITypeInfo> controlTemplateType;
+					{
+						auto elementType = MakePtr<TypeDescriptorTypeInfo>(controlTemplateTd, TypeInfoHint::Normal);
+						auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
+
+						controlTemplateType = pointerType;
+					}
+
+					Ptr<WfBlockStatement> returnStatBlock;
+					if (viewModelType)
+					{
+						auto refViewModel = MakePtr<WfReferenceExpression>();
+						refViewModel->name.value = L"<viewModel>";
+
+						auto condition = MakePtr<WfTypeTestingExpression>();
+						condition->test = WfTypeTesting::IsType;
+						condition->expression = refViewModel;
+						condition->type = GetTypeFromTypeInfo(viewModelType);
+
+						auto ifStat = MakePtr<WfIfStatement>();
+						subBlock->statements.Add(ifStat);
+						ifStat->expression = condition;
+
+						returnStatBlock = MakePtr<WfBlockStatement>();
+						ifStat->trueBranch = returnStatBlock;
+					}
+					else
+					{
+						returnStatBlock = subBlock;
+					}
+
+					{
+						auto createControlTemplate = MakePtr<WfNewClassExpression>();
+						createControlTemplate->type = GetTypeFromTypeInfo(controlTemplateType.Obj());
+						if (viewModelType)
+						{
+							auto refViewModel = MakePtr<WfReferenceExpression>();
+							refViewModel->name.value = L"<viewModel>";
+
+							auto cast = MakePtr<WfTypeCastingExpression>();
+							cast->strategy = WfTypeCastingStrategy::Strong;
+							cast->expression = refViewModel;
+							cast->type = GetTypeFromTypeInfo(viewModelType);
+							createControlTemplate->arguments.Add(cast);
+						}
+
+						auto returnStat = MakePtr<WfReturnStatement>();
+						returnStat->expression = createControlTemplate;
+						returnStatBlock->statements.Add(returnStat);
+					}
+				}
+
+				if (!stopControlTemplateTd)
+				{
+					auto value = MakePtr<WfStringExpression>();
+					value->value.value = L"Cannot find a matched control template to create.";
+
+					auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+					raiseStat->expression = value;
+
+					block->statements.Add(raiseStat);
+				}
+
+				auto expr = MakePtr<WfFunctionExpression>();
+				expr->function = funcCreateTemplate;
+				return expr;
+			}
+
+			static Ptr<WfExpression> CreateDataVisualizerFactory(
+				types::ResolvingResult& resolvingResult,
+				List<ITypeDescriptor*>& controlTemplateTds,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+			)
+			{
+				auto templateType = TypeInfoRetriver<GuiGridVisualizerTemplate*>::CreateTypeInfo();
+				Ptr<WfExpression> previousFactory;
+				FOREACH_INDEXER(ITypeDescriptor*, controlTemplateTd, index, controlTemplateTds)
+				{
+					List<ITypeDescriptor*> tds;
+					tds.Add(controlTemplateTd);
+					auto refFactory = CreateTemplateFactory(resolvingResult, tds, templateType.Obj(), templateType.Obj(), tagPosition, errors);
+					auto createStyle = MakePtr<WfNewClassExpression>();
+					createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::DataVisualizerFactory>>::CreateTypeInfo().Obj());
+					createStyle->arguments.Add(refFactory);
+
+					if (index > 0)
+					{
+						createStyle->arguments.Add(previousFactory);
+					}
+					else
+					{
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+						createStyle->arguments.Add(nullExpr);
+					}
+					previousFactory = createStyle;
+				}
+				return previousFactory;
+			}
+
+			static Ptr<WfExpression> CreateDataEditorFactory(
+				types::ResolvingResult& resolvingResult,
+				List<ITypeDescriptor*>& controlTemplateTds,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+			)
+			{
+				auto templateType = TypeInfoRetriver<GuiGridEditorTemplate*>::CreateTypeInfo();
+				auto refFactory = CreateTemplateFactory(resolvingResult, controlTemplateTds, templateType.Obj(), templateType.Obj(), tagPosition, errors);
+				auto createStyle = MakePtr<WfNewClassExpression>();
+				createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::DataEditorFactory>>::CreateTypeInfo().Obj());
+				createStyle->arguments.Add(refFactory);
+				return createStyle;
+			}
+
+			Ptr<workflow::WfExpression> Deserialize(
+				GuiResourcePrecompileContext& precompileContext,
+				types::ResolvingResult& resolvingResult,
+				const IGuiInstanceLoader::PropertyInfo& propertyInfo,
+				description::ITypeInfo* typeInfo,
+				Ptr<workflow::WfExpression> valueExpression,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+				)override
+			{
+				auto stringExpr = valueExpression.Cast<WfStringExpression>();
+
+				List<ITypeDescriptor*> tds;
+				GetItemTemplateType(resolvingResult, stringExpr->value.value, tds, tagPosition, errors);
+
+				if (IsDataVisualizerFactoryType(typeInfo))
+				{
+					return CreateDataVisualizerFactory(resolvingResult, tds, tagPosition, errors);
+				}
+				else if (IsDataEditorFactoryType(typeInfo))
+				{
+					return CreateDataEditorFactory(resolvingResult, tds, tagPosition, errors);
+				}
+				else
+				{
+					auto returnTemplateType = typeInfo->GetElementType()->GetGenericArgument(0);
+					auto expectedTemplateType = returnTemplateType;
+					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
+					{
+						auto td = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor();
+						if (td != nullptr && td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+						{
+							auto methodGroup = td->GetMethodGroupByName(L"GetControlTemplateObject", true);
+							vint count = methodGroup->GetMethodCount();
+							for (vint i = 0; i < count; i++)
+							{
+								auto methodInfo = methodGroup->GetMethod(i);
+								if (methodInfo->GetParameterCount() == 0)
+								{
+									auto returnType = methodInfo->GetReturn();
+									if (returnType->GetDecorator() == ITypeInfo::RawPtr)
+									{
+										if (returnType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiControlTemplate>()))
+										{
+											expectedTemplateType = returnType;
+										}
+									}
+								}
+							}
+						}
+					}
+					return CreateTemplateFactory(resolvingResult, tds, returnTemplateType, expectedTemplateType, tagPosition, errors);
+				}
+			}
+		};
+
+/***********************************************************************
+GuiItemPropertyDeserializer
+***********************************************************************/
+
+		class GuiItemPropertyDeserializer : public Object, public IGuiInstanceDeserializer
+		{
+		protected:
+			Ptr<ITypeInfo>						stringType;
+
+			bool IsItemPropertyType(ITypeInfo* propType)
+			{
+				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					auto genericType = propType->GetElementType();
+					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 2)
+					{
+						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+						{
+							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>())
+							{
+								return true;
+							}
+						}
+					}
+				}
+				return false;
+			}
+
+			bool IsWritableItemPropertyType(ITypeInfo* propType)
+			{
+				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					auto genericType = propType->GetElementType();
+					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 4)
+					{
+						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+						{
+							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>()
+								&& genericType->GetGenericArgument(3)->GetTypeDescriptor() == description::GetTypeDescriptor<bool>())
+							{
+								if (IsSameType(genericType->GetGenericArgument(0), genericType->GetGenericArgument(2)))
+								{
+									return true;
+								}
+							}
+						}
+					}
+				}
+				return false;
+			}
+
+		public:
+			GuiItemPropertyDeserializer()
+			{
+				stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
+			}
+
+			bool CanDeserialize(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
+			{
+				return IsItemPropertyType(typeInfo) || IsWritableItemPropertyType(typeInfo);
+			}
+
+			description::ITypeInfo* DeserializeAs(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
+			{
+				return stringType.Obj();
+			}
+
+			Ptr<workflow::WfExpression> Deserialize(
+				GuiResourcePrecompileContext& precompileContext,
+				types::ResolvingResult& resolvingResult,
+				const IGuiInstanceLoader::PropertyInfo& propertyInfo,
+				description::ITypeInfo* typeInfo,
+				Ptr<workflow::WfExpression> valueExpression,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+				)override
+			{
+				auto stringExpr = valueExpression.Cast<WfStringExpression>();
+				Ptr<WfExpression> propertyExpression;
+				{
+					propertyExpression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, stringExpr->value.value, tagPosition, errors);
+					if (!propertyExpression)
+					{
+						return nullptr;
+					}
+				};
+
+				vint indexItemType = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemType"));
+				if (indexItemType == -1)
+				{
+					auto error
+						= L"Precompile: env.ItemType must be specified before deserializing \""
+						+ stringExpr->value.value
+						+ L"\" to value of type \""
+						+ typeInfo->GetTypeFriendlyName()
+						+ L"\".";
+					errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition, error));
+					return nullptr;
+				}
+
+				Ptr<WfType> itemType;
+				{
+					const auto& values = resolvingResult.envVars.GetByIndex(indexItemType);
+					auto itemTypeValue = values[values.Count() - 1];
+
+					itemType = Workflow_ParseType(precompileContext, { resolvingResult.resource }, itemTypeValue->value, itemTypeValue->valuePosition, errors);
+					if (!itemType)
+					{
+						return nullptr;
+					}
+				};
+
+				vint indexItemName = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemName"));
+				WString itemName(L"item", false);
+				if (indexItemName != -1)
+				{
+					const auto& values = resolvingResult.envVars.GetByIndex(indexItemName);
+					itemName = values[values.Count() - 1]->value;
+				}
+
+				if (auto refExpr = propertyExpression.Cast<WfReferenceExpression>())
+				{
+					if (refExpr->name.value != itemName)
+					{
+						auto refItem = MakePtr<WfReferenceExpression>();
+						refItem->name.value = itemName;
+
+						auto member = MakePtr<WfMemberExpression>();
+						member->parent = refItem;
+						member->name.value = refExpr->name.value;
+
+						propertyExpression = member;
+					}
+				}
+
+				bool isWritableItemProperty = IsWritableItemPropertyType(typeInfo);
+
+				auto funcDecl = MakePtr<WfFunctionDeclaration>();
+				ITypeInfo* acceptValueType = nullptr;
+				funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
+				{
+					auto genericType = typeInfo->GetElementType();
+					funcDecl->returnType = GetTypeFromTypeInfo(genericType->GetGenericArgument(0));
+					{
+						auto argument = MakePtr<WfFunctionArgument>();
+						argument->name.value = L"<item>";
+						argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(1));
+						funcDecl->arguments.Add(argument);
+					}
+
+					if (isWritableItemProperty)
+					{
+						{
+							auto argument = MakePtr<WfFunctionArgument>();
+							argument->name.value = L"<value>";
+							argument->type = GetTypeFromTypeInfo((acceptValueType = genericType->GetGenericArgument(2)));
+							funcDecl->arguments.Add(argument);
+						}
+						{
+							auto argument = MakePtr<WfFunctionArgument>();
+							argument->name.value = L"<update>";
+							argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(3));
+							funcDecl->arguments.Add(argument);
+						}
+					}
+				}
+
+				auto funcBlock = MakePtr<WfBlockStatement>();
+				funcDecl->statement = funcBlock;
+
+				{
+					auto refItem = MakePtr<WfReferenceExpression>();
+					refItem->name.value = L"<item>";
+
+					auto refCast = MakePtr<WfTypeCastingExpression>();
+					refCast->strategy = WfTypeCastingStrategy::Strong;
+					refCast->type = itemType;
+					refCast->expression = refItem;
+
+					auto varDecl = MakePtr<WfVariableDeclaration>();
+					varDecl->name.value = itemName;
+					varDecl->expression = refCast;
+
+					auto varStat = MakePtr<WfVariableStatement>();
+					varStat->variable = varDecl;
+					funcBlock->statements.Add(varStat);
+				}
+
+				Ptr<WfReturnStatement> returnStat;
+				{
+					returnStat = MakePtr<WfReturnStatement>();
+					returnStat->expression = propertyExpression;
+				}
+
+				if (isWritableItemProperty)
+				{
+					auto ifStat = MakePtr<WfIfStatement>();
+					funcBlock->statements.Add(ifStat);
+					{
+						auto refUpdate = MakePtr<WfReferenceExpression>();
+						refUpdate->name.value = L"<update>";
+
+						ifStat->expression = refUpdate;
+					}
+					{
+						auto block = MakePtr<WfBlockStatement>();
+						ifStat->trueBranch = block;
+
+						{
+							auto refValue = MakePtr<WfReferenceExpression>();
+							refValue->name.value = L"<value>";
+
+							auto assignExpr = MakePtr<WfBinaryExpression>();
+							assignExpr->op = WfBinaryOperator::Assign;
+							assignExpr->first = CopyExpression(propertyExpression);
+
+							if (acceptValueType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
+							{
+								auto castExpr = MakePtr<WfExpectedTypeCastExpression>();
+								castExpr->strategy = WfTypeCastingStrategy::Strong;
+								castExpr->expression = refValue;
+								assignExpr->second = castExpr;
+							}
+							else
+							{
+								assignExpr->second = refValue;
+							}
+
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = assignExpr;
+							block->statements.Add(stat);
+						}
+						{
+							auto returnStat = MakePtr<WfReturnStatement>();
+							block->statements.Add(returnStat);
+
+							auto returnType = typeInfo->GetElementType()->GetGenericArgument(0);
+							returnStat->expression = CreateDefaultValue(returnType);
+						}
+					}
+					{
+						auto block = MakePtr<WfBlockStatement>();
+						ifStat->falseBranch = block;
+
+						block->statements.Add(returnStat);
+					}
+				}
+				else
+				{
+					funcBlock->statements.Add(returnStat);
+				}
+
+				auto funcExpr = MakePtr<WfFunctionExpression>();
+				funcExpr->function = funcDecl;
+				return funcExpr;
+			}
+		};
+
+/***********************************************************************
+GuiDataProcessorDeserializer
+***********************************************************************/
+
+		class GuiDataProcessorDeserializer : public Object, public IGuiInstanceDeserializer
+		{
+		protected:
+			Ptr<ITypeInfo>						stringType;
+
+		public:
+			GuiDataProcessorDeserializer()
+			{
+				stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
+			}
+
+			bool CanDeserialize(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
+			{
+				return typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataFilter>()
+					|| typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataSorter>();
+			}
+
+			description::ITypeInfo* DeserializeAs(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
+			{
+				return stringType.Obj();
+			}
+
+			Ptr<workflow::WfExpression> Deserialize(
+				GuiResourcePrecompileContext& precompileContext,
+				types::ResolvingResult& resolvingResult,
+				const IGuiInstanceLoader::PropertyInfo& propertyInfo,
+				description::ITypeInfo* typeInfo,
+				Ptr<workflow::WfExpression> valueExpression,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+				)override
+			{
+				auto stringExpr = valueExpression.Cast<WfStringExpression>();
+				Ptr<WfExpression> propertyExpression;
+				{
+					propertyExpression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, stringExpr->value.value, tagPosition, errors);
+					if (!propertyExpression)
+					{
+						return nullptr;
+					}
+				};
+
+				vint indexItemType = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemType"));
+				if (indexItemType == -1)
+				{
+					auto error
+						= L"Precompile: env.ItemType must be specified before deserializing \""
+						+ stringExpr->value.value
+						+ L"\" to value of type \""
+						+ typeInfo->GetTypeFriendlyName()
+						+ L"\".";
+					errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition, error));
+					return nullptr;
+				}
+
+				Ptr<WfType> itemType;
+				{
+					const auto& values = resolvingResult.envVars.GetByIndex(indexItemType);
+					auto itemTypeValue = values[values.Count() - 1];
+
+					itemType = Workflow_ParseType(precompileContext, { resolvingResult.resource }, itemTypeValue->value, itemTypeValue->valuePosition, errors);
+					if (!itemType)
+					{
+						return nullptr;
+					}
+				};
+
+				auto newExpr = MakePtr<WfNewInterfaceExpression>();
+				newExpr->type = GetTypeFromTypeInfo(typeInfo);
+				{
+					auto decl = MakePtr<WfFunctionDeclaration>();
+					newExpr->declarations.Add(decl);
+					decl->classMember = MakePtr<WfClassMember>();
+					decl->classMember->kind = WfClassMemberKind::Override;
+					decl->name.value = L"SetCallback";
+					decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
+					{
+						auto argument = MakePtr<WfFunctionArgument>();
+						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<IDataProcessorCallback*>::CreateTypeInfo().Obj());
+						argument->name.value = L"value";
+						decl->arguments.Add(argument);
+					}
+
+					auto block = MakePtr<WfBlockStatement>();
+					decl->statement = block;
+				}
+				{
+					auto decl = MakePtr<WfFunctionDeclaration>();
+					newExpr->declarations.Add(decl);
+					decl->classMember = MakePtr<WfClassMember>();
+					decl->classMember->kind = WfClassMemberKind::Override;
+
+					List<WString> argumentNames;
+					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataFilter>())
+					{
+						decl->name.value = L"Filter";
+						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
+						argumentNames.Add(L"<row>");
+					}
+					else
+					{
+						decl->name.value = L"Compare";
+						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
+						argumentNames.Add(L"<row1>");
+						argumentNames.Add(L"<row2>");
+					}
+
+					FOREACH(WString, name, argumentNames)
+					{
+						auto argument = MakePtr<WfFunctionArgument>();
+						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
+						argument->name.value = name;
+						decl->arguments.Add(argument);
+					}
+
+					auto block = MakePtr<WfBlockStatement>();
+					decl->statement = block;
+
+					auto inferExpr = MakePtr<WfInferExpression>();
+					inferExpr->expression = propertyExpression;
+					{
+						auto funcType = MakePtr<WfFunctionType>();
+						inferExpr->type = funcType;
+
+						funcType->result = CopyType(decl->returnType);
+						for (vint i = 0; i < decl->arguments.Count(); i++)
+						{
+							funcType->arguments.Add(CopyType(itemType));
+						}
+					}
+
+					auto callExpr = MakePtr<WfCallExpression>();
+					callExpr->function = inferExpr;
+					FOREACH_INDEXER(WString, name, index, argumentNames)
+					{
+						auto refExpr = MakePtr<WfReferenceExpression>();
+						refExpr->name.value = name;
+
+						auto castExpr = MakePtr<WfTypeCastingExpression>();
+						castExpr->strategy = WfTypeCastingStrategy::Strong;
+						castExpr->type = (index == 0 ? itemType : CopyType(itemType));
+						castExpr->expression = refExpr;
+
+						callExpr->arguments.Add(castExpr);
+					}
+
+					auto stat = MakePtr<WfReturnStatement>();
+					stat->expression = callExpr;
+					block->statements.Add(stat);
+				}
+				return newExpr;
+			}
+		};
+
+/***********************************************************************
+GuiPredefinedInstanceDeserializersPlugin
+***********************************************************************/
+
+		class GuiPredefinedInstanceDeserializersPlugin : public Object, public IGuiPlugin
+		{
+		public:
+
+			GUI_PLUGIN_NAME(GacUI_Instance_Deserializers)
+			{
+				GUI_PLUGIN_DEPEND(GacUI_Instance);
+			}
+
+			void Load()override
+			{
+				IGuiInstanceLoaderManager* manager = GetInstanceLoaderManager();
+				manager->AddInstanceDeserializer(new GuiTemplatePropertyDeserializer);
+				manager->AddInstanceDeserializer(new GuiItemPropertyDeserializer);
+				manager->AddInstanceDeserializer(new GuiDataProcessorDeserializer);
+			}
+
+			void Unload()override
+			{
+			}
+		};
+		GUI_REGISTER_PLUGIN(GuiPredefinedInstanceDeserializersPlugin)
+	}
+}
+
+
+/***********************************************************************
+.\GUIINSTANCELOADER_PREDEFINEDTYPERESOLVERS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace parsing;
+		using namespace parsing::xml;
+		using namespace workflow;
+		using namespace workflow::analyzer;
+		using namespace workflow::emitter;
+		using namespace workflow::runtime;
+		using namespace reflection::description;
+		using namespace collections;
+		using namespace stream;
+
+		using namespace controls;
+
+		class WorkflowVirtualScriptPositionVisitor : public traverse_visitor::ModuleVisitor
+		{
+		public:
+			GuiResourcePrecompileContext&						context;
+			Ptr<types::ScriptPosition>							sp;
+
+			WorkflowVirtualScriptPositionVisitor(GuiResourcePrecompileContext& _context)
+				:context(_context)
+			{
+				sp = Workflow_GetScriptPosition(context);
+			}
+
+			void Visit(WfVirtualExpression* node)override
+			{
+				traverse_visitor::ExpressionVisitor::Visit(node);
+				vint index = sp->nodePositions.Keys().IndexOf(node);
+				if (index != -1)
+				{
+					auto record = sp->nodePositions.Values()[index];
+					Workflow_RecordScriptPosition(context, record.position, node->expandedExpression, record.availableAfter);
+				}
+			}
+
+			void Visit(WfVirtualStatement* node)override
+			{
+				traverse_visitor::StatementVisitor::Visit(node);
+				vint index = sp->nodePositions.Keys().IndexOf(node);
+				if (index != -1)
+				{
+					auto record = sp->nodePositions.Values()[index];
+					Workflow_RecordScriptPosition(context, record.position, node->expandedStatement, record.availableAfter);
+				}
+			}
+
+			void Visit(WfVirtualDeclaration* node)override
+			{
+				traverse_visitor::DeclarationVisitor::Visit(node);
+				vint index = sp->nodePositions.Keys().IndexOf(node);
+				if (index != -1)
+				{
+					auto record = sp->nodePositions.Values()[index];
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
+					}
+				}
+			}
+		};
+
+		Ptr<GuiInstanceCompiledWorkflow> Workflow_GetModule(GuiResourcePrecompileContext& context, const WString& path)
+		{
+			return context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
+		}
+
+		void Workflow_AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType, GuiResourceTextPos tagPosition)
+		{
+			auto compiled = Workflow_GetModule(context, path);
+			if (!compiled)
+			{
+				compiled = new GuiInstanceCompiledWorkflow;
+				compiled->type = assemblyType;
+				context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
+			}
+			else
+			{
+				CHECK_ERROR(compiled->type == assemblyType, L"Workflow_AddModule(GuiResourcePrecompiledContext&, const WString&, GuiInstanceCompiledWorkflow::AssemblyType)#Unexpected assembly type.");
+			}
+
+			if (compiled)
+			{
+				GuiInstanceCompiledWorkflow::ModuleRecord record;
+				record.module = module;
+				record.position = tagPosition;
+				record.shared = assemblyType == GuiInstanceCompiledWorkflow::Shared;
+				compiled->modules.Add(record);
+			}
+		}
+
+		void Workflow_GenerateAssembly(GuiResourcePrecompileContext& context, const WString& path, GuiResourceError::List& errors, bool keepMetadata, IWfCompilerCallback* compilerCallback)
+		{
+			auto compiled = Workflow_GetModule(context, path);
+			if (!compiled)
+			{
+				return;
+			}
+
+			if (!compiled->assembly)
+			{
+				List<WString> codes;
+				auto manager = Workflow_GetSharedManager();
+				manager->Clear(false, true);
+
+				auto addCode = [&codes](TextReader& reader)
+				{
+					vint row = 0;
+					WString code;
+					while (!reader.IsEnd())
+					{
+						auto rowHeader = itow(++row);
+						while (rowHeader.Length() < 6)
+						{
+							rowHeader = L" " + rowHeader;
+						}
+						code += rowHeader + L" : " + reader.ReadLine() + L"\r\n";
+					}
+					codes.Add(code);
+				};
+
+				for (vint i = 0; i < compiled->modules.Count(); i++)
+				{
+					manager->AddModule(compiled->modules[i].module);
+				}
+
+				if (manager->errors.Count() == 0)
+				{
+					manager->Rebuild(true, compilerCallback);
+				}
+
+				if (manager->errors.Count() == 0)
+				{
+					compiled->assembly = GenerateAssembly(manager, compilerCallback);
+					compiled->Initialize(true);
+				}
+				else
+				{
+					WorkflowVirtualScriptPositionVisitor visitor(context);
+					for (vint i = 0; i < compiled->modules.Count(); i++)
+					{
+						auto module = compiled->modules[i];
+						visitor.VisitField(module.module.Obj());
+						Workflow_RecordScriptPosition(context, module.position, module.module);
+					}
+
+					auto sp = Workflow_GetScriptPosition(context);
+					for (vint i = 0; i < manager->errors.Count(); i++)
+					{
+						auto error = manager->errors[i];
+						errors.Add({ sp->nodePositions[error->parsingTree].computedPosition, error->errorMessage });
+					}
+				}
+
+				if (keepMetadata)
+				{
+					compiled->metadata = Workflow_TransferSharedManager();
+				}
+				else
+				{
+					manager->Clear(false, true);
+				}
+			}
+		}
+
+/***********************************************************************
+Shared Script Type Resolver (Script)
+***********************************************************************/
+
+#define Path_Shared				L"Workflow/Shared"
+#define Path_TemporaryClass		L"Workflow/TemporaryClass"
+#define Path_InstanceClass		L"Workflow/InstanceClass"
+
+		class GuiResourceSharedScriptTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_Precompile
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Script";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return false;
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return false;
+			}
+
+			vint GetMaxPassIndex()override
+			{
+				return Workflow_Max;
+			}
+
+			PassSupport GetPassSupport(vint passIndex)override
+			{
+				switch (passIndex)
+				{
+				case Workflow_Collect:
+					return PerResource;
+				case Workflow_Compile:
+					return PerPass;
+				default:
+					return NotSupported;
+				}
+			}
+
+			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
+			{
+				switch (context.passIndex)
+				{
+				case Workflow_Collect:
+					{
+						if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
+						{
+							if (obj->language == L"Workflow")
+							{
+								if (auto module = Workflow_ParseModule(context, obj->codePosition.originalLocation, obj->code, obj->codePosition, errors))
+								{
+									Workflow_AddModule(context, Path_Shared, module, GuiInstanceCompiledWorkflow::Shared, obj->codePosition);
+								}
+							}
+						}
+					}
+					break;
+				}
+			}
+
+			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
+			{
+				switch (context.passIndex)
+				{
+				case Workflow_Compile:
+					Workflow_GenerateAssembly(context, Path_Shared, errors, false, context.compilerCallback);
+					break;
+				}
+			}
+
+			IGuiResourceTypeResolver_Precompile* Precompile()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			{
+				if (auto obj = content.Cast<GuiInstanceSharedScript>())
+				{
+					return obj->SaveToXml();
+				}
+				return nullptr;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
+			{
+				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
+				if (xml)
+				{
+					auto schema = GuiInstanceSharedScript::LoadFromXml(resource, xml, errors);
+					return schema;
+				}
+				return 0;
+			}
+		};
+
+/***********************************************************************
+Instance Type Resolver (Instance)
+***********************************************************************/
+
+		class GuiResourceInstanceTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_Precompile
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Instance";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return false;
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return false;
+			}
+
+			vint GetMaxPassIndex()override
+			{
+				return Instance_Max;
+			}
+
+			PassSupport GetPassSupport(vint passIndex)override
+			{
+				switch (passIndex)
+				{
+				case Instance_CollectInstanceTypes:
+				case Instance_CollectEventHandlers:
+				case Instance_GenerateInstanceClass:
+					return PerResource;
+				case Instance_CompileInstanceTypes:
+				case Instance_CompileEventHandlers:
+				case Instance_CompileInstanceClass:
+					return PerPass;
+				default:
+					return NotSupported;
+				}
+			}
+
+#define ENSURE_ASSEMBLY_EXISTS(PATH)\
+			if (auto compiled = Workflow_GetModule(context, PATH))\
+			{\
+				if (!compiled->assembly)\
+				{\
+					break;\
+				}\
+			}\
+			else\
+			{\
+				break;\
+			}\
+
+#define UNLOAD_ASSEMBLY(PATH)\
+			if (auto compiled = Workflow_GetModule(context, PATH))\
+			{\
+				compiled->context = nullptr;\
+			}\
+
+#define DELETE_ASSEMBLY(PATH)\
+			if (auto compiled = Workflow_GetModule(context, PATH))\
+			{\
+				compiled->context = nullptr;\
+				compiled->assembly = nullptr;\
+			}\
+
+			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
+			{
+				switch (context.passIndex)
+				{
+				case Instance_CollectEventHandlers:
+					ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
+				case Instance_CollectInstanceTypes:
+					{
+						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
+						{
+							if (obj->className == L"")
+							{
+								errors.Add(GuiResourceError({ resource }, obj->tagPosition,
+									L"Precompile: Instance \"" +
+									(obj->instance->typeNamespace == GlobalStringKey::Empty
+										? obj->instance->typeName.ToString()
+										: obj->instance->typeNamespace.ToString() + L":" + obj->instance->typeName.ToString()
+										) +
+									L"\" should have the class name specified in the ref.Class attribute."));
+							}
+
+							obj->ApplyStyles(resource, context.resolver, errors);
+
+							types::ResolvingResult resolvingResult;
+							resolvingResult.resource = resource;
+							resolvingResult.context = obj;
+							if (auto module = Workflow_GenerateInstanceClass(context, L"<instance>" + obj->className, resolvingResult, errors, context.passIndex))
+							{
+								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass, obj->tagPosition);
+							}
+
+							if (context.passIndex == Instance_CollectInstanceTypes)
+							{
+								auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
+								if (!record)
+								{
+									record = MakePtr<GuiResourceClassNameRecord>();
+									context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
+								}
+								record->classNames.Add(obj->className);
+							}
+						}
+					}
+					break;
+				case Instance_GenerateInstanceClass:
+					{
+						ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
+						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
+						{
+							vint previousErrorCount = errors.Count();
+
+							types::ResolvingResult resolvingResult;
+							resolvingResult.resource = resource;
+							resolvingResult.context = obj;
+							resolvingResult.rootTypeInfo = Workflow_CollectReferences(context, resolvingResult, errors);
+
+							if (errors.Count() == previousErrorCount)
+							{
+								if (auto ctorModule = Workflow_PrecompileInstanceContext(context, L"<constructor>" + obj->className, resolvingResult, errors))
+								{
+									if (auto instanceModule = Workflow_GenerateInstanceClass(context, L"<instance>" + obj->className, resolvingResult, errors, context.passIndex))
+									{
+										Workflow_AddModule(context, Path_InstanceClass, ctorModule, GuiInstanceCompiledWorkflow::InstanceClass, obj->tagPosition);
+										Workflow_AddModule(context, Path_InstanceClass, instanceModule, GuiInstanceCompiledWorkflow::InstanceClass, obj->tagPosition);
+									}
+								}
+							}
+						}
+					}
+					break;
+				}
+			}
+
+			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
+			{
+				WString path;
+				switch (context.passIndex)
+				{
+				case Instance_CompileInstanceTypes:
+					DELETE_ASSEMBLY(Path_Shared)
+					path = Path_TemporaryClass;
+					break;
+				case Instance_CompileEventHandlers:
+					DELETE_ASSEMBLY(Path_TemporaryClass)
+					path = Path_TemporaryClass;
+					break;
+				case Instance_CompileInstanceClass:
+					UNLOAD_ASSEMBLY(Path_TemporaryClass)
+					path = Path_InstanceClass;
+					break;
+				default:
+					return;
+				}
+
+				auto sharedCompiled = Workflow_GetModule(context, Path_Shared);
+				auto compiled = Workflow_GetModule(context, path);
+				if (sharedCompiled && compiled)
+				{
+					CopyFrom(
+						compiled->modules,
+						From(sharedCompiled->modules)
+							.Where([](const GuiInstanceCompiledWorkflow::ModuleRecord& module)
+							{
+								return module.shared;
+							}),
+						true
+					);
+				}
+
+				switch (context.passIndex)
+				{
+				case Instance_CompileInstanceTypes:
+					Workflow_GenerateAssembly(context, path, errors, false, context.compilerCallback);
+					compiled->modules.Clear();
+					break;
+				case Instance_CompileEventHandlers:
+					Workflow_GenerateAssembly(context, path, errors, false, context.compilerCallback);
+					break;
+				case Instance_CompileInstanceClass:
+					Workflow_GenerateAssembly(context, path, errors, true, context.compilerCallback);
+					break;
+				default:;
+				}
+				Workflow_ClearScriptPosition(context);
+				GetInstanceLoaderManager()->ClearReflectionCache();
+			}
+
+#undef DELETE_ASSEMBLY
+#undef UNLOAD_ASSEMBLY
+#undef ENSURE_ASSEMBLY_EXISTS
+
+			IGuiResourceTypeResolver_Precompile* Precompile()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			{
+				if (auto obj = content.Cast<GuiInstanceContext>())
+				{
+					return obj->SaveToXml();
+				}
+				return 0;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
+			{
+				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
+				if (xml)
+				{
+					Ptr<GuiInstanceContext> context = GuiInstanceContext::LoadFromXml(resource, xml, errors);
+					return context;
+				}
+				return 0;
+			}
+		};
+
+#undef Path_Shared
+#undef Path_TemporaryClass
+#undef Path_InstanceClass
+
+/***********************************************************************
+Instance Style Type Resolver (InstanceStyle)
+***********************************************************************/
+
+		class GuiResourceInstanceStyleResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"InstanceStyle";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return false;
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return false;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			{
+				if (auto obj = content.Cast<GuiInstanceStyleContext>())
+				{
+					return obj->SaveToXml();
+				}
+				return 0;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
+			{
+				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
+				if (xml)
+				{
+					auto context = GuiInstanceStyleContext::LoadFromXml(resource, xml, errors);
+					return context;
+				}
+				return 0;
+			}
+		};
+
+/***********************************************************************
+Plugin
+***********************************************************************/
+
+		class GuiCompilerTypeResolversPlugin : public Object, public IGuiPlugin
+		{
+		public:
+
+			GUI_PLUGIN_NAME(GacUI_Compiler_InstanceTypeResolvers)
+			{
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
+			}
+
+			void Load()override
+			{
+				IGuiResourceResolverManager* manager = GetResourceResolverManager();
+				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
+				manager->SetTypeResolver(new GuiResourceInstanceStyleResolver);
+				manager->SetTypeResolver(new GuiResourceSharedScriptTypeResolver);
+			}
+
+			void Unload()override
+			{
+			}
+		};
+		GUI_REGISTER_PLUGIN(GuiCompilerTypeResolversPlugin)
+	}
+}
+
+
+/***********************************************************************
 .\WORKFLOWCODEGEN\GUIINSTANCELOADER_WORKFLOWCODEGEN.CPP
 ***********************************************************************/
 
@@ -5413,7 +5490,7 @@ Workflow_GenerateInstanceClass
 			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfDeclaration>>& memberDecls, GuiResourceTextPos position)
 			{
 				WString wrappedCode = L"module parse_members; class Class {\r\n" + code + L"\r\n}";
-				if(auto module = Workflow_ParseModule(precompileContext, { resolvingResult.resource }, wrappedCode, position, errors, { 1,0 }))
+				if (auto module = Workflow_ParseModule(precompileContext, { resolvingResult.resource }, wrappedCode, position, errors, { 1,0 }))
 				{
 					CopyFrom(memberDecls, module->declarations[0].Cast<WfClassDeclaration>()->declarations);
 				}
@@ -5508,18 +5585,39 @@ Workflow_GenerateInstanceClass
 			{
 				WString classNameTail;
 				Ptr<ITypeInfo> parameterTypeInfo;
-				if (auto paramTd = GetTypeDescriptor(parameter->className.ToString()))
 				{
-					parameterTypeInfo = Workflow_GetSuggestedParameterType(paramTd);
-					switch (parameterTypeInfo->GetDecorator())
+					auto paramTd = GetTypeDescriptor(parameter->className.ToString());
+					if (!paramTd)
 					{
-					case ITypeInfo::RawPtr: classNameTail = L"*"; break;
-					case ITypeInfo::SharedPtr: classNameTail = L"^"; break;
-					default:;
+						auto source = FindInstanceLoadingSource(resolvingResult.context, {}, parameter->className.ToString());
+						if (auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName))
+						{
+							paramTd = typeInfo->GetTypeDescriptor();
+						}
+					}
+
+					if (paramTd)
+					{
+						parameterTypeInfo = Workflow_GetSuggestedParameterType(paramTd);
+						switch (parameterTypeInfo->GetDecorator())
+						{
+						case ITypeInfo::RawPtr: classNameTail = L"*"; break;
+						case ITypeInfo::SharedPtr: classNameTail = L"^"; break;
+						default:;
+						}
 					}
 				}
 
-				if (auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + classNameTail, parameter->classPosition, errors))
+				vint errorCount = errors.Count();
+				auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + classNameTail, parameter->classPosition, errors);
+				if (beforePrecompile && !parameterTypeInfo && errorCount == errors.Count())
+				{
+					if (!type || type.Cast<WfReferenceType>() || type.Cast<WfChildType>() || type.Cast<WfTopQualifiedType>())
+					{
+						type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + L"*", parameter->classPosition, errors);
+					}
+				}
+				if (type)
 				{
 					if (!beforePrecompile)
 					{
@@ -6015,9 +6113,9 @@ WorkflowReferenceNamesVisitor
 				ITypeDescriptor* td = nullptr;
 				{
 					auto typeInfo = candidate.info->acceptableTypes[0];
-					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(typeInfo.Obj()))
+					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(propertyInfo, typeInfo.Obj()))
 					{
-						td = deserializer->DeserializeAs(typeInfo.Obj())->GetTypeDescriptor();
+						td = deserializer->DeserializeAs(propertyInfo, typeInfo.Obj())->GetTypeDescriptor();
 					}
 					else
 					{
@@ -6828,6 +6926,7 @@ WorkflowGenerateCreatingVisitor
 
 			IGuiInstanceLoader::ArgumentInfo GetArgumentInfo(GuiResourceTextPos attPosition, GuiValueRepr* repr)
 			{
+				IGuiInstanceLoader::PropertyInfo propertyInfo;
 				Ptr<ITypeInfo> typeInfo = nullptr;
 				bool serializable = false;
 				WString textValue;
@@ -6836,7 +6935,10 @@ WorkflowGenerateCreatingVisitor
 
 				if (auto text = dynamic_cast<GuiTextRepr*>(repr))
 				{
-					typeInfo = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
+					auto resolving = resolvingResult.propertyResolvings[repr];
+					propertyInfo = resolving.propertyInfo;
+					typeInfo = resolving.info->acceptableTypes[0];
+
 					serializable = true;
 					textValue = text->text;
 					textValuePosition = text->tagPosition;
@@ -6845,7 +6947,9 @@ WorkflowGenerateCreatingVisitor
 				{
 					if (ctor->instanceName == GlobalStringKey::Empty)
 					{
-						typeInfo = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
+						auto resolving = resolvingResult.propertyResolvings[repr];
+						propertyInfo = resolving.propertyInfo;
+						typeInfo = resolving.info->acceptableTypes[0];
 					}
 					else
 					{
@@ -6867,12 +6971,12 @@ WorkflowGenerateCreatingVisitor
 
 				if (serializable)
 				{
-					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(typeInfo.Obj()))
+					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(propertyInfo, typeInfo.Obj()))
 					{
-						auto typeInfoAs = deserializer->DeserializeAs(typeInfo.Obj());
+						auto typeInfoAs = deserializer->DeserializeAs(propertyInfo, typeInfo.Obj());
 						if (auto expression = Workflow_ParseTextValue(precompileContext, typeInfoAs->GetTypeDescriptor(), { resolvingResult.resource }, textValue, textValuePosition, errors))
 						{
-							argumentInfo.expression = deserializer->Deserialize(precompileContext, resolvingResult, typeInfo.Obj(), expression, textValuePosition, errors);
+							argumentInfo.expression = deserializer->Deserialize(precompileContext, resolvingResult, propertyInfo, typeInfo.Obj(), expression, textValuePosition, errors);
 						}
 					}
 					else
@@ -8898,8 +9002,8 @@ GuiDocumentInstanceLoaderBase
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
 
-				GuiDocumentInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod)
-					:TBaseType(_typeName, _styleMethod)
+				GuiDocumentInstanceLoaderBase(const WString& _typeName, theme::ThemeName themeName)
+					:TBaseType(_typeName, themeName)
 				{
 				}
 
@@ -8956,12 +9060,12 @@ GuiDocumentInstanceLoaderBase
 GuiDocumentViewerInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentViewer, GuiDocumentViewerTemplate_StyleProvider, GuiDocumentViewerTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentViewer>
 			class GuiDocumentViewerInstanceLoader : public GuiDocumentInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
 				GuiDocumentViewerInstanceLoader()
-					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentViewer>::content.typeName, L"CreateDocumentViewerStyle")
+					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentViewer>::content.typeName, theme::ThemeName::DocumentViewer)
 				{
 				}
 			};
@@ -8971,12 +9075,12 @@ GuiDocumentViewerInstanceLoader
 GuiDocumentLabelInstanceLoader
 ***********************************************************************/
 		
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentLabel, GuiDocumentLabelTemplate_StyleProvider, GuiDocumentLabelTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentLabel>
 			class GuiDocumentLabelInstanceLoader : public GuiDocumentInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
 				GuiDocumentLabelInstanceLoader()
-					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentLabel>::content.typeName, L"CreateDocumentLabelStyle")
+					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentLabel>::content.typeName, theme::ThemeName::DocumentLabel)
 				{
 				}
 			};
@@ -9040,7 +9144,7 @@ namespace vl
 GuiComboBoxInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiComboBoxListControl, GuiComboBoxTemplate_StyleProvider, GuiComboBoxTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiComboBoxListControl>
 			class GuiComboBoxInstanceLoader : public BASE_TYPE
 			{
 			protected:
@@ -9056,7 +9160,7 @@ GuiComboBoxInstanceLoader
 				}
 			public:
 				GuiComboBoxInstanceLoader()
-					:BASE_TYPE(L"presentation::controls::GuiComboBox", L"CreateComboBoxStyle")
+					:BASE_TYPE(L"presentation::controls::GuiComboBox", theme::ThemeName::ComboBox)
 				{
 					_ListControl = GlobalStringKey::Get(L"ListControl");
 				}
@@ -9093,7 +9197,7 @@ GuiComboBoxInstanceLoader
 GuiTreeViewInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<TControl, GuiTreeViewTemplate_StyleProvider, GuiTreeViewTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<TControl>
 			template<typename TControl>
 			class GuiTreeViewInstanceLoaderBase : public BASE_TYPE
 			{
@@ -9103,7 +9207,7 @@ GuiTreeViewInstanceLoader
 
 			public:
 				GuiTreeViewInstanceLoaderBase(bool _bindable)
-					:BASE_TYPE(description::TypeInfo<TControl>::content.typeName, L"CreateTreeViewStyle")
+					:BASE_TYPE(description::TypeInfo<TControl>::content.typeName, theme::ThemeName::TreeView)
 					, bindable(_bindable)
 				{
 					_Nodes = GlobalStringKey::Get(L"Nodes");
@@ -9393,7 +9497,7 @@ GuiTreeNodeInstanceLoader
 GuiBindableDataGridInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableDataGrid, GuiListViewTemplate_StyleProvider, GuiListViewTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableDataGrid>
 			class GuiBindableDataGridInstanceLoader : public BASE_TYPE
 			{
 			protected:
@@ -9416,7 +9520,7 @@ GuiBindableDataGridInstanceLoader
 				}
 			public:
 				GuiBindableDataGridInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::content.typeName, L"CreateListViewStyle")
+					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::content.typeName, theme::ThemeName::ListView)
 				{
 					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::content.typeName);
 					_ViewModelContext = GlobalStringKey::Get(L"ViewModelContext");
@@ -9674,14 +9778,12 @@ GuiPredefinedInstanceLoadersPlugin
 
 			Ptr<WfExpression> CreateStandardDataPicker(IGuiInstanceLoader::ArgumentMap&)
 			{
-				using TControl = GuiDatePicker;
-				using TControlStyle = GuiDateComboBoxTemplate_StyleProvider;
-				using TTemplate = GuiDatePickerTemplate;
+				using TLoader = GuiTemplateControlInstanceLoader<GuiDatePicker>;
 
-				auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
+				auto controlType = TypeInfoRetriver<GuiDatePicker*>::CreateTypeInfo();
 				auto createControl = MakePtr<WfNewClassExpression>();
 				createControl->type = GetTypeFromTypeInfo(controlType.Obj());
-				createControl->arguments.Add(GuiTemplateControlInstanceLoader<TControl, TControlStyle, TTemplate>::CreateIThemeCall(L"CreateDatePickerStyle"));
+				createControl->arguments.Add(TLoader::CreateThemeName(theme::ThemeName::DatePicker));
 
 				return createControl;
 			}
@@ -9729,79 +9831,75 @@ GuiPredefinedInstanceLoadersPlugin
 	#ifndef VCZH_DEBUG_NO_REFLECTION
 					IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
 
-	#define ADD_VIRTUAL_TYPE_LOADER(TYPENAME, LOADER)\
-		manager->CreateVirtualType(\
-			GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-			new LOADER\
-			)
-
-	#define ADD_TEMPLATE_CONTROL(TYPENAME, STYLE_METHOD, TEMPLATE)\
+	#define ADD_TEMPLATE_CONTROL(TYPENAME, THEME_NAME)\
 		manager->SetLoader(\
-		new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
+		new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::" L ## #TYPENAME,\
-				L ## #STYLE_METHOD\
+				theme::ThemeName::THEME_NAME\
 				)\
 			)
 
-	#define ADD_TEMPLATE_CONTROL_2(TYPENAME, STYLE_METHOD, ARGUMENT_FUNCTION, TEMPLATE)\
+	#define ADD_TEMPLATE_CONTROL_2(TYPENAME, THEME_NAME, ARGUMENT_FUNCTION)\
 		manager->SetLoader(\
-		new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
+		new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::" L ## #TYPENAME,\
-				L ## #STYLE_METHOD,\
-				ARGUMENT_FUNCTION\
+				theme::ThemeName::THEME_NAME,\
+				ARGUMENT_FUNCTION,\
+				nullptr\
 				)\
 			)
 
-	#define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, TEMPLATE)\
+	#define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, THEME_NAME)\
 		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-		new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
+		new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
-				L ## #STYLE_METHOD\
+				theme::ThemeName::THEME_NAME\
 				)\
 			)
 
-	#define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, TEMPLATE, INIT_FUNCTION)\
+	#define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, THEME_NAME, INIT_FUNCTION)\
 		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-		new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
+		new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
-				L ## #STYLE_METHOD,\
+				theme::ThemeName::THEME_NAME,\
+				nullptr,\
 				INIT_FUNCTION\
 				)\
 			)
 
 					manager->SetLoader(new GuiControlInstanceLoader);
 
-					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,		CreateCustomControlStyle,											GuiControlTemplate											);
-					ADD_TEMPLATE_CONTROL	(							GuiLabel,				CreateLabelStyle,													GuiLabelTemplate											);
-					ADD_TEMPLATE_CONTROL	(							GuiButton,				CreateButtonStyle,													GuiButtonTemplate											);
-					ADD_TEMPLATE_CONTROL	(							GuiTabPage,				CreateCustomControlStyle,											GuiControlTemplate											);
-					ADD_TEMPLATE_CONTROL	(							GuiTab,					CreateTabStyle,														GuiTabTemplate												);
-					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		CreateScrollContainerStyle,											GuiScrollViewTemplate										);
-					ADD_TEMPLATE_CONTROL	(							GuiWindow,				CreateWindowStyle,													GuiWindowTemplate											);
-					ADD_TEMPLATE_CONTROL	(							GuiTextList,			CreateTextListStyle,												GuiTextListTemplate											);
-					ADD_TEMPLATE_CONTROL	(							GuiBindableTextList,	CreateTextListStyle,												GuiTextListTemplate											);
-					ADD_TEMPLATE_CONTROL	(							GuiListView,			CreateListViewStyle,												GuiListViewTemplate);
-					ADD_TEMPLATE_CONTROL	(							GuiBindableListView,	CreateListViewStyle,												GuiListViewTemplate);
-					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,	CreateMultilineTextBoxStyle,										GuiMultilineTextBoxTemplate									);
-					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	CreateTextBoxStyle,													GuiSinglelineTextBoxTemplate								);
-					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			CreateDatePickerStyle,												GuiDatePickerTemplate										);
-					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,		CreateComboBoxStyle,				CreateStandardDataPicker,		GuiDateComboBoxTemplate										);
+					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,		CustomControl										);
+					ADD_TEMPLATE_CONTROL	(							GuiLabel,				Label												);
+					ADD_TEMPLATE_CONTROL	(							GuiButton,				Button												);
+					ADD_TEMPLATE_CONTROL	(							GuiTabPage,				CustomControl										);
+					ADD_TEMPLATE_CONTROL	(							GuiTab,					Tab													);
+					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		ScrollView											);
+					ADD_TEMPLATE_CONTROL	(							GuiWindow,				Window												);
+					ADD_TEMPLATE_CONTROL	(							GuiTextList,			TextList											);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableTextList,	TextList											);
+					ADD_TEMPLATE_CONTROL	(							GuiListView,			ListView											);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableListView,	ListView											);
+					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,	MultilineTextBox									);
+					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	SinglelineTextBox									);
+					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			DatePicker											);
+					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,		ComboBox,				CreateStandardDataPicker	);
 
-					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,				CreateGroupBoxStyle,												GuiControlTemplate											);
-					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,				CreateMenuSplitterStyle,											GuiControlTemplate											);
-					ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,		CreateMenuBarButtonStyle,											GuiToolstripButtonTemplate									);
-					ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,		CreateMenuItemButtonStyle,											GuiToolstripButtonTemplate									);
-					ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,		CreateToolBarDropdownButtonStyle,									GuiToolstripButtonTemplate									);
-					ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,		CreateToolBarSplitButtonStyle,										GuiToolstripButtonTemplate									);
-					ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,				CreateToolBarSplitterStyle,											GuiControlTemplate											);
-					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,	CreateCheckBoxStyle,												GuiSelectableButtonTemplate									);
-					ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,	CreateRadioButtonStyle,												GuiSelectableButtonTemplate									);
-					ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,				CreateHScrollStyle,													GuiScrollTemplate											);
-					ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,				CreateVScrollStyle,													GuiScrollTemplate											);
-					ADD_VIRTUAL_CONTROL		(DocumentTextBox,			GuiDocumentLabel,		CreateDocumentTextBoxStyle,											GuiDocumentLabelTemplate									);
-					ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,				CreateHTrackerStyle,												GuiScrollTemplate,				InitializeTrackerProgressBar);
-					ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,				CreateVTrackerStyle,												GuiScrollTemplate,				InitializeTrackerProgressBar);
-					ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,				CreateProgressBarStyle,												GuiScrollTemplate,				InitializeTrackerProgressBar);
+					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,				GroupBox											);
+					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,				MenuSplitter										);
+					ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,		MenuBarButton										);
+					ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,		MenuItemButton										);
+					ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,		ToolstripDropdownButton								);
+					ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,		ToolstripSplitButton								);
+					ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,				ToolstripSplitter									);
+					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,	CheckBox											);
+					ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,	RadioButton											);
+					ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,				HScroll												);
+					ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,				VScroll												);
+					ADD_VIRTUAL_CONTROL		(DocumentTextBox,			GuiDocumentLabel,		DocumentTextBox										);
+					ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,				HTracker,				InitializeTrackerProgressBar);
+					ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,				VTracker,				InitializeTrackerProgressBar);
+					ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,				ProgressBar,			InitializeTrackerProgressBar);
 
 					LoadToolstripControls(manager);
 					LoadListControls(manager);
@@ -9809,7 +9907,6 @@ GuiPredefinedInstanceLoadersPlugin
 					LoadCompositions(manager);
 					LoadTemplates(manager);
 
-	#undef ADD_VIRTUAL_TYPE_LOADER
 	#undef ADD_TEMPLATE_CONTROL
 	#undef ADD_TEMPLATE_CONTROL_2
 	#undef ADD_VIRTUAL_CONTROL
@@ -9983,13 +10080,13 @@ GuiToolstripInstanceLoaderBase
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
 
-				GuiToolstripInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod, Ptr<WfExpression>(*_argumentFunction)(ArgumentMap&))
-					:TBaseType(_typeName, _styleMethod, _argumentFunction)
+				GuiToolstripInstanceLoaderBase(const WString& _typeName, theme::ThemeName themeName, Ptr<WfExpression>(*_argumentFunction)(ArgumentMap&))
+					:TBaseType(_typeName, themeName, _argumentFunction)
 				{
 				}
 
-				GuiToolstripInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod)
-					:TBaseType(_typeName, _styleMethod)
+				GuiToolstripInstanceLoaderBase(const WString& _typeName, theme::ThemeName themeName)
+					:TBaseType(_typeName, themeName)
 				{
 				}
 
@@ -10025,7 +10122,7 @@ GuiToolstripInstanceLoaderBase
 GuiToolstripMenuInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenu, GuiMenuTemplate_StyleProvider, GuiMenuTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenu>
 			class GuiToolstripMenuInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
@@ -10037,7 +10134,7 @@ GuiToolstripMenuInstanceLoader
 				}
 			public:
 				GuiToolstripMenuInstanceLoader()
-					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripMenu>::content.typeName, L"CreateMenuStyle", ArgumentFunction)
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripMenu>::content.typeName, theme::ThemeName::Menu, ArgumentFunction)
 				{
 				}
 			};
@@ -10047,12 +10144,12 @@ GuiToolstripMenuInstanceLoader
 GuiToolstripMenuBarInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenuBar, GuiControlTemplate_StyleProvider, GuiControlTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenuBar>
 			class GuiToolstripMenuBarInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
 				GuiToolstripMenuBarInstanceLoader()
-					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripMenuBar>::content.typeName, L"CreateMenuBarStyle")
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripMenuBar>::content.typeName, theme::ThemeName::MenuBar)
 				{
 				}
 			};
@@ -10062,12 +10159,12 @@ GuiToolstripMenuBarInstanceLoader
 GuiToolstripToolBarInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripToolBar, GuiControlTemplate_StyleProvider, GuiControlTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripToolBar>
 			class GuiToolstripToolBarInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
 				GuiToolstripToolBarInstanceLoader()
-					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripToolBar>::content.typeName, L"CreateToolBarStyle")
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripToolBar>::content.typeName, theme::ThemeName::ToolstripToolBar)
 				{
 				}
 			};
@@ -10077,7 +10174,7 @@ GuiToolstripToolBarInstanceLoader
 GuiToolstripButtonInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripButton, GuiToolstripButtonTemplate_StyleProvider, GuiToolstripButtonTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripButton>
 			class GuiToolstripButtonInstanceLoader : public BASE_TYPE
 			{
 			protected:
@@ -10085,7 +10182,7 @@ GuiToolstripButtonInstanceLoader
 
 			public:
 				GuiToolstripButtonInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiToolstripButton>::content.typeName, L"CreateToolBarButtonStyle")
+					:BASE_TYPE(description::TypeInfo<GuiToolstripButton>::content.typeName, theme::ThemeName::ToolstripButton)
 				{
 					_SubMenu = GlobalStringKey::Get(L"SubMenu");
 				}
