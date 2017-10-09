@@ -435,13 +435,36 @@ GuiScrollContainer
 				if (extendToFullWidth != value)
 				{
 					extendToFullWidth = value;
+					auto margin = containerComposition->GetAlignmentToParent();
 					if (value)
 					{
-						containerComposition->SetAlignmentToParent(Margin(0, -1, 0, -1));
+						containerComposition->SetAlignmentToParent(Margin(0, margin.top, 0, margin.bottom));
 					}
 					else
 					{
-						containerComposition->SetAlignmentToParent(Margin(-1, -1, -1, -1));
+						containerComposition->SetAlignmentToParent(Margin(-1, margin.top, -1, margin.bottom));
+					}
+				}
+			}
+
+			bool GuiScrollContainer::GetExtendToFullHeight()
+			{
+				return extendToFullHeight;
+			}
+
+			void GuiScrollContainer::SetExtendToFullHeight(bool value)
+			{
+				if (extendToFullHeight != value)
+				{
+					extendToFullHeight = value;
+					auto margin = containerComposition->GetAlignmentToParent();
+					if (value)
+					{
+						containerComposition->SetAlignmentToParent(Margin(margin.left, 0, margin.right, 0));
+					}
+					else
+					{
+						containerComposition->SetAlignmentToParent(Margin(margin.left, -1, margin.right, -1));
 					}
 				}
 			}

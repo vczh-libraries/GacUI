@@ -190,6 +190,7 @@ Scroll View
 			{
 			protected:
 				bool									extendToFullWidth = false;
+				bool									extendToFullHeight = false;
 
 				Size									QueryFullSize()override;
 				void									UpdateView(Rect viewBounds)override;
@@ -205,6 +206,13 @@ Scroll View
 				/// <summary>Set does the content container always extend its width to fill the scroll container.</summary>
 				/// <param name="value">Set to true if the content container always extend its width to fill the scroll container.</param>
 				void									SetExtendToFullWidth(bool value);
+
+				/// <summary>Test does the content container always extend its height to fill the scroll container.</summary>
+				/// <returns>Return true if the content container always extend its height to fill the scroll container.</returns>
+				bool									GetExtendToFullHeight();
+				/// <summary>Set does the content container always extend its height to fill the scroll container.</summary>
+				/// <param name="value">Set to true if the content container always extend its height to fill the scroll container.</param>
+				void									SetExtendToFullHeight(bool value);
 			};
 		}
 	}

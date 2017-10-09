@@ -13141,6 +13141,16 @@ Class (::darkskin::HScrollTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
+		(this->invalidContainer = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(this->invalidContainer)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->invalidContainer)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->invalidContainer));
+		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3D3D42", false)));
@@ -13290,7 +13300,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->handle)->GetEventReceiver()->mouseMove, __vwsn_event_handler_);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->self));
+			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->invalidContainer));
 		}
 	}
 
@@ -13324,6 +13334,16 @@ Class (::darkskin::HTrackerTemplateConstructor)
 		(this->self = __vwsn_this_);
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->invalidContainer = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(this->invalidContainer)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->invalidContainer)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->invalidContainer));
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
@@ -13424,7 +13444,7 @@ Class (::darkskin::HTrackerTemplateConstructor)
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->handle)->GetEventReceiver()->mouseMove, __vwsn_event_handler_);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->self));
+			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->invalidContainer));
 		}
 	}
 
@@ -16288,6 +16308,16 @@ Class (::darkskin::VScrollTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
+		(this->invalidContainer = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(this->invalidContainer)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->invalidContainer)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->invalidContainer));
+		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3D3D42", false)));
@@ -16437,7 +16467,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->handle)->GetEventReceiver()->mouseMove, __vwsn_event_handler_);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->self));
+			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->invalidContainer));
 		}
 	}
 
@@ -16471,6 +16501,16 @@ Class (::darkskin::VTrackerTemplateConstructor)
 		(this->self = __vwsn_this_);
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->invalidContainer = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(this->invalidContainer)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->invalidContainer)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->invalidContainer));
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
@@ -16571,7 +16611,7 @@ Class (::darkskin::VTrackerTemplateConstructor)
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->handle)->GetEventReceiver()->mouseMove, __vwsn_event_handler_);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->self));
+			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->invalidContainer));
 		}
 	}
 

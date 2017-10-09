@@ -282,6 +282,7 @@ Type Declaration
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiScrollContainer)
 
 				CLASS_MEMBER_PROPERTY_FAST(ExtendToFullWidth)
+				CLASS_MEMBER_PROPERTY_FAST(ExtendToFullHeight)
 			END_CLASS_MEMBER(GuiScrollContainer)
 
 			BEGIN_CLASS_MEMBER(GuiControlHost)

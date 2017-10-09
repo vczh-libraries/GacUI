@@ -1034,7 +1034,8 @@
           var draggingStartLocation : Point = {x:0 y:0};
         ]]>
       </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="self" MinSizeLimitation="LimitToElementAndChildren">
+      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
+        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Left">
           <Button ControlTemplate="darkskin::LeftScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallDecrease();"/>
@@ -1096,7 +1097,8 @@
           var draggingStartLocation : Point = {x:0 y:0};
         ]]>
       </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="self" MinSizeLimitation="LimitToElementAndChildren">
+      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
+        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Top">
           <Button ControlTemplate="darkskin::TopScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallDecrease();"/>
@@ -1158,7 +1160,8 @@
           var draggingStartLocation : Point = {x:0 y:0};
         ]]>
       </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="self" MinSizeLimitation="LimitToElementAndChildren">
+      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
+        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         <SolidBackground Color="#3F3F47"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder Color="#55545A"/>
@@ -1240,7 +1243,8 @@
           var draggingStartLocation : Point = {x:0 y:0};
         ]]>
       </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="self" MinSizeLimitation="LimitToElementAndChildren">
+      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
+        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         <SolidBackground Color="#3F3F47"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder Color="#55545A"/>
