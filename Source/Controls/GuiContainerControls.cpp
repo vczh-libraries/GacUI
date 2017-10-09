@@ -53,8 +53,8 @@ GuiTabPageList
 			{
 				value->tab = tab;
 				value->SetVisible(false);
-				value->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				tab->GetContainerComposition()->AddChild(value->GetBoundsComposition());
+				value->boundsComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				tab->containerComposition->AddChild(value->boundsComposition);
 
 				if (!tab->selectedPage)
 				{
@@ -64,7 +64,7 @@ GuiTabPageList
 
 			void GuiTabPageList::BeforeRemove(vint index, GuiTabPage* const& value)
 			{
-				tab->GetContainerComposition()->RemoveChild(value->GetBoundsComposition());
+				tab->containerComposition->RemoveChild(value->boundsComposition);
 				value->tab = nullptr;
 
 				if (items.Count() == 0)
@@ -150,7 +150,7 @@ GuiTab
 						selectedPage = nullptr;
 					}
 				}
-				else if (value->tab == this)
+				else if (value->GetOwnerTab() == this)
 				{
 					if (selectedPage == value)
 					{
@@ -163,7 +163,10 @@ GuiTab
 						tabPage->SetVisible(tabPage == selectedPage);
 					}
 				}
-				GetControlTemplateObject()->SetSelectedTabPage(selectedPage);
+				if (HasControlTemplateObject())
+				{
+					GetControlTemplateObject()->SetSelectedTabPage(selectedPage);
+				}
 				SelectedPageChanged.Execute(GetNotifyEventArguments());
 				return selectedPage == value;
 			}

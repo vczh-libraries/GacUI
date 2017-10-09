@@ -142,6 +142,7 @@ GuiListControl
 
 			void GuiListControl::AfterControlTemplateInstalled_(bool initialize)
 			{
+				callback->ClearCache();
 			}
 
 			void GuiListControl::OnItemModified(vint start, vint count, vint newCount)

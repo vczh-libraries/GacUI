@@ -28,7 +28,6 @@ Tab Control
 			class GuiTabPage : public GuiCustomControl, public AggregatableDescription<GuiTabPage>
 			{
 				friend class GuiTabPageList;
-				friend class GuiTab;
 			protected:
 				GuiTab*											tab = nullptr;
 
@@ -59,7 +58,6 @@ Tab Control
 			class GuiTab : public GuiControl, public Description<GuiTab>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TabTemplate, GuiControl)
-				friend class GuiTabPage;
 				friend class GuiTabPageList;
 			protected:
 				class CommandExecutor : public Object, public ITabCommandExecutor

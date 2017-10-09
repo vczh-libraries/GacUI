@@ -291,6 +291,10 @@ Basic Construction
 					NAME = ct; \
 					BASE_TYPE::CheckAndStoreControlTemplate(value); \
 				} \
+				bool HasControlTemplateObject() \
+				{ \
+					return NAME != nullptr; \
+				} \
 			public: \
 				templates::Gui##TEMPLATE* GetControlTemplateObject() \
 				{ \
