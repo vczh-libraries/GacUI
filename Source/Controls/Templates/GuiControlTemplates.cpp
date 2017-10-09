@@ -487,11 +487,6 @@ GuiScrollViewTemplate
 				return verticalScroll;
 			}
 
-			compositions::GuiBoundsComposition* GuiScrollViewTemplate::GetInternalContainerComposition()
-			{
-				return containerComposition;
-			}
-
 			bool GuiScrollViewTemplate::GetHorizontalAlwaysVisible()
 			{
 				return horizontalAlwaysVisible;

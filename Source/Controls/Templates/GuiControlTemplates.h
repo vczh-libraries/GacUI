@@ -471,7 +471,6 @@ Scrollable Controls
 
 				controls::GuiScroll*					GetHorizontalScroll();
 				controls::GuiScroll*					GetVerticalScroll();
-				compositions::GuiBoundsComposition*		GetInternalContainerComposition();
 
 				bool									GetHorizontalAlwaysVisible();
 				void									SetHorizontalAlwaysVisible(bool value);

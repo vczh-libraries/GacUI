@@ -136,7 +136,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(AdjustView, {L"fullSize"})
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(HorizontalScroll)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(VerticalScroll)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(InternalContainerComposition)
 				CLASS_MEMBER_PROPERTY_FAST(HorizontalAlwaysVisible)
 				CLASS_MEMBER_PROPERTY_FAST(VerticalAlwaysVisible)
 			END_CLASS_MEMBER(GuiScrollViewTemplate)

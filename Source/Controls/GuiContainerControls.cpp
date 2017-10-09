@@ -197,13 +197,11 @@ GuiScrollView
 			{
 				auto ct = GetControlTemplateObject();
 				ct->SetCommands(nullptr);
-				ct->GetInternalContainerComposition()->BoundsChanged.Detach(containerBoundsChangedHandler);
 				ct->GetHorizontalScroll()->PositionChanged.Detach(hScrollHandler);
 				ct->GetVerticalScroll()->PositionChanged.Detach(vScrollHandler);
 				ct->GetEventReceiver()->horizontalWheel.Detach(hWheelHandler);
 				ct->GetEventReceiver()->verticalWheel.Detach(vWheelHandler);
 
-				containerBoundsChangedHandler = nullptr;
 				hScrollHandler = nullptr;
 				vScrollHandler = nullptr;
 				hWheelHandler = nullptr;
@@ -215,7 +213,6 @@ GuiScrollView
 			{
 				auto ct = GetControlTemplateObject();
 				ct->SetCommands(commandExecutor.Obj());
-				containerBoundsChangedHandler = ct->GetInternalContainerComposition()->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);
 				hScrollHandler = ct->GetHorizontalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
 				vScrollHandler = ct->GetVerticalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnVerticalScroll);
 				hWheelHandler = ct->GetEventReceiver()->horizontalWheel.AttachMethod(this, &GuiScrollView::OnHorizontalWheel);
@@ -290,6 +287,7 @@ GuiScrollView
 				, supressScrolling(false)
 			{
 				commandExecutor = new CommandExecutor(this);
+				containerComposition->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);
 			}
 
 			vint GuiScrollView::GetSmallMove()
@@ -347,7 +345,7 @@ GuiScrollView
 
 			Size GuiScrollView::GetViewSize()
 			{
-				Size viewSize = GetControlTemplateObject()->GetInternalContainerComposition()->GetBounds().GetSize();
+				Size viewSize = GetControlTemplateObject()->GetContainerComposition()->GetBounds().GetSize();
 				return viewSize;
 			}
 
@@ -405,11 +403,6 @@ GuiScrollView
 GuiScrollContainer
 ***********************************************************************/
 
-			void GuiScrollContainer::OnControlContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				CalculateView();
-			}
-
 			Size GuiScrollContainer::QueryFullSize()
 			{
 				return containerComposition->GetBounds().GetSize();
@@ -424,13 +417,7 @@ GuiScrollContainer
 			GuiScrollContainer::GuiScrollContainer(theme::ThemeName themeName)
 				:GuiScrollView(themeName)
 			{
-				containerComposition = new GuiBoundsComposition();
-				containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				containerComposition->BoundsChanged.AttachMethod(this, &GuiScrollContainer::OnControlContainerBoundsChanged);
-
-				GuiControl::containerComposition->AddChild(containerComposition);
-				GuiControl::containerComposition = containerComposition;
-
+				containerComposition->SetAlignmentToParent(Margin(-1, -1, -1, -1));
 				UpdateView(Rect(0, 0, 0, 0));
 			}
 

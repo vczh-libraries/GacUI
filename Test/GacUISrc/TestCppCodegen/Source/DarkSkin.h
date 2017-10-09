@@ -1717,10 +1717,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ScrollViewTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::darkskin::ScrollViewTemplate* self = static_cast<::darkskin::ScrollViewTemplate*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
 		void __vwsn_initialize_instance_(::darkskin::ScrollViewTemplate* __vwsn_this_);
 	public:
 		ScrollViewTemplateConstructor();

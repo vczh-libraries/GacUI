@@ -121,7 +121,6 @@ Scroll View
 
 				Ptr<CommandExecutor>					commandExecutor;
 				bool									supressScrolling;
-				Ptr<IEventHandler>						containerBoundsChangedHandler;
 				Ptr<IEventHandler>						hScrollHandler;
 				Ptr<IEventHandler>						vScrollHandler;
 				Ptr<IEventHandler>						hWheelHandler;
@@ -191,9 +190,7 @@ Scroll View
 			{
 			protected:
 				bool									extendToFullWidth = false;
-				compositions::GuiBoundsComposition*		containerComposition = nullptr;
 
-				void									OnControlContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				Size									QueryFullSize()override;
 				void									UpdateView(Rect viewBounds)override;
 			public:

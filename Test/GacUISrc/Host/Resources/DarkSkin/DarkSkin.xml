@@ -1344,13 +1344,13 @@
 
   <Instance name="ScrollViewTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ScrollViewTemplate" ref.Styles="res://DarkSkin/Style">
-      <ScrollViewTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+      <ScrollViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
         <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
         <att.DefaultScrollSize>20</att.DefaultScrollSize>
 
         <SolidBackground Color="#252526"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
         </Bounds>
       </ScrollViewTemplate>
