@@ -17414,8 +17414,8 @@ namespace vl
 					{
 					}
 
-					static OrderResult						CheckOrder(Ptr<TransitionItem> t1, Ptr<TransitionItem> t2, bool forceGivingOrder);
-					static vint								Compare(Ptr<TransitionItem> t1, Ptr<TransitionItem> t2);
+					static OrderResult						CheckOrder(Ptr<TransitionItem> t1, Ptr<TransitionItem> t2, OrderResult defaultResult = UnknownOrder);
+					static vint								Compare(Ptr<TransitionItem> t1, Ptr<TransitionItem> t2, OrderResult defaultResult);
 				};
 
 				class TransitionBag
@@ -17646,15 +17646,21 @@ namespace vl
 
 			class Automaton : public Object
 			{
+				typedef collections::List<definitions::ParsingDefinitionRuleDefinition*>							RuleDefList;
 				typedef collections::Dictionary<definitions::ParsingDefinitionRuleDefinition*, Ptr<RuleInfo>>		RuleInfoMap;
 			public:
 				ParsingSymbolManager*								symbolManager;
 				collections::List<Ptr<Transition>>					transitions;
 				collections::List<Ptr<State>>						states;
-				RuleInfoMap											ruleInfos;
+				collections::List<Ptr<RuleInfo>>					ruleInfos;
+
+				RuleDefList											orderedRulesDefs;
+				RuleInfoMap											ruleDefToInfoMap;
 
 				Automaton(ParsingSymbolManager* _symbolManager);
 				~Automaton();
+
+				void												AddRuleInfo(definitions::ParsingDefinitionRuleDefinition* rule, Ptr<RuleInfo> ruleInfo);
 
 				State*												RuleStartState(definitions::ParsingDefinitionRuleDefinition* ownerRule);
 				State*												RootRuleStartState(definitions::ParsingDefinitionRuleDefinition* ownerRule);
