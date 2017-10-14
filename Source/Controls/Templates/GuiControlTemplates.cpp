@@ -1047,6 +1047,10 @@ GuiDatePickerTemplate
 
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				SetContainerComposition(this);
+
+				FontChanged.AttachMethod(this, &GuiDatePickerTemplate::OnFontChanged);
+				GuiEventArgs arguments(this);
+				FontChanged.Execute(arguments);
 			}
 
 /***********************************************************************
