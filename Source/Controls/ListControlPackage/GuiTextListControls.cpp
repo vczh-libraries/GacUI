@@ -152,7 +152,7 @@ DefaultRadioTextListItemTemplate
 				{
 					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
-						auto style = textList->GetControlTemplateObject()->GetCheckBulletTemplate();
+						auto style = textList->GetControlTemplateObject()->GetRadioBulletTemplate();
 						if (style) return style;
 					}
 					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::RadioTextListItem);
