@@ -225,6 +225,12 @@ GuiListControl
 				CalculateView();
 			}
 
+			void GuiListControl::OnClientBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				auto args = GetNotifyEventArguments();
+				AdoptedSizeInvalidated.Execute(args);
+			}
+
 			void GuiListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				FOREACH(ItemStyle*, style, visibleStyles.Keys())
@@ -352,10 +358,12 @@ GuiListControl
 			{
 				FontChanged.AttachMethod(this, &GuiListControl::OnFontChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
+				containerComposition->BoundsChanged.AttachMethod(this, &GuiListControl::OnClientBoundsChanged);
 
 				ItemTemplateChanged.SetAssociatedComposition(boundsComposition);
 				ArrangerChanged.SetAssociatedComposition(boundsComposition);
 				AxisChanged.SetAssociatedComposition(boundsComposition);
+				AdoptedSizeInvalidated.SetAssociatedComposition(boundsComposition);
 
 				ItemLeftButtonDown.SetAssociatedComposition(boundsComposition);
 				ItemLeftButtonUp.SetAssociatedComposition(boundsComposition);

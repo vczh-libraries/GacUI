@@ -1,4 +1,5 @@
 #include "GuiComboControls.h"
+#include "../GuiApplication.h"
 
 namespace vl
 {
@@ -152,6 +153,21 @@ GuiComboBoxListControl
 				InstallStyleController(itemIndex);
 			}
 
+			void GuiComboBoxListControl::AdoptSubMenuSize()
+			{
+				Size expectedSize(0, GetFont().size * 20);
+				Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
+
+				Size clientSize = GetPreferredMenuClientSize();
+				clientSize.y = adoptedSize.y + GetSubMenu()->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
+				SetPreferredMenuClientSize(clientSize);
+
+				if (GetSubMenuOpening())
+				{
+					GetSubMenu()->SetClientSize(clientSize);
+				}
+			}
+
 			void GuiComboBoxListControl::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if (itemStyleController)
@@ -166,8 +182,7 @@ GuiComboBoxListControl
 				{
 					itemStyleController->SetFont(GetFont());
 				}
-				auto args = GetNotifyEventArguments();
-				OnListControlAdoptedSizeInvalidated(nullptr, args);
+				AdoptSubMenuSize();
 			}
 
 			void GuiComboBoxListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -180,17 +195,15 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				Size expectedSize(0, GetFont().size * 20);
-				Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
+				AdoptSubMenuSize();
+			}
 
-				Size clientSize = GetPreferredMenuClientSize();
-				clientSize.y = adoptedSize.y + GetSubMenu()->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
-				SetPreferredMenuClientSize(clientSize);
-
-				if (GetSubMenuOpening())
+			void GuiComboBoxListControl::OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				GetApplication()->InvokeLambdaInMainThread([=]()
 				{
-					GetSubMenu()->SetClientSize(clientSize);
-				}
+					AdoptSubMenuSize();
+				});
 			}
 
 			void GuiComboBoxListControl::OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -210,6 +223,7 @@ GuiComboBoxListControl
 
 				containedListControl->SetMultiSelect(false);
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
+				containedListControl->GetBoundsComposition()->BoundsChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlBoundsChanged);
 				containedListControl->SelectionChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
 
 				auto itemProvider = containedListControl->GetItemProvider();
