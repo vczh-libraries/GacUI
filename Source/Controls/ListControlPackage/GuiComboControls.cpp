@@ -223,8 +223,8 @@ GuiComboBoxListControl
 
 				containedListControl->SetMultiSelect(false);
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
-				containedListControl->GetBoundsComposition()->BoundsChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlBoundsChanged);
 				containedListControl->SelectionChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
+				boundsChangedHandler = containedListControl->GetBoundsComposition()->BoundsChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlBoundsChanged);
 
 				auto itemProvider = containedListControl->GetItemProvider();
 
@@ -237,6 +237,8 @@ GuiComboBoxListControl
 
 			GuiComboBoxListControl::~GuiComboBoxListControl()
 			{
+				containedListControl->GetBoundsComposition()->BoundsChanged.Detach(boundsChangedHandler);
+				boundsChangedHandler = nullptr;
 			}
 
 			GuiSelectableListControl* GuiComboBoxListControl::GetContainedListControl()
