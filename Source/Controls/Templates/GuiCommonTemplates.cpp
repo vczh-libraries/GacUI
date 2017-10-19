@@ -170,6 +170,8 @@ GuiCommonDatePickerLook
 				, primaryTextColor(_primaryTextColor)
 				, secondaryTextColor(_secondaryTextColor)
 			{
+				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
 				GuiTableComposition* monthTable = 0;
 				GuiTableComposition* dayTable = 0;
 				{
