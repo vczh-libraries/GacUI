@@ -145,16 +145,7 @@ Type Declaration
 			GUI_CONTROL_TEMPLATE(GuiListViewTemplate, GuiListControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiTreeViewTemplate, GuiListControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiTabTemplate, GuiControlTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiDatePickerTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiDatePickerTemplate*(), NO_PARAMETER)
-
-				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(DateLocale)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Date)
-			END_CLASS_MEMBER(GuiDatePickerTemplate)
-
+			GUI_CONTROL_TEMPLATE(GuiDatePickerTemplate, GuiControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiDateComboBoxTemplate, GuiComboBoxTemplate)
 			GUI_CONTROL_TEMPLATE(GuiListItemTemplate, GuiTemplate)
 			GUI_CONTROL_TEMPLATE(GuiTextListItemTemplate, GuiListItemTemplate)
@@ -162,6 +153,19 @@ Type Declaration
 			GUI_CONTROL_TEMPLATE(GuiGridCellTemplate, GuiControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiGridVisualizerTemplate, GuiGridCellTemplate)
 			GUI_CONTROL_TEMPLATE(GuiGridEditorTemplate, GuiGridCellTemplate)
+
+			BEGIN_CLASS_MEMBER(GuiCommonDatePickerLook)
+				CLASS_MEMBER_BASE(GuiTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiCommonDatePickerLook*(Color, Color, Color), { L"backgroundColor" _ L"primaryTextColor" _ L"secondaryTextColor" })
+
+				CLASS_MEMBER_PROPERTY_FAST(Commands)
+				CLASS_MEMBER_PROPERTY_FAST(DateButtonTemplate)
+				CLASS_MEMBER_PROPERTY_FAST(DateTextListTemplate)
+				CLASS_MEMBER_PROPERTY_FAST(DateComboBoxTemplate)
+				CLASS_MEMBER_PROPERTY_FAST(DateLocale)
+				CLASS_MEMBER_PROPERTY_FAST(Date)
+				CLASS_MEMBER_PROPERTY_FAST(Font)
+			END_CLASS_MEMBER(GuiCommonDatePickerLook)
 
 #undef GUI_CONTROL_TEMPLATE
 #undef GUI_TEMPLATE_PROPERTY_REFLECTION

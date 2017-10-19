@@ -227,6 +227,7 @@ Type List (Templates)
 			F(presentation::templates::GuiGridCellTemplate)\
 			F(presentation::templates::GuiGridVisualizerTemplate)\
 			F(presentation::templates::GuiGridEditorTemplate)\
+			F(presentation::templates::GuiCommonDatePickerLook)\
 
 /***********************************************************************
 Type List (Controls)

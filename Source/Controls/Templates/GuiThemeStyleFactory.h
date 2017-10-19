@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUITHEMESTYLEFACTORY
 
 #include "GuiControlTemplates.h"
+#include "GuiCommonTemplates.h"
 
 namespace vl
 {

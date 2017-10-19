@@ -471,6 +471,9 @@
     <ClCompile Include="..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.cpp">
       <Filter>GacUI\Controls\Templates</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\Templates\GuiCommonTemplates.cpp">
+      <Filter>GacUI\Controls\Templates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -756,6 +759,9 @@
       <Filter>GacUI\Compiler</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.h">
+      <Filter>GacUI\Controls\Templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\Templates\GuiCommonTemplates.h">
       <Filter>GacUI\Controls\Templates</Filter>
     </ClInclude>
   </ItemGroup>
