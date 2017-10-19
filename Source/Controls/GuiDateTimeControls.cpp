@@ -25,6 +25,7 @@ GuiDatePicker::CommandExecutor
 
 			void GuiDatePicker::CommandExecutor::NotifyDateChanged()
 			{
+				datePicker->date = datePicker->GetControlTemplateObject()->GetDate();
 				datePicker->UpdateText();
 				datePicker->DateChanged.Execute(datePicker->GetNotifyEventArguments());
 			}
