@@ -37,9 +37,17 @@ GuiCommonDatePickerLookLoader
 
 				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					propertyNames.Add(_BackgroundColor);
-					propertyNames.Add(_PrimaryTextColor);
-					propertyNames.Add(_SecondaryTextColor);
+					if (CanCreate(typeInfo))
+					{
+						propertyNames.Add(_BackgroundColor);
+						propertyNames.Add(_PrimaryTextColor);
+						propertyNames.Add(_SecondaryTextColor);
+					}
+				}
+
+				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					GetRequiredPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override

@@ -1,6 +1,8 @@
 #include "GuiControlTemplates.h"
 #include "../Templates/GuiThemeStyleFactory.h"
+#include "../GuiWindowControls.h"
 #include "../GuiScrollControls.h"
+#include "../ListControlPackage/GuiListControls.h"
 
 namespace vl
 {
@@ -9,6 +11,7 @@ namespace vl
 		namespace controls
 		{
 			using namespace reflection::description;
+			using namespace compositions;
 
 /***********************************************************************
 GuiComponent
