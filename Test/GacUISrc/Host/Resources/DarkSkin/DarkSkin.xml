@@ -1651,7 +1651,7 @@
 
   <Instance name="ListViewColumnHeaderTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ListViewColumnHeaderTemplate" ref.Styles="res://DarkSkin/Style">
-      <ListViewColumnHeaderTemplate ref.Name="self" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
+      <ListViewColumnHeaderTemplate ref.Name="self" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
         <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <SolidBackground ref.Style="columnHeaderBackground"/>
         <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0" PreferredMinSize="x:1 y:0">
@@ -1660,7 +1660,7 @@
         <Bounds AlignmentToParent="left:0 top:-1 right:0 bottom:0" PreferredMinSize="x:0 y:1">
           <SolidBorder Color="#404042"/>
         </Bounds>
-        <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
+        <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:11 bottom:1">
           <Bounds AlignmentToParent="left:8 top:5 right:5 bottom:5">
             <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" Ellipse="true" HorizontalAlignment="Left" VerticalAlignment="Center"/>
           </Bounds>

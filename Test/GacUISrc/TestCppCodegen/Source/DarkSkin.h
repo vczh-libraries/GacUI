@@ -1349,6 +1349,7 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewColumnHeaderTemplateConstructor>;
 #endif
 	protected:
+		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::darkskin::ListViewColumnHeaderTemplate* self = static_cast<::darkskin::ListViewColumnHeaderTemplate*>(nullptr);
 		::vl::presentation::controls::GuiSelectableButton* buttonArrow = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
@@ -1357,10 +1358,9 @@ namespace darkskin
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::darkskin::ListViewColumnHeaderTemplate* __vwsn_this_);
 	public:
 		ListViewColumnHeaderTemplateConstructor();
