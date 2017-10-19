@@ -686,6 +686,7 @@ GuiDatePickerTemplate
 			GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiDatePickerTemplate::GuiDatePickerTemplate()
+				:Commands_(nullptr)
 			{
 				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}

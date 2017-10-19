@@ -1593,9 +1593,9 @@
 
   <Instance name="DatePickerTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::DatePickerTemplate" ref.Styles="res://DarkSkin/Style">
-      <DatePickerTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
+      <DatePickerTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren" Date-bind="look.Date">
         <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-        <CommonDatePickerLook AlignmentToParent="left:0 top:0 right:0 bottom:0" Font-bind="self.Font" Date-bind="self.Date" DateLocale-bind="self.DateLocale">
+        <CommonDatePickerLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0" Font-bind="self.Font" Date-bind="self.Date" DateLocale-bind="self.DateLocale" Commands-bind="self.Commands">
           <att.DateButtonTemplate>darkskin::ItemBackgroundTemplate</att.DateButtonTemplate>
           <att.DateTextListTemplate>darkskin::TextListTemplate</att.DateTextListTemplate>
           <att.DateComboBoxTemplate>darkskin::ComboBoxTemplate</att.DateComboBoxTemplate>

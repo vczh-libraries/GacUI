@@ -66,6 +66,8 @@ GuiCommonDatePickerLook
 				GuiCommonDatePickerLook(Color _backgroundColor, Color _primaryTextColor, Color _secondaryTextColor);
 				~GuiCommonDatePickerLook();
 
+				compositions::GuiNotifyEvent						DateChanged;
+
 				controls::IDatePickerCommandExecutor*				GetCommands();
 				void												SetCommands(controls::IDatePickerCommandExecutor* value);
 				TemplateProperty<GuiSelectableButtonTemplate>		GetDateButtonTemplate();

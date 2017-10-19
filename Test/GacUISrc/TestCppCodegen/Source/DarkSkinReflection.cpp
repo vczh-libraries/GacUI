@@ -235,8 +235,8 @@ namespace vl
 			BEGIN_CLASS_MEMBER(::darkskin::DatePickerTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::DatePickerTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
-				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(invalidContainer)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::DatePickerTemplateConstructor)
 

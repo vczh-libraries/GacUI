@@ -76,6 +76,9 @@ GuiCommonDatePickerLook
 						vint year = comboYear->GetSelectedIndex() + YearFirst;
 						vint month = comboMonth->GetSelectedIndex() + 1;
 						SetDate(DateTime::FromDateTime(year, month, 1));
+
+						GuiEventArgs arguments(this);
+						DateChanged.Execute(arguments);
 						commands->NotifyDateChanged();
 						commands->NotifyDateNavigated();
 					}
@@ -101,6 +104,9 @@ GuiCommonDatePickerLook
 							{
 								currentDate = day;
 							}
+
+							GuiEventArgs arguments(this);
+							DateChanged.Execute(arguments);
 							commands->NotifyDateChanged();
 							commands->NotifyDateSelected();
 						}
@@ -170,6 +176,7 @@ GuiCommonDatePickerLook
 				, primaryTextColor(_primaryTextColor)
 				, secondaryTextColor(_secondaryTextColor)
 			{
+				DateChanged.SetAssociatedComposition(this);
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 				GuiTableComposition* monthTable = 0;
