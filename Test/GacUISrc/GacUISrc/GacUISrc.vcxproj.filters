@@ -25,9 +25,6 @@
     <Filter Include="GacUI\Controls\ListControlPackage">
       <UniqueIdentifier>{6c979760-36c4-4f83-a1ba-7b4b286a377d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GacUI\Controls\Styles">
-      <UniqueIdentifier>{219d871a-eea3-4532-83e3-7f8202920db0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GacUI\Controls\Templates">
       <UniqueIdentifier>{eb48375e-e953-4bc4-87b7-7f47c70becd7}</UniqueIdentifier>
     </Filter>
@@ -137,9 +134,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.cpp">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.cpp">
-      <Filter>GacUI\Controls\Styles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.cpp">
       <Filter>GacUI\Controls\Templates</Filter>
@@ -474,6 +468,9 @@
     <ClCompile Include="..\..\..\Source\Compiler\GuiCppGen.cpp">
       <Filter>GacUI\Compiler</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.cpp">
+      <Filter>GacUI\Controls\Templates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -526,9 +523,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.h">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.h">
-      <Filter>GacUI\Controls\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.h">
       <Filter>GacUI\Controls\Templates</Filter>
@@ -760,6 +754,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\GuiCppGen.h">
       <Filter>GacUI\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.h">
+      <Filter>GacUI\Controls\Templates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

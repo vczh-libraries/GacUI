@@ -1,5 +1,7 @@
 #include "GuiControlTemplates.h"
-#include "../Styles/GuiThemeStyleFactory.h"
+#include "../Templates/GuiThemeStyleFactory.h"
+#include "../GuiScrollControls.h"
+#include "../ListControlPackage/GuiComboControls.h"
 
 namespace vl
 {

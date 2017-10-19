@@ -356,8 +356,8 @@
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.cpp" />
-    <ClCompile Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextAutoComplete.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextColorizer.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextGeneralOperations.cpp" />
@@ -546,8 +546,8 @@
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.h" />
-    <ClInclude Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.h" />
     <ClInclude Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.h" />
     <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextAutoComplete.h" />
     <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextColorizer.h" />
     <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextGeneralOperations.h" />

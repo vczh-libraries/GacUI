@@ -9,30 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUITHEMESTYLEFACTORY
 #define VCZH_PRESENTATION_CONTROLS_GUITHEMESTYLEFACTORY
 
-#include "../GuiBasicControls.h"
-#include "../GuiLabelControls.h"
-#include "../GuiButtonControls.h"
-#include "../GuiScrollControls.h"
-#include "../GuiWindowControls.h"
-#include "../GuiContainerControls.h"
-#include "../GuiDateTimeControls.h"
-#include "../GuiDialogs.h"
-
-#include "../TextEditorPackage/GuiTextControls.h"
-#include "../TextEditorPackage/GuiDocumentViewer.h"
-
-#include "../ListControlPackage/GuiListControls.h"
-#include "../ListControlPackage/GuiTextListControls.h"
-#include "../ListControlPackage/GuiListViewControls.h"
-#include "../ListControlPackage/GuiTreeViewControls.h"
-#include "../ListControlPackage/GuiComboControls.h"
-#include "../ListControlPackage/GuiDataGridControls.h"
-#include "../ListControlPackage/GuiDataGridExtensions.h"
-#include "../ListControlPackage/GuiBindableListControls.h"
-#include "../ListControlPackage/GuiBindableDataGrid.h"
-
-#include "../ToolstripPackage/GuiMenuControls.h"
-#include "../ToolstripPackage/GuiToolstripMenu.h"
+#include "GuiControlTemplates.h"
 
 namespace vl
 {

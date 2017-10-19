@@ -1,6 +1,6 @@
 #include "GuiTreeViewControls.h"
 #include "GuiListControlItemArrangers.h"
-#include "../Styles/GuiThemeStyleFactory.h"
+#include "../Templates/GuiThemeStyleFactory.h"
 
 namespace vl
 {
