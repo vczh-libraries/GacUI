@@ -71,6 +71,7 @@ Predefined ItemArranger
 					Size										GetTotalSize()override;
 					GuiListControl::ItemStyle*					GetVisibleStyle(vint itemIndex)override;
 					vint										GetVisibleIndex(GuiListControl::ItemStyle* style)override;
+					void										ReloadVisibleStyles()override;
 					void										OnViewChanged(Rect bounds)override;
 				};
 				

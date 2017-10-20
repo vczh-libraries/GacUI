@@ -434,6 +434,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(DetachListControl, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetVisibleStyle, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(GetVisibleIndex, {L"style"})
+				CLASS_MEMBER_METHOD(ReloadVisibleStyles, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(OnViewChanged, {L"bounds"})
 				CLASS_MEMBER_METHOD(FindItem, {L"itemIndex" _ L"key"})
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})

@@ -282,8 +282,8 @@ RangedItemArrangerBase
 					if (callback != value)
 					{
 						ClearStyles();
+						callback = value;
 					}
-					callback = value;
 				}
 
 				Size RangedItemArrangerBase::GetTotalSize()
@@ -320,6 +320,11 @@ RangedItemArrangerBase
 						}
 					}
 					return -1;
+				}
+
+				void RangedItemArrangerBase::ReloadVisibleStyles()
+				{
+					ClearStyles();
 				}
 
 				void RangedItemArrangerBase::OnViewChanged(Rect bounds)

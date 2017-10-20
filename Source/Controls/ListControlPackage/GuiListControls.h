@@ -147,42 +147,44 @@ List Control
 				public:
 					/// <summary>Called when an item arranger in installed to a <see cref="GuiListControl"/>.</summary>
 					/// <param name="value">The list control.</param>
-					virtual void								AttachListControl(GuiListControl* value)=0;
+					virtual void								AttachListControl(GuiListControl* value) = 0;
 					/// <summary>Called when an item arranger in uninstalled from a <see cref="GuiListControl"/>.</summary>
-					virtual void								DetachListControl()=0;
+					virtual void								DetachListControl() = 0;
 					/// <summary>Get the binded item arranger callback object.</summary>
 					/// <returns>The binded item arranger callback object.</returns>
-					virtual IItemArrangerCallback*				GetCallback()=0;
+					virtual IItemArrangerCallback*				GetCallback() = 0;
 					/// <summary>Bind the item arranger callback object.</summary>
 					/// <param name="value">The item arranger callback object to bind.</param>
-					virtual void								SetCallback(IItemArrangerCallback* value)=0;
+					virtual void								SetCallback(IItemArrangerCallback* value) = 0;
 					/// <summary>Get the total size of all data controls.</summary>
 					/// <returns>The total size.</returns>
-					virtual Size								GetTotalSize()=0;
+					virtual Size								GetTotalSize() = 0;
 					/// <summary>Get the item style controller for an visible item index. If an item is not visible, it returns null.</summary>
 					/// <returns>The item style controller.</returns>
 					/// <param name="itemIndex">The item index.</param>
-					virtual ItemStyle*							GetVisibleStyle(vint itemIndex)=0;
+					virtual ItemStyle*							GetVisibleStyle(vint itemIndex) = 0;
 					/// <summary>Get the item index for an visible item style controller. If an item is not visible, it returns -1.</summary>
 					/// <returns>The item index.</returns>
 					/// <param name="style">The item style controller.</param>
-					virtual vint								GetVisibleIndex(ItemStyle* style)=0;
+					virtual vint								GetVisibleIndex(ItemStyle* style) = 0;
+					/// <summary>Reload all visible items.</summary>
+					virtual void								ReloadVisibleStyles() = 0;
 					/// <summary>Called when the visible area of item container is changed.</summary>
 					/// <param name="bounds">The new visible area.</param>
-					virtual void								OnViewChanged(Rect bounds)=0;
+					virtual void								OnViewChanged(Rect bounds) = 0;
 					/// <summary>Find the item by an base item and a key direction.</summary>
 					/// <returns>The item index that is found. Returns -1 if this operation failed.</returns>
 					/// <param name="itemIndex">The base item index.</param>
 					/// <param name="key">The key direction.</param>
-					virtual vint								FindItem(vint itemIndex, compositions::KeyDirection key)=0;
+					virtual vint								FindItem(vint itemIndex, compositions::KeyDirection key) = 0;
 					/// <summary>Adjust the view location to make an item visible.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="itemIndex">The item index of the item to be made visible.</param>
-					virtual bool								EnsureItemVisible(vint itemIndex)=0;
+					virtual bool								EnsureItemVisible(vint itemIndex) = 0;
 					/// <summary>Get the adopted size for the view bounds.</summary>
 					/// <returns>The adopted size, making the vids bounds just enough to display several items.</returns>
 					/// <param name="expectedSize">The expected size, to provide a guidance.</param>
-					virtual Size								GetAdoptedSize(Size expectedSize)=0;
+					virtual Size								GetAdoptedSize(Size expectedSize) = 0;
 				};
 
 			protected:

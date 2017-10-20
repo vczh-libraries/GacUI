@@ -142,7 +142,11 @@ GuiListControl
 
 			void GuiListControl::AfterControlTemplateInstalled_(bool initialize)
 			{
-				callback->ClearCache();
+				if (itemArranger)
+				{
+					itemArranger->ReloadVisibleStyles();
+					CalculateView();
+				}
 			}
 
 			void GuiListControl::OnItemModified(vint start, vint count, vint newCount)

@@ -718,6 +718,11 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY(GetVisibleIndex, style);
 				}
 
+				void ReloadVisibleStyles()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(ReloadVisibleStyles);
+				}
+
 				void OnViewChanged(presentation::Rect bounds)override
 				{
 					INVOKE_INTERFACE_PROXY(OnViewChanged, bounds);
