@@ -235,7 +235,6 @@ namespace vl
 			BEGIN_CLASS_MEMBER(::darkskin::DatePickerTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::DatePickerTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
-				CLASS_MEMBER_FIELD(invalidContainer)
 				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::DatePickerTemplateConstructor)
@@ -344,7 +343,6 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
 				CLASS_MEMBER_FIELD(handle)
 				CLASS_MEMBER_FIELD(handleContainer)
-				CLASS_MEMBER_FIELD(invalidContainer)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::HScrollTemplateConstructor)
 
@@ -366,7 +364,6 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(handle)
-				CLASS_MEMBER_FIELD(invalidContainer)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::HTrackerTemplateConstructor)
 
@@ -857,7 +854,6 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
 				CLASS_MEMBER_FIELD(handle)
 				CLASS_MEMBER_FIELD(handleContainer)
-				CLASS_MEMBER_FIELD(invalidContainer)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::VScrollTemplateConstructor)
 
@@ -879,7 +875,6 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(handle)
-				CLASS_MEMBER_FIELD(invalidContainer)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::VTrackerTemplateConstructor)
 

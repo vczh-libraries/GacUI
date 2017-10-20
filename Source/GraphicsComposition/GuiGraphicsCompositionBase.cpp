@@ -138,9 +138,6 @@ GuiGraphicsComposition
 			}
 
 			GuiGraphicsComposition::GuiGraphicsComposition()
-				:visible(true)
-				,minSizeLimitation(NoLimit)
-				,associatedHitTestResult(INativeWindowListener::NoDecision)
 			{
 				sharedPtrDestructorProc = &GuiGraphicsComposition::SharedPtrDestructorProc;
 			}
@@ -338,7 +335,7 @@ GuiGraphicsComposition
 				return eventReceiver;
 			}
 
-			GuiGraphicsComposition* GuiGraphicsComposition::FindComposition(Point location)
+			GuiGraphicsComposition* GuiGraphicsComposition::FindComposition(Point location, bool forMouseEvent)
 			{
 				if (!visible) return 0;
 				Rect bounds = GetBounds();
@@ -353,18 +350,29 @@ GuiGraphicsComposition
 						vint offsetX = childBounds.x1 + (clientArea.x1 - bounds.x1);
 						vint offsetY = childBounds.y1 + (clientArea.y1 - bounds.y1);
 						Point newLocation = location - Size(offsetX, offsetY);
-						GuiGraphicsComposition* childResult = child->FindComposition(newLocation);
+						GuiGraphicsComposition* childResult = child->FindComposition(newLocation, forMouseEvent);
 						if (childResult)
 						{
 							return childResult;
 						}
 					}
-					return this;
+
+					if (!forMouseEvent || !transparentToMouse)
+					{
+						return this;
+					}
 				}
-				else
-				{
-					return 0;
-				}
+				return nullptr;
+			}
+
+			bool GuiGraphicsComposition::GetTransparentToMouse()
+			{
+				return transparentToMouse;
+			}
+
+			void GuiGraphicsComposition::SetTransparentToMouse(bool value)
+			{
+				transparentToMouse = value;
 			}
 
 			Rect GuiGraphicsComposition::GetGlobalBounds()

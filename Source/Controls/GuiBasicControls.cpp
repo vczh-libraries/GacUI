@@ -204,6 +204,7 @@ GuiControl
 					boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 					containerComposition = new GuiBoundsComposition;
+					containerComposition->SetTransparentToMouse(true);
 					containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					containerComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 

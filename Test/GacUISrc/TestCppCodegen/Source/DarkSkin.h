@@ -883,7 +883,6 @@ namespace darkskin
 #endif
 	protected:
 		::darkskin::DatePickerTemplate* self = static_cast<::darkskin::DatePickerTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* invalidContainer = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::templates::GuiCommonDatePickerLook* look = static_cast<::vl::presentation::templates::GuiCommonDatePickerLook*>(nullptr);
 		void __vwsn_initialize_instance_(::darkskin::DatePickerTemplate* __vwsn_this_);
 	public:
@@ -1143,7 +1142,6 @@ namespace darkskin
 #endif
 	protected:
 		::darkskin::HScrollTemplate* self = static_cast<::darkskin::HScrollTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* invalidContainer = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* handleContainer = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiPartialViewComposition* handle = static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
@@ -1207,7 +1205,6 @@ namespace darkskin
 #endif
 	protected:
 		::darkskin::HTrackerTemplate* self = static_cast<::darkskin::HTrackerTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* invalidContainer = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* handle = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
@@ -2500,7 +2497,6 @@ namespace darkskin
 #endif
 	protected:
 		::darkskin::VScrollTemplate* self = static_cast<::darkskin::VScrollTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* invalidContainer = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* handleContainer = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiPartialViewComposition* handle = static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
@@ -2564,7 +2560,6 @@ namespace darkskin
 #endif
 	protected:
 		::darkskin::VTrackerTemplate* self = static_cast<::darkskin::VTrackerTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* invalidContainer = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* handle = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);

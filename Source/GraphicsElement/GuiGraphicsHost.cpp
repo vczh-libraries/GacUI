@@ -345,7 +345,7 @@ GuiGraphicsHost
 					if(!hostRecord.nativeWindow->IsCapturing() && !info.nonClient)
 					{
 						hostRecord.nativeWindow->RequireCapture();
-						mouseCaptureComposition=windowComposition->FindComposition(Point(info.x, info.y));
+						mouseCaptureComposition=windowComposition->FindComposition(Point(info.x, info.y), true);
 					}
 				}
 			}
@@ -475,7 +475,7 @@ GuiGraphicsHost
 				}
 				else
 				{
-					composition=windowComposition->FindComposition(Point(info.x, info.y));
+					composition=windowComposition->FindComposition(Point(info.x, info.y), true);
 				}
 				if(composition)
 				{
@@ -493,7 +493,7 @@ GuiGraphicsHost
 				Rect bounds = hostRecord.nativeWindow->GetBounds();
 				Rect clientBounds = hostRecord.nativeWindow->GetClientBoundsInScreen();
 				Point clientLocation(location.x + bounds.x1 - clientBounds.x1, location.y + bounds.y1 - clientBounds.y1);
-				GuiGraphicsComposition* hitComposition = windowComposition->FindComposition(clientLocation);
+				GuiGraphicsComposition* hitComposition = windowComposition->FindComposition(clientLocation, false);
 				while (hitComposition)
 				{
 					INativeWindowListener::HitTestResult result = hitComposition->GetAssociatedHitTestResult();
@@ -642,7 +642,7 @@ GuiGraphicsHost
 			{
 				CompositionList newCompositions;
 				{
-					GuiGraphicsComposition* composition = windowComposition->FindComposition(Point(info.x, info.y));
+					GuiGraphicsComposition* composition = windowComposition->FindComposition(Point(info.x, info.y), true);
 					while (composition)
 					{
 						newCompositions.Insert(0, composition);

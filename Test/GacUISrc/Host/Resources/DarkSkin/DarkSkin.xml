@@ -1034,8 +1034,7 @@
           var draggingStartLocation : Point = {x:0 y:0};
         ]]>
       </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Left">
           <Button ControlTemplate="darkskin::LeftScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallDecrease();"/>
@@ -1097,8 +1096,7 @@
           var draggingStartLocation : Point = {x:0 y:0};
         ]]>
       </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Top">
           <Button ControlTemplate="darkskin::TopScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallDecrease();"/>
@@ -1160,8 +1158,7 @@
           var draggingStartLocation : Point = {x:0 y:0};
         ]]>
       </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground Color="#3F3F47"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder Color="#55545A"/>
@@ -1243,8 +1240,7 @@
           var draggingStartLocation : Point = {x:0 y:0};
         ]]>
       </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground Color="#3F3F47"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder Color="#55545A"/>
@@ -1593,8 +1589,7 @@
 
   <Instance name="DatePickerTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::DatePickerTemplate" ref.Styles="res://DarkSkin/Style">
-      <DatePickerTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren" Date-bind="look.Date">
-        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      <DatePickerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" Date-bind="look.Date">
         <CommonDatePickerLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0" Font-bind="self.Font" Date-bind="self.Date" DateLocale-bind="self.DateLocale" Commands-bind="self.Commands">
           <att.DateButtonTemplate>darkskin::ItemBackgroundTemplate</att.DateButtonTemplate>
           <att.DateTextListTemplate>darkskin::TextListTemplate</att.DateTextListTemplate>

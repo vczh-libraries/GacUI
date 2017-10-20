@@ -70,14 +70,15 @@ Basic Construction
 				CompositionList								children;
 				GuiGraphicsComposition*						parent = nullptr;
 				Ptr<elements::IGuiGraphicsElement>			ownedElement;
-				bool										visible;
-				MinSizeLimitation							minSizeLimitation;
+				bool										visible = true;
+				bool										transparentToMouse = false;
+				MinSizeLimitation							minSizeLimitation = MinSizeLimitation::NoLimit;
 
 				Ptr<compositions::GuiGraphicsEventReceiver>	eventReceiver;
 				GraphicsHostRecord*							relatedHostRecord = nullptr;
 				controls::GuiControl*						associatedControl = nullptr;
 				INativeCursor*								associatedCursor = nullptr;
-				INativeWindowListener::HitTestResult		associatedHitTestResult;
+				INativeWindowListener::HitTestResult		associatedHitTestResult = INativeWindowListener::NoDecision;
 
 				Margin										margin;
 				Margin										internalMargin;
@@ -158,7 +159,14 @@ Basic Construction
 				/// <summary>Find a deepest composition that under a specified location. If the location is inside a compsition but not hit any sub composition, this function will return this composition.</summary>
 				/// <returns>The deepest composition that under a specified location.</returns>
 				/// <param name="location">The specified location.</param>
-				GuiGraphicsComposition*						FindComposition(Point location);
+				/// <param name="forMouseEvent">Find a composition for mouse event, it will ignore all compositions that are transparent to mouse events.</param>
+				GuiGraphicsComposition*						FindComposition(Point location, bool forMouseEvent);
+				/// <summary>Get is this composition transparent to mouse events.</summary>
+				/// <returns>Returns true if this composition is transparent to mouse events, which means it just passes all mouse events to the composition under it.</returns>
+				bool										GetTransparentToMouse();
+				/// <summary>Set is the composition transparent to mouse events.</summary>
+				/// <param name="value">Set to true to make this composition transparent to mouse events.</param>
+				void										SetTransparentToMouse(bool value);
 				/// <summary>Get the bounds in the top composition space.</summary>
 				/// <returns>The bounds in the top composition space.</returns>
 				Rect										GetGlobalBounds();
