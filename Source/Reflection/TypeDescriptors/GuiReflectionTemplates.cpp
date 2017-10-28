@@ -163,7 +163,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiComponent)
 				CLASS_MEMBER_CONSTRUCTOR(GuiCommonScrollBehavior*(), NO_PARAMETER)
 				
-				CLASS_MEMBER_PROPERTY_FAST(ScrollTemplate)
+				CLASS_MEMBER_METHOD(AttachScrollTemplate, { L"value" })
 				CLASS_MEMBER_METHOD(AttachDecreaseButton, { L"button" })
 				CLASS_MEMBER_METHOD(AttachIncreaseButton, { L"button" })
 				CLASS_MEMBER_METHOD(AttachHorizontalPartialView, { L"partialView" })

@@ -601,12 +601,7 @@ GuiCommonScrollBehavior
 			{
 			}
 
-			GuiScrollTemplate* GuiCommonScrollBehavior::GetScrollTemplate()
-			{
-				return scrollTemplate;
-			}
-
-			void GuiCommonScrollBehavior::SetScrollTemplate(GuiScrollTemplate* value)
+			void GuiCommonScrollBehavior::AttachScrollTemplate(GuiScrollTemplate* value)
 			{
 				scrollTemplate = value;
 			}

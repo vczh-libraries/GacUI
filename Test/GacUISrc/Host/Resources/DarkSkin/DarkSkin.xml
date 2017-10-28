@@ -993,59 +993,30 @@
 
   <Instance name="HScrollTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::HScrollTemplate" ref.Styles="res://DarkSkin/Style">
-      <ref.Members>
+      <ref.Ctor>
         <![CDATA[
-          @cpp:Protected
-          var draggingHandle : bool = false;
-          
-          @cpp:Protected
-          var draggingStartLocation : Point = {x:0 y:0};
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachDecreaseButton(buttonDecrease);
+            behavior.AttachIncreaseButton(buttonIncrease);
+            behavior.AttachHorizontalPartialView(handle);
+          }
         ]]>
-      </ref.Members>
+      </ref.Ctor>
       <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+        
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Left">
-          <Button ControlTemplate="darkskin::LeftScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallDecrease();"/>
+          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::LeftScrollButtonTemplate"/>
         </SideAligned>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Right">
-          <Button ControlTemplate="darkskin::RightScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallIncrease();"/>
+          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::RightScrollButtonTemplate"/>
         </SideAligned>
         <Bounds ref.Name="handleContainer" AlignmentToParent="left:20 top:0 right:20 bottom:0" MinSizeLimitation="NoLimit">
-          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigDecrease();}">
-            <att.AlignmentToParent-bind>{left:0 top:0 right:(handleContainer.Bounds.x2 - handleContainer.Bounds.x1 - handle.Bounds.x1) bottom:0}</att.AlignmentToParent-bind>
-          </Bounds>
-          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigIncrease();}">
-            <att.AlignmentToParent-bind>{left:(handle.Bounds.x2) top:0 right:0 bottom:0}</att.AlignmentToParent-bind>
-          </Bounds>
           <PartialView ref.Name="handle">
             <att.WidthPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.WidthPageSize-bind>
             <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
-            <ev.leftButtonDown-eval>
-              <![CDATA[
-                if (self.VisuallyEnabled)
-                {
-                  self.draggingHandle = true;
-                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
-                }
-              ]]>
-            </ev.leftButtonDown-eval>
-            <ev.leftButtonUp-eval>
-              <![CDATA[
-                self.draggingHandle = false;
-              ]]>
-            </ev.leftButtonUp-eval>
-            <ev.mouseMove-eval>
-              <![CDATA[
-                if (self.draggingHandle)
-                {
-                  var bounds = handle.Parent.Bounds;
-                  var totalPixels = bounds.x2 - bounds.x1;
-                  var currentOffset = handle.Bounds.x1;
-                  var newOffset = currentOffset + (arguments.x - self.draggingStartLocation.x);
-                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
-                }
-              ]]>
-            </ev.mouseMove-eval>
             <Button ControlTemplate="darkskin::HScrollHandleTemplate"/>
           </PartialView>
         </Bounds>
@@ -1055,59 +1026,30 @@
 
   <Instance name="VScrollTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::VScrollTemplate" ref.Styles="res://DarkSkin/Style">
-      <ref.Members>
+      <ref.Ctor>
         <![CDATA[
-          @cpp:Protected
-          var draggingHandle : bool = false;
-          
-          @cpp:Protected
-          var draggingStartLocation : Point = {x:0 y:0};
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachDecreaseButton(buttonDecrease);
+            behavior.AttachIncreaseButton(buttonIncrease);
+            behavior.AttachHorizontalPartialView(handle);
+          }
         ]]>
-      </ref.Members>
+      </ref.Ctor>
       <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Top">
-          <Button ControlTemplate="darkskin::TopScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallDecrease();"/>
+          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::TopScrollButtonTemplate"/>
         </SideAligned>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Bottom">
-          <Button ControlTemplate="darkskin::BottomScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallIncrease();"/>
+          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::BottomScrollButtonTemplate"/>
         </SideAligned>
         <Bounds ref.Name="handleContainer" AlignmentToParent="left:0 top:20 right:0 bottom:20" MinSizeLimitation="NoLimit">
-          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigDecrease();}">
-            <att.AlignmentToParent-bind>{left:0 top:0 right:0 bottom:(handleContainer.Bounds.y2 - handleContainer.Bounds.y1 - handle.Bounds.y1)}</att.AlignmentToParent-bind>
-          </Bounds>
-          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigIncrease();}">
-            <att.AlignmentToParent-bind>{left:0 top:(handle.Bounds.y2) right:0 bottom:0}</att.AlignmentToParent-bind>
-          </Bounds>
           <PartialView ref.Name="handle">
             <att.HeightPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.HeightPageSize-bind>
             <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
-            <ev.leftButtonDown-eval>
-              <![CDATA[
-                if (self.VisuallyEnabled)
-                {
-                  self.draggingHandle = true;
-                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
-                }
-              ]]>
-            </ev.leftButtonDown-eval>
-            <ev.leftButtonUp-eval>
-              <![CDATA[
-                self.draggingHandle = false;
-              ]]>
-            </ev.leftButtonUp-eval>
-            <ev.mouseMove-eval>
-              <![CDATA[
-                if (self.draggingHandle)
-                {
-                  var bounds = handle.Parent.Bounds;
-                  var totalPixels = bounds.y2 - bounds.y1;
-                  var currentOffset = handle.Bounds.y1;
-                  var newOffset = currentOffset + (arguments.y - self.draggingStartLocation.y);
-                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
-                }
-              ]]>
-            </ev.mouseMove-eval>
             <Button ControlTemplate="darkskin::VScrollHandleTemplate"/>
           </PartialView>
         </Bounds>

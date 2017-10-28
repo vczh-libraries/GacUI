@@ -136,9 +136,7 @@ GuiCommonScrollBehavior
 				GuiCommonScrollBehavior();
 				~GuiCommonScrollBehavior();
 
-				GuiScrollTemplate*									GetScrollTemplate();
-				void												SetScrollTemplate(GuiScrollTemplate* value);
-
+				void												AttachScrollTemplate(GuiScrollTemplate* value);
 				void												AttachDecreaseButton(controls::GuiButton* button);
 				void												AttachIncreaseButton(controls::GuiButton* button);
 				void												AttachHorizontalPartialView(compositions::GuiPartialViewComposition* partialView);
