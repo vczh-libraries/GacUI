@@ -84,6 +84,45 @@ GuiCommonDatePickerLook
 				const FontProperties&								GetFont();
 				void												SetFont(const FontProperties& value);
 			};
+
+/***********************************************************************
+GuiCommonScrollViewLook
+***********************************************************************/
+
+			class GuiCommonScrollViewLook : public GuiTemplate, public Description<GuiCommonScrollViewLook>
+			{
+			protected:
+				controls::GuiScroll*								horizontalScroll = nullptr;
+				controls::GuiScroll*								verticalScroll = nullptr;
+				compositions::GuiTableComposition*					tableComposition = nullptr;
+				compositions::GuiCellComposition*					containerCellComposition = nullptr;
+				compositions::GuiBoundsComposition*					containerComposition = nullptr;
+
+				vint												defaultScrollSize = 12;
+				controls::IScrollViewCommandExecutor*				commands = nullptr;
+				TemplateProperty<GuiScrollTemplate>					hScrollTemplate;
+				TemplateProperty<GuiScrollTemplate>					vScrollTemplate;
+
+				void												UpdateTable();
+				void												hScroll_OnVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												vScroll_OnVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+			public:
+				GuiCommonScrollViewLook();
+				~GuiCommonScrollViewLook();
+
+				controls::GuiScroll*								GetHScroll();
+				controls::GuiScroll*								GetVScroll();
+				compositions::GuiGraphicsComposition*				GetContainerComposition();
+
+				controls::IScrollViewCommandExecutor*				GetCommands();
+				void												SetCommands(controls::IScrollViewCommandExecutor* value);
+				vint												GetDefaultScrollSize();
+				void												SetDefaultScrollSize(vint value);
+				TemplateProperty<GuiScrollTemplate>					GetHScrollTemplate();
+				void												SetHScrollTemplate(const TemplateProperty<GuiScrollTemplate>& value);
+				TemplateProperty<GuiScrollTemplate>					GetVScrollTemplate();
+				void												SetVScrollTemplate(const TemplateProperty<GuiScrollTemplate>& value);
+			};
 		}
 	}
 }

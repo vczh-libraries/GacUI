@@ -28,7 +28,6 @@ DefaultTextListItemTemplate
 
 				void DefaultTextListItemTemplate::OnInitialize()
 				{
-					templates::GuiTextListItemTemplate::OnInitialize();
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 					textElement = GuiSolidLabelElement::Create();

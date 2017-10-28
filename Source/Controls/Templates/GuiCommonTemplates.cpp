@@ -418,6 +418,155 @@ GuiCommonDatePickerLook
 					}
 				}
 			}
+
+/***********************************************************************
+GuiCommonDatePickerLook
+***********************************************************************/
+
+			void GuiCommonScrollViewLook::UpdateTable()
+			{
+				if (horizontalScroll->GetVisible())
+				{
+					tableComposition->SetRowOption(1, GuiCellOption::AbsoluteOption(GetDefaultScrollSize()));
+				}
+				else
+				{
+					tableComposition->SetRowOption(1, GuiCellOption::AbsoluteOption(0));
+				}
+
+				if (verticalScroll->GetVisible())
+				{
+					tableComposition->SetColumnOption(1, GuiCellOption::AbsoluteOption(GetDefaultScrollSize()));
+				}
+				else
+				{
+					tableComposition->SetColumnOption(1, GuiCellOption::AbsoluteOption(0));
+				}
+
+				tableComposition->UpdateCellBounds();
+			}
+
+			void GuiCommonScrollViewLook::hScroll_OnVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				UpdateTable();
+			}
+
+			void GuiCommonScrollViewLook::vScroll_OnVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				UpdateTable();
+			}
+
+			GuiCommonScrollViewLook::GuiCommonScrollViewLook()
+			{
+				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+				horizontalScroll = new GuiScroll(theme::ThemeName::HScroll);
+				horizontalScroll->SetControlTemplate(GetHScrollTemplate());
+				horizontalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				horizontalScroll->SetEnabled(false);
+				verticalScroll = new GuiScroll(theme::ThemeName::HScroll);
+				verticalScroll->SetControlTemplate(GetVScrollTemplate());
+				verticalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				verticalScroll->SetEnabled(false);
+
+				tableComposition = new GuiTableComposition;
+				AddChild(tableComposition);
+				tableComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				tableComposition->SetRowsAndColumns(2, 2);
+				tableComposition->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
+				tableComposition->SetRowOption(1, GuiCellOption::MinSizeOption());
+				tableComposition->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
+				tableComposition->SetColumnOption(1, GuiCellOption::MinSizeOption());
+				UpdateTable();
+				{
+					GuiCellComposition* cell = new GuiCellComposition;
+					tableComposition->AddChild(cell);
+					cell->SetSite(1, 0, 1, 1);
+					cell->AddChild(horizontalScroll->GetBoundsComposition());
+				}
+				{
+					GuiCellComposition* cell = new GuiCellComposition;
+					tableComposition->AddChild(cell);
+					cell->SetSite(0, 1, 1, 1);
+					cell->AddChild(verticalScroll->GetBoundsComposition());
+				}
+
+				containerCellComposition = new GuiCellComposition;
+				tableComposition->AddChild(containerCellComposition);
+				containerCellComposition->SetSite(0, 0, 1, 1);
+
+				containerComposition = new GuiBoundsComposition;
+				containerComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				containerCellComposition->AddChild(containerComposition);
+
+				horizontalScroll->VisibleChanged.AttachMethod(this, &GuiCommonScrollViewLook::hScroll_OnVisibleChanged);
+				verticalScroll->VisibleChanged.AttachMethod(this, &GuiCommonScrollViewLook::vScroll_OnVisibleChanged);
+			}
+
+			GuiCommonScrollViewLook::~GuiCommonScrollViewLook()
+			{
+			}
+
+			controls::GuiScroll* GuiCommonScrollViewLook::GetHScroll()
+			{
+				return horizontalScroll;
+			}
+
+			controls::GuiScroll* GuiCommonScrollViewLook::GetVScroll()
+			{
+				return verticalScroll;
+			}
+
+			compositions::GuiGraphicsComposition* GuiCommonScrollViewLook::GetContainerComposition()
+			{
+				return containerComposition;
+			}
+
+			controls::IScrollViewCommandExecutor* GuiCommonScrollViewLook::GetCommands()
+			{
+				return commands;
+			}
+
+			void GuiCommonScrollViewLook::SetCommands(controls::IScrollViewCommandExecutor* value)
+			{
+				commands = value;
+			}
+
+			vint GuiCommonScrollViewLook::GetDefaultScrollSize()
+			{
+				return defaultScrollSize;
+			}
+
+			void GuiCommonScrollViewLook::SetDefaultScrollSize(vint value)
+			{
+				if (defaultScrollSize != value)
+				{
+					defaultScrollSize = value;
+					UpdateTable();
+				}
+			}
+
+			TemplateProperty<GuiScrollTemplate> GuiCommonScrollViewLook::GetHScrollTemplate()
+			{
+				return hScrollTemplate;
+			}
+
+			void GuiCommonScrollViewLook::SetHScrollTemplate(const TemplateProperty<GuiScrollTemplate>& value)
+			{
+				hScrollTemplate = value;
+				horizontalScroll->SetControlTemplate(value);
+			}
+
+			TemplateProperty<GuiScrollTemplate> GuiCommonScrollViewLook::GetVScrollTemplate()
+			{
+				return vScrollTemplate;
+			}
+
+			void GuiCommonScrollViewLook::SetVScrollTemplate(const TemplateProperty<GuiScrollTemplate>& value)
+			{
+				vScrollTemplate = value;
+				verticalScroll->SetControlTemplate(value);
+			}
 		}
 	}
 }

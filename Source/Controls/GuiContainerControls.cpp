@@ -217,17 +217,6 @@ GuiScrollView
 				vScrollHandler = ct->GetVerticalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnVerticalScroll);
 				hWheelHandler = ct->GetEventReceiver()->horizontalWheel.AttachMethod(this, &GuiScrollView::OnHorizontalWheel);
 				vWheelHandler = ct->GetEventReceiver()->verticalWheel.AttachMethod(this, &GuiScrollView::OnVerticalWheel);
-
-				if (initialize)
-				{
-					horizontalAlwaysVisible = ct->GetHorizontalAlwaysVisible();
-					verticalAlwaysVisible = ct->GetVerticalAlwaysVisible();
-				}
-				else
-				{
-					ct->SetHorizontalAlwaysVisible(horizontalAlwaysVisible);
-					ct->SetVerticalAlwaysVisible(verticalAlwaysVisible);
-				}
 				CalculateView();
 			}
 
@@ -282,9 +271,44 @@ GuiScrollView
 				UpdateView(viewBounds);
 			}
 
+			void GuiScrollView::AdjustView(Size fullSize)
+			{
+				auto ct = GetControlTemplateObject();
+				auto hScroll = ct->GetHorizontalScroll();
+				auto vScroll = ct->GetVerticalScroll();
+
+				Size viewSize = containerComposition->GetBounds().GetSize();
+				if (fullSize.x <= viewSize.x)
+				{
+					hScroll->SetVisible(horizontalAlwaysVisible);
+					hScroll->SetEnabled(false);
+					hScroll->SetPosition(0);
+				}
+				else
+				{
+					hScroll->SetVisible(true);
+					hScroll->SetEnabled(true);
+					hScroll->SetTotalSize(fullSize.x);
+					hScroll->SetPageSize(viewSize.x);
+				}
+
+				if (fullSize.y <= viewSize.y)
+				{
+					vScroll->SetVisible(verticalAlwaysVisible);
+					vScroll->SetEnabled(false);
+					vScroll->SetPosition(0);
+				}
+				else
+				{
+					vScroll->SetVisible(true);
+					vScroll->SetEnabled(true);
+					vScroll->SetTotalSize(fullSize.y);
+					vScroll->SetPageSize(viewSize.y);
+				}
+			}
+
 			GuiScrollView::GuiScrollView(theme::ThemeName themeName)
 				:GuiControl(themeName)
-				, supressScrolling(false)
 			{
 				commandExecutor = new CommandExecutor(this);
 				containerComposition->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);
@@ -318,8 +342,8 @@ GuiScrollView
 					Size fullSize = QueryFullSize();
 					while(true)
 					{
-						ct->AdjustView(fullSize);
-						ct->AdjustView(fullSize);
+						AdjustView(fullSize);
+						AdjustView(fullSize);
 						supressScrolling = true;
 						CallUpdateView();
 						supressScrolling = false;
@@ -381,7 +405,7 @@ GuiScrollView
 				if (horizontalAlwaysVisible != value)
 				{
 					horizontalAlwaysVisible = value;
-					GetControlTemplateObject()->SetHorizontalAlwaysVisible(value);
+					CalculateView();
 				}
 			}
 
@@ -395,7 +419,7 @@ GuiScrollView
 				if (verticalAlwaysVisible != value)
 				{
 					verticalAlwaysVisible = value;
-					GetControlTemplateObject()->SetVerticalAlwaysVisible(value);
+					CalculateView();
 				}
 			}
 

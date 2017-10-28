@@ -243,8 +243,6 @@ Control Template
 			public:
 				GuiControlTemplate();
 				~GuiControlTemplate();
-
-				virtual void				Initialize();
 				
 #define GuiControlTemplate_PROPERTIES(F)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition)\
@@ -445,39 +443,16 @@ Scrollable Controls
 
 			class GuiScrollViewTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollViewTemplate>
 			{
-			protected:
-				controls::GuiScroll*					horizontalScroll = nullptr;
-				controls::GuiScroll*					verticalScroll = nullptr;
-				compositions::GuiTableComposition*		tableComposition = nullptr;
-				compositions::GuiCellComposition*		containerCellComposition = nullptr;
-				compositions::GuiBoundsComposition*		containerComposition = nullptr;
-				bool									horizontalAlwaysVisible = true;
-				bool									verticalAlwaysVisible = true;
-
-				void									UpdateTable();
 			public:
 				GuiScrollViewTemplate();
 				~GuiScrollViewTemplate();
 
 #define GuiScrollViewTemplate_PROPERTIES(F)\
-				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, HScrollTemplate)\
-				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, VScrollTemplate)\
-				F(GuiScrollViewTemplate, vint, DefaultScrollSize)\
 				F(GuiScrollViewTemplate, controls::IScrollViewCommandExecutor*, Commands)\
+				F(GuiScrollViewTemplate, controls::GuiScroll*, HorizontalScroll)\
+				F(GuiScrollViewTemplate, controls::GuiScroll*, VerticalScroll)\
 
 				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-
-				void									AdjustView(Size fullSize);
-
-				controls::GuiScroll*					GetHorizontalScroll();
-				controls::GuiScroll*					GetVerticalScroll();
-
-				bool									GetHorizontalAlwaysVisible();
-				void									SetHorizontalAlwaysVisible(bool value);
-				bool									GetVerticalAlwaysVisible();
-				void									SetVerticalAlwaysVisible(bool value);
-
-				void									Initialize()override;
 			};
 
 			class GuiMultilineTextBoxTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiMultilineTextBoxTemplate>
@@ -625,10 +600,8 @@ Item Template
 			{
 			protected:
 				controls::GuiListControl*	listControl = nullptr;
-				bool						initialized = false;
 
 				virtual void				OnInitialize();
-
 			public:
 				GuiListItemTemplate();
 				~GuiListItemTemplate();

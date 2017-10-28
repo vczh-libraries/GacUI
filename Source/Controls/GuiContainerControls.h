@@ -120,7 +120,7 @@ Scroll View
 				};
 
 				Ptr<CommandExecutor>					commandExecutor;
-				bool									supressScrolling;
+				bool									supressScrolling = false;
 				Ptr<IEventHandler>						hScrollHandler;
 				Ptr<IEventHandler>						vScrollHandler;
 				Ptr<IEventHandler>						hWheelHandler;
@@ -134,6 +134,7 @@ Scroll View
 				void									OnHorizontalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnVerticalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									CallUpdateView();
+				void									AdjustView(Size fullSize);
 
 				/// <summary>Calculate the full size of the content.</summary>
 				/// <returns>The full size of the content.</returns>
