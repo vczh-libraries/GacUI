@@ -5452,14 +5452,35 @@ Closures
 	__vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::VTrackerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::VTrackerTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::darkskin::VTrackerTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::darkskin::VTrackerTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = ::vl::__vwsn::This(__vwsnthis_0->behavior)->GetVerticalTrackerHandlerPosition(__vwsnthis_0->handle, static_cast<::vl::presentation::templates::GuiScrollTemplate*>(__vwsnthis_0->self)); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = (- static_cast<::vl::vint32_t>(1)); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = ::vl::__vwsn::This(__vwsnthis_0->behavior)->GetVerticalTrackerHandlerPosition(__vwsnthis_0->handle, ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTotalSize(), ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetPageSize(), ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetPosition()); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = (- static_cast<::vl::vint32_t>(1)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
 	}
 
 	bool __vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Open()
@@ -5467,6 +5488,12 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = __vwsnthis_0->self);
+			(__vwsn_bind_cache_1 = __vwsnthis_0->self);
+			(__vwsn_bind_cache_2 = __vwsnthis_0->self);
+			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+			(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
+			(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
 			return true;
 		}
 		return false;
@@ -5487,6 +5514,15 @@ Closures
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TotalSizeChanged, __vwsn_bind_handler_0_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->PageSizeChanged, __vwsn_bind_handler_1_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->PositionChanged, __vwsn_bind_handler_2_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::VTrackerTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::darkskin::VTrackerTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::darkskin::VTrackerTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -7711,14 +7747,35 @@ Closures
 	__vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::HTrackerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::HTrackerTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::darkskin::HTrackerTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::darkskin::HTrackerTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = ::vl::__vwsn::This(__vwsnthis_0->behavior)->GetHorizontalTrackerHandlerPosition(__vwsnthis_0->handle, static_cast<::vl::presentation::templates::GuiScrollTemplate*>(__vwsnthis_0->self)); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = (- static_cast<::vl::vint32_t>(1)); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = ::vl::__vwsn::This(__vwsnthis_0->behavior)->GetHorizontalTrackerHandlerPosition(__vwsnthis_0->handle, ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTotalSize(), ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetPageSize(), ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetPosition()); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = (- static_cast<::vl::vint32_t>(1)); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
 	}
 
 	bool __vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Open()
@@ -7726,6 +7783,12 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = __vwsnthis_0->self);
+			(__vwsn_bind_cache_1 = __vwsnthis_0->self);
+			(__vwsn_bind_cache_2 = __vwsnthis_0->self);
+			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+			(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
+			(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
 			return true;
 		}
 		return false;
@@ -7746,6 +7809,15 @@ Closures
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TotalSizeChanged, __vwsn_bind_handler_0_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->PageSizeChanged, __vwsn_bind_handler_1_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->PositionChanged, __vwsn_bind_handler_2_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::HTrackerTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::darkskin::HTrackerTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::darkskin::HTrackerTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;

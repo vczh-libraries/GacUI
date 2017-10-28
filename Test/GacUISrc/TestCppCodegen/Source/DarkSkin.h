@@ -5096,9 +5096,18 @@ Closures
 
 		__vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::VTrackerTemplateConstructor* __vwsnctorthis_0);
 
+		::darkskin::VTrackerTemplate* __vwsn_bind_cache_0 = nullptr;
+		::darkskin::VTrackerTemplate* __vwsn_bind_cache_1 = nullptr;
+		::darkskin::VTrackerTemplate* __vwsn_bind_cache_2 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -5792,9 +5801,18 @@ Closures
 
 		__vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::HTrackerTemplateConstructor* __vwsnctorthis_0);
 
+		::darkskin::HTrackerTemplate* __vwsn_bind_cache_0 = nullptr;
+		::darkskin::HTrackerTemplate* __vwsn_bind_cache_1 = nullptr;
+		::darkskin::HTrackerTemplate* __vwsn_bind_cache_2 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;

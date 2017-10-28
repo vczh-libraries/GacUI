@@ -144,8 +144,8 @@ GuiCommonScrollBehavior
 				void												AttachHorizontalTrackerHandle(compositions::GuiBoundsComposition* handle);
 				void												AttachVerticalTrackerHandle(compositions::GuiBoundsComposition* handle);
 
-				vint												GetHorizontalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, GuiScrollTemplate* scrollTemplate);
-				vint												GetVerticalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, GuiScrollTemplate* scrollTemplate);
+				vint												GetHorizontalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position);
+				vint												GetVerticalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position);
 			};
 		}
 	}

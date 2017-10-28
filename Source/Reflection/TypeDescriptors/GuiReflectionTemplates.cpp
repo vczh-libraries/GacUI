@@ -170,8 +170,8 @@ Type Declaration
 				CLASS_MEMBER_METHOD(AttachVerticalPartialView, { L"partialView" })
 				CLASS_MEMBER_METHOD(AttachHorizontalTrackerHandle, { L"handle" })
 				CLASS_MEMBER_METHOD(AttachVerticalTrackerHandle, { L"handle" })
-				CLASS_MEMBER_METHOD(GetHorizontalTrackerHandlerPosition, { L"handle" _ L"scrollTemplate" })
-				CLASS_MEMBER_METHOD(GetVerticalTrackerHandlerPosition, { L"handle" _ L"scrollTemplate" })
+				CLASS_MEMBER_METHOD(GetHorizontalTrackerHandlerPosition, { L"handle" _ L"totalSize" _ L"pageSize" _ L"position" })
+				CLASS_MEMBER_METHOD(GetVerticalTrackerHandlerPosition, { L"handle" _ L"totalSize" _ L"pageSize" _ L"position" })
 			END_CLASS_MEMBER(GuiCommonScrollBehavior)
 
 #undef GUI_CONTROL_TEMPLATE

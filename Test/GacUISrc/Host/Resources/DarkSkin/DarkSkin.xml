@@ -1093,7 +1093,7 @@
             <att.AlignmentToParent-bind>
               <![CDATA[
                 {
-                  left:(behavior.GetHorizontalTrackerHandlerPosition(handle, self))
+                  left:(behavior.GetHorizontalTrackerHandlerPosition(handle, self.TotalSize, self.PageSize, self.Position))
                   top:0
                   right:-1
                   bottom:0
@@ -1146,7 +1146,7 @@
               <![CDATA[
                 {
                   left:0
-                  top:(behavior.GetVerticalTrackerHandlerPosition(handle, self))
+                  top:(behavior.GetVerticalTrackerHandlerPosition(handle, self.TotalSize, self.PageSize, self.Position))
                   right:0
                   bottom:-1
                 }

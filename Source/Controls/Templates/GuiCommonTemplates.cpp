@@ -720,18 +720,18 @@ GuiCommonScrollBehavior
 				AttachHandle(handle);
 			}
 
-			vint GuiCommonScrollBehavior::GetHorizontalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, GuiScrollTemplate* scrollTemplate)
+			vint GuiCommonScrollBehavior::GetHorizontalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position)
 			{
 				vint width = handle->GetParent()->GetBounds().Width() - handle->GetParent()->GetBounds().Width();
-				vint max = scrollTemplate->GetTotalSize() - scrollTemplate->GetPageSize();
-				return max == 0 ? 0 : width * scrollTemplate->GetPosition() / max;
+				vint max = totalSize - pageSize;
+				return max == 0 ? 0 : width * position / max;
 			}
 
-			vint GuiCommonScrollBehavior::GetVerticalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, GuiScrollTemplate* scrollTemplate)
+			vint GuiCommonScrollBehavior::GetVerticalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position)
 			{
 				vint height = handle->GetParent()->GetBounds().Height() - handle->GetParent()->GetBounds().Height();
-				vint max = scrollTemplate->GetTotalSize() - scrollTemplate->GetPageSize();
-				return max == 0 ? 0 : height * scrollTemplate->GetPosition() / max;
+				vint max = totalSize - pageSize;
+				return max == 0 ? 0 : height * position / max;
 			}
 		}
 	}
