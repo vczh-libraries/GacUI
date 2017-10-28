@@ -722,14 +722,14 @@ GuiCommonScrollBehavior
 
 			vint GuiCommonScrollBehavior::GetHorizontalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position)
 			{
-				vint width = handle->GetParent()->GetBounds().Width() - handle->GetParent()->GetBounds().Width();
+				vint width = handle->GetParent()->GetBounds().Width() - handle->GetBounds().Width();
 				vint max = totalSize - pageSize;
 				return max == 0 ? 0 : width * position / max;
 			}
 
 			vint GuiCommonScrollBehavior::GetVerticalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position)
 			{
-				vint height = handle->GetParent()->GetBounds().Height() - handle->GetParent()->GetBounds().Height();
+				vint height = handle->GetParent()->GetBounds().Height() - handle->GetBounds().Height();
 				vint max = totalSize - pageSize;
 				return max == 0 ? 0 : height * position / max;
 			}
