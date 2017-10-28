@@ -834,16 +834,18 @@
 
   <Instance name="MultilineTextBoxTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::MultilineTextBoxTemplate" ref.Styles="res://DarkSkin/Style">
-      <MultilineTextBoxTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+      <MultilineTextBoxTemplate ref.Name="self" ContainerComposition-ref="look.ContainerComposition" MinSizeLimitation="LimitToElementAndChildren">
         <att.TextColor>normal:{text:(cast Color "#FFFFFF") background:(cast Color "#00000000")} selectedFocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")} selectedUnfocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")}</att.TextColor>
         <att.CaretColor>#FFFFFF</att.CaretColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </MultilineTextBoxTemplate>
     </Instance>
@@ -1344,14 +1346,15 @@
 
   <Instance name="ScrollViewTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ScrollViewTemplate" ref.Styles="res://DarkSkin/Style">
-      <ScrollViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
-
+      <ScrollViewTemplate ref.Name="self" ContainerComposition-ref="look.ContainerComposition" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </ScrollViewTemplate>
     </Instance>
@@ -1359,15 +1362,17 @@
 
   <Instance name="DocumentViewerTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::DocumentViewerTemplate" ref.Styles="res://DarkSkin/Style">
-      <DocumentViewerTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren" BaselineDocument-uri="res://DarkSkin/BaselineDocument">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+      <DocumentViewerTemplate ref.Name="self" ContainerComposition-ref="look.ContainerComposition" MinSizeLimitation="LimitToElementAndChildren" BaselineDocument-uri="res://DarkSkin/BaselineDocument">
         <att.CaretColor>#FFFFFF</att.CaretColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </DocumentViewerTemplate>
     </Instance>
@@ -1393,18 +1398,20 @@
 
   <Instance name="TextListTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TextListTemplate" ref.Styles="res://DarkSkin/Style">
-      <TextListTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+      <TextListTemplate ref.Name="self" ContainerComposition-ref="look.ContainerComposition" MinSizeLimitation="LimitToElementAndChildren">
         <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
         <att.CheckBulletTemplate>darkskin::CheckBoxTemplate</att.CheckBulletTemplate>
         <att.RadioBulletTemplate>darkskin::RadioButtonTemplate</att.RadioBulletTemplate>
         <att.TextColor>#F1F1F1</att.TextColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </TextListTemplate>
     </Instance>
@@ -1703,10 +1710,7 @@
 
   <Instance name="ListViewTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ListViewTemplate" ref.Styles="res://DarkSkin/Style">
-      <ListViewTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+      <ListViewTemplate ref.Name="self" ContainerComposition-ref="look.ContainerComposition" MinSizeLimitation="LimitToElementAndChildren">
         <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
         <att.ColumnHeaderTemplate>darkskin::ListViewColumnHeaderTemplate</att.ColumnHeaderTemplate>
         <att.PrimaryTextColor>#F1F1F1</att.PrimaryTextColor>
@@ -1714,8 +1718,13 @@
         <att.ItemSeparatorColor>#F1F1F1</att.ItemSeparatorColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </ListViewTemplate>
     </Instance>
@@ -1763,17 +1772,19 @@
 
   <Instance name="TreeViewTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TreeViewTemplate" ref.Styles="res://DarkSkin/Style">
-      <TreeViewTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+      <TreeViewTemplate ref.Name="self" ContainerComposition-ref="look.ContainerComposition" MinSizeLimitation="LimitToElementAndChildren">
         <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
         <att.ExpandingDecoratorTemplate>darkskin::ExpandingDecoratorTemplate</att.ExpandingDecoratorTemplate>
         <att.TextColor>#F1F1F1</att.TextColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </TreeViewTemplate>
     </Instance>
