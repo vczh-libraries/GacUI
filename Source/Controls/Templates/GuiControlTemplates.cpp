@@ -417,7 +417,6 @@ GuiScrollViewTemplate
 			GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiScrollViewTemplate::GuiScrollViewTemplate()
-				:Commands_(nullptr)
 			{
 				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}

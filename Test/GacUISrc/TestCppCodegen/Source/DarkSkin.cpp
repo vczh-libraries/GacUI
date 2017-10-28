@@ -13762,6 +13762,12 @@ Class (::darkskin::DocumentViewerTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetBaselineDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"DarkSkin/BaselineDocument", false), true).Obj())));
 		}
+		{
+			::vl::__vwsn::This(this->self)->SetHorizontalScroll(::vl::__vwsn::This(this->look)->GetHScroll());
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetVerticalScroll(::vl::__vwsn::This(this->look)->GetVScroll());
+		}
 	}
 
 	DocumentViewerTemplateConstructor::DocumentViewerTemplateConstructor()
@@ -14909,6 +14915,12 @@ Class (::darkskin::ListViewTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetContainerComposition(::vl::__vwsn::This(this->look)->GetContainerComposition());
 		}
+		{
+			::vl::__vwsn::This(this->self)->SetHorizontalScroll(::vl::__vwsn::This(this->look)->GetHScroll());
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetVerticalScroll(::vl::__vwsn::This(this->look)->GetVScroll());
+		}
 	}
 
 	ListViewTemplateConstructor::ListViewTemplateConstructor()
@@ -15352,6 +15364,12 @@ Class (::darkskin::MultilineTextBoxTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetContainerComposition(::vl::__vwsn::This(this->look)->GetContainerComposition());
 		}
+		{
+			::vl::__vwsn::This(this->self)->SetHorizontalScroll(::vl::__vwsn::This(this->look)->GetHScroll());
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetVerticalScroll(::vl::__vwsn::This(this->look)->GetVScroll());
+		}
 	}
 
 	MultilineTextBoxTemplateConstructor::MultilineTextBoxTemplateConstructor()
@@ -15766,6 +15784,12 @@ Class (::darkskin::ScrollViewTemplateConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetContainerComposition(::vl::__vwsn::This(this->look)->GetContainerComposition());
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetHorizontalScroll(::vl::__vwsn::This(this->look)->GetHScroll());
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetVerticalScroll(::vl::__vwsn::This(this->look)->GetVScroll());
 		}
 	}
 
@@ -16339,6 +16363,12 @@ Class (::darkskin::TextListTemplateConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetContainerComposition(::vl::__vwsn::This(this->look)->GetContainerComposition());
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetHorizontalScroll(::vl::__vwsn::This(this->look)->GetHScroll());
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetVerticalScroll(::vl::__vwsn::This(this->look)->GetVScroll());
 		}
 	}
 
@@ -17259,6 +17289,12 @@ Class (::darkskin::TreeViewTemplateConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetContainerComposition(::vl::__vwsn::This(this->look)->GetContainerComposition());
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetHorizontalScroll(::vl::__vwsn::This(this->look)->GetHScroll());
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetVerticalScroll(::vl::__vwsn::This(this->look)->GetVScroll());
 		}
 	}
 
