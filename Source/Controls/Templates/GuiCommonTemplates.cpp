@@ -427,7 +427,7 @@ GuiCommonDatePickerLook
 			{
 				if (horizontalScroll->GetVisible())
 				{
-					tableComposition->SetRowOption(1, GuiCellOption::AbsoluteOption(GetDefaultScrollSize()));
+					tableComposition->SetRowOption(1, GuiCellOption::AbsoluteOption(defaultScrollSize));
 				}
 				else
 				{
@@ -436,7 +436,7 @@ GuiCommonDatePickerLook
 
 				if (verticalScroll->GetVisible())
 				{
-					tableComposition->SetColumnOption(1, GuiCellOption::AbsoluteOption(GetDefaultScrollSize()));
+					tableComposition->SetColumnOption(1, GuiCellOption::AbsoluteOption(defaultScrollSize));
 				}
 				else
 				{
@@ -456,7 +456,8 @@ GuiCommonDatePickerLook
 				UpdateTable();
 			}
 
-			GuiCommonScrollViewLook::GuiCommonScrollViewLook()
+			GuiCommonScrollViewLook::GuiCommonScrollViewLook(vint _defaultScrollSize)
+				:defaultScrollSize(_defaultScrollSize)
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
@@ -501,6 +502,7 @@ GuiCommonDatePickerLook
 
 				horizontalScroll->VisibleChanged.AttachMethod(this, &GuiCommonScrollViewLook::hScroll_OnVisibleChanged);
 				verticalScroll->VisibleChanged.AttachMethod(this, &GuiCommonScrollViewLook::vScroll_OnVisibleChanged);
+				UpdateTable();
 			}
 
 			GuiCommonScrollViewLook::~GuiCommonScrollViewLook()
@@ -530,20 +532,6 @@ GuiCommonDatePickerLook
 			void GuiCommonScrollViewLook::SetCommands(controls::IScrollViewCommandExecutor* value)
 			{
 				commands = value;
-			}
-
-			vint GuiCommonScrollViewLook::GetDefaultScrollSize()
-			{
-				return defaultScrollSize;
-			}
-
-			void GuiCommonScrollViewLook::SetDefaultScrollSize(vint value)
-			{
-				if (defaultScrollSize != value)
-				{
-					defaultScrollSize = value;
-					UpdateTable();
-				}
 			}
 
 			TemplateProperty<GuiScrollTemplate> GuiCommonScrollViewLook::GetHScrollTemplate()

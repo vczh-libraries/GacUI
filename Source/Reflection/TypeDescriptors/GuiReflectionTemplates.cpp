@@ -109,7 +109,6 @@ Type Declaration
 				CLASS_MEMBER_BASE(BASE)\
 				CLASS_MEMBER_CONSTRUCTOR(NAME*(), NO_PARAMETER)\
 				NAME ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)\
-				CLASS_MEMBER_METHOD(Initialize, NO_PARAMETER)\
 			END_CLASS_MEMBER(NAME)\
 
 			GUI_CONTROL_TEMPLATE(GuiControlTemplate, GuiTemplate)
@@ -126,20 +125,7 @@ Type Declaration
 			GUI_CONTROL_TEMPLATE(GuiListViewColumnHeaderTemplate, GuiToolstripButtonTemplate)
 			GUI_CONTROL_TEMPLATE(GuiComboBoxTemplate, GuiToolstripButtonTemplate)
 			GUI_CONTROL_TEMPLATE(GuiScrollTemplate, GuiControlTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiScrollViewTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiScrollViewTemplate*(), NO_PARAMETER)
-
-				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-
-				CLASS_MEMBER_METHOD(AdjustView, {L"fullSize"})
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(HorizontalScroll)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(VerticalScroll)
-				CLASS_MEMBER_PROPERTY_FAST(HorizontalAlwaysVisible)
-				CLASS_MEMBER_PROPERTY_FAST(VerticalAlwaysVisible)
-			END_CLASS_MEMBER(GuiScrollViewTemplate)
-
+			GUI_CONTROL_TEMPLATE(GuiScrollViewTemplate, GuiControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiListControlTemplate, GuiScrollViewTemplate)
 			GUI_CONTROL_TEMPLATE(GuiTextListTemplate, GuiListControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiListViewTemplate, GuiListControlTemplate)
@@ -166,6 +152,18 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Date)
 				CLASS_MEMBER_PROPERTY_FAST(Font)
 			END_CLASS_MEMBER(GuiCommonDatePickerLook)
+
+			BEGIN_CLASS_MEMBER(GuiCommonScrollViewLook)
+				CLASS_MEMBER_BASE(GuiTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiCommonScrollViewLook*(vint), { L"defaultScrollSize" })
+
+				CLASS_MEMBER_PROPERTY_FAST(Commands)
+				CLASS_MEMBER_PROPERTY_FAST(HScrollTemplate)
+				CLASS_MEMBER_PROPERTY_FAST(VScrollTemplate)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(HScroll)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(VScroll)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainerComposition)
+			END_CLASS_MEMBER(GuiCommonScrollViewLook)
 
 #undef GUI_CONTROL_TEMPLATE
 #undef GUI_TEMPLATE_PROPERTY_REFLECTION

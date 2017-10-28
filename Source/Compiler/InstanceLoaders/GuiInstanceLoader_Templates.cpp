@@ -100,12 +100,93 @@ GuiCommonDatePickerLookLoader
 			};
 
 /***********************************************************************
+GuiCommonScrollViewLookLoader
+***********************************************************************/
+
+			class GuiCommonScrollViewLookLoader : public Object, public IGuiInstanceLoader
+			{
+			protected:
+				GlobalStringKey					typeName;
+				GlobalStringKey					_DefaultScrollSize;
+
+			public:
+				GuiCommonScrollViewLookLoader()
+				{
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiCommonScrollViewLook>::content.typeName);
+					_DefaultScrollSize = GlobalStringKey::Get(L"DefaultScrollSize");
+				}
+
+				GlobalStringKey GetTypeName()override
+				{
+					return typeName;
+				}
+
+				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					if (CanCreate(typeInfo))
+					{
+						propertyNames.Add(_DefaultScrollSize);
+					}
+				}
+
+				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					GetRequiredPropertyNames(typeInfo, propertyNames);
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == _DefaultScrollSize)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<vint>::CreateTypeInfo());
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						return info;
+					}
+					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+				}
+
+				bool CanCreate(const TypeInfo& typeInfo)
+				{
+					return typeInfo.typeName == typeName;
+				}
+
+				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)
+				{
+					if (CanCreate(typeInfo))
+					{
+						vint indexDefaultScrollSize = arguments.Keys().IndexOf(_DefaultScrollSize);
+						if (indexDefaultScrollSize != -1)
+						{
+							auto type = TypeInfoRetriver<GuiCommonScrollViewLook*>::CreateTypeInfo();
+							auto createExpr = MakePtr<WfNewClassExpression>();
+							createExpr->type = GetTypeFromTypeInfo(type.Obj());
+							createExpr->arguments.Add(arguments.GetByIndex(indexDefaultScrollSize)[0].expression);
+
+							auto refVariable = MakePtr<WfReferenceExpression>();
+							refVariable->name.value = variableName.ToString();
+
+							auto assignExpr = MakePtr<WfBinaryExpression>();
+							assignExpr->op = WfBinaryOperator::Assign;
+							assignExpr->first = refVariable;
+							assignExpr->second = createExpr;
+
+							auto assignStat = MakePtr<WfExpressionStatement>();
+							assignStat->expression = assignExpr;
+							return assignStat;
+						}
+					}
+					return nullptr;
+				}
+			};
+
+/***********************************************************************
 Initialization
 ***********************************************************************/
 
 			void LoadTemplates(IGuiInstanceLoaderManager* manager)
 			{
 				manager->SetLoader(new GuiCommonDatePickerLookLoader);
+				manager->SetLoader(new GuiCommonScrollViewLookLoader);
 			}
 		}
 	}

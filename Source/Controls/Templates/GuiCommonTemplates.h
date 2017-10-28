@@ -107,7 +107,7 @@ GuiCommonScrollViewLook
 				void												hScroll_OnVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void												vScroll_OnVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				GuiCommonScrollViewLook();
+				GuiCommonScrollViewLook(vint _defaultScrollSize);
 				~GuiCommonScrollViewLook();
 
 				controls::GuiScroll*								GetHScroll();
@@ -116,8 +116,6 @@ GuiCommonScrollViewLook
 
 				controls::IScrollViewCommandExecutor*				GetCommands();
 				void												SetCommands(controls::IScrollViewCommandExecutor* value);
-				vint												GetDefaultScrollSize();
-				void												SetDefaultScrollSize(vint value);
 				TemplateProperty<GuiScrollTemplate>					GetHScrollTemplate();
 				void												SetHScrollTemplate(const TemplateProperty<GuiScrollTemplate>& value);
 				TemplateProperty<GuiScrollTemplate>					GetVScrollTemplate();
