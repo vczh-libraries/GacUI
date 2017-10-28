@@ -143,6 +143,9 @@ GuiCommonScrollBehavior
 				void												AttachVerticalPartialView(compositions::GuiPartialViewComposition* partialView);
 				void												AttachHorizontalTrackerHandle(compositions::GuiBoundsComposition* handle);
 				void												AttachVerticalTrackerHandle(compositions::GuiBoundsComposition* handle);
+
+				vint												GetHorizontalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle);
+				vint												GetVerticalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle);
 			};
 		}
 	}

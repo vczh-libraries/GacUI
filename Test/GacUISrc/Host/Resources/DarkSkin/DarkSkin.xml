@@ -1032,7 +1032,7 @@
             behavior.AttachScrollTemplate(self);
             behavior.AttachDecreaseButton(buttonDecrease);
             behavior.AttachIncreaseButton(buttonIncrease);
-            behavior.AttachHorizontalPartialView(handle);
+            behavior.AttachVerticalPartialView(handle);
           }
         ]]>
       </ref.Ctor>
@@ -1059,16 +1059,17 @@
 
   <Instance name="HTrackerTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::HTrackerTemplate" ref.Styles="res://DarkSkin/Style">
-      <ref.Members>
+      <ref.Ctor>
         <![CDATA[
-          @cpp:Protected
-          var draggingHandle : bool = false;
-          
-          @cpp:Protected
-          var draggingStartLocation : Point = {x:0 y:0};
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachHorizontalTrackerHandle(handle);
+          }
         ]]>
-      </ref.Members>
+      </ref.Ctor>
       <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+
         <SolidBackground Color="#3F3F47"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder Color="#55545A"/>
@@ -1092,44 +1093,13 @@
             <att.AlignmentToParent-bind>
               <![CDATA[
                 {
-                  left:(
-                    let
-                      width = (self.Bounds.x2 - self.Bounds.x1) - (handle.Bounds.x2 - handle.Bounds.x1),
-                      max = self.TotalSize - self.PageSize
-                      in (max == 0 ? 0 : width * self.Position / max)
-                    )
+                  left:behavior.GetHorizontalTrackerHandlerPosition(handle)
                   top:0
                   right:-1
                   bottom:0
                 }
               ]]>
             </att.AlignmentToParent-bind>
-            <ev.leftButtonDown-eval>
-              <![CDATA[
-                if (self.VisuallyEnabled)
-                {
-                  self.draggingHandle = true;
-                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
-                }
-              ]]>
-            </ev.leftButtonDown-eval>
-            <ev.leftButtonUp-eval>
-              <![CDATA[
-                self.draggingHandle = false;
-              ]]>
-            </ev.leftButtonUp-eval>
-            <ev.mouseMove-eval>
-              <![CDATA[
-                if (self.draggingHandle)
-                {
-                  var bounds = handle.Parent.Bounds;
-                  var totalPixels = bounds.x2 - bounds.x1;
-                  var currentOffset = handle.Bounds.x1;
-                  var newOffset = currentOffset + (arguments.x - self.draggingStartLocation.x);
-                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
-                }
-              ]]>
-            </ev.mouseMove-eval>
             <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
               <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
@@ -1141,16 +1111,17 @@
 
   <Instance name="VTrackerTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::VTrackerTemplate" ref.Styles="res://DarkSkin/Style">
-      <ref.Members>
+      <ref.Ctor>
         <![CDATA[
-          @cpp:Protected
-          var draggingHandle : bool = false;
-          
-          @cpp:Protected
-          var draggingStartLocation : Point = {x:0 y:0};
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachVerticalTrackerHandle(handle);
+          }
         ]]>
-      </ref.Members>
+      </ref.Ctor>
       <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+
         <SolidBackground Color="#3F3F47"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder Color="#55545A"/>
@@ -1175,43 +1146,12 @@
               <![CDATA[
                 {
                   left:0
-                  top:(
-                    let
-                      height = (self.Bounds.y2 - self.Bounds.y1) - (handle.Bounds.y2 - handle.Bounds.y1),
-                      max = self.TotalSize - self.PageSize
-                      in (max == 0 ? 0 : height * self.Position / max)
-                    )
+                  top:behavior.GetVerticalTrackerHandlerPosition(handle)
                   right:0
                   bottom:-1
                 }
               ]]>
             </att.AlignmentToParent-bind>
-            <ev.leftButtonDown-eval>
-              <![CDATA[
-                if (self.VisuallyEnabled)
-                {
-                  self.draggingHandle = true;
-                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
-                }
-              ]]>
-            </ev.leftButtonDown-eval>
-            <ev.leftButtonUp-eval>
-              <![CDATA[
-                self.draggingHandle = false;
-              ]]>
-            </ev.leftButtonUp-eval>
-            <ev.mouseMove-eval>
-              <![CDATA[
-                if (self.draggingHandle)
-                {
-                  var bounds = handle.Parent.Bounds;
-                  var totalPixels = bounds.y2 - bounds.y1;
-                  var currentOffset = handle.Bounds.y1;
-                  var newOffset = currentOffset + (arguments.y - self.draggingStartLocation.y);
-                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
-                }
-              ]]>
-            </ev.mouseMove-eval>
             <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
               <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
