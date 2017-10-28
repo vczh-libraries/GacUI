@@ -5458,7 +5458,7 @@ Closures
 
 	void __vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = ::vl::__vwsn::This(__vwsnthis_0->behavior)->GetVerticalTrackerHandlerPosition(__vwsnthis_0->handle); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = (- static_cast<::vl::vint32_t>(1)); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = ::vl::__vwsn::This(__vwsnthis_0->behavior)->GetVerticalTrackerHandlerPosition(__vwsnthis_0->handle, static_cast<::vl::presentation::templates::GuiScrollTemplate*>(__vwsnthis_0->self)); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = (- static_cast<::vl::vint32_t>(1)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -7717,7 +7717,7 @@ Closures
 
 	void __vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = ::vl::__vwsn::This(__vwsnthis_0->behavior)->GetHorizontalTrackerHandlerPosition(__vwsnthis_0->handle); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = (- static_cast<::vl::vint32_t>(1)); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = ::vl::__vwsn::This(__vwsnthis_0->behavior)->GetHorizontalTrackerHandlerPosition(__vwsnthis_0->handle, static_cast<::vl::presentation::templates::GuiScrollTemplate*>(__vwsnthis_0->self)); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = (- static_cast<::vl::vint32_t>(1)); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
