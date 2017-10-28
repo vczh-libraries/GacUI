@@ -121,6 +121,10 @@ GuiCompositionInstanceLoader
 						info->acceptableTypes.Add(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
 						info->acceptableTypes.Add(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo());
 						info->acceptableTypes.Add(TypeInfoRetriver<Ptr<IGuiGraphicsElement>>::CreateTypeInfo());
+						if (propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiInstanceRootObject>()))
+						{
+							info->acceptableTypes.Add(TypeInfoRetriver<GuiComponent*>::CreateTypeInfo());
+						}
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
@@ -139,7 +143,22 @@ GuiCompositionInstanceLoader
 							auto td = values[0].typeInfo->GetTypeDescriptor();
 
 							Ptr<WfExpression> expr;
-							if (td->CanConvertTo(description::GetTypeDescriptor<IGuiGraphicsElement>()))
+							if (td->CanConvertTo(description::GetTypeDescriptor<GuiComponent>()))
+							{
+								auto refControl = MakePtr<WfReferenceExpression>();
+								refControl->name.value = variableName.ToString();
+
+								auto refAddComponent = MakePtr<WfMemberExpression>();
+								refAddComponent->parent = refControl;
+								refAddComponent->name.value = L"AddComponent";
+
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAddComponent;
+								call->arguments.Add(value);
+
+								expr = call;
+							}
+							else if (td->CanConvertTo(description::GetTypeDescriptor<IGuiGraphicsElement>()))
 							{
 								auto refComposition = MakePtr<WfReferenceExpression>();
 								refComposition->name.value = variableName.ToString();
