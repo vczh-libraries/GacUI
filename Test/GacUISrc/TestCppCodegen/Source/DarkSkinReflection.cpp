@@ -271,7 +271,8 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::DocumentViewerTemplateConstructor)
 
@@ -439,7 +440,8 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::ListViewTemplateConstructor)
 
@@ -500,7 +502,8 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::MultilineTextBoxTemplateConstructor)
 
@@ -564,6 +567,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::ScrollViewTemplateConstructor)
 
@@ -658,7 +662,8 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::TextListTemplateConstructor)
 
@@ -816,7 +821,8 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::TreeViewTemplateConstructor)
 

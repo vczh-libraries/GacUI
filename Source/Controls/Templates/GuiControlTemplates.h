@@ -457,10 +457,6 @@ Scrollable Controls
 
 			class GuiMultilineTextBoxTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiMultilineTextBoxTemplate>
 			{
-			protected:
-				elements::GuiColorizedTextElement*			textElement;
-				compositions::GuiBoundsComposition*			textComposition;
-
 			public:
 				GuiMultilineTextBoxTemplate();
 				~GuiMultilineTextBoxTemplate();

@@ -970,10 +970,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentViewerTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::darkskin::DocumentViewerTemplate* self = static_cast<::darkskin::DocumentViewerTemplate*>(nullptr);
+		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
 		void __vwsn_initialize_instance_(::darkskin::DocumentViewerTemplate* __vwsn_this_);
 	public:
 		DocumentViewerTemplateConstructor();
@@ -1440,10 +1441,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::darkskin::ListViewTemplate* self = static_cast<::darkskin::ListViewTemplate*>(nullptr);
+		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
 		void __vwsn_initialize_instance_(::darkskin::ListViewTemplate* __vwsn_this_);
 	public:
 		ListViewTemplateConstructor();
@@ -1631,10 +1633,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MultilineTextBoxTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::darkskin::MultilineTextBoxTemplate* self = static_cast<::darkskin::MultilineTextBoxTemplate*>(nullptr);
+		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
 		void __vwsn_initialize_instance_(::darkskin::MultilineTextBoxTemplate* __vwsn_this_);
 	public:
 		MultilineTextBoxTemplateConstructor();
@@ -1791,6 +1794,7 @@ namespace darkskin
 #endif
 	protected:
 		::darkskin::ScrollViewTemplate* self = static_cast<::darkskin::ScrollViewTemplate*>(nullptr);
+		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
@@ -2024,10 +2028,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::darkskin::TextListTemplate* self = static_cast<::darkskin::TextListTemplate*>(nullptr);
+		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
 		void __vwsn_initialize_instance_(::darkskin::TextListTemplate* __vwsn_this_);
 	public:
 		TextListTemplateConstructor();
@@ -2419,10 +2424,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::darkskin::TreeViewTemplate* self = static_cast<::darkskin::TreeViewTemplate*>(nullptr);
+		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
 		void __vwsn_initialize_instance_(::darkskin::TreeViewTemplate* __vwsn_this_);
 	public:
 		TreeViewTemplateConstructor();

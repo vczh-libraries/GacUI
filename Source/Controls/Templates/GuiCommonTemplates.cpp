@@ -462,11 +462,9 @@ GuiCommonDatePickerLook
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 				horizontalScroll = new GuiScroll(theme::ThemeName::HScroll);
-				horizontalScroll->SetControlTemplate(GetHScrollTemplate());
 				horizontalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				horizontalScroll->SetEnabled(false);
 				verticalScroll = new GuiScroll(theme::ThemeName::HScroll);
-				verticalScroll->SetControlTemplate(GetVScrollTemplate());
 				verticalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				verticalScroll->SetEnabled(false);
 
