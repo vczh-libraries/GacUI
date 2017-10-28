@@ -159,6 +159,19 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainerComposition)
 			END_CLASS_MEMBER(GuiCommonScrollViewLook)
 
+			BEGIN_CLASS_MEMBER(GuiCommonScrollBehavior)
+				CLASS_MEMBER_BASE(GuiComponent)
+				CLASS_MEMBER_CONSTRUCTOR(GuiCommonScrollBehavior*(), NO_PARAMETER)
+				
+				CLASS_MEMBER_PROPERTY_FAST(ScrollTemplate)
+				CLASS_MEMBER_METHOD(AttachDecreaseButton, { L"button" })
+				CLASS_MEMBER_METHOD(AttachIncreaseButton, { L"button" })
+				CLASS_MEMBER_METHOD(AttachHorizontalPartialView, { L"partialView" })
+				CLASS_MEMBER_METHOD(AttachVerticalPartialView, { L"partialView" })
+				CLASS_MEMBER_METHOD(AttachHorizontalTrackerHandle, { L"handle" })
+				CLASS_MEMBER_METHOD(AttachVerticalTrackerHandle, { L"handle" })
+			END_CLASS_MEMBER(GuiCommonScrollBehavior)
+
 #undef GUI_CONTROL_TEMPLATE
 #undef GUI_TEMPLATE_PROPERTY_REFLECTION
 #undef _

@@ -118,6 +118,34 @@ GuiCommonScrollViewLook
 				TemplateProperty<GuiScrollTemplate>					GetVScrollTemplate();
 				void												SetVScrollTemplate(const TemplateProperty<GuiScrollTemplate>& value);
 			};
+
+/***********************************************************************
+GuiCommonScrollBehavior
+***********************************************************************/
+
+			class GuiCommonScrollBehavior : public controls::GuiComponent, public Description<GuiCommonScrollBehavior>
+			{
+			protected:
+				bool												dragging = false;
+				Point												location = { 0,0 };
+				GuiScrollTemplate*									scrollTemplate = nullptr;
+
+				void												SetScroll(vint totalPixels, vint newOffset);
+				void												AttachHandle(compositions::GuiGraphicsComposition* handle);
+			public:
+				GuiCommonScrollBehavior();
+				~GuiCommonScrollBehavior();
+
+				GuiScrollTemplate*									GetScrollTemplate();
+				void												SetScrollTemplate(GuiScrollTemplate* value);
+
+				void												AttachDecreaseButton(controls::GuiButton* button);
+				void												AttachIncreaseButton(controls::GuiButton* button);
+				void												AttachHorizontalPartialView(compositions::GuiPartialViewComposition* partialView);
+				void												AttachVerticalPartialView(compositions::GuiPartialViewComposition* partialView);
+				void												AttachHorizontalTrackerHandle(compositions::GuiBoundsComposition* handle);
+				void												AttachVerticalTrackerHandle(compositions::GuiBoundsComposition* handle);
+			};
 		}
 	}
 }

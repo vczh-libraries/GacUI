@@ -543,6 +543,161 @@ GuiCommonDatePickerLook
 				vScrollTemplate = value;
 				verticalScroll->SetControlTemplate(value);
 			}
+
+/***********************************************************************
+GuiCommonScrollBehavior
+***********************************************************************/
+
+			void GuiCommonScrollBehavior::SetScroll(vint totalPixels, vint newOffset)
+			{
+				vint totalSize = scrollTemplate->GetTotalSize();
+				double ratio = (double)newOffset / totalPixels;
+				vint newPosition = (vint)round(ratio * totalSize);
+
+				vint offset1 = (vint)round(((double)newPosition / totalSize) * totalPixels);
+				vint offset2 = (vint)round(((double)(newPosition + 1)) / totalSize * totalPixels);
+				vint delta1 = offset1 - newOffset;
+				vint delta2 = offset2 - newOffset;
+
+				if (delta1 < 0) { delta1 = -delta1; }
+				if (delta2 < 0) { delta2 = -delta2; }
+
+				if (delta1 < delta2)
+				{
+					scrollTemplate->GetCommands()->SetPosition(newPosition);
+				}
+				else
+				{
+					scrollTemplate->GetCommands()->SetPosition(newPosition + 1);
+				}
+			}
+
+			void GuiCommonScrollBehavior::AttachHandle(compositions::GuiGraphicsComposition* handle)
+			{
+				handle->GetEventReceiver()->leftButtonDown.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				{
+					if (scrollTemplate->GetVisuallyEnabled())
+					{
+						dragging = true;
+						location.x = arguments.x;
+						location.y = arguments.y;
+					}
+				});
+
+				handle->GetEventReceiver()->leftButtonUp.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs&)
+				{
+					if (scrollTemplate->GetVisuallyEnabled())
+					{
+						dragging = false;
+					}
+				});
+			}
+
+			GuiCommonScrollBehavior::GuiCommonScrollBehavior()
+			{
+			}
+
+			GuiCommonScrollBehavior::~GuiCommonScrollBehavior()
+			{
+			}
+
+			GuiScrollTemplate* GuiCommonScrollBehavior::GetScrollTemplate()
+			{
+				return scrollTemplate;
+			}
+
+			void GuiCommonScrollBehavior::SetScrollTemplate(GuiScrollTemplate* value)
+			{
+				scrollTemplate = value;
+			}
+
+			void GuiCommonScrollBehavior::AttachDecreaseButton(controls::GuiButton* button)
+			{
+				button->Clicked.AttachLambda([=](GuiGraphicsComposition*, GuiEventArgs&)
+				{
+					scrollTemplate->GetCommands()->SmallDecrease();
+				});
+			}
+
+			void GuiCommonScrollBehavior::AttachIncreaseButton(controls::GuiButton* button)
+			{
+				button->Clicked.AttachLambda([=](GuiGraphicsComposition*, GuiEventArgs&)
+				{
+					scrollTemplate->GetCommands()->SmallIncrease();
+				});
+			}
+
+			void GuiCommonScrollBehavior::AttachHorizontalPartialView(compositions::GuiPartialViewComposition* partialView)
+			{
+				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				{
+					if (scrollTemplate->GetVisuallyEnabled())
+					{
+						if (arguments.x < partialView->GetBounds().x1)
+						{
+							scrollTemplate->GetCommands()->BigDecrease();
+						}
+						else if (arguments.x >= partialView->GetBounds().x2)
+						{
+							scrollTemplate->GetCommands()->BigIncrease();
+						}
+					}
+				});
+
+				partialView->GetEventReceiver()->mouseMove.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				{
+					if (dragging)
+					{
+						auto bounds = partialView->GetParent()->GetBounds();
+						vint totalPixels = bounds.x2 - bounds.x1;
+						vint currentOffset = partialView->GetBounds().x1;
+						vint newOffset = currentOffset + (arguments.x - location.x);
+						SetScroll(totalPixels, newOffset);
+					}
+				});
+
+				AttachHandle(partialView);
+			}
+
+			void GuiCommonScrollBehavior::AttachVerticalPartialView(compositions::GuiPartialViewComposition* partialView)
+			{
+				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				{
+					if (scrollTemplate->GetVisuallyEnabled())
+					{
+						if (arguments.y < partialView->GetBounds().y1)
+						{
+							scrollTemplate->GetCommands()->BigDecrease();
+						}
+						else if (arguments.y >= partialView->GetBounds().y2)
+						{
+							scrollTemplate->GetCommands()->BigIncrease();
+						}
+					}
+				});
+
+				partialView->GetEventReceiver()->mouseMove.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				{
+					if (dragging)
+					{
+						auto bounds = partialView->GetParent()->GetBounds();
+						vint totalPixels = bounds.y2 - bounds.y1;
+						vint currentOffset = partialView->GetBounds().y1;
+						vint newOffset = currentOffset + (arguments.y - location.y);
+						SetScroll(totalPixels, newOffset);
+					}
+				});
+
+				AttachHandle(partialView);
+			}
+
+			void GuiCommonScrollBehavior::AttachHorizontalTrackerHandle(compositions::GuiBoundsComposition* handle)
+			{
+			}
+
+			void GuiCommonScrollBehavior::AttachVerticalTrackerHandle(compositions::GuiBoundsComposition* handle)
+			{
+			}
 		}
 	}
 }

@@ -991,44 +991,6 @@
     </Instance>
   </Instance>
 
-  <Script name="ScrollTemplateScript">
-    <Workflow>
-      <![CDATA[
-        module ScrollTemplateScript;
-        
-        using system::*;
-        using presentation::templates::*;
-        
-        class ScrollTemplateScript
-        {
-          static func SetScroll(totalPixels : int, newOffset : int, scrollTemplate : GuiScrollTemplate*) : void
-          {
-            var totalSize = scrollTemplate.TotalSize;
-            var ratio = (cast double newOffset) / totalPixels;
-            var newPosition = cast int Math::Round(ratio * totalSize);
-
-			      var offset1 = cast int Math::Round(((cast double newPosition) / totalSize) * totalPixels);
-			      var offset2 = cast int Math::Round((cast double (newPosition + 1)) / totalSize * totalPixels);
-			      var delta1 = offset1 - newOffset;
-			      var delta2 = offset2 - newOffset;
-            
-            if (delta1 < 0) { delta1 = -delta1; }
-            if (delta2 < 0) { delta2 = -delta2; }
-
-			      if(delta1 < delta2)
-			      {
-				      scrollTemplate.Commands.SetPosition(newPosition);
-			      }
-			      else
-			      {
-				      scrollTemplate.Commands.SetPosition(newPosition + 1);
-			      }
-          }
-        }
-      ]]>
-    </Workflow>
-  </Script>
-
   <Instance name="HScrollTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::HScrollTemplate" ref.Styles="res://DarkSkin/Style">
       <ref.Members>
