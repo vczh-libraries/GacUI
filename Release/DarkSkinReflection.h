@@ -47,7 +47,6 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::ScrollTemplateScript)
 			DECL_TYPE_INFO(::darkskin::BottomScrollButtonTemplate)
 			DECL_TYPE_INFO(::darkskin::BottomScrollButtonTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::ButtonTemplate)

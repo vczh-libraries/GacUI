@@ -834,16 +834,22 @@
 
   <Instance name="MultilineTextBoxTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::MultilineTextBoxTemplate" ref.Styles="res://DarkSkin/Style">
-      <MultilineTextBoxTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+      <MultilineTextBoxTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+        
         <att.TextColor>normal:{text:(cast Color "#FFFFFF") background:(cast Color "#00000000")} selectedFocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")} selectedUnfocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")}</att.TextColor>
         <att.CaretColor>#FFFFFF</att.CaretColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </MultilineTextBoxTemplate>
     </Instance>
@@ -985,100 +991,32 @@
     </Instance>
   </Instance>
 
-  <Script name="ScrollTemplateScript">
-    <Workflow>
-      <![CDATA[
-        module ScrollTemplateScript;
-        
-        using system::*;
-        using presentation::templates::*;
-        
-        class ScrollTemplateScript
-        {
-          static func SetScroll(totalPixels : int, newOffset : int, scrollTemplate : GuiScrollTemplate*) : void
-          {
-            var totalSize = scrollTemplate.TotalSize;
-            var ratio = (cast double newOffset) / totalPixels;
-            var newPosition = cast int Math::Round(ratio * totalSize);
-
-			      var offset1 = cast int Math::Round(((cast double newPosition) / totalSize) * totalPixels);
-			      var offset2 = cast int Math::Round((cast double (newPosition + 1)) / totalSize * totalPixels);
-			      var delta1 = offset1 - newOffset;
-			      var delta2 = offset2 - newOffset;
-            
-            if (delta1 < 0) { delta1 = -delta1; }
-            if (delta2 < 0) { delta2 = -delta2; }
-
-			      if(delta1 < delta2)
-			      {
-				      scrollTemplate.Commands.SetPosition(newPosition);
-			      }
-			      else
-			      {
-				      scrollTemplate.Commands.SetPosition(newPosition + 1);
-			      }
-          }
-        }
-      ]]>
-    </Workflow>
-  </Script>
-
   <Instance name="HScrollTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::HScrollTemplate" ref.Styles="res://DarkSkin/Style">
-      <ref.Members>
+      <ref.Ctor>
         <![CDATA[
-          @cpp:Protected
-          var draggingHandle : bool = false;
-          
-          @cpp:Protected
-          var draggingStartLocation : Point = {x:0 y:0};
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachDecreaseButton(buttonDecrease);
+            behavior.AttachIncreaseButton(buttonIncrease);
+            behavior.AttachHorizontalPartialView(handle);
+          }
         ]]>
-      </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      </ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+        
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Left">
-          <Button ControlTemplate="darkskin::LeftScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallDecrease();"/>
+          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::LeftScrollButtonTemplate"/>
         </SideAligned>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Right">
-          <Button ControlTemplate="darkskin::RightScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallIncrease();"/>
+          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::RightScrollButtonTemplate"/>
         </SideAligned>
         <Bounds ref.Name="handleContainer" AlignmentToParent="left:20 top:0 right:20 bottom:0" MinSizeLimitation="NoLimit">
-          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigDecrease();}">
-            <att.AlignmentToParent-bind>{left:0 top:0 right:(handleContainer.Bounds.x2 - handleContainer.Bounds.x1 - handle.Bounds.x1) bottom:0}</att.AlignmentToParent-bind>
-          </Bounds>
-          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigIncrease();}">
-            <att.AlignmentToParent-bind>{left:(handle.Bounds.x2) top:0 right:0 bottom:0}</att.AlignmentToParent-bind>
-          </Bounds>
           <PartialView ref.Name="handle">
             <att.WidthPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.WidthPageSize-bind>
             <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
-            <ev.leftButtonDown-eval>
-              <![CDATA[
-                if (self.VisuallyEnabled)
-                {
-                  self.draggingHandle = true;
-                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
-                }
-              ]]>
-            </ev.leftButtonDown-eval>
-            <ev.leftButtonUp-eval>
-              <![CDATA[
-                self.draggingHandle = false;
-              ]]>
-            </ev.leftButtonUp-eval>
-            <ev.mouseMove-eval>
-              <![CDATA[
-                if (self.draggingHandle)
-                {
-                  var bounds = handle.Parent.Bounds;
-                  var totalPixels = bounds.x2 - bounds.x1;
-                  var currentOffset = handle.Bounds.x1;
-                  var newOffset = currentOffset + (arguments.x - self.draggingStartLocation.x);
-                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
-                }
-              ]]>
-            </ev.mouseMove-eval>
             <Button ControlTemplate="darkskin::HScrollHandleTemplate"/>
           </PartialView>
         </Bounds>
@@ -1088,60 +1026,30 @@
 
   <Instance name="VScrollTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::VScrollTemplate" ref.Styles="res://DarkSkin/Style">
-      <ref.Members>
+      <ref.Ctor>
         <![CDATA[
-          @cpp:Protected
-          var draggingHandle : bool = false;
-          
-          @cpp:Protected
-          var draggingStartLocation : Point = {x:0 y:0};
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachDecreaseButton(buttonDecrease);
+            behavior.AttachIncreaseButton(buttonIncrease);
+            behavior.AttachVerticalPartialView(handle);
+          }
         ]]>
-      </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      </ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Top">
-          <Button ControlTemplate="darkskin::TopScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallDecrease();"/>
+          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::TopScrollButtonTemplate"/>
         </SideAligned>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Bottom">
-          <Button ControlTemplate="darkskin::BottomScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallIncrease();"/>
+          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::BottomScrollButtonTemplate"/>
         </SideAligned>
         <Bounds ref.Name="handleContainer" AlignmentToParent="left:0 top:20 right:0 bottom:20" MinSizeLimitation="NoLimit">
-          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigDecrease();}">
-            <att.AlignmentToParent-bind>{left:0 top:0 right:0 bottom:(handleContainer.Bounds.y2 - handleContainer.Bounds.y1 - handle.Bounds.y1)}</att.AlignmentToParent-bind>
-          </Bounds>
-          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigIncrease();}">
-            <att.AlignmentToParent-bind>{left:0 top:(handle.Bounds.y2) right:0 bottom:0}</att.AlignmentToParent-bind>
-          </Bounds>
           <PartialView ref.Name="handle">
             <att.HeightPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.HeightPageSize-bind>
             <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
-            <ev.leftButtonDown-eval>
-              <![CDATA[
-                if (self.VisuallyEnabled)
-                {
-                  self.draggingHandle = true;
-                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
-                }
-              ]]>
-            </ev.leftButtonDown-eval>
-            <ev.leftButtonUp-eval>
-              <![CDATA[
-                self.draggingHandle = false;
-              ]]>
-            </ev.leftButtonUp-eval>
-            <ev.mouseMove-eval>
-              <![CDATA[
-                if (self.draggingHandle)
-                {
-                  var bounds = handle.Parent.Bounds;
-                  var totalPixels = bounds.y2 - bounds.y1;
-                  var currentOffset = handle.Bounds.y1;
-                  var newOffset = currentOffset + (arguments.y - self.draggingStartLocation.y);
-                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
-                }
-              ]]>
-            </ev.mouseMove-eval>
             <Button ControlTemplate="darkskin::VScrollHandleTemplate"/>
           </PartialView>
         </Bounds>
@@ -1151,17 +1059,17 @@
 
   <Instance name="HTrackerTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::HTrackerTemplate" ref.Styles="res://DarkSkin/Style">
-      <ref.Members>
+      <ref.Ctor>
         <![CDATA[
-          @cpp:Protected
-          var draggingHandle : bool = false;
-          
-          @cpp:Protected
-          var draggingStartLocation : Point = {x:0 y:0};
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachHorizontalTrackerHandle(handle);
+          }
         ]]>
-      </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      </ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+
         <SolidBackground Color="#3F3F47"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder Color="#55545A"/>
@@ -1185,44 +1093,13 @@
             <att.AlignmentToParent-bind>
               <![CDATA[
                 {
-                  left:(
-                    let
-                      width = (self.Bounds.x2 - self.Bounds.x1) - (handle.Bounds.x2 - handle.Bounds.x1),
-                      max = self.TotalSize - self.PageSize
-                      in (max == 0 ? 0 : width * self.Position / max)
-                    )
+                  left:(behavior.GetHorizontalTrackerHandlerPosition(handle, self.TotalSize, self.PageSize, self.Position))
                   top:0
                   right:-1
                   bottom:0
                 }
               ]]>
             </att.AlignmentToParent-bind>
-            <ev.leftButtonDown-eval>
-              <![CDATA[
-                if (self.VisuallyEnabled)
-                {
-                  self.draggingHandle = true;
-                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
-                }
-              ]]>
-            </ev.leftButtonDown-eval>
-            <ev.leftButtonUp-eval>
-              <![CDATA[
-                self.draggingHandle = false;
-              ]]>
-            </ev.leftButtonUp-eval>
-            <ev.mouseMove-eval>
-              <![CDATA[
-                if (self.draggingHandle)
-                {
-                  var bounds = handle.Parent.Bounds;
-                  var totalPixels = bounds.x2 - bounds.x1;
-                  var currentOffset = handle.Bounds.x1;
-                  var newOffset = currentOffset + (arguments.x - self.draggingStartLocation.x);
-                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
-                }
-              ]]>
-            </ev.mouseMove-eval>
             <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
               <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
@@ -1234,17 +1111,17 @@
 
   <Instance name="VTrackerTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::VTrackerTemplate" ref.Styles="res://DarkSkin/Style">
-      <ref.Members>
+      <ref.Ctor>
         <![CDATA[
-          @cpp:Protected
-          var draggingHandle : bool = false;
-          
-          @cpp:Protected
-          var draggingStartLocation : Point = {x:0 y:0};
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachVerticalTrackerHandle(handle);
+          }
         ]]>
-      </ref.Members>
-      <ScrollTemplate ref.Name="self" ContainerComposition-ref="invalidContainer" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds ref.Name="invalidContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      </ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+
         <SolidBackground Color="#3F3F47"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder Color="#55545A"/>
@@ -1269,43 +1146,12 @@
               <![CDATA[
                 {
                   left:0
-                  top:(
-                    let
-                      height = (self.Bounds.y2 - self.Bounds.y1) - (handle.Bounds.y2 - handle.Bounds.y1),
-                      max = self.TotalSize - self.PageSize
-                      in (max == 0 ? 0 : height * self.Position / max)
-                    )
+                  top:(behavior.GetVerticalTrackerHandlerPosition(handle, self.TotalSize, self.PageSize, self.Position))
                   right:0
                   bottom:-1
                 }
               ]]>
             </att.AlignmentToParent-bind>
-            <ev.leftButtonDown-eval>
-              <![CDATA[
-                if (self.VisuallyEnabled)
-                {
-                  self.draggingHandle = true;
-                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
-                }
-              ]]>
-            </ev.leftButtonDown-eval>
-            <ev.leftButtonUp-eval>
-              <![CDATA[
-                self.draggingHandle = false;
-              ]]>
-            </ev.leftButtonUp-eval>
-            <ev.mouseMove-eval>
-              <![CDATA[
-                if (self.draggingHandle)
-                {
-                  var bounds = handle.Parent.Bounds;
-                  var totalPixels = bounds.y2 - bounds.y1;
-                  var currentOffset = handle.Bounds.y1;
-                  var newOffset = currentOffset + (arguments.y - self.draggingStartLocation.y);
-                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
-                }
-              ]]>
-            </ev.mouseMove-eval>
             <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
               <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
@@ -1349,13 +1195,18 @@
   <Instance name="ScrollViewTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ScrollViewTemplate" ref.Styles="res://DarkSkin/Style">
       <ScrollViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
-
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+        
         <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </ScrollViewTemplate>
     </Instance>
@@ -1363,15 +1214,21 @@
 
   <Instance name="DocumentViewerTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::DocumentViewerTemplate" ref.Styles="res://DarkSkin/Style">
-      <DocumentViewerTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren" BaselineDocument-uri="res://DarkSkin/BaselineDocument">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+      <DocumentViewerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" BaselineDocument-uri="res://DarkSkin/BaselineDocument">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+        
         <att.CaretColor>#FFFFFF</att.CaretColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </DocumentViewerTemplate>
     </Instance>
@@ -1397,18 +1254,24 @@
 
   <Instance name="TextListTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TextListTemplate" ref.Styles="res://DarkSkin/Style">
-      <TextListTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+      <TextListTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+        
         <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
         <att.CheckBulletTemplate>darkskin::CheckBoxTemplate</att.CheckBulletTemplate>
         <att.RadioBulletTemplate>darkskin::RadioButtonTemplate</att.RadioBulletTemplate>
         <att.TextColor>#F1F1F1</att.TextColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </TextListTemplate>
     </Instance>
@@ -1593,13 +1456,15 @@
 
   <Instance name="DatePickerTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::DatePickerTemplate" ref.Styles="res://DarkSkin/Style">
-      <DatePickerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <att.DateButtonTemplate>darkskin::ItemBackgroundTemplate</att.DateButtonTemplate>
-        <att.DateTextListTemplate>darkskin::TextListTemplate</att.DateTextListTemplate>
-        <att.DateComboBoxTemplate>darkskin::ComboBoxTemplate</att.DateComboBoxTemplate>
-        <att.BackgroundColor>#2D2D30</att.BackgroundColor>
-        <att.PrimaryTextColor>#FFFFFF</att.PrimaryTextColor>
-        <att.SecondaryTextColor>#999999</att.SecondaryTextColor>
+      <DatePickerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" Date-bind="look.Date">
+        <CommonDatePickerLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0" Font-bind="self.Font" Date-bind="self.Date" DateLocale-bind="self.DateLocale" Commands-bind="self.Commands">
+          <att.DateButtonTemplate>darkskin::ItemBackgroundTemplate</att.DateButtonTemplate>
+          <att.DateTextListTemplate>darkskin::TextListTemplate</att.DateTextListTemplate>
+          <att.DateComboBoxTemplate>darkskin::ComboBoxTemplate</att.DateComboBoxTemplate>
+          <att.BackgroundColor>#2D2D30</att.BackgroundColor>
+          <att.PrimaryTextColor>#FFFFFF</att.PrimaryTextColor>
+          <att.SecondaryTextColor>#999999</att.SecondaryTextColor>
+        </CommonDatePickerLook>
       </DatePickerTemplate>
     </Instance>
   </Instance>
@@ -1648,7 +1513,7 @@
 
   <Instance name="ListViewColumnHeaderTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ListViewColumnHeaderTemplate" ref.Styles="res://DarkSkin/Style">
-      <ListViewColumnHeaderTemplate ref.Name="self" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
+      <ListViewColumnHeaderTemplate ref.Name="self" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
         <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <SolidBackground ref.Style="columnHeaderBackground"/>
         <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0" PreferredMinSize="x:1 y:0">
@@ -1657,8 +1522,40 @@
         <Bounds AlignmentToParent="left:0 top:-1 right:0 bottom:0" PreferredMinSize="x:0 y:1">
           <SolidBorder Color="#404042"/>
         </Bounds>
-        <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
-          <Bounds AlignmentToParent="left:8 top:5 right:5 bottom:5">
+        <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:11 bottom:1">
+          <Table AlignmentToParent="left:0 top:1 right:0 bottom:-1">
+            <att.Rows>
+              <_>composeType:MinSize</_>
+              <_>composeType:Percentage percentage:1.0</_>
+            </att.Rows>
+            <att.Columns>
+              <_>composeType:Percentage percentage:0.5</_>
+              <_>composeType:MinSize</_>
+              <_>composeType:Percentage percentage:0.5</_>
+            </att.Columns>
+
+            <Cell Site="row:0 column:1">
+              <Bounds Visible-bind="self.SortingState == ColumnSortingState::Ascending">
+                <Polygon ref.Style="toolstripSplitArrow" Size="x:7 y:4">
+                  <att.Points>
+                    <Point>x:0 y:3</Point>
+                    <Point>x:3 y:0</Point>
+                    <Point>x:6 y:3</Point>
+                  </att.Points>
+                </Polygon>
+              </Bounds>
+              <Bounds Visible-bind="self.SortingState == ColumnSortingState::Descending">
+                <Polygon ref.Style="toolstripSplitArrow" Size="x:7 y:4">
+                  <att.Points>
+                    <Point>x:0 y:0</Point>
+                    <Point>x:3 y:3</Point>
+                    <Point>x:6 y:0</Point>
+                  </att.Points>
+                </Polygon>
+              </Bounds>
+            </Cell>
+          </Table>
+          <Bounds AlignmentToParent="left:8 top:6 right:5 bottom:5">
             <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" Ellipse="true" HorizontalAlignment="Left" VerticalAlignment="Center"/>
           </Bounds>
         </Bounds>
@@ -1673,10 +1570,11 @@
 
   <Instance name="ListViewTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ListViewTemplate" ref.Styles="res://DarkSkin/Style">
-      <ListViewTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+      <ListViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+        
         <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
         <att.ColumnHeaderTemplate>darkskin::ListViewColumnHeaderTemplate</att.ColumnHeaderTemplate>
         <att.PrimaryTextColor>#F1F1F1</att.PrimaryTextColor>
@@ -1684,8 +1582,13 @@
         <att.ItemSeparatorColor>#F1F1F1</att.ItemSeparatorColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </ListViewTemplate>
     </Instance>
@@ -1733,17 +1636,23 @@
 
   <Instance name="TreeViewTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TreeViewTemplate" ref.Styles="res://DarkSkin/Style">
-      <TreeViewTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
-        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
-        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+      <TreeViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+        
         <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
         <att.ExpandingDecoratorTemplate>darkskin::ExpandingDecoratorTemplate</att.ExpandingDecoratorTemplate>
         <att.TextColor>#F1F1F1</att.TextColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
           <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
         </Bounds>
       </TreeViewTemplate>
     </Instance>

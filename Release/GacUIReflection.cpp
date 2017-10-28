@@ -897,6 +897,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Visible)
 				CLASS_MEMBER_PROPERTY_FAST(MinSizeLimitation)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(GlobalBounds)
+				CLASS_MEMBER_PROPERTY_FAST(TransparentToMouse)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(AssociatedControl)
 				CLASS_MEMBER_PROPERTY_FAST(AssociatedCursor)
 				CLASS_MEMBER_PROPERTY_FAST(AssociatedHitTestResult)
@@ -919,7 +920,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(RemoveChild, {L"child"})
 				CLASS_MEMBER_METHOD(MoveChild, {L"child" _ L"newIndex"})
 				CLASS_MEMBER_METHOD(Render, {L"size"})
-				CLASS_MEMBER_METHOD(FindComposition, {L"location"})
+				CLASS_MEMBER_METHOD(FindComposition, {L"location" _ L"forMouseEvent"})
 				CLASS_MEMBER_METHOD(ForceCalculateSizeImmediately, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(IsSizeAffectParent, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiGraphicsComposition)
@@ -1695,6 +1696,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(DetachListControl, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetVisibleStyle, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(GetVisibleIndex, {L"style"})
+				CLASS_MEMBER_METHOD(ReloadVisibleStyles, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(OnViewChanged, {L"bounds"})
 				CLASS_MEMBER_METHOD(FindItem, {L"itemIndex" _ L"key"})
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
@@ -3132,11 +3134,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(NotifyDateSelected, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IDatePickerCommandExecutor)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IScrollViewCommandExecutor)
-				CLASS_MEMBER_BASE(IDescriptable)
-				CLASS_MEMBER_METHOD(CalculateView, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IScrollViewCommandExecutor)
-
 			BEGIN_CLASS_MEMBER(GuiComponent)
 			END_CLASS_MEMBER(GuiComponent)
 
@@ -3167,7 +3164,6 @@ Type Declaration
 				CLASS_MEMBER_BASE(BASE)\
 				CLASS_MEMBER_CONSTRUCTOR(NAME*(), NO_PARAMETER)\
 				NAME ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)\
-				CLASS_MEMBER_METHOD(Initialize, NO_PARAMETER)\
 			END_CLASS_MEMBER(NAME)\
 
 			GUI_CONTROL_TEMPLATE(GuiControlTemplate, GuiTemplate)
@@ -3184,35 +3180,13 @@ Type Declaration
 			GUI_CONTROL_TEMPLATE(GuiListViewColumnHeaderTemplate, GuiToolstripButtonTemplate)
 			GUI_CONTROL_TEMPLATE(GuiComboBoxTemplate, GuiToolstripButtonTemplate)
 			GUI_CONTROL_TEMPLATE(GuiScrollTemplate, GuiControlTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiScrollViewTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiScrollViewTemplate*(), NO_PARAMETER)
-
-				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-
-				CLASS_MEMBER_METHOD(AdjustView, {L"fullSize"})
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(HorizontalScroll)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(VerticalScroll)
-				CLASS_MEMBER_PROPERTY_FAST(HorizontalAlwaysVisible)
-				CLASS_MEMBER_PROPERTY_FAST(VerticalAlwaysVisible)
-			END_CLASS_MEMBER(GuiScrollViewTemplate)
-
+			GUI_CONTROL_TEMPLATE(GuiScrollViewTemplate, GuiControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiListControlTemplate, GuiScrollViewTemplate)
 			GUI_CONTROL_TEMPLATE(GuiTextListTemplate, GuiListControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiListViewTemplate, GuiListControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiTreeViewTemplate, GuiListControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiTabTemplate, GuiControlTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiDatePickerTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiDatePickerTemplate*(), NO_PARAMETER)
-
-				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(DateLocale)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Date)
-			END_CLASS_MEMBER(GuiDatePickerTemplate)
-
+			GUI_CONTROL_TEMPLATE(GuiDatePickerTemplate, GuiControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiDateComboBoxTemplate, GuiComboBoxTemplate)
 			GUI_CONTROL_TEMPLATE(GuiListItemTemplate, GuiTemplate)
 			GUI_CONTROL_TEMPLATE(GuiTextListItemTemplate, GuiListItemTemplate)
@@ -3220,6 +3194,45 @@ Type Declaration
 			GUI_CONTROL_TEMPLATE(GuiGridCellTemplate, GuiControlTemplate)
 			GUI_CONTROL_TEMPLATE(GuiGridVisualizerTemplate, GuiGridCellTemplate)
 			GUI_CONTROL_TEMPLATE(GuiGridEditorTemplate, GuiGridCellTemplate)
+
+			BEGIN_CLASS_MEMBER(GuiCommonDatePickerLook)
+				CLASS_MEMBER_BASE(GuiTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiCommonDatePickerLook*(Color, Color, Color), { L"backgroundColor" _ L"primaryTextColor" _ L"secondaryTextColor" })
+
+				CLASS_MEMBER_PROPERTY_FAST(Commands)
+				CLASS_MEMBER_PROPERTY_FAST(DateButtonTemplate)
+				CLASS_MEMBER_PROPERTY_FAST(DateTextListTemplate)
+				CLASS_MEMBER_PROPERTY_FAST(DateComboBoxTemplate)
+				CLASS_MEMBER_PROPERTY_FAST(DateLocale)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Date)
+				CLASS_MEMBER_PROPERTY_FAST(Font)
+			END_CLASS_MEMBER(GuiCommonDatePickerLook)
+
+			BEGIN_CLASS_MEMBER(GuiCommonScrollViewLook)
+				CLASS_MEMBER_BASE(GuiTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiCommonScrollViewLook*(vint), { L"defaultScrollSize" })
+				
+				CLASS_MEMBER_PROPERTY_FAST(HScrollTemplate)
+				CLASS_MEMBER_PROPERTY_FAST(VScrollTemplate)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(HScroll)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(VScroll)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainerComposition)
+			END_CLASS_MEMBER(GuiCommonScrollViewLook)
+
+			BEGIN_CLASS_MEMBER(GuiCommonScrollBehavior)
+				CLASS_MEMBER_BASE(GuiComponent)
+				CLASS_MEMBER_CONSTRUCTOR(GuiCommonScrollBehavior*(), NO_PARAMETER)
+				
+				CLASS_MEMBER_METHOD(AttachScrollTemplate, { L"value" })
+				CLASS_MEMBER_METHOD(AttachDecreaseButton, { L"button" })
+				CLASS_MEMBER_METHOD(AttachIncreaseButton, { L"button" })
+				CLASS_MEMBER_METHOD(AttachHorizontalPartialView, { L"partialView" })
+				CLASS_MEMBER_METHOD(AttachVerticalPartialView, { L"partialView" })
+				CLASS_MEMBER_METHOD(AttachHorizontalTrackerHandle, { L"handle" })
+				CLASS_MEMBER_METHOD(AttachVerticalTrackerHandle, { L"handle" })
+				CLASS_MEMBER_METHOD(GetHorizontalTrackerHandlerPosition, { L"handle" _ L"totalSize" _ L"pageSize" _ L"position" })
+				CLASS_MEMBER_METHOD(GetVerticalTrackerHandlerPosition, { L"handle" _ L"totalSize" _ L"pageSize" _ L"position" })
+			END_CLASS_MEMBER(GuiCommonScrollBehavior)
 
 #undef GUI_CONTROL_TEMPLATE
 #undef GUI_TEMPLATE_PROPERTY_REFLECTION

@@ -6525,14 +6525,15 @@ Basic Construction
 				CompositionList								children;
 				GuiGraphicsComposition*						parent = nullptr;
 				Ptr<elements::IGuiGraphicsElement>			ownedElement;
-				bool										visible;
-				MinSizeLimitation							minSizeLimitation;
+				bool										visible = true;
+				bool										transparentToMouse = false;
+				MinSizeLimitation							minSizeLimitation = MinSizeLimitation::NoLimit;
 
 				Ptr<compositions::GuiGraphicsEventReceiver>	eventReceiver;
 				GraphicsHostRecord*							relatedHostRecord = nullptr;
 				controls::GuiControl*						associatedControl = nullptr;
 				INativeCursor*								associatedCursor = nullptr;
-				INativeWindowListener::HitTestResult		associatedHitTestResult;
+				INativeWindowListener::HitTestResult		associatedHitTestResult = INativeWindowListener::NoDecision;
 
 				Margin										margin;
 				Margin										internalMargin;
@@ -6613,7 +6614,14 @@ Basic Construction
 				/// <summary>Find a deepest composition that under a specified location. If the location is inside a compsition but not hit any sub composition, this function will return this composition.</summary>
 				/// <returns>The deepest composition that under a specified location.</returns>
 				/// <param name="location">The specified location.</param>
-				GuiGraphicsComposition*						FindComposition(Point location);
+				/// <param name="forMouseEvent">Find a composition for mouse event, it will ignore all compositions that are transparent to mouse events.</param>
+				GuiGraphicsComposition*						FindComposition(Point location, bool forMouseEvent);
+				/// <summary>Get is this composition transparent to mouse events.</summary>
+				/// <returns>Returns true if this composition is transparent to mouse events, which means it just passes all mouse events to the composition under it.</returns>
+				bool										GetTransparentToMouse();
+				/// <summary>Set is the composition transparent to mouse events.</summary>
+				/// <param name="value">Set to true to make this composition transparent to mouse events.</param>
+				void										SetTransparentToMouse(bool value);
 				/// <summary>Get the bounds in the top composition space.</summary>
 				/// <returns>The bounds in the top composition space.</returns>
 				Rect										GetGlobalBounds();
@@ -8060,14 +8068,6 @@ namespace vl
 				virtual void						NotifyDateSelected() = 0;
 			};
 
-			/// <summary>A command executor for the style controller to change the control state.</summary>
-			class IScrollViewCommandExecutor : public virtual IDescriptable, public Description<IScrollViewCommandExecutor>
-			{
-			public:
-				/// <summary>Called when the size of the content has been changed.</summary>
-				virtual void						CalculateView() = 0;
-			};
-
 			class GuiInstanceRootObject;
 
 			/// <summary>
@@ -8193,8 +8193,6 @@ Control Template
 			public:
 				GuiControlTemplate();
 				~GuiControlTemplate();
-
-				virtual void				Initialize();
 				
 #define GuiControlTemplate_PROPERTIES(F)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition)\
@@ -8395,47 +8393,19 @@ Scrollable Controls
 
 			class GuiScrollViewTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollViewTemplate>
 			{
-			protected:
-				controls::GuiScroll*					horizontalScroll = nullptr;
-				controls::GuiScroll*					verticalScroll = nullptr;
-				compositions::GuiTableComposition*		tableComposition = nullptr;
-				compositions::GuiCellComposition*		containerCellComposition = nullptr;
-				compositions::GuiBoundsComposition*		containerComposition = nullptr;
-				bool									horizontalAlwaysVisible = true;
-				bool									verticalAlwaysVisible = true;
-
-				void									UpdateTable();
 			public:
 				GuiScrollViewTemplate();
 				~GuiScrollViewTemplate();
 
 #define GuiScrollViewTemplate_PROPERTIES(F)\
-				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, HScrollTemplate)\
-				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, VScrollTemplate)\
-				F(GuiScrollViewTemplate, vint, DefaultScrollSize)\
-				F(GuiScrollViewTemplate, controls::IScrollViewCommandExecutor*, Commands)\
+				F(GuiScrollViewTemplate, controls::GuiScroll*, HorizontalScroll)\
+				F(GuiScrollViewTemplate, controls::GuiScroll*, VerticalScroll)\
 
 				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-
-				void									AdjustView(Size fullSize);
-
-				controls::GuiScroll*					GetHorizontalScroll();
-				controls::GuiScroll*					GetVerticalScroll();
-
-				bool									GetHorizontalAlwaysVisible();
-				void									SetHorizontalAlwaysVisible(bool value);
-				bool									GetVerticalAlwaysVisible();
-				void									SetVerticalAlwaysVisible(bool value);
-
-				void									Initialize()override;
 			};
 
 			class GuiMultilineTextBoxTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiMultilineTextBoxTemplate>
 			{
-			protected:
-				elements::GuiColorizedTextElement*			textElement;
-				compositions::GuiBoundsComposition*			textComposition;
-
 			public:
 				GuiMultilineTextBoxTemplate();
 				~GuiMultilineTextBoxTemplate();
@@ -8543,60 +8513,16 @@ Date Controls
 
 			class GuiDatePickerTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDatePickerTemplate>
 			{
-			protected:
-				static const vint									DaysOfWeek = 7;
-				static const vint									DayRows = 6;
-				static const vint									DayRowStart = 2;
-				static const vint									YearFirst = 1900;
-				static const vint									YearLast = 2099;
-
-				DateTime											currentDate;
-				Locale												dateLocale;
-				bool												preventComboEvent;
-				bool												preventButtonEvent;
-
-				controls::GuiComboBoxListControl*					comboYear;
-				controls::GuiTextList*								listYears;
-				controls::GuiComboBoxListControl*					comboMonth;
-				controls::GuiTextList*								listMonths;
-				collections::Array<elements::GuiSolidLabelElement*>	labelDaysOfWeek;
-				collections::Array<controls::GuiSelectableButton*>	buttonDays;
-				collections::Array<elements::GuiSolidLabelElement*>	labelDays;
-				collections::Array<DateTime>						dateDays;
-
-				void												SetDay(const DateTime& day, vint& index, bool currentMonth);
-				void												DisplayMonth(vint year, vint month);
-				void												SelectDay(vint day);
-
-				void												comboYearMonth_SelectedIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void												buttonDay_SelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void												UpdateData(const DateTime& value, bool forceUpdate);
-
 			public:
 				GuiDatePickerTemplate();
 				~GuiDatePickerTemplate();
 
 #define GuiDatePickerTemplate_PROPERTIES(F)\
 				F(GuiDatePickerTemplate, controls::IDatePickerCommandExecutor*, Commands)\
-				F(GuiDatePickerTemplate, TemplateProperty<GuiSelectableButtonTemplate>, DateButtonTemplate)\
-				F(GuiDatePickerTemplate, TemplateProperty<GuiTextListTemplate>, DateTextListTemplate)\
-				F(GuiDatePickerTemplate, TemplateProperty<GuiComboBoxTemplate>, DateComboBoxTemplate)\
-				F(GuiDatePickerTemplate, Color, BackgroundColor)\
-				F(GuiDatePickerTemplate, Color, PrimaryTextColor)\
-				F(GuiDatePickerTemplate, Color, SecondaryTextColor)\
+				F(GuiDatePickerTemplate, Locale, DateLocale)\
+				F(GuiDatePickerTemplate, DateTime, Date)\
 
 				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-
-				compositions::GuiNotifyEvent						DateLocaleChanged;
-				compositions::GuiNotifyEvent						DateChanged;
-
-				const Locale&										GetDateLocale();
-				void												SetDateLocale(const Locale& value);
-				const DateTime&										GetDate();
-				void												SetDate(const DateTime& value);
-
-				void												Initialize()override;
 			};
 
 			class GuiDateComboBoxTemplate : public GuiComboBoxTemplate, public AggregatableDescription<GuiDateComboBoxTemplate>
@@ -8619,10 +8545,8 @@ Item Template
 			{
 			protected:
 				controls::GuiListControl*	listControl = nullptr;
-				bool						initialized = false;
 
 				virtual void				OnInitialize();
-
 			public:
 				GuiListItemTemplate();
 				~GuiListItemTemplate();
@@ -8710,6 +8634,278 @@ Item Template
 
 				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\CONTROLS\TEMPLATES\GUICOMMONTEMPLATES.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Template System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICOMMONTEMPLATES
+#define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICOMMONTEMPLATES
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace templates
+		{
+
+/***********************************************************************
+GuiCommonDatePickerLook
+***********************************************************************/
+
+			class GuiCommonDatePickerLook : public GuiTemplate, public Description<GuiCommonDatePickerLook>
+			{
+			protected:
+				static const vint									DaysOfWeek = 7;
+				static const vint									DayRows = 6;
+				static const vint									DayRowStart = 2;
+				static const vint									YearFirst = 1900;
+				static const vint									YearLast = 2099;
+
+				Color												backgroundColor;
+				Color												primaryTextColor;
+				Color												secondaryTextColor;
+				DateTime											currentDate;
+				Locale												dateLocale;
+				FontProperties										font;
+
+				TemplateProperty<GuiSelectableButtonTemplate>		dateButtonTemplate;
+				TemplateProperty<GuiTextListTemplate>				dateTextListTemplate;
+				TemplateProperty<GuiComboBoxTemplate>				dateComboBoxTemplate;
+
+				controls::IDatePickerCommandExecutor*				commands = nullptr;
+				bool												preventComboEvent = false;
+				bool												preventButtonEvent = false;
+
+				controls::GuiComboBoxListControl*					comboYear;
+				controls::GuiTextList*								listYears;
+				controls::GuiComboBoxListControl*					comboMonth;
+				controls::GuiTextList*								listMonths;
+				collections::Array<elements::GuiSolidLabelElement*>	labelDaysOfWeek;
+				collections::Array<controls::GuiSelectableButton*>	buttonDays;
+				collections::Array<elements::GuiSolidLabelElement*>	labelDays;
+				collections::Array<DateTime>						dateDays;
+
+				void												SetDay(const DateTime& day, vint& index, bool currentMonth);
+				void												DisplayMonth(vint year, vint month);
+				void												SelectDay(vint day);
+
+				void												comboYearMonth_SelectedIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												buttonDay_SelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+			public:
+				GuiCommonDatePickerLook(Color _backgroundColor, Color _primaryTextColor, Color _secondaryTextColor);
+				~GuiCommonDatePickerLook();
+
+				compositions::GuiNotifyEvent						DateChanged;
+
+				controls::IDatePickerCommandExecutor*				GetCommands();
+				void												SetCommands(controls::IDatePickerCommandExecutor* value);
+				TemplateProperty<GuiSelectableButtonTemplate>		GetDateButtonTemplate();
+				void												SetDateButtonTemplate(const TemplateProperty<GuiSelectableButtonTemplate>& value);
+				TemplateProperty<GuiTextListTemplate>				GetDateTextListTemplate();
+				void												SetDateTextListTemplate(const TemplateProperty<GuiTextListTemplate>& value);
+				TemplateProperty<GuiComboBoxTemplate>				GetDateComboBoxTemplate();
+				void												SetDateComboBoxTemplate(const TemplateProperty<GuiComboBoxTemplate>& value);
+
+				const Locale&										GetDateLocale();
+				void												SetDateLocale(const Locale& value);
+				const DateTime&										GetDate();
+				void												SetDate(const DateTime& value);
+				const FontProperties&								GetFont();
+				void												SetFont(const FontProperties& value);
+			};
+
+/***********************************************************************
+GuiCommonScrollViewLook
+***********************************************************************/
+
+			class GuiCommonScrollViewLook : public GuiTemplate, public Description<GuiCommonScrollViewLook>
+			{
+			protected:
+				controls::GuiScroll*								horizontalScroll = nullptr;
+				controls::GuiScroll*								verticalScroll = nullptr;
+				compositions::GuiTableComposition*					tableComposition = nullptr;
+				compositions::GuiCellComposition*					containerCellComposition = nullptr;
+				compositions::GuiBoundsComposition*					containerComposition = nullptr;
+
+				vint												defaultScrollSize = 12;
+				TemplateProperty<GuiScrollTemplate>					hScrollTemplate;
+				TemplateProperty<GuiScrollTemplate>					vScrollTemplate;
+
+				void												UpdateTable();
+				void												hScroll_OnVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												vScroll_OnVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+			public:
+				GuiCommonScrollViewLook(vint _defaultScrollSize);
+				~GuiCommonScrollViewLook();
+
+				controls::GuiScroll*								GetHScroll();
+				controls::GuiScroll*								GetVScroll();
+				compositions::GuiGraphicsComposition*				GetContainerComposition();
+
+				TemplateProperty<GuiScrollTemplate>					GetHScrollTemplate();
+				void												SetHScrollTemplate(const TemplateProperty<GuiScrollTemplate>& value);
+				TemplateProperty<GuiScrollTemplate>					GetVScrollTemplate();
+				void												SetVScrollTemplate(const TemplateProperty<GuiScrollTemplate>& value);
+			};
+
+/***********************************************************************
+GuiCommonScrollBehavior
+***********************************************************************/
+
+			class GuiCommonScrollBehavior : public controls::GuiComponent, public Description<GuiCommonScrollBehavior>
+			{
+			protected:
+				bool												dragging = false;
+				Point												location = { 0,0 };
+				GuiScrollTemplate*									scrollTemplate = nullptr;
+
+				void												SetScroll(vint totalPixels, vint newOffset);
+				void												AttachHandle(compositions::GuiGraphicsComposition* handle);
+			public:
+				GuiCommonScrollBehavior();
+				~GuiCommonScrollBehavior();
+
+				void												AttachScrollTemplate(GuiScrollTemplate* value);
+				void												AttachDecreaseButton(controls::GuiButton* button);
+				void												AttachIncreaseButton(controls::GuiButton* button);
+				void												AttachHorizontalPartialView(compositions::GuiPartialViewComposition* partialView);
+				void												AttachVerticalPartialView(compositions::GuiPartialViewComposition* partialView);
+				void												AttachHorizontalTrackerHandle(compositions::GuiBoundsComposition* handle);
+				void												AttachVerticalTrackerHandle(compositions::GuiBoundsComposition* handle);
+
+				vint												GetHorizontalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position);
+				vint												GetVerticalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\CONTROLS\TEMPLATES\GUITHEMESTYLEFACTORY.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control Styles::Common Style Helpers
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUITHEMESTYLEFACTORY
+#define VCZH_PRESENTATION_CONTROLS_GUITHEMESTYLEFACTORY
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace theme
+		{
+#define GUI_CONTROL_TEMPLATE_TYPES(F) \
+			F(WindowTemplate,				Window) \
+			F(ControlTemplate,				CustomControl) \
+			F(WindowTemplate,				Tooltip) \
+			F(LabelTemplate,				Label) \
+			F(LabelTemplate,				ShortcutKey) \
+			F(ScrollViewTemplate,			ScrollView) \
+			F(ControlTemplate,				GroupBox) \
+			F(TabTemplate,					Tab) \
+			F(ComboBoxTemplate,				ComboBox) \
+			F(MultilineTextBoxTemplate,		MultilineTextBox) \
+			F(SinglelineTextBoxTemplate,	SinglelineTextBox) \
+			F(DocumentViewerTemplate,		DocumentViewer) \
+			F(DocumentLabelTemplate,		DocumentLabel) \
+			F(DocumentLabelTemplate,		DocumentTextBox) \
+			F(ListViewTemplate,				ListView) \
+			F(TreeViewTemplate,				TreeView) \
+			F(TextListTemplate,				TextList) \
+			F(SelectableButtonTemplate,		ListItemBackground) \
+			F(SelectableButtonTemplate,		TreeItemExpander) \
+			F(SelectableButtonTemplate,		CheckTextListItem) \
+			F(SelectableButtonTemplate,		RadioTextListItem) \
+			F(MenuTemplate,					Menu) \
+			F(ControlTemplate,				MenuBar) \
+			F(ControlTemplate,				MenuSplitter) \
+			F(ToolstripButtonTemplate,		MenuBarButton) \
+			F(ToolstripButtonTemplate,		MenuItemButton) \
+			F(ControlTemplate,				ToolstripToolBar) \
+			F(ToolstripButtonTemplate,		ToolstripButton) \
+			F(ToolstripButtonTemplate,		ToolstripDropdownButton) \
+			F(ToolstripButtonTemplate,		ToolstripSplitButton) \
+			F(ControlTemplate,				ToolstripSplitter) \
+			F(ButtonTemplate,				Button) \
+			F(SelectableButtonTemplate,		CheckBox) \
+			F(SelectableButtonTemplate,		RadioButton) \
+			F(DatePickerTemplate,			DatePicker) \
+			F(ScrollTemplate,				HScroll) \
+			F(ScrollTemplate,				VScroll) \
+			F(ScrollTemplate,				HTracker) \
+			F(ScrollTemplate,				VTracker) \
+			F(ScrollTemplate,				ProgressBar) \
+
+			enum class ThemeName
+			{
+				Unknown,
+#define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) CONTROL,
+				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
+#undef GUI_DEFINE_THEME_NAME
+			};
+
+			/// <summary>Theme interface. A theme creates appropriate style controllers or style providers for default controls. Call [M:vl.presentation.theme.GetCurrentTheme] to access this interface.</summary>
+			class ITheme : public virtual IDescriptable, public Description<ITheme>
+			{
+			public:
+				virtual TemplateProperty<templates::GuiControlTemplate>				CreateStyle(ThemeName themeName) = 0;
+			};
+
+			class Theme;
+
+			/// <summary>Partial control template collections. [F:vl.presentation.theme.GetCurrentTheme] will returns an object, which walks through multiple registered [T:vl.presentation.theme.ThemeTemplates] to create a correct template object for a control.</summary>
+			class ThemeTemplates : public controls::GuiInstanceRootObject, public AggregatableDescription<ThemeTemplates>
+			{
+				friend class Theme;
+			protected:
+				ThemeTemplates*														previous = nullptr;
+				ThemeTemplates*														next = nullptr;
+
+			public:
+				~ThemeTemplates();
+
+#define GUI_DEFINE_ITEM_PROPERTY(TEMPLATE, CONTROL) TemplateProperty<templates::Gui##TEMPLATE> CONTROL;
+				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_ITEM_PROPERTY)
+#undef GUI_DEFINE_ITEM_PROPERTY
+			};
+
+			/// <summary>Get the current theme style factory object. The default theme is [T:vl.presentation.win7.Win7Theme]. Call [M:vl.presentation.theme.SetCurrentTheme] to change the default theme.</summary>
+			/// <returns>The current theme style factory object.</returns>
+			extern ITheme*						GetCurrentTheme();
+			extern void							InitializeTheme();
+			extern void							FinalizeTheme();
+			/// <summary>Register a control template collection object.</summary>
+			/// <param name="name">The name of the theme.</param>
+			/// <param name="theme">The control template collection object.</param>
+			extern bool							RegisterTheme(const WString& name, Ptr<ThemeTemplates> theme);
+			/// <summary>Unregister a control template collection object.</summary>
+			/// <returns>The registered object. Returns null if it does not exist.</returns>
+			/// <param name="name">The name of the theme.</param>
+			extern Ptr<ThemeTemplates>			UnregisterTheme(const WString& name);
 		}
 	}
 }
@@ -10177,20 +10373,7 @@ Scroll View
 
 				using IEventHandler = compositions::IGuiGraphicsEventHandler;
 			protected:
-				class CommandExecutor : public Object, public IScrollViewCommandExecutor
-				{
-				protected:
-					GuiScrollView*						scrollView;
-
-				public:
-					CommandExecutor(GuiScrollView* _scrollView);
-					~CommandExecutor();
-
-					void								CalculateView()override;
-				};
-
-				Ptr<CommandExecutor>					commandExecutor;
-				bool									supressScrolling;
+				bool									supressScrolling = false;
 				Ptr<IEventHandler>						hScrollHandler;
 				Ptr<IEventHandler>						vScrollHandler;
 				Ptr<IEventHandler>						hWheelHandler;
@@ -10204,6 +10387,7 @@ Scroll View
 				void									OnHorizontalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnVerticalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									CallUpdateView();
+				void									AdjustView(Size fullSize);
 
 				/// <summary>Calculate the full size of the content.</summary>
 				/// <returns>The full size of the content.</returns>
@@ -11060,42 +11244,44 @@ List Control
 				public:
 					/// <summary>Called when an item arranger in installed to a <see cref="GuiListControl"/>.</summary>
 					/// <param name="value">The list control.</param>
-					virtual void								AttachListControl(GuiListControl* value)=0;
+					virtual void								AttachListControl(GuiListControl* value) = 0;
 					/// <summary>Called when an item arranger in uninstalled from a <see cref="GuiListControl"/>.</summary>
-					virtual void								DetachListControl()=0;
+					virtual void								DetachListControl() = 0;
 					/// <summary>Get the binded item arranger callback object.</summary>
 					/// <returns>The binded item arranger callback object.</returns>
-					virtual IItemArrangerCallback*				GetCallback()=0;
+					virtual IItemArrangerCallback*				GetCallback() = 0;
 					/// <summary>Bind the item arranger callback object.</summary>
 					/// <param name="value">The item arranger callback object to bind.</param>
-					virtual void								SetCallback(IItemArrangerCallback* value)=0;
+					virtual void								SetCallback(IItemArrangerCallback* value) = 0;
 					/// <summary>Get the total size of all data controls.</summary>
 					/// <returns>The total size.</returns>
-					virtual Size								GetTotalSize()=0;
+					virtual Size								GetTotalSize() = 0;
 					/// <summary>Get the item style controller for an visible item index. If an item is not visible, it returns null.</summary>
 					/// <returns>The item style controller.</returns>
 					/// <param name="itemIndex">The item index.</param>
-					virtual ItemStyle*							GetVisibleStyle(vint itemIndex)=0;
+					virtual ItemStyle*							GetVisibleStyle(vint itemIndex) = 0;
 					/// <summary>Get the item index for an visible item style controller. If an item is not visible, it returns -1.</summary>
 					/// <returns>The item index.</returns>
 					/// <param name="style">The item style controller.</param>
-					virtual vint								GetVisibleIndex(ItemStyle* style)=0;
+					virtual vint								GetVisibleIndex(ItemStyle* style) = 0;
+					/// <summary>Reload all visible items.</summary>
+					virtual void								ReloadVisibleStyles() = 0;
 					/// <summary>Called when the visible area of item container is changed.</summary>
 					/// <param name="bounds">The new visible area.</param>
-					virtual void								OnViewChanged(Rect bounds)=0;
+					virtual void								OnViewChanged(Rect bounds) = 0;
 					/// <summary>Find the item by an base item and a key direction.</summary>
 					/// <returns>The item index that is found. Returns -1 if this operation failed.</returns>
 					/// <param name="itemIndex">The base item index.</param>
 					/// <param name="key">The key direction.</param>
-					virtual vint								FindItem(vint itemIndex, compositions::KeyDirection key)=0;
+					virtual vint								FindItem(vint itemIndex, compositions::KeyDirection key) = 0;
 					/// <summary>Adjust the view location to make an item visible.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="itemIndex">The item index of the item to be made visible.</param>
-					virtual bool								EnsureItemVisible(vint itemIndex)=0;
+					virtual bool								EnsureItemVisible(vint itemIndex) = 0;
 					/// <summary>Get the adopted size for the view bounds.</summary>
 					/// <returns>The adopted size, making the vids bounds just enough to display several items.</returns>
 					/// <param name="expectedSize">The expected size, to provide a guidance.</param>
-					virtual Size								GetAdoptedSize(Size expectedSize)=0;
+					virtual Size								GetAdoptedSize(Size expectedSize) = 0;
 				};
 
 			protected:
@@ -11184,6 +11370,7 @@ List Control
 				friend class collections::ArrayBase<Ptr<VisibleStyleHelper>>;
 				collections::Dictionary<ItemStyle*, Ptr<VisibleStyleHelper>>		visibleStyles;
 
+				void											OnClientBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
@@ -11471,6 +11658,7 @@ Predefined ItemArranger
 					Size										GetTotalSize()override;
 					GuiListControl::ItemStyle*					GetVisibleStyle(vint itemIndex)override;
 					vint										GetVisibleIndex(GuiListControl::ItemStyle* style)override;
+					void										ReloadVisibleStyles()override;
 					void										OnViewChanged(Rect bounds)override;
 				};
 				
@@ -15093,7 +15281,7 @@ ComboBox with GuiListControl
 				GuiSelectableListControl*					containedListControl = nullptr;
 				ItemStyleProperty							itemStyleProperty;
 				templates::GuiTemplate*						itemStyleController = nullptr;
-
+				Ptr<compositions::IGuiGraphicsEventHandler>	boundsChangedHandler;
 
 				void										BeforeControlTemplateUninstalled()override;
 				void										AfterControlTemplateInstalled(bool initialize)override;
@@ -15102,10 +15290,12 @@ ComboBox with GuiListControl
 				void										RemoveStyleController();
 				void										InstallStyleController(vint itemIndex);
 				virtual void								DisplaySelectedContent(vint itemIndex);
+				void										AdoptSubMenuSize();
 				void										OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller and a list control that will be put in the popup control to show all items.</summary>
@@ -17086,124 +17276,6 @@ Toolstrip Component
 				static const bool							CanRead = true;
 				static const bool							CanResize = false;
 			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\CONTROLS\STYLES\GUITHEMESTYLEFACTORY.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control Styles::Common Style Helpers
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUITHEMESTYLEFACTORY
-#define VCZH_PRESENTATION_CONTROLS_GUITHEMESTYLEFACTORY
-
-
-
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace theme
-		{
-#define GUI_CONTROL_TEMPLATE_TYPES(F) \
-			F(WindowTemplate,				Window) \
-			F(ControlTemplate,				CustomControl) \
-			F(WindowTemplate,				Tooltip) \
-			F(LabelTemplate,				Label) \
-			F(LabelTemplate,				ShortcutKey) \
-			F(ScrollViewTemplate,			ScrollView) \
-			F(ControlTemplate,				GroupBox) \
-			F(TabTemplate,					Tab) \
-			F(ComboBoxTemplate,				ComboBox) \
-			F(MultilineTextBoxTemplate,		MultilineTextBox) \
-			F(SinglelineTextBoxTemplate,	SinglelineTextBox) \
-			F(DocumentViewerTemplate,		DocumentViewer) \
-			F(DocumentLabelTemplate,		DocumentLabel) \
-			F(DocumentLabelTemplate,		DocumentTextBox) \
-			F(ListViewTemplate,				ListView) \
-			F(TreeViewTemplate,				TreeView) \
-			F(TextListTemplate,				TextList) \
-			F(SelectableButtonTemplate,		ListItemBackground) \
-			F(SelectableButtonTemplate,		TreeItemExpander) \
-			F(SelectableButtonTemplate,		CheckTextListItem) \
-			F(SelectableButtonTemplate,		RadioTextListItem) \
-			F(MenuTemplate,					Menu) \
-			F(ControlTemplate,				MenuBar) \
-			F(ControlTemplate,				MenuSplitter) \
-			F(ToolstripButtonTemplate,		MenuBarButton) \
-			F(ToolstripButtonTemplate,		MenuItemButton) \
-			F(ControlTemplate,				ToolstripToolBar) \
-			F(ToolstripButtonTemplate,		ToolstripButton) \
-			F(ToolstripButtonTemplate,		ToolstripDropdownButton) \
-			F(ToolstripButtonTemplate,		ToolstripSplitButton) \
-			F(ControlTemplate,				ToolstripSplitter) \
-			F(ButtonTemplate,				Button) \
-			F(SelectableButtonTemplate,		CheckBox) \
-			F(SelectableButtonTemplate,		RadioButton) \
-			F(DatePickerTemplate,			DatePicker) \
-			F(ScrollTemplate,				HScroll) \
-			F(ScrollTemplate,				VScroll) \
-			F(ScrollTemplate,				HTracker) \
-			F(ScrollTemplate,				VTracker) \
-			F(ScrollTemplate,				ProgressBar) \
-
-			enum class ThemeName
-			{
-				Unknown,
-#define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) CONTROL,
-				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
-#undef GUI_DEFINE_THEME_NAME
-			};
-
-			/// <summary>Theme interface. A theme creates appropriate style controllers or style providers for default controls. Call [M:vl.presentation.theme.GetCurrentTheme] to access this interface.</summary>
-			class ITheme : public virtual IDescriptable, public Description<ITheme>
-			{
-			public:
-				virtual TemplateProperty<templates::GuiControlTemplate>				CreateStyle(ThemeName themeName) = 0;
-			};
-
-			class Theme;
-
-			/// <summary>Partial control template collections. [F:vl.presentation.theme.GetCurrentTheme] will returns an object, which walks through multiple registered [T:vl.presentation.theme.ThemeTemplates] to create a correct template object for a control.</summary>
-			class ThemeTemplates : public controls::GuiInstanceRootObject, public AggregatableDescription<ThemeTemplates>
-			{
-				friend class Theme;
-			protected:
-				ThemeTemplates*														previous = nullptr;
-				ThemeTemplates*														next = nullptr;
-
-			public:
-				~ThemeTemplates();
-
-#define GUI_DEFINE_ITEM_PROPERTY(TEMPLATE, CONTROL) TemplateProperty<templates::Gui##TEMPLATE> CONTROL;
-				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_ITEM_PROPERTY)
-#undef GUI_DEFINE_ITEM_PROPERTY
-			};
-
-			/// <summary>Get the current theme style factory object. The default theme is [T:vl.presentation.win7.Win7Theme]. Call [M:vl.presentation.theme.SetCurrentTheme] to change the default theme.</summary>
-			/// <returns>The current theme style factory object.</returns>
-			extern ITheme*						GetCurrentTheme();
-			extern void							InitializeTheme();
-			extern void							FinalizeTheme();
-			/// <summary>Register a control template collection object.</summary>
-			/// <param name="name">The name of the theme.</param>
-			/// <param name="theme">The control template collection object.</param>
-			extern bool							RegisterTheme(const WString& name, Ptr<ThemeTemplates> theme);
-			/// <summary>Unregister a control template collection object.</summary>
-			/// <returns>The registered object. Returns null if it does not exist.</returns>
-			/// <param name="name">The name of the theme.</param>
-			extern Ptr<ThemeTemplates>			UnregisterTheme(const WString& name);
 		}
 	}
 }

@@ -262,7 +262,6 @@ Type List (Templates)
 			F(presentation::controls::IScrollCommandExecutor)\
 			F(presentation::controls::ITabCommandExecutor)\
 			F(presentation::controls::IDatePickerCommandExecutor)\
-			F(presentation::controls::IScrollViewCommandExecutor)\
 			F(presentation::controls::GuiComponent)\
 			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::templates::GuiTemplate)\
@@ -294,6 +293,9 @@ Type List (Templates)
 			F(presentation::templates::GuiGridCellTemplate)\
 			F(presentation::templates::GuiGridVisualizerTemplate)\
 			F(presentation::templates::GuiGridEditorTemplate)\
+			F(presentation::templates::GuiCommonDatePickerLook)\
+			F(presentation::templates::GuiCommonScrollViewLook)\
+			F(presentation::templates::GuiCommonScrollBehavior)\
 
 /***********************************************************************
 Type List (Controls)
@@ -782,6 +784,11 @@ Interface Proxy (Controls)
 				vint GetVisibleIndex(presentation::controls::GuiListControl::ItemStyle* style)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetVisibleIndex, style);
+				}
+
+				void ReloadVisibleStyles()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(ReloadVisibleStyles);
 				}
 
 				void OnViewChanged(presentation::Rect bounds)override

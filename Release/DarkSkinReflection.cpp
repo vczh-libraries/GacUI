@@ -39,7 +39,6 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(ScrollTemplateScript)
 			IMPL_CPP_TYPE_INFO(darkskin::BottomScrollButtonTemplate)
 			IMPL_CPP_TYPE_INFO(darkskin::BottomScrollButtonTemplateConstructor)
 			IMPL_CPP_TYPE_INFO(darkskin::ButtonTemplate)
@@ -140,11 +139,6 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(darkskin::WindowTemplateConstructor)
 
 #define _ ,
-			BEGIN_CLASS_MEMBER(::ScrollTemplateScript)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::ScrollTemplateScript>(), NO_PARAMETER)
-				CLASS_MEMBER_STATIC_METHOD(SetScroll, { L"totalPixels" _ L"newOffset" _ L"scrollTemplate" })
-			END_CLASS_MEMBER(::ScrollTemplateScript)
-
 			BEGIN_CLASS_MEMBER(::darkskin::BottomScrollButtonTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::BottomScrollButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::BottomScrollButtonTemplate)
@@ -243,6 +237,7 @@ namespace vl
 			BEGIN_CLASS_MEMBER(::darkskin::DatePickerTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::DatePickerTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::DatePickerTemplateConstructor)
 
@@ -278,7 +273,8 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::DocumentViewerTemplateConstructor)
 
@@ -330,8 +326,7 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(::darkskin::HScrollTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::HScrollTemplate*(), NO_PARAMETER)
-				CLASS_MEMBER_FIELD(draggingHandle)
-				CLASS_MEMBER_FIELD(draggingStartLocation)
+				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::HScrollTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::HScrollTemplateConstructor)
@@ -339,25 +334,22 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_10)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
+				CLASS_MEMBER_FIELD(behavior)
+				CLASS_MEMBER_FIELD(buttonDecrease)
+				CLASS_MEMBER_FIELD(buttonIncrease)
 				CLASS_MEMBER_FIELD(handle)
 				CLASS_MEMBER_FIELD(handleContainer)
-				CLASS_MEMBER_FIELD(invalidContainer)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::HScrollTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::HTrackerTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::HTrackerTemplate*(), NO_PARAMETER)
-				CLASS_MEMBER_FIELD(draggingHandle)
-				CLASS_MEMBER_FIELD(draggingStartLocation)
+				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::HTrackerTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::HTrackerTemplateConstructor)
@@ -371,8 +363,8 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
+				CLASS_MEMBER_FIELD(behavior)
 				CLASS_MEMBER_FIELD(handle)
-				CLASS_MEMBER_FIELD(invalidContainer)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::HTrackerTemplateConstructor)
 
@@ -421,6 +413,11 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_10)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_11)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_12)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_13)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_14)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
@@ -430,6 +427,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
 				CLASS_MEMBER_FIELD(buttonArrow)
+				CLASS_MEMBER_FIELD(container)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::ListViewColumnHeaderTemplateConstructor)
 
@@ -442,7 +440,8 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::ListViewTemplateConstructor)
 
@@ -503,7 +502,8 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::MultilineTextBoxTemplateConstructor)
 
@@ -567,6 +567,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::ScrollViewTemplateConstructor)
 
@@ -661,7 +662,8 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::TextListTemplateConstructor)
 
@@ -819,7 +821,8 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(look)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::TreeViewTemplateConstructor)
 
@@ -837,8 +840,7 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(::darkskin::VScrollTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::VScrollTemplate*(), NO_PARAMETER)
-				CLASS_MEMBER_FIELD(draggingHandle)
-				CLASS_MEMBER_FIELD(draggingStartLocation)
+				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::VScrollTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::VScrollTemplateConstructor)
@@ -846,25 +848,22 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_10)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
+				CLASS_MEMBER_FIELD(behavior)
+				CLASS_MEMBER_FIELD(buttonDecrease)
+				CLASS_MEMBER_FIELD(buttonIncrease)
 				CLASS_MEMBER_FIELD(handle)
 				CLASS_MEMBER_FIELD(handleContainer)
-				CLASS_MEMBER_FIELD(invalidContainer)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::VScrollTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::VTrackerTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::VTrackerTemplate*(), NO_PARAMETER)
-				CLASS_MEMBER_FIELD(draggingHandle)
-				CLASS_MEMBER_FIELD(draggingStartLocation)
+				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::VTrackerTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::VTrackerTemplateConstructor)
@@ -878,8 +877,8 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
+				CLASS_MEMBER_FIELD(behavior)
 				CLASS_MEMBER_FIELD(handle)
-				CLASS_MEMBER_FIELD(invalidContainer)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::VTrackerTemplateConstructor)
 
@@ -925,7 +924,6 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
-					ADD_TYPE_INFO(::ScrollTemplateScript)
 					ADD_TYPE_INFO(::darkskin::BottomScrollButtonTemplate)
 					ADD_TYPE_INFO(::darkskin::BottomScrollButtonTemplateConstructor)
 					ADD_TYPE_INFO(::darkskin::ButtonTemplate)
