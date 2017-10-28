@@ -257,7 +257,7 @@ GuiScrollView
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
 
-				Size viewSize = containerComposition->GetBounds().GetSize();
+				Size viewSize = ct->GetContainerComposition()->GetBounds().GetSize();
 				if (fullSize.x <= viewSize.x)
 				{
 					hScroll->SetVisible(horizontalAlwaysVisible);
