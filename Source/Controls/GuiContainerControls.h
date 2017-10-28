@@ -107,19 +107,6 @@ Scroll View
 
 				using IEventHandler = compositions::IGuiGraphicsEventHandler;
 			protected:
-				class CommandExecutor : public Object, public IScrollViewCommandExecutor
-				{
-				protected:
-					GuiScrollView*						scrollView;
-
-				public:
-					CommandExecutor(GuiScrollView* _scrollView);
-					~CommandExecutor();
-
-					void								CalculateView()override;
-				};
-
-				Ptr<CommandExecutor>					commandExecutor;
 				bool									supressScrolling = false;
 				Ptr<IEventHandler>						hScrollHandler;
 				Ptr<IEventHandler>						vScrollHandler;

@@ -110,14 +110,6 @@ namespace vl
 				virtual void						NotifyDateSelected() = 0;
 			};
 
-			/// <summary>A command executor for the style controller to change the control state.</summary>
-			class IScrollViewCommandExecutor : public virtual IDescriptable, public Description<IScrollViewCommandExecutor>
-			{
-			public:
-				/// <summary>Called when the size of the content has been changed.</summary>
-				virtual void						CalculateView() = 0;
-			};
-
 			class GuiInstanceRootObject;
 
 			/// <summary>
@@ -448,7 +440,6 @@ Scrollable Controls
 				~GuiScrollViewTemplate();
 
 #define GuiScrollViewTemplate_PROPERTIES(F)\
-				F(GuiScrollViewTemplate, controls::IScrollViewCommandExecutor*, Commands)\
 				F(GuiScrollViewTemplate, controls::GuiScroll*, HorizontalScroll)\
 				F(GuiScrollViewTemplate, controls::GuiScroll*, VerticalScroll)\
 

@@ -522,16 +522,6 @@ GuiCommonDatePickerLook
 				return containerComposition;
 			}
 
-			controls::IScrollViewCommandExecutor* GuiCommonScrollViewLook::GetCommands()
-			{
-				return commands;
-			}
-
-			void GuiCommonScrollViewLook::SetCommands(controls::IScrollViewCommandExecutor* value)
-			{
-				commands = value;
-			}
-
 			TemplateProperty<GuiScrollTemplate> GuiCommonScrollViewLook::GetHScrollTemplate()
 			{
 				return hScrollTemplate;

@@ -74,11 +74,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(NotifyDateSelected, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IDatePickerCommandExecutor)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IScrollViewCommandExecutor)
-				CLASS_MEMBER_BASE(IDescriptable)
-				CLASS_MEMBER_METHOD(CalculateView, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IScrollViewCommandExecutor)
-
 			BEGIN_CLASS_MEMBER(GuiComponent)
 			END_CLASS_MEMBER(GuiComponent)
 
@@ -156,8 +151,7 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiCommonScrollViewLook)
 				CLASS_MEMBER_BASE(GuiTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(GuiCommonScrollViewLook*(vint), { L"defaultScrollSize" })
-
-				CLASS_MEMBER_PROPERTY_FAST(Commands)
+				
 				CLASS_MEMBER_PROPERTY_FAST(HScrollTemplate)
 				CLASS_MEMBER_PROPERTY_FAST(VScrollTemplate)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(HScroll)

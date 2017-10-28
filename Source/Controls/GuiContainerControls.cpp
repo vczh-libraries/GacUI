@@ -172,31 +172,12 @@ GuiTab
 			}
 
 /***********************************************************************
-GuiScrollView::CommandExecutor
-***********************************************************************/
-
-			GuiScrollView::CommandExecutor::CommandExecutor(GuiScrollView* _scrollView)
-				:scrollView(_scrollView)
-			{
-			}
-
-			GuiScrollView::CommandExecutor::~CommandExecutor()
-			{
-			}
-
-			void GuiScrollView::CommandExecutor::CalculateView()
-			{
-				scrollView->CalculateView();
-			}
-
-/***********************************************************************
 GuiScrollView
 ***********************************************************************/
 
 			void GuiScrollView::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
-				ct->SetCommands(nullptr);
 				ct->GetHorizontalScroll()->PositionChanged.Detach(hScrollHandler);
 				ct->GetVerticalScroll()->PositionChanged.Detach(vScrollHandler);
 				ct->GetEventReceiver()->horizontalWheel.Detach(hWheelHandler);
@@ -212,7 +193,6 @@ GuiScrollView
 			void GuiScrollView::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject();
-				ct->SetCommands(commandExecutor.Obj());
 				hScrollHandler = ct->GetHorizontalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
 				vScrollHandler = ct->GetVerticalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnVerticalScroll);
 				hWheelHandler = ct->GetEventReceiver()->horizontalWheel.AttachMethod(this, &GuiScrollView::OnHorizontalWheel);
@@ -310,7 +290,6 @@ GuiScrollView
 			GuiScrollView::GuiScrollView(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
-				commandExecutor = new CommandExecutor(this);
 				containerComposition->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);
 			}
 

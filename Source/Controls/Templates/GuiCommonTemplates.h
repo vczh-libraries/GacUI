@@ -99,7 +99,6 @@ GuiCommonScrollViewLook
 				compositions::GuiBoundsComposition*					containerComposition = nullptr;
 
 				vint												defaultScrollSize = 12;
-				controls::IScrollViewCommandExecutor*				commands = nullptr;
 				TemplateProperty<GuiScrollTemplate>					hScrollTemplate;
 				TemplateProperty<GuiScrollTemplate>					vScrollTemplate;
 
@@ -114,8 +113,6 @@ GuiCommonScrollViewLook
 				controls::GuiScroll*								GetVScroll();
 				compositions::GuiGraphicsComposition*				GetContainerComposition();
 
-				controls::IScrollViewCommandExecutor*				GetCommands();
-				void												SetCommands(controls::IScrollViewCommandExecutor* value);
 				TemplateProperty<GuiScrollTemplate>					GetHScrollTemplate();
 				void												SetHScrollTemplate(const TemplateProperty<GuiScrollTemplate>& value);
 				TemplateProperty<GuiScrollTemplate>					GetVScrollTemplate();
