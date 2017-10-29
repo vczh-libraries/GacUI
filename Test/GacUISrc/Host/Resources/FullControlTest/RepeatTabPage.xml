@@ -117,7 +117,8 @@
 
       <Cell Site="row:0 column:1">
         <GroupBox Text="Operations">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
+          <att.ContainerComposition-set InternalMargin="left:5 top:0 right:5 bottom:5"/>
           <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
             <StackItem>
               <Button Alt="A" Text="Add 10 items">

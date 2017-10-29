@@ -630,7 +630,7 @@
         </Bounds>
         <Bounds ref.Name="titleBounds" AlignmentToParent="left:5 top:0 right:-1 bottom:-1">
           <SolidBackground Color="#2D2D30"/>
-          <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+          <Bounds AlignmentToParent="left:2 top:0 right:2 bottom:0">
             <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#C7C7C7" VerticalAlignment="Center"/>
           </Bounds>
         </Bounds>
