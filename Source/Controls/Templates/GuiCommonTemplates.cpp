@@ -420,7 +420,7 @@ GuiCommonDatePickerLook
 			}
 
 /***********************************************************************
-GuiCommonDatePickerLook
+GuiCommonScrollViewLook
 ***********************************************************************/
 
 			void GuiCommonScrollViewLook::UpdateTable()
@@ -464,7 +464,7 @@ GuiCommonDatePickerLook
 				horizontalScroll = new GuiScroll(theme::ThemeName::HScroll);
 				horizontalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				horizontalScroll->SetEnabled(false);
-				verticalScroll = new GuiScroll(theme::ThemeName::HScroll);
+				verticalScroll = new GuiScroll(theme::ThemeName::VScroll);
 				verticalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				verticalScroll->SetEnabled(false);
 
