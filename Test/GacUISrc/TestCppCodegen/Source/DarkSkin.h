@@ -145,14 +145,13 @@ namespace vl_workflow_global
 	struct __vwsnf205_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf206_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf207_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
-	struct __vwsnf208_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf208_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf209_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf20_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf210_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf211_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf212_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf213_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
-	struct __vwsnf214_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf21_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf22_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf23_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__;
@@ -219,13 +218,13 @@ namespace vl_workflow_global
 	struct __vwsnf79_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf7_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf80_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
-	struct __vwsnf81_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__;
-	struct __vwsnf82_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf81_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf82_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf83_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf84_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf85_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf86_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
-	struct __vwsnf87_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf87_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf88_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf89_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf8_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__;
@@ -268,9 +267,8 @@ namespace vl_workflow_global
 	class __vwsnc123_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc124_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc125_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc126_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc127_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc128_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc12_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc13_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc14_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -299,11 +297,11 @@ namespace vl_workflow_global
 	class __vwsnc35_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc36_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc37_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc38_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc39_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc38_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc39_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc3_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc40_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc41_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc42_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc43_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc44_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -1019,9 +1017,11 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc35_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc36_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc37_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc38_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf78_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf79_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf80_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf81_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GroupBoxTemplateConstructor>;
 #endif
@@ -1046,9 +1046,11 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc35_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc36_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc37_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc38_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf78_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf79_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf80_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf81_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GroupBoxTemplate>;
 #endif
@@ -1059,8 +1061,8 @@ namespace darkskin
 
 	class HScrollHandleTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<HScrollHandleTemplateConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc38_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf81_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc39_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf82_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollHandleTemplateConstructor>;
 #endif
@@ -1076,8 +1078,8 @@ namespace darkskin
 	class HScrollHandleTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::HScrollHandleTemplateConstructor, public ::vl::reflection::Description<HScrollHandleTemplate>
 	{
 		friend class ::darkskin::HScrollHandleTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc38_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf81_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc39_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf82_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollHandleTemplate>;
 #endif
@@ -1088,13 +1090,13 @@ namespace darkskin
 
 	class HScrollTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<HScrollTemplateConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc39_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc40_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf82_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc41_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf83_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf84_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf85_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf86_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf87_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollTemplateConstructor>;
 #endif
@@ -1120,13 +1122,13 @@ namespace darkskin
 	class HScrollTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::HScrollTemplateConstructor, public ::vl::reflection::Description<HScrollTemplate>
 	{
 		friend class ::darkskin::HScrollTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc39_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc40_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf82_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc41_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf83_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf84_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf85_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf86_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf87_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollTemplate>;
 #endif
@@ -1138,8 +1140,6 @@ namespace darkskin
 
 	class HTrackerTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<HTrackerTemplateConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf87_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf88_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HTrackerTemplateConstructor>;
@@ -1147,7 +1147,7 @@ namespace darkskin
 	protected:
 		::darkskin::HTrackerTemplate* self = static_cast<::darkskin::HTrackerTemplate*>(nullptr);
 		::vl::presentation::templates::GuiCommonScrollBehavior* behavior = static_cast<::vl::presentation::templates::GuiCommonScrollBehavior*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* handle = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiPartialViewComposition* handle = static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
@@ -1164,8 +1164,6 @@ namespace darkskin
 	class HTrackerTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::HTrackerTemplateConstructor, public ::vl::reflection::Description<HTrackerTemplate>
 	{
 		friend class ::darkskin::HTrackerTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf87_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf88_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HTrackerTemplate>;
@@ -2466,16 +2464,14 @@ namespace darkskin
 
 	class VTrackerTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<VTrackerTemplateConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf207_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf208_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VTrackerTemplateConstructor>;
 #endif
 	protected:
 		::darkskin::VTrackerTemplate* self = static_cast<::darkskin::VTrackerTemplate*>(nullptr);
 		::vl::presentation::templates::GuiCommonScrollBehavior* behavior = static_cast<::vl::presentation::templates::GuiCommonScrollBehavior*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* handle = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiPartialViewComposition* handle = static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
@@ -2492,9 +2488,7 @@ namespace darkskin
 	class VTrackerTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::VTrackerTemplateConstructor, public ::vl::reflection::Description<VTrackerTemplate>
 	{
 		friend class ::darkskin::VTrackerTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf207_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf208_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VTrackerTemplate>;
 #endif
@@ -2506,14 +2500,14 @@ namespace darkskin
 
 	class WindowTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<WindowTemplateConstructor>
 	{
+		friend class ::vl_workflow_global::__vwsnc126_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc127_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc128_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf208_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf209_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf210_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf211_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf212_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf213_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf214_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<WindowTemplateConstructor>;
 #endif
@@ -2553,14 +2547,14 @@ namespace darkskin
 	class WindowTemplate : public ::vl::presentation::templates::GuiWindowTemplate, public ::darkskin::WindowTemplateConstructor, public ::vl::reflection::Description<WindowTemplate>
 	{
 		friend class ::darkskin::WindowTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc126_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc127_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc128_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf208_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf209_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf210_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf211_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf212_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf213_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf214_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<WindowTemplate>;
 #endif
@@ -3658,13 +3652,13 @@ Closures
 		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
-	struct __vwsnf208_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__
+	struct __vwsnf208_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__
 	{
-		::darkskin::VTrackerTemplateConstructor* __vwsnthis_0;
+		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf208_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__(::darkskin::VTrackerTemplateConstructor* __vwsnctorthis_0);
+		__vwsnf208_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		::vl::presentation::templates::GuiWindowTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf209_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__
@@ -3673,7 +3667,7 @@ Closures
 
 		__vwsnf209_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiWindowTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf20_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__
@@ -3709,7 +3703,7 @@ Closures
 
 		__vwsnf212_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf213_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__
@@ -3717,15 +3711,6 @@ Closures
 		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
 
 		__vwsnf213_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf214_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__
-	{
-		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf214_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
@@ -4324,22 +4309,22 @@ Closures
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf81_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__
+	struct __vwsnf81_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__
 	{
-		::darkskin::HScrollHandleTemplateConstructor* __vwsnthis_0;
+		::darkskin::GroupBoxTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf81_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollHandleTemplateConstructor* __vwsnctorthis_0);
+		__vwsnf81_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::GroupBoxTemplateConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf82_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__
+	struct __vwsnf82_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__
 	{
-		::darkskin::HScrollTemplateConstructor* __vwsnthis_0;
+		::darkskin::HScrollHandleTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf82_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0);
+		__vwsnf82_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollHandleTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf83_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__
@@ -4366,7 +4351,7 @@ Closures
 
 		__vwsnf85_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf86_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__
@@ -4378,13 +4363,13 @@ Closures
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf87_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__
+	struct __vwsnf87_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__
 	{
-		::darkskin::HTrackerTemplateConstructor* __vwsnthis_0;
+		::darkskin::HScrollTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf87_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(::darkskin::HTrackerTemplateConstructor* __vwsnctorthis_0);
+		__vwsnf87_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf88_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__
@@ -4393,7 +4378,7 @@ Closures
 
 		__vwsnf88_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(::darkskin::HTrackerTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf89_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance__
@@ -5089,36 +5074,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::darkskin::VTrackerTemplateConstructor* __vwsnthis_0;
-
-		__vwsnc126_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::VTrackerTemplateConstructor* __vwsnctorthis_0);
-
-		::darkskin::VTrackerTemplate* __vwsn_bind_cache_0 = nullptr;
-		::darkskin::VTrackerTemplate* __vwsn_bind_cache_1 = nullptr;
-		::darkskin::VTrackerTemplate* __vwsn_bind_cache_2 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc127_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc126_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc127_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc126_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
 
 		::darkskin::WindowTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -5131,12 +5092,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc128_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc127_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc128_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc127_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
 
 		::darkskin::WindowTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -5681,7 +5642,7 @@ Closures
 
 		__vwsnc36_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::GroupBoxTemplateConstructor* __vwsnctorthis_0);
 
-		::darkskin::GroupBoxTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
@@ -5710,36 +5671,33 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc38_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc38_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::darkskin::HScrollHandleTemplateConstructor* __vwsnthis_0;
+		::darkskin::GroupBoxTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc38_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::HScrollHandleTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc38_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::GroupBoxTemplateConstructor* __vwsnctorthis_0);
 
-		::darkskin::HScrollHandleTemplate* __vwsn_bind_cache_0 = nullptr;
-		::darkskin::HScrollHandleTemplate* __vwsn_bind_cache_1 = nullptr;
+		::darkskin::GroupBoxTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
 	};
 
-	class __vwsnc39_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc39_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::darkskin::HScrollTemplateConstructor* __vwsnthis_0;
+		::darkskin::HScrollHandleTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc39_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc39_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::HScrollHandleTemplateConstructor* __vwsnctorthis_0);
 
-		::darkskin::HScrollTemplate* __vwsn_bind_cache_0 = nullptr;
-		::darkskin::HScrollTemplate* __vwsn_bind_cache_1 = nullptr;
+		::darkskin::HScrollHandleTemplate* __vwsn_bind_cache_0 = nullptr;
+		::darkskin::HScrollHandleTemplate* __vwsn_bind_cache_1 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
@@ -5794,25 +5752,22 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc41_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::darkskin::HTrackerTemplateConstructor* __vwsnthis_0;
+		::darkskin::HScrollTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc41_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::HTrackerTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc41_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0);
 
-		::darkskin::HTrackerTemplate* __vwsn_bind_cache_0 = nullptr;
-		::darkskin::HTrackerTemplate* __vwsn_bind_cache_1 = nullptr;
-		::darkskin::HTrackerTemplate* __vwsn_bind_cache_2 = nullptr;
+		::darkskin::HScrollTemplate* __vwsn_bind_cache_0 = nullptr;
+		::darkskin::HScrollTemplate* __vwsn_bind_cache_1 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;

@@ -626,7 +626,7 @@
         <SolidBackground Color="#2D2D30"/>
         <Bounds AlignmentToParent-bind="{left:0 top:(titleBounds.Bounds.y2/2) right:0 bottom:0}">
           <SolidBorder Color="#3F3F46"/>
-          <Bounds ref.Name="container" AlignmentToParent="left:1 top:5 right:1 bottom:1"/>
+          <Bounds ref.Name="container" AlignmentToParent-bind="{left:1 top:(1+titleBounds.Bounds.y2/2) right:1 bottom:1}"/>
         </Bounds>
         <Bounds ref.Name="titleBounds" AlignmentToParent="left:5 top:0 right:-1 bottom:-1">
           <SolidBackground Color="#2D2D30"/>
@@ -996,7 +996,7 @@
             behavior.AttachScrollTemplate(self);
             behavior.AttachDecreaseButton(buttonDecrease);
             behavior.AttachIncreaseButton(buttonIncrease);
-            behavior.AttachHorizontalPartialView(handle);
+            behavior.AttachHorizontalScrollHandle(handle);
           }
         ]]>
       </ref.Ctor>
@@ -1035,7 +1035,7 @@
             behavior.AttachScrollTemplate(self);
             behavior.AttachDecreaseButton(buttonDecrease);
             behavior.AttachIncreaseButton(buttonIncrease);
-            behavior.AttachVerticalPartialView(handle);
+            behavior.AttachVerticalScrollHandle(handle);
           }
         ]]>
       </ref.Ctor>
@@ -1098,21 +1098,11 @@
             </Cell>
           </Table>
 
-          <Bounds ref.Name="handle" PreferredMinSize="x:12 y:0">
-            <att.AlignmentToParent-bind>
-              <![CDATA[
-                {
-                  left:(behavior.GetHorizontalTrackerHandlerPosition(handle, self.TotalSize, self.PageSize, self.Position))
-                  top:0
-                  right:-1
-                  bottom:0
-                }
-              ]]>
-            </att.AlignmentToParent-bind>
+          <PartialView ref.Name="handle" PreferredMinSize="x:12 y:0">
             <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
               <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
-          </Bounds>
+          </PartialView>
         </Bounds>
       </ScrollTemplate>
     </Instance>
@@ -1150,21 +1140,11 @@
             </Cell>
           </Table>
 
-          <Bounds ref.Name="handle" PreferredMinSize="x:0 y:12">
-            <att.AlignmentToParent-bind>
-              <![CDATA[
-                {
-                  left:0
-                  top:(behavior.GetVerticalTrackerHandlerPosition(handle, self.TotalSize, self.PageSize, self.Position))
-                  right:0
-                  bottom:-1
-                }
-              ]]>
-            </att.AlignmentToParent-bind>
+          <PartialView ref.Name="handle" PreferredMinSize="x:0 y:12">
             <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
               <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
-          </Bounds>
+          </PartialView>
         </Bounds>
       </ScrollTemplate>
     </Instance>

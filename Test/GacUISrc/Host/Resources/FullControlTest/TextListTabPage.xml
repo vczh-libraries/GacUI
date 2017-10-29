@@ -63,102 +63,105 @@
       </Cell>
 
       <Cell Site="row:1 column:1">
-        <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-          <StackItem>
-            <Button Alt="A" Text="Add 10 items">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    for (i in range [0, 9])
+        <GroupBox Text="Operations">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+            <StackItem>
+              <Button Alt="A" Text="Add 10 items">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
                     {
-                      var textItem = new TextItem^(cast string (self.counter + i));
-                      textList.Items.Add(textItem);
-                    }
-                    
-                    for (i in range [0, 9])
-                    {
-                      var textItem = new demo::MyTextItem^();
-                      textItem.Name = cast string (self.counter + i);
-                      self.itemsToBind.Add(textItem);
-                    }
-                    
-                    self.counter = self.counter + 10;
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </StackItem>
-          <StackItem>
-            <Button Alt="O" Text="Remove odd items">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    {
-                      var i = 0;
-                      while (i < textList.Items.Count)
+                      for (i in range [0, 9])
                       {
-                        textList.Items.RemoveAt(i);
-                        i = i + 1;
+                        var textItem = new TextItem^(cast string (self.counter + i));
+                        textList.Items.Add(textItem);
+                      }
+                    
+                      for (i in range [0, 9])
+                      {
+                        var textItem = new demo::MyTextItem^();
+                        textItem.Name = cast string (self.counter + i);
+                        self.itemsToBind.Add(textItem);
+                      }
+                    
+                      self.counter = self.counter + 10;
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
+              <Button Alt="O" Text="Remove odd items">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      {
+                        var i = 0;
+                        while (i < textList.Items.Count)
+                        {
+                          textList.Items.RemoveAt(i);
+                          i = i + 1;
+                        }
+                      }
+                    
+                      {
+                        var i = 0;
+                        while (i < self.itemsToBind.Count)
+                        {
+                          self.itemsToBind.RemoveAt(i);
+                          i = i + 1;
+                        }
                       }
                     }
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
+              <Button Alt="E" Text="Remove even items">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      {
+                        var i = 1;
+                        while (i < textList.Items.Count)
+                        {
+                          textList.Items.RemoveAt(i);
+                          i = i + 1;
+                        }
+                      }
                     
-                    {
-                      var i = 0;
-                      while (i < self.itemsToBind.Count)
                       {
-                        self.itemsToBind.RemoveAt(i);
-                        i = i + 1;
+                        var i = 1;
+                        while (i < self.itemsToBind.Count)
+                        {
+                          self.itemsToBind.RemoveAt(i);
+                          i = i + 1;
+                        }
                       }
                     }
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </StackItem>
-          <StackItem>
-            <Button Alt="E" Text="Remove even items">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
+              <Button Alt="C" Text="Clear">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
                     {
-                      var i = 1;
-                      while (i < textList.Items.Count)
-                      {
-                        textList.Items.RemoveAt(i);
-                        i = i + 1;
-                      }
+                      textList.Items.Clear();
+                      self.itemsToBind.Clear();
                     }
-                    
-                    {
-                      var i = 1;
-                      while (i < self.itemsToBind.Count)
-                      {
-                        self.itemsToBind.RemoveAt(i);
-                        i = i + 1;
-                      }
-                    }
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </StackItem>
-          <StackItem>
-            <Button Alt="C" Text="Clear">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    textList.Items.Clear();
-                    self.itemsToBind.Clear();
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </StackItem>
-        </Stack>
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </StackItem>
+          </Stack>
+        </GroupBox>
       </Cell>
 
       <Cell Site="row:1 column:2">

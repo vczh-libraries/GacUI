@@ -139,10 +139,10 @@ GuiCommonScrollBehavior
 				void												AttachScrollTemplate(GuiScrollTemplate* value);
 				void												AttachDecreaseButton(controls::GuiButton* button);
 				void												AttachIncreaseButton(controls::GuiButton* button);
-				void												AttachHorizontalPartialView(compositions::GuiPartialViewComposition* partialView);
-				void												AttachVerticalPartialView(compositions::GuiPartialViewComposition* partialView);
-				void												AttachHorizontalTrackerHandle(compositions::GuiBoundsComposition* handle);
-				void												AttachVerticalTrackerHandle(compositions::GuiBoundsComposition* handle);
+				void												AttachHorizontalScrollHandle(compositions::GuiPartialViewComposition* partialView);
+				void												AttachVerticalScrollHandle(compositions::GuiPartialViewComposition* partialView);
+				void												AttachHorizontalTrackerHandle(compositions::GuiPartialViewComposition* partialView);
+				void												AttachVerticalTrackerHandle(compositions::GuiPartialViewComposition* partialView);
 
 				vint												GetHorizontalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position);
 				vint												GetVerticalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position);
