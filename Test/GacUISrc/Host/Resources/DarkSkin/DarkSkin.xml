@@ -1098,7 +1098,8 @@
             </Cell>
           </Table>
 
-          <PartialView ref.Name="handle" PreferredMinSize="x:12 y:0">
+          <PartialView ref.Name="handle" PreferredMinSize="x:12 y:0" WidthPageSize="0">
+            <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
             <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
               <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
@@ -1140,7 +1141,8 @@
             </Cell>
           </Table>
 
-          <PartialView ref.Name="handle" PreferredMinSize="x:0 y:12">
+          <PartialView ref.Name="handle" PreferredMinSize="x:0 y:12" HeightPageSize="0">
+            <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
             <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
               <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
