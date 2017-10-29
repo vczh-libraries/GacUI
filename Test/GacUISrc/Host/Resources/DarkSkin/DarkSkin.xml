@@ -45,9 +45,6 @@
   <InstanceStyle name="Style">
     <Styles>
       <Style ref.Path="(//Bounds + //Table + //RepeatStack + //RepeatFlow)" MinSizeLimitation="LimitToElementAndChildren"/>
-      <Style ref.Path="(//SideAligned + //PartialView)/*">
-        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-      </Style>
       <Style ref.Path="//*.buttonBackground">
         <att.Color-bind>
           <![CDATA[
@@ -1008,16 +1005,22 @@
         
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Left">
-          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::LeftScrollButtonTemplate"/>
+          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::LeftScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </Button>
         </SideAligned>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Right">
-          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::RightScrollButtonTemplate"/>
+          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::RightScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </Button>
         </SideAligned>
         <Bounds ref.Name="handleContainer" AlignmentToParent="left:20 top:0 right:20 bottom:0" MinSizeLimitation="NoLimit">
           <PartialView ref.Name="handle">
             <att.WidthPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.WidthPageSize-bind>
             <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
-            <Button ControlTemplate="darkskin::HScrollHandleTemplate"/>
+            <Button ControlTemplate="darkskin::HScrollHandleTemplate">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Button>
           </PartialView>
         </Bounds>
       </ScrollTemplate>
@@ -1041,16 +1044,22 @@
 
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Top">
-          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::TopScrollButtonTemplate"/>
+          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::TopScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </Button>
         </SideAligned>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Bottom">
-          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::BottomScrollButtonTemplate"/>
+          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::BottomScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </Button>
         </SideAligned>
         <Bounds ref.Name="handleContainer" AlignmentToParent="left:0 top:20 right:0 bottom:20" MinSizeLimitation="NoLimit">
           <PartialView ref.Name="handle">
             <att.HeightPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.HeightPageSize-bind>
             <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
-            <Button ControlTemplate="darkskin::VScrollHandleTemplate"/>
+            <Button ControlTemplate="darkskin::VScrollHandleTemplate">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Button>
           </PartialView>
         </Bounds>
       </ScrollTemplate>
@@ -1168,24 +1177,17 @@
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder Color="#55545A"/>
           <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1">
-            <Bounds>
-              <att.AlignmentToParent-bind>
+            <PartialView>
+              <att.WidthPageSize-bind>
                 <![CDATA[
-                  {
-                    left:0
-                    top:0
-                    right:(
-                      let
-                        width = container.Bounds.x2 - container.Bounds.x1,
-                        max = self.TotalSize - self.PageSize
-                        in (max == 0 ? 0 : width - width * self.Position / max)
-                      )
-                    bottom:0
-                  }
+                  let
+                    a = self.Position,
+                    b = self.TotalSize - self.PageSize
+                    in ((cast double a) / (a > b ? a : b))
                 ]]>
-              </att.AlignmentToParent-bind>
+              </att.WidthPageSize-bind>
               <SolidBackground Color="#07B023"/>
-            </Bounds>
+            </PartialView>
           </Bounds>
         </Bounds>
       </ScrollTemplate>

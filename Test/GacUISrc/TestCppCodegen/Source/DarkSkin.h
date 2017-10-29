@@ -1605,7 +1605,7 @@ namespace darkskin
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiPartialViewComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
 		void __vwsn_initialize_instance_(::darkskin::ProgressBarTemplate* __vwsn_this_);
 	public:
@@ -6596,24 +6596,18 @@ Closures
 
 		__vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ProgressBarTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_bind_cache_0 = nullptr;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_bind_cache_1 = nullptr;
+		::darkskin::ProgressBarTemplate* __vwsn_bind_cache_0 = nullptr;
+		::darkskin::ProgressBarTemplate* __vwsn_bind_cache_1 = nullptr;
 		::darkskin::ProgressBarTemplate* __vwsn_bind_cache_2 = nullptr;
-		::darkskin::ProgressBarTemplate* __vwsn_bind_cache_3 = nullptr;
-		::darkskin::ProgressBarTemplate* __vwsn_bind_cache_4 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_3_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_4_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;

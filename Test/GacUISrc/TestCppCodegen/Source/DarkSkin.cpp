@@ -699,13 +699,13 @@ Closures
 
 	void __vwsnf134_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3)->GetAlignmentToParent();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Margin>(__vwsn_value_);
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3)->GetWidthPageSize();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3)->SetAlignmentToParent(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3)->SetWidthPageSize(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -10342,23 +10342,19 @@ Closures
 	__vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ProgressBarTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::ProgressBarTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::darkskin::ProgressBarTemplate*>(nullptr);
 		this->__vwsn_bind_cache_2 = static_cast<::darkskin::ProgressBarTemplate*>(nullptr);
-		this->__vwsn_bind_cache_3 = static_cast<::darkskin::ProgressBarTemplate*>(nullptr);
-		this->__vwsn_bind_cache_4 = static_cast<::darkskin::ProgressBarTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_4_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = [&](auto width, auto max){ return ((max == static_cast<::vl::vint32_t>(0)) ? static_cast<::vl::vint32_t>(0) : (width - ((width * ::vl::__vwsn::This(__vwsn_bind_cache_4)->GetPosition()) / max))); }((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetBounds().x2 - ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetBounds().x1), (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetTotalSize() - ::vl::__vwsn::This(__vwsn_bind_cache_3)->GetPageSize())); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](auto a, auto b){ return (static_cast<double>(a) / static_cast<double>(((a > b) ? a : b))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPosition(), (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTotalSize() - ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetPageSize()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10377,31 +10373,17 @@ Closures
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
 	bool __vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = __vwsnthis_0->container);
-			(__vwsn_bind_cache_1 = __vwsnthis_0->container);
+			(__vwsn_bind_cache_0 = __vwsnthis_0->self);
+			(__vwsn_bind_cache_1 = __vwsnthis_0->self);
 			(__vwsn_bind_cache_2 = __vwsnthis_0->self);
-			(__vwsn_bind_cache_3 = __vwsnthis_0->self);
-			(__vwsn_bind_cache_4 = __vwsnthis_0->self);
-			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->BoundsChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
-			(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->BoundsChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
-			(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
-			(__vwsn_bind_handler_3_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)));
-			(__vwsn_bind_handler_4_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)));
+			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+			(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
+			(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
 			return true;
 		}
 		return false;
@@ -10422,21 +10404,15 @@ Closures
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->BoundsChanged, __vwsn_bind_handler_0_0);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->BoundsChanged, __vwsn_bind_handler_1_0);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->TotalSizeChanged, __vwsn_bind_handler_2_0);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3)->PageSizeChanged, __vwsn_bind_handler_3_0);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_4)->PositionChanged, __vwsn_bind_handler_4_0);
-			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr));
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, __vwsn_bind_handler_0_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, __vwsn_bind_handler_1_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->PageSizeChanged, __vwsn_bind_handler_2_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::ProgressBarTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::darkskin::ProgressBarTemplate*>(nullptr));
 			(__vwsn_bind_cache_2 = static_cast<::darkskin::ProgressBarTemplate*>(nullptr));
-			(__vwsn_bind_cache_3 = static_cast<::darkskin::ProgressBarTemplate*>(nullptr));
-			(__vwsn_bind_cache_4 = static_cast<::darkskin::ProgressBarTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_4_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -13563,12 +13539,12 @@ Class (::darkskin::HTrackerTemplateConstructor)
 		{
 			(this->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
-		}
 		(this->__vwsn_precompile_7 = ::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf87_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
@@ -14651,10 +14627,7 @@ Class (::darkskin::ProgressBarTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->container)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
-		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiPartialViewComposition());
 		(this->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#07B023", false)));
@@ -16809,12 +16782,12 @@ Class (::darkskin::VTrackerTemplateConstructor)
 		{
 			(this->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
-		}
 		(this->__vwsn_precompile_7 = ::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf207_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
@@ -17028,12 +17001,12 @@ Class (::darkskin::WindowTemplateConstructor)
 		{
 			(this->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
-		}
 		(this->__vwsn_precompile_14 = ::vl::__vwsn::This(this->__vwsn_precompile_13)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(1); __vwsn_temp__.top = static_cast<::vl::vint32_t>(1); __vwsn_temp__.right = static_cast<::vl::vint32_t>(1); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetText(::vl::WString(L" 0 ", false));
@@ -17057,12 +17030,12 @@ Class (::darkskin::WindowTemplateConstructor)
 		{
 			(this->__vwsn_precompile_16 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
-		}
 		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->__vwsn_precompile_16)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(1); __vwsn_temp__.top = static_cast<::vl::vint32_t>(1); __vwsn_temp__.right = static_cast<::vl::vint32_t>(1); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf211_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
@@ -17083,12 +17056,12 @@ Class (::darkskin::WindowTemplateConstructor)
 		{
 			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
-		}
 		(this->__vwsn_precompile_20 = ::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(1); __vwsn_temp__.top = static_cast<::vl::vint32_t>(1); __vwsn_temp__.right = static_cast<::vl::vint32_t>(1); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetText(::vl::WString(L" r ", false));
