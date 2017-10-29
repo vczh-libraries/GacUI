@@ -8783,10 +8783,10 @@ GuiCommonScrollBehavior
 				void												AttachScrollTemplate(GuiScrollTemplate* value);
 				void												AttachDecreaseButton(controls::GuiButton* button);
 				void												AttachIncreaseButton(controls::GuiButton* button);
-				void												AttachHorizontalPartialView(compositions::GuiPartialViewComposition* partialView);
-				void												AttachVerticalPartialView(compositions::GuiPartialViewComposition* partialView);
-				void												AttachHorizontalTrackerHandle(compositions::GuiBoundsComposition* handle);
-				void												AttachVerticalTrackerHandle(compositions::GuiBoundsComposition* handle);
+				void												AttachHorizontalScrollHandle(compositions::GuiPartialViewComposition* partialView);
+				void												AttachVerticalScrollHandle(compositions::GuiPartialViewComposition* partialView);
+				void												AttachHorizontalTrackerHandle(compositions::GuiPartialViewComposition* partialView);
+				void												AttachVerticalTrackerHandle(compositions::GuiPartialViewComposition* partialView);
 
 				vint												GetHorizontalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position);
 				vint												GetVerticalTrackerHandlerPosition(compositions::GuiBoundsComposition* handle, vint totalSize, vint pageSize, vint position);
@@ -10378,6 +10378,7 @@ Scroll View
 				Ptr<IEventHandler>						vScrollHandler;
 				Ptr<IEventHandler>						hWheelHandler;
 				Ptr<IEventHandler>						vWheelHandler;
+				Ptr<IEventHandler>						containerBoundsChangedHandler;
 				bool									horizontalAlwaysVisible = true;
 				bool									verticalAlwaysVisible = true;
 
@@ -10387,7 +10388,7 @@ Scroll View
 				void									OnHorizontalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnVerticalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									CallUpdateView();
-				void									AdjustView(Size fullSize);
+				bool									AdjustView(Size fullSize);
 
 				/// <summary>Calculate the full size of the content.</summary>
 				/// <returns>The full size of the content.</returns>
