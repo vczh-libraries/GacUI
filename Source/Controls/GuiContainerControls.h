@@ -112,6 +112,7 @@ Scroll View
 				Ptr<IEventHandler>						vScrollHandler;
 				Ptr<IEventHandler>						hWheelHandler;
 				Ptr<IEventHandler>						vWheelHandler;
+				Ptr<IEventHandler>						containerBoundsChangedHandler;
 				bool									horizontalAlwaysVisible = true;
 				bool									verticalAlwaysVisible = true;
 
@@ -121,7 +122,7 @@ Scroll View
 				void									OnHorizontalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnVerticalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									CallUpdateView();
-				void									AdjustView(Size fullSize);
+				bool									AdjustView(Size fullSize);
 
 				/// <summary>Calculate the full size of the content.</summary>
 				/// <returns>The full size of the content.</returns>

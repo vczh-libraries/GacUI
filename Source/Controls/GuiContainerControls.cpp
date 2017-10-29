@@ -182,11 +182,13 @@ GuiScrollView
 				ct->GetVerticalScroll()->PositionChanged.Detach(vScrollHandler);
 				ct->GetEventReceiver()->horizontalWheel.Detach(hWheelHandler);
 				ct->GetEventReceiver()->verticalWheel.Detach(vWheelHandler);
+				ct->BoundsChanged.Detach(containerBoundsChangedHandler);
 
 				hScrollHandler = nullptr;
 				vScrollHandler = nullptr;
 				hWheelHandler = nullptr;
 				vWheelHandler = nullptr;
+				containerBoundsChangedHandler = nullptr;
 				supressScrolling = false;
 			}
 
@@ -197,6 +199,7 @@ GuiScrollView
 				vScrollHandler = ct->GetVerticalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnVerticalScroll);
 				hWheelHandler = ct->GetEventReceiver()->horizontalWheel.AttachMethod(this, &GuiScrollView::OnHorizontalWheel);
 				vWheelHandler = ct->GetEventReceiver()->verticalWheel.AttachMethod(this, &GuiScrollView::OnVerticalWheel);
+				containerBoundsChangedHandler = ct->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);
 				CalculateView();
 			}
 
@@ -251,11 +254,14 @@ GuiScrollView
 				UpdateView(viewBounds);
 			}
 
-			void GuiScrollView::AdjustView(Size fullSize)
+			bool GuiScrollView::AdjustView(Size fullSize)
 			{
 				auto ct = GetControlTemplateObject();
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
+
+				auto hVisible = hScroll->GetVisible();
+				auto vVisible = vScroll->GetVisible();
 
 				Size viewSize = ct->GetContainerComposition()->GetBounds().GetSize();
 				if (fullSize.x <= viewSize.x)
@@ -285,6 +291,8 @@ GuiScrollView
 					vScroll->SetTotalSize(fullSize.y);
 					vScroll->SetPageSize(viewSize.y);
 				}
+
+				return hVisible != hScroll->GetVisible() || vVisible != vScroll->GetVisible();
 			}
 
 			GuiScrollView::GuiScrollView(theme::ThemeName themeName)
@@ -316,18 +324,18 @@ GuiScrollView
 			void GuiScrollView::CalculateView()
 			{
 				auto ct = GetControlTemplateObject();
-				if(!supressScrolling)
+				if (!supressScrolling)
 				{
 					Size fullSize = QueryFullSize();
-					while(true)
+					while (true)
 					{
-						AdjustView(fullSize);
-						AdjustView(fullSize);
+						bool flagA = AdjustView(fullSize);
+						bool flagB = AdjustView(fullSize);
 						supressScrolling = true;
 						CallUpdateView();
 						supressScrolling = false;
 
-						Size newSize=QueryFullSize();
+						Size newSize = QueryFullSize();
 						if (fullSize == newSize)
 						{
 							vint smallMove = GetSmallMove();
@@ -336,11 +344,15 @@ GuiScrollView
 							Size bigMove = GetBigMove();
 							ct->GetHorizontalScroll()->SetBigMove(bigMove.x);
 							ct->GetVerticalScroll()->SetBigMove(bigMove.y);
-							break;
+
+							if (!flagA && !flagB)
+							{
+								break;
+							}
 						}
 						else
 						{
-							fullSize=newSize;
+							fullSize = newSize;
 						}
 					}
 				}
