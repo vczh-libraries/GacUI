@@ -185,15 +185,15 @@ namespace vl
 		namespace templates
 		{
 
-#define GUI_TEMPLATE_PROPERTY_DECL(CLASS, TYPE, NAME)\
+#define GUI_TEMPLATE_PROPERTY_DECL(CLASS, TYPE, NAME, VALUE)\
 			private:\
-				TYPE NAME##_;\
+				TYPE NAME##_ = VALUE;\
 			public:\
 				TYPE Get##NAME();\
 				void Set##NAME(TYPE const& value);\
 				compositions::GuiNotifyEvent NAME##Changed;\
 
-#define GUI_TEMPLATE_PROPERTY_IMPL(CLASS, TYPE, NAME)\
+#define GUI_TEMPLATE_PROPERTY_IMPL(CLASS, TYPE, NAME, VALUE)\
 			TYPE CLASS::Get##NAME()\
 			{\
 				return NAME##_;\
@@ -207,8 +207,63 @@ namespace vl
 				}\
 			}\
 
-#define GUI_TEMPLATE_PROPERTY_EVENT_INIT(CLASS, TYPE, NAME)\
+#define GUI_TEMPLATE_PROPERTY_EVENT_INIT(CLASS, TYPE, NAME, VALUE)\
 			NAME##Changed.SetAssociatedComposition(this);
+
+#define GUI_TEMPLATE_CLASS_DECL(CLASS, BASE)\
+			class CLASS : public BASE, public AggregatableDescription<CLASS>\
+			{\
+			public:\
+				CLASS();\
+				~CLASS();\
+				CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)\
+			};\
+
+#define GUI_TEMPLATE_CLASS_IMPL(CLASS, BASE)\
+			CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)\
+			CLASS::CLASS()\
+			{\
+				CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)\
+			}\
+			CLASS::~CLASS()\
+			{\
+				FinalizeAggregation();\
+			}\
+
+#define GUI_CONTROL_TEMPLATE_DECL(F)\
+			F(GuiControlTemplate,				GuiTemplate)				\
+			F(GuiLabelTemplate,					GuiControlTemplate)			\
+			F(GuiSinglelineTextBoxTemplate,		GuiControlTemplate)			\
+			F(GuiDocumentLabelTemplate,			GuiControlTemplate)			\
+			F(GuiWindowTemplate,				GuiControlTemplate)			\
+			F(GuiMenuTemplate,					GuiWindowTemplate)			\
+			F(GuiButtonTemplate,				GuiControlTemplate)			\
+			F(GuiSelectableButtonTemplate,		GuiButtonTemplate)			\
+			F(GuiToolstripButtonTemplate,		GuiSelectableButtonTemplate)\
+			F(GuiListViewColumnHeaderTemplate,	GuiToolstripButtonTemplate)	\
+			F(GuiComboBoxTemplate,				GuiToolstripButtonTemplate)	\
+			F(GuiScrollTemplate,				GuiControlTemplate)			\
+			F(GuiScrollViewTemplate,			GuiControlTemplate)			\
+			F(GuiMultilineTextBoxTemplate,		GuiScrollViewTemplate)		\
+			F(GuiDocumentViewerTemplate,		GuiScrollViewTemplate)		\
+			F(GuiListControlTemplate,			GuiScrollViewTemplate)		\
+			F(GuiTextListTemplate,				GuiListControlTemplate)		\
+			F(GuiListViewTemplate,				GuiListControlTemplate)		\
+			F(GuiTreeViewTemplate,				GuiListControlTemplate)		\
+			F(GuiTabTemplate,					GuiControlTemplate)			\
+			F(GuiDatePickerTemplate,			GuiControlTemplate)			\
+			F(GuiDateComboBoxTemplate,			GuiComboBoxTemplate)		\
+
+#define GUI_ITEM_TEMPLATE_DECL(F)\
+			F(GuiTextListItemTemplate,			GuiListItemTemplate)		\
+			F(GuiTreeItemTemplate,				GuiTextListItemTemplate)	\
+			F(GuiGridCellTemplate,				GuiControlTemplate)			\
+			F(GuiGridVisualizerTemplate,		GuiGridCellTemplate)		\
+			F(GuiGridEditorTemplate,			GuiGridCellTemplate)		\
+
+/***********************************************************************
+GuiTemplate
+***********************************************************************/
 
 			/// <summary>Represents a user customizable template.</summary>
 			class GuiTemplate : public compositions::GuiBoundsComposition, public controls::GuiInstanceRootObject, public Description<GuiTemplate>
@@ -219,368 +274,15 @@ namespace vl
 				~GuiTemplate();
 				
 #define GuiTemplate_PROPERTIES(F)\
-				F(GuiTemplate, FontProperties, Font)\
-				F(GuiTemplate, WString, Text)\
-				F(GuiTemplate, bool, VisuallyEnabled)\
+				F(GuiTemplate,	FontProperties,	Font,				{}	)\
+				F(GuiTemplate,	WString,		Text,				{}	)\
+				F(GuiTemplate,	bool,			VisuallyEnabled,	true)\
 
 				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
 /***********************************************************************
-Control Template
-***********************************************************************/
-
-			class GuiControlTemplate : public GuiTemplate, public AggregatableDescription<GuiControlTemplate>
-			{
-			public:
-				GuiControlTemplate();
-				~GuiControlTemplate();
-				
-#define GuiControlTemplate_PROPERTIES(F)\
-				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition)\
-				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, FocusableComposition)\
-
-				GuiControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-/***********************************************************************
-Basic Controls
-***********************************************************************/
-
-			class GuiLabelTemplate :public GuiControlTemplate, public AggregatableDescription<GuiLabelTemplate>
-			{
-			public:
-				GuiLabelTemplate();
-				~GuiLabelTemplate();
-
-#define GuiLabelTemplate_PROPERTIES(F)\
-				F(GuiLabelTemplate, Color, DefaultTextColor)\
-				F(GuiLabelTemplate, Color, TextColor)\
-
-				GuiLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiSinglelineTextBoxTemplate : public GuiControlTemplate, public AggregatableDescription<GuiSinglelineTextBoxTemplate>
-			{
-			public:
-				GuiSinglelineTextBoxTemplate();
-				~GuiSinglelineTextBoxTemplate();
-
-#define GuiSinglelineTextBoxTemplate_PROPERTIES(F)\
-				F(GuiSinglelineTextBoxTemplate, elements::text::ColorEntry, TextColor)\
-				F(GuiSinglelineTextBoxTemplate, Color, CaretColor)\
-
-				GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiDocumentLabelTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDocumentLabelTemplate>
-			{
-			public:
-				GuiDocumentLabelTemplate();
-				~GuiDocumentLabelTemplate();
-
-#define GuiDocumentLabelTemplate_PROPERTIES(F)\
-				F(GuiDocumentLabelTemplate, Ptr<DocumentModel>, BaselineDocument)\
-				F(GuiDocumentLabelTemplate, Color, CaretColor)\
-
-				GuiDocumentLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-/***********************************************************************
-Window
-***********************************************************************/
-
-			enum class BoolOption
-			{
-				AlwaysTrue,
-				AlwaysFalse,
-				Customizable,
-			};
-
-			class GuiWindowTemplate : public GuiControlTemplate, public AggregatableDescription<GuiWindowTemplate>
-			{
-			public:
-				GuiWindowTemplate();
-				~GuiWindowTemplate();
-
-#define GuiWindowTemplate_PROPERTIES(F)\
-				F(GuiWindowTemplate, BoolOption, MaximizedBoxOption)\
-				F(GuiWindowTemplate, BoolOption, MinimizedBoxOption)\
-				F(GuiWindowTemplate, BoolOption, BorderOption)\
-				F(GuiWindowTemplate, BoolOption, SizeBoxOption)\
-				F(GuiWindowTemplate, BoolOption, IconVisibleOption)\
-				F(GuiWindowTemplate, BoolOption, TitleBarOption)\
-				F(GuiWindowTemplate, bool, MaximizedBox)\
-				F(GuiWindowTemplate, bool, MinimizedBox)\
-				F(GuiWindowTemplate, bool, Border)\
-				F(GuiWindowTemplate, bool, SizeBox)\
-				F(GuiWindowTemplate, bool, IconVisible)\
-				F(GuiWindowTemplate, bool, TitleBar)\
-				F(GuiWindowTemplate, bool, CustomizedBorder)\
-				F(GuiWindowTemplate, bool, Maximized)\
-				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate)\
-				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate)\
-				F(GuiWindowTemplate, bool, CustomFrameEnabled)
-
-				GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiMenuTemplate : public GuiWindowTemplate, public AggregatableDescription<GuiMenuTemplate>
-			{
-			public:
-				GuiMenuTemplate();
-				~GuiMenuTemplate();
-
-#define GuiMenuTemplate_PROPERTIES(F)
-
-				GuiMenuTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-/***********************************************************************
-Button Controls
-***********************************************************************/
-
-			class GuiButtonTemplate : public GuiControlTemplate, public AggregatableDescription<GuiButtonTemplate>
-			{
-			public:
-				GuiButtonTemplate();
-				~GuiButtonTemplate();
-
-#define GuiButtonTemplate_PROPERTIES(F)\
-				F(GuiButtonTemplate, controls::ButtonState, State)\
-
-				GuiButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiSelectableButtonTemplate : public GuiButtonTemplate, public AggregatableDescription<GuiSelectableButtonTemplate>
-			{
-			public:
-				GuiSelectableButtonTemplate();
-				~GuiSelectableButtonTemplate();
-
-#define GuiSelectableButtonTemplate_PROPERTIES(F)\
-				F(GuiSelectableButtonTemplate, bool, Selected)\
-
-				GuiSelectableButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-/***********************************************************************
-Toolstrip Controls
-***********************************************************************/
-
-			class GuiToolstripButtonTemplate : public GuiSelectableButtonTemplate, public AggregatableDescription<GuiToolstripButtonTemplate>
-			{
-			public:
-				GuiToolstripButtonTemplate();
-				~GuiToolstripButtonTemplate();
-
-#define GuiToolstripButtonTemplate_PROPERTIES(F)\
-				F(GuiToolstripButtonTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate)\
-				F(GuiToolstripButtonTemplate, bool, SubMenuExisting)\
-				F(GuiToolstripButtonTemplate, bool, SubMenuOpening)\
-				F(GuiToolstripButtonTemplate, controls::GuiButton*, SubMenuHost)\
-				F(GuiToolstripButtonTemplate, Ptr<GuiImageData>, Image)\
-				F(GuiToolstripButtonTemplate, WString, ShortcutText)\
-
-				GuiToolstripButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiListViewColumnHeaderTemplate :public GuiToolstripButtonTemplate, public AggregatableDescription<GuiListViewColumnHeaderTemplate>
-			{
-			public:
-				GuiListViewColumnHeaderTemplate();
-				~GuiListViewColumnHeaderTemplate();
-
-#define GuiListViewColumnHeaderTemplate_PROPERTIES(F)\
-				F(GuiListViewColumnHeaderTemplate, controls::ColumnSortingState, SortingState)\
-
-				GuiListViewColumnHeaderTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiComboBoxTemplate : public GuiToolstripButtonTemplate, public AggregatableDescription<GuiComboBoxTemplate>
-			{
-			public:
-				GuiComboBoxTemplate();
-				~GuiComboBoxTemplate();
-
-#define GuiComboBoxTemplate_PROPERTIES(F)\
-				F(GuiComboBoxTemplate, controls::IComboBoxCommandExecutor*, Commands)\
-				F(GuiComboBoxTemplate, bool, TextVisible)\
-
-				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-/***********************************************************************
-Scroll Controls
-***********************************************************************/
-
-			class GuiScrollTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollTemplate>
-			{
-			public:
-				GuiScrollTemplate();
-				~GuiScrollTemplate();
-
-#define GuiScrollTemplate_PROPERTIES(F)\
-				F(GuiScrollTemplate, controls::IScrollCommandExecutor*, Commands)\
-				F(GuiScrollTemplate, vint, TotalSize)\
-				F(GuiScrollTemplate, vint, PageSize)\
-				F(GuiScrollTemplate, vint, Position)\
-
-				GuiScrollTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-/***********************************************************************
-Scrollable Controls
-***********************************************************************/
-
-			class GuiScrollViewTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollViewTemplate>
-			{
-			public:
-				GuiScrollViewTemplate();
-				~GuiScrollViewTemplate();
-
-#define GuiScrollViewTemplate_PROPERTIES(F)\
-				F(GuiScrollViewTemplate, controls::GuiScroll*, HorizontalScroll)\
-				F(GuiScrollViewTemplate, controls::GuiScroll*, VerticalScroll)\
-
-				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiMultilineTextBoxTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiMultilineTextBoxTemplate>
-			{
-			public:
-				GuiMultilineTextBoxTemplate();
-				~GuiMultilineTextBoxTemplate();
-
-#define GuiMultilineTextBoxTemplate_PROPERTIES(F)\
-				F(GuiMultilineTextBoxTemplate, controls::ITextBoxCommandExecutor*, Commands)\
-				F(GuiMultilineTextBoxTemplate, elements::text::ColorEntry, TextColor)\
-				F(GuiMultilineTextBoxTemplate, Color, CaretColor)\
-
-				GuiMultilineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiDocumentViewerTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiDocumentViewerTemplate>
-			{
-			public:
-				GuiDocumentViewerTemplate();
-				~GuiDocumentViewerTemplate();
-
-#define GuiDocumentViewerTemplate_PROPERTIES(F)\
-				F(GuiDocumentViewerTemplate, Ptr<DocumentModel>, BaselineDocument)\
-				F(GuiDocumentViewerTemplate, Color, CaretColor)\
-
-				GuiDocumentViewerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-/***********************************************************************
-List Controls
-***********************************************************************/
-
-			class GuiListControlTemplate : public GuiScrollViewTemplate, public Description<GuiListControlTemplate>
-			{
-			public:
-				GuiListControlTemplate();
-				~GuiListControlTemplate();
-
-#define GuiListControlTemplate_PROPERTIES(F)\
-				F(GuiListControlTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
-
-				GuiListControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiTextListTemplate : public GuiListControlTemplate, public AggregatableDescription<GuiTextListTemplate>
-			{
-			public:
-				GuiTextListTemplate();
-				~GuiTextListTemplate();
-
-#define GuiTextListTemplate_PROPERTIES(F)\
-				F(GuiTextListTemplate, Color, TextColor)\
-				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, CheckBulletTemplate)\
-				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, RadioBulletTemplate)\
-
-				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiListViewTemplate : public GuiListControlTemplate, public AggregatableDescription<GuiListViewTemplate>
-			{
-			public:
-				GuiListViewTemplate();
-				~GuiListViewTemplate();
-
-#define GuiListViewTemplate_PROPERTIES(F)\
-				F(GuiListViewTemplate, TemplateProperty<GuiListViewColumnHeaderTemplate>, ColumnHeaderTemplate)\
-				F(GuiListViewTemplate, Color, PrimaryTextColor)\
-				F(GuiListViewTemplate, Color, SecondaryTextColor)\
-				F(GuiListViewTemplate, Color, ItemSeparatorColor)\
-
-				GuiListViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiTreeViewTemplate : public GuiListControlTemplate, public AggregatableDescription<GuiTreeViewTemplate>
-			{
-			public:
-				GuiTreeViewTemplate();
-				~GuiTreeViewTemplate();
-
-#define GuiTreeViewTemplate_PROPERTIES(F)\
-				F(GuiTreeViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, ExpandingDecoratorTemplate)\
-				F(GuiTreeViewTemplate, Color, TextColor)\
-
-				GuiTreeViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-/***********************************************************************
-Tab Controls
-***********************************************************************/
-
-			class GuiTabTemplate : public GuiControlTemplate, public AggregatableDescription<GuiTabTemplate>
-			{
-			public:
-				GuiTabTemplate();
-				~GuiTabTemplate();
-
-#define GuiTabTemplate_PROPERTIES(F)\
-				F(GuiTabTemplate, controls::ITabCommandExecutor*, Commands)\
-				F(GuiTabTemplate, Ptr<reflection::description::IValueObservableList>, TabPages)\
-				F(GuiTabTemplate, controls::GuiTabPage*, SelectedTabPage)\
-
-				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-/***********************************************************************
-Date Controls
-***********************************************************************/
-
-			class GuiDatePickerTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDatePickerTemplate>
-			{
-			public:
-				GuiDatePickerTemplate();
-				~GuiDatePickerTemplate();
-
-#define GuiDatePickerTemplate_PROPERTIES(F)\
-				F(GuiDatePickerTemplate, controls::IDatePickerCommandExecutor*, Commands)\
-				F(GuiDatePickerTemplate, Locale, DateLocale)\
-				F(GuiDatePickerTemplate, DateTime, Date)\
-
-				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiDateComboBoxTemplate : public GuiComboBoxTemplate, public AggregatableDescription<GuiDateComboBoxTemplate>
-			{
-			public:
-				GuiDateComboBoxTemplate();
-				~GuiDateComboBoxTemplate();
-
-#define GuiDateComboBoxTemplate_PROPERTIES(F)\
-				F(GuiDateComboBoxTemplate, TemplateProperty<GuiDatePickerTemplate>, DatePickerTemplate)\
-
-				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-/***********************************************************************
-Item Template
+GuiListItemTemplate
 ***********************************************************************/
 
 			class GuiListItemTemplate : public GuiTemplate, public AggregatableDescription<GuiListItemTemplate>
@@ -592,90 +294,179 @@ Item Template
 			public:
 				GuiListItemTemplate();
 				~GuiListItemTemplate();
-				
+
 #define GuiListItemTemplate_PROPERTIES(F)\
-				F(GuiListItemTemplate, bool, Selected)\
-				F(GuiListItemTemplate, vint, Index)\
+				F(GuiListItemTemplate, bool, Selected, false)\
+				F(GuiListItemTemplate, vint, Index, 0)\
 
 				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 
-				void						BeginEditListItem();
+					void						BeginEditListItem();
 				void						EndEditListItem();
 				void						Initialize(controls::GuiListControl* _listControl);
 			};
 
-			class GuiTextListItemTemplate : public GuiListItemTemplate, public AggregatableDescription<GuiTextListItemTemplate>
-			{
-			public:
-				GuiTextListItemTemplate();
-				~GuiTextListItemTemplate();
-				
-#define GuiTextListItemTemplate_PROPERTIES(F)\
-				F(GuiTextListItemTemplate, Color, TextColor)\
-				F(GuiTextListItemTemplate, bool, Checked)\
+/***********************************************************************
+Control Template
+***********************************************************************/
 
-				GuiTextListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			enum class BoolOption
+			{
+				AlwaysTrue,
+				AlwaysFalse,
+				Customizable,
 			};
+				
+#define GuiControlTemplate_PROPERTIES(F)\
+				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition, this)\
+				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, FocusableComposition, nullptr)\
 
-			class GuiTreeItemTemplate : public GuiTextListItemTemplate, public AggregatableDescription<GuiTreeItemTemplate>
-			{
-			public:
-				GuiTreeItemTemplate();
-				~GuiTreeItemTemplate();
+#define GuiLabelTemplate_PROPERTIES(F)\
+				F(GuiLabelTemplate, Color, DefaultTextColor, {})\
+				F(GuiLabelTemplate, Color, TextColor, {})\
+
+#define GuiSinglelineTextBoxTemplate_PROPERTIES(F)\
+				F(GuiSinglelineTextBoxTemplate, elements::text::ColorEntry, TextColor, {})\
+				F(GuiSinglelineTextBoxTemplate, Color, CaretColor, {})\
+
+#define GuiDocumentLabelTemplate_PROPERTIES(F)\
+				F(GuiDocumentLabelTemplate, Ptr<DocumentModel>, BaselineDocument, {})\
+				F(GuiDocumentLabelTemplate, Color, CaretColor, {})\
+
+#define GuiWindowTemplate_PROPERTIES(F)\
+				F(GuiWindowTemplate, BoolOption, MaximizedBoxOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, BoolOption, MinimizedBoxOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, BoolOption, BorderOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, BoolOption, SizeBoxOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, BoolOption, IconVisibleOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, BoolOption, TitleBarOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, bool, MaximizedBox, true)\
+				F(GuiWindowTemplate, bool, MinimizedBox, true)\
+				F(GuiWindowTemplate, bool, Border, true)\
+				F(GuiWindowTemplate, bool, SizeBox, true)\
+				F(GuiWindowTemplate, bool, IconVisible, true)\
+				F(GuiWindowTemplate, bool, TitleBar, true)\
+				F(GuiWindowTemplate, bool, CustomizedBorder, false)\
+				F(GuiWindowTemplate, bool, Maximized, false)\
+				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate, {})\
+				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate, {})\
+				F(GuiWindowTemplate, bool, CustomFrameEnabled, true)\
+
+#define GuiMenuTemplate_PROPERTIES(F)
+
+#define GuiButtonTemplate_PROPERTIES(F)\
+				F(GuiButtonTemplate, controls::ButtonState, State, controls::ButtonState::Normal)\
+
+#define GuiSelectableButtonTemplate_PROPERTIES(F)\
+				F(GuiSelectableButtonTemplate, bool, Selected, false)\
+
+#define GuiToolstripButtonTemplate_PROPERTIES(F)\
+				F(GuiToolstripButtonTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate, {})\
+				F(GuiToolstripButtonTemplate, bool, SubMenuExisting, false)\
+				F(GuiToolstripButtonTemplate, bool, SubMenuOpening, false)\
+				F(GuiToolstripButtonTemplate, controls::GuiButton*, SubMenuHost, nullptr)\
+				F(GuiToolstripButtonTemplate, Ptr<GuiImageData>, Image, {})\
+				F(GuiToolstripButtonTemplate, WString, ShortcutText, {})\
+
+#define GuiListViewColumnHeaderTemplate_PROPERTIES(F)\
+				F(GuiListViewColumnHeaderTemplate, controls::ColumnSortingState, SortingState, controls::ColumnSortingState::NotSorted)\
+
+#define GuiComboBoxTemplate_PROPERTIES(F)\
+				F(GuiComboBoxTemplate, controls::IComboBoxCommandExecutor*, Commands, nullptr)\
+				F(GuiComboBoxTemplate, bool, TextVisible, true)\
+
+#define GuiScrollTemplate_PROPERTIES(F)\
+				F(GuiScrollTemplate, controls::IScrollCommandExecutor*, Commands, nullptr)\
+				F(GuiScrollTemplate, vint, TotalSize, 100)\
+				F(GuiScrollTemplate, vint, PageSize, 10)\
+				F(GuiScrollTemplate, vint, Position, 0)\
+
+#define GuiScrollViewTemplate_PROPERTIES(F)\
+				F(GuiScrollViewTemplate, controls::GuiScroll*, HorizontalScroll, nullptr)\
+				F(GuiScrollViewTemplate, controls::GuiScroll*, VerticalScroll, nullptr)\
+
+#define GuiMultilineTextBoxTemplate_PROPERTIES(F)\
+				F(GuiMultilineTextBoxTemplate, controls::ITextBoxCommandExecutor*, Commands, nullptr)\
+				F(GuiMultilineTextBoxTemplate, elements::text::ColorEntry, TextColor, {})\
+				F(GuiMultilineTextBoxTemplate, Color, CaretColor, {})\
+
+#define GuiDocumentViewerTemplate_PROPERTIES(F)\
+				F(GuiDocumentViewerTemplate, Ptr<DocumentModel>, BaselineDocument, {})\
+				F(GuiDocumentViewerTemplate, Color, CaretColor, {})\
+
+#define GuiListControlTemplate_PROPERTIES(F)\
+				F(GuiListControlTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
+
+#define GuiTextListTemplate_PROPERTIES(F)\
+				F(GuiTextListTemplate, Color, TextColor, {})\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, CheckBulletTemplate, {})\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, RadioBulletTemplate, {})\
+
+#define GuiListViewTemplate_PROPERTIES(F)\
+				F(GuiListViewTemplate, TemplateProperty<GuiListViewColumnHeaderTemplate>, ColumnHeaderTemplate, {})\
+				F(GuiListViewTemplate, Color, PrimaryTextColor, {})\
+				F(GuiListViewTemplate, Color, SecondaryTextColor, {})\
+				F(GuiListViewTemplate, Color, ItemSeparatorColor, {})\
+
+#define GuiTreeViewTemplate_PROPERTIES(F)\
+				F(GuiTreeViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, ExpandingDecoratorTemplate, {})\
+				F(GuiTreeViewTemplate, Color, TextColor, {})\
+
+#define GuiTabTemplate_PROPERTIES(F)\
+				F(GuiTabTemplate, controls::ITabCommandExecutor*, Commands, nullptr)\
+				F(GuiTabTemplate, Ptr<reflection::description::IValueObservableList>, TabPages, {})\
+				F(GuiTabTemplate, controls::GuiTabPage*, SelectedTabPage, nullptr)\
+
+#define GuiDatePickerTemplate_PROPERTIES(F)\
+				F(GuiDatePickerTemplate, controls::IDatePickerCommandExecutor*, Commands, nullptr)\
+				F(GuiDatePickerTemplate, Locale, DateLocale, {})\
+				F(GuiDatePickerTemplate, DateTime, Date, {})\
+
+#define GuiDateComboBoxTemplate_PROPERTIES(F)\
+				F(GuiDateComboBoxTemplate, TemplateProperty<GuiDatePickerTemplate>, DatePickerTemplate, {})\
+				
+#define GuiListItemTemplate_PROPERTIES(F)\
+				F(GuiListItemTemplate, bool, Selected, false)\
+				F(GuiListItemTemplate, vint, Index, 0)\
+
+/***********************************************************************
+Item Template
+***********************************************************************/
+
+#define GuiTextListItemTemplate_PROPERTIES(F)\
+				F(GuiTextListItemTemplate, Color, TextColor, {})\
+				F(GuiTextListItemTemplate, bool, Checked, false)\
 				
 #define GuiTreeItemTemplate_PROPERTIES(F)\
-				F(GuiTreeItemTemplate, bool, Expanding)\
-				F(GuiTreeItemTemplate, bool, Expandable)\
-				F(GuiTreeItemTemplate, vint, Level)\
-				F(GuiTreeItemTemplate, Ptr<GuiImageData>, Image)\
-
-				GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiGridCellTemplate : public GuiControlTemplate, public AggregatableDescription<GuiGridCellTemplate>
-			{
-			public:
-				GuiGridCellTemplate();
-				~GuiGridCellTemplate();
+				F(GuiTreeItemTemplate, bool, Expanding, false)\
+				F(GuiTreeItemTemplate, bool, Expandable, false)\
+				F(GuiTreeItemTemplate, vint, Level, 0)\
+				F(GuiTreeItemTemplate, Ptr<GuiImageData>, Image, {})\
 
 #define GuiGridCellTemplate_PROPERTIES(F)\
-				F(GuiGridCellTemplate, Color, PrimaryTextColor)\
-				F(GuiGridCellTemplate, Color, SecondaryTextColor)\
-				F(GuiGridCellTemplate, Color, ItemSeparatorColor)\
-				F(GuiGridCellTemplate, Ptr<GuiImageData>, LargeImage)\
-				F(GuiGridCellTemplate, Ptr<GuiImageData>, SmallImage)\
-
-				GuiGridCellTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiGridVisualizerTemplate : public GuiGridCellTemplate, public AggregatableDescription<GuiGridVisualizerTemplate>
-			{
-			public:
-				GuiGridVisualizerTemplate();
-				~GuiGridVisualizerTemplate();
+				F(GuiGridCellTemplate, Color, PrimaryTextColor, {})\
+				F(GuiGridCellTemplate, Color, SecondaryTextColor, {})\
+				F(GuiGridCellTemplate, Color, ItemSeparatorColor, {})\
+				F(GuiGridCellTemplate, Ptr<GuiImageData>, LargeImage, {})\
+				F(GuiGridCellTemplate, Ptr<GuiImageData>, SmallImage, {})\
 
 #define GuiGridVisualizerTemplate_PROPERTIES(F)\
-				F(GuiGridVisualizerTemplate, description::Value, RowValue)\
-				F(GuiGridVisualizerTemplate, description::Value, CellValue)\
-				F(GuiGridVisualizerTemplate, bool, Selected)\
-
-				GuiGridVisualizerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiGridEditorTemplate : public GuiGridCellTemplate, public AggregatableDescription<GuiGridEditorTemplate>
-			{
-			public:
-				GuiGridEditorTemplate();
-				~GuiGridEditorTemplate();
+				F(GuiGridVisualizerTemplate, description::Value, RowValue, {})\
+				F(GuiGridVisualizerTemplate, description::Value, CellValue, {})\
+				F(GuiGridVisualizerTemplate, bool, Selected, false)\
 
 #define GuiGridEditorTemplate_PROPERTIES(F)\
-				F(GuiGridEditorTemplate, description::Value, RowValue)\
-				F(GuiGridEditorTemplate, description::Value, CellValue)\
-				F(GuiGridEditorTemplate, bool, CellValueSaved)\
-				F(GuiGridEditorTemplate, controls::GuiControl*, FocusControl)\
+				F(GuiGridEditorTemplate, description::Value, RowValue, {})\
+				F(GuiGridEditorTemplate, description::Value, CellValue, {})\
+				F(GuiGridEditorTemplate, bool, CellValueSaved, true)\
+				F(GuiGridEditorTemplate, controls::GuiControl*, FocusControl, nullptr)\
 
-				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
+/***********************************************************************
+Template Declarations
+***********************************************************************/
+
+			GUI_CONTROL_TEMPLATE_DECL(GUI_TEMPLATE_CLASS_DECL)
+			GUI_ITEM_TEMPLATE_DECL(GUI_TEMPLATE_CLASS_DECL)
 		}
 	}
 }

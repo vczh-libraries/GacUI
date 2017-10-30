@@ -94,7 +94,7 @@ DataVisualizerFactory
 							childTemplate->Set##NAME(itemTemplate->Get##NAME());\
 						});\
 
-#define FORWARD_EVENT_IMPL(CLASS, TYPE, NAME) FORWARD_EVENT(NAME)
+#define FORWARD_EVENT_IMPL(CLASS, TYPE, NAME, VALUE) FORWARD_EVENT(NAME)
 
 						GuiTemplate_PROPERTIES(FORWARD_EVENT_IMPL)
 						GuiControlTemplate_PROPERTIES(FORWARD_EVENT_IMPL)

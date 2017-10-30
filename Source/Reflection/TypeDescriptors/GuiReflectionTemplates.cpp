@@ -19,7 +19,7 @@ Type Declaration
 
 #define _ ,
 
-#define GUI_TEMPLATE_PROPERTY_REFLECTION(CLASS, TYPE, NAME)\
+#define GUI_TEMPLATE_PROPERTY_REFLECTION(CLASS, TYPE, NAME, VALUE)\
 	CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(NAME)
 
 			BEGIN_ENUM_ITEM(ButtonState)
@@ -106,34 +106,9 @@ Type Declaration
 				NAME ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)\
 			END_CLASS_MEMBER(NAME)\
 
-			GUI_CONTROL_TEMPLATE(GuiControlTemplate, GuiTemplate)
-			GUI_CONTROL_TEMPLATE(GuiLabelTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiSinglelineTextBoxTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiDocumentLabelTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiMultilineTextBoxTemplate, GuiScrollViewTemplate)
-			GUI_CONTROL_TEMPLATE(GuiDocumentViewerTemplate, GuiScrollViewTemplate)
-			GUI_CONTROL_TEMPLATE(GuiMenuTemplate, GuiWindowTemplate)
-			GUI_CONTROL_TEMPLATE(GuiWindowTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiButtonTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiSelectableButtonTemplate, GuiButtonTemplate)
-			GUI_CONTROL_TEMPLATE(GuiToolstripButtonTemplate, GuiSelectableButtonTemplate)
-			GUI_CONTROL_TEMPLATE(GuiListViewColumnHeaderTemplate, GuiToolstripButtonTemplate)
-			GUI_CONTROL_TEMPLATE(GuiComboBoxTemplate, GuiToolstripButtonTemplate)
-			GUI_CONTROL_TEMPLATE(GuiScrollTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiScrollViewTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiListControlTemplate, GuiScrollViewTemplate)
-			GUI_CONTROL_TEMPLATE(GuiTextListTemplate, GuiListControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiListViewTemplate, GuiListControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiTreeViewTemplate, GuiListControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiTabTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiDatePickerTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiDateComboBoxTemplate, GuiComboBoxTemplate)
 			GUI_CONTROL_TEMPLATE(GuiListItemTemplate, GuiTemplate)
-			GUI_CONTROL_TEMPLATE(GuiTextListItemTemplate, GuiListItemTemplate)
-			GUI_CONTROL_TEMPLATE(GuiTreeItemTemplate, GuiTextListItemTemplate)
-			GUI_CONTROL_TEMPLATE(GuiGridCellTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiGridVisualizerTemplate, GuiGridCellTemplate)
-			GUI_CONTROL_TEMPLATE(GuiGridEditorTemplate, GuiGridCellTemplate)
+			GUI_CONTROL_TEMPLATE_DECL(GUI_CONTROL_TEMPLATE)
+			GUI_ITEM_TEMPLATE_DECL(GUI_CONTROL_TEMPLATE)
 
 			BEGIN_CLASS_MEMBER(GuiCommonDatePickerLook)
 				CLASS_MEMBER_BASE(GuiTemplate)
