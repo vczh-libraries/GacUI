@@ -455,7 +455,14 @@ GuiRadialGradientBackgroundElementRenderer
 
 			IMPLEMENT_BRUSH_ELEMENT_RENDERER_RADIAL_GRADIENT_BRUSH(GuiRadialGradientBackgroundElementRenderer)
 			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiRadialGradientBackgroundElementRenderer)
-			{				
+			{
+				D2D1_POINT_2F center;
+				center.x = ((FLOAT)bounds.x1 + (FLOAT)bounds.x2) / 2;
+				center.y = ((FLOAT)bounds.y1 + (FLOAT)bounds.y2) / 2;
+				brush->SetCenter(center);
+				brush->SetRadiusX((FLOAT)bounds.Width() / 2);
+				brush->SetRadiusY((FLOAT)bounds.Height() / 2);
+
 				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
 				auto shape = element->GetShape();
 
