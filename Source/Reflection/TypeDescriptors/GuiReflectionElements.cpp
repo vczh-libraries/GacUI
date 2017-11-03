@@ -43,7 +43,7 @@ Type Declaration
 			END_ENUM_ITEM(ElementShapeType)
 
 			BEGIN_STRUCT_MEMBER(ElementShape)
-				STRUCT_MEMBER(type)
+				STRUCT_MEMBER(shapeType)
 				STRUCT_MEMBER(radiusX)
 				STRUCT_MEMBER(radiusY)
 			END_STRUCT_MEMBER(ElementShape)

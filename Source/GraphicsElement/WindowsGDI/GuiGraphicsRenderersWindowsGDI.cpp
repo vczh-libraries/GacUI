@@ -40,7 +40,7 @@ GuiSolidBorderElementRenderer
 					renderTarget->GetDC()->SetPen(pen);
 					auto shape = element->GetShape();
 
-					switch(shape.type)
+					switch(shape.shapeType)
 					{
 					case ElementShapeType::Rectangle:
 						renderTarget->GetDC()->Rectangle(bounds.Left(), bounds.Top(), bounds.Right()-1, bounds.Bottom()-1);
@@ -246,7 +246,7 @@ GuiSolidBackgroundElementRenderer
 					renderTarget->GetDC()->SetBrush(brush);
 					auto shape = element->GetShape();
 
-					switch(shape.type)
+					switch(shape.shapeType)
 					{
 					case ElementShapeType::Rectangle:
 						renderTarget->GetDC()->FillRect(bounds.Left(), bounds.Top(), bounds.Right(), bounds.Bottom());
@@ -362,7 +362,7 @@ GuiGradientBackgroundElementRenderer
 					}
 
 					auto shape = element->GetShape();
-					switch(shape.type)
+					switch(shape.shapeType)
 					{
 					case ElementShapeType::Rectangle:
 						{

@@ -103,7 +103,7 @@ GuiSolidBorderElementRenderer
 				ID2D1RenderTarget* d2dRenderTarget = renderTarget->GetDirect2DRenderTarget();
 				auto shape = element->GetShape();
 
-				switch (shape.type)
+				switch (shape.shapeType)
 				{
 				case ElementShapeType::Rectangle:
 					d2dRenderTarget->DrawRectangle(
@@ -315,7 +315,7 @@ GuiSolidBackgroundElementRenderer
 				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
 				auto shape = element->GetShape();
 
-				switch(shape.type)
+				switch(shape.shapeType)
 				{
 				case ElementShapeType::Rectangle:
 					d2dRenderTarget->FillRectangle(
@@ -392,7 +392,7 @@ GuiGradientBackgroundElementRenderer
 				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
 				auto shape = element->GetShape();
 
-				switch(shape.type)
+				switch(shape.shapeType)
 				{
 				case ElementShapeType::Rectangle:
 					d2dRenderTarget->FillRectangle(

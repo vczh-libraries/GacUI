@@ -42,7 +42,7 @@ namespace vl
 			/// </summary>
 			struct ElementShape
 			{
-				ElementShapeType		type = ElementShapeType::Rectangle;
+				ElementShapeType		shapeType = ElementShapeType::Rectangle;
 				int						radiusX = 0;
 				int						radiusY = 0;
 			};

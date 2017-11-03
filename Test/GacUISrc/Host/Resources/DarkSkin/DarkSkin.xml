@@ -745,13 +745,13 @@
 
           <Cell Site="row:1 column:0">
             <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
-              <SolidBackground ref.Style="buttonBackground" Shape="Ellipse"/>
+              <SolidBackground ref.Style="buttonBackground" Shape="shapeType:Ellipse"/>
             </Bounds>
             <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
-              <SolidBorder ref.Style="buttonBorder" Shape="Ellipse"/>
+              <SolidBorder ref.Style="buttonBorder" Shape="shapeType:Ellipse"/>
             </Bounds>
             <Bounds Visible-bind="self.Selected" AlignmentToParent="left:5 top:5 right:5 bottom:5">
-              <SolidBackground ref.Style="buttonText" Shape="Ellipse"/>
+              <SolidBackground ref.Style="buttonText" Shape="shapeType:Ellipse"/>
             </Bounds>
           </Cell>
 
