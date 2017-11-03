@@ -230,6 +230,7 @@
     <Xml Include="Resources\FullControlTest\DataGridTabPage.xml" />
     <Xml Include="Resources\FullControlTest\DocumentComponents.xml" />
     <Xml Include="Resources\FullControlTest\DocumentTabPage.xml" />
+    <Xml Include="Resources\FullControlTest\ElementTabPage.xml" />
     <Xml Include="Resources\FullControlTest\Images\ImageLoader.xml" />
     <Xml Include="Resources\FullControlTest\Images\LargeImages.xml" />
     <Xml Include="Resources\FullControlTest\Images\MiscImages.xml" />

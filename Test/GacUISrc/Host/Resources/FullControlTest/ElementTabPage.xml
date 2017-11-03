@@ -1,0 +1,81 @@
+<Instance ref.CodeBehind="false" ref.Class="demo::ElementTabPage">
+  <TabPage ref.Name="self" Text="Elements">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="10">
+      <att.Rows>
+        <_>composeType:Absolute absolute:45</_>
+        <_>composeType:Absolute absolute:45</_>
+        <_>composeType:Absolute absolute:45</_>
+        <_>composeType:Absolute absolute:45</_>
+        <_>composeType:Absolute absolute:45</_>
+        <_>composeType:Absolute absolute:45</_>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Rows>
+      <att.Columns>
+        <_>composeType:Absolute absolute:100</_>
+        <_>composeType:Absolute absolute:100</_>
+        <_>composeType:Absolute absolute:45</_>
+        <_>composeType:Absolute absolute:45</_>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Columns>
+
+      <Cell Site="row:0 column:0 rowSpan:2">
+        <SolidBorder Color="#FFFF00"/>
+      </Cell>
+      <Cell Site="row:2 column:0 rowSpan:2">
+        <SolidBorder Color="#FFFF00" Shape="shapeType:Ellipse"/>
+      </Cell>
+      <Cell Site="row:4 column:0 rowSpan:2">
+        <SolidBorder Color="#FFFF00" Shape="shapeType:RoundRect radiusX:10 radiusY:5"/>
+      </Cell>
+
+      <Cell Site="row:0 column:1 rowSpan:2">
+        <SolidBackground Color="#FFFF00"/>
+      </Cell>
+      <Cell Site="row:2 column:1 rowSpan:2">
+        <SolidBackground Color="#FFFF00" Shape="shapeType:Ellipse"/>
+      </Cell>
+      <Cell Site="row:4 column:1 rowSpan:2">
+        <SolidBackground Color="#FFFF00" Shape="shapeType:RoundRect radiusX:10 radiusY:5"/>
+      </Cell>
+
+      <Cell Site="row:0 column:2">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Horizontal"/>
+      </Cell>
+      <Cell Site="row:0 column:3">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Vertical"/>
+      </Cell>
+      <Cell Site="row:1 column:2">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Slash"/>
+      </Cell>
+      <Cell Site="row:1 column:3">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Backslash"/>
+      </Cell>
+
+      <Cell Site="row:2 column:2">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Horizontal" Shape="shapeType:Ellipse"/>
+      </Cell>
+      <Cell Site="row:2 column:3">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Vertical" Shape="shapeType:Ellipse"/>
+      </Cell>
+      <Cell Site="row:3 column:2">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Slash" Shape="shapeType:Ellipse"/>
+      </Cell>
+      <Cell Site="row:3 column:3">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Backslash" Shape="shapeType:Ellipse"/>
+      </Cell>
+
+      <Cell Site="row:4 column:2">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Horizontal" Shape="shapeType:RoundRect radiusX:10 radiusY:5"/>
+      </Cell>
+      <Cell Site="row:4 column:3">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Vertical" Shape="shapeType:RoundRect radiusX:10 radiusY:5"/>
+      </Cell>
+      <Cell Site="row:5 column:2">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Slash" Shape="shapeType:RoundRect radiusX:10 radiusY:5"/>
+      </Cell>
+      <Cell Site="row:5 column:3">
+        <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Backslash" Shape="shapeType:RoundRect radiusX:10 radiusY:5"/>
+      </Cell>
+    </Table>
+  </TabPage>
+</Instance>

@@ -40,6 +40,7 @@ Type Declaration
 			BEGIN_ENUM_ITEM(ElementShapeType)
 				ENUM_CLASS_ITEM(Rectangle)
 				ENUM_CLASS_ITEM(Ellipse)
+				ENUM_CLASS_ITEM(RoundRect)
 			END_ENUM_ITEM(ElementShapeType)
 
 			BEGIN_STRUCT_MEMBER(ElementShape)
@@ -107,6 +108,8 @@ Type Declaration
 				ENUM_ITEM_NAMESPACE(GuiGradientBackgroundElement)
 				ENUM_NAMESPACE_ITEM(Horizontal)
 				ENUM_NAMESPACE_ITEM(Vertical)
+				ENUM_NAMESPACE_ITEM(Slash)
+				ENUM_NAMESPACE_ITEM(Backslash)
 			END_ENUM_ITEM(GuiGradientBackgroundElement::Direction)
 
 			BEGIN_CLASS_MEMBER(GuiSolidLabelElement)
