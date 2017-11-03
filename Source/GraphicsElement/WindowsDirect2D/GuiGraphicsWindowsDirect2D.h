@@ -90,6 +90,8 @@ Functionality
 				virtual void								DestroyDirect2DBrush(Color color)=0;
 				virtual ID2D1LinearGradientBrush*			CreateDirect2DLinearBrush(Color c1, Color c2)=0;
 				virtual void								DestroyDirect2DLinearBrush(Color c1, Color c2)=0;
+				virtual ID2D1RadialGradientBrush*			CreateDirect2DRadialBrush(Color c1, Color c2) = 0;
+				virtual void								DestroyDirect2DRadialBrush(Color c1, Color c2) = 0;
 			};
 
 			class Direct2DTextFormatPackage

@@ -93,6 +93,36 @@ IMPLEMENT_BRUSH_ELEMENT_RENDERER
 				}\
 			}\
 
+#define IMPLEMENT_BRUSH_ELEMENT_RENDERER_RADIAL_GRADIENT_BRUSH(TRENDERER)\
+			void TRENDERER::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
+			{\
+				if(_renderTarget)\
+				{\
+					oldColor=Pair<Color, Color>(element->GetColor1(), element->GetColor2());\
+					brush=_renderTarget->CreateDirect2DRadialBrush(oldColor.key, oldColor.value);\
+				}\
+			}\
+			void TRENDERER::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
+			{\
+				if(_renderTarget && brush)\
+				{\
+					_renderTarget->DestroyDirect2DRadialBrush(oldColor.key, oldColor.value);\
+					brush=0;\
+				}\
+			}\
+			void TRENDERER::OnElementStateChanged()\
+			{\
+				if(renderTarget)\
+				{\
+					Pair<Color, Color> color=Pair<Color, Color>(element->GetColor1(), element->GetColor2());\
+					if(oldColor!=color)\
+					{\
+						DestroyBrush(renderTarget);\
+						CreateBrush(renderTarget);\
+					}\
+				}\
+			}\
+
 /***********************************************************************
 GuiSolidBorderElementRenderer
 ***********************************************************************/
@@ -389,6 +419,43 @@ GuiGradientBackgroundElementRenderer
 				brush->SetStartPoint(points[0]);
 				brush->SetEndPoint(points[1]);
 				
+				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
+				auto shape = element->GetShape();
+
+				switch(shape.shapeType)
+				{
+				case ElementShapeType::Rectangle:
+					d2dRenderTarget->FillRectangle(
+						D2D1::RectF((FLOAT)bounds.x1, (FLOAT)bounds.y1, (FLOAT)bounds.x2, (FLOAT)bounds.y2),
+						brush
+						);
+					break;
+				case ElementShapeType::Ellipse:
+					d2dRenderTarget->FillEllipse(
+						D2D1::Ellipse(D2D1::Point2F((bounds.x1+bounds.x2)/2.0f, (bounds.y1+bounds.y2)/2.0f), bounds.Width()/2.0f, bounds.Height()/2.0f),
+						brush
+						);
+					break;
+				case ElementShapeType::RoundRect:
+					d2dRenderTarget->FillRoundedRectangle(
+						D2D1::RoundedRect(
+							D2D1::RectF((FLOAT)bounds.x1 + 0.5f, (FLOAT)bounds.y1 + 0.5f, (FLOAT)bounds.x2 - 0.5f, (FLOAT)bounds.y2 - 0.5f),
+							(FLOAT)shape.radiusX,
+							(FLOAT)shape.radiusY
+							),
+						brush
+						);
+					break;
+				}
+			}
+
+/***********************************************************************
+GuiRadialGradientBackgroundElementRenderer
+***********************************************************************/
+
+			IMPLEMENT_BRUSH_ELEMENT_RENDERER_RADIAL_GRADIENT_BRUSH(GuiRadialGradientBackgroundElementRenderer)
+			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiRadialGradientBackgroundElementRenderer)
+			{				
 				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
 				auto shape = element->GetShape();
 

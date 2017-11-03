@@ -97,6 +97,12 @@ Renderers
 				DEFINE_BRUSH_ELEMENT_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, ID2D1LinearGradientBrush, ColorPair)
 			};
 
+			class GuiRadialGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				typedef collections::Pair<Color, Color> ColorPair;
+				DEFINE_BRUSH_ELEMENT_RENDERER(GuiRadialGradientBackgroundElement, GuiRadialGradientBackgroundElementRenderer, ID2D1RadialGradientBrush, ColorPair)
+			};
+
 			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
 				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsDirect2DRenderTarget)

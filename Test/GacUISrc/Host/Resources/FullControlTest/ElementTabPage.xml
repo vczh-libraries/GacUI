@@ -15,6 +15,7 @@
         <_>composeType:Absolute absolute:100</_>
         <_>composeType:Absolute absolute:45</_>
         <_>composeType:Absolute absolute:45</_>
+        <_>composeType:Absolute absolute:100</_>
         <_>composeType:Percentage percentage:1.0</_>
       </att.Columns>
 
@@ -75,6 +76,16 @@
       </Cell>
       <Cell Site="row:5 column:3">
         <GradientBackground Color1="#FFFF00" Color2="#0000FF" Direction="Backslash" Shape="shapeType:RoundRect radiusX:10 radiusY:5"/>
+      </Cell>
+
+      <Cell Site="row:0 column:4 rowSpan:2">
+        <RadialGradientBackground Color1="#FFFF00" Color2="#0000FF"/>
+      </Cell>
+      <Cell Site="row:2 column:4 rowSpan:2">
+        <RadialGradientBackground Color1="#FFFF00" Color2="#0000FF" Shape="shapeType:Ellipse"/>
+      </Cell>
+      <Cell Site="row:4 column:4 rowSpan:2">
+        <RadialGradientBackground Color1="#FFFF00" Color2="#0000FF" Shape="shapeType:RoundRect radiusX:10 radiusY:5"/>
       </Cell>
     </Table>
   </TabPage>

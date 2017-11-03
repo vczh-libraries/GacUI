@@ -117,6 +117,57 @@ CachedResourceAllocator
 				}
 			};
 
+			class CachedRadialBrushAllocator
+			{
+				typedef Pair<Color, Color> ColorPair;
+				DEFINE_CACHED_RESOURCE_ALLOCATOR(ColorPair, ComPtr<ID2D1RadialGradientBrush>)
+
+				IWindowsDirect2DRenderTarget*	guiRenderTarget;
+			public:
+				CachedRadialBrushAllocator()
+					:guiRenderTarget(0)
+				{
+				}
+
+				void SetRenderTarget(IWindowsDirect2DRenderTarget* _guiRenderTarget)
+				{
+					guiRenderTarget=_guiRenderTarget;
+				}
+
+				ComPtr<ID2D1RadialGradientBrush> CreateInternal(ColorPair colors)
+				{
+					ID2D1RenderTarget* renderTarget=guiRenderTarget->GetDirect2DRenderTarget();
+					ID2D1GradientStopCollection* stopCollection=0;
+					{
+						D2D1_GRADIENT_STOP stops[2];
+						stops[0].color=GetD2DColor(colors.key);
+						stops[0].position=0.0f;
+						stops[1].color=GetD2DColor(colors.value);
+						stops[1].position=1.0f;
+
+						HRESULT hr=renderTarget->CreateGradientStopCollection(
+							stops,
+							2,
+							D2D1_GAMMA_2_2,
+							D2D1_EXTEND_MODE_CLAMP,
+							&stopCollection);
+						if(FAILED(hr)) return 0;
+					}
+
+					ID2D1RadialGradientBrush* brush=0;
+					{
+						D2D1_POINT_2F points[2]={{0, 0}, {0, 0}};
+						HRESULT hr=renderTarget->CreateRadialGradientBrush(
+							D2D1::RadialGradientBrushProperties(points[0], points[1], 1, 1),
+							stopCollection,
+							&brush);
+						stopCollection->Release();
+						if(FAILED(hr)) return 0;
+					}
+					return brush;
+				}
+			};
+
 			class CachedTextFormatAllocator
 			{
 			private:
@@ -331,6 +382,7 @@ WindowsDirect2DRenderTarget
 
 				CachedSolidBrushAllocator		solidBrushes;
 				CachedLinearBrushAllocator		linearBrushes;
+				CachedRadialBrushAllocator		radialBrushes;
 				ImageCacheList					imageCaches;
 
 				ComPtr<IDWriteRenderingParams>	noAntialiasParams;
@@ -366,6 +418,7 @@ WindowsDirect2DRenderTarget
 				{
 					solidBrushes.SetRenderTarget(this);
 					linearBrushes.SetRenderTarget(this);
+					radialBrushes.SetRenderTarget(this);
 
 					IDWriteFactory* dwriteFactory=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
 					IDWriteRenderingParams* defaultParams=0;
@@ -538,6 +591,16 @@ WindowsDirect2DRenderTarget
 				{
 					linearBrushes.Destroy(Pair<Color, Color>(c1, c2));
 				}
+
+				ID2D1RadialGradientBrush* CreateDirect2DRadialBrush(Color c1, Color c2)override
+				{
+					return radialBrushes.Create(Pair<Color, Color>(c1, c2)).Obj();
+				}
+
+				void DestroyDirect2DRadialBrush(Color c1, Color c2)override
+				{
+					radialBrushes.Destroy(Pair<Color, Color>(c1, c2));
+				}
 			};
 
 /***********************************************************************
@@ -668,6 +731,7 @@ void RendererMainDirect2D()
 	elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
 	elements_windows_d2d::GuiSolidBackgroundElementRenderer::Register();
 	elements_windows_d2d::GuiGradientBackgroundElementRenderer::Register();
+	elements_windows_d2d::GuiRadialGradientBackgroundElementRenderer::Register();
 	elements_windows_d2d::GuiSolidLabelElementRenderer::Register();
 	elements_windows_d2d::GuiImageFrameElementRenderer::Register();
 	elements_windows_d2d::GuiPolygonElementRenderer::Register();

@@ -226,7 +226,7 @@ namespace vl
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGradientBackgroundElement, L"GradientBackground")
 			public:
 				/// <summary>
-				/// Defines a direction of the <see cref="Gui3DSplitterElement"></see>.
+				/// Defines a direction of the <see cref="GuiGradientBackgroundElement"></see>.
 				/// </summary>
 				enum Direction
 				{
@@ -284,6 +284,58 @@ namespace vl
 				/// </summary>
 				/// <param name="value">The new direction.</param>
 				void					SetDirection(Direction value);
+				/// <summary>
+				/// Get the shape.
+				/// </summary>
+				/// <returns>The shape.</returns>
+				ElementShape			GetShape();
+				/// <summary>
+				/// Set the shape.
+				/// </summary>
+				/// <param name="value">The new shape.</param>
+				void					SetShape(ElementShape value);
+			};
+
+			/// <summary>
+			/// Defines a color-filled radial gradient element without border.
+			/// </summary>
+			class GuiRadialGradientBackgroundElement : public GuiElementBase<GuiRadialGradientBackgroundElement>
+			{
+				DEFINE_GUI_GRAPHICS_ELEMENT(GuiRadialGradientBackgroundElement, L"RadialGradientBackground")
+			protected:
+				Color					color1;
+				Color					color2;
+				ElementShape			shape;
+
+				GuiRadialGradientBackgroundElement();
+			public:
+				/// <summary>
+				/// Get the left-top color.
+				/// </summary>
+				/// <returns>The left-top color.</returns>
+				Color					GetColor1();
+				/// <summary>
+				/// Set the border color.
+				/// </summary>
+				/// <param name="value">The new left-top color.</param>
+				void					SetColor1(Color value);
+				/// <summary>
+				/// Get the right bottom color.
+				/// </summary>
+				/// <returns>The right-bottom color.</returns>
+				Color					GetColor2();
+				/// <summary>
+				/// Set the border color.
+				/// </summary>
+				/// <param name="value">The new right-bottom color.</param>
+				void					SetColor2(Color value);
+				/// <summary>
+				/// Set colors of the element.
+				/// </summary>
+				/// <param name="value1">The new left-top color.</param>
+				/// <param name="value2">The new right bottom color.</param>
+				void					SetColors(Color value1, Color value2);
+
 				/// <summary>
 				/// Get the shape.
 				/// </summary>

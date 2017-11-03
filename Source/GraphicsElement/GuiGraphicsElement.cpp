@@ -229,6 +229,54 @@ GuiGradientBackgroundElement
 			}
 
 /***********************************************************************
+GuiRadialGradientBackgroundElement
+***********************************************************************/
+
+			GuiRadialGradientBackgroundElement::GuiRadialGradientBackgroundElement()
+			{
+			}
+
+			Color GuiRadialGradientBackgroundElement::GetColor1()
+			{
+				return color1;
+			}
+
+			void GuiRadialGradientBackgroundElement::SetColor1(Color value)
+			{
+				SetColors(value, color2);
+			}
+
+			Color GuiRadialGradientBackgroundElement::GetColor2()
+			{
+				return color2;
+			}
+
+			void GuiRadialGradientBackgroundElement::SetColor2(Color value)
+			{
+				SetColors(color1, value);
+			}
+
+			void GuiRadialGradientBackgroundElement::SetColors(Color value1, Color value2)
+			{
+				if(color1!=value1 || color2!=value2)
+				{
+					color1=value1;
+					color2=value2;
+					InvokeOnElementStateChanged();
+				}
+			}
+			
+			ElementShape GuiRadialGradientBackgroundElement::GetShape()
+			{
+				return shape;
+			}
+
+			void GuiRadialGradientBackgroundElement::SetShape(ElementShape value)
+			{
+				shape=value;
+			}
+
+/***********************************************************************
 GuiSolidLabelElement
 ***********************************************************************/
 

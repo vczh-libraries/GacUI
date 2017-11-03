@@ -763,6 +763,12 @@ namespace demo
 		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_34 = ::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement>();
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_35 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_36 = ::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement>();
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_37 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement> __vwsn_precompile_38 = ::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement>();
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_39 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement> __vwsn_precompile_40 = ::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement>();
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_41 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement> __vwsn_precompile_42 = ::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement>();
 		void __vwsn_initialize_instance_(::demo::ElementTabPage* __vwsn_this_);
 	public:
 		ElementTabPageConstructor();

@@ -104,6 +104,17 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Shape)
 			END_CLASS_MEMBER(GuiGradientBackgroundElement)
 
+			BEGIN_CLASS_MEMBER(GuiRadialGradientBackgroundElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiRadialGradientBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiRadialGradientBackgroundElement>)
+				
+				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
+
+				CLASS_MEMBER_PROPERTY_FAST(Color1)
+				CLASS_MEMBER_PROPERTY_FAST(Color2)
+				CLASS_MEMBER_PROPERTY_FAST(Shape)
+			END_CLASS_MEMBER(GuiRadialGradientBackgroundElement)
+
 			BEGIN_ENUM_ITEM(GuiGradientBackgroundElement::Direction)
 				ENUM_ITEM_NAMESPACE(GuiGradientBackgroundElement)
 				ENUM_NAMESPACE_ITEM(Horizontal)
