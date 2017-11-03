@@ -345,10 +345,10 @@ GuiGradientBackgroundElementRenderer
 							switch (element->GetDirection())
 							{
 							case GuiGradientBackgroundElement::Horizontal:
-								renderTarget->GetDC()->GradientRectH(vertices, 2, rectangles, 1);
+								renderTarget->GetDC()->GradientRectH(vertices, sizeof(vertices) / sizeof(*vertices), rectangles, sizeof(rectangles) / sizeof(*rectangles));
 								break;
 							case GuiGradientBackgroundElement::Vertical:
-								renderTarget->GetDC()->GradientRectV(vertices, 2, rectangles, 1);
+								renderTarget->GetDC()->GradientRectV(vertices, sizeof(vertices) / sizeof(*vertices), rectangles, sizeof(rectangles) / sizeof(*rectangles));
 								break;
 							}
 						}
@@ -410,7 +410,7 @@ GuiGradientBackgroundElementRenderer
 							vertices[3].Blue = color2.b << 8;
 							vertices[3].Alpha = color2.a << 8;
 
-							renderTarget->GetDC()->GradientTriangle(vertices, 4, triangles, 2);
+							renderTarget->GetDC()->GradientTriangle(vertices, sizeof(vertices) / sizeof(*vertices), triangles, sizeof(triangles) / sizeof(*triangles));
 						}
 						break;
 					}
@@ -432,10 +432,17 @@ GuiRadialGradientBackgroundElementRenderer
 
 			void GuiRadialGradientBackgroundElementRenderer::InitializeInternal()
 			{
+				IWindowsGDIResourceManager* resourceManager = GetWindowsGDIResourceManager();
+				oldColor = element->GetColor2();
+				pen = resourceManager->CreateGdiPen(oldColor);
+				brush = resourceManager->CreateGdiBrush(oldColor);
 			}
 
 			void GuiRadialGradientBackgroundElementRenderer::FinalizeInternal()
 			{
+				IWindowsGDIResourceManager* resourceManager = GetWindowsGDIResourceManager();
+				resourceManager->DestroyGdiPen(oldColor);
+				resourceManager->DestroyGdiBrush(oldColor);
 			}
 
 			void GuiRadialGradientBackgroundElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
@@ -444,10 +451,85 @@ GuiRadialGradientBackgroundElementRenderer
 
 			void GuiRadialGradientBackgroundElementRenderer::Render(Rect bounds)
 			{
+				Color color1 = element->GetColor1();
+				Color color2 = element->GetColor2();
+				if (color1.a > 0 || color2.a > 0)
+				{
+					Ptr<WinRegion> targetRegion, oldRegion, newRegion;
+					auto shape = element->GetShape();
+					switch (shape.shapeType)
+					{
+					case ElementShapeType::Rectangle:
+						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, true);
+						break;
+					case ElementShapeType::Ellipse:
+						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, false);
+						break;
+					case ElementShapeType::RoundRect:
+						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, shape.radiusX * 2, shape.radiusY * 2);
+						break;
+					}
+
+					oldRegion = renderTarget->GetDC()->GetClipRegion();
+					newRegion = new WinRegion(oldRegion, targetRegion, RGN_AND);
+					renderTarget->GetDC()->ClipRegion(newRegion);
+
+					renderTarget->GetDC()->SetPen(pen);
+					renderTarget->GetDC()->SetBrush(brush);
+					renderTarget->GetDC()->FillRect(bounds.Left(), bounds.Top(), bounds.Right(), bounds.Bottom());
+					{
+						const vint triangleCount = 64;
+						TRIVERTEX vertices[triangleCount + 1];
+						GRADIENT_TRIANGLE triangles[triangleCount];
+
+						vint cx = (bounds.x1 + bounds.x2) / 2;
+						vint cy = (bounds.y1 + bounds.y2) / 2;
+						vint rx = bounds.Width() / 2;
+						vint ry = bounds.Height() / 2;
+						for (vint i = 0; i < triangleCount; i++)
+						{
+							vertices[i].Red = color2.r << 8;
+							vertices[i].Green = color2.g << 8;
+							vertices[i].Blue = color2.b << 8;
+							vertices[i].Alpha = color2.a << 8;
+
+							double theta = 3.1416 * 2 * i / triangleCount;
+							vertices[i].x = (LONG)(cx + cos(theta) * rx);
+							vertices[i].y = (LONG)(cy + sin(theta) * ry);
+						}
+						vertices[triangleCount].Red = color1.r << 8;
+						vertices[triangleCount].Green = color1.g << 8;
+						vertices[triangleCount].Blue = color1.b << 8;
+						vertices[triangleCount].Alpha = color1.a << 8;
+						vertices[triangleCount].x = (LONG)cx;
+						vertices[triangleCount].y = (LONG)cy;
+
+						for (vint i = 0; i < triangleCount; i++)
+						{
+							triangles[i].Vertex1 = (ULONG)triangleCount;
+							triangles[i].Vertex2 = (ULONG)i;
+							triangles[i].Vertex3 = (ULONG)(i + 1) % triangleCount;
+						}
+
+						renderTarget->GetDC()->GradientTriangle(vertices, sizeof(vertices) / sizeof(*vertices), triangles, sizeof(triangles) / sizeof(*triangles));
+					}
+
+					renderTarget->GetDC()->ClipRegion(oldRegion);
+				}
 			}
 
 			void GuiRadialGradientBackgroundElementRenderer::OnElementStateChanged()
 			{
+				Color color = element->GetColor2();
+				if (oldColor != color)
+				{
+					IWindowsGDIResourceManager* resourceManager = GetWindowsGDIResourceManager();
+					resourceManager->DestroyGdiPen(oldColor);
+					resourceManager->DestroyGdiBrush(oldColor);
+					oldColor = color;
+					pen = resourceManager->CreateGdiPen(oldColor);
+					brush = resourceManager->CreateGdiBrush(oldColor);
+				}
 			}
 
 /***********************************************************************

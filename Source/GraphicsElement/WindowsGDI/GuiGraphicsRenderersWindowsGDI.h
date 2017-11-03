@@ -105,6 +105,10 @@ Renderers
 			{
 				DEFINE_GUI_GRAPHICS_RENDERER(GuiRadialGradientBackgroundElement, GuiRadialGradientBackgroundElementRenderer, IWindowsGDIRenderTarget)
 			protected:
+				Color					oldColor;
+				Ptr<windows::WinPen>	pen;
+				Ptr<windows::WinBrush>	brush;
+
 				void					InitializeInternal();
 				void					FinalizeInternal();
 				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
