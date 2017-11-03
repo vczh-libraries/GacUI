@@ -101,6 +101,18 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
+			class GuiRadialGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiRadialGradientBackgroundElement, GuiRadialGradientBackgroundElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
 			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
 				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsGDIRenderTarget)

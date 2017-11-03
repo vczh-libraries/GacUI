@@ -398,6 +398,30 @@ GuiGradientBackgroundElementRenderer
 			}
 
 /***********************************************************************
+GuiRadialGradientBackgroundElementRenderer
+***********************************************************************/
+
+			void GuiRadialGradientBackgroundElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiRadialGradientBackgroundElementRenderer::FinalizeInternal()
+			{
+			}
+
+			void GuiRadialGradientBackgroundElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
+			{
+			}
+
+			void GuiRadialGradientBackgroundElementRenderer::Render(Rect bounds)
+			{
+			}
+
+			void GuiRadialGradientBackgroundElementRenderer::OnElementStateChanged()
+			{
+			}
+
+/***********************************************************************
 GuiSolidLabelElementRenderer
 ***********************************************************************/
 

@@ -489,6 +489,7 @@ void RendererMainGDI()
 	elements_windows_gdi::Gui3DSplitterElementRenderer::Register();
 	elements_windows_gdi::GuiSolidBackgroundElementRenderer::Register();
 	elements_windows_gdi::GuiGradientBackgroundElementRenderer::Register();
+	elements_windows_gdi::GuiRadialGradientBackgroundElementRenderer::Register();
 	elements_windows_gdi::GuiSolidLabelElementRenderer::Register();
 	elements_windows_gdi::GuiImageFrameElementRenderer::Register();
 	elements_windows_gdi::GuiPolygonElementRenderer::Register();
