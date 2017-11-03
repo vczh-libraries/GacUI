@@ -293,102 +293,131 @@ GuiGradientBackgroundElementRenderer
 
 			void GuiGradientBackgroundElementRenderer::Render(Rect bounds)
 			{
-				Color color1=element->GetColor1();
-				Color color2=element->GetColor2();
-				if(color1.a>0 || color2.a>0)
+				Color color1 = element->GetColor1();
+				Color color2 = element->GetColor2();
+				if (color1.a > 0 || color2.a > 0)
 				{
-					TRIVERTEX vertices[4];
-					GRADIENT_TRIANGLE triangles[2];
-
-					vertices[0].x=(int)bounds.x1;
-					vertices[0].y=(int)bounds.y1;
-					vertices[1].x=(int)bounds.x1;
-					vertices[1].y=(int)bounds.y2;
-					vertices[2].x=(int)bounds.x2;
-					vertices[2].y=(int)bounds.y2;
-					vertices[3].x=(int)bounds.x2;
-					vertices[3].y=(int)bounds.y1;
-
-					triangles[0].Vertex1=0;
-					triangles[0].Vertex2=1;
-					triangles[0].Vertex3=2;
-					triangles[1].Vertex1=0;
-					triangles[1].Vertex2=2;
-					triangles[1].Vertex3=3;
-
-					if(element->GetDirection()==GuiGradientBackgroundElement::Horizontal)
-					{
-						vertices[0].Red=color1.r<<8;
-						vertices[0].Green=color1.g<<8;
-						vertices[0].Blue=color1.b<<8;
-						vertices[0].Alpha=0xFF00;
-						
-						vertices[1].Red=color1.r<<8;
-						vertices[1].Green=color1.g<<8;
-						vertices[1].Blue=color1.b<<8;
-						vertices[1].Alpha=0xFF00;
-						
-						vertices[2].Red=color2.r<<8;
-						vertices[2].Green=color2.g<<8;
-						vertices[2].Blue=color2.b<<8;
-						vertices[2].Alpha=0xFF00;
-						
-						vertices[3].Red=color2.r<<8;
-						vertices[3].Green=color2.g<<8;
-						vertices[3].Blue=color2.b<<8;
-						vertices[3].Alpha=0xFF00;
-					}
-					else
-					{
-						vertices[0].Red=color1.r<<8;
-						vertices[0].Green=color1.g<<8;
-						vertices[0].Blue=color1.b<<8;
-						vertices[0].Alpha=0xFF00;
-						
-						vertices[1].Red=color2.r<<8;
-						vertices[1].Green=color2.g<<8;
-						vertices[1].Blue=color2.b<<8;
-						vertices[1].Alpha=0xFF00;
-						
-						vertices[2].Red=color2.r<<8;
-						vertices[2].Green=color2.g<<8;
-						vertices[2].Blue=color2.b<<8;
-						vertices[2].Alpha=0xFF00;
-						
-						vertices[3].Red=color1.r<<8;
-						vertices[3].Green=color1.g<<8;
-						vertices[3].Blue=color1.b<<8;
-						vertices[3].Alpha=0xFF00;
-					}
-
+					Ptr<WinRegion> targetRegion, oldRegion, newRegion;
 					auto shape = element->GetShape();
-					switch(shape.shapeType)
+					switch (shape.shapeType)
 					{
-					case ElementShapeType::Rectangle:
-						{
-							renderTarget->GetDC()->GradientTriangle(vertices, 6, triangles, 2);
-						}
-						break;
 					case ElementShapeType::Ellipse:
-						{
-							Ptr<WinRegion> ellipseRegion=new WinRegion(bounds.x1, bounds.y1, bounds.x2+1, bounds.y2+1, false);
-							Ptr<WinRegion> oldRegion=renderTarget->GetDC()->GetClipRegion();
-							Ptr<WinRegion> newRegion=new WinRegion(oldRegion, ellipseRegion, RGN_AND);
-							renderTarget->GetDC()->ClipRegion(newRegion);
-							renderTarget->GetDC()->GradientTriangle(vertices, 6, triangles, 2);
-							renderTarget->GetDC()->ClipRegion(oldRegion);
-						}
+						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, false);
 						break;
 					case ElementShapeType::RoundRect:
+						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, shape.radiusX * 2, shape.radiusY * 2);
+						break;
+					}
+
+					if (targetRegion)
+					{
+						oldRegion = renderTarget->GetDC()->GetClipRegion();
+						newRegion = new WinRegion(oldRegion, targetRegion, RGN_AND);
+						renderTarget->GetDC()->ClipRegion(newRegion);
+					}
+
+					switch (element->GetDirection())
+					{
+					case GuiGradientBackgroundElement::Horizontal:
+					case GuiGradientBackgroundElement::Vertical:
 						{
-							Ptr<WinRegion> ellipseRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, shape.radiusX * 2, shape.radiusY * 2);
-							Ptr<WinRegion> oldRegion = renderTarget->GetDC()->GetClipRegion();
-							Ptr<WinRegion> newRegion = new WinRegion(oldRegion, ellipseRegion, RGN_AND);
-							renderTarget->GetDC()->ClipRegion(newRegion);
-							renderTarget->GetDC()->GradientTriangle(vertices, 6, triangles, 2);
-							renderTarget->GetDC()->ClipRegion(oldRegion);
+							TRIVERTEX vertices[2];
+							GRADIENT_RECT rectangles[1];
+
+							vertices[0].x = (int)bounds.x1;
+							vertices[0].y = (int)bounds.y1;
+							vertices[1].x = (int)bounds.x2;
+							vertices[1].y = (int)bounds.y2;
+
+							rectangles[0].UpperLeft = 0;
+							rectangles[0].LowerRight = 1;
+
+							vertices[0].Red = color1.r << 8;
+							vertices[0].Green = color1.g << 8;
+							vertices[0].Blue = color1.b << 8;
+							vertices[0].Alpha = color1.a << 8;
+
+							vertices[1].Red = color2.r << 8;
+							vertices[1].Green = color2.g << 8;
+							vertices[1].Blue = color2.b << 8;
+							vertices[1].Alpha = color2.a << 8;
+
+							switch (element->GetDirection())
+							{
+							case GuiGradientBackgroundElement::Horizontal:
+								renderTarget->GetDC()->GradientRectH(vertices, 2, rectangles, 1);
+								break;
+							case GuiGradientBackgroundElement::Vertical:
+								renderTarget->GetDC()->GradientRectV(vertices, 2, rectangles, 1);
+								break;
+							}
 						}
 						break;
+					case GuiGradientBackgroundElement::Slash:
+					case GuiGradientBackgroundElement::Backslash:
+						{
+							TRIVERTEX vertices[4];
+							GRADIENT_TRIANGLE triangles[2];
+
+							switch (element->GetDirection())
+							{
+							case GuiGradientBackgroundElement::Slash:
+								vertices[0].x = (int)bounds.x2;
+								vertices[0].y = (int)bounds.y1;
+								vertices[1].x = (int)bounds.x1;
+								vertices[1].y = (int)bounds.y1;
+								vertices[2].x = (int)bounds.x2;
+								vertices[2].y = (int)bounds.y2;
+								vertices[3].x = (int)bounds.x1;
+								vertices[3].y = (int)bounds.y2;
+								break;
+							case GuiGradientBackgroundElement::Backslash:
+								vertices[0].x = (int)bounds.x1;
+								vertices[0].y = (int)bounds.y1;
+								vertices[1].x = (int)bounds.x1;
+								vertices[1].y = (int)bounds.y2;
+								vertices[2].x = (int)bounds.x2;
+								vertices[2].y = (int)bounds.y1;
+								vertices[3].x = (int)bounds.x2;
+								vertices[3].y = (int)bounds.y2;
+								break;
+							}
+
+							triangles[0].Vertex1 = 0;
+							triangles[0].Vertex2 = 1;
+							triangles[0].Vertex3 = 2;
+							triangles[1].Vertex1 = 1;
+							triangles[1].Vertex2 = 2;
+							triangles[1].Vertex3 = 3;
+
+							vertices[0].Red = color1.r << 8;
+							vertices[0].Green = color1.g << 8;
+							vertices[0].Blue = color1.b << 8;
+							vertices[0].Alpha = color1.a << 8;
+
+							vertices[1].Red = ((color1.r + color2.r) / 2) << 8;
+							vertices[1].Green = ((color1.g + color2.g) / 2) << 8;
+							vertices[1].Blue = ((color1.b + color2.b) / 2) << 8;
+							vertices[1].Alpha = ((color1.a + color2.a) / 2) << 8;
+
+							vertices[2].Red = ((color1.r + color2.r) / 2) << 8;
+							vertices[2].Green = ((color1.g + color2.g) / 2) << 8;
+							vertices[2].Blue = ((color1.b + color2.b) / 2) << 8;
+							vertices[2].Alpha = ((color1.a + color2.a) / 2) << 8;
+
+							vertices[3].Red = color2.r << 8;
+							vertices[3].Green = color2.g << 8;
+							vertices[3].Blue = color2.b << 8;
+							vertices[3].Alpha = color2.a << 8;
+
+							renderTarget->GetDC()->GradientTriangle(vertices, 4, triangles, 2);
+						}
+						break;
+					}
+
+					if (targetRegion)
+					{
+						renderTarget->GetDC()->ClipRegion(oldRegion);
 					}
 				}
 			}
