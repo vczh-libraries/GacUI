@@ -20,19 +20,31 @@ namespace vl
 		namespace elements
 		{
 
-/***********************************************************************
-Elements
-***********************************************************************/
-			
+			/***********************************************************************
+			Elements
+			***********************************************************************/
+
 			/// <summary>
-			/// Defines an shape for some <see cref="IGuiGraphicsElement"></see>.
+			/// Defines a shape for some <see cref="IGuiGraphicsElement"></see>.
 			/// </summary>
-			enum class ElementShape
+			enum class ElementShapeType
 			{
 				/// <summary>Rectangle shape.</summary>
 				Rectangle,
 				/// <summary>Ellipse shape.</summary>
 				Ellipse,
+				/// <summary>Round rectangle shape.</summary>
+				RoundRect,
+			};
+
+			/// <summary>
+			/// Defines a shape for some <see cref="IGuiGraphicsElement"></see>.
+			/// </summary>
+			struct ElementShape
+			{
+				ElementShapeType		type = ElementShapeType::Rectangle;
+				int						radiusX = 0;
+				int						radiusY = 0;
 			};
 
 			/// <summary>
@@ -67,41 +79,6 @@ Elements
 				/// </summary>
 				/// <param name="value">The new shape.</param>
 				void					SetShape(ElementShape value);
-			};
-			
-			/// <summary>
-			/// Defines a rectangle border element with round corners and a thickness of one pixel.
-			/// </summary>
-			class GuiRoundBorderElement : public GuiElementBase<GuiRoundBorderElement>
-			{
-				DEFINE_GUI_GRAPHICS_ELEMENT(GuiRoundBorderElement, L"RoundBorder")
-			protected:
-				Color					color;
-				vint					radius;
-
-				GuiRoundBorderElement();
-			public:
-				/// <summary>
-				/// Get the border color.
-				/// </summary>
-				/// <returns>The border color.</returns>
-				Color					GetColor();
-				/// <summary>
-				/// Set the border color.
-				/// </summary>
-				/// <param name="value">The new border color.</param>
-				void					SetColor(Color value);
-				
-				/// <summary>
-				/// Get the radius of round corners.
-				/// </summary>
-				/// <returns>The radius.</returns>
-				vint					GetRadius();
-				/// <summary>
-				/// Set the radius of round corners.
-				/// </summary>
-				/// <param name="value">The new radius.</param>
-				void					SetRadius(vint value);
 			};
 			
 			/// <summary>

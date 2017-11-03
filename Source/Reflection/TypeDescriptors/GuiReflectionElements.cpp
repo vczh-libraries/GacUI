@@ -37,10 +37,16 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(CaretMoveDown)
 			END_ENUM_ITEM(IGuiGraphicsParagraph::CaretRelativePosition)
 
-			BEGIN_ENUM_ITEM(ElementShape)
+			BEGIN_ENUM_ITEM(ElementShapeType)
 				ENUM_CLASS_ITEM(Rectangle)
 				ENUM_CLASS_ITEM(Ellipse)
-			END_ENUM_ITEM(ElementShape)
+			END_ENUM_ITEM(ElementShapeType)
+
+			BEGIN_STRUCT_MEMBER(ElementShape)
+				STRUCT_MEMBER(type)
+				STRUCT_MEMBER(radiusX)
+				STRUCT_MEMBER(radiusY)
+			END_STRUCT_MEMBER(ElementShape)
 
 			BEGIN_CLASS_MEMBER(GuiSolidBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
@@ -49,14 +55,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Color)
 				CLASS_MEMBER_PROPERTY_FAST(Shape)
 			END_CLASS_MEMBER(GuiSolidBorderElement)
-
-			BEGIN_CLASS_MEMBER(GuiRoundBorderElement)
-				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiRoundBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiRoundBorderElement>)
-				
-				CLASS_MEMBER_PROPERTY_FAST(Color)
-				CLASS_MEMBER_PROPERTY_FAST(Radius)
-			END_CLASS_MEMBER(GuiRoundBorderElement)
 
 			BEGIN_CLASS_MEMBER(Gui3DBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)

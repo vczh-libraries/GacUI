@@ -44,11 +44,6 @@ Renderers
 				DEFINE_BRUSH_ELEMENT_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, ID2D1SolidColorBrush, Color)
 			};
 
-			class GuiRoundBorderElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_BRUSH_ELEMENT_RENDERER(GuiRoundBorderElement, GuiRoundBorderElementRenderer, ID2D1SolidColorBrush, Color)
-			};
-
 			class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
 				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsDirect2DRenderTarget)

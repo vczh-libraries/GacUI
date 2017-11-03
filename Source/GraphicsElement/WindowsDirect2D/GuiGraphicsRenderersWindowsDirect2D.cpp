@@ -100,40 +100,34 @@ GuiSolidBorderElementRenderer
 			IMPLEMENT_BRUSH_ELEMENT_RENDERER_SOLID_COLOR_BRUSH(GuiSolidBorderElementRenderer)
 			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiSolidBorderElementRenderer)
 			{
-				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
-				switch(element->GetShape())
+				ID2D1RenderTarget* d2dRenderTarget = renderTarget->GetDirect2DRenderTarget();
+				auto shape = element->GetShape();
+
+				switch (shape.type)
 				{
-				case ElementShape::Rectangle:
+				case ElementShapeType::Rectangle:
 					d2dRenderTarget->DrawRectangle(
-						D2D1::RectF((FLOAT)bounds.x1+0.5f, (FLOAT)bounds.y1+0.5f, (FLOAT)bounds.x2-0.5f, (FLOAT)bounds.y2-0.5f),
+						D2D1::RectF((FLOAT)bounds.x1 + 0.5f, (FLOAT)bounds.y1 + 0.5f, (FLOAT)bounds.x2 - 0.5f, (FLOAT)bounds.y2 - 0.5f),
 						brush
 						);
 					break;
-				case ElementShape::Ellipse:
+				case ElementShapeType::Ellipse:
 					d2dRenderTarget->DrawEllipse(
-						D2D1::Ellipse(D2D1::Point2F((bounds.x1+bounds.x2)/2.0f, (bounds.y1+bounds.y2)/2.0f), bounds.Width()/2.0f, bounds.Height()/2.0f),
+						D2D1::Ellipse(D2D1::Point2F((bounds.x1 + bounds.x2) / 2.0f, (bounds.y1 + bounds.y2) / 2.0f), bounds.Width() / 2.0f, bounds.Height() / 2.0f),
+						brush
+						);
+					break;
+				case ElementShapeType::RoundRect:
+					d2dRenderTarget->DrawRoundedRectangle(
+						D2D1::RoundedRect(
+							D2D1::RectF((FLOAT)bounds.x1 + 0.5f, (FLOAT)bounds.y1 + 0.5f, (FLOAT)bounds.x2 - 0.5f, (FLOAT)bounds.y2 - 0.5f),
+							(FLOAT)shape.radiusX,
+							(FLOAT)shape.radiusY
+							),
 						brush
 						);
 					break;
 				}
-			}
-
-/***********************************************************************
-GuiRoundBorderElementRenderer
-***********************************************************************/
-				
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER_SOLID_COLOR_BRUSH(GuiRoundBorderElementRenderer)
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiRoundBorderElementRenderer)
-			{
-				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
-				d2dRenderTarget->DrawRoundedRectangle(
-					D2D1::RoundedRect(
-						D2D1::RectF((FLOAT)bounds.x1+0.5f, (FLOAT)bounds.y1+0.5f, (FLOAT)bounds.x2-0.5f, (FLOAT)bounds.y2-0.5f),
-						(FLOAT)element->GetRadius(),
-						(FLOAT)element->GetRadius()
-						),
-					brush
-					);
 			}
 
 /***********************************************************************
@@ -319,17 +313,29 @@ GuiSolidBackgroundElementRenderer
 			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiSolidBackgroundElementRenderer)
 			{
 				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
-				switch(element->GetShape())
+				auto shape = element->GetShape();
+
+				switch(shape.type)
 				{
-				case ElementShape::Rectangle:
+				case ElementShapeType::Rectangle:
 					d2dRenderTarget->FillRectangle(
 						D2D1::RectF((FLOAT)bounds.x1, (FLOAT)bounds.y1, (FLOAT)bounds.x2, (FLOAT)bounds.y2),
 						brush
 						);
 					break;
-				case ElementShape::Ellipse:
+				case ElementShapeType::Ellipse:
 					d2dRenderTarget->FillEllipse(
 						D2D1::Ellipse(D2D1::Point2F((bounds.x1+bounds.x2)/2.0f, (bounds.y1+bounds.y2)/2.0f), bounds.Width()/2.0f, bounds.Height()/2.0f),
+						brush
+						);
+					break;
+				case ElementShapeType::RoundRect:
+					d2dRenderTarget->FillRoundedRectangle(
+						D2D1::RoundedRect(
+							D2D1::RectF((FLOAT)bounds.x1 + 0.5f, (FLOAT)bounds.y1 + 0.5f, (FLOAT)bounds.x2 - 0.5f, (FLOAT)bounds.y2 - 0.5f),
+							(FLOAT)shape.radiusX,
+							(FLOAT)shape.radiusY
+							),
 						brush
 						);
 					break;
@@ -384,17 +390,29 @@ GuiGradientBackgroundElementRenderer
 				brush->SetEndPoint(points[1]);
 				
 				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
-				switch(element->GetShape())
+				auto shape = element->GetShape();
+
+				switch(shape.type)
 				{
-				case ElementShape::Rectangle:
+				case ElementShapeType::Rectangle:
 					d2dRenderTarget->FillRectangle(
 						D2D1::RectF((FLOAT)bounds.x1, (FLOAT)bounds.y1, (FLOAT)bounds.x2, (FLOAT)bounds.y2),
 						brush
 						);
 					break;
-				case ElementShape::Ellipse:
+				case ElementShapeType::Ellipse:
 					d2dRenderTarget->FillEllipse(
 						D2D1::Ellipse(D2D1::Point2F((bounds.x1+bounds.x2)/2.0f, (bounds.y1+bounds.y2)/2.0f), bounds.Width()/2.0f, bounds.Height()/2.0f),
+						brush
+						);
+					break;
+				case ElementShapeType::RoundRect:
+					d2dRenderTarget->FillRoundedRectangle(
+						D2D1::RoundedRect(
+							D2D1::RectF((FLOAT)bounds.x1 + 0.5f, (FLOAT)bounds.y1 + 0.5f, (FLOAT)bounds.x2 - 0.5f, (FLOAT)bounds.y2 - 0.5f),
+							(FLOAT)shape.radiusX,
+							(FLOAT)shape.radiusY
+							),
 						brush
 						);
 					break;

@@ -103,9 +103,9 @@ Type List (Elements)
 			F(presentation::elements::IGuiGraphicsElement)\
 			F(presentation::elements::IGuiGraphicsParagraph)\
 			F(presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition)\
+			F(presentation::elements::ElementShapeType)\
 			F(presentation::elements::ElementShape)\
 			F(presentation::elements::GuiSolidBorderElement)\
-			F(presentation::elements::GuiRoundBorderElement)\
 			F(presentation::elements::Gui3DBorderElement)\
 			F(presentation::elements::Gui3DSplitterElement)\
 			F(presentation::elements::Gui3DSplitterElement::Direction)\

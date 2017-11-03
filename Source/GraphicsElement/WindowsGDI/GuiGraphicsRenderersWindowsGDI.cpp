@@ -38,65 +38,24 @@ GuiSolidBorderElementRenderer
 				{
 					renderTarget->GetDC()->SetBrush(brush);
 					renderTarget->GetDC()->SetPen(pen);
-					switch(element->GetShape())
+					auto shape = element->GetShape();
+
+					switch(shape.type)
 					{
-					case ElementShape::Rectangle:
+					case ElementShapeType::Rectangle:
 						renderTarget->GetDC()->Rectangle(bounds.Left(), bounds.Top(), bounds.Right()-1, bounds.Bottom()-1);
 						break;
-					case ElementShape::Ellipse:
+					case ElementShapeType::Ellipse:
 						renderTarget->GetDC()->Ellipse(bounds.Left(), bounds.Top(), bounds.Right()-1, bounds.Bottom()-1);
+						break;
+					case ElementShapeType::RoundRect:
+						renderTarget->GetDC()->RoundRect(bounds.Left(), bounds.Top(), bounds.Right() - 1, bounds.Bottom() - 1, shape.radiusX * 2, shape.radiusY * 2);
 						break;
 					}
 				}
 			}
 
 			void GuiSolidBorderElementRenderer::OnElementStateChanged()
-			{
-				Color color=element->GetColor();
-				if(oldColor!=color)
-				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
-					resourceManager->DestroyGdiPen(oldColor);
-					oldColor=color;
-					pen=resourceManager->CreateGdiPen(oldColor);
-				}
-			}
-
-/***********************************************************************
-GuiRoundBorderElementRenderer
-***********************************************************************/
-
-			void GuiRoundBorderElementRenderer::InitializeInternal()
-			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
-				oldColor=element->GetColor();
-				pen=resourceManager->CreateGdiPen(oldColor);
-				brush=resourceManager->CreateGdiBrush(Color(0, 0, 0, 0));
-			}
-
-			void GuiRoundBorderElementRenderer::FinalizeInternal()
-			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
-				resourceManager->DestroyGdiPen(oldColor);
-				resourceManager->DestroyGdiBrush(Color(0, 0, 0, 0));
-			}
-
-			void GuiRoundBorderElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
-			{
-			}
-
-			void GuiRoundBorderElementRenderer::Render(Rect bounds)
-			{
-				if(oldColor.a>0)
-				{
-					vint ellipse=element->GetRadius()*2;
-					renderTarget->GetDC()->SetBrush(brush);
-					renderTarget->GetDC()->SetPen(pen);
-					renderTarget->GetDC()->RoundRect(bounds.Left(), bounds.Top(), bounds.Right()-1, bounds.Bottom()-1, ellipse, ellipse);
-				}
-			}
-
-			void GuiRoundBorderElementRenderer::OnElementStateChanged()
 			{
 				Color color=element->GetColor();
 				if(oldColor!=color)
@@ -285,13 +244,18 @@ GuiSolidBackgroundElementRenderer
 				{
 					renderTarget->GetDC()->SetPen(pen);
 					renderTarget->GetDC()->SetBrush(brush);
-					switch(element->GetShape())
+					auto shape = element->GetShape();
+
+					switch(shape.type)
 					{
-					case ElementShape::Rectangle:
+					case ElementShapeType::Rectangle:
 						renderTarget->GetDC()->FillRect(bounds.Left(), bounds.Top(), bounds.Right(), bounds.Bottom());
 						break;
-					case ElementShape::Ellipse:
+					case ElementShapeType::Ellipse:
 						renderTarget->GetDC()->Ellipse(bounds.Left(), bounds.Top(), bounds.Right()-1, bounds.Bottom()-1);
+						break;
+					case ElementShapeType::RoundRect:
+						renderTarget->GetDC()->RoundRect(bounds.Left(), bounds.Top(), bounds.Right() - 1, bounds.Bottom() - 1, shape.radiusX * 2, shape.radiusY * 2);
 						break;
 					}
 				}
@@ -396,19 +360,30 @@ GuiGradientBackgroundElementRenderer
 						vertices[3].Blue=color1.b<<8;
 						vertices[3].Alpha=0xFF00;
 					}
-					
-					switch(element->GetShape())
+
+					auto shape = element->GetShape();
+					switch(shape.type)
 					{
-					case ElementShape::Rectangle:
+					case ElementShapeType::Rectangle:
 						{
 							renderTarget->GetDC()->GradientTriangle(vertices, 6, triangles, 2);
 						}
 						break;
-					case ElementShape::Ellipse:
+					case ElementShapeType::Ellipse:
 						{
 							Ptr<WinRegion> ellipseRegion=new WinRegion(bounds.x1, bounds.y1, bounds.x2+1, bounds.y2+1, false);
 							Ptr<WinRegion> oldRegion=renderTarget->GetDC()->GetClipRegion();
 							Ptr<WinRegion> newRegion=new WinRegion(oldRegion, ellipseRegion, RGN_AND);
+							renderTarget->GetDC()->ClipRegion(newRegion);
+							renderTarget->GetDC()->GradientTriangle(vertices, 6, triangles, 2);
+							renderTarget->GetDC()->ClipRegion(oldRegion);
+						}
+						break;
+					case ElementShapeType::RoundRect:
+						{
+							Ptr<WinRegion> ellipseRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, shape.radiusX * 2, shape.radiusY * 2);
+							Ptr<WinRegion> oldRegion = renderTarget->GetDC()->GetClipRegion();
+							Ptr<WinRegion> newRegion = new WinRegion(oldRegion, ellipseRegion, RGN_AND);
 							renderTarget->GetDC()->ClipRegion(newRegion);
 							renderTarget->GetDC()->GradientTriangle(vertices, 6, triangles, 2);
 							renderTarget->GetDC()->ClipRegion(oldRegion);

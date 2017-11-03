@@ -14,7 +14,6 @@ GuiSolidBorderElement
 
 			GuiSolidBorderElement::GuiSolidBorderElement()
 				:color(0, 0, 0)
-				,shape(ElementShape::Rectangle)
 			{
 			}
 
@@ -40,44 +39,6 @@ GuiSolidBorderElement
 			void GuiSolidBorderElement::SetShape(ElementShape value)
 			{
 				shape=value;
-			}
-
-/***********************************************************************
-GuiRoundBorderElement
-***********************************************************************/
-
-			GuiRoundBorderElement::GuiRoundBorderElement()
-				:color(0, 0, 0)
-				,radius(10)
-			{
-			}
-
-			Color GuiRoundBorderElement::GetColor()
-			{
-				return color;
-			}
-
-			void GuiRoundBorderElement::SetColor(Color value)
-			{
-				if(color!=value)
-				{
-					color=value;
-					InvokeOnElementStateChanged();
-				}
-			}
-
-			vint GuiRoundBorderElement::GetRadius()
-			{
-				return radius;
-			}
-
-			void GuiRoundBorderElement::SetRadius(vint value)
-			{
-				if(radius!=value)
-				{
-					radius=value;
-					InvokeOnElementStateChanged();
-				}
 			}
 
 /***********************************************************************
@@ -177,7 +138,6 @@ GuiSolidBackgroundElement
 
 			GuiSolidBackgroundElement::GuiSolidBackgroundElement()
 				:color(255, 255, 255)
-				,shape(ElementShape::Rectangle)
 			{
 			}
 
@@ -211,7 +171,6 @@ GuiGradientBackgroundElement
 
 			GuiGradientBackgroundElement::GuiGradientBackgroundElement()
 				:direction(Horizontal)
-				,shape(ElementShape::Rectangle)
 			{
 			}
 

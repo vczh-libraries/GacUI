@@ -664,7 +664,6 @@ void RendererMainDirect2D()
 	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
 
 	elements_windows_d2d::GuiSolidBorderElementRenderer::Register();
-	elements_windows_d2d::GuiRoundBorderElementRenderer::Register();
 	elements_windows_d2d::Gui3DBorderElementRenderer::Register();
 	elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
 	elements_windows_d2d::GuiSolidBackgroundElementRenderer::Register();

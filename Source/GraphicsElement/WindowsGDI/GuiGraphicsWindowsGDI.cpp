@@ -485,7 +485,6 @@ void RendererMainGDI()
 	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
 
 	elements_windows_gdi::GuiSolidBorderElementRenderer::Register();
-	elements_windows_gdi::GuiRoundBorderElementRenderer::Register();
 	elements_windows_gdi::Gui3DBorderElementRenderer::Register();
 	elements_windows_gdi::Gui3DSplitterElementRenderer::Register();
 	elements_windows_gdi::GuiSolidBackgroundElementRenderer::Register();
