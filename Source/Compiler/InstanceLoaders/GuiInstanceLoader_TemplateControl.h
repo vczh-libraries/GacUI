@@ -51,19 +51,8 @@ GuiVrtualTypeInstanceLoader
 			public:
 				static Ptr<WfExpression> CreateThemeName(theme::ThemeName themeName)
 				{
-					auto presentationExpr = MakePtr<WfTopQualifiedExpression>();
-					presentationExpr->name.value = L"presentation";
-
-					auto themeExpr = MakePtr<WfChildExpression>();
-					themeExpr->parent = presentationExpr;
-					themeExpr->name.value = L"theme";
-
-					auto themeNameExpr = MakePtr<WfChildExpression>();
-					themeNameExpr->parent = themeExpr;
-					themeNameExpr->name.value = L"ThemeName";
-
 					auto refExpr = MakePtr<WfChildExpression>();
-					refExpr->parent = themeNameExpr;
+					refExpr->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<ThemeName>());
 					switch (themeName)
 					{
 #define THEME_NAME_CASE(TEMPLATE, CONTROL) case theme::ThemeName::CONTROL: refExpr->name.value = L ## #CONTROL; break;

@@ -594,7 +594,7 @@ GuiItemPropertyDeserializer
 
 							auto assignExpr = MakePtr<WfBinaryExpression>();
 							assignExpr->op = WfBinaryOperator::Assign;
-							assignExpr->first = CopyExpression(propertyExpression);
+							assignExpr->first = CopyExpression(propertyExpression, true);
 
 							if (acceptValueType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
 							{

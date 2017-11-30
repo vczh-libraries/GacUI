@@ -10,6 +10,7 @@ Classes:
 #define VCZH_PRESENTATION_GUITYPES
 
 #include "../Import/Vlpp.h"
+#include "../Import/VlppWorkflowLibrary.h"
 
 namespace vl
 {

@@ -292,7 +292,8 @@ Workflow_GenerateInstanceClass
 
 		class ReplaceDeclImplVisitor
 			: public empty_visitor::DeclarationVisitor
-			, public empty_visitor::VirtualDeclarationVisitor
+			, public empty_visitor::VirtualCfeDeclarationVisitor
+			, public empty_visitor::VirtualCseDeclarationVisitor
 		{
 		public:
 			Func<Ptr<WfStatement>()>			statCtor;
@@ -304,27 +305,32 @@ Workflow_GenerateInstanceClass
 			{
 			}
 
-			virtual void Dispatch(WfVirtualDeclaration* node)override
+			void Dispatch(WfVirtualCfeDeclaration* node)override
 			{
-				node->Accept(static_cast<WfVirtualDeclaration::IVisitor*>(this));
+				node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
 			}
 
-			virtual void Visit(WfFunctionDeclaration* node)override
+			void Dispatch(WfVirtualCseDeclaration* node)override
 			{
-				node->statement = statCtor();
+				node->Accept(static_cast<WfVirtualCseDeclaration::IVisitor*>(this));
 			}
 
-			virtual void Visit(WfConstructorDeclaration* node)override
-			{
-				node->statement = statCtor();
-			}
-
-			virtual void Visit(WfDestructorDeclaration* node)override
+			void Visit(WfFunctionDeclaration* node)override
 			{
 				node->statement = statCtor();
 			}
 
-			virtual void Visit(WfClassDeclaration* node)override
+			void Visit(WfConstructorDeclaration* node)override
+			{
+				node->statement = statCtor();
+			}
+
+			void Visit(WfDestructorDeclaration* node)override
+			{
+				node->statement = statCtor();
+			}
+
+			void Visit(WfClassDeclaration* node)override
 			{
 				CopyFrom(unprocessed, node->declarations, true);
 			}
@@ -645,15 +651,8 @@ Workflow_GenerateInstanceClass
 			if (!beforePrecompile)
 			{
 				{
-					auto presentationExpr = MakePtr<WfTopQualifiedExpression>();
-					presentationExpr->name.value = L"presentation";
-
-					auto rmExpr = MakePtr<WfChildExpression>();
-					rmExpr->parent = presentationExpr;
-					rmExpr->name.value = L"IGuiResourceManager";
-
 					auto getRmExpr = MakePtr<WfChildExpression>();
-					getRmExpr->parent = rmExpr;
+					getRmExpr->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<IGuiResourceManager>());
 					getRmExpr->name.value = L"GetResourceManager";
 
 					auto call1Expr = MakePtr<WfCallExpression>();

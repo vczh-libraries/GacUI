@@ -34,7 +34,7 @@ namespace vl
 				sp = Workflow_GetScriptPosition(context);
 			}
 
-			void Visit(WfVirtualExpression* node)override
+			void Visit(WfVirtualCfeExpression* node)override
 			{
 				traverse_visitor::ExpressionVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
@@ -45,7 +45,18 @@ namespace vl
 				}
 			}
 
-			void Visit(WfVirtualStatement* node)override
+			void Visit(WfVirtualCseExpression* node)override
+			{
+				traverse_visitor::ExpressionVisitor::Visit(node);
+				vint index = sp->nodePositions.Keys().IndexOf(node);
+				if (index != -1)
+				{
+					auto record = sp->nodePositions.Values()[index];
+					Workflow_RecordScriptPosition(context, record.position, node->expandedExpression, record.availableAfter);
+				}
+			}
+
+			void Visit(WfVirtualCseStatement* node)override
 			{
 				traverse_visitor::StatementVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
@@ -56,7 +67,21 @@ namespace vl
 				}
 			}
 
-			void Visit(WfVirtualDeclaration* node)override
+			void Visit(WfVirtualCfeDeclaration* node)override
+			{
+				traverse_visitor::DeclarationVisitor::Visit(node);
+				vint index = sp->nodePositions.Keys().IndexOf(node);
+				if (index != -1)
+				{
+					auto record = sp->nodePositions.Values()[index];
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
+					}
+				}
+			}
+
+			void Visit(WfVirtualCseDeclaration* node)override
 			{
 				traverse_visitor::DeclarationVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
