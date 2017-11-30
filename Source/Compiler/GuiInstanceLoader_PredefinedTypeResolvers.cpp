@@ -284,6 +284,17 @@ Shared Script Type Resolver (Script)
 				{
 				case Workflow_Compile:
 					Workflow_GenerateAssembly(context, Path_Shared, errors, false, context.compilerCallback);
+					if (auto compiled = Workflow_GetModule(context, Path_Shared))
+					{
+						for (vint i = 0; i < compiled->modules.Count(); i++)
+						{
+							auto& module = compiled->modules[i];
+							if (module.module)
+							{
+								module.module = CopyModule(module.module, true);
+							}
+						}
+					}
 					break;
 				}
 			}

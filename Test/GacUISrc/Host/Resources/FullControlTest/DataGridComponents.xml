@@ -199,14 +199,14 @@
                 var date = (cast (MyDataItem^) row).Birthday;
                 if (checkFrom.Selected)
                 {
-                  if (Sys::CompareDateTime(date, dateFrom.SelectedDate) < 0)
+                  if (Sys::Compare(date, dateFrom.SelectedDate) < 0)
                   {
                     return false;
                   }
                 }
                 if (checkTo.Selected)
                 {
-                  if (Sys::CompareDateTime(date, dateTo.SelectedDate) > 0)
+                  if (Sys::Compare(date, dateTo.SelectedDate) > 0)
                   {
                     return false;
                   }

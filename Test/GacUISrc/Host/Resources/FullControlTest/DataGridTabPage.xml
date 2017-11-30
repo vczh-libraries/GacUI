@@ -99,7 +99,7 @@
               <att.TextProperty>Name</att.TextProperty>
               <att.ValueProperty>Name</att.ValueProperty>
               <att.EditorFactory>demo:TextEditor</att.EditorFactory>
-              <att.Sorter>[Sys::CompareString($1.Name, $2.Name)]</att.Sorter>
+              <att.Sorter>[Sys::Compare($1.Name, $2.Name)]</att.Sorter>
             </DataColumn>
 
             <DataColumn Text="Gender" Size="80">
@@ -107,7 +107,7 @@
               <att.ValueProperty>Gender</att.ValueProperty>
               <att.VisualizerFactory>demo:GenderVisualizer;CellBorderVisualizerTemplate</att.VisualizerFactory>
               <att.EditorFactory>demo:GenderEditor</att.EditorFactory>
-              <att.Sorter>[Sys::CompareUInt64(cast UInt64 ($1.Gender), cast UInt64 ($2.Gender))]</att.Sorter>
+              <att.Sorter>[Sys::Compare(cast UInt64 ($1.Gender), cast UInt64 ($2.Gender))]</att.Sorter>
             </DataColumn>
 
             <DataColumn Text="Category" Size="80">
@@ -115,14 +115,14 @@
               <att.ValueProperty>Category</att.ValueProperty>
               <att.VisualizerFactory>demo:CategoryVisualizer;CellBorderVisualizerTemplate</att.VisualizerFactory>
               <att.EditorFactory>demo:CategoryEditor</att.EditorFactory>
-              <att.Sorter>[Sys::CompareUInt64(cast UInt64 ($1.Category), cast UInt64 ($2.Category))]</att.Sorter>
+              <att.Sorter>[Sys::Compare(cast UInt64 ($1.Category), cast UInt64 ($2.Category))]</att.Sorter>
             </DataColumn>
 
             <DataColumn Text="Birthday" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Birthday)</att.TextProperty>
               <att.ValueProperty>Birthday</att.ValueProperty>
               <att.EditorFactory>demo:DateEditor</att.EditorFactory>
-              <att.Sorter>[Sys::CompareDateTime($1.Birthday, $2.Birthday)]</att.Sorter>
+              <att.Sorter>[Sys::Compare($1.Birthday, $2.Birthday)]</att.Sorter>
               <att.Filter-eval>dateFilter.Filter</att.Filter-eval>
               <att.Popup>
                 <ToolstripMenu>
@@ -138,7 +138,7 @@
               <att.ValueProperty>Website</att.ValueProperty>
               <att.VisualizerFactory>HyperlinkVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
               <att.EditorFactory>demo:TextEditor</att.EditorFactory>
-              <att.Sorter>[Sys::CompareString($1.Website, $2.Website)]</att.Sorter>
+              <att.Sorter>[Sys::Compare($1.Website, $2.Website)]</att.Sorter>
             </DataColumn>
           </att.Columns>
 
