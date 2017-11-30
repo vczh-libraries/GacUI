@@ -17486,19 +17486,19 @@ Copy(Type|Expression|Statement|Declaration)
 			void CopyWithExpandVirtualVisitor::Visit(WfNamespaceDeclaration* node)
 			{
 				copy_visitor::DeclarationVisitor::Visit(node);
-				Expand(node->declarations);
+				Expand(result.Cast<WfNamespaceDeclaration>()->declarations);
 			}
 
 			void CopyWithExpandVirtualVisitor::Visit(WfClassDeclaration* node)
 			{
 				copy_visitor::DeclarationVisitor::Visit(node);
-				Expand(node->declarations);
+				Expand(result.Cast<WfClassDeclaration>()->declarations);
 			}
 
 			void CopyWithExpandVirtualVisitor::Visit(WfNewInterfaceExpression* node)
 			{
 				copy_visitor::ExpressionVisitor::Visit(node);
-				Expand(node->declarations);
+				Expand(result.Cast<WfNewInterfaceExpression>()->declarations);
 			}
 
 			Ptr<WfType> CopyType(Ptr<WfType> type)
