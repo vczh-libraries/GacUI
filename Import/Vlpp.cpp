@@ -11420,6 +11420,157 @@ Function Related
 }
 
 /***********************************************************************
+.\REFLECTION\GUITYPEDESCRIPTORPREDEFINED.CPP
+***********************************************************************/
+
+namespace vl
+{
+	using namespace collections;
+
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+IValueEnumerable
+***********************************************************************/
+
+			Ptr<IValueEnumerable> IValueEnumerable::Create(collections::LazyList<Value> values)
+			{
+				Ptr<IEnumerable<Value>> enumerable = new LazyList<Value>(values);
+				return new ValueEnumerableWrapper<Ptr<IEnumerable<Value>>>(enumerable);
+			}
+
+/***********************************************************************
+IValueList
+***********************************************************************/
+
+			Ptr<IValueList> IValueList::Create()
+			{
+				return Create(LazyList<Value>());
+			}
+
+			Ptr<IValueList> IValueList::Create(Ptr<IValueReadonlyList> values)
+			{
+				return Create(GetLazyList<Value>(values));
+			}
+
+			Ptr<IValueList> IValueList::Create(collections::LazyList<Value> values)
+			{
+				Ptr<List<Value>> list = new List<Value>;
+				CopyFrom(*list.Obj(), values);
+				return new ValueListWrapper<Ptr<List<Value>>>(list);
+			}
+
+/***********************************************************************
+IObservableList
+***********************************************************************/
+
+			class ReversedObservableList : public ObservableListBase<Value>
+			{
+			protected:
+
+				void NotifyUpdateInternal(vint start, vint count, vint newCount)override
+				{
+					if (observableList)
+					{
+						observableList->ItemChanged(start, count, newCount);
+					}
+				}
+			public:
+				IValueObservableList*		observableList = nullptr;
+			};
+
+			Ptr<IValueObservableList> IValueObservableList::Create()
+			{
+				return Create(LazyList<Value>());
+			}
+
+			Ptr<IValueObservableList> IValueObservableList::Create(Ptr<IValueReadonlyList> values)
+			{
+				return Create(GetLazyList<Value>(values));
+			}
+
+			Ptr<IValueObservableList> IValueObservableList::Create(collections::LazyList<Value> values)
+			{
+				auto list = MakePtr<ReversedObservableList>();
+				CopyFrom(*list.Obj(), values);
+				auto wrapper = MakePtr<ValueObservableListWrapper<Ptr<ReversedObservableList>>>(list);
+				list->observableList = wrapper.Obj();
+				return wrapper;
+			}
+
+/***********************************************************************
+IValueDictionary
+***********************************************************************/
+
+			Ptr<IValueDictionary> IValueDictionary::Create()
+			{
+				Ptr<Dictionary<Value, Value>> dictionary = new Dictionary<Value, Value>;
+				return new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary);
+			}
+
+			Ptr<IValueDictionary> IValueDictionary::Create(Ptr<IValueReadonlyDictionary> values)
+			{
+				Ptr<Dictionary<Value, Value>> dictionary = new Dictionary<Value, Value>;
+				CopyFrom(*dictionary.Obj(), GetLazyList<Value, Value>(values));
+				return new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary);
+			}
+
+			Ptr<IValueDictionary> IValueDictionary::Create(collections::LazyList<collections::Pair<Value, Value>> values)
+			{
+				Ptr<Dictionary<Value, Value>> dictionary = new Dictionary<Value, Value>;
+				CopyFrom(*dictionary.Obj(), values);
+				return new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary);
+			}
+
+/***********************************************************************
+IValueException
+***********************************************************************/
+
+			class DefaultValueException : public Object, public IValueException
+			{
+			protected:
+				WString				message;
+
+			public:
+				DefaultValueException(const WString& _message)
+					:message(_message)
+				{
+				}
+
+#pragma push_macro("GetMessage")
+#if defined GetMessage
+#undef GetMessage
+#endif
+				WString GetMessage()override
+				{
+					return message;
+				}
+#pragma pop_macro("GetMessage")
+
+				bool GetFatal()override
+				{
+					return false;
+				}
+
+				Ptr<IValueReadonlyList> GetCallStack()override
+				{
+					return nullptr;
+				}
+			};
+
+			Ptr<IValueException> IValueException::Create(const WString& message)
+			{
+				return new DefaultValueException(message);
+			}
+		}
+	}
+}
+
+
+/***********************************************************************
 .\REFLECTION\GUITYPEDESCRIPTORREFLECTION.CPP
 ***********************************************************************/
 #include <limits.h>
@@ -11441,8 +11592,6 @@ TypeName
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Sys, system::Sys)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Math, system::Math)
 			IMPL_TYPE_INFO_RENAME(void, system::Void)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::VoidValue, system::Void)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::IDescriptable, system::Interface)
@@ -11476,18 +11625,6 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueSubscription, system::Subscription)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueCallStack, system::CallStack)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueException, system::Exception)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::CoroutineStatus, system::CoroutineStatus)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::CoroutineResult, system::CoroutineResult)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ICoroutine, system::Coroutine)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::EnumerableCoroutine::IImpl, system::EnumerableCoroutine::IImpl)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::EnumerableCoroutine, system::EnumerableCoroutine)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncStatus, system::AsyncStatus)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IAsync, system::Async)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IPromise, system::Promise)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IFuture, system::Future)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IAsyncScheduler, system::AsyncScheduler)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncCoroutine::IImpl, system::AsyncCoroutine::IImpl)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncCoroutine, system::AsyncCoroutine)
 
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IBoxedValue, system::reflection::BoxedValue)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IBoxedValue::CompareResult, system::reflection::ValueType::CompareResult)
@@ -11978,99 +12115,6 @@ LoadPredefinedTypes
 				};
 			};
 
-#define PT(TYPE) PT_##TYPE
-#define PT_vint Int
-#define PT_vint8_t Int8
-#define PT_vint16_t Int16
-#define PT_vint32_t Int32
-#define PT_vint64_t Int64
-#define PT_vuint8_t UInt8
-#define PT_vuint16_t UInt16
-#define PT_vuint32_t UInt32
-#define PT_vuint64_t UInt64
-#define PT_float Single
-#define PT_double Double
-#define PT_bool Bool
-#define PT_wchar_t Char
-#define PT_WString String
-#define PT_Locale Locale
-#define PT_DateTime DateTime
-#define PT_CONCAT_(A, B) A##B
-#define PT_CONCAT(A, B) PT_CONCAT_(A, B)
-
-			BEGIN_CLASS_MEMBER(Sys)
-				CLASS_MEMBER_STATIC_METHOD(Len, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(Left, { L"value" _ L"length" })
-				CLASS_MEMBER_STATIC_METHOD(Right, { L"value" _ L"length" })
-				CLASS_MEMBER_STATIC_METHOD(Mid, { L"value" _ L"start" _ L"length" })
-				CLASS_MEMBER_STATIC_METHOD(Find, { L"value" _ L"substr" })
-				CLASS_MEMBER_STATIC_METHOD(ReverseEnumerable, { L"value" })
-#pragma push_macro("CompareString")
-#if defined CompareString
-#undef CompareString
-#endif
-#define DEFINE_COMPARE(TYPE) CLASS_MEMBER_STATIC_EXTERNALMETHOD(PT_CONCAT(Compare, PT(TYPE)), PROTECT_PARAMETERS({L"a" _ L"b"}), vint(*)(TYPE, TYPE), vl::reflection::description::Sys::Compare)
-				REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_COMPARE)
-				DEFINE_COMPARE(DateTime)
-				DEFINE_COMPARE(vint)
-#undef DEFINE_COMPARE
-#pragma pop_macro("CompareString")
-			END_CLASS_MEMBER(Sys)
-
-			BEGIN_CLASS_MEMBER(Math)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsInt8, { L"value" }, vint8_t(*)(vint8_t), vl::reflection::description::Math::Abs)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsInt16, { L"value" }, vint16_t(*)(vint16_t), vl::reflection::description::Math::Abs)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsInt32, { L"value" }, vint32_t(*)(vint32_t), vl::reflection::description::Math::Abs)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsInt64, { L"value" }, vint64_t(*)(vint64_t), vl::reflection::description::Math::Abs)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsSingle, { L"value" }, float(*)(float), vl::reflection::description::Math::Abs)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsDouble, { L"value" }, double(*)(double), vl::reflection::description::Math::Abs)
-
-#define DEFINE_MINMAX(TYPE)\
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(PT_CONCAT(Min, PT(TYPE)), PROTECT_PARAMETERS({L"a" _ L"b"}), TYPE(*)(TYPE, TYPE), vl::reflection::description::Math::Min)\
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(PT_CONCAT(Max, PT(TYPE)), PROTECT_PARAMETERS({L"a" _ L"b"}), TYPE(*)(TYPE, TYPE), vl::reflection::description::Math::Max)\
-
-				REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_MINMAX)
-				DEFINE_MINMAX(DateTime)
-				DEFINE_MINMAX(vint)
-#undef DEFINE_MINMAX
-
-				CLASS_MEMBER_STATIC_METHOD(Sin, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(Cos, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(Tan, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(ASin, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(ACos, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(ATan, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(ATan2, { L"x" _ L"y" })
-
-				CLASS_MEMBER_STATIC_METHOD(Exp, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(LogN, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(Log10, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(Log, { L"value" _ L"base" })
-				CLASS_MEMBER_STATIC_METHOD(Pow, { L"value" _ L"power" })
-				CLASS_MEMBER_STATIC_METHOD(Ceil, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(Floor, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(Round, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(Trunc, { L"value" })
-			END_CLASS_MEMBER(Math)
-
-#undef PT
-#undef PT_vint8_t
-#undef PT_vint16_t
-#undef PT_vint32_t
-#undef PT_vint64_t
-#undef PT_vuint8_t
-#undef PT_vuint16_t
-#undef PT_vuint32_t
-#undef PT_vuint64_t
-#undef PT_float
-#undef PT_double
-#undef PT_bool
-#undef PT_wchar_t
-#undef PT_WString
-#undef PT_DateTime
-#undef PT_CONCAT_
-#undef PT_CONCAT
-
 			BEGIN_STRUCT_MEMBER_FLAG(VoidValue, TypeDescriptorFlags::Primitive)
 			END_STRUCT_MEMBER(VoidValue)
 
@@ -12182,77 +12226,6 @@ LoadPredefinedTypes
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Fatal)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CallStack)
 			END_INTERFACE_MEMBER(IValueException)
-
-			BEGIN_ENUM_ITEM(CoroutineStatus)
-				ENUM_CLASS_ITEM(Waiting)
-				ENUM_CLASS_ITEM(Executing)
-				ENUM_CLASS_ITEM(Stopped)
-			END_ENUM_ITEM(CoroutineStatus)
-
-			BEGIN_INTERFACE_MEMBER(ICoroutine)
-				CLASS_MEMBER_METHOD(Resume, { L"raiseException" _ L"output" })
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Failure)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Status)
-			END_INTERFACE_MEMBER(ICoroutine)
-
-			BEGIN_CLASS_MEMBER(CoroutineResult)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<CoroutineResult>(), NO_PARAMETER)
-				CLASS_MEMBER_PROPERTY_FAST(Result)
-				CLASS_MEMBER_PROPERTY_FAST(Failure)
-			END_CLASS_MEMBER(CoroutineResult)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(EnumerableCoroutine::IImpl)
-				CLASS_MEMBER_BASE(IValueEnumerator)
-			END_INTERFACE_MEMBER(EnumerableCoroutine::IImpl)
-
-			BEGIN_CLASS_MEMBER(EnumerableCoroutine)
-				CLASS_MEMBER_STATIC_METHOD(YieldAndPause, { L"impl" _ L"value" })
-				CLASS_MEMBER_STATIC_METHOD(JoinAndPause, { L"impl" _ L"value" })
-				CLASS_MEMBER_STATIC_METHOD(ReturnAndExit, { L"impl" })
-				CLASS_MEMBER_STATIC_METHOD(Create, { L"creator" })
-			END_CLASS_MEMBER(EnumerableCoroutine)
-
-			BEGIN_ENUM_ITEM(AsyncStatus)
-				ENUM_CLASS_ITEM(Ready)
-				ENUM_CLASS_ITEM(Executing)
-				ENUM_CLASS_ITEM(Stopped)
-			END_ENUM_ITEM(AsyncStatus)
-
-			BEGIN_INTERFACE_MEMBER(IAsync)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Status)
-				CLASS_MEMBER_METHOD(Execute, { L"callback" })
-				CLASS_MEMBER_STATIC_METHOD(Delay, { L"milliseconds" })
-			END_INTERFACE_MEMBER(IAsync)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IPromise)
-				CLASS_MEMBER_METHOD(SendResult, { L"result" })
-				CLASS_MEMBER_METHOD(SendFailure, { L"failure" })
-			END_INTERFACE_MEMBER(IPromise)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IFuture)
-				CLASS_MEMBER_BASE(IAsync)
-				CLASS_MEMBER_BASE(IPromise)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Promise)
-				CLASS_MEMBER_STATIC_METHOD(Create, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IFuture)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IAsyncScheduler)
-				CLASS_MEMBER_METHOD(Execute, { L"callback" })
-				CLASS_MEMBER_METHOD(ExecuteInBackground, { L"callback" })
-				CLASS_MEMBER_METHOD(DelayExecute, { L"callback" _ L"milliseconds" })
-				CLASS_MEMBER_STATIC_METHOD(GetSchedulerForCurrentThread, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IAsyncScheduler)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(AsyncCoroutine::IImpl)
-				CLASS_MEMBER_BASE(IAsync)
-			END_INTERFACE_MEMBER(AsyncCoroutine::IImpl)
-
-			BEGIN_CLASS_MEMBER(AsyncCoroutine)
-				CLASS_MEMBER_STATIC_METHOD(AwaitAndRead, { L"impl" _ L"value" })
-				CLASS_MEMBER_STATIC_METHOD(ReturnAndExit, { L"impl" _ L"value"})
-				CLASS_MEMBER_STATIC_METHOD(Create, { L"creator" })
-				CLASS_MEMBER_STATIC_METHOD(CreateAndRun, { L"creator" })
-			END_CLASS_MEMBER(AsyncCoroutine)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IBoxedValue)
 				CLASS_MEMBER_METHOD(Copy, NO_PARAMETER)
@@ -12727,6 +12700,1915 @@ LogTypeManager
 
 
 /***********************************************************************
+.\THREADING.CPP
+***********************************************************************/
+#ifdef VCZH_MSVC
+
+namespace vl
+{
+	using namespace threading_internal;
+	using namespace collections;
+
+/***********************************************************************
+WaitableObject
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct WaitableData
+		{
+			HANDLE			handle;
+
+			WaitableData(HANDLE _handle)
+				:handle(_handle)
+			{
+			}
+		};
+	}
+
+	WaitableObject::WaitableObject()
+		:waitableData(0)
+	{
+	}
+
+	void WaitableObject::SetData(threading_internal::WaitableData* data)
+	{
+		waitableData=data;
+	}
+
+	bool WaitableObject::IsCreated()
+	{
+		return waitableData!=0;
+	}
+
+	bool WaitableObject::Wait()
+	{
+		return WaitForTime(INFINITE);
+	}
+
+	bool WaitableObject::WaitForTime(vint ms)
+	{
+		if(IsCreated())
+		{
+			if(WaitForSingleObject(waitableData->handle, (DWORD)ms)==WAIT_OBJECT_0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool WaitableObject::WaitAll(WaitableObject** objects, vint count)
+	{
+		Array<HANDLE> handles(count);
+		for(vint i=0;i<count;i++)
+		{
+			handles[i]=objects[i]->waitableData->handle;
+		}
+		DWORD result=WaitForMultipleObjects((DWORD)count, &handles[0], TRUE, INFINITE);
+		return result==WAIT_OBJECT_0 || result==WAIT_ABANDONED_0;
+
+	}
+
+	bool WaitableObject::WaitAllForTime(WaitableObject** objects, vint count, vint ms)
+	{
+		Array<HANDLE> handles(count);
+		for(vint i=0;i<count;i++)
+		{
+			handles[i]=objects[i]->waitableData->handle;
+		}
+		DWORD result=WaitForMultipleObjects((DWORD)count, &handles[0], TRUE, (DWORD)ms);
+		return result==WAIT_OBJECT_0 || result==WAIT_ABANDONED_0;
+	}
+
+	vint WaitableObject::WaitAny(WaitableObject** objects, vint count, bool* abandoned)
+	{
+		Array<HANDLE> handles(count);
+		for(vint i=0;i<count;i++)
+		{
+			handles[i]=objects[i]->waitableData->handle;
+		}
+		DWORD result=WaitForMultipleObjects((DWORD)count, &handles[0], FALSE, INFINITE);
+		if(WAIT_OBJECT_0 <= result && result<WAIT_OBJECT_0+count)
+		{
+			*abandoned=false;
+			return result-WAIT_OBJECT_0;
+		}
+		else if(WAIT_ABANDONED_0 <= result && result<WAIT_ABANDONED_0+count)
+		{
+			*abandoned=true;
+			return result-WAIT_ABANDONED_0;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+	vint WaitableObject::WaitAnyForTime(WaitableObject** objects, vint count, vint ms, bool* abandoned)
+	{
+		Array<HANDLE> handles(count);
+		for(vint i=0;i<count;i++)
+		{
+			handles[i]=objects[i]->waitableData->handle;
+		}
+		DWORD result=WaitForMultipleObjects((DWORD)count, &handles[0], FALSE, (DWORD)ms);
+		if(WAIT_OBJECT_0 <= result && result<WAIT_OBJECT_0+count)
+		{
+			*abandoned=false;
+			return result-WAIT_OBJECT_0;
+		}
+		else if(WAIT_ABANDONED_0 <= result && result<WAIT_ABANDONED_0+count)
+		{
+			*abandoned=true;
+			return result-WAIT_ABANDONED_0;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+/***********************************************************************
+Thread
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct ThreadData : public WaitableData
+		{
+			DWORD						id;
+
+			ThreadData()
+				:WaitableData(NULL)
+			{
+				id=-1;
+			}
+		};
+
+		class ProceduredThread : public Thread
+		{
+		private:
+			Thread::ThreadProcedure		procedure;
+			void*						argument;
+			bool						deleteAfterStopped;
+
+		protected:
+			void Run()
+			{
+				bool deleteAfterStopped = this->deleteAfterStopped;
+				ThreadLocalStorage::FixStorages();
+				try
+				{
+					procedure(this, argument);
+					threadState=Thread::Stopped;
+					ThreadLocalStorage::ClearStorages();
+				}
+				catch (...)
+				{
+					ThreadLocalStorage::ClearStorages();
+					throw;
+				}
+				if(deleteAfterStopped)
+				{
+					delete this;
+				}
+			}
+		public:
+			ProceduredThread(Thread::ThreadProcedure _procedure, void* _argument, bool _deleteAfterStopped)
+				:procedure(_procedure)
+				,argument(_argument)
+				,deleteAfterStopped(_deleteAfterStopped)
+			{
+			}
+		};
+
+		class LambdaThread : public Thread
+		{
+		private:
+			Func<void()>				procedure;
+			bool						deleteAfterStopped;
+
+		protected:
+			void Run()
+			{
+				bool deleteAfterStopped = this->deleteAfterStopped;
+				ThreadLocalStorage::FixStorages();
+				try
+				{
+					procedure();
+					threadState=Thread::Stopped;
+					ThreadLocalStorage::ClearStorages();
+				}
+				catch (...)
+				{
+					ThreadLocalStorage::ClearStorages();
+					throw;
+				}
+				if(deleteAfterStopped)
+				{
+					delete this;
+				}
+			}
+		public:
+			LambdaThread(const Func<void()>& _procedure, bool _deleteAfterStopped)
+				:procedure(_procedure)
+				,deleteAfterStopped(_deleteAfterStopped)
+			{
+			}
+		};
+	}
+
+	void InternalThreadProc(Thread* thread)
+	{
+		thread->Run();
+	}
+
+	DWORD WINAPI InternalThreadProcWrapper(LPVOID lpParameter)
+	{
+		InternalThreadProc((Thread*)lpParameter);
+		return 0;
+	}
+
+	Thread::Thread()
+	{
+		internalData=new ThreadData;
+		internalData->handle=CreateThread(NULL, 0, InternalThreadProcWrapper, this, CREATE_SUSPENDED, &internalData->id);
+		threadState=Thread::NotStarted;
+		SetData(internalData);
+	}
+
+	Thread::~Thread()
+	{
+		if (internalData)
+		{
+			Stop();
+			CloseHandle(internalData->handle);
+			delete internalData;
+		}
+	}
+
+	Thread* Thread::CreateAndStart(ThreadProcedure procedure, void* argument, bool deleteAfterStopped)
+	{
+		if(procedure)
+		{
+			Thread* thread=new ProceduredThread(procedure, argument, deleteAfterStopped);
+			if(thread->Start())
+			{
+				return thread;
+			}
+			else
+			{
+				delete thread;
+			}
+		}
+		return 0;
+	}
+
+	Thread* Thread::CreateAndStart(const Func<void()>& procedure, bool deleteAfterStopped)
+	{
+		Thread* thread=new LambdaThread(procedure, deleteAfterStopped);
+		if(thread->Start())
+		{
+			return thread;
+		}
+		else
+		{
+			delete thread;
+		}
+		return 0;
+	}
+
+	void Thread::Sleep(vint ms)
+	{
+		::Sleep((DWORD)ms);
+	}
+
+	
+	vint Thread::GetCPUCount()
+	{
+		SYSTEM_INFO info;
+		GetSystemInfo(&info);
+		return info.dwNumberOfProcessors;
+	}
+
+	vint Thread::GetCurrentThreadId()
+	{
+		return (vint)::GetCurrentThreadId();
+	}
+
+	bool Thread::Start()
+	{
+		if(threadState==Thread::NotStarted && internalData->handle!=NULL)
+		{
+			if(ResumeThread(internalData->handle)!=-1)
+			{
+				threadState=Thread::Running;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Thread::Stop()
+	{
+		if(internalData->handle!=NULL)
+		{
+			if (SuspendThread(internalData->handle) != -1)
+			{
+				threadState=Thread::Stopped;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	Thread::ThreadState Thread::GetState()
+	{
+		return threadState;
+	}
+
+	void Thread::SetCPU(vint index)
+	{
+		SetThreadAffinityMask(internalData->handle, ((vint)1 << index));
+	}
+
+/***********************************************************************
+Mutex
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct MutexData : public WaitableData
+		{
+			MutexData(HANDLE _handle)
+				:WaitableData(_handle)
+			{
+			}
+		};
+	}
+
+	Mutex::Mutex()
+		:internalData(0)
+	{
+	}
+
+	Mutex::~Mutex()
+	{
+		if(internalData)
+		{
+			CloseHandle(internalData->handle);
+			delete internalData;
+		}
+	}
+
+	bool Mutex::Create(bool owned, const WString& name)
+	{
+		if(IsCreated())return false;
+		BOOL aOwned=owned?TRUE:FALSE;
+		LPCTSTR aName=name==L""?NULL:name.Buffer();
+		HANDLE handle=CreateMutex(NULL, aOwned, aName);
+		if(handle)
+		{
+			internalData=new MutexData(handle);
+			SetData(internalData);
+		}
+		return IsCreated();
+	}
+
+	bool Mutex::Open(bool inheritable, const WString& name)
+	{
+		if(IsCreated())return false;
+		BOOL aInteritable=inheritable?TRUE:FALSE;
+		HANDLE handle=OpenMutex(SYNCHRONIZE, aInteritable, name.Buffer());
+		if(handle)
+		{
+			internalData=new MutexData(handle);
+			SetData(internalData);
+		}
+		return IsCreated();
+	}
+
+	bool Mutex::Release()
+	{
+		if(IsCreated())
+		{
+			return ReleaseMutex(internalData->handle)!=0;
+		}
+		return false;
+	}
+
+/***********************************************************************
+Semaphore
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct SemaphoreData : public WaitableData
+		{
+			SemaphoreData(HANDLE _handle)
+				:WaitableData(_handle)
+			{
+			}
+		};
+	}
+
+	Semaphore::Semaphore()
+		:internalData(0)
+	{
+	}
+
+	Semaphore::~Semaphore()
+	{
+		if(internalData)
+		{
+			CloseHandle(internalData->handle);
+			delete internalData;
+		}
+	}
+
+	bool Semaphore::Create(vint initialCount, vint maxCount, const WString& name)
+	{
+		if(IsCreated())return false;
+		LONG aInitial=(LONG)initialCount;
+		LONG aMax=(LONG)maxCount;
+		LPCTSTR aName=name==L""?NULL:name.Buffer();
+		HANDLE handle=CreateSemaphore(NULL, aInitial, aMax, aName);
+		if(handle)
+		{
+			internalData=new SemaphoreData(handle);
+			SetData(internalData);
+		}
+		return IsCreated();
+	}
+
+	bool Semaphore::Open(bool inheritable, const WString& name)
+	{
+		if(IsCreated())return false;
+		BOOL aInteritable=inheritable?TRUE:FALSE;
+		HANDLE handle=OpenSemaphore(SYNCHRONIZE, aInteritable, name.Buffer());
+		if(handle)
+		{
+			internalData=new SemaphoreData(handle);
+			SetData(internalData);
+		}
+		return IsCreated();
+	}
+
+	bool Semaphore::Release()
+	{
+		if(IsCreated())
+		{
+			return Release(1)!=-1;
+		}
+		return false;
+	}
+
+	vint Semaphore::Release(vint count)
+	{
+		if(IsCreated())
+		{
+			LONG previous=-1;
+			if(ReleaseSemaphore(internalData->handle, (LONG)count, &previous)!=0)
+			{
+				return (vint)previous;
+			}
+		}
+		return -1;
+	}
+
+/***********************************************************************
+EventObject
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct EventData : public WaitableData
+		{
+			EventData(HANDLE _handle)
+				:WaitableData(_handle)
+			{
+			}
+		};
+	}
+
+	EventObject::EventObject()
+		:internalData(0)
+	{
+	}
+
+	EventObject::~EventObject()
+	{
+		if(internalData)
+		{
+			CloseHandle(internalData->handle);
+			delete internalData;
+		}
+	}
+
+	bool EventObject::CreateAutoUnsignal(bool signaled, const WString& name)
+	{
+		if(IsCreated())return false;
+		BOOL aSignaled=signaled?TRUE:FALSE;
+		LPCTSTR aName=name==L""?NULL:name.Buffer();
+		HANDLE handle=CreateEvent(NULL, FALSE, aSignaled, aName);
+		if(handle)
+		{
+			internalData=new EventData(handle);
+			SetData(internalData);
+		}
+		return IsCreated();
+	}
+
+	bool EventObject::CreateManualUnsignal(bool signaled, const WString& name)
+	{
+		if(IsCreated())return false;
+		BOOL aSignaled=signaled?TRUE:FALSE;
+		LPCTSTR aName=name==L""?NULL:name.Buffer();
+		HANDLE handle=CreateEvent(NULL, TRUE, aSignaled, aName);
+		if(handle)
+		{
+			internalData=new EventData(handle);
+			SetData(internalData);
+		}
+		return IsCreated();
+	}
+
+	bool EventObject::Open(bool inheritable, const WString& name)
+	{
+		if(IsCreated())return false;
+		BOOL aInteritable=inheritable?TRUE:FALSE;
+		HANDLE handle=OpenEvent(SYNCHRONIZE, aInteritable, name.Buffer());
+		if(handle)
+		{
+			internalData=new EventData(handle);
+			SetData(internalData);
+		}
+		return IsCreated();
+	}
+
+	bool EventObject::Signal()
+	{
+		if(IsCreated())
+		{
+			return SetEvent(internalData->handle)!=0;
+		}
+		return false;
+	}
+
+	bool EventObject::Unsignal()
+	{
+		if(IsCreated())
+		{
+			return ResetEvent(internalData->handle)!=0;
+		}
+		return false;
+	}
+
+/***********************************************************************
+ThreadPoolLite
+***********************************************************************/
+
+		struct ThreadPoolQueueProcArgument
+		{
+			void(*proc)(void*);
+			void* argument;
+		};
+
+		DWORD WINAPI ThreadPoolQueueProc(void* argument)
+		{
+			Ptr<ThreadPoolQueueProcArgument> proc=(ThreadPoolQueueProcArgument*)argument;
+			ThreadLocalStorage::FixStorages();
+			try
+			{
+				proc->proc(proc->argument);
+				ThreadLocalStorage::ClearStorages();
+			}
+			catch (...)
+			{
+				ThreadLocalStorage::ClearStorages();
+			}
+			return 0;
+		}
+
+		DWORD WINAPI ThreadPoolQueueFunc(void* argument)
+		{
+			Ptr<Func<void()>> proc=(Func<void()>*)argument;
+			ThreadLocalStorage::FixStorages();
+			try
+			{
+				(*proc.Obj())();
+				ThreadLocalStorage::ClearStorages();
+			}
+			catch (...)
+			{
+				ThreadLocalStorage::ClearStorages();
+			}
+			return 0;
+		}
+
+		ThreadPoolLite::ThreadPoolLite()
+		{
+		}
+
+		ThreadPoolLite::~ThreadPoolLite()
+		{
+		}
+
+		bool ThreadPoolLite::Queue(void(*proc)(void*), void* argument)
+		{
+			ThreadPoolQueueProcArgument* p=new ThreadPoolQueueProcArgument;
+			p->proc=proc;
+			p->argument=argument;
+			if(QueueUserWorkItem(&ThreadPoolQueueProc, p, WT_EXECUTEDEFAULT))
+			{
+				return true;
+			}
+			else
+			{
+				delete p;
+				return false;
+			}
+		}
+
+		bool ThreadPoolLite::Queue(const Func<void()>& proc)
+		{
+			Func<void()>* p=new Func<void()>(proc);
+			if(QueueUserWorkItem(&ThreadPoolQueueFunc, p, WT_EXECUTEDEFAULT))
+			{
+				return true;
+			}
+			else
+			{
+				delete p;
+				return false;
+			}
+		}
+
+/***********************************************************************
+CriticalSection
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct CriticalSectionData
+		{
+			CRITICAL_SECTION		criticalSection;
+		};
+	}
+
+	CriticalSection::Scope::Scope(CriticalSection& _criticalSection)
+		:criticalSection(&_criticalSection)
+	{
+		criticalSection->Enter();
+	}
+
+	CriticalSection::Scope::~Scope()
+	{
+		criticalSection->Leave();
+	}
+			
+	CriticalSection::CriticalSection()
+	{
+		internalData=new CriticalSectionData;
+		InitializeCriticalSection(&internalData->criticalSection);
+	}
+
+	CriticalSection::~CriticalSection()
+	{
+		DeleteCriticalSection(&internalData->criticalSection);
+		delete internalData;
+	}
+
+	bool CriticalSection::TryEnter()
+	{
+		return TryEnterCriticalSection(&internalData->criticalSection)!=0;
+	}
+
+	void CriticalSection::Enter()
+	{
+		EnterCriticalSection(&internalData->criticalSection);
+	}
+
+	void CriticalSection::Leave()
+	{
+		LeaveCriticalSection(&internalData->criticalSection);
+	}
+
+/***********************************************************************
+ReaderWriterLock
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct ReaderWriterLockData
+		{
+			SRWLOCK			lock;
+		};
+	}
+
+	ReaderWriterLock::ReaderScope::ReaderScope(ReaderWriterLock& _lock)
+		:lock(&_lock)
+	{
+		lock->EnterReader();
+	}
+
+	ReaderWriterLock::ReaderScope::~ReaderScope()
+	{
+		lock->LeaveReader();
+	}
+
+	ReaderWriterLock::WriterScope::WriterScope(ReaderWriterLock& _lock)
+		:lock(&_lock)
+	{
+		lock->EnterWriter();
+	}
+
+	ReaderWriterLock::WriterScope::~WriterScope()
+	{
+		lock->LeaveWriter();
+	}
+
+	ReaderWriterLock::ReaderWriterLock()
+		:internalData(new threading_internal::ReaderWriterLockData)
+	{
+		InitializeSRWLock(&internalData->lock);
+	}
+
+	ReaderWriterLock::~ReaderWriterLock()
+	{
+		delete internalData;
+	}
+
+	bool ReaderWriterLock::TryEnterReader()
+	{
+		return TryAcquireSRWLockShared(&internalData->lock)!=0;
+	}
+
+	void ReaderWriterLock::EnterReader()
+	{
+		AcquireSRWLockShared(&internalData->lock);
+	}
+
+	void ReaderWriterLock::LeaveReader()
+	{
+		ReleaseSRWLockShared(&internalData->lock);
+	}
+
+	bool ReaderWriterLock::TryEnterWriter()
+	{
+		return TryAcquireSRWLockExclusive(&internalData->lock)!=0;
+	}
+
+	void ReaderWriterLock::EnterWriter()
+	{
+		AcquireSRWLockExclusive(&internalData->lock);
+	}
+
+	void ReaderWriterLock::LeaveWriter()
+	{
+		ReleaseSRWLockExclusive(&internalData->lock);
+	}
+
+/***********************************************************************
+ConditionVariable
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct ConditionVariableData
+		{
+			CONDITION_VARIABLE			variable;
+		};
+	}
+
+	ConditionVariable::ConditionVariable()
+		:internalData(new threading_internal::ConditionVariableData)
+	{
+		InitializeConditionVariable(&internalData->variable);
+	}
+
+	ConditionVariable::~ConditionVariable()
+	{
+		delete internalData;
+	}
+
+	bool ConditionVariable::SleepWith(CriticalSection& cs)
+	{
+		return SleepConditionVariableCS(&internalData->variable, &cs.internalData->criticalSection, INFINITE)!=0;
+	}
+
+	bool ConditionVariable::SleepWithForTime(CriticalSection& cs, vint ms)
+	{
+		return SleepConditionVariableCS(&internalData->variable, &cs.internalData->criticalSection, (DWORD)ms)!=0;
+	}
+
+	bool ConditionVariable::SleepWithReader(ReaderWriterLock& lock)
+	{
+		return SleepConditionVariableSRW(&internalData->variable, &lock.internalData->lock, INFINITE, CONDITION_VARIABLE_LOCKMODE_SHARED)!=0;
+	}
+
+	bool ConditionVariable::SleepWithReaderForTime(ReaderWriterLock& lock, vint ms)
+	{
+		return SleepConditionVariableSRW(&internalData->variable, &lock.internalData->lock, (DWORD)ms, CONDITION_VARIABLE_LOCKMODE_SHARED)!=0;
+	}
+
+	bool ConditionVariable::SleepWithWriter(ReaderWriterLock& lock)
+	{
+		return SleepConditionVariableSRW(&internalData->variable, &lock.internalData->lock, INFINITE, 0)!=0;
+	}
+
+	bool ConditionVariable::SleepWithWriterForTime(ReaderWriterLock& lock, vint ms)
+	{
+		return SleepConditionVariableSRW(&internalData->variable, &lock.internalData->lock, (DWORD)ms, 0)!=0;
+	}
+
+	void ConditionVariable::WakeOnePending()
+	{
+		WakeConditionVariable(&internalData->variable);
+	}
+
+	void ConditionVariable::WakeAllPendings()
+	{
+		WakeAllConditionVariable(&internalData->variable);
+	}
+
+/***********************************************************************
+SpinLock
+***********************************************************************/
+
+	SpinLock::Scope::Scope(SpinLock& _spinLock)
+		:spinLock(&_spinLock)
+	{
+		spinLock->Enter();
+	}
+
+	SpinLock::Scope::~Scope()
+	{
+		spinLock->Leave();
+	}
+			
+	SpinLock::SpinLock()
+		:token(0)
+	{
+	}
+
+	SpinLock::~SpinLock()
+	{
+	}
+
+	bool SpinLock::TryEnter()
+	{
+		return _InterlockedExchange(&token, 1)==0;
+	}
+
+	void SpinLock::Enter()
+	{
+		while(_InterlockedCompareExchange(&token, 1, 0)!=0)
+		{
+			while(token!=0) _mm_pause();
+		}
+	}
+
+	void SpinLock::Leave()
+	{
+		_InterlockedExchange(&token, 0);
+	}
+
+/***********************************************************************
+ThreadLocalStorage
+***********************************************************************/
+
+#define KEY ((DWORD&)key)
+
+	ThreadLocalStorage::ThreadLocalStorage(Destructor _destructor)
+		:destructor(_destructor)
+	{
+		static_assert(sizeof(key) >= sizeof(DWORD), "ThreadLocalStorage's key storage is not large enouth.");
+		PushStorage(this);
+		KEY = TlsAlloc();
+		CHECK_ERROR(KEY != TLS_OUT_OF_INDEXES, L"vl::ThreadLocalStorage::ThreadLocalStorage()#Failed to alloc new thread local storage index.");
+	}
+
+	ThreadLocalStorage::~ThreadLocalStorage()
+	{
+		TlsFree(KEY);
+	}
+
+	void* ThreadLocalStorage::Get()
+	{
+		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Get()#Cannot access a disposed ThreadLocalStorage.");
+		return TlsGetValue(KEY);
+	}
+
+	void ThreadLocalStorage::Set(void* data)
+	{
+		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Set()#Cannot access a disposed ThreadLocalStorage.");
+		TlsSetValue(KEY, data);
+	}
+
+#undef KEY
+}
+#endif
+
+/***********************************************************************
+ThreadLocalStorage Common Implementations
+***********************************************************************/
+
+namespace vl
+{
+	void ThreadLocalStorage::Clear()
+	{
+		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Clear()#Cannot access a disposed ThreadLocalStorage.");
+		if(destructor)
+		{
+			if (auto data = Get())
+			{
+				destructor(data);
+			}
+		}
+		Set(nullptr);
+	}
+
+	void ThreadLocalStorage::Dispose()
+	{
+		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Dispose()#Cannot access a disposed ThreadLocalStorage.");
+		Clear();
+		disposed = true;
+	}
+
+	struct TlsStorageLink
+	{
+		ThreadLocalStorage*		storage = nullptr;
+		TlsStorageLink*			next = nullptr;
+	};
+
+	volatile bool				tlsFixed = false;
+	TlsStorageLink*				tlsHead = nullptr;
+	TlsStorageLink**			tlsTail = &tlsHead;
+
+	void ThreadLocalStorage::PushStorage(ThreadLocalStorage* storage)
+	{
+		CHECK_ERROR(!tlsFixed, L"vl::ThreadLocalStorage::PushStorage(ThreadLocalStorage*)#Cannot create new ThreadLocalStorage instance after calling ThreadLocalStorage::FixStorages().");
+		auto link = new TlsStorageLink;
+		link->storage = storage;
+		*tlsTail = link;
+		tlsTail = &link->next;
+	}
+
+	void ThreadLocalStorage::FixStorages()
+	{
+		tlsFixed = true;
+	}
+
+	void ThreadLocalStorage::ClearStorages()
+	{
+		FixStorages();
+		auto current = tlsHead;
+		while (current)
+		{
+			current->storage->Clear();
+			current = current->next;
+		}
+	}
+
+	void ThreadLocalStorage::DisposeStorages()
+	{
+		FixStorages();
+		auto current = tlsHead;
+		tlsHead = nullptr;
+		tlsTail = nullptr;
+		while (current)
+		{
+			current->storage->Dispose();
+
+			auto temp = current;
+			current = current->next;
+			delete temp;
+		}
+	}
+}
+
+
+/***********************************************************************
+.\THREADINGLINUX.CPP
+***********************************************************************/
+#ifdef VCZH_GCC
+#include <pthread.h>
+#include <fcntl.h>
+#include <semaphore.h>
+#include <errno.h>
+#if defined(__APPLE__) || defined(__APPLE_CC__)
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
+
+namespace vl
+{
+	using namespace threading_internal;
+	using namespace collections;
+
+
+/***********************************************************************
+Thread
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct ThreadData
+		{
+			pthread_t					id;
+			EventObject					ev;
+		};
+
+		class ProceduredThread : public Thread
+		{
+		private:
+			Thread::ThreadProcedure		procedure;
+			void*						argument;
+			bool						deleteAfterStopped;
+
+		protected:
+			void Run()
+			{
+				bool deleteAfterStopped = this->deleteAfterStopped;
+				ThreadLocalStorage::FixStorages();
+				try
+				{
+					procedure(this, argument);
+					threadState=Thread::Stopped;
+					internalData->ev.Signal();
+					ThreadLocalStorage::ClearStorages();
+				}
+				catch (...)
+				{
+					ThreadLocalStorage::ClearStorages();
+					throw;
+				}
+				if(deleteAfterStopped)
+				{
+					delete this;
+				}
+			}
+		public:
+			ProceduredThread(Thread::ThreadProcedure _procedure, void* _argument, bool _deleteAfterStopped)
+				:procedure(_procedure)
+				,argument(_argument)
+				,deleteAfterStopped(_deleteAfterStopped)
+			{
+			}
+		};
+
+		class LambdaThread : public Thread
+		{
+		private:
+			Func<void()>				procedure;
+			bool						deleteAfterStopped;
+
+		protected:
+			void Run()
+			{
+				bool deleteAfterStopped = this->deleteAfterStopped;
+				ThreadLocalStorage::FixStorages();
+				try
+				{
+					procedure();
+					threadState=Thread::Stopped;
+					internalData->ev.Signal();
+					ThreadLocalStorage::ClearStorages();
+				}
+				catch (...)
+				{
+					ThreadLocalStorage::ClearStorages();
+					throw;
+				}
+				if(deleteAfterStopped)
+				{
+					delete this;
+				}
+			}
+		public:
+			LambdaThread(const Func<void()>& _procedure, bool _deleteAfterStopped)
+				:procedure(_procedure)
+				,deleteAfterStopped(_deleteAfterStopped)
+			{
+			}
+		};
+	}
+
+	void InternalThreadProc(Thread* thread)
+	{
+		thread->Run();
+	}
+
+	void* InternalThreadProcWrapper(void* lpParameter)
+	{
+		InternalThreadProc((Thread*)lpParameter);
+		return 0;
+	}
+
+	Thread::Thread()
+	{
+		internalData=new ThreadData;
+		internalData->ev.CreateManualUnsignal(false);
+		threadState=Thread::NotStarted;
+	}
+
+	Thread::~Thread()
+	{
+		if (internalData)
+		{
+			Stop();
+			if (threadState!=Thread::NotStarted)
+			{
+				pthread_detach(internalData->id);
+			}
+			delete internalData;
+		}
+	}
+
+	Thread* Thread::CreateAndStart(ThreadProcedure procedure, void* argument, bool deleteAfterStopped)
+	{
+		if(procedure)
+		{
+			Thread* thread=new ProceduredThread(procedure, argument, deleteAfterStopped);
+			if(thread->Start())
+			{
+				return thread;
+			}
+			else
+			{
+				delete thread;
+			}
+		}
+		return 0;
+	}
+
+	Thread* Thread::CreateAndStart(const Func<void()>& procedure, bool deleteAfterStopped)
+	{
+		Thread* thread=new LambdaThread(procedure, deleteAfterStopped);
+		if(thread->Start())
+		{
+			return thread;
+		}
+		else
+		{
+			delete thread;
+		}
+		return 0;
+	}
+
+	void Thread::Sleep(vint ms)
+	{
+		if (ms >= 1000)
+		{
+			sleep(ms / 1000);
+		}
+		if (ms % 1000)
+		{
+			usleep((ms % 1000) * 1000);
+		}
+	}
+	
+	vint Thread::GetCPUCount()
+	{
+		return (vint)sysconf(_SC_NPROCESSORS_ONLN);
+	}
+
+	vint Thread::GetCurrentThreadId()
+	{
+		return (vint)::pthread_self();
+	}
+
+	bool Thread::Start()
+	{
+		if(threadState==Thread::NotStarted)
+		{
+			if(pthread_create(&internalData->id, nullptr, &InternalThreadProcWrapper, this)==0)
+			{
+				threadState=Thread::Running;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Thread::Wait()
+	{
+		return internalData->ev.Wait();
+	}
+
+	bool Thread::Stop()
+	{
+		if (threadState==Thread::Running)
+		{
+			if(pthread_cancel(internalData->id)==0)
+			{
+				threadState=Thread::Stopped;
+				internalData->ev.Signal();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	Thread::ThreadState Thread::GetState()
+	{
+		return threadState;
+	}
+
+/***********************************************************************
+Mutex
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct MutexData
+		{
+			Semaphore			sem;
+		};
+	};
+
+	Mutex::Mutex()
+	{
+		internalData = new MutexData;
+	}
+
+	Mutex::~Mutex()
+	{
+		delete internalData;
+	}
+
+	bool Mutex::Create(bool owned, const WString& name)
+	{
+		return internalData->sem.Create(owned ? 0 : 1, 1, name);
+	}
+
+	bool Mutex::Open(bool inheritable, const WString& name)
+	{
+		return internalData->sem.Open(inheritable, name);
+	}
+
+	bool Mutex::Release()
+	{
+		return internalData->sem.Release();
+	}
+
+	bool Mutex::Wait()
+	{
+		return internalData->sem.Wait();
+	}
+
+/***********************************************************************
+Semaphore
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct SemaphoreData
+		{
+			sem_t			semUnnamed;
+			sem_t*			semNamed = nullptr;
+		};
+	}
+
+	Semaphore::Semaphore()
+		:internalData(0)
+	{
+	}
+
+	Semaphore::~Semaphore()
+	{
+		if (internalData)
+		{
+			if (internalData->semNamed)
+			{
+				sem_close(internalData->semNamed);
+			}
+			else
+			{
+				sem_destroy(&internalData->semUnnamed);
+			}
+			delete internalData;
+		}
+	}
+
+	bool Semaphore::Create(vint initialCount, vint maxCount, const WString& name)
+	{
+		if (internalData) return false;
+		if (initialCount > maxCount) return false;
+
+		internalData = new SemaphoreData;
+#if defined(__APPLE__)
+        
+		AString auuid;
+		if(name.Length() == 0)
+		{
+			CFUUIDRef cfuuid = CFUUIDCreate(kCFAllocatorDefault);
+			CFStringRef cfstr = CFUUIDCreateString(kCFAllocatorDefault, cfuuid);
+			auuid = CFStringGetCStringPtr(cfstr, kCFStringEncodingASCII);
+
+			CFRelease(cfstr);
+			CFRelease(cfuuid);
+		}
+		auuid = auuid.Insert(0, "/");
+		// OSX SEM_NAME_LENGTH = 31
+		if(auuid.Length() >= 30)
+			auuid = auuid.Sub(0, 30);
+        
+		if ((internalData->semNamed = sem_open(auuid.Buffer(), O_CREAT, O_RDWR, initialCount)) == SEM_FAILED)
+		{
+			delete internalData;
+			internalData = 0;
+			return false;
+		}
+        
+#else
+		if (name == L"")
+		{
+			if(sem_init(&internalData->semUnnamed, 0, (int)initialCount) == -1)
+			{
+				delete internalData;
+				internalData = 0;
+				return false;
+			}
+		}
+        	else
+        	{
+			AString astr = wtoa(name);
+            
+			if ((internalData->semNamed = sem_open(astr.Buffer(), O_CREAT, 0777, initialCount)) == SEM_FAILED)
+			{
+				delete internalData;
+				internalData = 0;
+				return false;
+			}
+		}
+#endif
+
+		Release(initialCount);
+		return true;
+	}
+
+	bool Semaphore::Open(bool inheritable, const WString& name)
+	{
+		if (internalData) return false;
+		if (inheritable) return false;
+
+		internalData = new SemaphoreData;
+		if (!(internalData->semNamed = sem_open(wtoa(name).Buffer(), 0)))
+		{
+            delete internalData;
+            internalData = 0;
+			return false;
+		}
+
+		return true;
+	}
+
+	bool Semaphore::Release()
+	{
+		return Release(1);
+	}
+
+	vint Semaphore::Release(vint count)
+	{
+		for (vint i = 0; i < count; i++)
+		{
+			if (internalData->semNamed)
+			{
+				sem_post(internalData->semNamed);
+			}
+			else
+			{
+				sem_post(&internalData->semUnnamed);
+			}
+		}
+		return true;
+	}
+
+	bool Semaphore::Wait()
+	{
+		if (internalData->semNamed)
+		{
+			return sem_wait(internalData->semNamed) == 0;
+		}
+		else
+		{
+			return sem_wait(&internalData->semUnnamed) == 0;
+		}
+	}
+
+/***********************************************************************
+EventObject
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct EventData
+		{
+			bool				autoReset;
+			volatile bool		signaled;
+			CriticalSection		mutex;
+			ConditionVariable	cond;
+			volatile vint		counter = 0;
+		};
+	}
+
+	EventObject::EventObject()
+	{
+		internalData = nullptr;
+	}
+
+	EventObject::~EventObject()
+	{
+		if (internalData)
+		{
+			delete internalData;
+		}
+	}
+
+	bool EventObject::CreateAutoUnsignal(bool signaled, const WString& name)
+	{
+		if (name!=L"") return false;
+		if (internalData) return false;
+
+		internalData = new EventData;
+		internalData->autoReset = true;
+		internalData->signaled = signaled;
+		return true;
+	}
+
+	bool EventObject::CreateManualUnsignal(bool signaled, const WString& name)
+	{
+		if (name!=L"") return false;
+		if (internalData) return false;
+
+		internalData = new EventData;
+		internalData->autoReset = false;
+		internalData->signaled = signaled;
+		return true;
+	}
+
+	bool EventObject::Signal()
+	{
+		if (!internalData) return false;
+
+		internalData->mutex.Enter();
+		internalData->signaled = true;
+		if (internalData->counter)
+		{
+			if (internalData->autoReset)
+			{
+				internalData->cond.WakeOnePending();
+				internalData->signaled = false;
+			}
+			else
+			{
+				internalData->cond.WakeAllPendings();
+			}
+		}
+		internalData->mutex.Leave();
+		return true;
+	}
+
+	bool EventObject::Unsignal()
+	{
+		if (!internalData) return false;
+
+		internalData->mutex.Enter();
+		internalData->signaled = false;
+		internalData->mutex.Leave();
+		return true;
+	}
+
+	bool EventObject::Wait()
+	{
+		if (!internalData) return false;
+
+		internalData->mutex.Enter();
+		if (internalData->signaled)
+		{
+			if (internalData->autoReset)
+			{
+				internalData->signaled = false;
+			}
+		}
+		else
+		{
+			internalData->counter++;
+			internalData->cond.SleepWith(internalData->mutex);
+			internalData->counter--;
+		}
+		internalData->mutex.Leave();
+		return true;
+	}
+
+/***********************************************************************
+ThreadPoolLite
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct ThreadPoolTask
+		{
+			Func<void()>			task;
+			Ptr<ThreadPoolTask>		next;
+		};
+
+		struct ThreadPoolData
+		{
+			Semaphore				semaphore;
+			EventObject				taskFinishEvent;
+			Ptr<ThreadPoolTask>		taskBegin;
+			Ptr<ThreadPoolTask>*	taskEnd = nullptr;
+			volatile bool			stopping = false;
+			List<Thread*>			taskThreads;
+		};
+
+		SpinLock					threadPoolLock;
+		ThreadPoolData*				threadPoolData = nullptr;
+
+		void ThreadPoolProc(Thread* thread, void* argument)
+		{
+			while (true)
+			{
+				Ptr<ThreadPoolTask> task;
+
+				threadPoolData->semaphore.Wait();
+				SPIN_LOCK(threadPoolLock)
+				{
+					if (threadPoolData->taskBegin)
+					{
+						task = threadPoolData->taskBegin;
+						threadPoolData->taskBegin = task->next;
+					}
+
+					if (!threadPoolData->taskBegin)
+					{
+						threadPoolData->taskEnd = &threadPoolData->taskBegin;
+						threadPoolData->taskFinishEvent.Signal();
+					}
+				}
+
+				if (task)
+				{
+					ThreadLocalStorage::FixStorages();
+					try
+					{
+						task->task();
+						ThreadLocalStorage::ClearStorages();
+					}
+					catch (...)
+					{
+						ThreadLocalStorage::ClearStorages();
+					}
+				}
+				else if (threadPoolData->stopping)
+				{
+					return;
+				}
+			}
+		}
+
+		bool ThreadPoolQueue(const Func<void()>& proc)
+		{
+			SPIN_LOCK(threadPoolLock)
+			{
+				if (!threadPoolData)
+				{
+					threadPoolData = new ThreadPoolData;
+					threadPoolData->semaphore.Create(0, 65536);
+					threadPoolData->taskFinishEvent.CreateManualUnsignal(false);
+					threadPoolData->taskEnd = &threadPoolData->taskBegin;
+
+					for (vint i = 0; i < Thread::GetCPUCount() * 4; i++)
+					{
+						threadPoolData->taskThreads.Add(Thread::CreateAndStart(&ThreadPoolProc, nullptr, false));
+					}
+				}
+
+				if (threadPoolData)
+				{
+					if (threadPoolData->stopping)
+					{
+						return false;
+					}
+
+					auto task = MakePtr<ThreadPoolTask>();
+					task->task = proc;
+					*threadPoolData->taskEnd = task;
+					threadPoolData->taskEnd = &task->next;
+					threadPoolData->semaphore.Release();
+					threadPoolData->taskFinishEvent.Unsignal();
+				}
+			}
+			return true;
+		}
+
+		bool ThreadPoolStop(bool discardPendingTasks)
+		{
+			SPIN_LOCK(threadPoolLock)
+			{
+				if (!threadPoolData) return false;
+				if (threadPoolData->stopping) return false;
+
+				threadPoolData->stopping = true;
+				if (discardPendingTasks)
+				{
+					threadPoolData->taskEnd = &threadPoolData->taskBegin;
+					threadPoolData->taskBegin = nullptr;
+				}
+
+				threadPoolData->semaphore.Release(threadPoolData->taskThreads.Count());
+			}
+
+			threadPoolData->taskFinishEvent.Wait();
+			for (vint i = 0; i < threadPoolData->taskThreads.Count(); i++)
+			{
+				auto thread = threadPoolData->taskThreads[i];
+				thread->Wait();
+				delete thread;
+			}
+			threadPoolData->taskThreads.Clear();
+
+			SPIN_LOCK(threadPoolLock)
+			{
+				delete threadPoolData;
+				threadPoolData = nullptr;
+			}
+			return true;
+		}
+	}
+
+	ThreadPoolLite::ThreadPoolLite()
+	{
+	}
+
+	ThreadPoolLite::~ThreadPoolLite()
+	{
+	}
+
+	bool ThreadPoolLite::Queue(void(*proc)(void*), void* argument)
+	{
+		return ThreadPoolQueue([proc, argument](){proc(argument);});
+	}
+
+	bool ThreadPoolLite::Queue(const Func<void()>& proc)
+	{
+		return ThreadPoolQueue(proc);
+	}
+
+	bool ThreadPoolLite::Stop(bool discardPendingTasks)
+	{
+		return ThreadPoolStop(discardPendingTasks);
+	}
+
+/***********************************************************************
+CriticalSection
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct CriticalSectionData
+		{
+			pthread_mutex_t		mutex;
+		};
+	}
+
+	CriticalSection::CriticalSection()
+	{
+		internalData = new CriticalSectionData;
+		pthread_mutex_init(&internalData->mutex, nullptr);
+	}
+
+	CriticalSection::~CriticalSection()
+	{
+		pthread_mutex_destroy(&internalData->mutex);
+		delete internalData;
+	}
+
+	bool CriticalSection::TryEnter()
+	{
+		return pthread_mutex_trylock(&internalData->mutex) == 0;
+	}
+
+	void CriticalSection::Enter()
+	{
+		pthread_mutex_lock(&internalData->mutex);
+	}
+
+	void CriticalSection::Leave()
+	{
+		pthread_mutex_unlock(&internalData->mutex);
+	}
+
+	CriticalSection::Scope::Scope(CriticalSection& _criticalSection)
+		:criticalSection(&_criticalSection)
+	{
+		criticalSection->Enter();
+	}
+
+	CriticalSection::Scope::~Scope()
+	{
+		criticalSection->Leave();
+	}
+
+/***********************************************************************
+ReaderWriterLock
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct ReaderWriterLockData
+		{
+			pthread_rwlock_t			rwlock;
+		};
+	}
+
+	ReaderWriterLock::ReaderWriterLock()
+	{
+		internalData = new ReaderWriterLockData;
+		pthread_rwlock_init(&internalData->rwlock, nullptr);
+	}
+
+	ReaderWriterLock::~ReaderWriterLock()
+	{
+		pthread_rwlock_destroy(&internalData->rwlock);
+		delete internalData;
+	}
+
+	bool ReaderWriterLock::TryEnterReader()
+	{
+		return pthread_rwlock_tryrdlock(&internalData->rwlock) == 0;
+	}
+
+	void ReaderWriterLock::EnterReader()
+	{
+		pthread_rwlock_rdlock(&internalData->rwlock);
+	}
+
+	void ReaderWriterLock::LeaveReader()
+	{
+		pthread_rwlock_unlock(&internalData->rwlock);
+	}
+
+	bool ReaderWriterLock::TryEnterWriter()
+	{
+		return pthread_rwlock_trywrlock(&internalData->rwlock) == 0;
+	}
+
+	void ReaderWriterLock::EnterWriter()
+	{
+		pthread_rwlock_wrlock(&internalData->rwlock);
+	}
+
+	void ReaderWriterLock::LeaveWriter()
+	{
+		pthread_rwlock_unlock(&internalData->rwlock);
+	}
+
+	ReaderWriterLock::ReaderScope::ReaderScope(ReaderWriterLock& _lock)
+		:lock(&_lock)
+	{
+		lock->EnterReader();
+	}
+
+	ReaderWriterLock::ReaderScope::~ReaderScope()
+	{
+		lock->LeaveReader();
+	}
+
+	ReaderWriterLock::WriterScope::WriterScope(ReaderWriterLock& _lock)
+		:lock(&_lock)
+	{
+		lock->EnterWriter();
+	}
+
+	ReaderWriterLock::WriterScope::~WriterScope()
+	{
+		lock->LeaveReader();
+	}
+
+/***********************************************************************
+ConditionVariable
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct ConditionVariableData
+		{
+			pthread_cond_t			cond;
+		};
+	}
+
+	ConditionVariable::ConditionVariable()
+	{
+		internalData = new ConditionVariableData;
+		pthread_cond_init(&internalData->cond, nullptr);
+	}
+
+	ConditionVariable::~ConditionVariable()
+	{
+		pthread_cond_destroy(&internalData->cond);
+		delete internalData;
+	}
+
+	bool ConditionVariable::SleepWith(CriticalSection& cs)
+	{
+		return pthread_cond_wait(&internalData->cond, &cs.internalData->mutex) == 0;
+	}
+
+	void ConditionVariable::WakeOnePending()
+	{
+		pthread_cond_signal(&internalData->cond);
+	}
+
+	void ConditionVariable::WakeAllPendings()
+	{
+		pthread_cond_broadcast(&internalData->cond);
+	}
+
+/***********************************************************************
+SpinLock
+***********************************************************************/
+
+	SpinLock::Scope::Scope(SpinLock& _spinLock)
+		:spinLock(&_spinLock)
+	{
+		spinLock->Enter();
+	}
+
+	SpinLock::Scope::~Scope()
+	{
+		spinLock->Leave();
+	}
+			
+	SpinLock::SpinLock()
+		:token(0)
+	{
+	}
+
+	SpinLock::~SpinLock()
+	{
+	}
+
+	bool SpinLock::TryEnter()
+	{
+		return __sync_lock_test_and_set(&token, 1)==0;
+	}
+
+	void SpinLock::Enter()
+	{
+		while(__sync_val_compare_and_swap(&token, 0, 1)!=0)
+		{
+			while(token!=0) _mm_pause();
+		}
+	}
+
+	void SpinLock::Leave()
+	{
+		__sync_lock_test_and_set(&token, 0);
+	}
+
+/***********************************************************************
+ThreadLocalStorage
+***********************************************************************/
+
+#define KEY ((pthread_key_t&)key)
+
+	ThreadLocalStorage::ThreadLocalStorage(Destructor _destructor)
+		:destructor(_destructor)
+	{
+		static_assert(sizeof(key) >= sizeof(pthread_key_t), "ThreadLocalStorage's key storage is not large enouth.");
+		PushStorage(this);
+		auto error = pthread_key_create(&KEY, destructor);
+		CHECK_ERROR(error != EAGAIN && error != ENOMEM, L"vl::ThreadLocalStorage::ThreadLocalStorage()#Failed to create a thread local storage index.");
+	}
+
+	ThreadLocalStorage::~ThreadLocalStorage()
+	{
+		pthread_key_delete(KEY);
+	}
+
+	void* ThreadLocalStorage::Get()
+	{
+		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Get()#Cannot access a disposed ThreadLocalStorage.");
+		return pthread_getspecific(KEY);
+	}
+
+	void ThreadLocalStorage::Set(void* data)
+	{
+		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Set()#Cannot access a disposed ThreadLocalStorage.");
+		pthread_setspecific(KEY, data);
+	}
+
+#undef KEY
+}
+#endif
+
+
+/***********************************************************************
 .\PARSING\JSON\PARSINGJSON.CPP
 ***********************************************************************/
 
@@ -13149,111 +15031,126 @@ namespace vl
 ParserText
 ***********************************************************************/
 
-const wchar_t parserTextBuffer[] = 
-L"\r\n" L""
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L"// AST"
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L""
-L"\r\n" L"class Node"
-L"\r\n" L"{"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class Literal:Node"
-L"\r\n" L"{"
-L"\r\n" L"\tenum Value"
-L"\r\n" L"\t{"
-L"\r\n" L"\t\tTrue,"
-L"\r\n" L"\t\tFalse,"
-L"\r\n" L"\t\tNull,"
-L"\r\n" L"\t}"
-L"\r\n" L""
-L"\r\n" L"\tValue value;"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class String:Node"
-L"\r\n" L"{"
-L"\r\n" L"\ttoken content(JsonUnescapingString)\t\t\t\t@Color(\"String\");"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class Number:Node"
-L"\r\n" L"{"
-L"\r\n" L"\ttoken content;"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class Array:Node"
-L"\r\n" L"{"
-L"\r\n" L"\tNode[] items;"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class ObjectField:Node"
-L"\r\n" L"{"
-L"\r\n" L"\ttoken name(JsonUnescapingString)\t\t\t\t@Color(\"AttName\");"
-L"\r\n" L"\tNode value;"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class Object:Node"
-L"\r\n" L"{"
-L"\r\n" L"\tObjectField[] fields;"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L"// Lexer"
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L""
-L"\r\n" L"token TRUEVALUE = \"true\"\t\t\t\t\t\t\t@Color(\"Keyword\");"
-L"\r\n" L"token FALSEVALUE = \"false\"\t\t\t\t\t\t\t@Color(\"Keyword\");"
-L"\r\n" L"token NULLVALUE = \"null\"\t\t\t\t\t\t\t@Color(\"Keyword\");"
-L"\r\n" L"token OBJOPEN = \"\\{\"\t\t\t\t\t\t\t\t@Color(\"Boundary\");"
-L"\r\n" L"token OBJCLOSE = \"\\}\"\t\t\t\t\t\t\t\t@Color(\"Boundary\");"
-L"\r\n" L"token ARROPEN = \"\\[\"\t\t\t\t\t\t\t\t@Color(\"Boundary\");"
-L"\r\n" L"token ARRCLOSE = \"\\]\"\t\t\t\t\t\t\t\t@Color(\"Boundary\");"
-L"\r\n" L"token COMMA = \",\";"
-L"\r\n" L"token COLON = \":\";"
-L"\r\n" L"token NUMBER = \"[\\-]?\\d+(.\\d+)?([eE][+\\-]?\\d+)?\"\t@Color(\"Number\");"
-L"\r\n" L"token STRING = \"\"\"([^\\\\\"\"]|\\\\[^u]|\\\\u\\d{4})*\"\"\"\t\t@ContextColor();"
-L"\r\n" L""
-L"\r\n" L"discardtoken SPACE = \"\\s+\";"
-L"\r\n" L""
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L"// Rules"
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L""
-L"\r\n" L"rule Node JLiteral"
-L"\r\n" L"\t= STRING:content as String"
-L"\r\n" L"\t= NUMBER:content as Number"
-L"\r\n" L"\t= \"true\" as Literal with {value = \"True\"}"
-L"\r\n" L"\t= \"false\" as Literal with {value = \"False\"}"
-L"\r\n" L"\t= \"null\" as Literal with {value = \"Null\"}"
-L"\r\n" L"\t;"
-L"\r\n" L""
-L"\r\n" L"rule ObjectField JField"
-L"\r\n" L"\t= STRING:name \":\" JValue:value as ObjectField"
-L"\r\n" L"\t;"
-L"\r\n" L""
-L"\r\n" L"rule Object JObject"
-L"\r\n" L"\t= \"{\" [JField:fields {\",\" JField:fields} ] \"}\" as Object"
-L"\r\n" L"\t;"
-L"\r\n" L""
-L"\r\n" L"rule Array JArray"
-L"\r\n" L"\t= \"[\" [JValue:items {\",\" JValue:items} ] \"]\" as Array"
-L"\r\n" L"\t;"
-L"\r\n" L""
-L"\r\n" L"rule Node JValue"
-L"\r\n" L"\t= !JLiteral"
-L"\r\n" L"\t= !JObject"
-L"\r\n" L"\t= !JArray"
-L"\r\n" L"\t;"
-L"\r\n" L""
-L"\r\n" L"rule Node JRoot"
-L"\r\n" L"\t= !JObject"
-L"\r\n" L"\t= !JArray"
-L"\r\n" L"\t;"
-;
+const wchar_t* const parserTextBuffer[] = {
+  L"" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"// AST" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"" L"\r\n"
+, L"class Node" L"\r\n"
+, L"{" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class Literal:Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\tenum Value" L"\r\n"
+, L"\t{" L"\r\n"
+, L"\t\tTrue," L"\r\n"
+, L"\t\tFalse," L"\r\n"
+, L"\t\tNull," L"\r\n"
+, L"\t}" L"\r\n"
+, L"" L"\r\n"
+, L"\tValue value;" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class String:Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\ttoken content(JsonUnescapingString)\t\t\t\t@Color(\"String\");" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class Number:Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\ttoken content;" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class Array:Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\tNode[] items;" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class ObjectField:Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\ttoken name(JsonUnescapingString)\t\t\t\t@Color(\"AttName\");" L"\r\n"
+, L"\tNode value;" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class Object:Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\tObjectField[] fields;" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"// Lexer" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"" L"\r\n"
+, L"token TRUEVALUE = \"true\"\t\t\t\t\t\t\t@Color(\"Keyword\");" L"\r\n"
+, L"token FALSEVALUE = \"false\"\t\t\t\t\t\t\t@Color(\"Keyword\");" L"\r\n"
+, L"token NULLVALUE = \"null\"\t\t\t\t\t\t\t@Color(\"Keyword\");" L"\r\n"
+, L"token OBJOPEN = \"\\{\"\t\t\t\t\t\t\t\t@Color(\"Boundary\");" L"\r\n"
+, L"token OBJCLOSE = \"\\}\"\t\t\t\t\t\t\t\t@Color(\"Boundary\");" L"\r\n"
+, L"token ARROPEN = \"\\[\"\t\t\t\t\t\t\t\t@Color(\"Boundary\");" L"\r\n"
+, L"token ARRCLOSE = \"\\]\"\t\t\t\t\t\t\t\t@Color(\"Boundary\");" L"\r\n"
+, L"token COMMA = \",\";" L"\r\n"
+, L"token COLON = \":\";" L"\r\n"
+, L"token NUMBER = \"[\\-]?\\d+(.\\d+)?([eE][+\\-]?\\d+)?\"\t@Color(\"Number\");" L"\r\n"
+, L"token STRING = \"\"\"([^\\\\\"\"]|\\\\[^u]|\\\\u\\d{4})*\"\"\"\t\t@ContextColor();" L"\r\n"
+, L"" L"\r\n"
+, L"discardtoken SPACE = \"\\s+\";" L"\r\n"
+, L"" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"// Rules" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"" L"\r\n"
+, L"rule Node JLiteral" L"\r\n"
+, L"\t= STRING:content as String" L"\r\n"
+, L"\t= NUMBER:content as Number" L"\r\n"
+, L"\t= \"true\" as Literal with {value = \"True\"}" L"\r\n"
+, L"\t= \"false\" as Literal with {value = \"False\"}" L"\r\n"
+, L"\t= \"null\" as Literal with {value = \"Null\"}" L"\r\n"
+, L"\t;" L"\r\n"
+, L"" L"\r\n"
+, L"rule ObjectField JField" L"\r\n"
+, L"\t= STRING:name \":\" JValue:value as ObjectField" L"\r\n"
+, L"\t;" L"\r\n"
+, L"" L"\r\n"
+, L"rule Object JObject" L"\r\n"
+, L"\t= \"{\" [JField:fields {\",\" JField:fields} ] \"}\" as Object" L"\r\n"
+, L"\t;" L"\r\n"
+, L"" L"\r\n"
+, L"rule Array JArray" L"\r\n"
+, L"\t= \"[\" [JValue:items {\",\" JValue:items} ] \"]\" as Array" L"\r\n"
+, L"\t;" L"\r\n"
+, L"" L"\r\n"
+, L"rule Node JValue" L"\r\n"
+, L"\t= !JLiteral" L"\r\n"
+, L"\t= !JObject" L"\r\n"
+, L"\t= !JArray" L"\r\n"
+, L"\t;" L"\r\n"
+, L"" L"\r\n"
+, L"rule Node JRoot" L"\r\n"
+, L"\t= !JObject" L"\r\n"
+, L"\t= !JArray" L"\r\n"
+, L"\t;" L"\r\n"
+};
+const vint lengthTextBuffer[] = {
+  2, 68, 8, 68, 2, 12, 3, 3, 2, 20, 3, 13, 4, 9, 10, 9, 4, 2, 15, 3, 2, 19, 3, 59, 3, 2, 19, 3, 17, 3, 2, 18
+, 3, 16, 3, 2, 24, 3, 57, 14, 3, 2, 19, 3, 24, 3, 2, 68, 10, 68, 2, 51, 53, 51, 49, 50, 49, 50, 20, 20, 68, 67, 2, 29
+, 2, 68, 10, 68, 2, 20, 29, 29, 44, 46, 44, 4, 2, 25, 48, 4, 2, 21, 59, 4, 2, 19, 56, 4, 2, 18, 14, 13, 12, 4, 2, 17
+, 13, 12, 4
+};
+const vint lengthTextBufferTotal = 2018;
 
 			vl::WString JsonGetParserTextBuffer()
 			{
-				return parserTextBuffer;
+				vl::collections::Array<wchar_t> textBuffer(lengthTextBufferTotal + 1);
+				wchar_t* reading = &textBuffer[0];
+				for(vint i = 0; i < sizeof(parserTextBuffer) / sizeof(*parserTextBuffer); i++)
+				{
+					memcpy(reading, parserTextBuffer[i], lengthTextBuffer[i] * sizeof(wchar_t));
+					reading += lengthTextBuffer[i];
+				}
+				*reading = 0;
+				return &textBuffer[0];
 			}
 
 /***********************************************************************
@@ -13264,7 +15161,7 @@ const vint parserBufferLength = 3809; // 17748 bytes before compressing
 const vint parserBufferBlock = 1024;
 const vint parserBufferRemain = 737;
 const vint parserBufferRows = 4;
-const char* parserBuffer[] = {
+const char* const parserBuffer[] = {
 "\x00\x0B\x00\x02\x83\x80\x07\x7D\x00\x82\x03\xFF\x45\x08\x82\x83\x86\x81\x21\x6F\x6C\x2F\x32\x37\x84\x86\x02\x86\x00\x17\x82\x93\x24\x3A\x39\x34\x37\x67\x06\x98\x8A\x88\x8E\x84\x00\x88\x12\x94\x98\x87\x0B\x93\x81\x20\x3A\x74\x4E\x21\x2D\x35\x32\x90\x86\x92\x0C\xA6\xA8\x93\x85\x88\x84\x96\x86\x3F\x80\x0B\x25\x39\x3F\x3B\x88\x32\x36\x88\xB8\x88\x8A\x99\x88\x9F\x96\x40\x83\x83\xA5\xA7\xA1\xA4\x83\xA5\x04\xCD\xA9\x9D\x94\x81\xA1\xAE\xA9\x44\xC6\xB2\x28\xAC\xA9\x86\x93\xAC\x03\xBB\xAA\x8C\x88\x00\x8D\xB6\x81\x42\x6F\x35\x2E\x34\x31\x32\x39\x3C\x56\xE6\xA5\x89\xBE\xA3\xB4\x85\xB7\x7F\x83\xB1\xB3\xB5\xBF\xB9\xBC\x81\x58\x83\x9A\xAF\xAC\xB6\xB6\xC0\xB9\x74\xF6\xB8\xA5\xB8\xC7\xB2\xC4\xBE\x5B\x8E\xCD\xD0\xB0\xCD\xC3\xC9\x91\x96\x8D\x98\xCC\xC8\x82\x8D\xD3\x81\x4E\x75\x2D\x22\x35\x32\x3B\xC3\x82\x0C\x18\xB1\xCF\x8F\x36\x34\x3B\x32\x78\x74\x2A\xB8\x80\x06\xAF\xCB\x9C\x2E\xF2\x32\x21\x38\xBF\x7E\xE3\xE3\xFF\x3E\xC2\x81\xAC\x21\x37\xDB\xE1\x6C\x48\xC8\xE4\x08\x8C\xEA\x80\x27\x6F\x64\x35\x92\xE6\xE6\xD0\x82\xD3\xA9\xAB\xED\xDC\xED\xE8\x8E\xD3\x27\x62\x6A\x25\x23\x34\x3C\xF3\x7F\x80\x0C\xF0\xC0\x08\xFA\xF4\xF6\x23\x34\x65\x6C\x08\xA4\xFE\xEB\x82\xD2\x8E\x1E\x60\x4E\x7A\x72\x00\x21\x65\x81\x70\xC3\x79\x16\x82\x49\xCE\x65\x1D\x1B\x1C\x03\x90\x50\x01\x73\xCF\x61\x1C\x1B\x82\x03\x76\x16\x85\x1D\xDB\x5C\x7D\x7E\x40\xE0\x6A\x6C\x6A\x1C\x04\x81\x53\x19\x6D\xB7\x76\x6E\x7B\x87\x19\x43\x44\x7F\x7A\x74\x2C\x86\x6A\x19\xF8\x7A\x70\x84\x79\xF2\x44\x42\x7F\x8B\xF6\x75\x84\x1A\x75\x08\x40\x9E\x1B\x4C\x65\x14\x60\x40\x46\x3B\xA9\x70\x8F\x7D\xF9\x64\x18\x86\x40\x1A\xAC\x1C\x87\x8A\xE6\x43\x40\x83\x47\x67\x25\x83\x43\x89\xB6\x65\x16\x6C\x6F\x0F\x18\x44\x08\x46\x61\xBC\x66\x9A\x52\xEE\x64\x77\x9B\x4D\x69\x9C\x7B\x98\x9A\x6D\x88\x7F\x9B\x55\x71\x88\x79\x00\x46\x77\x82\x44\x16\x14\x55\x05\x16\x15\x10\x4C\x3D\x90\x90\x41\x40\x9D\x4C\x84\x6F\x02\x18\x4A\x02\xA2\x03\x46\x10\xA3\x14\x7E\x80\xAD\x9F\x93\x00\x26\x16\x87\x1C\x45\x98\x43\x00\x9E\x9C\x97\x75\x14\x13\x4C\x3F\x91\xA1\x11\x83\x83\x42\x91\x1D\x6C\x2C\x19\xA0\x43\xA5\x8B\x72\x87\x13\x42\x0A\x1F\x10\x14\x45\x0E\x1B\xA8\x42\xB7\x9C\x1B\x1F\xA6\xC0\x5B\x61\x62\x40\xB0\x8A\x13\x10\x13\x4F\x10\xA7\xAC\x41\xB9\xBD\x1D\xA9\x8B\x51\x4D\xB0\x01\x10\x52\x12\x13\xAD\xAD\xC7\x83\x49\xAF\x16\x06\x84\x80\x60\x41\x80\x50\xB2\x17\xB0\xC5\x85\x15\xB6\x40\xB9\x9D\x1C\x8B\xB6\xBF\x4C\x59\x5B\x13\x4D\x0D\x11\x12\x91\x3D\x6C\x04\x82\x7B\x94\x83\x1F\x10\xB1\x4E\x30\xB3\x42\x0E\xE8\x88\x6C\x7D\x95\x9E\x8D\x12\x11\x11\x52\x1F\x08\x46\xC1\x02\x5B\x1C\x15\x0B\x5D\x3F\x0C\x14\x19\x2B\x28\x0E\x0B\xC3\x2B\x29\x0F\x0C\x0A\x5B\x25\x15\x11\x17\x5B\x2B\x0B\xC1\xC3\x14\xD6\xC9\x9C\x42\x23\xDF\x70\xC0\x00\x53\x3B\x99\x12\x13\x47\x1B\x08\x46\xCB\x02\x62\x08\xC6\x17\x5C\x1C\x12\x09\x17\x7C\x35\xCB\x16\x17\x75\x38\xC5\xCD\x1D\x0F\xFB\x14\x0D\x1F\x29\x2A\x02\x0B\xA2\x0C\x48\xD8\x42\x91\x94\x93\x10\x15\x10\x43\x05\x1C\xAC\x42\x53\xDC\x13\x1F\x0A\x39\x89\x44\x7B\x98\xBE\x9C\xB3\x42\x12\x14\xAD\x66\x86\x04\x18\x64\xD2\x40\xD8\x0D\x90\x7E\x0A\x14\x6F\x2F\x14\x1C\x47\x76\x74\x1D\x00\x46\x73\xC2\x40\x10\x08\x24\x3C\x08\xD9\x85\x6C\x3E\x0D\xBC\x00\x80\x7B\xD2\xD8\x1B\x0E\x18\x45\xE3\xD9\x61\xEA\xD0\xDE\x1C\x74\x33\x68\x42\xE3\x77\xFA\xD9\xE2\x85\x7E\xDA\x60\x02\xE0\xD0\x4A\xD4\x42\xD2\x98\xD6\x8E\x09\x0C\xFA\x18\x41\xEA\x40\x92\xE9\xD4\xE6\x0E\x20\x29\xC2\x17\xCA\x47\x20\x08\xE8\x97\x29\xB4\x10\x09\x18\x73\x29\xED\x44\x96\x40\x0D\x0A\x01\xE9\x7C\xFE\x08\xEA\x13\x55\x02\xC4\xC2\xEB\x20\x30\xEE\x96\xEC\xB4\xE0\x01\x7B\x88\xB9\xFB\xED\xE5\xDF\xA8\xE2\x06\xA1\x19\x22\x33\xE5\xEF\xE4\x6C\x37\xD7\x1E\x73\x68\x20\x0B\x1C\x08\x51\x9C\x80\x09\x0F\x20\x22\x04\x16\x1C\x1C\x95\xFD\x1E\xEE\xBC\xC3\xEE\xED\xF9\x96\xAC\x18\xA5\xF5\xC9\xD8\xFA\xF4\xF7\xDE\xE0\xFB\x85\x19\xE3\xE5\xF6\x13\xA5\xD4\x60\x07\xFA\x4E\x78\x7B\xF7\x62\x06\x0D\xA8\x4C\x0C\xFD\x57\x76\x75\xEC\x60\x03\x7B\x74\x1D\x7B\xF7\x61\x7C\x7E\xF2\x62\x01\x35\xA9\x4A\x7F\xDF\x01\x78\x7A\x08\x18\x26\x83\x88\x6D\x83\xDA\x6D\x64\x0F\x22\x34\x2D\x6E\x08\x28\x85\xDE\x4F\x7E\x06\x10\x00\x0A\x46\x5F\x76\x0B\xFE\x1B\x81\x87\xFD\x5F\x75\x07\x18\x38\x84\xE9\x4A\x02\x86\x29\x65\x0F\x7D\x21\x0F\x79\xF3\x7A\x6D\x86",
 "\x0E\x40\x8A\x56\x4A\x4C\x3F\x10\xBC\x8B\x7F\x23\x81\x0A\x38\xC4\x2F\x87\xC9\x4A\x0C\x48\xFD\x34\x87\x6C\x55\x84\x0E\x0B\x33\x0A\x06\x8C\x1D\x8B\x87\x59\x8F\x7E\xEA\x2C\x74\x79\x21\x74\x25\x7C\x3A\x15\x78\x13\xBE\x84\x78\x0A\x96\x78\x04\x3C\x54\x0D\x16\xD2\x86\x23\xAF\x4F\x89\x41\x57\x97\x73\x1D\xC4\x3E\x04\x19\x0C\x10\x23\x7F\x9B\x87\x1E\xF9\x06\x81\x2D\x15\x7B\x0B\x20\x0B\x8E\xF8\x28\x7D\x41\x07\x77\x6F\x7B\x22\x0C\x06\x1A\xC5\x8C\x7E\x46\xB7\x37\x41\x02\x80\x05\x17\x65\x7D\x0B\x05\xA0\x03\x90\xEC\x6A\x0B\x20\x85\x97\x91\x44\x94\x94\x78\x8D\x95\x74\x10\x10\x92\x92\x53\xBB\x78\x95\x97\x95\x75\x1F\x1A\x9C\x92\x4F\x83\x90\x86\x67\x74\x93\xE1\x08\x2B\x96\x45\xA5\x0B\x84\x6E\x66\x84\x19\x59\x62\x20\xF9\x2B\x84\x92\x2D\x94\x8F\x69\x58\x8E\x47\x5D\x84\x25\x97\x59\x80\x99\x09\xF4\x24\x99\x23\x42\x23\x85\x61\x8E\x86\x96\x67\x61\x8F\x92\x43\x23\x64\x48\x95\x3C\x1D\x7D\x84\x12\x8C\x25\x9B\x87\x71\x86\x83\x1E\x25\x94\x8A\x1F\x44\x7C\x46\x4D\x53\x0F\x23\xE5\x7D\x95\x76\x8D\x4F\x9D\x3E\x52\x94\x2D\xA2\x0D\x0E\x4F\xB1\x89\x94\xE9\x91\x7B\x3A\xA0\x08\x90\x7B\xBA\x38\x9F\xF1\x8E\x84\x2B\xEA\x89\x8A\x84\xB6\x41\x93\x9B\x9C\x9E\x3F\xC9\x81\x47\x29\x83\x91\x8F\xA2\x90\x89\x1E\x5B\x85\x08\x8C\x1D\xA2\x90\x1A\xA4\x94\x41\xAE\x9C\x8C\x4B\x8E\x45\x76\x0B\xA4\xA7\x22\xA0\x09\x94\x88\xB5\x97\x8D\x83\x8A\x9A\xC9\x67\x67\xA2\xCB\x59\xA1\x41\x2E\x14\x07\x47\x88\x2B\xA6\xBD\x63\x91\x7A\x86\x83\xA6\x2F\xB0\x97\xA5\xFC\x51\x92\x04\x77\x63\xAA\x49\x98\x93\x97\x88\x9D\x90\xA6\x1A\xBB\x9B\xE5\x5D\x9D\x53\xA9\x94\xA1\xA7\x49\x18\x21\x56\xE8\x94\xA2\x75\xAC\x9D\xA1\xA8\x70\x9F\x43\x8B\xA9\xA8\xB0\xA0\x02\xAC\x64\x1A\x9D\x44\xFD\x9F\x8D\x38\x92\xA9\x9C\x30\x5E\x9A\x40\x60\x91\x8F\x2D\x9B\xA8\x21\x77\xBA\x6D\x40\xE5\x73\xA1\x82\xA6\xA8\xAD\x28\xB4\x9C\x43\xEE\x91\xAD\x7C\xAE\xA2\xA2\x6D\xB4\xA2\x4C\xFE\x36\x8E\x8D\x8E\x9B\x20\xBD\x83\x92\x34\xC2\x95\x9A\x63\xBE\xA1\xA4\x2E\x94\x52\x12\x6C\x6E\x6D\xB7\x9C\xB3\x9C\x31\x05\x04\x46\x22\xBB\x87\xCF\x87\x89\x8E\x4B\x86\xB4\xEA\x41\x81\xA7\xB7\x94\xAC\x21\x74\xB7\xA9\x0C\x77\xA4\x21\xBC\xB0\xAC\x3D\x5E\xB7\x6E\x5F\x84\xB7\xAC\xC3\xA9\xA6\xA0\x64\x0E\xA1\x5A\x87\xBC\xAD\xE4\x71\x88\x97\x7A\x9A\xA0\x46\x92\xB1\x07\x9D\x84\x25\xA7\x37\xA4\x38\x29\xBA\xBA\xA5\x4A\xAC\xA1\x96\x46\xB5\x9F\x29\xCB\xAA\xAD\x97\x89\x7F\x96\x53\x99\x88\x46\xD1\x91\x07\x2F\x88\x26\xBC\x7A\x61\x8C\xEA\x63\x8C\x65\x32\x84\x4F\x6E\x22\x09\x8D\x75\xED\x8F\x94\xE3\x94\xA1\x8B\xAE\xB4\xA1\x99\x08\x2B\xBF\xDB\xA3\x9F\xB3\xC2\x8E\x70\x41\x0E\x7B\x85\x74\x99\xB3\x2F\x67\x7F\xB0\x0A\x84\x28\x85\xCD\xA4\x83\xB2\x74\x3A\x73\x40\x4A\x6B\x84\xD3\xAE\x80\xB9\xC0\xA3\xBE\x8F\x7D\x86\xBC\x82\x28\xB8\xB8\x62\x8A\x65\x7B\xA8\x76\x8C\xFE\x71\xB8\xA9\xF3\xA8\x76\x1B\xF6\xB2\x9D\x2C\x98\xC1\x8B\x20\x88\x21\x8C\xC0\xB2\x9B\xC5\x74\x0D\xB2\x03\x37\x6C\x36\xBE\x4E\x07\x17\xFE\x42\xC0\x03\x2E\x70\x8D\xB6\xC2\xC2\x81\x0A\x69\x72\x20\xD9\xBE\x38\x91\x08\x22\x26\xDC\x9F\xAA\x9F\xB6\xC4\x90\x82\x20\x72\xBC\x7A\xAD\xAB\x4A\xD0\x47\x82\x83\x2D\xC1\xBA\xB6\xC0\xC7\x76\x60\x07\x95\xE2\x9D\xC6\x8B\x9A\xA1\xC6\x04\x33\xC6\x64\xD1\xC4\x0F\xB8\x60\xC8\x00\x3A\xD7\xB1\x82\x65\xC5\x8E\x9A\x9A\xA3\xCA\x00\x02\xCA\x64\xC4\xCC\x51\x30\xF2\xCA\xBA\x18\xD4\x90\x9A\x83\x23\xC6\x4A\xB5\xC5\xCD\x8C\x6F\xCD\x9C\xBE\x94\xCF\x65\x97\x74\x92\x78\xC2\xCA\xA1\xFC\xC9\x69\x1C\xE2\xCC\xD1\x9A\xBF\xB3\x7E\x84\x2D\xBF\xCF\x87\xD1\x6E\x45\xC0\x03\x91\xD6\xCE\xC0\xB7\x7E\x01\xD3\x24\x8F\xCD\xA9\xE3\x96\xC6\xB9\x80\x03\x64\x48\xC6\xB4\x46\xD8\x71\xD4\xCE\x58\x7D\x8F\xA3\x68\x21\xAE\xED\x70\x3B\x10\xEB\x73\xC4\xC5\x68\x47\xF1\x6F\x87\x4A\x90\x0B\x8D\x80\xBF\x61\x7B\xC0\x52\x04\x78\xE3\x76\x37\x8D\xCB\x6D\x37\xB1\x8D\x86\x81\xE9\x5E\x90\x7B\x0F\x98\x7F\x04\xAF\x96\x83\xF3\x69\x7A\x80\xD3\xDD\x75\xF4\x71\x73\x7F\x37\x98\xD8\x82\x12\x9A\x7C\x1B\x96\x8F\x7E\xF9\x41\x85\x0F\xE1\xCE\x7D\xF4\x08\x89\x82\x73\xCD\x81\xDB\x11\x99\x7E\x1B\x96\x88\x82\x05\xA0\xDE\xC7\x4D\x5A\xC1\x93\x39\xAD\xC3\x7D\x43\x21\xBD\x3C\xCB\xBE\x88\xAD\x74\xC4\x22\x68\x8B\x92\xAF\x8A\xC5\x7D\xB5\x71\x8F\x39\x99\xCC\x3D\xAE\xD1\xB6\x38\xAE\x05\x06\xDA\x83\x26\xB6\x7B\xA2\x05\x5F\x89\x9F\xAE\xDF\x82\xB4\xE4\xBC\xA0\xB0\x71\x93\xA2\x9D\xC5",
 "\xA0\x45\xB1\x78\x96\xA6\x64\xB5\x0E\xB9\x81\x10\xBF\xA7\xE5\x61\xA9\x41\xDB\xB7\xBB\xA2\xBF\xB4\xE7\x2D\xAD\xAA\x77\xB5\x71\xA7\x73\x76\xA0\x7B\xCB\x40\x48\x76\x5A\x33\x4E\xAD\x5E\x41\xBC\x3E\x4F\xCD\xC5\xBE\x4C\x36\x0B\x23\x24\x3C\x17\xF5\xA1\x9D\xF3\x34\xA2\xDE\x18\x07\xEA\x4F\xFB\xE9\x74\x8A\x48\xC1\x67\x5A\xA4\x37\x1A\x00\xEE\x74\x01\xDB\x7F\xA4\xE8\x31\x3B\x65\x1C\x34\x07\x6A\xE8\x38\x54\xEE\x6E\xED\xD7\x30\xEC\x6F\x1E\x04\xEF\xE3\x1C\x03\x5C\xAF\x3F\x1C\x6F\x46\x4D\xE9\xC2\xF3\x49\xF0\xCB\x43\x5E\xE1\x80\x0A\xF1\x65\x7C\x34\x52\x14\x98\xEC\x00\x5E\xD5\x0D\x59\xCD\x86\xF0\x52\xB8\x78\x6F\x16\xFC\x6F\xC0\xC6\x42\xF1\x86\xED\xF1\xE1\x90\xFB\x7E\x4A\x6D\xD8\x53\x9C\xE3\x70\xE6\x92\x4A\xF2\xCB\x5E\x69\x84\x9D\xE6\x4B\x3F\x2C\x40\xF5\xC2\xE2\xF5\xE9\xA4\xFE\x86\xE4\xFD\xD9\xF4\xE8\x2B\xF6\x59\xAD\xFD\x6B\x40\x1C\x87\xF2\xA5\x32\xF3\xCB\xE4\x4B\xF0\x43\x0A\xF4\xF0\x09\x5F\x2A\x20\xCE\xD4\x0F\xE6\xC7\xE5\xF9\xA6\xC8\xB9\xDA\x72\x13\xFA\xAF\x4F\x71\xF1\xC7\x89\xFA\xF9\xC8\x58\x21\xF3\xCE\x5F\xF8\x00\x11\xFA\xFB\xBF\x57\x71\xF0\xF3\x48\xB9\x62\xE7\x08\xFD\xAF\xEA\xFF\xE5\x81\xF6\x49\xA9\x60\xFE\x4C\x81\xF7\xF7\x9C\x46\x4D\x02\x8C\x0A\xF4\x45\xFD\x77\x7F\x02\x1D\x7B\x16\x26\x7F\x02\x8B\x75\x33\x5F\x68\xFB\x37\x80\x37\x12\x7B\x46\x24\x20\x0C\x85\x10\x06\x88\x18\x8A\x76\x20\x83\x78\x11\x15\x0E\x7F\x27\x34\x10\x19\x87\x80\x6C\x7E\x43\xE3\x7A\x2E\xBD\x20\x00\x14\x4C\x1B\x00\x7A\x1F\xFF\x0F\x7F\x85\x76\x24\x4E\x68\x2B\x1B\x83\x10\x2D\x87\x7F\x1F\x8C\x21\xB5\x73\x82\x68\x12\x10\xA9\x46\x82\x66\x69\x20\x29\x8F\x82\x67\x26\x24\xD5\x4A\x82\xF1\x1C\x80\x33\x85\x06\x35\x82\x82\x48\x89\x83\x3E\x8C\x2C\xC9\x59\x20\x87\x7E\x80\xAE\x70\x7E\x21\x8F\x26\x52\x77\x5F\x54\x7B\x84\xA6\x10\x5C\x3D\x87\x13\x8A\x7E\x6A\x17\x8C\x10\x83\x62\x10\x13\x8B\x78\x55\x8D\x62\x57\x88\x80\x8C\x5C\x4C\x4D\x2C\x22\x61\x8B\x78\x27\x84\x06\x47\x89\x80\x09\x80\x58\xBC\x19\x75\x5B\x84\x32\x2B\x82\x1B\x9A\x2C\x80\x65\x8B\x24\x67\x8E\x68\x09\x80\x5C\x2C\x28\x67\x86\x7F\x86\x71\x89\x86\x8E\x64\x87\xCE\x73\x10\x41\x1E\x5F\x07\x81\x78\xB5\x61\x81\x23\x12\x7B\x6F\x62\x89\x96\x8A\x7C\x81\x7F\x37\xC8\x77\x89\x81\x75\x4D\x84\x8C\x89\x50\x8C\x10\xDE\x7B\x78\x53\x8B\x26\x94\x23\x48\x3A\x82\x76\x83\x47\x87\x57\x1A\x78\x9B\x6B\x26\x46\x28\x30\x54\x3C\x80\xA7\x87\x76\x58\x80\x73\xC4\x1C\x22\xB2\x82\x83\x3B\x84\x1C\x63\x81\x81\x76\x7D\x1E\xFA\x7F\x26\xFC\x7B\x87\x07\x85\x8B\x4E\x87\x8B\x76\x69\x20\x00\x84\x84\xBD\x89\x07\xBF\x8E\x8C\x62\x74\x49\x86\x78\x78\x1A\x87\x80\xCB\x26\x20\xD5\x45\x88\xCF\x86\x20\x01\x82\x80\x45\x8E\x78\x65\x77\x83\x24\x8D\x76\xD5\x13\x10\x94\x74\x80\x6C\x0F\x7B\x3E\x13\x10\xEB\x71\x7F\xF1\x7C\x7D\xB2\x7F\x79\x0C\x89\x8D\x48\x22\x8D\x8E\x63\x76\xDE\x88\x8F\x81\x84\x49\xE2\x86\x83\xE9\x24\x41\xA6\x70\x40\xEA\x8C\x8E\xE5\x7F\x8E\xC3\x74\x7D\xB1\x73\x12\xB4\x75\x8F\xE3\x83\x10\xDB\x85\x78\x18\x63\x48\xFB\x8E\x81\x53\x4E\x8F\xA3\x75\x76\x91\x77\x8E\xD7\x19\x40\x05\x95\x78\x99\x75\x7D\xE9\x71\x8F\xD8\x31\x78\x04\x2D\x86\xA1\x7F\x90\xC5\x4C\x8F\x88\x8A\x8F\x18\x1F\x8D\xBC\x83\x8D\x0B\x81\x78\xAE\x61\x83\xE0\x75\x81\xF7\x86\x91\xAA\x8A\x51\x15\x90\x8E\x17\x9B\x80\x88\x17\x7C\xD7\x82\x80\xF6\x83\x84\x3A\x99\x8F\x14\x9F\x92\x2C\x9F\x72\xB9\x4B\x3F\xA5\x8E\x2A\xCE\x27\x7E\x51\x83\x80\x5F\x38\x90\x67\x27\x7D\x22\x2D\x1A\xF0\x79\x90\xB0\x73\x38\xDD\x73\x94\xF7\x75\x94\x08\x11\x91\xD6\x7D\x8D\x4A\x97\x94\xFD\x8E\x94\x20\x92\x21\x52\x92\x7C\x54\x9D\x95\xBE\x72\x91\x27\x3E\x7E\x5B\x9F\x96\xF2\x7C\x37\x4D\x7F\x95\x0C\x16\x36\x02\x88\x93\x0C\x1F\x89\x4D\x79\x75\x4F\x90\x00\x92\x75\x62\xA9\x89\x8F\x59\x45\x10\xA1\x88\x10\x13\x0C\x80\x83\x97\x98\x09\x81\x47\x75\x82\x21\xFE\x5C\x8A\x09\x1E\x8A\x79\x8C\x10\xBB\x83\x10\xD1\x85\x96\x5B\x72\x99\x8B\x80\x95\x56\x52\x4E\xBA\x8C\x80\x59\x7D\x99\x02\x81\x8C\x96\x92\x10\xFF\x8B\x34\x67\x93\x8B\x68\x98\x88\xA0\x94\x7E\x8C\x8F\x35\xC7\x5F\x9A\xF7\x77\x9A\x97\x82\x87\x2D\x94\x8D\xA0\x83\x89\x18\x14\x01\xBB\x91\x81\x99\x84\x37\xC3\x90\x9C\x37\x13\x8A\x7C\x97\x7F\x7E\x92\x63\xA6\x94\x99\x71\x43\x98\x85\x94\x24\x90\x9D\x92\x89\x99\x10\xB2\x79\x78\x0E\x90\x90\x02\x16\x93\xCA\x73\x91\x3C\x98\x9B\xE0\x71\x8E\x19\x93\x82\x1B\x9C\x2A\xE8\x88\x3E",
@@ -21831,94 +23728,108 @@ namespace vl
 ParserText
 ***********************************************************************/
 
-const wchar_t parserTextBuffer[] = 
-L"\r\n" L""
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L"// AST"
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L""
-L"\r\n" L"class Node"
-L"\r\n" L"{"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class Text : Node"
-L"\r\n" L"{"
-L"\r\n" L"\ttoken content;"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class CData : Node"
-L"\r\n" L"{"
-L"\r\n" L"\ttoken content (XmlUnescapeCData);"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class Attribute : Node"
-L"\r\n" L"{"
-L"\r\n" L"\ttoken name\t\t\t\t\t\t\t\t\t@Color(\"AttName\");"
-L"\r\n" L"\ttoken value (XmlUnescapeAttributeValue)\t\t@Color(\"AttValue\");"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class Comment : Node"
-L"\r\n" L"{"
-L"\r\n" L"\ttoken content (XmlUnescapeComment);"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class Element : Node"
-L"\r\n" L"{"
-L"\r\n" L"\ttoken name\t\t\t\t\t\t\t\t\t@Color(\"TagName\");"
-L"\r\n" L"\ttoken closingName\t\t\t\t\t\t\t@Color(\"TagName\");"
-L"\r\n" L"\tAttribute[] attributes;"
-L"\r\n" L"\tNode[] subNodes (XmlMergeTextFragment);"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class Instruction : Node"
-L"\r\n" L"{"
-L"\r\n" L"\ttoken name\t\t\t\t\t\t\t\t\t@Color(\"TagName\");"
-L"\r\n" L"\tAttribute[] attributes;"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"class Document : Node"
-L"\r\n" L"{"
-L"\r\n" L"\tNode[] prologs;"
-L"\r\n" L"\tElement rootElement;"
-L"\r\n" L"}"
-L"\r\n" L""
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L"// Lexer"
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L""
-L"\r\n" L"token INSTRUCTION_OPEN = \"/</?\"\t\t\t@Color(\"Boundary\");"
-L"\r\n" L"token INSTRUCTION_CLOSE = \"/?/>\"\t\t@Color(\"Boundary\");"
-L"\r\n" L"token COMPLEX_ELEMENT_OPEN = \"/<//\"\t\t@Color(\"Boundary\");"
-L"\r\n" L"token SINGLE_ELEMENT_CLOSE = \"///>\"\t\t@Color(\"Boundary\");"
-L"\r\n" L"token ELEMENT_OPEN = \"/<\"\t\t\t\t@Color(\"Boundary\");"
-L"\r\n" L"token ELEMENT_CLOSE = \"/>\"\t\t\t\t@Color(\"Boundary\");"
-L"\r\n" L"token EQUAL = \"/=\";"
-L"\r\n" L""
-L"\r\n" L"token NAME = \"[a-zA-Z0-9:._/-]+\"\t\t\t\t\t\t\t\t@ContextColor();"
-L"\r\n" L"token ATTVALUE = \"\"\"[^<>\"\"]*\"\"|\'[^<>\']*\'\"\t\t\t\t\t\t@ContextColor();"
-L"\r\n" L"token COMMENT = \"/</!--([^/->]|-[^/->]|--[^>])*--/>\"\t\t\t@Color(\"Comment\");"
-L"\r\n" L"token CDATA = \"/</!/[CDATA/[([^/]]|/][^/]]|/]/][^>])*/]/]/>\";"
-L"\r\n" L"token TEXT = \"([^<>=\"\"\' /r/n/ta-zA-Z0-9:._/-])+|\"\"|\'\";"
-L"\r\n" L""
-L"\r\n" L"discardtoken SPACE = \"/s+\";"
-L"\r\n" L""
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L"// Rules"
-L"\r\n" L"//////////////////////////////////////////////////////////////////"
-L"\r\n" L""
-L"\r\n" L"rule Attribute XAttribute = NAME:name \"=\" ATTVALUE:value as Attribute;"
-L"\r\n" L"rule Text XText = (NAME:content | EQUAL:content | ATTVALUE:content | TEXT:content) as Text;"
-L"\r\n" L"rule CData XCData = CDATA:content as CData;"
-L"\r\n" L"rule Comment XComment = COMMENT:content as Comment;"
-L"\r\n" L"rule Element XElement = \"<\" NAME:name {XAttribute:attributes} (\"/>\" | \">\" {XSubNode:subNodes} \"</\" NAME:closingName \">\") as Element;"
-L"\r\n" L"rule Node XSubNode = !XText | !XCData | !XComment | !XElement;"
-L"\r\n" L"rule Instruction XInstruction = \"<?\" NAME:name {XAttribute:attributes} \"?>\" as Instruction;"
-L"\r\n" L"rule Document XDocument = {XInstruction:prologs | XComment:prologs} XElement:rootElement as Document;"
-;
+const wchar_t* const parserTextBuffer[] = {
+  L"" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"// AST" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"" L"\r\n"
+, L"class Node" L"\r\n"
+, L"{" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class Text : Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\ttoken content;" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class CData : Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\ttoken content (XmlUnescapeCData);" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class Attribute : Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\ttoken name\t\t\t\t\t\t\t\t\t@Color(\"AttName\");" L"\r\n"
+, L"\ttoken value (XmlUnescapeAttributeValue)\t\t@Color(\"AttValue\");" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class Comment : Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\ttoken content (XmlUnescapeComment);" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class Element : Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\ttoken name\t\t\t\t\t\t\t\t\t@Color(\"TagName\");" L"\r\n"
+, L"\ttoken closingName\t\t\t\t\t\t\t@Color(\"TagName\");" L"\r\n"
+, L"\tAttribute[] attributes;" L"\r\n"
+, L"\tNode[] subNodes (XmlMergeTextFragment);" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class Instruction : Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\ttoken name\t\t\t\t\t\t\t\t\t@Color(\"TagName\");" L"\r\n"
+, L"\tAttribute[] attributes;" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"class Document : Node" L"\r\n"
+, L"{" L"\r\n"
+, L"\tNode[] prologs;" L"\r\n"
+, L"\tElement rootElement;" L"\r\n"
+, L"}" L"\r\n"
+, L"" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"// Lexer" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"" L"\r\n"
+, L"token INSTRUCTION_OPEN = \"/</?\"\t\t\t@Color(\"Boundary\");" L"\r\n"
+, L"token INSTRUCTION_CLOSE = \"/?/>\"\t\t@Color(\"Boundary\");" L"\r\n"
+, L"token COMPLEX_ELEMENT_OPEN = \"/<//\"\t\t@Color(\"Boundary\");" L"\r\n"
+, L"token SINGLE_ELEMENT_CLOSE = \"///>\"\t\t@Color(\"Boundary\");" L"\r\n"
+, L"token ELEMENT_OPEN = \"/<\"\t\t\t\t@Color(\"Boundary\");" L"\r\n"
+, L"token ELEMENT_CLOSE = \"/>\"\t\t\t\t@Color(\"Boundary\");" L"\r\n"
+, L"token EQUAL = \"/=\";" L"\r\n"
+, L"" L"\r\n"
+, L"token NAME = \"[a-zA-Z0-9:._/-]+\"\t\t\t\t\t\t\t\t@ContextColor();" L"\r\n"
+, L"token ATTVALUE = \"\"\"[^<>\"\"]*\"\"|\'[^<>\']*\'\"\t\t\t\t\t\t@ContextColor();" L"\r\n"
+, L"token COMMENT = \"/</!--([^/->]|-[^/->]|--[^>])*--/>\"\t\t\t@Color(\"Comment\");" L"\r\n"
+, L"token CDATA = \"/</!/[CDATA/[([^/]]|/][^/]]|/]/][^>])*/]/]/>\";" L"\r\n"
+, L"token TEXT = \"([^<>=\"\"\' /r/n/ta-zA-Z0-9:._/-])+|\"\"|\'\";" L"\r\n"
+, L"" L"\r\n"
+, L"discardtoken SPACE = \"/s+\";" L"\r\n"
+, L"" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"// Rules" L"\r\n"
+, L"//////////////////////////////////////////////////////////////////" L"\r\n"
+, L"" L"\r\n"
+, L"rule Attribute XAttribute = NAME:name \"=\" ATTVALUE:value as Attribute;" L"\r\n"
+, L"rule Text XText = (NAME:content | EQUAL:content | ATTVALUE:content | TEXT:content) as Text;" L"\r\n"
+, L"rule CData XCData = CDATA:content as CData;" L"\r\n"
+, L"rule Comment XComment = COMMENT:content as Comment;" L"\r\n"
+, L"rule Element XElement = \"<\" NAME:name {XAttribute:attributes} (\"/>\" | \">\" {XSubNode:subNodes} \"</\" NAME:closingName \">\") as Element;" L"\r\n"
+, L"rule Node XSubNode = !XText | !XCData | !XComment | !XElement;" L"\r\n"
+, L"rule Instruction XInstruction = \"<?\" NAME:name {XAttribute:attributes} \"?>\" as Instruction;" L"\r\n"
+, L"rule Document XDocument = {XInstruction:prologs | XComment:prologs} XElement:rootElement as Document;" L"\r\n"
+};
+const vint lengthTextBuffer[] = {
+  2, 68, 8, 68, 2, 12, 3, 3, 2, 19, 3, 17, 3, 2, 20, 3, 36, 3, 2, 24, 3, 40, 63, 3, 2, 22, 3, 38, 3, 2, 22, 3
+, 40, 45, 26, 42, 3, 2, 26, 3, 40, 26, 3, 2, 23, 3, 18, 23, 3, 2, 68, 10, 68, 2, 55, 55, 58, 58, 50, 51, 21, 2, 58, 65
+, 75, 63, 56, 2, 29, 2, 68, 10, 68, 2, 72, 93, 45, 53, 134, 64, 93, 103
+};
+const vint lengthTextBufferTotal = 2487;
 
 			vl::WString XmlGetParserTextBuffer()
 			{
-				return parserTextBuffer;
+				vl::collections::Array<wchar_t> textBuffer(lengthTextBufferTotal + 1);
+				wchar_t* reading = &textBuffer[0];
+				for(vint i = 0; i < sizeof(parserTextBuffer) / sizeof(*parserTextBuffer); i++)
+				{
+					memcpy(reading, parserTextBuffer[i], lengthTextBuffer[i] * sizeof(wchar_t));
+					reading += lengthTextBuffer[i];
+				}
+				*reading = 0;
+				return &textBuffer[0];
 			}
 
 /***********************************************************************
@@ -21929,7 +23840,7 @@ const vint parserBufferLength = 4440; // 18926 bytes before compressing
 const vint parserBufferBlock = 1024;
 const vint parserBufferRemain = 344;
 const vint parserBufferRows = 5;
-const char* parserBuffer[] = {
+const char* const parserBuffer[] = {
 "\x00\x0E\x00\x02\x83\x80\x07\x7D\x00\x82\x03\xFF\x45\x08\x82\x83\x86\x81\x21\x6F\x6C\x2F\x32\x37\x84\x87\x02\x86\x00\x17\x82\x81\x24\x3C\x3A\x27\x30\x6D\x65\x06\x98\x8A\x80\x8E\x86\x00\x10\x92\x94\x98\x88\x04\x97\x80\x8E\x74\x56\x21\x2C\x35\x3A\x91\x8A\x84\x25\x8C\xA7\x89\x93\x8F\x98\x82\x8D\x08\xC0\x94\x21\x37\x37\x8D\x91\x91\x0C\xB9\x88\x9B\x91\x8D\x9C\x8C\xA0\x3F\x83\x83\xA5\xA0\x96\x98\x93\x93\x04\xCC\xAA\x9E\x93\x80\xA9\xAE\xA9\x44\xC6\x96\xA9\xA8\xAB\x82\xAC\xA7\x0C\xAD\xA9\xA3\x82\x27\x35\x3A\x37\x64\x61\x32\x39\x38\xA0\x9D\xB3\x86\x03\xBC\xAB\x8B\xBC\xB8\x01\xB7\xB7\x71\xF3\xB5\xA4\x8A\xA1\xAD\xBD\xA6\x7B\x88\xAA\xAA\xCC\xB6\xB4\xB8\xB9\x74\xDC\x82\x85\xC6\xB7\xC3\xAC\x97\x7D\xFF\x8F\xC2\xC2\xCD\x83\xBA\x00\x67\x89\xC4\x8B\xC3\xD5\xC4\xC0\xC8\x83\x89\x9F\xC1\xDD\xCC\xD3\x81\xC5\x9A\x81\xD1\xC4\x9C\x00\x8D\xDB\x87\x6F\x6E\x34\x25\x38\x3C\x3A\xBC\x8C\x05\x9D\xFF\x77\xD8\x84\xE0\x88\xDD\xBC\xBE\xC8\xC0\xE9\xD3\xCB\xD4\xCB\x68\xC1\x8F\xA7\xCD\x31\x92\xDC\xD7\x02\x89\x18\x9A\xEB\x8D\x8E\x39\x34\x62\x75\x3B\xDF\x74\xF5\xF0\xF3\xE7\x0F\xC4\x21\x34\x31\x36\xF2\xF2\xAF\x02\xC0\x90\x95\xE5\x32\xDE\xF7\xF2\xD8\x80\x0B\xC4\x2F\x33\x31\x3A\xEB\x74\x37\x74\x78\x7C\x19\x43\x45\x10\x1B\x65\x00\x82\x83\x3F\x0B\x18\x4D\x82\x40\x49\x2E\x13\x1C\x1D\x72\x35\x13\x18\x1D\x69\x39\x6B\x80\x01\x18\x5C\x82\x42\x13\x6F\x24\x12\x4A\x80\x1E\x88\x45\x88\x15\xC9\x4B\x8D\x03\x76\x2C\x9D\x74\x84\x78\xE2\x65\x15\x88\x41\x25\xAE\x15\x54\x70\xDC\x48\x49\x8C\x4C\xDF\x61\x7B\x6C\x7A\x00\x36\x13\x4D\x4D\x9D\x40\x93\x12\x7A\xEC\x44\x80\x53\x18\xB9\x7B\x66\x7E\x80\x4A\x94\x70\x81\x94\x02\x4C\x98\x73\x93\xF7\x79\x7B\x7D\x7F\xFF\x75\x74\x1C\x95\x00\x30\x12\x1D\x53\x67\x33\x1B\x82\x96\x03\x7C\x7E\x7C\x80\x0F\x88\x4D\x9B\x98\x6F\x34\x17\x81\x82\x5E\x8B\x80\x9B\x9C\x00\x8A\x08\x46\x9E\x02\x6B\x7F\x8A\x8F\x65\x26\x90\x97\x74\x02\x78\x9E\x95\x9B\x04\x6D\x93\x1A\x44\x73\x29\x1E\x18\x55\x21\x43\x04\xA2\x74\x85\x88\x80\x83\x8C\x03\x75\x85\x56\x00\x93\x91\x55\xA4\x9D\xD7\x58\x60\x03\x1C\x75\x22\x10\x8A\x88\x82\xB7\x78\xA3\x40\x6D\x91\x83\x85\x85\x17\x99\x8E\x18\x9F\x08\x74\xAE\x9D\x8F\x31\xA9\xAE\x7B\xAA\x02\x6D\xA2\x84\x85\x16\x98\x89\x6C\xA6\x02\x5A\xA1\x48\xB1\x00\x08\xB7\x89\x72\x60\x96\x9E\x91\x80\x02\x90\x08\x45\x0C\x18\x52\xB0\x73\xB5\x38\x4B\x82\x80\xB6\x49\x5A\xB7\x7C\xB7\xD9\x9E\xB6\x78\xB8\x84\x62\xB6\x7A\xB5\x08\x68\xB9\x12\x13\x53\x14\x12\x15\x15\x43\x14\x19\x13\x13\x4E\x1F\x1F\x10\x14\x45\x0E\x1A\xB3\x40\x2F\x3C\x0F\x0B\x0F\xC0\x5F\x61\x04\x46\x03\xD0\x8C\xBA\xBB\xF0\xB2\xB4\xBF\x17\x43\x0C\x1F\x13\x14\x45\x3B\xB2\x43\xBF\x2F\x3E\x0D\x66\x01\x18\x54\x09\xC5\x5E\x4F\x0D\x10\x14\x13\x45\x18\x1F\x15\x11\x20\xCD\x19\xBC\x15\xF6\xB8\xBA\xBD\x87\xFC\xBE\xBF\x08\xA7\x16\x5B\xCC\x42\xC6\x02\x53\x1B\xBB\x11\x20\xE3\xC5\xCB\xC9\x0C\xCE\xC0\xC6\xC4\x00\x2F\x02\xD2\x0F\x92\xBD\x54\x40\x71\x47\xC6\x8B\xCE\x13\x28\xF7\xB9\xBC\xCC\x08\x50\xDD\xBC\xB2\x39\x84\x4B\x88\x43\x57\xC0\x04\xC9\x11\x26\xCC\xDD\xCF\xC3\x45\x10\xD4\x42\xD4\x3E\x1F\x64\xAE\x61\x3A\x46\x81\x15\x15\x41\x0C\x12\xDB\x40\x52\xFD\x08\xC5\xB7\xF7\x40\xDE\x11\x10\x26\xC5\xC8\x42\xDE\x5B\x21\x1D\x0A\x1E\x41\x2D\x0A\x14\x0C\x2D\x39\x0A\x0E\x0B\x5F\x2F\x0D\x09\x17\x2B\x04\x8C\xAE\x7E\xA2\x81\x14\x14\x15\x56\x2D\xD5\x15\x11\x13\x18\x49\xE6\x40\x22\x1B\x1E\x14\x0F\x3E\x22\x0D\x16\x0A\x22\x3C\x17\x0A\xE7\xA0\xE7\x03\xEB\x09\xF9\x48\xDF\x55\xCC\x0F\x5D\xCD\xD4\x15\x22\x18\x45\xEF\xC4\xFE\xA1\x0D\x09\x0B\x28\x1E\xEA\xE2\x0F\x5D\x3C\x1D\x0A\xEF\x2D\x00\xF2\xF3\xF0\x5E\x00\xF9\x0A\x0A\xBB\xD5\xC5\xD7\x40\x59\xE8\xDB\x51\x5E\x44\x12\xE1\x10\x0B\x18\x58\xF8\xEF\x0B\x21\x2F\x0B\x17\x91\xD6\xDE\xFD\xEE\x17\x2F\x1D\x11\xF1\xF9\xBE\xE6\xFC\x1D\xF9\xE8\xC9\xFD\x17\xF2\xEC\xDD\x15\xC7\xD9\x09\x64\x8C\xCA\x40\x54\x21\xC4\x14\x09\x18\x7C\xF2\x43\xF8\xA0\x7D\x06\x08\x27\x00\x05\x17\x32\x0F\x05\x6E\x0F\x04\x7B\x7F\x61\x71\xC1\x45\x77\x70\x89\x6B\x71\x0A\x2B\x0C\x0F\xD2\x67\x07\x71\x0B\x45\x4A\x49\x03\x23\x0A\x28\x01\x0B\x08\x45\x05\x68\x42\x22\x8F\x05\x39\x2B\x06\x75\x93\x22\x40\xB5\x0C\x24\x7E\x81\x34\x50\x0B\x3C\x50\x47\x6E\x34\x68\x20\x1A\xB0\x86\x3B\x32\x85\x0E\x0B\x52\x0F\x0D\x38\x53\x0C\x3D\x72\x14\x0F\x03\x18\x23\x88",
 "\x81\x00\x08\x04\x24\x1C\x07\x0D\xFF\x41\x46\x1F\x2D\x80\x00\x2F\x91\x84\xA0\x68\x54\x20\x74\x4B\x88\x57\xBB\x2E\x07\x0F\xF2\x24\x0F\x80\x0C\x26\x8B\x00\x07\x8A\x12\xD2\x8D\x89\x27\x91\x88\x87\x80\x48\x84\x00\x44\x37\x8B\x1C\xAE\x01\x06\x3C\x18\x21\x1C\x82\x23\x8C\x34\x8D\x8A\x07\x20\x17\x6E\xC9\x20\x08\x8E\x1B\x61\x27\x88\x22\x02\x80\x08\x12\x74\x72\xCB\x45\x0C\x8F\x20\x02\x48\x4D\x65\x00\x05\x30\x33\x0B\x90\x76\x9B\x36\x19\x83\x2D\x8D\x34\xB6\x34\x92\x64\x99\x8A\x0C\x73\x88\x20\x4E\xB5\x8C\x89\xBB\x3E\x04\x1E\xFA\x87\x91\x3E\x95\x28\x04\x81\x82\x07\x11\x84\x95\x72\x26\x17\x70\x91\x8A\x95\x25\x23\x8F\x99\x93\x32\x13\x92\x20\x95\x91\x46\x1A\xEC\x85\x96\x17\x33\x04\x93\x04\x3E\x91\x2E\xA1\x93\x94\xBC\x65\x90\x04\x7E\x8C\x91\x2A\x83\x93\x73\x56\xAF\x90\x8F\xB1\x8C\x92\x23\x90\x90\x95\x32\x00\x0F\x96\x00\x03\x99\x19\x12\x08\x22\x6E\xB8\x95\x97\x3C\x91\x4D\x11\x70\x25\x88\x84\x25\x99\x89\xDA\x9E\x04\x08\x40\x08\x4C\x5C\x86\x52\x37\xD8\x98\x0B\x3B\xF4\x0E\x04\x19\x0E\x02\x32\xF7\x94\x8E\x3C\x96\x5E\x4A\x51\xA8\x94\x07\x22\x19\x8E\x31\x88\x99\x99\x23\xBB\x08\x04\xDA\x88\x93\xAD\x39\x8F\x91\x3E\x20\x00\x05\xA8\x95\x61\x40\xFC\x08\x95\xD0\x60\x07\xA0\x58\x13\x09\xA9\x27\x5C\x90\x3C\xA4\x56\x54\x21\x41\x50\x08\x0E\xA2\x04\x7F\x41\xA4\x94\x88\x8B\x53\x1B\x0D\x5F\x50\xB1\x15\xA1\xA0\x29\x13\x94\x08\x73\x9D\x00\x05\x0A\x8B\x9E\xFE\x85\xA7\x49\x83\xA6\x95\x90\x2B\x98\xA3\xB5\x8A\xA1\x24\xA2\xAE\xA0\x88\xA2\x02\xA2\x20\x14\xA2\x08\x16\xA8\xA2\x8D\xA0\xA2\x44\x88\x9F\xA0\x47\x8D\xAF\x9F\x17\x3B\xA3\x8F\x78\x8A\xA4\x4B\x90\x5A\x98\x8B\xB1\xA3\x9A\xF3\x9B\x94\x25\xAE\x50\x59\x58\x79\x30\x8C\x04\x20\x8C\x16\x64\xA0\x56\x61\x6E\x0D\x9E\xA4\x18\x21\x5C\xFA\x9C\xAD\x60\x72\x51\xA7\x3C\x1F\x07\x55\xC7\x95\xA1\x8B\x88\xA1\xA8\x78\x8B\xA0\xA0\x54\xA2\x05\x1F\x16\xA3\x9A\x75\xA6\xAE\x1B\x35\xAA\x89\xC4\xAE\xA8\xAF\x7A\xA2\xA0\x56\xC8\x97\x94\x20\x00\xAB\xA8\x42\xB5\x98\x61\x86\xB1\xA0\xC4\xBF\x55\xAD\xB2\x4D\x9D\x36\xF3\x91\x9F\x79\xAE\x04\x06\xF9\x88\x21\x6A\xB7\xAC\x9E\xDD\x38\xAB\xAF\x04\xA7\x97\x65\xD5\x99\xB2\x2C\x84\xAF\xA1\x11\xB6\xA2\x52\xA1\x76\xA0\x84\x8E\xAC\xA3\x51\xBB\xA1\x48\x84\xB6\xA4\xC9\x87\x9A\xAB\x8E\x5C\xAB\x4B\xA0\x0F\xAB\x47\xB4\xA6\xA6\xFB\x80\x54\x1D\x2F\xB6\xB9\xD8\xBE\xA3\xB6\xB6\xB5\xB4\x43\xA3\xA8\xB7\xA3\xBA\xB3\xB9\x96\xBE\xB6\x70\xD0\xAE\xA3\xF1\xB7\xB5\xA4\x56\xB5\xB9\x56\x8C\x59\xB8\x97\x8B\xA8\xA6\x32\xB3\x9E\x68\xD1\xB9\x4F\x3D\x54\x96\xB4\x33\x06\x10\x46\x7A\xBA\x9E\x9C\xB8\x8A\xA7\xEA\xB4\xB3\x75\xFF\xA8\xB3\xC0\x83\xAC\xAA\x46\xA8\xAB\x6E\x81\xAD\xA8\xF3\x81\xBF\xA9\xE7\xA5\xB8\x4A\xEB\xBB\xA5\xF6\xA7\x97\xBD\xCC\xB1\xBD\x6B\xF4\x00\x08\xB1\xB8\x96\xB1\xB2\x48\xAF\x40\x6A\xA0\xC5\xDC\x3E\x91\x0A\x18\x28\xC4\x5D\x9F\xB6\xAF\xDC\x10\xB0\xB6\x3D\xAC\x90\x76\xB9\x8A\xBB\xC1\x9C\xBD\xB0\x87\xAF\x91\x89\xEE\x0C\x9C\x51\x74\xBE\x4B\xA5\xBB\xC2\x0B\x36\x0C\xBE\x84\x05\xCC\xB5\xD2\xB4\xBB\x84\x82\xC2\xC6\x02\xF4\xB6\xC0\x9A\xBC\xB9\x82\xDF\xB8\xC3\x06\xD0\xC7\xC1\x53\xB7\xC6\x49\xC7\x8B\xC8\xE4\xAD\xA7\xC2\x5E\xBA\xC2\x74\xC0\x48\x0A\x14\x7D\x30\x4C\x65\xC9\x3B\x1B\xD8\x08\x22\x36\xFA\x9E\xCC\xD3\xA5\x9B\x64\xCE\x5E\x4B\xA4\xB3\xA3\x6D\x6D\x69\xA5\x93\x75\xC4\xA2\x56\x86\x92\xCF\x57\x54\x0E\x9D\xF9\x75\xCC\x40\xCF\x5A\xA6\x70\xC0\x0B\xDC\x08\x2B\xD0\x2C\x07\x4B\x3D\x61\x13\xBF\xA3\xEC\x3F\x8D\x11\x18\x26\xD2\xFA\x93\xD1\x18\x7E\x90\x7C\x2A\x01\x0E\xD0\x75\xD3\x9A\xA6\xBD\xCD\x2E\x47\xEF\x0C\x3E\xF0\x96\xBC\x2E\xF3\x30\x41\x37\xA9\x00\x23\xAF\xD9\xD3\xA9\x80\x4C\xD2\xD9\x67\x60\xD4\xBA\x32\xA4\xAB\xDE\x44\xD4\xC6\x2E\x9B\xC3\x41\xD2\xBB\x1B\xC5\xC4\x21\x23\xFF\xC6\xB5\xFF\xA0\xA0\x97\xBC\xAC\xC8\xBF\x89\xA0\xCA\xB6\xA8\xC1\x6E\x93\xAB\xB8\x2B\xC0\xBD\xBC\x10\xC4\xB9\x7A\xDD\xCC\xBD\x2F\xFE\xA0\xC3\xCD\xB3\xA7\x86\xF3\xB3\x9E\x2A\x83\x26\x8A\xA6\xA1\x9E\x9C\x70\x21\x7A\xE8\x43\x20\x9D\x38\xAB\x9F\x7C\xBF\xB1\xA5\x78\xB4\xDA\x44\x6F\x95\x04\x46\x7A\xDA\x9F\x7B\xE5\x0E\x9F\x21\x09\xCD\x6F\x76\xC1\xE0\x4D\xC4\xE6\xD4\xA8\xC2\xD0\x45\x81\xE3\x9E\x20\x0F\x79\x3B\x94\x8A\x4D\x97\x3A\x3F\x71\x36\x58\x0A\xE2\xAD\xD1\x04\x18\x18\x2B\xE2\x7D\x98\xE5\x9F\x78\x98\xA3\x8E\x88\x92\x4C\x32\x4F\x94\xA2\x08\xE0\x40\xC9\xE3\x42\x23\x32",
 "\x5C\xBF\xD8\x82\xD8\x8C\x9C\x72\x4B\xC2\x99\x9F\xE2\x37\x1D\xD7\x93\x87\xAC\xCA\xB0\x1A\x84\x26\x86\x3B\xDB\x85\x0F\xEB\xD4\x0C\xBD\x44\x22\x6F\xE8\x9B\xC6\x3A\x8E\xED\x45\x6C\xB7\xE4\x0E\x15\xF1\xE0\x97\x2D\xD2\x07\x8E\xC8\x26\xEA\x4A\x8F\xEA\x3F\xE1\xBB\xAC\x9E\xEE\xAB\xE5\x26\xF6\xCD\xCA\xF5\xC8\x8F\x92\xED\xE4\xAA\x30\xE8\x93\xCC\xF3\x96\xE7\xA9\xDE\x4C\xDC\xC0\xCA\xD7\x68\xC2\xC7\x06\x62\xC3\x26\xD8\xFE\xBF\x9C\x8C\xCD\xD3\xC6\x40\x75\xC1\x57\x52\xD3\xDA\x9D\xD5\xC2\xBD\x2B\xD8\xD9\xCB\x24\xB2\xC0\xB3\xDE\xCC\xAA\x40\xA1\xC8\xAC\x1B\xC4\xCC\x9C\xED\xD2\x21\xAC\x42\xE4\x9E\xEA\xC3\x9C\x19\x58\x98\x9C\x38\xCB\xEB\xD1\x04\x2D\xD2\xA6\xA2\xC2\x20\xB5\x9A\xD2\xE8\xE2\x90\x2D\xD4\x82\x28\x9C\x4D\xCB\xEA\xD2\xB3\xDE\x4A\xB9\x82\x26\x8B\x5D\xFA\x30\xF5\x44\xF4\xF0\x00\x59\x6D\xF5\xD8\xEE\xB2\xDE\x3E\xDE\xDF\xEC\x80\x06\x8A\x7F\xF8\xF2\xF3\xBA\xFC\xF6\x12\xFE\xDB\xE9\x87\xC0\x01\x47\x17\xEE\xEE\x6E\x46\xE3\x20\xBD\x51\xFB\x4D\x5E\x47\xF8\x5C\x24\xF0\x21\x77\xD9\xEA\xFA\xD3\xAB\x9E\x87\xD9\x9B\xC6\xEE\xE4\xC6\xEB\xB2\x4F\x8E\x8A\x88\x2B\xFD\xC6\xA8\xFE\xC5\xC9\xDA\xAF\xB2\x93\xB9\x98\x67\xC0\xB5\x91\x07\xD7\xC4\x67\xB2\xAB\xC6\xC9\xC9\x3D\x9C\x04\x15\x4E\x97\x78\x7B\x5B\x41\x44\xD8\x47\x44\x9D\x79\x1C\x65\x3B\x41\xB8\x40\x67\xAB\x79\x4D\x70\x6A\x45\x40\x44\x07\xCE\x79\x23\x62\x47\x79\x3E\x00\x7A\x03\x12\x7A\x48\x21\x06\xC3\x75\x7B\x1D\x84\x80\x13\x8F\x80\x08\x8A\x44\xAE\x7A\x81\x02\x1C\x81\x90\x63\x7E\x8E\x61\x82\x05\x84\x07\x07\x80\x02\x26\x8D\x81\x3E\x00\x7B\x09\x7E\x4D\x08\x18\x83\x63\x77\x7B\xEA\x6F\x82\xC9\x73\x10\x25\x8B\x83\xD3\x56\x83\x00\x26\x7E\x94\x46\x7B\xF4\x4F\x82\xE3\x77\x81\x48\x85\x83\x3E\x63\x4F\x38\x84\x10\x3A\x89\x6E\x43\x7E\x83\x18\x19\x35\x41\x88\x53\x70\x72\x5D\x46\x8F\x6B\xC2\x6A\x84\x3A\x71\x46\x32\x80\x73\x4E\x85\x6A\xFE\x61\x85\x03\x1A\x83\xC6\x7D\x83\x13\x8F\x83\x46\x48\x44\xCB\x76\x5E\x65\x8E\x6B\xD9\x4E\x6F\x5D\x85\x87\xE6\x52\x81\x5C\x4B\x84\x63\x8C\x7C\x2C\x8B\x63\x16\x08\x11\x81\x8B\x73\xAF\x2D\x62\x6F\x5C\x86\x5C\x44\x7D\x02\x1A\x37\x41\x8A\x74\x7F\x8F\x7E\x6E\x08\x86\x02\x1A\x83\x41\x7F\x82\x1F\x80\x84\x63\x8A\x74\x15\x82\x75\xD8\x7A\x1B\x9B\x38\x10\x9F\x87\x7D\x13\x78\x79\x55\x83\x81\x77\x81\x84\x5A\x7B\x89\xB8\x4F\x74\x00\x83\x10\x02\x8F\x74\x7A\x81\x44\x6E\x82\x86\xDF\x7D\x89\xD3\x51\x4F\xB5\x4C\x82\xBD\x44\x03\xC0\x43\x10\xC2\x45\x4B\xFE\x4B\x64\xF5\x7B\x4C\x7E\x6E\x4A\xC7\x41\x4D\x32\x55\x4B\x40\x0E\x7F\x67\x63\x29\x03\x82\x03\x6E\x68\x10\xD1\x8A\x44\x9E\x72\x67\xC7\x5B\x67\xB9\x64\x51\x45\x08\x67\x4C\x08\x6B\x0A\x7C\x4C\x85\x46\x8C\xDE\x83\x68\xFA\x33\x8E\xD3\x49\x68\x28\x80\x00\x2A\x8C\x1E\x92\x61\x82\x32\x08\x69\x08\x10\x8F\x33\x80\x69\x9C\x65\x3D\x9E\x66\x8E\x8F\x43\x6A\x44\x80\x64\x72\x72\x84\xF5\x41\x6B\x08\x10\x90\x26\x8E\x7B\x71\x60\x02\x43\x06\x6B\x4C\x38\x8F\x06\x94\x90\xBD\x65\x1A\x5E\x85\x5F\x2C\x47\x5F\x42\x65\x03\x76\x72\x10\x78\x7B\x61\x4A\x6C\x6C\xF5\x7D\x77\x31\x2F\x77\xBB\x12\x6D\xDE\x54\x6D\x84\x79\x51\x0E\x67\x78\xC3\x5A\x65\xDB\x6B\x78\xDD\x6A\x5C\xE0\x62\x66\x00\x29\x73\x0C\x1C\x46\xE5\x78\x11\xE7\x75\x88\x8A\x57\x5A\xEB\x74\x10\xED\x7D\x75\x36\x9F\x58\xF1\x7B\x77\x1B\x9E\x64\xD9\x50\x6D\xDB\x54\x52\xFB\x7E\x59\x3D\x92\x2B\x4C\x7C\x10\xD0\x7F\x74\x0F\x82\x8A\xAD\x63\x03\x56\x74\x10\x58\x70\x95\x20\x7E\x6C\x23\x75\x76\x2C\x7F\x06\x2E\x78\x72\x48\x80\x76\x67\x7F\x72\x6C\x72\x73\x43\x7C\x76\xD3\x4F\x74\x0D\x93\x10\xB8\x83\x54\xAA\x80\x00\xB5\x44\x2E\xF5\x37\x1F\xCC\x84\x07\x40\x30\x67\xC0\x1C\x01\x24\x12\x20\xE9\x8B\x8E\x61\x06\x24\x1D\x80\x1C\x1E\x09\x97\x59\x2E\x63\x48\x80\x26\x48\x80\x1C\x20\x02\x98\xEE\x1B\x85\x53\x23\x29\xF3\x40\x1C\xB7\x31\x2E\x8B\x91\x7C\xE6\x56\x37\x21\x50\x1C\xFE\x32\x99\xE6\x1F\x88\x49\x99\x1B\x0F\x8B\x63\xC0\x16\x02\x8A\x96\x1E\x6D\x96\x95\xA1\x2D\x17\x4F\x70\x1C\x28\x03\x9A\xE5\x10\x01\x22\x49\x10\xC2\x10\x1C\x9D\x10\x97\xB4\x95\x9B\x38\x12\x1C\x8F\x3F\x36\xB6\x90\x00\x9D\x13\x9B\xF7\x36\x22\x03\x19\x4C\xC0\x1B\x96\xD5\x40\x97\xCD\x15\x10\x4F\x4F\x9A\xBB\x9B\x9C\x24\x12\x1C\x6A\x48\x2C\xB5\x9D\x9B\xB4\x90\x24\xD1\x43\x9C\xFD\x8F\x96\xB0\x9D\x9C\x0C\x8C\x9C\xBC\x9C\x9D\x10\x7C\x94\x2F\x13\x54\xD6\x91\x91\xDF\x43\x54\xFF\x0A\x9B\x05\x18\x9E",
@@ -22230,2655 +24141,6 @@ Table Generation
 		}
 	}
 }
-
-
-/***********************************************************************
-.\REFLECTION\GUITYPEDESCRIPTORPREDEFINED.CPP
-***********************************************************************/
-
-namespace vl
-{
-	using namespace collections;
-
-	namespace reflection
-	{
-		namespace description
-		{
-
-/***********************************************************************
-IValueEnumerable
-***********************************************************************/
-
-			Ptr<IValueEnumerable> IValueEnumerable::Create(collections::LazyList<Value> values)
-			{
-				Ptr<IEnumerable<Value>> enumerable = new LazyList<Value>(values);
-				return new ValueEnumerableWrapper<Ptr<IEnumerable<Value>>>(enumerable);
-			}
-
-/***********************************************************************
-IValueList
-***********************************************************************/
-
-			Ptr<IValueList> IValueList::Create()
-			{
-				return Create(LazyList<Value>());
-			}
-
-			Ptr<IValueList> IValueList::Create(Ptr<IValueReadonlyList> values)
-			{
-				return Create(GetLazyList<Value>(values));
-			}
-
-			Ptr<IValueList> IValueList::Create(collections::LazyList<Value> values)
-			{
-				Ptr<List<Value>> list = new List<Value>;
-				CopyFrom(*list.Obj(), values);
-				return new ValueListWrapper<Ptr<List<Value>>>(list);
-			}
-
-/***********************************************************************
-IObservableList
-***********************************************************************/
-
-			class ReversedObservableList : public ObservableListBase<Value>
-			{
-			protected:
-
-				void NotifyUpdateInternal(vint start, vint count, vint newCount)override
-				{
-					if (observableList)
-					{
-						observableList->ItemChanged(start, count, newCount);
-					}
-				}
-			public:
-				IValueObservableList*		observableList = nullptr;
-			};
-
-			Ptr<IValueObservableList> IValueObservableList::Create()
-			{
-				return Create(LazyList<Value>());
-			}
-
-			Ptr<IValueObservableList> IValueObservableList::Create(Ptr<IValueReadonlyList> values)
-			{
-				return Create(GetLazyList<Value>(values));
-			}
-
-			Ptr<IValueObservableList> IValueObservableList::Create(collections::LazyList<Value> values)
-			{
-				auto list = MakePtr<ReversedObservableList>();
-				CopyFrom(*list.Obj(), values);
-				auto wrapper = MakePtr<ValueObservableListWrapper<Ptr<ReversedObservableList>>>(list);
-				list->observableList = wrapper.Obj();
-				return wrapper;
-			}
-
-/***********************************************************************
-IValueDictionary
-***********************************************************************/
-
-			Ptr<IValueDictionary> IValueDictionary::Create()
-			{
-				Ptr<Dictionary<Value, Value>> dictionary = new Dictionary<Value, Value>;
-				return new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary);
-			}
-
-			Ptr<IValueDictionary> IValueDictionary::Create(Ptr<IValueReadonlyDictionary> values)
-			{
-				Ptr<Dictionary<Value, Value>> dictionary = new Dictionary<Value, Value>;
-				CopyFrom(*dictionary.Obj(), GetLazyList<Value, Value>(values));
-				return new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary);
-			}
-
-			Ptr<IValueDictionary> IValueDictionary::Create(collections::LazyList<collections::Pair<Value, Value>> values)
-			{
-				Ptr<Dictionary<Value, Value>> dictionary = new Dictionary<Value, Value>;
-				CopyFrom(*dictionary.Obj(), values);
-				return new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary);
-			}
-
-/***********************************************************************
-IValueException
-***********************************************************************/
-
-			class DefaultValueException : public Object, public IValueException
-			{
-			protected:
-				WString				message;
-
-			public:
-				DefaultValueException(const WString& _message)
-					:message(_message)
-				{
-				}
-
-#pragma push_macro("GetMessage")
-#if defined GetMessage
-#undef GetMessage
-#endif
-				WString GetMessage()override
-				{
-					return message;
-				}
-#pragma pop_macro("GetMessage")
-
-				bool GetFatal()override
-				{
-					return false;
-				}
-
-				Ptr<IValueReadonlyList> GetCallStack()override
-				{
-					return nullptr;
-				}
-			};
-
-			Ptr<IValueException> IValueException::Create(const WString& message)
-			{
-				return new DefaultValueException(message);
-			}
-
-/***********************************************************************
-CoroutineResult
-***********************************************************************/
-
-			Value CoroutineResult::GetResult()
-			{
-				return result;
-			}
-
-			void CoroutineResult::SetResult(const Value& value)
-			{
-				result = value;
-			}
-
-			Ptr<IValueException> CoroutineResult::GetFailure()
-			{
-				return failure;
-			}
-
-			void CoroutineResult::SetFailure(Ptr<IValueException> value)
-			{
-				failure = value;
-			}
-
-/***********************************************************************
-EnumerableCoroutine
-***********************************************************************/
-
-			class CoroutineEnumerator : public Object, public virtual EnumerableCoroutine::IImpl, public Description<CoroutineEnumerator>
-			{
-			protected:
-				EnumerableCoroutine::Creator		creator;
-				Ptr<ICoroutine>						coroutine;
-				Value								current;
-				vint								index = -1;
-				Ptr<IValueEnumerator>				joining;
-
-			public:
-				CoroutineEnumerator(const EnumerableCoroutine::Creator& _creator)
-					:creator(_creator)
-				{
-				}
-
-				Value GetCurrent()override
-				{
-					return current;
-				}
-
-				vint GetIndex()override
-				{
-					return index;
-				}
-
-				bool Next()override
-				{
-					if (!coroutine)
-					{
-						coroutine = creator(this);
-					}
-
-					while (coroutine->GetStatus() == CoroutineStatus::Waiting)
-					{
-						if (joining)
-						{
-							if (joining->Next())
-							{
-								current = joining->GetCurrent();
-								index++;
-								return true;
-							}
-							else
-							{
-								joining = nullptr;
-							}
-						}
-
-						coroutine->Resume(true, nullptr);
-						if (coroutine->GetStatus() != CoroutineStatus::Waiting)
-						{
-							break;
-						}
-
-						if (!joining)
-						{
-							index++;
-							return true;
-						}
-					}
-					return false;
-				}
-
-				void OnYield(const Value& value)override
-				{
-					current = value;
-					joining = nullptr;
-				}
-
-				void OnJoin(Ptr<IValueEnumerable> value)override
-				{
-					if (!value)
-					{
-						throw Exception(L"Cannot join a null collection.");
-					}
-					current = Value();
-					joining = value->CreateEnumerator();
-				}
-			};
-
-			class CoroutineEnumerable : public Object, public virtual IValueEnumerable, public Description<CoroutineEnumerable>
-			{
-			protected:
-				EnumerableCoroutine::Creator		creator;
-
-			public:
-				CoroutineEnumerable(const EnumerableCoroutine::Creator& _creator)
-					:creator(_creator)
-				{
-				}
-
-				Ptr<IValueEnumerator> CreateEnumerator()override
-				{
-					return new CoroutineEnumerator(creator);
-				}
-			};
-
-			void EnumerableCoroutine::YieldAndPause(IImpl* impl, const Value& value)
-			{
-				impl->OnYield(value);
-			}
-
-			void EnumerableCoroutine::JoinAndPause(IImpl* impl, Ptr<IValueEnumerable> value)
-			{
-				impl->OnJoin(value);
-			}
-
-			void EnumerableCoroutine::ReturnAndExit(IImpl* impl)
-			{
-			}
-
-			Ptr<IValueEnumerable> EnumerableCoroutine::Create(const Creator& creator)
-			{
-				return new CoroutineEnumerable(creator);
-			}
-
-/***********************************************************************
-IAsync
-***********************************************************************/
-
-			class DelayAsync : public Object, public virtual IAsync, public Description<DelayAsync>
-			{
-			protected:
-				SpinLock							lock;
-				vint								milliseconds;
-				AsyncStatus							status = AsyncStatus::Ready;
-
-			public:
-				DelayAsync(vint _milliseconds)
-					:milliseconds(_milliseconds)
-				{
-				}
-
-				AsyncStatus GetStatus()override
-				{
-					return status;
-				}
-
-				bool Execute(const Func<void(Ptr<CoroutineResult>)>& _callback)override
-				{
-					SPIN_LOCK(lock)
-					{
-						if (status != AsyncStatus::Ready) return false;
-						status = AsyncStatus::Executing;
-						IAsyncScheduler::GetSchedulerForCurrentThread()->DelayExecute([async = Ptr<DelayAsync>(this), callback = _callback]()
-						{
-							if (callback)
-							{
-								callback(nullptr);
-							}
-						}, milliseconds);
-					}
-					return true;
-				}
-			};
-
-			Ptr<IAsync> IAsync::Delay(vint milliseconds)
-			{
-				return new DelayAsync(milliseconds);
-			}
-
-/***********************************************************************
-IFuture
-***********************************************************************/
-
-			class FutureAndPromiseAsync : public virtual IFuture, public virtual IPromise, public Description<FutureAndPromiseAsync>
-			{
-			public:
-				SpinLock							lock;
-				AsyncStatus							status = AsyncStatus::Ready;
-				Ptr<CoroutineResult>				cr;
-				Func<void(Ptr<CoroutineResult>)>	callback;
-
-				void ExecuteCallbackAndClear()
-				{
-					status = AsyncStatus::Stopped;
-					if (callback)
-					{
-						callback(cr);
-					}
-					cr = nullptr;
-					callback = {};
-				}
-
-				template<typename F>
-				bool Send(F f)
-				{
-					SPIN_LOCK(lock)
-					{
-						if (status == AsyncStatus::Stopped || cr) return false;
-						cr = MakePtr<CoroutineResult>();
-						f();
-						if (status == AsyncStatus::Executing)
-						{
-							ExecuteCallbackAndClear();
-						}
-					}
-					return true;
-				}
-
-				AsyncStatus GetStatus()override
-				{
-					return status;
-				}
-
-				bool Execute(const Func<void(Ptr<CoroutineResult>)>& _callback)override
-				{
-					SPIN_LOCK(lock)
-					{
-						if (status != AsyncStatus::Ready) return false;
-						callback = _callback;
-						if (cr)
-						{
-							ExecuteCallbackAndClear();
-						}
-						else
-						{
-							status = AsyncStatus::Executing;
-						}
-					}
-					return true;
-				}
-
-				Ptr<IPromise> GetPromise()override
-				{
-					return this;
-				}
-
-				bool SendResult(const Value& result)override
-				{
-					return Send([=]()
-					{
-						cr->SetResult(result);
-					});
-				}
-
-				bool SendFailure(Ptr<IValueException> failure)override
-				{
-					return Send([=]()
-					{
-						cr->SetFailure(failure);
-					});
-				}
-			};
-
-			Ptr<IFuture> IFuture::Create()
-			{
-				return new FutureAndPromiseAsync();
-			}
-
-/***********************************************************************
-IAsyncScheduler
-***********************************************************************/
-
-			class AsyncSchedulerMap
-			{
-			public:
-				Dictionary<vint, Ptr<IAsyncScheduler>>		schedulers;
-				Ptr<IAsyncScheduler>						defaultScheduler;
-			};
-
-			AsyncSchedulerMap* asyncSchedulerMap = nullptr;
-			SpinLock asyncSchedulerLock;
-
-#define ENSURE_ASYNC_SCHEDULER_MAP\
-			if (!asyncSchedulerMap) asyncSchedulerMap = new AsyncSchedulerMap;
-
-#define DISPOSE_ASYNC_SCHEDULER_MAP_IF_NECESSARY\
-			if (asyncSchedulerMap->schedulers.Count() == 0 && !asyncSchedulerMap->defaultScheduler)\
-			{\
-				delete asyncSchedulerMap;\
-				asyncSchedulerMap = nullptr;\
-			}\
-
-			void IAsyncScheduler::RegisterDefaultScheduler(Ptr<IAsyncScheduler> scheduler)
-			{
-				SPIN_LOCK(asyncSchedulerLock)
-				{
-					ENSURE_ASYNC_SCHEDULER_MAP
-					CHECK_ERROR(!asyncSchedulerMap->defaultScheduler, L"IAsyncScheduler::RegisterDefaultScheduler()#A default scheduler has already been registered.");
-					asyncSchedulerMap->defaultScheduler = scheduler;
-				}
-			}
-
-			void IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr<IAsyncScheduler> scheduler)
-			{
-				SPIN_LOCK(asyncSchedulerLock)
-				{
-					ENSURE_ASYNC_SCHEDULER_MAP
-					CHECK_ERROR(!asyncSchedulerMap->schedulers.Keys().Contains(Thread::GetCurrentThreadId()), L"IAsyncScheduler::RegisterDefaultScheduler()#A scheduler for this thread has already been registered.");
-					asyncSchedulerMap->schedulers.Add(Thread::GetCurrentThreadId(), scheduler);
-				}
-			}
-
-			Ptr<IAsyncScheduler> IAsyncScheduler::UnregisterDefaultScheduler()
-			{
-				Ptr<IAsyncScheduler> scheduler;
-				SPIN_LOCK(asyncSchedulerLock)
-				{
-					if (asyncSchedulerMap)
-					{
-						scheduler = asyncSchedulerMap->defaultScheduler;
-						asyncSchedulerMap->defaultScheduler = nullptr;
-						DISPOSE_ASYNC_SCHEDULER_MAP_IF_NECESSARY
-					}
-				}
-				return scheduler;
-			}
-
-			Ptr<IAsyncScheduler> IAsyncScheduler::UnregisterSchedulerForCurrentThread()
-			{
-				Ptr<IAsyncScheduler> scheduler;
-				SPIN_LOCK(asyncSchedulerLock)
-				{
-					if (asyncSchedulerMap)
-					{
-						vint index = asyncSchedulerMap->schedulers.Keys().IndexOf(Thread::GetCurrentThreadId());
-						if (index != -1)
-						{
-							scheduler = asyncSchedulerMap->schedulers.Values()[index];
-							asyncSchedulerMap->schedulers.Remove(Thread::GetCurrentThreadId());
-						}
-						DISPOSE_ASYNC_SCHEDULER_MAP_IF_NECESSARY
-					}
-				}
-				return scheduler;
-			}
-
-#undef ENSURE_ASYNC_SCHEDULER_MAP
-#undef DISPOSE_ASYNC_SCHEDULER_MAP_IF_NECESSARY
-
-			Ptr<IAsyncScheduler> IAsyncScheduler::GetSchedulerForCurrentThread()
-			{
-				Ptr<IAsyncScheduler> scheduler;
-				SPIN_LOCK(asyncSchedulerLock)
-				{
-					CHECK_ERROR(asyncSchedulerMap != nullptr, L"IAsyncScheduler::GetSchedulerForCurrentThread()#There is no scheduler registered for the current thread.");
-					vint index = asyncSchedulerMap->schedulers.Keys().IndexOf(Thread::GetCurrentThreadId());
-					if (index != -1)
-					{
-						scheduler = asyncSchedulerMap->schedulers.Values()[index];
-					}
-					else if (asyncSchedulerMap->defaultScheduler)
-					{
-						scheduler = asyncSchedulerMap->defaultScheduler;
-					}
-					else
-					{
-						CHECK_FAIL(L"IAsyncScheduler::GetSchedulerForCurrentThread()#There is no scheduler registered for the current thread.");
-					}
-				}
-				return scheduler;
-			}
-
-/***********************************************************************
-AsyncCoroutine
-***********************************************************************/
-
-			class CoroutineAsync : public Object, public virtual AsyncCoroutine::IImpl, public Description<CoroutineAsync>
-			{
-			protected:
-				Ptr<ICoroutine>						coroutine;
-				AsyncCoroutine::Creator				creator;
-				Ptr<IAsyncScheduler>				scheduler;
-				Func<void(Ptr<CoroutineResult>)>	callback;
-				Value								result;
-
-			public:
-				CoroutineAsync(AsyncCoroutine::Creator _creator)
-					:creator(_creator)
-				{
-				}
-
-				AsyncStatus GetStatus()override
-				{
-					if (!coroutine)
-					{
-						return AsyncStatus::Ready;
-					}
-					else if (coroutine->GetStatus() != CoroutineStatus::Stopped)
-					{
-						return AsyncStatus::Executing;
-					}
-					else
-					{
-						return AsyncStatus::Stopped;
-					}
-				}
-
-				bool Execute(const Func<void(Ptr<CoroutineResult>)>& _callback)override
-				{
-					if (coroutine) return false;
-					scheduler = IAsyncScheduler::GetSchedulerForCurrentThread();
-					callback = _callback;
-					coroutine = creator(this);
-					OnContinue(nullptr);
-					return true;
-				}
-
-				Ptr<IAsyncScheduler> GetScheduler()override
-				{
-					return scheduler;
-				}
-
-				void OnContinue(Ptr<CoroutineResult> output)override
-				{
-					scheduler->Execute([async = Ptr<CoroutineAsync>(this), output]()
-					{
-						async->coroutine->Resume(false, output);
-						if (async->coroutine->GetStatus() == CoroutineStatus::Stopped && async->callback)
-						{
-							auto result = MakePtr<CoroutineResult>();
-							if (async->coroutine->GetFailure())
-							{
-								result->SetFailure(async->coroutine->GetFailure());
-							}
-							else
-							{
-								result->SetResult(async->result);
-							}
-							async->callback(result);
-						}
-					});
-				}
-
-				void OnReturn(const Value& value)override
-				{
-					result = value;
-				}
-			};
-			
-			void AsyncCoroutine::AwaitAndRead(IImpl* impl, Ptr<IAsync> value)
-			{
-				value->Execute([async = Ptr<IImpl>(impl)](auto output)
-				{
-					async->OnContinue(output);
-				});
-			}
-
-			void AsyncCoroutine::ReturnAndExit(IImpl* impl, const Value& value)
-			{
-				impl->OnReturn(value);
-			}
-
-			Ptr<IAsync> AsyncCoroutine::Create(const Creator& creator)
-			{
-				return new CoroutineAsync(creator);
-			}
-			void AsyncCoroutine::CreateAndRun(const Creator& creator)
-			{
-				MakePtr<CoroutineAsync>(creator)->Execute(
-					[](Ptr<CoroutineResult> cr)
-					{
-						if (cr->GetFailure())
-						{
-#pragma push_macro("GetMessage")
-#if defined GetMessage
-#undef GetMessage
-#endif
-							throw Exception(cr->GetFailure()->GetMessage());
-#pragma pop_macro("GetMessage")
-						}
-					});
-			}
-
-/***********************************************************************
-Libraries
-***********************************************************************/
-
-			namespace system_sys
-			{
-				class ReverseEnumerable : public Object, public IValueEnumerable
-				{
-				protected:
-					Ptr<IValueReadonlyList>					list;
-
-					class Enumerator : public Object, public IValueEnumerator
-					{
-					protected:
-						Ptr<IValueReadonlyList>				list;
-						vint								index;
-
-					public:
-						Enumerator(Ptr<IValueReadonlyList> _list)
-							:list(_list), index(_list->GetCount())
-						{
-						}
-
-						Value GetCurrent()
-						{
-							return list->Get(index);
-						}
-
-						vint GetIndex()
-						{
-							return list->GetCount() - 1 - index;
-						}
-
-						bool Next()
-						{
-							if (index <= 0) return false;
-							index--;
-							return true;
-						}
-					};
-
-				public:
-					ReverseEnumerable(Ptr<IValueReadonlyList> _list)
-						:list(_list)
-					{
-					}
-
-					Ptr<IValueEnumerator> CreateEnumerator()override
-					{
-						return MakePtr<Enumerator>(list);
-					}
-				};
-			}
-
-			Ptr<IValueEnumerable> Sys::ReverseEnumerable(Ptr<IValueEnumerable> value)
-			{
-				auto list = value.Cast<IValueReadonlyList>();
-				if (!list)
-				{
-					list = IValueList::Create(GetLazyList<Value>(value));
-				}
-				return new system_sys::ReverseEnumerable(list);
-			}
-
-#define DEFINE_COMPARE(TYPE)\
-			vint Sys::Compare(TYPE a, TYPE b)\
-			{\
-				auto result = TypedValueSerializerProvider<TYPE>::Compare(a, b);\
-				switch (result)\
-				{\
-				case IBoxedValue::Smaller:	return -1;\
-				case IBoxedValue::Greater:	return 1;\
-				case IBoxedValue::Equal:	return 0;\
-				default:\
-					CHECK_FAIL(L"Unexpected compare result.");\
-				}\
-			}\
-
-			REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_COMPARE)
-			DEFINE_COMPARE(DateTime)
-#undef DEFINE_COMPARE
-
-#define DEFINE_MINMAX(TYPE)\
-			TYPE Math::Min(TYPE a, TYPE b)\
-			{\
-				return Sys::Compare(a, b) < 0 ? a : b;\
-			}\
-			TYPE Math::Max(TYPE a, TYPE b)\
-			{\
-				return Sys::Compare(a, b) > 0 ? a : b;\
-			}\
-
-			REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_MINMAX)
-			DEFINE_MINMAX(DateTime)
-#undef DEFINE_MINMAX
-		}
-	}
-}
-
-
-/***********************************************************************
-.\THREADING.CPP
-***********************************************************************/
-#ifdef VCZH_MSVC
-
-namespace vl
-{
-	using namespace threading_internal;
-	using namespace collections;
-
-/***********************************************************************
-WaitableObject
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct WaitableData
-		{
-			HANDLE			handle;
-
-			WaitableData(HANDLE _handle)
-				:handle(_handle)
-			{
-			}
-		};
-	}
-
-	WaitableObject::WaitableObject()
-		:waitableData(0)
-	{
-	}
-
-	void WaitableObject::SetData(threading_internal::WaitableData* data)
-	{
-		waitableData=data;
-	}
-
-	bool WaitableObject::IsCreated()
-	{
-		return waitableData!=0;
-	}
-
-	bool WaitableObject::Wait()
-	{
-		return WaitForTime(INFINITE);
-	}
-
-	bool WaitableObject::WaitForTime(vint ms)
-	{
-		if(IsCreated())
-		{
-			if(WaitForSingleObject(waitableData->handle, (DWORD)ms)==WAIT_OBJECT_0)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool WaitableObject::WaitAll(WaitableObject** objects, vint count)
-	{
-		Array<HANDLE> handles(count);
-		for(vint i=0;i<count;i++)
-		{
-			handles[i]=objects[i]->waitableData->handle;
-		}
-		DWORD result=WaitForMultipleObjects((DWORD)count, &handles[0], TRUE, INFINITE);
-		return result==WAIT_OBJECT_0 || result==WAIT_ABANDONED_0;
-
-	}
-
-	bool WaitableObject::WaitAllForTime(WaitableObject** objects, vint count, vint ms)
-	{
-		Array<HANDLE> handles(count);
-		for(vint i=0;i<count;i++)
-		{
-			handles[i]=objects[i]->waitableData->handle;
-		}
-		DWORD result=WaitForMultipleObjects((DWORD)count, &handles[0], TRUE, (DWORD)ms);
-		return result==WAIT_OBJECT_0 || result==WAIT_ABANDONED_0;
-	}
-
-	vint WaitableObject::WaitAny(WaitableObject** objects, vint count, bool* abandoned)
-	{
-		Array<HANDLE> handles(count);
-		for(vint i=0;i<count;i++)
-		{
-			handles[i]=objects[i]->waitableData->handle;
-		}
-		DWORD result=WaitForMultipleObjects((DWORD)count, &handles[0], FALSE, INFINITE);
-		if(WAIT_OBJECT_0 <= result && result<WAIT_OBJECT_0+count)
-		{
-			*abandoned=false;
-			return result-WAIT_OBJECT_0;
-		}
-		else if(WAIT_ABANDONED_0 <= result && result<WAIT_ABANDONED_0+count)
-		{
-			*abandoned=true;
-			return result-WAIT_ABANDONED_0;
-		}
-		else
-		{
-			return -1;
-		}
-	}
-
-	vint WaitableObject::WaitAnyForTime(WaitableObject** objects, vint count, vint ms, bool* abandoned)
-	{
-		Array<HANDLE> handles(count);
-		for(vint i=0;i<count;i++)
-		{
-			handles[i]=objects[i]->waitableData->handle;
-		}
-		DWORD result=WaitForMultipleObjects((DWORD)count, &handles[0], FALSE, (DWORD)ms);
-		if(WAIT_OBJECT_0 <= result && result<WAIT_OBJECT_0+count)
-		{
-			*abandoned=false;
-			return result-WAIT_OBJECT_0;
-		}
-		else if(WAIT_ABANDONED_0 <= result && result<WAIT_ABANDONED_0+count)
-		{
-			*abandoned=true;
-			return result-WAIT_ABANDONED_0;
-		}
-		else
-		{
-			return -1;
-		}
-	}
-
-/***********************************************************************
-Thread
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct ThreadData : public WaitableData
-		{
-			DWORD						id;
-
-			ThreadData()
-				:WaitableData(NULL)
-			{
-				id=-1;
-			}
-		};
-
-		class ProceduredThread : public Thread
-		{
-		private:
-			Thread::ThreadProcedure		procedure;
-			void*						argument;
-			bool						deleteAfterStopped;
-
-		protected:
-			void Run()
-			{
-				bool deleteAfterStopped = this->deleteAfterStopped;
-				ThreadLocalStorage::FixStorages();
-				try
-				{
-					procedure(this, argument);
-					threadState=Thread::Stopped;
-					ThreadLocalStorage::ClearStorages();
-				}
-				catch (...)
-				{
-					ThreadLocalStorage::ClearStorages();
-					throw;
-				}
-				if(deleteAfterStopped)
-				{
-					delete this;
-				}
-			}
-		public:
-			ProceduredThread(Thread::ThreadProcedure _procedure, void* _argument, bool _deleteAfterStopped)
-				:procedure(_procedure)
-				,argument(_argument)
-				,deleteAfterStopped(_deleteAfterStopped)
-			{
-			}
-		};
-
-		class LambdaThread : public Thread
-		{
-		private:
-			Func<void()>				procedure;
-			bool						deleteAfterStopped;
-
-		protected:
-			void Run()
-			{
-				bool deleteAfterStopped = this->deleteAfterStopped;
-				ThreadLocalStorage::FixStorages();
-				try
-				{
-					procedure();
-					threadState=Thread::Stopped;
-					ThreadLocalStorage::ClearStorages();
-				}
-				catch (...)
-				{
-					ThreadLocalStorage::ClearStorages();
-					throw;
-				}
-				if(deleteAfterStopped)
-				{
-					delete this;
-				}
-			}
-		public:
-			LambdaThread(const Func<void()>& _procedure, bool _deleteAfterStopped)
-				:procedure(_procedure)
-				,deleteAfterStopped(_deleteAfterStopped)
-			{
-			}
-		};
-	}
-
-	void InternalThreadProc(Thread* thread)
-	{
-		thread->Run();
-	}
-
-	DWORD WINAPI InternalThreadProcWrapper(LPVOID lpParameter)
-	{
-		InternalThreadProc((Thread*)lpParameter);
-		return 0;
-	}
-
-	Thread::Thread()
-	{
-		internalData=new ThreadData;
-		internalData->handle=CreateThread(NULL, 0, InternalThreadProcWrapper, this, CREATE_SUSPENDED, &internalData->id);
-		threadState=Thread::NotStarted;
-		SetData(internalData);
-	}
-
-	Thread::~Thread()
-	{
-		if (internalData)
-		{
-			Stop();
-			CloseHandle(internalData->handle);
-			delete internalData;
-		}
-	}
-
-	Thread* Thread::CreateAndStart(ThreadProcedure procedure, void* argument, bool deleteAfterStopped)
-	{
-		if(procedure)
-		{
-			Thread* thread=new ProceduredThread(procedure, argument, deleteAfterStopped);
-			if(thread->Start())
-			{
-				return thread;
-			}
-			else
-			{
-				delete thread;
-			}
-		}
-		return 0;
-	}
-
-	Thread* Thread::CreateAndStart(const Func<void()>& procedure, bool deleteAfterStopped)
-	{
-		Thread* thread=new LambdaThread(procedure, deleteAfterStopped);
-		if(thread->Start())
-		{
-			return thread;
-		}
-		else
-		{
-			delete thread;
-		}
-		return 0;
-	}
-
-	void Thread::Sleep(vint ms)
-	{
-		::Sleep((DWORD)ms);
-	}
-
-	
-	vint Thread::GetCPUCount()
-	{
-		SYSTEM_INFO info;
-		GetSystemInfo(&info);
-		return info.dwNumberOfProcessors;
-	}
-
-	vint Thread::GetCurrentThreadId()
-	{
-		return (vint)::GetCurrentThreadId();
-	}
-
-	bool Thread::Start()
-	{
-		if(threadState==Thread::NotStarted && internalData->handle!=NULL)
-		{
-			if(ResumeThread(internalData->handle)!=-1)
-			{
-				threadState=Thread::Running;
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool Thread::Stop()
-	{
-		if(internalData->handle!=NULL)
-		{
-			if (SuspendThread(internalData->handle) != -1)
-			{
-				threadState=Thread::Stopped;
-				return true;
-			}
-		}
-		return false;
-	}
-
-	Thread::ThreadState Thread::GetState()
-	{
-		return threadState;
-	}
-
-	void Thread::SetCPU(vint index)
-	{
-		SetThreadAffinityMask(internalData->handle, ((vint)1 << index));
-	}
-
-/***********************************************************************
-Mutex
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct MutexData : public WaitableData
-		{
-			MutexData(HANDLE _handle)
-				:WaitableData(_handle)
-			{
-			}
-		};
-	}
-
-	Mutex::Mutex()
-		:internalData(0)
-	{
-	}
-
-	Mutex::~Mutex()
-	{
-		if(internalData)
-		{
-			CloseHandle(internalData->handle);
-			delete internalData;
-		}
-	}
-
-	bool Mutex::Create(bool owned, const WString& name)
-	{
-		if(IsCreated())return false;
-		BOOL aOwned=owned?TRUE:FALSE;
-		LPCTSTR aName=name==L""?NULL:name.Buffer();
-		HANDLE handle=CreateMutex(NULL, aOwned, aName);
-		if(handle)
-		{
-			internalData=new MutexData(handle);
-			SetData(internalData);
-		}
-		return IsCreated();
-	}
-
-	bool Mutex::Open(bool inheritable, const WString& name)
-	{
-		if(IsCreated())return false;
-		BOOL aInteritable=inheritable?TRUE:FALSE;
-		HANDLE handle=OpenMutex(SYNCHRONIZE, aInteritable, name.Buffer());
-		if(handle)
-		{
-			internalData=new MutexData(handle);
-			SetData(internalData);
-		}
-		return IsCreated();
-	}
-
-	bool Mutex::Release()
-	{
-		if(IsCreated())
-		{
-			return ReleaseMutex(internalData->handle)!=0;
-		}
-		return false;
-	}
-
-/***********************************************************************
-Semaphore
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct SemaphoreData : public WaitableData
-		{
-			SemaphoreData(HANDLE _handle)
-				:WaitableData(_handle)
-			{
-			}
-		};
-	}
-
-	Semaphore::Semaphore()
-		:internalData(0)
-	{
-	}
-
-	Semaphore::~Semaphore()
-	{
-		if(internalData)
-		{
-			CloseHandle(internalData->handle);
-			delete internalData;
-		}
-	}
-
-	bool Semaphore::Create(vint initialCount, vint maxCount, const WString& name)
-	{
-		if(IsCreated())return false;
-		LONG aInitial=(LONG)initialCount;
-		LONG aMax=(LONG)maxCount;
-		LPCTSTR aName=name==L""?NULL:name.Buffer();
-		HANDLE handle=CreateSemaphore(NULL, aInitial, aMax, aName);
-		if(handle)
-		{
-			internalData=new SemaphoreData(handle);
-			SetData(internalData);
-		}
-		return IsCreated();
-	}
-
-	bool Semaphore::Open(bool inheritable, const WString& name)
-	{
-		if(IsCreated())return false;
-		BOOL aInteritable=inheritable?TRUE:FALSE;
-		HANDLE handle=OpenSemaphore(SYNCHRONIZE, aInteritable, name.Buffer());
-		if(handle)
-		{
-			internalData=new SemaphoreData(handle);
-			SetData(internalData);
-		}
-		return IsCreated();
-	}
-
-	bool Semaphore::Release()
-	{
-		if(IsCreated())
-		{
-			return Release(1)!=-1;
-		}
-		return false;
-	}
-
-	vint Semaphore::Release(vint count)
-	{
-		if(IsCreated())
-		{
-			LONG previous=-1;
-			if(ReleaseSemaphore(internalData->handle, (LONG)count, &previous)!=0)
-			{
-				return (vint)previous;
-			}
-		}
-		return -1;
-	}
-
-/***********************************************************************
-EventObject
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct EventData : public WaitableData
-		{
-			EventData(HANDLE _handle)
-				:WaitableData(_handle)
-			{
-			}
-		};
-	}
-
-	EventObject::EventObject()
-		:internalData(0)
-	{
-	}
-
-	EventObject::~EventObject()
-	{
-		if(internalData)
-		{
-			CloseHandle(internalData->handle);
-			delete internalData;
-		}
-	}
-
-	bool EventObject::CreateAutoUnsignal(bool signaled, const WString& name)
-	{
-		if(IsCreated())return false;
-		BOOL aSignaled=signaled?TRUE:FALSE;
-		LPCTSTR aName=name==L""?NULL:name.Buffer();
-		HANDLE handle=CreateEvent(NULL, FALSE, aSignaled, aName);
-		if(handle)
-		{
-			internalData=new EventData(handle);
-			SetData(internalData);
-		}
-		return IsCreated();
-	}
-
-	bool EventObject::CreateManualUnsignal(bool signaled, const WString& name)
-	{
-		if(IsCreated())return false;
-		BOOL aSignaled=signaled?TRUE:FALSE;
-		LPCTSTR aName=name==L""?NULL:name.Buffer();
-		HANDLE handle=CreateEvent(NULL, TRUE, aSignaled, aName);
-		if(handle)
-		{
-			internalData=new EventData(handle);
-			SetData(internalData);
-		}
-		return IsCreated();
-	}
-
-	bool EventObject::Open(bool inheritable, const WString& name)
-	{
-		if(IsCreated())return false;
-		BOOL aInteritable=inheritable?TRUE:FALSE;
-		HANDLE handle=OpenEvent(SYNCHRONIZE, aInteritable, name.Buffer());
-		if(handle)
-		{
-			internalData=new EventData(handle);
-			SetData(internalData);
-		}
-		return IsCreated();
-	}
-
-	bool EventObject::Signal()
-	{
-		if(IsCreated())
-		{
-			return SetEvent(internalData->handle)!=0;
-		}
-		return false;
-	}
-
-	bool EventObject::Unsignal()
-	{
-		if(IsCreated())
-		{
-			return ResetEvent(internalData->handle)!=0;
-		}
-		return false;
-	}
-
-/***********************************************************************
-ThreadPoolLite
-***********************************************************************/
-
-		struct ThreadPoolQueueProcArgument
-		{
-			void(*proc)(void*);
-			void* argument;
-		};
-
-		DWORD WINAPI ThreadPoolQueueProc(void* argument)
-		{
-			Ptr<ThreadPoolQueueProcArgument> proc=(ThreadPoolQueueProcArgument*)argument;
-			ThreadLocalStorage::FixStorages();
-			try
-			{
-				proc->proc(proc->argument);
-				ThreadLocalStorage::ClearStorages();
-			}
-			catch (...)
-			{
-				ThreadLocalStorage::ClearStorages();
-			}
-			return 0;
-		}
-
-		DWORD WINAPI ThreadPoolQueueFunc(void* argument)
-		{
-			Ptr<Func<void()>> proc=(Func<void()>*)argument;
-			ThreadLocalStorage::FixStorages();
-			try
-			{
-				(*proc.Obj())();
-				ThreadLocalStorage::ClearStorages();
-			}
-			catch (...)
-			{
-				ThreadLocalStorage::ClearStorages();
-			}
-			return 0;
-		}
-
-		ThreadPoolLite::ThreadPoolLite()
-		{
-		}
-
-		ThreadPoolLite::~ThreadPoolLite()
-		{
-		}
-
-		bool ThreadPoolLite::Queue(void(*proc)(void*), void* argument)
-		{
-			ThreadPoolQueueProcArgument* p=new ThreadPoolQueueProcArgument;
-			p->proc=proc;
-			p->argument=argument;
-			if(QueueUserWorkItem(&ThreadPoolQueueProc, p, WT_EXECUTEDEFAULT))
-			{
-				return true;
-			}
-			else
-			{
-				delete p;
-				return false;
-			}
-		}
-
-		bool ThreadPoolLite::Queue(const Func<void()>& proc)
-		{
-			Func<void()>* p=new Func<void()>(proc);
-			if(QueueUserWorkItem(&ThreadPoolQueueFunc, p, WT_EXECUTEDEFAULT))
-			{
-				return true;
-			}
-			else
-			{
-				delete p;
-				return false;
-			}
-		}
-
-/***********************************************************************
-CriticalSection
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct CriticalSectionData
-		{
-			CRITICAL_SECTION		criticalSection;
-		};
-	}
-
-	CriticalSection::Scope::Scope(CriticalSection& _criticalSection)
-		:criticalSection(&_criticalSection)
-	{
-		criticalSection->Enter();
-	}
-
-	CriticalSection::Scope::~Scope()
-	{
-		criticalSection->Leave();
-	}
-			
-	CriticalSection::CriticalSection()
-	{
-		internalData=new CriticalSectionData;
-		InitializeCriticalSection(&internalData->criticalSection);
-	}
-
-	CriticalSection::~CriticalSection()
-	{
-		DeleteCriticalSection(&internalData->criticalSection);
-		delete internalData;
-	}
-
-	bool CriticalSection::TryEnter()
-	{
-		return TryEnterCriticalSection(&internalData->criticalSection)!=0;
-	}
-
-	void CriticalSection::Enter()
-	{
-		EnterCriticalSection(&internalData->criticalSection);
-	}
-
-	void CriticalSection::Leave()
-	{
-		LeaveCriticalSection(&internalData->criticalSection);
-	}
-
-/***********************************************************************
-ReaderWriterLock
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct ReaderWriterLockData
-		{
-			SRWLOCK			lock;
-		};
-	}
-
-	ReaderWriterLock::ReaderScope::ReaderScope(ReaderWriterLock& _lock)
-		:lock(&_lock)
-	{
-		lock->EnterReader();
-	}
-
-	ReaderWriterLock::ReaderScope::~ReaderScope()
-	{
-		lock->LeaveReader();
-	}
-
-	ReaderWriterLock::WriterScope::WriterScope(ReaderWriterLock& _lock)
-		:lock(&_lock)
-	{
-		lock->EnterWriter();
-	}
-
-	ReaderWriterLock::WriterScope::~WriterScope()
-	{
-		lock->LeaveWriter();
-	}
-
-	ReaderWriterLock::ReaderWriterLock()
-		:internalData(new threading_internal::ReaderWriterLockData)
-	{
-		InitializeSRWLock(&internalData->lock);
-	}
-
-	ReaderWriterLock::~ReaderWriterLock()
-	{
-		delete internalData;
-	}
-
-	bool ReaderWriterLock::TryEnterReader()
-	{
-		return TryAcquireSRWLockShared(&internalData->lock)!=0;
-	}
-
-	void ReaderWriterLock::EnterReader()
-	{
-		AcquireSRWLockShared(&internalData->lock);
-	}
-
-	void ReaderWriterLock::LeaveReader()
-	{
-		ReleaseSRWLockShared(&internalData->lock);
-	}
-
-	bool ReaderWriterLock::TryEnterWriter()
-	{
-		return TryAcquireSRWLockExclusive(&internalData->lock)!=0;
-	}
-
-	void ReaderWriterLock::EnterWriter()
-	{
-		AcquireSRWLockExclusive(&internalData->lock);
-	}
-
-	void ReaderWriterLock::LeaveWriter()
-	{
-		ReleaseSRWLockExclusive(&internalData->lock);
-	}
-
-/***********************************************************************
-ConditionVariable
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct ConditionVariableData
-		{
-			CONDITION_VARIABLE			variable;
-		};
-	}
-
-	ConditionVariable::ConditionVariable()
-		:internalData(new threading_internal::ConditionVariableData)
-	{
-		InitializeConditionVariable(&internalData->variable);
-	}
-
-	ConditionVariable::~ConditionVariable()
-	{
-		delete internalData;
-	}
-
-	bool ConditionVariable::SleepWith(CriticalSection& cs)
-	{
-		return SleepConditionVariableCS(&internalData->variable, &cs.internalData->criticalSection, INFINITE)!=0;
-	}
-
-	bool ConditionVariable::SleepWithForTime(CriticalSection& cs, vint ms)
-	{
-		return SleepConditionVariableCS(&internalData->variable, &cs.internalData->criticalSection, (DWORD)ms)!=0;
-	}
-
-	bool ConditionVariable::SleepWithReader(ReaderWriterLock& lock)
-	{
-		return SleepConditionVariableSRW(&internalData->variable, &lock.internalData->lock, INFINITE, CONDITION_VARIABLE_LOCKMODE_SHARED)!=0;
-	}
-
-	bool ConditionVariable::SleepWithReaderForTime(ReaderWriterLock& lock, vint ms)
-	{
-		return SleepConditionVariableSRW(&internalData->variable, &lock.internalData->lock, (DWORD)ms, CONDITION_VARIABLE_LOCKMODE_SHARED)!=0;
-	}
-
-	bool ConditionVariable::SleepWithWriter(ReaderWriterLock& lock)
-	{
-		return SleepConditionVariableSRW(&internalData->variable, &lock.internalData->lock, INFINITE, 0)!=0;
-	}
-
-	bool ConditionVariable::SleepWithWriterForTime(ReaderWriterLock& lock, vint ms)
-	{
-		return SleepConditionVariableSRW(&internalData->variable, &lock.internalData->lock, (DWORD)ms, 0)!=0;
-	}
-
-	void ConditionVariable::WakeOnePending()
-	{
-		WakeConditionVariable(&internalData->variable);
-	}
-
-	void ConditionVariable::WakeAllPendings()
-	{
-		WakeAllConditionVariable(&internalData->variable);
-	}
-
-/***********************************************************************
-SpinLock
-***********************************************************************/
-
-	SpinLock::Scope::Scope(SpinLock& _spinLock)
-		:spinLock(&_spinLock)
-	{
-		spinLock->Enter();
-	}
-
-	SpinLock::Scope::~Scope()
-	{
-		spinLock->Leave();
-	}
-			
-	SpinLock::SpinLock()
-		:token(0)
-	{
-	}
-
-	SpinLock::~SpinLock()
-	{
-	}
-
-	bool SpinLock::TryEnter()
-	{
-		return _InterlockedExchange(&token, 1)==0;
-	}
-
-	void SpinLock::Enter()
-	{
-		while(_InterlockedCompareExchange(&token, 1, 0)!=0)
-		{
-			while(token!=0) _mm_pause();
-		}
-	}
-
-	void SpinLock::Leave()
-	{
-		_InterlockedExchange(&token, 0);
-	}
-
-/***********************************************************************
-ThreadLocalStorage
-***********************************************************************/
-
-#define KEY ((DWORD&)key)
-
-	ThreadLocalStorage::ThreadLocalStorage(Destructor _destructor)
-		:destructor(_destructor)
-	{
-		static_assert(sizeof(key) >= sizeof(DWORD), "ThreadLocalStorage's key storage is not large enouth.");
-		PushStorage(this);
-		KEY = TlsAlloc();
-		CHECK_ERROR(KEY != TLS_OUT_OF_INDEXES, L"vl::ThreadLocalStorage::ThreadLocalStorage()#Failed to alloc new thread local storage index.");
-	}
-
-	ThreadLocalStorage::~ThreadLocalStorage()
-	{
-		TlsFree(KEY);
-	}
-
-	void* ThreadLocalStorage::Get()
-	{
-		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Get()#Cannot access a disposed ThreadLocalStorage.");
-		return TlsGetValue(KEY);
-	}
-
-	void ThreadLocalStorage::Set(void* data)
-	{
-		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Set()#Cannot access a disposed ThreadLocalStorage.");
-		TlsSetValue(KEY, data);
-	}
-
-#undef KEY
-}
-#endif
-
-/***********************************************************************
-ThreadLocalStorage Common Implementations
-***********************************************************************/
-
-namespace vl
-{
-	void ThreadLocalStorage::Clear()
-	{
-		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Clear()#Cannot access a disposed ThreadLocalStorage.");
-		if(destructor)
-		{
-			if (auto data = Get())
-			{
-				destructor(data);
-			}
-		}
-		Set(nullptr);
-	}
-
-	void ThreadLocalStorage::Dispose()
-	{
-		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Dispose()#Cannot access a disposed ThreadLocalStorage.");
-		Clear();
-		disposed = true;
-	}
-
-	struct TlsStorageLink
-	{
-		ThreadLocalStorage*		storage = nullptr;
-		TlsStorageLink*			next = nullptr;
-	};
-
-	volatile bool				tlsFixed = false;
-	TlsStorageLink*				tlsHead = nullptr;
-	TlsStorageLink**			tlsTail = &tlsHead;
-
-	void ThreadLocalStorage::PushStorage(ThreadLocalStorage* storage)
-	{
-		CHECK_ERROR(!tlsFixed, L"vl::ThreadLocalStorage::PushStorage(ThreadLocalStorage*)#Cannot create new ThreadLocalStorage instance after calling ThreadLocalStorage::FixStorages().");
-		auto link = new TlsStorageLink;
-		link->storage = storage;
-		*tlsTail = link;
-		tlsTail = &link->next;
-	}
-
-	void ThreadLocalStorage::FixStorages()
-	{
-		tlsFixed = true;
-	}
-
-	void ThreadLocalStorage::ClearStorages()
-	{
-		FixStorages();
-		auto current = tlsHead;
-		while (current)
-		{
-			current->storage->Clear();
-			current = current->next;
-		}
-	}
-
-	void ThreadLocalStorage::DisposeStorages()
-	{
-		FixStorages();
-		auto current = tlsHead;
-		tlsHead = nullptr;
-		tlsTail = nullptr;
-		while (current)
-		{
-			current->storage->Dispose();
-
-			auto temp = current;
-			current = current->next;
-			delete temp;
-		}
-	}
-}
-
-
-/***********************************************************************
-.\THREADINGLINUX.CPP
-***********************************************************************/
-#ifdef VCZH_GCC
-#include <pthread.h>
-#include <fcntl.h>
-#include <semaphore.h>
-#include <errno.h>
-#if defined(__APPLE__) || defined(__APPLE_CC__)
-#include <CoreFoundation/CoreFoundation.h>
-#endif
-
-
-namespace vl
-{
-	using namespace threading_internal;
-	using namespace collections;
-
-
-/***********************************************************************
-Thread
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct ThreadData
-		{
-			pthread_t					id;
-			EventObject					ev;
-		};
-
-		class ProceduredThread : public Thread
-		{
-		private:
-			Thread::ThreadProcedure		procedure;
-			void*						argument;
-			bool						deleteAfterStopped;
-
-		protected:
-			void Run()
-			{
-				bool deleteAfterStopped = this->deleteAfterStopped;
-				ThreadLocalStorage::FixStorages();
-				try
-				{
-					procedure(this, argument);
-					threadState=Thread::Stopped;
-					internalData->ev.Signal();
-					ThreadLocalStorage::ClearStorages();
-				}
-				catch (...)
-				{
-					ThreadLocalStorage::ClearStorages();
-					throw;
-				}
-				if(deleteAfterStopped)
-				{
-					delete this;
-				}
-			}
-		public:
-			ProceduredThread(Thread::ThreadProcedure _procedure, void* _argument, bool _deleteAfterStopped)
-				:procedure(_procedure)
-				,argument(_argument)
-				,deleteAfterStopped(_deleteAfterStopped)
-			{
-			}
-		};
-
-		class LambdaThread : public Thread
-		{
-		private:
-			Func<void()>				procedure;
-			bool						deleteAfterStopped;
-
-		protected:
-			void Run()
-			{
-				bool deleteAfterStopped = this->deleteAfterStopped;
-				ThreadLocalStorage::FixStorages();
-				try
-				{
-					procedure();
-					threadState=Thread::Stopped;
-					internalData->ev.Signal();
-					ThreadLocalStorage::ClearStorages();
-				}
-				catch (...)
-				{
-					ThreadLocalStorage::ClearStorages();
-					throw;
-				}
-				if(deleteAfterStopped)
-				{
-					delete this;
-				}
-			}
-		public:
-			LambdaThread(const Func<void()>& _procedure, bool _deleteAfterStopped)
-				:procedure(_procedure)
-				,deleteAfterStopped(_deleteAfterStopped)
-			{
-			}
-		};
-	}
-
-	void InternalThreadProc(Thread* thread)
-	{
-		thread->Run();
-	}
-
-	void* InternalThreadProcWrapper(void* lpParameter)
-	{
-		InternalThreadProc((Thread*)lpParameter);
-		return 0;
-	}
-
-	Thread::Thread()
-	{
-		internalData=new ThreadData;
-		internalData->ev.CreateManualUnsignal(false);
-		threadState=Thread::NotStarted;
-	}
-
-	Thread::~Thread()
-	{
-		if (internalData)
-		{
-			Stop();
-			if (threadState!=Thread::NotStarted)
-			{
-				pthread_detach(internalData->id);
-			}
-			delete internalData;
-		}
-	}
-
-	Thread* Thread::CreateAndStart(ThreadProcedure procedure, void* argument, bool deleteAfterStopped)
-	{
-		if(procedure)
-		{
-			Thread* thread=new ProceduredThread(procedure, argument, deleteAfterStopped);
-			if(thread->Start())
-			{
-				return thread;
-			}
-			else
-			{
-				delete thread;
-			}
-		}
-		return 0;
-	}
-
-	Thread* Thread::CreateAndStart(const Func<void()>& procedure, bool deleteAfterStopped)
-	{
-		Thread* thread=new LambdaThread(procedure, deleteAfterStopped);
-		if(thread->Start())
-		{
-			return thread;
-		}
-		else
-		{
-			delete thread;
-		}
-		return 0;
-	}
-
-	void Thread::Sleep(vint ms)
-	{
-		if (ms >= 1000)
-		{
-			sleep(ms / 1000);
-		}
-		if (ms % 1000)
-		{
-			usleep((ms % 1000) * 1000);
-		}
-	}
-	
-	vint Thread::GetCPUCount()
-	{
-		return (vint)sysconf(_SC_NPROCESSORS_ONLN);
-	}
-
-	vint Thread::GetCurrentThreadId()
-	{
-		return (vint)::pthread_self();
-	}
-
-	bool Thread::Start()
-	{
-		if(threadState==Thread::NotStarted)
-		{
-			if(pthread_create(&internalData->id, nullptr, &InternalThreadProcWrapper, this)==0)
-			{
-				threadState=Thread::Running;
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool Thread::Wait()
-	{
-		return internalData->ev.Wait();
-	}
-
-	bool Thread::Stop()
-	{
-		if (threadState==Thread::Running)
-		{
-			if(pthread_cancel(internalData->id)==0)
-			{
-				threadState=Thread::Stopped;
-				internalData->ev.Signal();
-				return true;
-			}
-		}
-		return false;
-	}
-
-	Thread::ThreadState Thread::GetState()
-	{
-		return threadState;
-	}
-
-/***********************************************************************
-Mutex
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct MutexData
-		{
-			Semaphore			sem;
-		};
-	};
-
-	Mutex::Mutex()
-	{
-		internalData = new MutexData;
-	}
-
-	Mutex::~Mutex()
-	{
-		delete internalData;
-	}
-
-	bool Mutex::Create(bool owned, const WString& name)
-	{
-		return internalData->sem.Create(owned ? 0 : 1, 1, name);
-	}
-
-	bool Mutex::Open(bool inheritable, const WString& name)
-	{
-		return internalData->sem.Open(inheritable, name);
-	}
-
-	bool Mutex::Release()
-	{
-		return internalData->sem.Release();
-	}
-
-	bool Mutex::Wait()
-	{
-		return internalData->sem.Wait();
-	}
-
-/***********************************************************************
-Semaphore
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct SemaphoreData
-		{
-			sem_t			semUnnamed;
-			sem_t*			semNamed = nullptr;
-		};
-	}
-
-	Semaphore::Semaphore()
-		:internalData(0)
-	{
-	}
-
-	Semaphore::~Semaphore()
-	{
-		if (internalData)
-		{
-			if (internalData->semNamed)
-			{
-				sem_close(internalData->semNamed);
-			}
-			else
-			{
-				sem_destroy(&internalData->semUnnamed);
-			}
-			delete internalData;
-		}
-	}
-
-	bool Semaphore::Create(vint initialCount, vint maxCount, const WString& name)
-	{
-		if (internalData) return false;
-		if (initialCount > maxCount) return false;
-
-		internalData = new SemaphoreData;
-#if defined(__APPLE__)
-        
-		AString auuid;
-		if(name.Length() == 0)
-		{
-			CFUUIDRef cfuuid = CFUUIDCreate(kCFAllocatorDefault);
-			CFStringRef cfstr = CFUUIDCreateString(kCFAllocatorDefault, cfuuid);
-			auuid = CFStringGetCStringPtr(cfstr, kCFStringEncodingASCII);
-
-			CFRelease(cfstr);
-			CFRelease(cfuuid);
-		}
-		auuid = auuid.Insert(0, "/");
-		// OSX SEM_NAME_LENGTH = 31
-		if(auuid.Length() >= 30)
-			auuid = auuid.Sub(0, 30);
-        
-		if ((internalData->semNamed = sem_open(auuid.Buffer(), O_CREAT, O_RDWR, initialCount)) == SEM_FAILED)
-		{
-			delete internalData;
-			internalData = 0;
-			return false;
-		}
-        
-#else
-		if (name == L"")
-		{
-			if(sem_init(&internalData->semUnnamed, 0, (int)initialCount) == -1)
-			{
-				delete internalData;
-				internalData = 0;
-				return false;
-			}
-		}
-        	else
-        	{
-			AString astr = wtoa(name);
-            
-			if ((internalData->semNamed = sem_open(astr.Buffer(), O_CREAT, 0777, initialCount)) == SEM_FAILED)
-			{
-				delete internalData;
-				internalData = 0;
-				return false;
-			}
-		}
-#endif
-
-		Release(initialCount);
-		return true;
-	}
-
-	bool Semaphore::Open(bool inheritable, const WString& name)
-	{
-		if (internalData) return false;
-		if (inheritable) return false;
-
-		internalData = new SemaphoreData;
-		if (!(internalData->semNamed = sem_open(wtoa(name).Buffer(), 0)))
-		{
-            delete internalData;
-            internalData = 0;
-			return false;
-		}
-
-		return true;
-	}
-
-	bool Semaphore::Release()
-	{
-		return Release(1);
-	}
-
-	vint Semaphore::Release(vint count)
-	{
-		for (vint i = 0; i < count; i++)
-		{
-			if (internalData->semNamed)
-			{
-				sem_post(internalData->semNamed);
-			}
-			else
-			{
-				sem_post(&internalData->semUnnamed);
-			}
-		}
-		return true;
-	}
-
-	bool Semaphore::Wait()
-	{
-		if (internalData->semNamed)
-		{
-			return sem_wait(internalData->semNamed) == 0;
-		}
-		else
-		{
-			return sem_wait(&internalData->semUnnamed) == 0;
-		}
-	}
-
-/***********************************************************************
-EventObject
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct EventData
-		{
-			bool				autoReset;
-			volatile bool		signaled;
-			CriticalSection		mutex;
-			ConditionVariable	cond;
-			volatile vint		counter = 0;
-		};
-	}
-
-	EventObject::EventObject()
-	{
-		internalData = nullptr;
-	}
-
-	EventObject::~EventObject()
-	{
-		if (internalData)
-		{
-			delete internalData;
-		}
-	}
-
-	bool EventObject::CreateAutoUnsignal(bool signaled, const WString& name)
-	{
-		if (name!=L"") return false;
-		if (internalData) return false;
-
-		internalData = new EventData;
-		internalData->autoReset = true;
-		internalData->signaled = signaled;
-		return true;
-	}
-
-	bool EventObject::CreateManualUnsignal(bool signaled, const WString& name)
-	{
-		if (name!=L"") return false;
-		if (internalData) return false;
-
-		internalData = new EventData;
-		internalData->autoReset = false;
-		internalData->signaled = signaled;
-		return true;
-	}
-
-	bool EventObject::Signal()
-	{
-		if (!internalData) return false;
-
-		internalData->mutex.Enter();
-		internalData->signaled = true;
-		if (internalData->counter)
-		{
-			if (internalData->autoReset)
-			{
-				internalData->cond.WakeOnePending();
-				internalData->signaled = false;
-			}
-			else
-			{
-				internalData->cond.WakeAllPendings();
-			}
-		}
-		internalData->mutex.Leave();
-		return true;
-	}
-
-	bool EventObject::Unsignal()
-	{
-		if (!internalData) return false;
-
-		internalData->mutex.Enter();
-		internalData->signaled = false;
-		internalData->mutex.Leave();
-		return true;
-	}
-
-	bool EventObject::Wait()
-	{
-		if (!internalData) return false;
-
-		internalData->mutex.Enter();
-		if (internalData->signaled)
-		{
-			if (internalData->autoReset)
-			{
-				internalData->signaled = false;
-			}
-		}
-		else
-		{
-			internalData->counter++;
-			internalData->cond.SleepWith(internalData->mutex);
-			internalData->counter--;
-		}
-		internalData->mutex.Leave();
-		return true;
-	}
-
-/***********************************************************************
-ThreadPoolLite
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct ThreadPoolTask
-		{
-			Func<void()>			task;
-			Ptr<ThreadPoolTask>		next;
-		};
-
-		struct ThreadPoolData
-		{
-			Semaphore				semaphore;
-			EventObject				taskFinishEvent;
-			Ptr<ThreadPoolTask>		taskBegin;
-			Ptr<ThreadPoolTask>*	taskEnd = nullptr;
-			volatile bool			stopping = false;
-			List<Thread*>			taskThreads;
-		};
-
-		SpinLock					threadPoolLock;
-		ThreadPoolData*				threadPoolData = nullptr;
-
-		void ThreadPoolProc(Thread* thread, void* argument)
-		{
-			while (true)
-			{
-				Ptr<ThreadPoolTask> task;
-
-				threadPoolData->semaphore.Wait();
-				SPIN_LOCK(threadPoolLock)
-				{
-					if (threadPoolData->taskBegin)
-					{
-						task = threadPoolData->taskBegin;
-						threadPoolData->taskBegin = task->next;
-					}
-
-					if (!threadPoolData->taskBegin)
-					{
-						threadPoolData->taskEnd = &threadPoolData->taskBegin;
-						threadPoolData->taskFinishEvent.Signal();
-					}
-				}
-
-				if (task)
-				{
-					ThreadLocalStorage::FixStorages();
-					try
-					{
-						task->task();
-						ThreadLocalStorage::ClearStorages();
-					}
-					catch (...)
-					{
-						ThreadLocalStorage::ClearStorages();
-					}
-				}
-				else if (threadPoolData->stopping)
-				{
-					return;
-				}
-			}
-		}
-
-		bool ThreadPoolQueue(const Func<void()>& proc)
-		{
-			SPIN_LOCK(threadPoolLock)
-			{
-				if (!threadPoolData)
-				{
-					threadPoolData = new ThreadPoolData;
-					threadPoolData->semaphore.Create(0, 65536);
-					threadPoolData->taskFinishEvent.CreateManualUnsignal(false);
-					threadPoolData->taskEnd = &threadPoolData->taskBegin;
-
-					for (vint i = 0; i < Thread::GetCPUCount() * 4; i++)
-					{
-						threadPoolData->taskThreads.Add(Thread::CreateAndStart(&ThreadPoolProc, nullptr, false));
-					}
-				}
-
-				if (threadPoolData)
-				{
-					if (threadPoolData->stopping)
-					{
-						return false;
-					}
-
-					auto task = MakePtr<ThreadPoolTask>();
-					task->task = proc;
-					*threadPoolData->taskEnd = task;
-					threadPoolData->taskEnd = &task->next;
-					threadPoolData->semaphore.Release();
-					threadPoolData->taskFinishEvent.Unsignal();
-				}
-			}
-			return true;
-		}
-
-		bool ThreadPoolStop(bool discardPendingTasks)
-		{
-			SPIN_LOCK(threadPoolLock)
-			{
-				if (!threadPoolData) return false;
-				if (threadPoolData->stopping) return false;
-
-				threadPoolData->stopping = true;
-				if (discardPendingTasks)
-				{
-					threadPoolData->taskEnd = &threadPoolData->taskBegin;
-					threadPoolData->taskBegin = nullptr;
-				}
-
-				threadPoolData->semaphore.Release(threadPoolData->taskThreads.Count());
-			}
-
-			threadPoolData->taskFinishEvent.Wait();
-			for (vint i = 0; i < threadPoolData->taskThreads.Count(); i++)
-			{
-				auto thread = threadPoolData->taskThreads[i];
-				thread->Wait();
-				delete thread;
-			}
-			threadPoolData->taskThreads.Clear();
-
-			SPIN_LOCK(threadPoolLock)
-			{
-				delete threadPoolData;
-				threadPoolData = nullptr;
-			}
-			return true;
-		}
-	}
-
-	ThreadPoolLite::ThreadPoolLite()
-	{
-	}
-
-	ThreadPoolLite::~ThreadPoolLite()
-	{
-	}
-
-	bool ThreadPoolLite::Queue(void(*proc)(void*), void* argument)
-	{
-		return ThreadPoolQueue([proc, argument](){proc(argument);});
-	}
-
-	bool ThreadPoolLite::Queue(const Func<void()>& proc)
-	{
-		return ThreadPoolQueue(proc);
-	}
-
-	bool ThreadPoolLite::Stop(bool discardPendingTasks)
-	{
-		return ThreadPoolStop(discardPendingTasks);
-	}
-
-/***********************************************************************
-CriticalSection
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct CriticalSectionData
-		{
-			pthread_mutex_t		mutex;
-		};
-	}
-
-	CriticalSection::CriticalSection()
-	{
-		internalData = new CriticalSectionData;
-		pthread_mutex_init(&internalData->mutex, nullptr);
-	}
-
-	CriticalSection::~CriticalSection()
-	{
-		pthread_mutex_destroy(&internalData->mutex);
-		delete internalData;
-	}
-
-	bool CriticalSection::TryEnter()
-	{
-		return pthread_mutex_trylock(&internalData->mutex) == 0;
-	}
-
-	void CriticalSection::Enter()
-	{
-		pthread_mutex_lock(&internalData->mutex);
-	}
-
-	void CriticalSection::Leave()
-	{
-		pthread_mutex_unlock(&internalData->mutex);
-	}
-
-	CriticalSection::Scope::Scope(CriticalSection& _criticalSection)
-		:criticalSection(&_criticalSection)
-	{
-		criticalSection->Enter();
-	}
-
-	CriticalSection::Scope::~Scope()
-	{
-		criticalSection->Leave();
-	}
-
-/***********************************************************************
-ReaderWriterLock
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct ReaderWriterLockData
-		{
-			pthread_rwlock_t			rwlock;
-		};
-	}
-
-	ReaderWriterLock::ReaderWriterLock()
-	{
-		internalData = new ReaderWriterLockData;
-		pthread_rwlock_init(&internalData->rwlock, nullptr);
-	}
-
-	ReaderWriterLock::~ReaderWriterLock()
-	{
-		pthread_rwlock_destroy(&internalData->rwlock);
-		delete internalData;
-	}
-
-	bool ReaderWriterLock::TryEnterReader()
-	{
-		return pthread_rwlock_tryrdlock(&internalData->rwlock) == 0;
-	}
-
-	void ReaderWriterLock::EnterReader()
-	{
-		pthread_rwlock_rdlock(&internalData->rwlock);
-	}
-
-	void ReaderWriterLock::LeaveReader()
-	{
-		pthread_rwlock_unlock(&internalData->rwlock);
-	}
-
-	bool ReaderWriterLock::TryEnterWriter()
-	{
-		return pthread_rwlock_trywrlock(&internalData->rwlock) == 0;
-	}
-
-	void ReaderWriterLock::EnterWriter()
-	{
-		pthread_rwlock_wrlock(&internalData->rwlock);
-	}
-
-	void ReaderWriterLock::LeaveWriter()
-	{
-		pthread_rwlock_unlock(&internalData->rwlock);
-	}
-
-	ReaderWriterLock::ReaderScope::ReaderScope(ReaderWriterLock& _lock)
-		:lock(&_lock)
-	{
-		lock->EnterReader();
-	}
-
-	ReaderWriterLock::ReaderScope::~ReaderScope()
-	{
-		lock->LeaveReader();
-	}
-
-	ReaderWriterLock::WriterScope::WriterScope(ReaderWriterLock& _lock)
-		:lock(&_lock)
-	{
-		lock->EnterWriter();
-	}
-
-	ReaderWriterLock::WriterScope::~WriterScope()
-	{
-		lock->LeaveReader();
-	}
-
-/***********************************************************************
-ConditionVariable
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct ConditionVariableData
-		{
-			pthread_cond_t			cond;
-		};
-	}
-
-	ConditionVariable::ConditionVariable()
-	{
-		internalData = new ConditionVariableData;
-		pthread_cond_init(&internalData->cond, nullptr);
-	}
-
-	ConditionVariable::~ConditionVariable()
-	{
-		pthread_cond_destroy(&internalData->cond);
-		delete internalData;
-	}
-
-	bool ConditionVariable::SleepWith(CriticalSection& cs)
-	{
-		return pthread_cond_wait(&internalData->cond, &cs.internalData->mutex) == 0;
-	}
-
-	void ConditionVariable::WakeOnePending()
-	{
-		pthread_cond_signal(&internalData->cond);
-	}
-
-	void ConditionVariable::WakeAllPendings()
-	{
-		pthread_cond_broadcast(&internalData->cond);
-	}
-
-/***********************************************************************
-SpinLock
-***********************************************************************/
-
-	SpinLock::Scope::Scope(SpinLock& _spinLock)
-		:spinLock(&_spinLock)
-	{
-		spinLock->Enter();
-	}
-
-	SpinLock::Scope::~Scope()
-	{
-		spinLock->Leave();
-	}
-			
-	SpinLock::SpinLock()
-		:token(0)
-	{
-	}
-
-	SpinLock::~SpinLock()
-	{
-	}
-
-	bool SpinLock::TryEnter()
-	{
-		return __sync_lock_test_and_set(&token, 1)==0;
-	}
-
-	void SpinLock::Enter()
-	{
-		while(__sync_val_compare_and_swap(&token, 0, 1)!=0)
-		{
-			while(token!=0) _mm_pause();
-		}
-	}
-
-	void SpinLock::Leave()
-	{
-		__sync_lock_test_and_set(&token, 0);
-	}
-
-/***********************************************************************
-ThreadLocalStorage
-***********************************************************************/
-
-#define KEY ((pthread_key_t&)key)
-
-	ThreadLocalStorage::ThreadLocalStorage(Destructor _destructor)
-		:destructor(_destructor)
-	{
-		static_assert(sizeof(key) >= sizeof(pthread_key_t), "ThreadLocalStorage's key storage is not large enouth.");
-		PushStorage(this);
-		auto error = pthread_key_create(&KEY, destructor);
-		CHECK_ERROR(error != EAGAIN && error != ENOMEM, L"vl::ThreadLocalStorage::ThreadLocalStorage()#Failed to create a thread local storage index.");
-	}
-
-	ThreadLocalStorage::~ThreadLocalStorage()
-	{
-		pthread_key_delete(KEY);
-	}
-
-	void* ThreadLocalStorage::Get()
-	{
-		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Get()#Cannot access a disposed ThreadLocalStorage.");
-		return pthread_getspecific(KEY);
-	}
-
-	void ThreadLocalStorage::Set(void* data)
-	{
-		CHECK_ERROR(!disposed, L"vl::ThreadLocalStorage::Set()#Cannot access a disposed ThreadLocalStorage.");
-		pthread_setspecific(KEY, data);
-	}
-
-#undef KEY
-}
-#endif
 
 
 /***********************************************************************

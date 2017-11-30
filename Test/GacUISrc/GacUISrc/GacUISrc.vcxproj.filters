@@ -93,9 +93,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Import\VlppWorkflow.cpp">
-      <Filter>Import</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Import\Vlpp.cpp">
       <Filter>Import</Filter>
     </ClCompile>
@@ -474,11 +471,14 @@
     <ClCompile Include="..\..\..\Source\Controls\Templates\GuiCommonTemplates.cpp">
       <Filter>GacUI\Controls\Templates</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppWorkflowLibrary.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppWorkflowRuntime.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
-      <Filter>Import</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
       <Filter>Import</Filter>
     </ClInclude>
@@ -763,6 +763,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\Templates\GuiCommonTemplates.h">
       <Filter>GacUI\Controls\Templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppWorkflowLibrary.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppWorkflowRuntime.h">
+      <Filter>Import</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
