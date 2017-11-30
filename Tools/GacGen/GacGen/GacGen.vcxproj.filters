@@ -27,19 +27,22 @@
     <ClInclude Include="..\..\..\Release\GacUIReflection.h">
       <Filter>Import</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
-      <Filter>Import</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
       <Filter>Import</Filter>
     </ClInclude>
     <ClInclude Include="GacGen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Release\GacUICompiler.h">
+      <Filter>Import</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\Import\VlppWorkflowCompiler.h">
       <Filter>Import</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Release\GacUICompiler.h">
+    <ClInclude Include="..\..\..\Import\VlppWorkflowLibrary.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppWorkflowRuntime.h">
       <Filter>Import</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,20 +59,23 @@
     <ClCompile Include="..\..\..\Import\Vlpp.cpp">
       <Filter>Import</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Import\VlppWorkflow.cpp">
-      <Filter>Import</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Import\VlppWorkflowCompiler.cpp">
-      <Filter>Import</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Release\GacUICompiler.cpp">
       <Filter>Import</Filter>
     </ClCompile>
     <ClCompile Include="GacGen.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppWorkflowCompiler.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppWorkflowLibrary.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppWorkflowRuntime.cpp">
+      <Filter>Import</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

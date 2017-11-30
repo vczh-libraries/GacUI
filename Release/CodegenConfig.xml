@@ -6,7 +6,8 @@
   </folders>
   <categories>
     <category name="vlpp" pattern="\Import\Vlpp."/>
-    <category name="wfruntime" pattern="\Import\VlppWorkflow."/>
+    <category name="wflibrary" pattern="\Import\VlppWorkflowLibrary."/>
+    <category name="wfruntime" pattern="\Import\VlppWorkflowRuntime."/>
     <category name="wfcompiler" pattern="\Import\VlppWorkflowCompiler."/>
     <category name="gacui" pattern="\Source\">
       <except pattern="\Windows\" />
@@ -28,7 +29,8 @@
   </categories>
   <output path=".">
     <codepair category="vlpp" filename="Vlpp" generate="false"/>
-    <codepair category="wfruntime" filename="VlppWorkflow" generate="false"/>
+    <codepair category="wflibrary" filename="VlppWorkflowLibrary" generate="false"/>
+    <codepair category="wfruntime" filename="VlppWorkflowRuntime" generate="false"/>
     <codepair category="wfcompiler" filename="VlppWorkflowCompiler" generate="false"/>
     <codepair category="gacui" filename="GacUI" generate="true"/>
     <codepair category="windows" filename="GacUIWindows" generate="true"/>

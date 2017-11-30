@@ -2941,7 +2941,6 @@ GuiSolidBorderElement
 
 			GuiSolidBorderElement::GuiSolidBorderElement()
 				:color(0, 0, 0)
-				,shape(ElementShape::Rectangle)
 			{
 			}
 
@@ -2967,44 +2966,6 @@ GuiSolidBorderElement
 			void GuiSolidBorderElement::SetShape(ElementShape value)
 			{
 				shape=value;
-			}
-
-/***********************************************************************
-GuiRoundBorderElement
-***********************************************************************/
-
-			GuiRoundBorderElement::GuiRoundBorderElement()
-				:color(0, 0, 0)
-				,radius(10)
-			{
-			}
-
-			Color GuiRoundBorderElement::GetColor()
-			{
-				return color;
-			}
-
-			void GuiRoundBorderElement::SetColor(Color value)
-			{
-				if(color!=value)
-				{
-					color=value;
-					InvokeOnElementStateChanged();
-				}
-			}
-
-			vint GuiRoundBorderElement::GetRadius()
-			{
-				return radius;
-			}
-
-			void GuiRoundBorderElement::SetRadius(vint value)
-			{
-				if(radius!=value)
-				{
-					radius=value;
-					InvokeOnElementStateChanged();
-				}
 			}
 
 /***********************************************************************
@@ -3104,7 +3065,6 @@ GuiSolidBackgroundElement
 
 			GuiSolidBackgroundElement::GuiSolidBackgroundElement()
 				:color(255, 255, 255)
-				,shape(ElementShape::Rectangle)
 			{
 			}
 
@@ -3138,7 +3098,6 @@ GuiGradientBackgroundElement
 
 			GuiGradientBackgroundElement::GuiGradientBackgroundElement()
 				:direction(Horizontal)
-				,shape(ElementShape::Rectangle)
 			{
 			}
 
@@ -3192,6 +3151,54 @@ GuiGradientBackgroundElement
 			}
 
 			void GuiGradientBackgroundElement::SetShape(ElementShape value)
+			{
+				shape=value;
+			}
+
+/***********************************************************************
+GuiRadialGradientBackgroundElement
+***********************************************************************/
+
+			GuiRadialGradientBackgroundElement::GuiRadialGradientBackgroundElement()
+			{
+			}
+
+			Color GuiRadialGradientBackgroundElement::GetColor1()
+			{
+				return color1;
+			}
+
+			void GuiRadialGradientBackgroundElement::SetColor1(Color value)
+			{
+				SetColors(value, color2);
+			}
+
+			Color GuiRadialGradientBackgroundElement::GetColor2()
+			{
+				return color2;
+			}
+
+			void GuiRadialGradientBackgroundElement::SetColor2(Color value)
+			{
+				SetColors(color1, value);
+			}
+
+			void GuiRadialGradientBackgroundElement::SetColors(Color value1, Color value2)
+			{
+				if(color1!=value1 || color2!=value2)
+				{
+					color1=value1;
+					color2=value2;
+					InvokeOnElementStateChanged();
+				}
+			}
+			
+			ElementShape GuiRadialGradientBackgroundElement::GetShape()
+			{
+				return shape;
+			}
+
+			void GuiRadialGradientBackgroundElement::SetShape(ElementShape value)
 			{
 				shape=value;
 			}
@@ -12937,7 +12944,6 @@ GuiTemplate
 			GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiTemplate::GuiTemplate()
-				:VisuallyEnabled_(true)
 			{
 				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}
@@ -12948,392 +12954,7 @@ GuiTemplate
 			}
 
 /***********************************************************************
-GuiControlTemplate
-***********************************************************************/
-
-			GuiControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiControlTemplate::GuiControlTemplate()
-				:ContainerComposition_(this)
-				, FocusableComposition_(0)
-			{
-				GuiControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiControlTemplate::~GuiControlTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiLabelTemplate
-***********************************************************************/
-
-			GuiLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiLabelTemplate::GuiLabelTemplate()
-			{
-				GuiLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiLabelTemplate::~GuiLabelTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiSinglelineTextBoxTemplate
-***********************************************************************/
-
-			GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiSinglelineTextBoxTemplate::GuiSinglelineTextBoxTemplate()
-			{
-				GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiSinglelineTextBoxTemplate::~GuiSinglelineTextBoxTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiDocumentLabelTemplate
-***********************************************************************/
-
-			GuiDocumentLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiDocumentLabelTemplate::GuiDocumentLabelTemplate()
-			{
-				GuiDocumentLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiDocumentLabelTemplate::~GuiDocumentLabelTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiMenuTemplate
-***********************************************************************/
-
-			GuiMenuTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiMenuTemplate::GuiMenuTemplate()
-			{
-				GuiMenuTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiMenuTemplate::~GuiMenuTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiWindowTemplate
-***********************************************************************/
-
-			GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiWindowTemplate::GuiWindowTemplate()
-				:MaximizedBoxOption_(BoolOption::Customizable)
-				, MinimizedBoxOption_(BoolOption::Customizable)
-				, BorderOption_(BoolOption::Customizable)
-				, SizeBoxOption_(BoolOption::Customizable)
-				, IconVisibleOption_(BoolOption::Customizable)
-				, TitleBarOption_(BoolOption::Customizable)
-				, MaximizedBox_(true)
-				, MinimizedBox_(true)
-				, Border_(true)
-				, SizeBox_(true)
-				, IconVisible_(true)
-				, TitleBar_(true)
-				, CustomizedBorder_(false)
-				, Maximized_(false)
-				, CustomFrameEnabled_(true)
-			{
-				GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiWindowTemplate::~GuiWindowTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiButtonTemplate
-***********************************************************************/
-
-			GuiButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiButtonTemplate::GuiButtonTemplate()
-				:State_(ButtonState::Normal)
-			{
-				GuiButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiButtonTemplate::~GuiButtonTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiSelectableButtonTemplate
-***********************************************************************/
-
-			GuiSelectableButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiSelectableButtonTemplate::GuiSelectableButtonTemplate()
-				:Selected_(false)
-			{
-				GuiSelectableButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiSelectableButtonTemplate::~GuiSelectableButtonTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiToolstripButtonTemplate
-***********************************************************************/
-
-			GuiToolstripButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiToolstripButtonTemplate::GuiToolstripButtonTemplate()
-				:SubMenuExisting_(false)
-				, SubMenuOpening_(false)
-				, SubMenuHost_(0)
-			{
-				GuiToolstripButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiToolstripButtonTemplate::~GuiToolstripButtonTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiListViewColumnHeaderTemplate
-***********************************************************************/
-
-			GuiListViewColumnHeaderTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiListViewColumnHeaderTemplate::GuiListViewColumnHeaderTemplate()
-				:SortingState_(ColumnSortingState::NotSorted)
-			{
-				GuiListViewColumnHeaderTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiListViewColumnHeaderTemplate::~GuiListViewColumnHeaderTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiComboBoxTemplate
-***********************************************************************/
-
-			GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiComboBoxTemplate::GuiComboBoxTemplate()
-				:Commands_(nullptr)
-				, TextVisible_(true)
-			{
-				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiComboBoxTemplate::~GuiComboBoxTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiScrollTemplate
-***********************************************************************/
-
-			GuiScrollTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiScrollTemplate::GuiScrollTemplate()
-				:Commands_(nullptr)
-				, TotalSize_(100)
-				, PageSize_(10)
-				, Position_(0)
-			{
-				GuiScrollTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiScrollTemplate::~GuiScrollTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiScrollViewTemplate
-***********************************************************************/
-
-			GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiScrollViewTemplate::GuiScrollViewTemplate()
-			{
-				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiScrollViewTemplate::~GuiScrollViewTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiMultilineTextBoxTemplate
-***********************************************************************/
-
-			GuiMultilineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiMultilineTextBoxTemplate::GuiMultilineTextBoxTemplate()
-				:Commands_(nullptr)
-			{
-				GuiMultilineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiMultilineTextBoxTemplate::~GuiMultilineTextBoxTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiListControlTemplate
-***********************************************************************/
-
-			GuiListControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiListControlTemplate::GuiListControlTemplate()
-			{
-				GuiListControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiListControlTemplate::~GuiListControlTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiTextListTemplate
-***********************************************************************/
-
-			GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiTextListTemplate::GuiTextListTemplate()
-			{
-				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiTextListTemplate::~GuiTextListTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiDocumentViewerTemplate
-***********************************************************************/
-
-			GuiDocumentViewerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiDocumentViewerTemplate::GuiDocumentViewerTemplate()
-			{
-				GuiDocumentViewerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiDocumentViewerTemplate::~GuiDocumentViewerTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiListViewTemplate
-***********************************************************************/
-
-			GuiListViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiListViewTemplate::GuiListViewTemplate()
-			{
-				GuiListViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiListViewTemplate::~GuiListViewTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiTreeViewTemplate
-***********************************************************************/
-
-			GuiTreeViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiTreeViewTemplate::GuiTreeViewTemplate()
-			{
-				GuiTreeViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiTreeViewTemplate::~GuiTreeViewTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiTabTemplate
-***********************************************************************/
-
-			GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiTabTemplate::GuiTabTemplate()
-				:Commands_(nullptr)
-				, SelectedTabPage_(nullptr)
-			{
-				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiTabTemplate::~GuiTabTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiDatePickerTemplate
-***********************************************************************/
-
-			GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiDatePickerTemplate::GuiDatePickerTemplate()
-				:Commands_(nullptr)
-			{
-				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiDatePickerTemplate::~GuiDatePickerTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiDateComboBoxTemplate
-***********************************************************************/
-
-			GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-				GuiDateComboBoxTemplate::GuiDateComboBoxTemplate()
-			{
-				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiDateComboBoxTemplate::~GuiDateComboBoxTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiListItemTemplate
+Item GuiListItemTemplate
 ***********************************************************************/
 
 			void GuiListItemTemplate::OnInitialize()
@@ -13343,8 +12964,6 @@ GuiListItemTemplate
 			GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiListItemTemplate::GuiListItemTemplate()
-				:Selected_(false)
-				, Index_(0)
 			{
 				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}
@@ -13372,89 +12991,11 @@ GuiListItemTemplate
 			}
 
 /***********************************************************************
-GuiTextListItemTemplate
+Template Declarations
 ***********************************************************************/
 
-			GuiTextListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiTextListItemTemplate::GuiTextListItemTemplate()
-			{
-				GuiTextListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiTextListItemTemplate::~GuiTextListItemTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiTreeItemTemplate
-***********************************************************************/
-
-			GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiTreeItemTemplate::GuiTreeItemTemplate()
-				:Expanding_(false)
-				, Expandable_(false)
-				, Level_(0)
-			{
-				GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiTreeItemTemplate::~GuiTreeItemTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiGridCellTemplate
-***********************************************************************/
-
-			GuiGridCellTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiGridCellTemplate::GuiGridCellTemplate()
-			{
-				GuiGridCellTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiGridCellTemplate::~GuiGridCellTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiGridVisualizerTemplate
-***********************************************************************/
-
-			GuiGridVisualizerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiGridVisualizerTemplate::GuiGridVisualizerTemplate()
-			{
-				GuiGridVisualizerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiGridVisualizerTemplate::~GuiGridVisualizerTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiGridEditorTemplate
-***********************************************************************/
-
-			GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiGridEditorTemplate::GuiGridEditorTemplate()
-				:CellValueSaved_(true)
-				, FocusControl_(nullptr)
-			{
-				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiGridEditorTemplate::~GuiGridEditorTemplate()
-			{
-				FinalizeAggregation();
-			}
+			GUI_CONTROL_TEMPLATE_DECL(GUI_TEMPLATE_CLASS_IMPL)
+			GUI_ITEM_TEMPLATE_DECL(GUI_TEMPLATE_CLASS_IMPL)
 		}
 	}
 }
@@ -22692,7 +22233,7 @@ DataVisualizerFactory
 							childTemplate->Set##NAME(itemTemplate->Get##NAME());\
 						});\
 
-#define FORWARD_EVENT_IMPL(CLASS, TYPE, NAME) FORWARD_EVENT(NAME)
+#define FORWARD_EVENT_IMPL(CLASS, TYPE, NAME, VALUE) FORWARD_EVENT(NAME)
 
 						GuiTemplate_PROPERTIES(FORWARD_EVENT_IMPL)
 						GuiControlTemplate_PROPERTIES(FORWARD_EVENT_IMPL)

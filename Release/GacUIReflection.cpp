@@ -2612,10 +2612,17 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(CaretMoveDown)
 			END_ENUM_ITEM(IGuiGraphicsParagraph::CaretRelativePosition)
 
-			BEGIN_ENUM_ITEM(ElementShape)
+			BEGIN_ENUM_ITEM(ElementShapeType)
 				ENUM_CLASS_ITEM(Rectangle)
 				ENUM_CLASS_ITEM(Ellipse)
-			END_ENUM_ITEM(ElementShape)
+				ENUM_CLASS_ITEM(RoundRect)
+			END_ENUM_ITEM(ElementShapeType)
+
+			BEGIN_STRUCT_MEMBER(ElementShape)
+				STRUCT_MEMBER(shapeType)
+				STRUCT_MEMBER(radiusX)
+				STRUCT_MEMBER(radiusY)
+			END_STRUCT_MEMBER(ElementShape)
 
 			BEGIN_CLASS_MEMBER(GuiSolidBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
@@ -2624,14 +2631,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Color)
 				CLASS_MEMBER_PROPERTY_FAST(Shape)
 			END_CLASS_MEMBER(GuiSolidBorderElement)
-
-			BEGIN_CLASS_MEMBER(GuiRoundBorderElement)
-				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiRoundBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiRoundBorderElement>)
-				
-				CLASS_MEMBER_PROPERTY_FAST(Color)
-				CLASS_MEMBER_PROPERTY_FAST(Radius)
-			END_CLASS_MEMBER(GuiRoundBorderElement)
 
 			BEGIN_CLASS_MEMBER(Gui3DBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
@@ -2680,10 +2679,23 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Shape)
 			END_CLASS_MEMBER(GuiGradientBackgroundElement)
 
+			BEGIN_CLASS_MEMBER(GuiRadialGradientBackgroundElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiRadialGradientBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiRadialGradientBackgroundElement>)
+				
+				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
+
+				CLASS_MEMBER_PROPERTY_FAST(Color1)
+				CLASS_MEMBER_PROPERTY_FAST(Color2)
+				CLASS_MEMBER_PROPERTY_FAST(Shape)
+			END_CLASS_MEMBER(GuiRadialGradientBackgroundElement)
+
 			BEGIN_ENUM_ITEM(GuiGradientBackgroundElement::Direction)
 				ENUM_ITEM_NAMESPACE(GuiGradientBackgroundElement)
 				ENUM_NAMESPACE_ITEM(Horizontal)
 				ENUM_NAMESPACE_ITEM(Vertical)
+				ENUM_NAMESPACE_ITEM(Slash)
+				ENUM_NAMESPACE_ITEM(Backslash)
 			END_ENUM_ITEM(GuiGradientBackgroundElement::Direction)
 
 			BEGIN_CLASS_MEMBER(GuiSolidLabelElement)
@@ -3039,6 +3051,7 @@ namespace vl
 					LoadParsingTypes();
 					XmlLoadTypes();
 					JsonLoadTypes();
+					WfLoadLibraryTypes();
 					LoadGuiBasicTypes();
 					LoadGuiElementTypes();
 					LoadGuiCompositionTypes();
@@ -3079,7 +3092,7 @@ Type Declaration
 
 #define _ ,
 
-#define GUI_TEMPLATE_PROPERTY_REFLECTION(CLASS, TYPE, NAME)\
+#define GUI_TEMPLATE_PROPERTY_REFLECTION(CLASS, TYPE, NAME, VALUE)\
 	CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(NAME)
 
 			BEGIN_ENUM_ITEM(ButtonState)
@@ -3166,34 +3179,9 @@ Type Declaration
 				NAME ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)\
 			END_CLASS_MEMBER(NAME)\
 
-			GUI_CONTROL_TEMPLATE(GuiControlTemplate, GuiTemplate)
-			GUI_CONTROL_TEMPLATE(GuiLabelTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiSinglelineTextBoxTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiDocumentLabelTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiMultilineTextBoxTemplate, GuiScrollViewTemplate)
-			GUI_CONTROL_TEMPLATE(GuiDocumentViewerTemplate, GuiScrollViewTemplate)
-			GUI_CONTROL_TEMPLATE(GuiMenuTemplate, GuiWindowTemplate)
-			GUI_CONTROL_TEMPLATE(GuiWindowTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiButtonTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiSelectableButtonTemplate, GuiButtonTemplate)
-			GUI_CONTROL_TEMPLATE(GuiToolstripButtonTemplate, GuiSelectableButtonTemplate)
-			GUI_CONTROL_TEMPLATE(GuiListViewColumnHeaderTemplate, GuiToolstripButtonTemplate)
-			GUI_CONTROL_TEMPLATE(GuiComboBoxTemplate, GuiToolstripButtonTemplate)
-			GUI_CONTROL_TEMPLATE(GuiScrollTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiScrollViewTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiListControlTemplate, GuiScrollViewTemplate)
-			GUI_CONTROL_TEMPLATE(GuiTextListTemplate, GuiListControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiListViewTemplate, GuiListControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiTreeViewTemplate, GuiListControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiTabTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiDatePickerTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiDateComboBoxTemplate, GuiComboBoxTemplate)
 			GUI_CONTROL_TEMPLATE(GuiListItemTemplate, GuiTemplate)
-			GUI_CONTROL_TEMPLATE(GuiTextListItemTemplate, GuiListItemTemplate)
-			GUI_CONTROL_TEMPLATE(GuiTreeItemTemplate, GuiTextListItemTemplate)
-			GUI_CONTROL_TEMPLATE(GuiGridCellTemplate, GuiControlTemplate)
-			GUI_CONTROL_TEMPLATE(GuiGridVisualizerTemplate, GuiGridCellTemplate)
-			GUI_CONTROL_TEMPLATE(GuiGridEditorTemplate, GuiGridCellTemplate)
+			GUI_CONTROL_TEMPLATE_DECL(GUI_CONTROL_TEMPLATE)
+			GUI_ITEM_TEMPLATE_DECL(GUI_CONTROL_TEMPLATE)
 
 			BEGIN_CLASS_MEMBER(GuiCommonDatePickerLook)
 				CLASS_MEMBER_BASE(GuiTemplate)

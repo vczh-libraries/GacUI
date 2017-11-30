@@ -4,70 +4,7 @@ DEVELOPER: Zihan Chen(vczh)
 ***********************************************************************/
 #include "GacUI.h"
 #include "Vlpp.h"
-
-/***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace elements_windows_d2d
-		{
-			class WindowsDirect2DLayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
-			{
-			public:
-				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace elements_windows_gdi
-		{
-			class WindowsGDILayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
-			{
-			public:
-				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
-			};
-		}
-	}
-}
-
-#endif
+#include "VlppWorkflowLibrary.h"
 
 /***********************************************************************
 .\NATIVEWINDOW\WINDOWS\GDI\WINGDI.H
@@ -446,6 +383,8 @@ namespace vl
 				void					Chord(vint Left, vint Top, vint Right, vint Bottom, vint StartX, vint StartY, vint EndX, vint EndY);
 				void					Pie(RECT Bound, POINT Start, POINT End);
 				void					Pie(vint Left, vint Top, vint Right, vint Bottom, vint StartX, vint StartY, vint EndX, vint EndY);
+				void					GradientRectH(TRIVERTEX* Vertices, vint VerticesCount, GRADIENT_RECT* Rectangles, vint RectangleCount);
+				void					GradientRectV(TRIVERTEX* Vertices, vint VerticesCount, GRADIENT_RECT* Rectangles, vint RectangleCount);
 				void					GradientTriangle(TRIVERTEX* Vertices, vint VerticesCount, GRADIENT_TRIANGLE* Triangles, vint TriangleCount);
 
 				void					BeginPath();
@@ -529,6 +468,70 @@ namespace vl
 			public:
 				WinImageDC();
 				~WinImageDC();
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements_windows_d2d
+		{
+			class WindowsDirect2DLayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
+			{
+			public:
+				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements_windows_gdi
+		{
+			class WindowsGDILayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
+			{
+			public:
+				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
 			};
 		}
 	}
@@ -1218,6 +1221,8 @@ Functionality
 				virtual void								DestroyDirect2DBrush(Color color)=0;
 				virtual ID2D1LinearGradientBrush*			CreateDirect2DLinearBrush(Color c1, Color c2)=0;
 				virtual void								DestroyDirect2DLinearBrush(Color c1, Color c2)=0;
+				virtual ID2D1RadialGradientBrush*			CreateDirect2DRadialBrush(Color c1, Color c2) = 0;
+				virtual void								DestroyDirect2DRadialBrush(Color c1, Color c2) = 0;
 			};
 
 			class Direct2DTextFormatPackage
@@ -1319,11 +1324,6 @@ Renderers
 				DEFINE_BRUSH_ELEMENT_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, ID2D1SolidColorBrush, Color)
 			};
 
-			class GuiRoundBorderElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_BRUSH_ELEMENT_RENDERER(GuiRoundBorderElement, GuiRoundBorderElementRenderer, ID2D1SolidColorBrush, Color)
-			};
-
 			class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
 				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsDirect2DRenderTarget)
@@ -1375,6 +1375,12 @@ Renderers
 			{
 				typedef collections::Pair<Color, Color> ColorPair;
 				DEFINE_BRUSH_ELEMENT_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, ID2D1LinearGradientBrush, ColorPair)
+			};
+
+			class GuiRadialGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				typedef collections::Pair<Color, Color> ColorPair;
+				DEFINE_BRUSH_ELEMENT_RENDERER(GuiRadialGradientBackgroundElement, GuiRadialGradientBackgroundElementRenderer, ID2D1RadialGradientBrush, ColorPair)
 			};
 
 			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
@@ -1681,22 +1687,6 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiRoundBorderElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiRoundBorderElement, GuiRoundBorderElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				Color					oldColor;
-				Ptr<windows::WinPen>	pen;
-				Ptr<windows::WinBrush>	brush;
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
 			class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
 				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsGDIRenderTarget)
@@ -1751,6 +1741,22 @@ Renderers
 			{
 				DEFINE_GUI_GRAPHICS_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget)
 			protected:
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiRadialGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiRadialGradientBackgroundElement, GuiRadialGradientBackgroundElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				Color					oldColor;
+				Ptr<windows::WinPen>	pen;
+				Ptr<windows::WinBrush>	brush;
+
 				void					InitializeInternal();
 				void					FinalizeInternal();
 				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);

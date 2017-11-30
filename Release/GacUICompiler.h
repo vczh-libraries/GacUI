@@ -6,112 +6,8 @@ DEVELOPER: Zihan Chen(vczh)
 #include "GacUIReflection.h"
 #include "Vlpp.h"
 #include "VlppWorkflowCompiler.h"
-#include "VlppWorkflow.h"
-
-/***********************************************************************
-.\GUIINSTANCEHELPERTYPES.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection: Instance Helper Types
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
-
-
-#if defined(__APPLE__) || defined(__APPLE_CC__)
-
-using namespace vl;
-using namespace vl::presentation;
-using namespace vl::presentation::elements;
-using namespace vl::presentation::compositions;
-using namespace vl::presentation::controls;
-using namespace vl::presentation::templates;
-using namespace vl::presentation::theme;
-
-#endif
-
-namespace vl
-{
-	namespace presentation
-	{
-
-/***********************************************************************
-Helper Types
-***********************************************************************/
-
-		namespace helper_types
-		{
-			struct SiteValue
-			{
-				vint			row = 0;
-				vint			column = 0;
-				vint			rowSpan = 1;
-				vint			columnSpan = 1;
-			};
-		}
-	}
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-
-	namespace reflection
-	{
-		namespace description
-		{
-
-/***********************************************************************
-Type List
-***********************************************************************/
-
-#define GUIREFLECTIONHELPERTYPES_TYPELIST(F)\
-			F(presentation::helper_types::SiteValue)\
-
-			GUIREFLECTIONHELPERTYPES_TYPELIST(DECL_TYPE_INFO)
-		}
-	}
-
-#endif
-}
-
-#endif
-
-/***********************************************************************
-.\GUIINSTANCESHAREDSCRIPT.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection: Shared Script
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCESHAREDSCRIPT
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESHAREDSCRIPT
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		class GuiInstanceSharedScript :public Object, public Description<GuiInstanceSharedScript>
-		{
-		public:
-			WString										language;
-			WString										code;
-			GuiResourceTextPos							codePosition;
-
-			static Ptr<GuiInstanceSharedScript>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
-			Ptr<parsing::xml::XmlElement>				SaveToXml();
-		};
-	}
-}
-
-#endif
+#include "VlppWorkflowLibrary.h"
+#include "VlppWorkflowRuntime.h"
 
 /***********************************************************************
 .\INSTANCEQUERY\GUIINSTANCEQUERY_AST.H
@@ -299,6 +195,77 @@ namespace vl
 		extern vl::Ptr<GuiIqQuery> GuiIqParse(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex = -1);
 	}
 }
+#endif
+
+/***********************************************************************
+.\GUIINSTANCEHELPERTYPES.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Instance Helper Types
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
+
+
+#if defined(__APPLE__) || defined(__APPLE_CC__)
+
+using namespace vl;
+using namespace vl::presentation;
+using namespace vl::presentation::elements;
+using namespace vl::presentation::compositions;
+using namespace vl::presentation::controls;
+using namespace vl::presentation::templates;
+using namespace vl::presentation::theme;
+
+#endif
+
+namespace vl
+{
+	namespace presentation
+	{
+
+/***********************************************************************
+Helper Types
+***********************************************************************/
+
+		namespace helper_types
+		{
+			struct SiteValue
+			{
+				vint			row = 0;
+				vint			column = 0;
+				vint			rowSpan = 1;
+				vint			columnSpan = 1;
+			};
+		}
+	}
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+Type List
+***********************************************************************/
+
+#define GUIREFLECTIONHELPERTYPES_TYPELIST(F)\
+			F(presentation::helper_types::SiteValue)\
+
+			GUIREFLECTIONHELPERTYPES_TYPELIST(DECL_TYPE_INFO)
+		}
+	}
+
+#endif
+}
+
 #endif
 
 /***********************************************************************
@@ -535,6 +502,40 @@ Instance Style Context
 
 			static Ptr<GuiInstanceStyleContext>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<parsing::xml::XmlDocument>			SaveToXml();
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\GUIINSTANCESHAREDSCRIPT.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Shared Script
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCESHAREDSCRIPT
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESHAREDSCRIPT
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class GuiInstanceSharedScript :public Object, public Description<GuiInstanceSharedScript>
+		{
+		public:
+			WString										language;
+			WString										code;
+			GuiResourceTextPos							codePosition;
+
+			static Ptr<GuiInstanceSharedScript>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
+			Ptr<parsing::xml::XmlElement>				SaveToXml();
 		};
 	}
 }
@@ -1071,19 +1072,8 @@ GuiVrtualTypeInstanceLoader
 			public:
 				static Ptr<WfExpression> CreateThemeName(theme::ThemeName themeName)
 				{
-					auto presentationExpr = MakePtr<WfTopQualifiedExpression>();
-					presentationExpr->name.value = L"presentation";
-
-					auto themeExpr = MakePtr<WfChildExpression>();
-					themeExpr->parent = presentationExpr;
-					themeExpr->name.value = L"theme";
-
-					auto themeNameExpr = MakePtr<WfChildExpression>();
-					themeNameExpr->parent = themeExpr;
-					themeNameExpr->name.value = L"ThemeName";
-
 					auto refExpr = MakePtr<WfChildExpression>();
-					refExpr->parent = themeNameExpr;
+					refExpr->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<ThemeName>());
 					switch (themeName)
 					{
 #define THEME_NAME_CASE(TEMPLATE, CONTROL) case theme::ThemeName::CONTROL: refExpr->name.value = L ## #CONTROL; break;

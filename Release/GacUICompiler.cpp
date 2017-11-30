@@ -4202,7 +4202,7 @@ GuiItemPropertyDeserializer
 
 							auto assignExpr = MakePtr<WfBinaryExpression>();
 							assignExpr->op = WfBinaryOperator::Assign;
-							assignExpr->first = CopyExpression(propertyExpression);
+							assignExpr->first = CopyExpression(propertyExpression, true);
 
 							if (acceptValueType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
 							{
@@ -4466,7 +4466,7 @@ namespace vl
 				sp = Workflow_GetScriptPosition(context);
 			}
 
-			void Visit(WfVirtualExpression* node)override
+			void Visit(WfVirtualCfeExpression* node)override
 			{
 				traverse_visitor::ExpressionVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
@@ -4477,7 +4477,18 @@ namespace vl
 				}
 			}
 
-			void Visit(WfVirtualStatement* node)override
+			void Visit(WfVirtualCseExpression* node)override
+			{
+				traverse_visitor::ExpressionVisitor::Visit(node);
+				vint index = sp->nodePositions.Keys().IndexOf(node);
+				if (index != -1)
+				{
+					auto record = sp->nodePositions.Values()[index];
+					Workflow_RecordScriptPosition(context, record.position, node->expandedExpression, record.availableAfter);
+				}
+			}
+
+			void Visit(WfVirtualCseStatement* node)override
 			{
 				traverse_visitor::StatementVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
@@ -4488,7 +4499,21 @@ namespace vl
 				}
 			}
 
-			void Visit(WfVirtualDeclaration* node)override
+			void Visit(WfVirtualCfeDeclaration* node)override
+			{
+				traverse_visitor::DeclarationVisitor::Visit(node);
+				vint index = sp->nodePositions.Keys().IndexOf(node);
+				if (index != -1)
+				{
+					auto record = sp->nodePositions.Values()[index];
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
+					}
+				}
+			}
+
+			void Visit(WfVirtualCseDeclaration* node)override
 			{
 				traverse_visitor::DeclarationVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
@@ -4691,6 +4716,17 @@ Shared Script Type Resolver (Script)
 				{
 				case Workflow_Compile:
 					Workflow_GenerateAssembly(context, Path_Shared, errors, false, context.compilerCallback);
+					if (auto compiled = Workflow_GetModule(context, Path_Shared))
+					{
+						for (vint i = 0; i < compiled->modules.Count(); i++)
+						{
+							auto& module = compiled->modules[i];
+							if (module.module)
+							{
+								module.module = CopyModule(module.module, true);
+							}
+						}
+					}
 					break;
 				}
 			}
@@ -5362,7 +5398,8 @@ Workflow_GenerateInstanceClass
 
 		class ReplaceDeclImplVisitor
 			: public empty_visitor::DeclarationVisitor
-			, public empty_visitor::VirtualDeclarationVisitor
+			, public empty_visitor::VirtualCfeDeclarationVisitor
+			, public empty_visitor::VirtualCseDeclarationVisitor
 		{
 		public:
 			Func<Ptr<WfStatement>()>			statCtor;
@@ -5374,27 +5411,32 @@ Workflow_GenerateInstanceClass
 			{
 			}
 
-			virtual void Dispatch(WfVirtualDeclaration* node)override
+			void Dispatch(WfVirtualCfeDeclaration* node)override
 			{
-				node->Accept(static_cast<WfVirtualDeclaration::IVisitor*>(this));
+				node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
 			}
 
-			virtual void Visit(WfFunctionDeclaration* node)override
+			void Dispatch(WfVirtualCseDeclaration* node)override
 			{
-				node->statement = statCtor();
+				node->Accept(static_cast<WfVirtualCseDeclaration::IVisitor*>(this));
 			}
 
-			virtual void Visit(WfConstructorDeclaration* node)override
-			{
-				node->statement = statCtor();
-			}
-
-			virtual void Visit(WfDestructorDeclaration* node)override
+			void Visit(WfFunctionDeclaration* node)override
 			{
 				node->statement = statCtor();
 			}
 
-			virtual void Visit(WfClassDeclaration* node)override
+			void Visit(WfConstructorDeclaration* node)override
+			{
+				node->statement = statCtor();
+			}
+
+			void Visit(WfDestructorDeclaration* node)override
+			{
+				node->statement = statCtor();
+			}
+
+			void Visit(WfClassDeclaration* node)override
 			{
 				CopyFrom(unprocessed, node->declarations, true);
 			}
@@ -5715,15 +5757,8 @@ Workflow_GenerateInstanceClass
 			if (!beforePrecompile)
 			{
 				{
-					auto presentationExpr = MakePtr<WfTopQualifiedExpression>();
-					presentationExpr->name.value = L"presentation";
-
-					auto rmExpr = MakePtr<WfChildExpression>();
-					rmExpr->parent = presentationExpr;
-					rmExpr->name.value = L"IGuiResourceManager";
-
 					auto getRmExpr = MakePtr<WfChildExpression>();
-					getRmExpr->parent = rmExpr;
+					getRmExpr->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<IGuiResourceManager>());
 					getRmExpr->name.value = L"GetResourceManager";
 
 					auto call1Expr = MakePtr<WfCallExpression>();

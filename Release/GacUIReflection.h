@@ -5,7 +5,8 @@ DEVELOPER: Zihan Chen(vczh)
 #include "GacUI.h"
 #include "Vlpp.h"
 #include "VlppWorkflowCompiler.h"
-#include "VlppWorkflow.h"
+#include "VlppWorkflowLibrary.h"
+#include "VlppWorkflowRuntime.h"
 
 /***********************************************************************
 .\GUIINSTANCECOMPILEDWORKFLOW.H
@@ -170,15 +171,16 @@ Type List (Elements)
 			F(presentation::elements::IGuiGraphicsElement)\
 			F(presentation::elements::IGuiGraphicsParagraph)\
 			F(presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition)\
+			F(presentation::elements::ElementShapeType)\
 			F(presentation::elements::ElementShape)\
 			F(presentation::elements::GuiSolidBorderElement)\
-			F(presentation::elements::GuiRoundBorderElement)\
 			F(presentation::elements::Gui3DBorderElement)\
 			F(presentation::elements::Gui3DSplitterElement)\
 			F(presentation::elements::Gui3DSplitterElement::Direction)\
 			F(presentation::elements::GuiSolidBackgroundElement)\
 			F(presentation::elements::GuiGradientBackgroundElement)\
 			F(presentation::elements::GuiGradientBackgroundElement::Direction)\
+			F(presentation::elements::GuiRadialGradientBackgroundElement)\
 			F(presentation::elements::GuiSolidLabelElement)\
 			F(presentation::elements::GuiImageFrameElement)\
 			F(presentation::elements::GuiPolygonElement)\
@@ -265,6 +267,7 @@ Type List (Templates)
 			F(presentation::controls::GuiComponent)\
 			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::templates::GuiTemplate)\
+			F(presentation::templates::GuiListItemTemplate)\
 			F(presentation::templates::GuiControlTemplate)\
 			F(presentation::templates::GuiLabelTemplate)\
 			F(presentation::templates::GuiSinglelineTextBoxTemplate)\
@@ -287,7 +290,6 @@ Type List (Templates)
 			F(presentation::templates::GuiTabTemplate)\
 			F(presentation::templates::GuiDatePickerTemplate)\
 			F(presentation::templates::GuiDateComboBoxTemplate)\
-			F(presentation::templates::GuiListItemTemplate)\
 			F(presentation::templates::GuiTextListItemTemplate)\
 			F(presentation::templates::GuiTreeItemTemplate)\
 			F(presentation::templates::GuiGridCellTemplate)\

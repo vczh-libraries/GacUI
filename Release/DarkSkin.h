@@ -4,6 +4,7 @@ DEVELOPER: Zihan Chen(vczh)
 ***********************************************************************/
 #include "GacUI.h"
 #include "Vlpp.h"
+#include "VlppWorkflowLibrary.h"
 
 /***********************************************************************
 .\DARKSKINPARTIALCLASSES.H

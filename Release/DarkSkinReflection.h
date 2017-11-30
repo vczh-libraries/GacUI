@@ -6,6 +6,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "GacUI.h"
 #include "GacUIReflection.h"
 #include "Vlpp.h"
+#include "VlppWorkflowLibrary.h"
 
 /***********************************************************************
 .\DARKSKINREFLECTION.H
