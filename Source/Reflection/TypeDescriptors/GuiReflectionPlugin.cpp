@@ -40,6 +40,7 @@ namespace vl
 					LoadParsingTypes();
 					XmlLoadTypes();
 					JsonLoadTypes();
+					WfLoadLibraryTypes();
 					LoadGuiBasicTypes();
 					LoadGuiElementTypes();
 					LoadGuiCompositionTypes();
