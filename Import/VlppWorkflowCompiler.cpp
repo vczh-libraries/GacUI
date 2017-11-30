@@ -13326,11 +13326,20 @@ WfLexicalScopeManager
 
 				nodeScopes.Clear();
 				expressionResolvings.Clear();
+				coNewCoroutineResolvings.Clear();
+				coOperatorResolvings.Clear();
+				coProviderResolvings.Clear();
+				coCastResultResolvings.Clear();
 				lambdaCaptures.Clear();
 				interfaceMethodImpls.Clear();
+				declaractionScopeSources.Clear();
 				declarationTypes.Clear();
 				declarationMemberInfos.Clear();
 				baseConstructorCallResolvings.Clear();
+				stateInputMethods.Clear();
+				stateInputArguments.Clear();
+				stateDeclArguments.Clear();
+				stateMachineInfos.Clear();
 			}
 
 #define CALLBACK(EXPR) if (callback) callback->EXPR
