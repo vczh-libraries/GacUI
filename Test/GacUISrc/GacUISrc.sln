@@ -14,6 +14,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCppCodegen", "TestCppCo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "UnitTest\UnitTest.vcxproj", "{456FDC57-9687-4607-86A6-D43B7E72E740}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestXml", "TestXml\TestXml.vcxproj", "{DD912F54-3FEB-4D62-B7EE-632D29841A46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -68,6 +70,18 @@ Global
 		{456FDC57-9687-4607-86A6-D43B7E72E740}.Release|Win32.Build.0 = Release|Win32
 		{456FDC57-9687-4607-86A6-D43B7E72E740}.Release|x64.ActiveCfg = Release|x64
 		{456FDC57-9687-4607-86A6-D43B7E72E740}.Release|x64.Build.0 = Release|x64
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.Debug|Win32.Build.0 = Debug|Win32
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.Debug|x64.ActiveCfg = Debug|x64
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.Debug|x64.Build.0 = Debug|x64
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.DebugNoReflection|Win32.ActiveCfg = Debug|Win32
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.DebugNoReflection|Win32.Build.0 = Debug|Win32
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.DebugNoReflection|x64.ActiveCfg = Debug|x64
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.DebugNoReflection|x64.Build.0 = Debug|x64
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.Release|Win32.ActiveCfg = Release|Win32
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.Release|Win32.Build.0 = Release|Win32
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.Release|x64.ActiveCfg = Release|x64
+		{DD912F54-3FEB-4D62-B7EE-632D29841A46}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

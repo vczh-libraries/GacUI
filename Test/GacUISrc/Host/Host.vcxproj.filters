@@ -103,6 +103,9 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ResourceCompiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\FullControlTest\Images\Build.bat">
@@ -114,5 +117,10 @@
     <None Include="Resources\FullControlTest\Images\Build_WriteImageLoader.bat">
       <Filter>Resource Files\FullControlTest\Images</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ResourceCompiler.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

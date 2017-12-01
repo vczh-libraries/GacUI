@@ -1,28 +1,11 @@
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
-#define GAC_HEADER_USE_NAMESPACE
-#include "..\..\..\Source\GacUI.h"
-#include "..\..\..\Source\Compiler\GuiCppGen.h"
-#ifndef VCZH_DEBUG_NO_REFLECTION
-#include "..\..\..\Source\Compiler\GuiInstanceLoader.h"
-#include "..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h"
-#include "..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h"
-#endif
+#include "ResourceCompiler.h"
 #include <Windows.h>
 
-using namespace vl::regex;
-using namespace vl::regex_internal;
-using namespace vl::parsing;
-using namespace vl::parsing::definitions;
-using namespace vl::parsing::tabling;
-using namespace vl::parsing::xml;
+using namespace vl;
 using namespace vl::stream;
-using namespace vl::reflection;
 using namespace vl::reflection::description;
-using namespace vl::collections;
-using namespace vl::filesystem;
-using namespace vl::workflow;
-using namespace vl::workflow::cppcodegen;
 
 //#define GUI_GRAPHICS_RENDERER_GDI
 #define GUI_GRAPHICS_RENDERER_DIRECT2D
@@ -65,140 +48,6 @@ void GuiMain_GrammarIntellisense()
 }
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
-class DebugCallback : public Object, public IGuiResourcePrecompileCallback, public IWfCompilerCallback
-{
-public:
-	vint lastPassIndex = -1;
-
-	void OnLoadEnvironment()override
-	{
-#if defined VCZH_MSVC && defined _DEBUG
-		OutputDebugString(L"    Workflow: Loading metadata from registered types ...\r\n");
-#endif
-	}
-
-	void OnInitialize(analyzer::WfLexicalScopeManager* manager)override
-	{
-#if defined VCZH_MSVC && defined _DEBUG
-		OutputDebugString(L"    Workflow: Creating metadata from declarations ...\r\n");
-#endif
-	}
-
-	void OnValidateModule(Ptr<WfModule> module)override
-	{
-#if defined VCZH_MSVC && defined _DEBUG
-		OutputDebugString((L"    Workflow: Validating module " + module->name.value + L" ...\r\n").Buffer());
-#endif
-	}
-
-	void OnGenerateMetadata()override
-	{
-#if defined VCZH_MSVC && defined _DEBUG
-		OutputDebugString(L"    Workflow: Generating metadata ...\r\n");
-#endif
-	}
-
-	void OnGenerateCode(Ptr<WfModule> module)override
-	{
-#if defined VCZH_MSVC && defined _DEBUG
-		OutputDebugString((L"    Workflow: Generating code for module " + module->name.value + L" ...\r\n").Buffer());
-#endif
-	}
-
-	void OnGenerateDebugInfo()override
-	{
-#if defined VCZH_MSVC && defined _DEBUG
-		OutputDebugString(L"    Workflow: Generating debug information ...\r\n");
-#endif
-	}
-
-	IWfCompilerCallback* GetCompilerCallback()override
-	{
-		return this;
-	}
-
-	void PrintPassName(vint passIndex)
-	{
-		if (lastPassIndex != passIndex)
-		{
-			lastPassIndex = passIndex;
-#if defined VCZH_MSVC && defined _DEBUG
-
-#define PRINT_PASS(PASS)\
-			case IGuiResourceTypeResolver_Precompile::PASS:\
-				OutputDebugString((itow(passIndex + 1) + L"/" + itow(IGuiResourceTypeResolver_Precompile::Instance_Max + 1) + L": " L ## #PASS L"\r\n").Buffer());\
-				break;\
-
-			switch (passIndex)
-			{
-				PRINT_PASS(Workflow_Collect)
-					PRINT_PASS(Workflow_Compile)
-					PRINT_PASS(Instance_CollectInstanceTypes)
-					PRINT_PASS(Instance_CompileInstanceTypes)
-					PRINT_PASS(Instance_CollectEventHandlers)
-					PRINT_PASS(Instance_CompileEventHandlers)
-					PRINT_PASS(Instance_GenerateInstanceClass)
-					PRINT_PASS(Instance_CompileInstanceClass)
-			}
-#endif
-		}
-	}
-
-	void OnPerPass(vint passIndex)override
-	{
-		PrintPassName(passIndex);
-	}
-
-	void OnPerResource(vint passIndex, Ptr<GuiResourceItem> resource)override
-	{
-		PrintPassName(passIndex);
-		OutputDebugString((L"    " + resource->GetResourcePath() + L"\r\n").Buffer());
-	}
-};
-#endif
-
-#define BINARY_FOLDER L"../TestCppCodegen/"
-#define SOURCE_FOLDER L"../TestCppCodegen/Source/"
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-
-void CompileResources(const WString& name, const WString& resourcePath, const WString& outputPath, bool compressResource)
-{
-	{
-		FilePath errorPath =	BINARY_FOLDER + name + L".UI.error.txt";
-		FilePath workflowPath =	BINARY_FOLDER + name + L".UI.txt";
-		FilePath binaryPath =	BINARY_FOLDER + name + L".UI.bin";
-		FilePath cppFolder =	outputPath;
-
-		List<GuiResourceError> errors;
-		auto resource = GuiResource::LoadFromXml(resourcePath, errors);
-		DebugCallback debugCallback;
-		File(errorPath).Delete();
-
-		auto precompiledFolder = PrecompileAndWriteErrors(resource, &debugCallback, errors, errorPath);
-		CHECK_ERROR(errors.Count() == 0, L"Error");
-
-		auto compiled = WriteWorkflowScript(precompiledFolder, workflowPath);
-
-		auto input = MakePtr<WfCppInput>(name);
-		input->multiFile = WfCppFileSwitch::Enabled;
-		input->reflection = WfCppFileSwitch::Enabled;
-		input->comment = L"Source: Host.sln";
-		input->normalIncludes.Add(L"../../../../Source/GacUI.h");
-		input->normalIncludes.Add(L"../Helpers.h");
-		input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h");
-		auto output = WriteCppCodesToFile(compiled, input, cppFolder);
-		WriteEmbeddedResource(resource, input, output, compressResource, cppFolder / (name + L"Resource.cpp"));
-
-		WriteBinaryResource(resource, false, true, binaryPath);
-		{
-			FileStream fileStream(binaryPath.GetFullPath(), FileStream::ReadOnly);
-			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
-			CHECK_ERROR(errors.Count() == 0, L"Error");
-		}
-		GetResourceManager()->SetResource(name, resource, GuiResourceUsage::InstanceClass);
-	}
-}
 
 void OpenMainWindow()
 {
@@ -229,8 +78,15 @@ void GuiMain()
 		LogTypeManager(writer);
 	}
 
-	CompileResources(L"DarkSkin",	LR"(Resources/DarkSkin/Resource.xml)",			L"../TestCppCodegen/Source/", true);
-	CompileResources(L"Demo",		LR"(Resources/FullControlTest/Resource.xml)",	L"../TestCppCodegen/Source/", false);
+#define BINARY_FOLDER L"../TestCppCodegen/"
+#define SOURCE_FOLDER L"../TestCppCodegen/Source/"
+
+	CompileResources(L"DarkSkin",	LR"(Resources/DarkSkin/Resource.xml)",			BINARY_FOLDER, SOURCE_FOLDER, true);
+	CompileResources(L"Demo",		LR"(Resources/FullControlTest/Resource.xml)",	BINARY_FOLDER, SOURCE_FOLDER, false);
+
+#undef BINARY_FOLDER
+#undef SOURCE_FOLDER
+
 	OpenMainWindow();
 #endif
 }
