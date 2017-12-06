@@ -310,6 +310,7 @@ Elements
 				GradientStopType		stopType = GradientStopType::Percentage;
 				double					percentage = 0;
 				vint					absolute = 0;
+				Color					color;
 
 				bool operator==(const GradientStop& value)const { return stopType == value.stopType && percentage == value.percentage && absolute == value.absolute; }
 				bool operator!=(const GradientStop& value)const { return !(*this == value); }

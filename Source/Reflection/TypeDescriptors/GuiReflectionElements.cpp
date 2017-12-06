@@ -113,6 +113,7 @@ Type Declaration
 				STRUCT_MEMBER(stopType)
 				STRUCT_MEMBER(percentage)
 				STRUCT_MEMBER(absolute)
+				STRUCT_MEMBER(color)
 			END_STRUCT_MEMBER(GradientStop)
 
 			BEGIN_CLASS_MEMBER(GuiRadialGradientBackgroundElement)
