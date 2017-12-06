@@ -236,34 +236,35 @@ GuiRadialGradientBackgroundElement
 			{
 			}
 
-			Color GuiRadialGradientBackgroundElement::GetColor1()
+			const GradientStop& GuiRadialGradientBackgroundElement::GetStop(vint index)
 			{
-				return color1;
+				return stops[index];
 			}
 
-			void GuiRadialGradientBackgroundElement::SetColor1(Color value)
+			vint GuiRadialGradientBackgroundElement::GetStopCount()
 			{
-				SetColors(value, color2);
+				return stops.Count();
 			}
 
-			Color GuiRadialGradientBackgroundElement::GetColor2()
+			void GuiRadialGradientBackgroundElement::SetStops(const GradientStop* p, vint count)
 			{
-				return color2;
-			}
-
-			void GuiRadialGradientBackgroundElement::SetColor2(Color value)
-			{
-				SetColors(color1, value);
-			}
-
-			void GuiRadialGradientBackgroundElement::SetColors(Color value1, Color value2)
-			{
-				if(color1!=value1 || color2!=value2)
+				stops.Resize(count);
+				if (count>0)
 				{
-					color1=value1;
-					color2=value2;
-					InvokeOnElementStateChanged();
+					memcpy(&stops[0], p, sizeof(*p)*count);
 				}
+				InvokeOnElementStateChanged();
+			}
+
+			const GuiRadialGradientBackgroundElement::StopArray& GuiRadialGradientBackgroundElement::GetStopsArray()
+			{
+				return stops;
+			}
+
+			void GuiRadialGradientBackgroundElement::SetStopsArray(const StopArray& value)
+			{
+				CopyFrom(stops, value);
+				InvokeOnElementStateChanged();
 			}
 			
 			ElementShape GuiRadialGradientBackgroundElement::GetShape()
@@ -273,7 +274,25 @@ GuiRadialGradientBackgroundElement
 
 			void GuiRadialGradientBackgroundElement::SetShape(ElementShape value)
 			{
-				shape=value;
+				if (shape != value)
+				{
+					shape = value;
+					InvokeOnElementStateChanged();
+				}
+			}
+			
+			ElementShape GuiRadialGradientBackgroundElement::GetInnerShape()
+			{
+				return innerShape;
+			}
+
+			void GuiRadialGradientBackgroundElement::SetInnerShape(ElementShape value)
+			{
+				if (innerShape != value)
+				{
+					innerShape = value;
+					InvokeOnElementStateChanged();
+				}
 			}
 
 /***********************************************************************
@@ -580,6 +599,7 @@ GuiPolygonElement
 			void GuiPolygonElement::SetPointsArray(const PointArray& value)
 			{
 				CopyFrom(points, value);
+				InvokeOnElementStateChanged();
 			}
 
 			Color GuiPolygonElement::GetBorderColor()

@@ -20,9 +20,9 @@ namespace vl
 		namespace elements
 		{
 
-			/***********************************************************************
-			Elements
-			***********************************************************************/
+/***********************************************************************
+Elements
+***********************************************************************/
 
 			/// <summary>
 			/// Defines a shape for some <see cref="IGuiGraphicsElement"></see>.
@@ -45,6 +45,9 @@ namespace vl
 				ElementShapeType		shapeType = ElementShapeType::Rectangle;
 				int						radiusX = 0;
 				int						radiusY = 0;
+
+				bool operator==(const ElementShape& value)const { return shapeType == value.shapeType && radiusX == value.radiusX && radiusY == value.radiusY; }
+				bool operator!=(const ElementShape& value)const { return !(*this == value); }
 			};
 
 			/// <summary>
@@ -296,45 +299,66 @@ namespace vl
 				void					SetShape(ElementShape value);
 			};
 
+			enum class GradientStopType
+			{
+				Percentage,
+				Absolute,
+			};
+
+			struct GradientStop
+			{
+				GradientStopType		stopType = GradientStopType::Percentage;
+				double					percentage = 0;
+				vint					absolute = 0;
+
+				bool operator==(const GradientStop& value)const { return stopType == value.stopType && percentage == value.percentage && absolute == value.absolute; }
+				bool operator!=(const GradientStop& value)const { return !(*this == value); }
+			};
+
 			/// <summary>
 			/// Defines a color-filled radial gradient element without border.
 			/// </summary>
 			class GuiRadialGradientBackgroundElement : public GuiElementBase<GuiRadialGradientBackgroundElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiRadialGradientBackgroundElement, L"RadialGradientBackground")
+
+				typedef collections::Array<GradientStop>			StopArray;
 			protected:
-				Color					color1;
-				Color					color2;
+				StopArray				stops;
 				ElementShape			shape;
+				ElementShape			innerShape;
 
 				GuiRadialGradientBackgroundElement();
 			public:
 				/// <summary>
-				/// Get the left-top color.
+				/// Get a stop of the gradient description using an index.
 				/// </summary>
-				/// <returns>The left-top color.</returns>
-				Color					GetColor1();
+				/// <param name="index">The index to access a stop.</param>
+				/// <returns>The stop of the gradient description associated with the index.</returns>
+				const GradientStop&		GetStop(vint index);
 				/// <summary>
-				/// Set the border color.
+				/// Get the number of stops
 				/// </summary>
-				/// <param name="value">The new left-top color.</param>
-				void					SetColor1(Color value);
+				/// <returns>The number of stops.</returns>
+				vint					GetStopCount();
 				/// <summary>
-				/// Get the right bottom color.
+				/// Set all stops to the gradient description.
 				/// </summary>
-				/// <returns>The right-bottom color.</returns>
-				Color					GetColor2();
+				/// <param name="p">A pointer to a buffer that stores all stops.</param>
+				/// <param name="count">The number of stops.</param>
+				void					SetStops(const GradientStop* p, vint count);
+
+
 				/// <summary>
-				/// Set the border color.
+				/// Get all stops.
 				/// </summary>
-				/// <param name="value">The new right-bottom color.</param>
-				void					SetColor2(Color value);
+				/// <returns>All stops</returns>
+				const StopArray&		GetStopsArray();
 				/// <summary>
-				/// Set colors of the element.
+				/// Set all stops.
 				/// </summary>
-				/// <param name="value1">The new left-top color.</param>
-				/// <param name="value2">The new right bottom color.</param>
-				void					SetColors(Color value1, Color value2);
+				/// <param name="value">All stops</param>
+				void					SetStopsArray(const StopArray& value);
 
 				/// <summary>
 				/// Get the shape.
@@ -346,6 +370,17 @@ namespace vl
 				/// </summary>
 				/// <param name="value">The new shape.</param>
 				void					SetShape(ElementShape value);
+
+				/// <summary>
+				/// Get the inner shape.
+				/// </summary>
+				/// <returns>The inner shape.</returns>
+				ElementShape			GetInnerShape();
+				/// <summary>
+				/// Set the inner shape.
+				/// </summary>
+				/// <param name="value">The new inner shape.</param>
+				void					SetInnerShape(ElementShape value);
 			};
 			
 			/// <summary>
