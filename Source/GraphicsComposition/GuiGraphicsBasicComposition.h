@@ -49,7 +49,7 @@ Basic Compositions
 				GuiBoundsComposition();
 				~GuiBoundsComposition();
 
-				/// <summary>Get if the parent composition's size calculation is aware of the configuration of this composition.</summary>
+				/// <summary>Get if the parent composition's size calculation is aware of the configuration of this composition. If you want to bind Bounds, PreferredMinSize, AlignmentToParent or other similar properties to some properties of parent compositions, this property should be set to false to prevent from infinite size glowing.</summary>
 				/// <returns>Returns true if it is awared.</returns>
 				bool								GetSizeAffectParent();
 				/// <summary>Set if the parent composition's size calculation is aware of the configuration of this composition.</summary>
