@@ -41,13 +41,22 @@ Basic Compositions
 			class GuiBoundsComposition : public GuiGraphicsSite, public Description<GuiBoundsComposition>
 			{
 			protected:
+				bool								sizeAffectParent = true;
 				Rect								compositionBounds;
 				Margin								alignmentToParent{ -1,-1,-1,-1 };
 				
 			public:
 				GuiBoundsComposition();
 				~GuiBoundsComposition();
+
+				/// <summary>Get if the parent composition's size calculation is aware of the configuration of this composition.</summary>
+				/// <returns>Returns true if it is awared.</returns>
+				bool								GetSizeAffectParent();
+				/// <summary>Set if the parent composition's size calculation is aware of the configuration of this composition.</summary>
+				/// <param name="value">Set to true to be awared.</param>
+				void								SetSizeAffectParent(bool value);
 				
+				bool								IsSizeAffectParent()override;
 				Rect								GetPreferredBounds()override;
 				Rect								GetBounds()override;
 				/// <summary>Set the expected bounds.</summary>

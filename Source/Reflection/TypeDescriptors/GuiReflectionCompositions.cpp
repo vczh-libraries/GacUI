@@ -142,6 +142,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiGraphicsSite)
 				CLASS_MEMBER_CONSTRUCTOR(GuiBoundsComposition*(), NO_PARAMETER)
 
+				CLASS_MEMBER_PROPERTY_FAST(SizeAffectParent)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
 				CLASS_MEMBER_PROPERTY_FAST(AlignmentToParent)
 				
