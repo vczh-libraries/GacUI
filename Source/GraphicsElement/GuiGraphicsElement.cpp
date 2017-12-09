@@ -229,68 +229,37 @@ GuiGradientBackgroundElement
 			}
 
 /***********************************************************************
-GuiRadialGradientBackgroundElement
+GuiInnerShadowElement
 ***********************************************************************/
 
-			GuiRadialGradientBackgroundElement::GuiRadialGradientBackgroundElement()
+			GuiInnerShadowElement::GuiInnerShadowElement()
 			{
 			}
 
-			const GradientStop& GuiRadialGradientBackgroundElement::GetStop(vint index)
+			Color GuiInnerShadowElement::GetColor()
 			{
-				return stops[index];
+				return color;
 			}
 
-			vint GuiRadialGradientBackgroundElement::GetStopCount()
+			void GuiInnerShadowElement::SetColor(Color value)
 			{
-				return stops.Count();
-			}
-
-			void GuiRadialGradientBackgroundElement::SetStops(const GradientStop* p, vint count)
-			{
-				stops.Resize(count);
-				if (count>0)
+				if (color != value)
 				{
-					memcpy(&stops[0], p, sizeof(*p)*count);
-				}
-				InvokeOnElementStateChanged();
-			}
-
-			const GuiRadialGradientBackgroundElement::StopArray& GuiRadialGradientBackgroundElement::GetStopsArray()
-			{
-				return stops;
-			}
-
-			void GuiRadialGradientBackgroundElement::SetStopsArray(const StopArray& value)
-			{
-				CopyFrom(stops, value);
-				InvokeOnElementStateChanged();
-			}
-			
-			ElementShape GuiRadialGradientBackgroundElement::GetShape()
-			{
-				return shape;
-			}
-
-			void GuiRadialGradientBackgroundElement::SetShape(ElementShape value)
-			{
-				if (shape != value)
-				{
-					shape = value;
+					color = value;
 					InvokeOnElementStateChanged();
 				}
 			}
-			
-			ElementShape GuiRadialGradientBackgroundElement::GetInnerShape()
+
+			vint GuiInnerShadowElement::GetThickness()
 			{
-				return innerShape;
+				return thickness;
 			}
 
-			void GuiRadialGradientBackgroundElement::SetInnerShape(ElementShape value)
+			void GuiInnerShadowElement::SetThickness(vint value)
 			{
-				if (innerShape != value)
+				if (thickness != value)
 				{
-					innerShape = value;
+					thickness = value;
 					InvokeOnElementStateChanged();
 				}
 			}

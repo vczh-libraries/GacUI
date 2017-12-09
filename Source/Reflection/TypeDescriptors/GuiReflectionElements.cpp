@@ -104,28 +104,13 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Shape)
 			END_CLASS_MEMBER(GuiGradientBackgroundElement)
 
-			BEGIN_ENUM_ITEM(GradientStopType)
-				ENUM_CLASS_ITEM(Percentage)
-				ENUM_CLASS_ITEM(Absolute)
-			END_ENUM_ITEM(GradientStopType)
-
-			BEGIN_STRUCT_MEMBER(GradientStop)
-				STRUCT_MEMBER(stopType)
-				STRUCT_MEMBER(percentage)
-				STRUCT_MEMBER(absolute)
-				STRUCT_MEMBER(color)
-			END_STRUCT_MEMBER(GradientStop)
-
-			BEGIN_CLASS_MEMBER(GuiRadialGradientBackgroundElement)
+			BEGIN_CLASS_MEMBER(GuiInnerShadowElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiRadialGradientBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiRadialGradientBackgroundElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiInnerShadowElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiInnerShadowElement>)
 
-				CLASS_MEMBER_METHOD_RENAME(GetStops, GetStopsArray, NO_PARAMETER);
-				CLASS_MEMBER_METHOD_RENAME(SetStops, SetStopsArray, { L"stops" });
-				CLASS_MEMBER_PROPERTY(Stops, GetStops, SetStops);
-				CLASS_MEMBER_PROPERTY_FAST(Shape)
-				CLASS_MEMBER_PROPERTY_FAST(InnerShape)
-			END_CLASS_MEMBER(GuiRadialGradientBackgroundElement)
+				CLASS_MEMBER_PROPERTY_FAST(Color)
+				CLASS_MEMBER_PROPERTY_FAST(Thickness)
+			END_CLASS_MEMBER(GuiInnerShadowElement)
 
 			BEGIN_ENUM_ITEM(GuiGradientBackgroundElement::Direction)
 				ENUM_ITEM_NAMESPACE(GuiGradientBackgroundElement)

@@ -79,13 +79,13 @@
       </Cell>
 
       <Cell Site="row:0 column:4 rowSpan:2">
-        <RadialGradientBackground Color1="#FFFF00" Color2="#0000FF"/>
+        <InnerShadow Color1="#FFFF00" Thickness="10"/>
       </Cell>
       <Cell Site="row:2 column:4 rowSpan:2">
-        <RadialGradientBackground Color1="#FFFF00" Color2="#0000FF" Shape="shapeType:Ellipse"/>
+        <InnerShadow Color1="#FF00FF" Thickness="20"/>
       </Cell>
       <Cell Site="row:4 column:4 rowSpan:2">
-        <RadialGradientBackground Color1="#FFFF00" Color2="#0000FF" Shape="shapeType:RoundRect radiusX:10 radiusY:5"/>
+        <InnerShadow Color1="#00FFFF" Thickness="30"/>
       </Cell>
     </Table>
   </TabPage>

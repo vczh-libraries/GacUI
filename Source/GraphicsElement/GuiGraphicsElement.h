@@ -299,89 +299,39 @@ Elements
 				void					SetShape(ElementShape value);
 			};
 
-			enum class GradientStopType
-			{
-				Percentage,
-				Absolute,
-			};
-
-			struct GradientStop
-			{
-				GradientStopType		stopType = GradientStopType::Percentage;
-				double					percentage = 0;
-				vint					absolute = 0;
-				Color					color;
-
-				bool operator==(const GradientStop& value)const { return stopType == value.stopType && percentage == value.percentage && absolute == value.absolute; }
-				bool operator!=(const GradientStop& value)const { return !(*this == value); }
-			};
-
 			/// <summary>
-			/// Defines a color-filled radial gradient element without border.
+			/// Defines a gradient border for shadow.
 			/// </summary>
-			class GuiRadialGradientBackgroundElement : public GuiElementBase<GuiRadialGradientBackgroundElement>
+			class GuiInnerShadowElement : public GuiElementBase<GuiInnerShadowElement>
 			{
-				DEFINE_GUI_GRAPHICS_ELEMENT(GuiRadialGradientBackgroundElement, L"RadialGradientBackground")
-
-				typedef collections::Array<GradientStop>			StopArray;
+				DEFINE_GUI_GRAPHICS_ELEMENT(GuiInnerShadowElement, L"InnerShadow")
 			protected:
-				StopArray				stops;
-				ElementShape			shape;
-				ElementShape			innerShape;
+				Color					color;
+				vint					thickness = 0;
 
-				GuiRadialGradientBackgroundElement();
+				GuiInnerShadowElement();
 			public:
 				/// <summary>
-				/// Get a stop of the gradient description using an index.
+				/// Get the shadow color.
 				/// </summary>
-				/// <param name="index">The index to access a stop.</param>
-				/// <returns>The stop of the gradient description associated with the index.</returns>
-				const GradientStop&		GetStop(vint index);
+				/// <returns>The shadow color.</returns>
+				Color					GetColor();
 				/// <summary>
-				/// Get the number of stops
+				/// Set the shadow color.
 				/// </summary>
-				/// <returns>The number of stops.</returns>
-				vint					GetStopCount();
-				/// <summary>
-				/// Set all stops to the gradient description.
-				/// </summary>
-				/// <param name="p">A pointer to a buffer that stores all stops.</param>
-				/// <param name="count">The number of stops.</param>
-				void					SetStops(const GradientStop* p, vint count);
-
+				/// <param name="value">The new shadow color.</param>
+				void					SetColor(Color value);
 
 				/// <summary>
-				/// Get all stops.
+				/// Get the thickness.
 				/// </summary>
-				/// <returns>All stops</returns>
-				const StopArray&		GetStopsArray();
+				/// <returns>The thickness.</returns>
+				vint					GetThickness();
 				/// <summary>
-				/// Set all stops.
+				/// Set the thickness.
 				/// </summary>
-				/// <param name="value">All stops</param>
-				void					SetStopsArray(const StopArray& value);
-
-				/// <summary>
-				/// Get the shape.
-				/// </summary>
-				/// <returns>The shape.</returns>
-				ElementShape			GetShape();
-				/// <summary>
-				/// Set the shape.
-				/// </summary>
-				/// <param name="value">The new shape.</param>
-				void					SetShape(ElementShape value);
-
-				/// <summary>
-				/// Get the inner shape.
-				/// </summary>
-				/// <returns>The inner shape.</returns>
-				ElementShape			GetInnerShape();
-				/// <summary>
-				/// Set the inner shape.
-				/// </summary>
-				/// <param name="value">The new inner shape.</param>
-				void					SetInnerShape(ElementShape value);
+				/// <param name="value">The new thickness.</param>
+				void					SetThickness(vint value);
 			};
 			
 			/// <summary>

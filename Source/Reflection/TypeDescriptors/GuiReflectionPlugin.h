@@ -112,9 +112,7 @@ Type List (Elements)
 			F(presentation::elements::GuiSolidBackgroundElement)\
 			F(presentation::elements::GuiGradientBackgroundElement)\
 			F(presentation::elements::GuiGradientBackgroundElement::Direction)\
-			F(presentation::elements::GradientStopType)\
-			F(presentation::elements::GradientStop)\
-			F(presentation::elements::GuiRadialGradientBackgroundElement)\
+			F(presentation::elements::GuiInnerShadowElement)\
 			F(presentation::elements::GuiSolidLabelElement)\
 			F(presentation::elements::GuiImageFrameElement)\
 			F(presentation::elements::GuiPolygonElement)\

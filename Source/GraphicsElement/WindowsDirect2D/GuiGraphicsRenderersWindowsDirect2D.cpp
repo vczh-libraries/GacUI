@@ -28,7 +28,6 @@ IMPLEMENT_BRUSH_ELEMENT_RENDERER
 				CreateBrush(newRenderTarget);\
 			}\
 			TRENDERER::TRENDERER()\
-				:brush(0)\
 			{\
 			}\
 			void TRENDERER::Render(Rect bounds)\
@@ -77,36 +76,6 @@ IMPLEMENT_BRUSH_ELEMENT_RENDERER
 				if(_renderTarget && brush)\
 				{\
 					_renderTarget->DestroyDirect2DLinearBrush(oldColor.key, oldColor.value);\
-					brush=0;\
-				}\
-			}\
-			void TRENDERER::OnElementStateChanged()\
-			{\
-				if(renderTarget)\
-				{\
-					Pair<Color, Color> color=Pair<Color, Color>(element->GetColor1(), element->GetColor2());\
-					if(oldColor!=color)\
-					{\
-						DestroyBrush(renderTarget);\
-						CreateBrush(renderTarget);\
-					}\
-				}\
-			}\
-
-#define IMPLEMENT_BRUSH_ELEMENT_RENDERER_RADIAL_GRADIENT_BRUSH(TRENDERER)\
-			void TRENDERER::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget)\
-				{\
-					oldColor=Pair<Color, Color>(element->GetColor1(), element->GetColor2());\
-					brush=_renderTarget->CreateDirect2DRadialBrush(oldColor.key, oldColor.value);\
-				}\
-			}\
-			void TRENDERER::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget && brush)\
-				{\
-					_renderTarget->DestroyDirect2DRadialBrush(oldColor.key, oldColor.value);\
 					brush=0;\
 				}\
 			}\
@@ -182,12 +151,12 @@ Gui3DBorderElementRenderer
 					if(brush1)
 					{
 						_renderTarget->DestroyDirect2DBrush(oldColor1);
-						brush1=0;
+						brush1 = nullptr;
 					}
 					if(brush2)
 					{
 						_renderTarget->DestroyDirect2DBrush(oldColor2);
-						brush2=0;
+						brush2 = nullptr;
 					}
 				}
 			}
@@ -208,8 +177,6 @@ Gui3DBorderElementRenderer
 			}
 
 			Gui3DBorderElementRenderer::Gui3DBorderElementRenderer()
-				:brush1(0)
-				,brush2(0)
 			{
 			}
 
@@ -260,12 +227,12 @@ Gui3DSplitterElementRenderer
 					if(brush1)
 					{
 						_renderTarget->DestroyDirect2DBrush(oldColor1);
-						brush1=0;
+						brush1 = nullptr;
 					}
 					if(brush2)
 					{
 						_renderTarget->DestroyDirect2DBrush(oldColor2);
-						brush2=0;
+						brush2 = nullptr;
 					}
 				}
 			}
@@ -286,8 +253,6 @@ Gui3DSplitterElementRenderer
 			}
 
 			Gui3DSplitterElementRenderer::Gui3DSplitterElementRenderer()
-				:brush1(0)
-				,brush2(0)
 			{
 			}
 
@@ -450,46 +415,63 @@ GuiGradientBackgroundElementRenderer
 			}
 
 /***********************************************************************
-GuiRadialGradientBackgroundElementRenderer
+GuiInnerShadowElementRenderer
 ***********************************************************************/
 
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER_RADIAL_GRADIENT_BRUSH(GuiRadialGradientBackgroundElementRenderer)
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiRadialGradientBackgroundElementRenderer)
+			void GuiInnerShadowElementRenderer::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)
 			{
-				D2D1_POINT_2F center;
-				center.x = ((FLOAT)bounds.x1 + (FLOAT)bounds.x2) / 2;
-				center.y = ((FLOAT)bounds.y1 + (FLOAT)bounds.y2) / 2;
-				brush->SetCenter(center);
-				brush->SetRadiusX((FLOAT)bounds.Width() / 2);
-				brush->SetRadiusY((FLOAT)bounds.Height() / 2);
-
-				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
-				auto shape = element->GetShape();
-
-				switch(shape.shapeType)
+				if (_renderTarget)
 				{
-				case ElementShapeType::Rectangle:
-					d2dRenderTarget->FillRectangle(
-						D2D1::RectF((FLOAT)bounds.x1, (FLOAT)bounds.y1, (FLOAT)bounds.x2, (FLOAT)bounds.y2),
-						brush
-						);
-					break;
-				case ElementShapeType::Ellipse:
-					d2dRenderTarget->FillEllipse(
-						D2D1::Ellipse(D2D1::Point2F((bounds.x1+bounds.x2)/2.0f, (bounds.y1+bounds.y2)/2.0f), bounds.Width()/2.0f, bounds.Height()/2.0f),
-						brush
-						);
-					break;
-				case ElementShapeType::RoundRect:
-					d2dRenderTarget->FillRoundedRectangle(
-						D2D1::RoundedRect(
-							D2D1::RectF((FLOAT)bounds.x1 + 0.5f, (FLOAT)bounds.y1 + 0.5f, (FLOAT)bounds.x2 - 0.5f, (FLOAT)bounds.y2 - 0.5f),
-							(FLOAT)shape.radiusX,
-							(FLOAT)shape.radiusY
-							),
-						brush
-						);
-					break;
+					oldColor = element->GetColor();
+					linearBrush = _renderTarget->CreateDirect2DLinearBrush(oldColor, Color(0, 0, 0, 0));
+					radialBrush = _renderTarget->CreateDirect2DRadialBrush(oldColor, Color(0, 0, 0, 0));
+				}
+			}
+
+			void GuiInnerShadowElementRenderer::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			{
+				if (renderTarget)
+				{
+					_renderTarget->DestroyDirect2DLinearBrush(oldColor, Color(0, 0, 0, 0));
+					_renderTarget->DestroyDirect2DRadialBrush(oldColor, Color(0, 0, 0, 0));
+
+					linearBrush = nullptr;
+					radialBrush = nullptr;
+				}
+			}
+
+			void GuiInnerShadowElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiInnerShadowElementRenderer::FinalizeInternal()
+			{
+				DestroyBrush(renderTarget);
+			}
+
+			void GuiInnerShadowElementRenderer::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
+			{
+				DestroyBrush(oldRenderTarget);
+				CreateBrush(newRenderTarget);
+			}
+			
+			GuiInnerShadowElementRenderer::GuiInnerShadowElementRenderer()
+			{
+			}
+			
+			void GuiInnerShadowElementRenderer::Render(Rect bounds)
+			{
+			}
+
+			void GuiInnerShadowElementRenderer::OnElementStateChanged()
+			{
+				if (renderTarget)
+				{
+					if (oldColor != element->GetColor())
+					{
+						DestroyBrush(renderTarget);
+						CreateBrush(renderTarget);
+					}
 				}
 			}
 
@@ -511,7 +493,7 @@ GuiSolidLabelElementRenderer
 				if(_renderTarget && brush)
 				{
 					_renderTarget->DestroyDirect2DBrush(oldColor);
-					brush=0;
+					brush = nullptr;
 				}
 			}
 
@@ -531,7 +513,7 @@ GuiSolidLabelElementRenderer
 				{
 					IWindowsDirect2DResourceManager* resourceManager=GetWindowsDirect2DResourceManager();
 					resourceManager->DestroyDirect2DTextFormat(oldFont);
-					textFormat=0;
+					textFormat = nullptr;
 				}
 			}
 
@@ -575,7 +557,7 @@ GuiSolidLabelElementRenderer
 				if(textLayout)
 				{
 					textLayout->Release();
-					textLayout=0;
+					textLayout = nullptr;
 				}
 			}
 
@@ -655,11 +637,6 @@ GuiSolidLabelElementRenderer
 			}
 
 			GuiSolidLabelElementRenderer::GuiSolidLabelElementRenderer()
-				:brush(0)
-				,textFormat(0)
-				,textLayout(0)
-				,oldText(L"")
-				,oldMaxWidth(-1)
 			{
 			}
 
@@ -966,7 +943,7 @@ GuiPolygonElementRenderer
 			{
 				if(geometry)
 				{
-					geometry=0;
+					geometry = nullptr;
 				}
 			}
 
@@ -1052,9 +1029,6 @@ GuiPolygonElementRenderer
 			}
 
 			GuiPolygonElementRenderer::GuiPolygonElementRenderer()
-				:borderBrush(0)
-				,backgroundBrush(0)
-				,geometry(0)
 			{
 			}
 

@@ -731,7 +731,7 @@ void RendererMainDirect2D()
 	elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
 	elements_windows_d2d::GuiSolidBackgroundElementRenderer::Register();
 	elements_windows_d2d::GuiGradientBackgroundElementRenderer::Register();
-	elements_windows_d2d::GuiRadialGradientBackgroundElementRenderer::Register();
+	elements_windows_d2d::GuiInnerShadowElementRenderer::Register();
 	elements_windows_d2d::GuiSolidLabelElementRenderer::Register();
 	elements_windows_d2d::GuiImageFrameElementRenderer::Register();
 	elements_windows_d2d::GuiPolygonElementRenderer::Register();
