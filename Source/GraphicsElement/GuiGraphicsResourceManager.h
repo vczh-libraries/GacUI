@@ -164,7 +164,9 @@ Helpers
 			public:
 				static TElement* Create()
 				{
-					return dynamic_cast<TElement*>(GetGuiGraphicsResourceManager()->GetElementFactory(TElement::GetElementTypeName())->Create());
+					auto factory = GetGuiGraphicsResourceManager()->GetElementFactory(TElement::GetElementTypeName());
+					CHECK_ERROR(factory != nullptr, L"This element is not supported by the selected renderer.");
+					return dynamic_cast<TElement*>(factory->Create());
 				}
 
 				~GuiElementBase()
