@@ -79,13 +79,13 @@
       </Cell>
 
       <Cell Site="row:0 column:4 rowSpan:2">
-        <InnerShadow Color1="#FFFF00" Thickness="10"/>
+        <InnerShadow Color="#FFFF00" Thickness="10"/>
       </Cell>
       <Cell Site="row:2 column:4 rowSpan:2">
-        <InnerShadow Color1="#FF00FF" Thickness="20"/>
+        <InnerShadow Color="#FF00FF" Thickness="20"/>
       </Cell>
       <Cell Site="row:4 column:4 rowSpan:2">
-        <InnerShadow Color1="#00FFFF" Thickness="30"/>
+        <InnerShadow Color="#00FFFF" Thickness="30"/>
       </Cell>
     </Table>
   </TabPage>

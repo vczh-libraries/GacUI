@@ -7922,12 +7922,12 @@ Class (::demo::ElementTabPageConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_37)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(4), static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(1));
 		}
-		(this->__vwsn_precompile_38 = ::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiRadialGradientBackgroundElement>()));
+		(this->__vwsn_precompile_38 = ::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiInnerShadowElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#0000FF", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_38.Obj())->SetThickness(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"10", false)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_38.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_37)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_38));
@@ -7939,15 +7939,12 @@ Class (::demo::ElementTabPageConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetSite(static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(4), static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(1));
 		}
-		(this->__vwsn_precompile_40 = ::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiRadialGradientBackgroundElement>()));
+		(this->__vwsn_precompile_40 = ::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiInnerShadowElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_40.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::Ellipse; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_40.Obj())->SetThickness(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_40.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#0000FF", false)));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_40.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_40.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FF00FF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_40));
@@ -7959,15 +7956,12 @@ Class (::demo::ElementTabPageConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_41)->SetSite(static_cast<::vl::vint32_t>(4), static_cast<::vl::vint32_t>(4), static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(1));
 		}
-		(this->__vwsn_precompile_42 = ::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiRadialGradientBackgroundElement>()));
+		(this->__vwsn_precompile_42 = ::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiInnerShadowElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_42.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::RoundRect; __vwsn_temp__.radiusX = static_cast<::vl::vint32_t>(10); __vwsn_temp__.radiusY = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_42.Obj())->SetThickness(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"30", false)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_42.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#0000FF", false)));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_42.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_42.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#00FFFF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_41)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_42));
@@ -10939,6 +10933,7 @@ Class (::demo::MyTextItem)
 	{
 		return this->__vwsn_prop_Name;
 	}
+
 	void MyTextItem::SetName(const ::vl::WString& __vwsn_value_)
 	{
 		(this->__vwsn_prop_Name = __vwsn_value_);
@@ -10948,6 +10943,7 @@ Class (::demo::MyTextItem)
 	{
 		return this->__vwsn_prop_Checked;
 	}
+
 	void MyTextItem::SetChecked(bool __vwsn_value_)
 	{
 		(this->__vwsn_prop_Checked = __vwsn_value_);
@@ -10965,6 +10961,7 @@ Class (::demo::MyDataItem)
 	{
 		return this->__vwsn_prop_Name;
 	}
+
 	void MyDataItem::SetName(const ::vl::WString& __vwsn_value_)
 	{
 		(this->__vwsn_prop_Name = __vwsn_value_);
@@ -10974,6 +10971,7 @@ Class (::demo::MyDataItem)
 	{
 		return this->__vwsn_prop_Gender;
 	}
+
 	void MyDataItem::SetGender(::demo::MyGender __vwsn_value_)
 	{
 		(this->__vwsn_prop_Gender = __vwsn_value_);
@@ -10983,6 +10981,7 @@ Class (::demo::MyDataItem)
 	{
 		return this->__vwsn_prop_Category;
 	}
+
 	void MyDataItem::SetCategory(::demo::MyCategory __vwsn_value_)
 	{
 		(this->__vwsn_prop_Category = __vwsn_value_);
@@ -10992,6 +10991,7 @@ Class (::demo::MyDataItem)
 	{
 		return this->__vwsn_prop_Birthday;
 	}
+
 	void MyDataItem::SetBirthday(::vl::DateTime __vwsn_value_)
 	{
 		(this->__vwsn_prop_Birthday = __vwsn_value_);
@@ -11001,6 +11001,7 @@ Class (::demo::MyDataItem)
 	{
 		return this->__vwsn_prop_Website;
 	}
+
 	void MyDataItem::SetWebsite(const ::vl::WString& __vwsn_value_)
 	{
 		(this->__vwsn_prop_Website = __vwsn_value_);
@@ -11010,6 +11011,7 @@ Class (::demo::MyDataItem)
 	{
 		return this->__vwsn_prop_LargeImage;
 	}
+
 	void MyDataItem::SetLargeImage(::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_value_)
 	{
 		(this->__vwsn_prop_LargeImage = __vwsn_value_);
@@ -11019,6 +11021,7 @@ Class (::demo::MyDataItem)
 	{
 		return this->__vwsn_prop_SmallImage;
 	}
+
 	void MyDataItem::SetSmallImage(::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_value_)
 	{
 		(this->__vwsn_prop_SmallImage = __vwsn_value_);

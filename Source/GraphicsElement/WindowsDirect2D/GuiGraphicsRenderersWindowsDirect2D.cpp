@@ -430,7 +430,7 @@ GuiInnerShadowElementRenderer
 
 			void GuiInnerShadowElementRenderer::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)
 			{
-				if (renderTarget)
+				if (_renderTarget)
 				{
 					_renderTarget->DestroyDirect2DLinearBrush(oldColor, Color(0, 0, 0, 0));
 					_renderTarget->DestroyDirect2DRadialBrush(oldColor, Color(0, 0, 0, 0));

@@ -764,11 +764,11 @@ namespace demo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_35 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
 		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_36 = ::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement>();
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_37 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement> __vwsn_precompile_38 = ::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement>();
+		::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement> __vwsn_precompile_38 = ::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement>();
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_39 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement> __vwsn_precompile_40 = ::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement>();
+		::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement> __vwsn_precompile_40 = ::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement>();
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_41 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement> __vwsn_precompile_42 = ::vl::Ptr<::vl::presentation::elements::GuiRadialGradientBackgroundElement>();
+		::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement> __vwsn_precompile_42 = ::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement>();
 		void __vwsn_initialize_instance_(::demo::ElementTabPage* __vwsn_this_);
 	public:
 		ElementTabPageConstructor();
@@ -1666,11 +1666,14 @@ namespace demo
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyTextItem>;
 #endif
-	public:
+	private:
 		::vl::WString __vwsn_prop_Name = ::vl::WString(L"", false);
+	public:
 		::vl::WString GetName();
 		void SetName(const ::vl::WString& __vwsn_value_);
+	private:
 		bool __vwsn_prop_Checked = false;
+	public:
 		bool GetChecked();
 		void SetChecked(bool __vwsn_value_);
 		MyTextItem();
@@ -1681,26 +1684,39 @@ namespace demo
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyDataItem>;
 #endif
-	public:
+	private:
 		::vl::WString __vwsn_prop_Name = ::vl::WString(L"", false);
+	public:
 		::vl::WString GetName();
 		void SetName(const ::vl::WString& __vwsn_value_);
+	private:
 		::demo::MyGender __vwsn_prop_Gender = ::demo::MyGender::Male;
+	public:
 		::demo::MyGender GetGender();
 		void SetGender(::demo::MyGender __vwsn_value_);
+	private:
 		::demo::MyCategory __vwsn_prop_Category = ::demo::MyCategory::White;
+	public:
 		::demo::MyCategory GetCategory();
 		void SetCategory(::demo::MyCategory __vwsn_value_);
+	private:
 		::vl::DateTime __vwsn_prop_Birthday = ::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString(L"2000-01-01 00:00:00.000", false));
+	public:
 		::vl::DateTime GetBirthday();
 		void SetBirthday(::vl::DateTime __vwsn_value_);
+	private:
 		::vl::WString __vwsn_prop_Website = ::vl::WString(L"", false);
+	public:
 		::vl::WString GetWebsite();
 		void SetWebsite(const ::vl::WString& __vwsn_value_);
+	private:
 		::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_prop_LargeImage = ::vl::Ptr<::vl::presentation::GuiImageData>();
+	public:
 		::vl::Ptr<::vl::presentation::GuiImageData> GetLargeImage();
 		void SetLargeImage(::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_value_);
+	private:
 		::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_prop_SmallImage = ::vl::Ptr<::vl::presentation::GuiImageData>();
+	public:
 		::vl::Ptr<::vl::presentation::GuiImageData> GetSmallImage();
 		void SetSmallImage(::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_value_);
 		MyDataItem();
