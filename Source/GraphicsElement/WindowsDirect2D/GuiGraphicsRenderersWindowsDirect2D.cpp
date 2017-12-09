@@ -423,8 +423,8 @@ GuiInnerShadowElementRenderer
 				if (_renderTarget)
 				{
 					oldColor = element->GetColor();
-					linearBrush = _renderTarget->CreateDirect2DLinearBrush(oldColor, Color(0, 0, 0, 0));
-					radialBrush = _renderTarget->CreateDirect2DRadialBrush(oldColor, Color(0, 0, 0, 0));
+					linearBrush = _renderTarget->CreateDirect2DLinearBrush(Color(0, 0, 0, 0), oldColor);
+					radialBrush = _renderTarget->CreateDirect2DRadialBrush(Color(0, 0, 0, 0), oldColor);
 				}
 			}
 
@@ -432,8 +432,8 @@ GuiInnerShadowElementRenderer
 			{
 				if (_renderTarget)
 				{
-					_renderTarget->DestroyDirect2DLinearBrush(oldColor, Color(0, 0, 0, 0));
-					_renderTarget->DestroyDirect2DRadialBrush(oldColor, Color(0, 0, 0, 0));
+					_renderTarget->DestroyDirect2DLinearBrush(Color(0, 0, 0, 0), oldColor);
+					_renderTarget->DestroyDirect2DRadialBrush(Color(0, 0, 0, 0), oldColor);
 
 					linearBrush = nullptr;
 					radialBrush = nullptr;
@@ -461,6 +461,72 @@ GuiInnerShadowElementRenderer
 			
 			void GuiInnerShadowElementRenderer::Render(Rect bounds)
 			{
+				vint w = bounds.Width();
+				vint h = bounds.Height();
+				vint t = element->GetThickness();
+				vint bW = w - 2 * t;
+				vint bH = h - 2 * t;
+				if (bW > 0 && bH > 0)
+				{
+					vint x1 = bounds.Left();
+					vint x4 = bounds.Right();
+					vint x2 = x1 + t;
+					vint x3 = x4 - t;
+
+					vint y1 = bounds.Top();
+					vint y4 = bounds.Bottom();
+					vint y2 = y1 + t;
+					vint y3 = y4 - t;
+
+					auto d2dRenderTarget = renderTarget->GetDirect2DRenderTarget();
+					{
+						// top
+						linearBrush->SetStartPoint(D2D1::Point2F((FLOAT)x2, (FLOAT)y2));
+						linearBrush->SetEndPoint(D2D1::Point2F((FLOAT)x2, (FLOAT)y1));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x2, (FLOAT)y1, (FLOAT)x3, (FLOAT)y2), linearBrush);
+					}
+					{
+						// bottom
+						linearBrush->SetStartPoint(D2D1::Point2F((FLOAT)x2, (FLOAT)y3));
+						linearBrush->SetEndPoint(D2D1::Point2F((FLOAT)x2, (FLOAT)y4));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x2, (FLOAT)y3, (FLOAT)x3, (FLOAT)y4), linearBrush);
+					}
+					{
+						// left
+						linearBrush->SetStartPoint(D2D1::Point2F((FLOAT)x2, (FLOAT)y2));
+						linearBrush->SetEndPoint(D2D1::Point2F((FLOAT)x1, (FLOAT)y2));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x1, (FLOAT)y2, (FLOAT)x2, (FLOAT)y3), linearBrush);
+					}
+					{
+						// right
+						linearBrush->SetStartPoint(D2D1::Point2F((FLOAT)x3, (FLOAT)y2));
+						linearBrush->SetEndPoint(D2D1::Point2F((FLOAT)x4, (FLOAT)y2));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x3, (FLOAT)y2, (FLOAT)x4, (FLOAT)y3), linearBrush);
+					}
+
+					radialBrush->SetRadiusX((FLOAT)t);
+					radialBrush->SetRadiusY((FLOAT)t);
+					{
+						// left-top
+						radialBrush->SetCenter(D2D1::Point2F((FLOAT)x2, (FLOAT)y2));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x1, (FLOAT)y1, (FLOAT)x2, (FLOAT)y2), radialBrush);
+					}
+					{
+						// left-bottom
+						radialBrush->SetCenter(D2D1::Point2F((FLOAT)x3, (FLOAT)y2));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x3, (FLOAT)y1, (FLOAT)x4, (FLOAT)y2), radialBrush);
+					}
+					{
+						// right-top
+						radialBrush->SetCenter(D2D1::Point2F((FLOAT)x2, (FLOAT)y3));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x1, (FLOAT)y3, (FLOAT)x2, (FLOAT)y4), radialBrush);
+					}
+					{
+						// right-bottom
+						radialBrush->SetCenter(D2D1::Point2F((FLOAT)x3, (FLOAT)y3));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x3, (FLOAT)y3, (FLOAT)x4, (FLOAT)y4), radialBrush);
+					}
+				}
 			}
 
 			void GuiInnerShadowElementRenderer::OnElementStateChanged()
