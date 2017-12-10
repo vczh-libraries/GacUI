@@ -103,6 +103,7 @@ Renderers
 				DEFINE_GUI_GRAPHICS_RENDERER(GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsDirect2DRenderTarget)
 			protected:
 				Color							oldColor;
+				Color							transparentColor;
 				ID2D1LinearGradientBrush*		linearBrush = nullptr;
 				ID2D1RadialGradientBrush*		radialBrush = nullptr;
 

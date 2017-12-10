@@ -423,8 +423,9 @@ GuiInnerShadowElementRenderer
 				if (_renderTarget)
 				{
 					oldColor = element->GetColor();
-					linearBrush = _renderTarget->CreateDirect2DLinearBrush(Color(0, 0, 0, 0), oldColor);
-					radialBrush = _renderTarget->CreateDirect2DRadialBrush(Color(0, 0, 0, 0), oldColor);
+					transparentColor = Color(oldColor.r, oldColor.g, oldColor.b, 0);
+					linearBrush = _renderTarget->CreateDirect2DLinearBrush(transparentColor, oldColor);
+					radialBrush = _renderTarget->CreateDirect2DRadialBrush(transparentColor, oldColor);
 				}
 			}
 
@@ -432,8 +433,8 @@ GuiInnerShadowElementRenderer
 			{
 				if (_renderTarget)
 				{
-					_renderTarget->DestroyDirect2DLinearBrush(Color(0, 0, 0, 0), oldColor);
-					_renderTarget->DestroyDirect2DRadialBrush(Color(0, 0, 0, 0), oldColor);
+					_renderTarget->DestroyDirect2DLinearBrush(transparentColor, oldColor);
+					_renderTarget->DestroyDirect2DRadialBrush(transparentColor, oldColor);
 
 					linearBrush = nullptr;
 					radialBrush = nullptr;
