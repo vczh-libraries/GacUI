@@ -548,19 +548,14 @@ Interface Proxy (Compositions)
 ***********************************************************************/
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::compositions::IGuiGraphicsAnimation)
-				vint GetTotalLength()override
+				void SetStartPosition(vuint64_t position)override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTotalLength);
+					INVOKE_INTERFACE_PROXY(SetStartPosition, position);
 				}
 
-				vint GetCurrentPosition()override
+				bool Play(vuint64_t currentPosition)override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCurrentPosition);
-				}
-
-				void Play(vint currentPosition, vint totalLength)override
-				{
-					INVOKE_INTERFACE_PROXY(Play, currentPosition, totalLength);
+					INVOKEGET_INTERFACE_PROXY(Play, currentPosition);
 				}
 
 				void Stop()override

@@ -28,6 +28,7 @@ GuiGraphicsAnimationManager
 			void GuiGraphicsAnimationManager::AddAnimation(Ptr<IGuiGraphicsAnimation> animation)
 			{
 				playingAnimations.Add(animation);
+				animation->SetStartPosition(DateTime::LocalTime().totalMilliseconds);
 			}
 
 			bool GuiGraphicsAnimationManager::HasAnimation()
@@ -37,13 +38,11 @@ GuiGraphicsAnimationManager
 
 			void GuiGraphicsAnimationManager::Play()
 			{
-				for(vint i=playingAnimations.Count()-1;i>=0;i--)
+				auto position = DateTime::LocalTime().totalMilliseconds;
+				for (vint i = playingAnimations.Count() - 1; i >= 0; i--)
 				{
-					Ptr<IGuiGraphicsAnimation> animation=playingAnimations[i];
-					vint totalLength=animation->GetTotalLength();
-					vint currentPosition=animation->GetCurrentPosition();
-					animation->Play(currentPosition, totalLength);
-					if(currentPosition>=totalLength)
+					Ptr<IGuiGraphicsAnimation> animation = playingAnimations[i];
+					if (!animation->Play(position))
 					{
 						playingAnimations.RemoveAt(i);
 						animation->Stop();
@@ -1023,40 +1022,6 @@ GuiGraphicsHost
 			void GuiGraphicsHost::DisconnectComposition(GuiGraphicsComposition* composition)
 			{
 				DisconnectCompositionInternal(composition);
-			}
-
-/***********************************************************************
-GuiTimeBasedAnimation
-***********************************************************************/
-
-			GuiTimeBasedAnimation::GuiTimeBasedAnimation(vint totalMilliseconds)
-				:startTime(0)
-				,length(totalMilliseconds)
-			{
-				Restart();
-			}
-
-			GuiTimeBasedAnimation::~GuiTimeBasedAnimation()
-			{
-			}
-
-			void GuiTimeBasedAnimation::Restart(vint totalMilliseconds)
-			{
-				startTime=DateTime::LocalTime().totalMilliseconds;
-				if(totalMilliseconds>-1)
-				{
-					length=totalMilliseconds;
-				}
-			}
-
-			vint GuiTimeBasedAnimation::GetTotalLength()
-			{
-				return length;
-			}
-
-			vint GuiTimeBasedAnimation::GetCurrentPosition()
-			{
-				return (vint)(DateTime::LocalTime().totalMilliseconds-startTime);
 			}
 
 /***********************************************************************

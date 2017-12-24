@@ -353,10 +353,8 @@ Type Declaration
 			END_CLASS_MEMBER(GuiRepeatFlowComposition)
 
 			BEGIN_INTERFACE_MEMBER(IGuiGraphicsAnimation)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TotalLength)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(CurrentPosition)
-
-				CLASS_MEMBER_METHOD(Play, {L"currentPosition" _ L"totalLength"})
+				CLASS_MEMBER_METHOD(SetStartPosition, { L"position" })
+				CLASS_MEMBER_METHOD(Play, { L"currentPosition" })
 				CLASS_MEMBER_METHOD(Stop, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IGuiGraphicsAnimation)
 

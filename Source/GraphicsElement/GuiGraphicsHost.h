@@ -33,18 +33,15 @@ Animation
 			class IGuiGraphicsAnimation : public virtual IDescriptable, public Description<IGuiGraphicsAnimation>
 			{
 			public:
-				/// <summary>Get the total length.</summary>
-				/// <returns>The total length.</returns>
-				virtual vint					GetTotalLength()=0;
-				/// <summary>Get the current position. Value in [0, TotalLength-1]. This function doesn't return a internal state. It return the suggested current position at the moment this function is called.</summary>
-				/// <returns>The current position.</returns>
-				virtual vint					GetCurrentPosition()=0;
-				/// <summary>Display a state in the animation with the specified current position and the specified total length.</summary>
-				/// <param name="currentPosition">The current position. When this function is called by [T:vl.presentation.compositions.GuiGraphicsAnimationManager], this value comes from <see cref="IGuiGraphicsAnimation::GetCurrentPosition"/>.</param>
-				/// <param name="totalLength">The total length. When this function is called by [T:vl.presentation.compositions.GuiGraphicsAnimationManager], this value comes from <see cref="IGuiGraphicsAnimation::GetTotalLength"/>.</param>
-				virtual void					Play(vint currentPosition, vint totalLength)=0;
-				/// <summary>Stop the animation.</summary>
-				virtual void					Stop()=0;
+				/// <summary>Set the start position in milliseconds.</summary>
+				/// <param name="value">SetStartPosition</param>
+				virtual void					SetStartPosition(vuint64_t position) = 0;
+				/// <summary>Display a state in the animation with the specified current position.</summary>
+				/// <returns>Returns false to indicate that this animation has stopped.</returns>
+				/// <param name="currentPosition">The current position in milliseconds.</param>
+				virtual bool					Play(vuint64_t currentPosition) = 0;
+				/// <summary>Stop the animation. <see cref="IGuiGraphicsAnimation::Play"/> will return false after this function is called.</summary>
+				virtual void					Stop() = 0;
 			};
 
 			/// <summary>
@@ -287,31 +284,6 @@ Host
 				/// <summary>Notify that a composition is going to disconnect from this graphics host. Generally this happens when a composition's parent line changes.</summary>
 				/// <param name="composition">The composition to disconnect</param>
 				void									DisconnectComposition(GuiGraphicsComposition* composition);
-			};
-
-/***********************************************************************
-Animation Helpers
-***********************************************************************/
-			
-			/// <summary>
-			/// Represents a time based animation.
-			/// </summary>
-			class GuiTimeBasedAnimation : public IGuiGraphicsAnimation, public Description<GuiTimeBasedAnimation>
-			{
-			protected:
-				vuint64_t						startTime;
-				vint							length;
-			public:
-				/// <summary>Create an animation with a specified length in milliseconds.</summary>
-				/// <param name="totalMilliseconds">The specified length in milliseconds.</param>
-				GuiTimeBasedAnimation(vint totalMilliseconds);
-				~GuiTimeBasedAnimation();
-
-				/// <summary>Restart an animation with a specified length in milliseconds.</summary>
-				/// <param name="totalMilliseconds">The specified length in milliseconds. If the value is -1, it will use the previous length.</param>
-				void							Restart(vint totalMilliseconds=-1);
-				vint							GetTotalLength()override;
-				vint							GetCurrentPosition()override;
 			};
 
 /***********************************************************************
