@@ -58,8 +58,8 @@ namespace vl
 				void									ExecuteAsyncTasks();
 				bool									IsInMainThread()override;
 				void									InvokeAsync(const Func<void()>& proc)override;
-				void									InvokeInMainThread(const Func<void()>& proc)override;
-				bool									InvokeInMainThreadAndWait(const Func<void()>& proc, vint milliseconds)override;
+				void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
+				bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
 				Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
 				Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
 			};

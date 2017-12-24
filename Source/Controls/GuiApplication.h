@@ -96,12 +96,12 @@ Application
 				void											InvokeAsync(const Func<void()>& proc);
 				/// <summary>Invoke a specified function in the main thread.</summary>
 				/// <param name="proc">The specified function.</param>
-				void											InvokeInMainThread(const Func<void()>& proc);
+				void											InvokeInMainThread(GuiControlHost* controlHost, const Func<void()>& proc);
 				/// <summary>Invoke a specified function in the main thread and wait for the function to complete or timeout.</summary>
 				/// <returns>Return true if the function complete. Return false if the function has not completed during a specified period of time.</returns>
 				/// <param name="proc">The specified function.</param>
 				/// <param name="milliseconds">The specified period of time to wait. Set to -1 (default value) to wait forever until the function completed.</param>
-				bool											InvokeInMainThreadAndWait(const Func<void()>& proc, vint milliseconds=-1);
+				bool											InvokeInMainThreadAndWait(GuiControlHost* controlHost, const Func<void()>& proc, vint milliseconds=-1);
 				/// <summary>Delay execute a specified function with an specified argument asynchronisly.</summary>
 				/// <returns>The Delay execution controller for this task.</returns>
 				/// <param name="proc">The specified function.</param>
@@ -114,13 +114,13 @@ Application
 				Ptr<INativeDelay>								DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds);
 				/// <summary>Run the specified function in the main thread. If the caller is in the main thread, then run the specified function directly.</summary>
 				/// <param name="proc">The specified function.</param>
-				void											RunGuiTask(const Func<void()>& proc);
+				void											RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc);
 
 				template<typename T>
-				T RunGuiValue(const Func<T()>& proc)
+				T RunGuiValue(GuiControlHost* controlHost, const Func<T()>& proc)
 				{
 					T result;
-					RunGuiTask([&result, &proc]()
+					RunGuiTask(controlHost, [&result, &proc]()
 					{
 						result=proc();
 					});
@@ -128,15 +128,15 @@ Application
 				}
 
 				template<typename T>
-				void InvokeLambdaInMainThread(const T& proc)
+				void InvokeLambdaInMainThread(GuiControlHost* controlHost, const T& proc)
 				{
-					InvokeInMainThread(Func<void()>(proc));
+					InvokeInMainThread(controlHost, Func<void()>(proc));
 				}
 				
 				template<typename T>
-				bool InvokeLambdaInMainThreadAndWait(const T& proc, vint milliseconds=-1)
+				bool InvokeLambdaInMainThreadAndWait(GuiControlHost* controlHost, const T& proc, vint milliseconds=-1)
 				{
-					return InvokeInMainThreadAndWait(Func<void()>(proc), milliseconds);
+					return InvokeInMainThreadAndWait(controlHost, Func<void()>(proc), milliseconds);
 				}
 			};
 

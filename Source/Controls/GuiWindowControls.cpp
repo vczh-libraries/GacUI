@@ -759,7 +759,7 @@ GuiWindow
 				auto container = MakePtr<IGuiGraphicsEventHandler::Container>();
 				container->handler = WindowClosed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
-					GetApplication()->InvokeInMainThread([=]()
+					GetApplication()->InvokeInMainThread(this, [=]()
 					{
 						WindowClosed.Detach(container->handler);
 						container->handler = nullptr;

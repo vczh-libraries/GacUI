@@ -149,7 +149,7 @@ WindowsAsyncService
 				ThreadPoolLite::Queue(proc);
 			}
 
-			void WindowsAsyncService::InvokeInMainThread(const Func<void()>& proc)
+			void WindowsAsyncService::InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)
 			{
 				SPIN_LOCK(taskListLock)
 				{
@@ -158,7 +158,7 @@ WindowsAsyncService
 				}
 			}
 
-			bool WindowsAsyncService::InvokeInMainThreadAndWait(const Func<void()>& proc, vint milliseconds)
+			bool WindowsAsyncService::InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)
 			{
 				Semaphore semaphore;
 				semaphore.Create(0, 1);

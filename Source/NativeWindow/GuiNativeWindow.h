@@ -968,14 +968,14 @@ Native Window Services
 			/// Invoke a specified function with an specified argument in the main thread.
 			/// </summary>
 			/// <param name="proc">The specified function.</param>
-			virtual void					InvokeInMainThread(const Func<void()>& proc)=0;
+			virtual void					InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)=0;
 			/// <summary>
 			/// Invoke a specified function with an specified argument in the main thread and wait for the function to complete or timeout.
 			/// </summary>
 			/// <returns>Return true if the function complete. Return false if the function has not completed during a specified period of time.</returns>
 			/// <param name="proc">The specified function.</param>
 			/// <param name="milliseconds">The specified period of time to wait. Set to -1 (default value) to wait forever until the function completed.</param>
-			virtual bool					InvokeInMainThreadAndWait(const Func<void()>& proc, vint milliseconds=-1)=0;
+			virtual bool					InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds=-1)=0;
 			/// <summary>
 			/// Delay execute a specified function with an specified argument asynchronisly.
 			/// </summary>

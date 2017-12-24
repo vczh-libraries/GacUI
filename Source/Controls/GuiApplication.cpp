@@ -260,14 +260,14 @@ GuiApplication
 				GetCurrentController()->AsyncService()->InvokeAsync(proc);
 			}
 
-			void GuiApplication::InvokeInMainThread(const Func<void()>& proc)
+			void GuiApplication::InvokeInMainThread(GuiControlHost* controlHost, const Func<void()>& proc)
 			{
-				GetCurrentController()->AsyncService()->InvokeInMainThread(proc);
+				GetCurrentController()->AsyncService()->InvokeInMainThread(controlHost->GetNativeWindow(), proc);
 			}
 
-			bool GuiApplication::InvokeInMainThreadAndWait(const Func<void()>& proc, vint milliseconds)
+			bool GuiApplication::InvokeInMainThreadAndWait(GuiControlHost* controlHost, const Func<void()>& proc, vint milliseconds)
 			{
-				return GetCurrentController()->AsyncService()->InvokeInMainThreadAndWait(proc, milliseconds);
+				return GetCurrentController()->AsyncService()->InvokeInMainThreadAndWait(controlHost->GetNativeWindow(), proc, milliseconds);
 			}
 
 			Ptr<INativeDelay> GuiApplication::DelayExecute(const Func<void()>& proc, vint milliseconds)
@@ -280,7 +280,7 @@ GuiApplication
 				return GetCurrentController()->AsyncService()->DelayExecuteInMainThread(proc, milliseconds);
 			}
 
-			void GuiApplication::RunGuiTask(const Func<void()>& proc)
+			void GuiApplication::RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc)
 			{
 				if(IsInMainThread())
 				{
@@ -288,7 +288,7 @@ GuiApplication
 				}
 				else
 				{
-					InvokeInMainThreadAndWait([&proc]()
+					InvokeInMainThreadAndWait(controlHost, [&proc]()
 					{
 						proc();
 					});
@@ -448,7 +448,7 @@ GuiApplicationMain
 			public:
 				void Execute(const Func<void()>& callback)override
 				{
-					GetApplication()->InvokeInMainThread(callback);
+					GetApplication()->InvokeInMainThread(GetApplication()->GetMainWindow(), callback);
 				}
 
 				void ExecuteInBackground(const Func<void()>& callback)override
