@@ -49,6 +49,7 @@ Application
 				GuiApplication();
 				~GuiApplication();
 
+				INativeWindow*									GetThreadContextNativeWindow(GuiControlHost* controlHost);
 				void											RegisterWindow(GuiWindow* window);
 				void											UnregisterWindow(GuiWindow* window);
 				void											RegisterPopupOpened(GuiPopup* popup);

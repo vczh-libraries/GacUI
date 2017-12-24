@@ -200,7 +200,7 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				GetApplication()->InvokeLambdaInMainThread([=]()
+				GetApplication()->InvokeLambdaInMainThread(GetRelatedControlHost(), [=]()
 				{
 					AdoptSubMenuSize();
 				});

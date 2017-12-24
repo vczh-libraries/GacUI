@@ -79,6 +79,11 @@ GuiApplication
 				GetCurrentController()->CallbackService()->UninstallListener(this);
 			}
 
+			INativeWindow* GuiApplication::GetThreadContextNativeWindow(GuiControlHost* controlHost)
+			{
+				return nullptr;
+			}
+
 			void GuiApplication::RegisterWindow(GuiWindow* window)
 			{
 				windows.Add(window);
@@ -141,11 +146,11 @@ GuiApplication
 
 			void GuiApplication::Run(GuiWindow* _mainWindow)
 			{
-				if(!mainWindow)
+				if (!mainWindow)
 				{
-					mainWindow=_mainWindow;
+					mainWindow = _mainWindow;
 					GetCurrentController()->WindowService()->Run(mainWindow->GetNativeWindow());
-					mainWindow=0;
+					mainWindow = nullptr;
 				}
 			}
 
@@ -161,13 +166,13 @@ GuiApplication
 
 			GuiWindow* GuiApplication::GetWindow(Point location)
 			{
-				INativeWindow* nativeWindow=GetCurrentController()->WindowService()->GetWindow(location);
-				if(nativeWindow)
+				INativeWindow* nativeWindow = GetCurrentController()->WindowService()->GetWindow(location);
+				if (nativeWindow)
 				{
-					for(vint i=0;i<windows.Count();i++)
+					for (vint i = 0; i < windows.Count(); i++)
 					{
-						GuiWindow* window=windows[i];
-						if(window->GetNativeWindow()==nativeWindow)
+						GuiWindow* window = windows[i];
+						if (window->GetNativeWindow() == nativeWindow)
 						{
 							return window;
 						}
@@ -262,12 +267,12 @@ GuiApplication
 
 			void GuiApplication::InvokeInMainThread(GuiControlHost* controlHost, const Func<void()>& proc)
 			{
-				GetCurrentController()->AsyncService()->InvokeInMainThread(controlHost->GetNativeWindow(), proc);
+				GetCurrentController()->AsyncService()->InvokeInMainThread(GetThreadContextNativeWindow(controlHost), proc);
 			}
 
 			bool GuiApplication::InvokeInMainThreadAndWait(GuiControlHost* controlHost, const Func<void()>& proc, vint milliseconds)
 			{
-				return GetCurrentController()->AsyncService()->InvokeInMainThreadAndWait(controlHost->GetNativeWindow(), proc, milliseconds);
+				return GetCurrentController()->AsyncService()->InvokeInMainThreadAndWait(GetThreadContextNativeWindow(controlHost), proc, milliseconds);
 			}
 
 			Ptr<INativeDelay> GuiApplication::DelayExecute(const Func<void()>& proc, vint milliseconds)
