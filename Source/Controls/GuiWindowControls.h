@@ -40,7 +40,8 @@ Control Host
 				Ptr<INativeDelay>								tooltipOpenDelay;
 				Ptr<INativeDelay>								tooltipCloseDelay;
 				Point											tooltipLocation;
-				
+
+				controls::GuiControlHost*						GetControlHostForInstance()override;
 				GuiControl*										GetTooltipOwner(Point location);
 				void											MoveIntoTooltipControl(GuiControl* tooltipControl, Point location);
 				void											MouseMoving(const NativeWindowMouseInfo& info)override;

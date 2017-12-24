@@ -500,6 +500,11 @@ GuiControl
 GuiCustomControl
 ***********************************************************************/
 
+			controls::GuiControlHost* GuiCustomControl::GetControlHostForInstance()
+			{
+				return GetRelatedControlHost();
+			}
+
 			GuiCustomControl::GuiCustomControl(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{

@@ -239,6 +239,8 @@ Basic Construction
 			/// <summary>Represnets a user customizable control.</summary>
 			class GuiCustomControl : public GuiControl, public GuiInstanceRootObject, public AggregatableDescription<GuiCustomControl>
 			{
+			protected:
+				controls::GuiControlHost*				GetControlHostForInstance()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

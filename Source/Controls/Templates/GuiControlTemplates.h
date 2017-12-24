@@ -135,6 +135,7 @@ namespace vl
 				collections::SortedList<GuiComponent*>			components;
 				bool											finalized = false;
 
+				virtual controls::GuiControlHost*				GetControlHostForInstance() = 0;
 			public:
 				GuiInstanceRootObject();
 				~GuiInstanceRootObject();
@@ -268,6 +269,8 @@ GuiTemplate
 			/// <summary>Represents a user customizable template.</summary>
 			class GuiTemplate : public compositions::GuiBoundsComposition, public controls::GuiInstanceRootObject, public Description<GuiTemplate>
 			{
+			protected:
+				controls::GuiControlHost*		GetControlHostForInstance()override;
 			public:
 				/// <summary>Create a template.</summary>
 				GuiTemplate();

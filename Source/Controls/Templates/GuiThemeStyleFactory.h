@@ -85,6 +85,7 @@ namespace vl
 				ThemeTemplates*														previous = nullptr;
 				ThemeTemplates*														next = nullptr;
 
+				controls::GuiControlHost*											GetControlHostForInstance()override;
 			public:
 				~ThemeTemplates();
 

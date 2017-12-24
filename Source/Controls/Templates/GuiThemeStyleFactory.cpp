@@ -98,6 +98,11 @@ namespace vl
 				}
 			};
 
+			controls::GuiControlHost* ThemeTemplates::GetControlHostForInstance()
+			{
+				return nullptr;
+			}
+
 			ThemeTemplates::~ThemeTemplates()
 			{
 				FinalizeAggregation();

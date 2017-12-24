@@ -178,6 +178,11 @@ GuiTemplate
 
 			GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
+			controls::GuiControlHost* GuiTemplate::GetControlHostForInstance()
+			{
+				return GetRelatedControlHost();
+			}
+
 			GuiTemplate::GuiTemplate()
 			{
 				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
