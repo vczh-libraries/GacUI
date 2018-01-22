@@ -396,9 +396,9 @@ GuiControlHost
 				host->SetShortcutKeyManager(value);
 			}
 
-			compositions::GuiGraphicsAnimationManager* GuiControlHost::GetAnimationManager()
+			compositions::GuiGraphicsTimerManager* GuiControlHost::GetTimerManager()
 			{
-				return host->GetAnimationManager();
+				return host->GetTimerManager();
 			}
 
 			Size GuiControlHost::GetClientSize()

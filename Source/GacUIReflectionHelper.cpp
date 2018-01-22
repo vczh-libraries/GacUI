@@ -100,11 +100,6 @@ Serialization (GlobalStringKey)
 External Functions (Basic)
 ***********************************************************************/
 
-			GuiGraphicsAnimationManager* GuiControlHost_GetAnimationManager(GuiControlHost* thisObject)
-			{
-				return thisObject->GetGraphicsHost()->GetAnimationManager();
-			}
-
 			Ptr<INativeImage> INativeImage_Constructor(const WString& path)
 			{
 				return GetCurrentController()->ImageService()->CreateImageFromFile(path);

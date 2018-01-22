@@ -14,38 +14,30 @@ namespace vl
 			using namespace theme;
 
 /***********************************************************************
-GuiGraphicsAnimationManager
+GuiGraphicsTimerManager
 ***********************************************************************/
 
-			GuiGraphicsAnimationManager::GuiGraphicsAnimationManager()
+			GuiGraphicsTimerManager::GuiGraphicsTimerManager()
 			{
 			}
 
-			GuiGraphicsAnimationManager::~GuiGraphicsAnimationManager()
+			GuiGraphicsTimerManager::~GuiGraphicsTimerManager()
 			{
 			}
 
-			void GuiGraphicsAnimationManager::AddAnimation(Ptr<IGuiGraphicsAnimation> animation)
+			void GuiGraphicsTimerManager::AddCallback(Ptr<IGuiGraphicsTimerCallback> callback)
 			{
-				playingAnimations.Add(animation);
-				animation->SetStartPosition(DateTime::LocalTime().totalMilliseconds);
+				callbacks.Add(callback);
 			}
 
-			bool GuiGraphicsAnimationManager::HasAnimation()
+			void GuiGraphicsTimerManager::Play()
 			{
-				return playingAnimations.Count()>0;
-			}
-
-			void GuiGraphicsAnimationManager::Play()
-			{
-				auto position = DateTime::LocalTime().totalMilliseconds;
-				for (vint i = playingAnimations.Count() - 1; i >= 0; i--)
+				for (vint i = callbacks.Count() - 1; i >= 0; i--)
 				{
-					Ptr<IGuiGraphicsAnimation> animation = playingAnimations[i];
-					if (!animation->Play(position))
+					auto callback = callbacks[i];
+					if (!callback->Play())
 					{
-						playingAnimations.RemoveAt(i);
-						animation->Stop();
+						callbacks.RemoveAt(i);
 					}
 				}
 			}
@@ -833,10 +825,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::GlobalTimer()
 			{
-				if(animationManager.HasAnimation())
-				{
-					animationManager.Play();
-				}
+				timerManager.Play();
 
 				DateTime now=DateTime::UtcTime();
 				if(now.totalMilliseconds-lastCaretTime>=CaretInterval)
@@ -1014,9 +1003,9 @@ GuiGraphicsHost
 				}
 			}
 
-			GuiGraphicsAnimationManager* GuiGraphicsHost::GetAnimationManager()
+			GuiGraphicsTimerManager* GuiGraphicsHost::GetTimerManager()
 			{
-				return &animationManager;
+				return &timerManager;
 			}
 
 			void GuiGraphicsHost::DisconnectComposition(GuiGraphicsComposition* composition)

@@ -352,18 +352,6 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatFlowComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiRepeatFlowComposition)
 
-			BEGIN_INTERFACE_MEMBER(IGuiGraphicsAnimation)
-				CLASS_MEMBER_METHOD(SetStartPosition, { L"position" })
-				CLASS_MEMBER_METHOD(Play, { L"currentPosition" })
-				CLASS_MEMBER_METHOD(Stop, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IGuiGraphicsAnimation)
-
-			BEGIN_CLASS_MEMBER(GuiGraphicsAnimationManager)
-				CLASS_MEMBER_METHOD(AddAnimation, {L"animation"})
-				CLASS_MEMBER_METHOD(HasAnimation, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(Play, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiGraphicsAnimationManager)
-
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiShortcutKeyItem)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Manager)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)

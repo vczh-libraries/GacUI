@@ -28,41 +28,33 @@ Animation
 ***********************************************************************/
 
 			/// <summary>
-			/// Represents an animation. Use [M:vl.presentation.compositions.GuiGraphicsHost.GetAnimationManager] to access this object.
+			/// Represents a timer callback object.
 			/// </summary>
-			class IGuiGraphicsAnimation : public virtual IDescriptable, public Description<IGuiGraphicsAnimation>
+			class IGuiGraphicsTimerCallback : public virtual IDescriptable, public Description<IGuiGraphicsTimerCallback>
 			{
 			public:
-				/// <summary>Set the start position in milliseconds.</summary>
-				/// <param name="value">SetStartPosition</param>
-				virtual void					SetStartPosition(vuint64_t position) = 0;
-				/// <summary>Display a state in the animation with the specified current position.</summary>
-				/// <returns>Returns false to indicate that this animation has stopped.</returns>
-				/// <param name="currentPosition">The current position in milliseconds.</param>
-				virtual bool					Play(vuint64_t currentPosition) = 0;
-				/// <summary>Stop the animation. <see cref="IGuiGraphicsAnimation::Play"/> will return false after this function is called.</summary>
-				virtual void					Stop() = 0;
+				/// <summary>Called periodically.</summary>
+				/// <returns>Returns false to indicate that this callback need to be removed.</returns>
+				virtual bool					Play() = 0;
 			};
 
 			/// <summary>
-			/// Animation manager.
+			/// Timer callback manager.
 			/// </summary>
-			class GuiGraphicsAnimationManager : public Object, public Description<GuiGraphicsAnimationManager>
+			class GuiGraphicsTimerManager : public Object, public Description<GuiGraphicsTimerManager>
 			{
-				typedef collections::List<Ptr<IGuiGraphicsAnimation>>		AnimationList;
+				typedef collections::List<Ptr<IGuiGraphicsTimerCallback>>		CallbackList;
 			protected:
-				AnimationList					playingAnimations;
-			public:
-				GuiGraphicsAnimationManager();
-				~GuiGraphicsAnimationManager();
+				CallbackList					callbacks;
 
-				/// <summary>Add a new animation.</summary>
-				/// <param name="animation">The new animation to add.</param>
-				void							AddAnimation(Ptr<IGuiGraphicsAnimation> animation);
-				/// <summary>Test is the animation manager contains any alive animation.</summary>
-				/// <returns>Returns true if the animation manager contains any alive animation.</returns>
-				bool							HasAnimation();
-				/// <summary>Play all alive animations. Any animation that comes to the end will be removed.</summary>
+			public:
+				GuiGraphicsTimerManager();
+				~GuiGraphicsTimerManager();
+
+				/// <summary>Add a new callback.</summary>
+				/// <param name="callback">The new callback to add.</param>
+				void							AddCallback(Ptr<IGuiGraphicsTimerCallback> callback);
+				/// <summary>Called periodically.</summary>
 				void							Play();
 			};
 
@@ -182,7 +174,7 @@ Host
 				Point									caretPoint;
 				vuint64_t								lastCaretTime;
 
-				GuiGraphicsAnimationManager				animationManager;
+				GuiGraphicsTimerManager					timerManager;
 				GuiGraphicsComposition*					mouseCaptureComposition;
 				CompositionList							mouseEnterCompositions;
 
@@ -278,9 +270,9 @@ Host
 				/// <param name="referenceComposition">The point space. If this argument is null, the "value" argument will use the point space of the client area in the main composition.</param>
 				void									SetCaretPoint(Point value, GuiGraphicsComposition* referenceComposition=0);
 
-				/// <summary>Get the animation manager.</summary>
-				/// <returns>The animation manager.</returns>
-				GuiGraphicsAnimationManager*			GetAnimationManager();
+				/// <summary>Get the timer manager.</summary>
+				/// <returns>The timer manager.</returns>
+				GuiGraphicsTimerManager*				GetTimerManager();
 				/// <summary>Notify that a composition is going to disconnect from this graphics host. Generally this happens when a composition's parent line changes.</summary>
 				/// <param name="composition">The composition to disconnect</param>
 				void									DisconnectComposition(GuiGraphicsComposition* composition);

@@ -140,9 +140,9 @@ Control Host
 				/// <summary>Attach or detach the <see cref="compositions::IGuiShortcutKeyManager"/> associated with this control host. When this control host is disposing, the associated shortcut key manager will be deleted if exists.</summary>
 				/// <param name="value">The shortcut key manager. Set to null to detach the previous shortcut key manager from this control host.</param>
 				void											SetShortcutKeyManager(compositions::IGuiShortcutKeyManager* value);
-				/// <summary>Get the animation manager.</summary>
-				/// <returns>The animation manager.</returns>
-				compositions::GuiGraphicsAnimationManager*		GetAnimationManager();
+				/// <summary>Get the timer manager.</summary>
+				/// <returns>The timer manager.</returns>
+				compositions::GuiGraphicsTimerManager*			GetTimerManager();
 
 				/// <summary>Get the client size of the window.</summary>
 				/// <returns>The client size of the window.</returns>

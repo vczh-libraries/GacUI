@@ -159,8 +159,6 @@ Type List (Compositions)
 			F(presentation::compositions::GuiRepeatCompositionBase)\
 			F(presentation::compositions::GuiRepeatStackComposition)\
 			F(presentation::compositions::GuiRepeatFlowComposition)\
-			F(presentation::compositions::IGuiGraphicsAnimation)\
-			F(presentation::compositions::GuiGraphicsAnimationManager)\
 			F(presentation::compositions::IGuiShortcutKeyItem)\
 			F(presentation::compositions::IGuiShortcutKeyManager)\
 			F(presentation::compositions::GuiShortcutKeyManager)\
@@ -546,23 +544,6 @@ Macros
 /***********************************************************************
 Interface Proxy (Compositions)
 ***********************************************************************/
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::compositions::IGuiGraphicsAnimation)
-				void SetStartPosition(vuint64_t position)override
-				{
-					INVOKE_INTERFACE_PROXY(SetStartPosition, position);
-				}
-
-				bool Play(vuint64_t currentPosition)override
-				{
-					INVOKEGET_INTERFACE_PROXY(Play, currentPosition);
-				}
-
-				void Stop()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(Stop);
-				}
-			END_INTERFACE_PROXY(presentation::compositions::IGuiGraphicsAnimation)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::compositions::IGuiAxis)
 				presentation::Size RealSizeToVirtualSize(presentation::Size size)override
