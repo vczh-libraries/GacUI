@@ -241,6 +241,7 @@ Basic Construction
 			{
 			protected:
 				controls::GuiControlHost*				GetControlHostForInstance()override;
+				void									OnParentLineChanged()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

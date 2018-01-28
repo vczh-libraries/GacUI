@@ -99,6 +99,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(UpdateSubscriptions, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(AddComponent, {L"component"})
 				CLASS_MEMBER_METHOD(AddControlHostComponent, {L"controlHost"})
+				CLASS_MEMBER_METHOD(AddAnimation, { L"animation" })
 			END_CLASS_MEMBER(GuiInstanceRootObject)
 
 			BEGIN_CLASS_MEMBER(GuiTemplate)

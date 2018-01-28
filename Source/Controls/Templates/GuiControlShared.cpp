@@ -35,12 +35,73 @@ GuiComponent
 GuiInstanceRootObject
 ***********************************************************************/
 
+			class RootObjectTimerCallback : public Object, public IGuiGraphicsTimerCallback
+			{
+			public:
+				GuiControlHost*					controlHost;
+				GuiInstanceRootObject*			rootObject;
+				bool							alive = true;
+
+				RootObjectTimerCallback(GuiInstanceRootObject* _rootObject, GuiControlHost* _controlHost)
+					:rootObject(_rootObject)
+					, controlHost(_controlHost)
+				{
+				}
+
+				bool Play()override
+				{
+					return alive;
+				}
+			};
+
+			void GuiInstanceRootObject::OnControlHostForInstanceChanged()
+			{
+				auto controlHost = GetControlHostForInstance();
+				if (timerCallback && timerCallback->controlHost != controlHost)
+				{
+					timerCallback->alive = false;
+					timerCallback = nullptr;
+
+					FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
+					{
+						animation->Pause();
+					}
+				}
+
+				if (controlHost && !timerCallback)
+				{
+					timerCallback = new RootObjectTimerCallback(this, controlHost);
+					controlHost->GetTimerManager()->AddCallback(timerCallback);
+
+					FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
+					{
+						animation->Resume();
+					}
+					StartPendingAnimations();
+				}
+			}
+
+			void GuiInstanceRootObject::StartPendingAnimations()
+			{
+				FOREACH(Ptr<IGuiAnimation>, animation, pendingAnimations)
+				{
+					animation->Start();
+				}
+
+				CopyFrom(runningAnimations, pendingAnimations, true);
+				pendingAnimations.Clear();
+			}
+
 			GuiInstanceRootObject::GuiInstanceRootObject()
 			{
 			}
 
 			GuiInstanceRootObject::~GuiInstanceRootObject()
 			{
+				if (timerCallback)
+				{
+					timerCallback->alive = false;
+				}
 			}
 
 			void GuiInstanceRootObject::FinalizeInstance()
@@ -145,7 +206,7 @@ GuiInstanceRootObject
 
 			bool GuiInstanceRootObject::AddComponent(GuiComponent* component)
 			{
-				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddComponent(GuiComponent*>)#Cannot add component after finalizing.");
+				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddComponent(GuiComponent*)#Cannot add component after finalizing.");
 				if(components.Contains(component))
 				{
 					return false;
@@ -161,6 +222,31 @@ GuiInstanceRootObject
 			bool GuiInstanceRootObject::AddControlHostComponent(GuiControlHost* controlHost)
 			{
 				return AddComponent(new GuiObjectComponent<GuiControlHost>(controlHost));
+			}
+
+			bool GuiInstanceRootObject::AddAnimation(Ptr<IGuiAnimation> animation)
+			{
+				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddAnimation(Ptr<IGuiAnimation>)#Cannot add animation after finalizing.");
+				if (runningAnimations.Contains(animation.Obj()) || pendingAnimations.Contains(animation.Obj()))
+				{
+					return false;
+				}
+				else
+				{
+					pendingAnimations.Add(animation);
+
+					if (auto controlHost = GetControlHostForInstance())
+					{
+						if (!timerCallback)
+						{
+							timerCallback = new RootObjectTimerCallback(this, controlHost);
+							controlHost->GetTimerManager()->AddCallback(timerCallback);
+							StartPendingAnimations();
+						}
+					}
+
+					return true;
+				}
 			}
 		}
 	}

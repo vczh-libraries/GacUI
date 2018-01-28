@@ -137,17 +137,25 @@ Animation
 Root Object
 ***********************************************************************/
 
+			class RootObjectTimerCallback;
+
 			/// <summary>Represnets a root GUI object.</summary>
 			class GuiInstanceRootObject abstract : public Description<GuiInstanceRootObject>
 			{
+				friend class RootObjectTimerCallback;
 				typedef collections::List<Ptr<description::IValueSubscription>>		SubscriptionList;
 			protected:
 				Ptr<GuiResourcePathResolver>					resourceResolver;
 				SubscriptionList								subscriptions;
 				collections::SortedList<GuiComponent*>			components;
+				Ptr<RootObjectTimerCallback>					timerCallback;
+				collections::SortedList<Ptr<IGuiAnimation>>		runningAnimations;
+				collections::SortedList<Ptr<IGuiAnimation>>		pendingAnimations;
 				bool											finalized = false;
 
 				virtual controls::GuiControlHost*				GetControlHostForInstance() = 0;
+				void											OnControlHostForInstanceChanged();
+				void											StartPendingAnimations();
 			public:
 				GuiInstanceRootObject();
 				~GuiInstanceRootObject();
@@ -190,6 +198,11 @@ Root Object
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="controlHost">The controlHost to add.</param>
 				bool											AddControlHostComponent(GuiControlHost* controlHost);
+
+				/// <summary>Add an animation. The animation will be paused if the root object is removed from a window.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="animation">The animation.</param>
+				bool											AddAnimation(Ptr<IGuiAnimation> animation);
 			};
 		}
 	}

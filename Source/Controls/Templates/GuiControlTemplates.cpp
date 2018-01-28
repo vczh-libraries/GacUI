@@ -23,6 +23,12 @@ GuiTemplate
 				return GetRelatedControlHost();
 			}
 
+			void GuiTemplate::OnParentLineChanged()
+			{
+				GuiBoundsComposition::OnParentLineChanged();
+				OnControlHostForInstanceChanged();
+			}
+
 			GuiTemplate::GuiTemplate()
 			{
 				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)

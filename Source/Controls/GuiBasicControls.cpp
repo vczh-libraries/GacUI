@@ -505,6 +505,12 @@ GuiCustomControl
 				return GetRelatedControlHost();
 			}
 
+			void GuiCustomControl::OnParentLineChanged()
+			{
+				GuiControl::OnParentLineChanged();
+				OnControlHostForInstanceChanged();
+			}
+
 			GuiCustomControl::GuiCustomControl(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
