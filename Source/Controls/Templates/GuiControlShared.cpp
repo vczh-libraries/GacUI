@@ -50,6 +50,18 @@ GuiInstanceRootObject
 
 				bool Play()override
 				{
+					if (alive)
+					{
+						for (vint i = rootObject->runningAnimations.Count() - 1; i >= 0; i--)
+						{
+							auto animation = rootObject->runningAnimations[i];
+							animation->Run();
+							if (animation->GetStopped())
+							{
+								rootObject->runningAnimations.RemoveAt(i);
+							}
+						}
+					}
 					return alive;
 				}
 			};
