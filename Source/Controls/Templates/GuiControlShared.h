@@ -123,13 +123,23 @@ namespace vl
 Animation
 ***********************************************************************/
 
+			/// <summary>Animation.</summary>
 			class IGuiAnimation abstract : public virtual IDescriptable, public Description<IGuiAnimation>
 			{
 			public:
+				/// <summary>Called when the animation is about to play the first frame.</summary>
 				virtual void							Start() = 0;
+
+				/// <summary>Called when the animation is about to pause.</summary>
 				virtual void							Pause() = 0;
+
+				/// <summary>Called when the animation is about to resume.</summary>
 				virtual void							Resume() = 0;
+
+				/// <summary>Play the animation. The animation should calculate the time itself to determine the content of the current state of animating objects.</summary>
 				virtual void							Run() = 0;
+
+				/// <summary>Returns true if the animation has ended.</summary>
 				virtual bool							GetStopped() = 0;
 			};
 
