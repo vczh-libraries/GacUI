@@ -195,6 +195,7 @@ Type List (Templates)
 			F(presentation::controls::ITabCommandExecutor)\
 			F(presentation::controls::IDatePickerCommandExecutor)\
 			F(presentation::controls::GuiComponent)\
+			F(presentation::controls::IGuiAnimation)\
 			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::templates::GuiTemplate)\
 			F(presentation::templates::GuiListItemTemplate)\
@@ -544,6 +545,33 @@ Macros
 /***********************************************************************
 Interface Proxy (Compositions)
 ***********************************************************************/
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::IGuiAnimation)
+				void Start()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Start);
+				}
+
+				void Pause()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Pause);
+				}
+
+				void Resume()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Resume);
+				}
+
+				void Run()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Run);
+				}
+
+				bool GetStopped()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetStopped);
+				}
+			END_INTERFACE_PROXY(presentation::controls::IGuiAnimation)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::compositions::IGuiAxis)
 				presentation::Size RealSizeToVirtualSize(presentation::Size size)override

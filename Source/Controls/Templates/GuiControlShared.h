@@ -119,6 +119,24 @@ namespace vl
 				virtual void							Detach(GuiInstanceRootObject* rootObject);
 			};
 
+/***********************************************************************
+Animation
+***********************************************************************/
+
+			class IGuiAnimation abstract : public virtual IDescriptable, public Description<IGuiAnimation>
+			{
+			public:
+				virtual void							Start() = 0;
+				virtual void							Pause() = 0;
+				virtual void							Resume() = 0;
+				virtual void							Run() = 0;
+				virtual bool							GetStopped() = 0;
+			};
+
+/***********************************************************************
+Root Object
+***********************************************************************/
+
 			/// <summary>Represnets a root GUI object.</summary>
 			class GuiInstanceRootObject abstract : public Description<GuiInstanceRootObject>
 			{

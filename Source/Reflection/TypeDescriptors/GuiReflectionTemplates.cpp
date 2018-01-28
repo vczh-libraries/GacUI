@@ -77,6 +77,16 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiComponent)
 			END_CLASS_MEMBER(GuiComponent)
 
+			BEGIN_INTERFACE_MEMBER(IGuiAnimation)
+				CLASS_MEMBER_BASE(IDescriptable)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Stopped)
+
+				CLASS_MEMBER_METHOD(Start, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Pause, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Resume, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Run, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IGuiAnimation)
+
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
 				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiTemplate*))
 				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiCustomControl*))
