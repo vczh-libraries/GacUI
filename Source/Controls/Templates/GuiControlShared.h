@@ -164,6 +164,8 @@ Root Object
 				bool											finalized = false;
 
 				virtual controls::GuiControlHost*				GetControlHostForInstance() = 0;
+				bool											InstallTimerCallback(controls::GuiControlHost* controlHost);
+				bool											UninstallTimerCallback(controls::GuiControlHost* controlHost);
 				void											OnControlHostForInstanceChanged();
 				void											StartPendingAnimations();
 			public:

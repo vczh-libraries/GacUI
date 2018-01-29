@@ -480,6 +480,9 @@
     <ClCompile Include="..\..\..\Source\Controls\Templates\GuiControlShared.cpp">
       <Filter>GacUI\Controls\Templates</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\Templates\GuiAnimation.cpp">
+      <Filter>GacUI\Controls\Templates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
@@ -774,6 +777,9 @@
       <Filter>Import</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\Templates\GuiControlShared.h">
+      <Filter>GacUI\Controls\Templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\Templates\GuiAnimation.h">
       <Filter>GacUI\Controls\Templates</Filter>
     </ClInclude>
   </ItemGroup>

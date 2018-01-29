@@ -61,35 +61,60 @@ GuiInstanceRootObject
 								rootObject->runningAnimations.RemoveAt(i);
 							}
 						}
+
+						if (rootObject->runningAnimations.Count() == 0)
+						{
+							rootObject->UninstallTimerCallback(nullptr);
+							return false;
+						}
 					}
 					return alive;
 				}
 			};
-
-			void GuiInstanceRootObject::OnControlHostForInstanceChanged()
+			
+			bool GuiInstanceRootObject::InstallTimerCallback(controls::GuiControlHost* controlHost)
 			{
-				auto controlHost = GetControlHostForInstance();
+				if (!timerCallback)
+				{
+					timerCallback = new RootObjectTimerCallback(this, controlHost);
+					controlHost->GetTimerManager()->AddCallback(timerCallback);
+					return true;
+				}
+				return false;
+			}
+
+			bool GuiInstanceRootObject::UninstallTimerCallback(controls::GuiControlHost* controlHost)
+			{
 				if (timerCallback && timerCallback->controlHost != controlHost)
 				{
 					timerCallback->alive = false;
 					timerCallback = nullptr;
+					return true;
+				}
+				return false;
+			}
 
+			void GuiInstanceRootObject::OnControlHostForInstanceChanged()
+			{
+				auto controlHost = GetControlHostForInstance();
+				if (UninstallTimerCallback(controlHost))
+				{
 					FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
 					{
 						animation->Pause();
 					}
 				}
 
-				if (controlHost && !timerCallback)
+				if (controlHost)
 				{
-					timerCallback = new RootObjectTimerCallback(this, controlHost);
-					controlHost->GetTimerManager()->AddCallback(timerCallback);
-
-					FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
+					if (InstallTimerCallback(controlHost))
 					{
-						animation->Resume();
+						FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
+						{
+							animation->Resume();
+						}
+						StartPendingAnimations();
 					}
-					StartPendingAnimations();
 				}
 			}
 
@@ -110,10 +135,7 @@ GuiInstanceRootObject
 
 			GuiInstanceRootObject::~GuiInstanceRootObject()
 			{
-				if (timerCallback)
-				{
-					timerCallback->alive = false;
-				}
+				UninstallTimerCallback(nullptr);
 			}
 
 			void GuiInstanceRootObject::FinalizeInstance()
@@ -249,10 +271,8 @@ GuiInstanceRootObject
 
 					if (auto controlHost = GetControlHostForInstance())
 					{
-						if (!timerCallback)
+						if (InstallTimerCallback(controlHost))
 						{
-							timerCallback = new RootObjectTimerCallback(this, controlHost);
-							controlHost->GetTimerManager()->AddCallback(timerCallback);
 							StartPendingAnimations();
 						}
 					}
