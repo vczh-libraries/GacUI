@@ -2084,14 +2084,14 @@ Native Window Services
 			/// Invoke a specified function with an specified argument in the main thread.
 			/// </summary>
 			/// <param name="proc">The specified function.</param>
-			virtual void					InvokeInMainThread(const Func<void()>& proc)=0;
+			virtual void					InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)=0;
 			/// <summary>
 			/// Invoke a specified function with an specified argument in the main thread and wait for the function to complete or timeout.
 			/// </summary>
 			/// <returns>Return true if the function complete. Return false if the function has not completed during a specified period of time.</returns>
 			/// <param name="proc">The specified function.</param>
 			/// <param name="milliseconds">The specified period of time to wait. Set to -1 (default value) to wait forever until the function completed.</param>
-			virtual bool					InvokeInMainThreadAndWait(const Func<void()>& proc, vint milliseconds=-1)=0;
+			virtual bool					InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds=-1)=0;
 			/// <summary>
 			/// Delay execute a specified function with an specified argument asynchronisly.
 			/// </summary>
@@ -3624,7 +3624,9 @@ Helpers
 			public:
 				static TElement* Create()
 				{
-					return dynamic_cast<TElement*>(GetGuiGraphicsResourceManager()->GetElementFactory(TElement::GetElementTypeName())->Create());
+					auto factory = GetGuiGraphicsResourceManager()->GetElementFactory(TElement::GetElementTypeName());
+					CHECK_ERROR(factory != nullptr, L"This element is not supported by the selected renderer.");
+					return dynamic_cast<TElement*>(factory->Create());
 				}
 
 				~GuiElementBase()
@@ -4968,9 +4970,9 @@ namespace vl
 		namespace elements
 		{
 
-			/***********************************************************************
-			Elements
-			***********************************************************************/
+/***********************************************************************
+Elements
+***********************************************************************/
 
 			/// <summary>
 			/// Defines a shape for some <see cref="IGuiGraphicsElement"></see>.
@@ -4993,6 +4995,9 @@ namespace vl
 				ElementShapeType		shapeType = ElementShapeType::Rectangle;
 				int						radiusX = 0;
 				int						radiusY = 0;
+
+				bool operator==(const ElementShape& value)const { return shapeType == value.shapeType && radiusX == value.radiusX && radiusY == value.radiusY; }
+				bool operator!=(const ElementShape& value)const { return !(*this == value); }
 			};
 
 			/// <summary>
@@ -5245,55 +5250,38 @@ namespace vl
 			};
 
 			/// <summary>
-			/// Defines a color-filled radial gradient element without border.
+			/// Defines a gradient border for shadow.
 			/// </summary>
-			class GuiRadialGradientBackgroundElement : public GuiElementBase<GuiRadialGradientBackgroundElement>
+			class GuiInnerShadowElement : public GuiElementBase<GuiInnerShadowElement>
 			{
-				DEFINE_GUI_GRAPHICS_ELEMENT(GuiRadialGradientBackgroundElement, L"RadialGradientBackground")
+				DEFINE_GUI_GRAPHICS_ELEMENT(GuiInnerShadowElement, L"InnerShadow")
 			protected:
-				Color					color1;
-				Color					color2;
-				ElementShape			shape;
+				Color					color;
+				vint					thickness = 0;
 
-				GuiRadialGradientBackgroundElement();
+				GuiInnerShadowElement();
 			public:
 				/// <summary>
-				/// Get the left-top color.
+				/// Get the shadow color.
 				/// </summary>
-				/// <returns>The left-top color.</returns>
-				Color					GetColor1();
+				/// <returns>The shadow color.</returns>
+				Color					GetColor();
 				/// <summary>
-				/// Set the border color.
+				/// Set the shadow color.
 				/// </summary>
-				/// <param name="value">The new left-top color.</param>
-				void					SetColor1(Color value);
-				/// <summary>
-				/// Get the right bottom color.
-				/// </summary>
-				/// <returns>The right-bottom color.</returns>
-				Color					GetColor2();
-				/// <summary>
-				/// Set the border color.
-				/// </summary>
-				/// <param name="value">The new right-bottom color.</param>
-				void					SetColor2(Color value);
-				/// <summary>
-				/// Set colors of the element.
-				/// </summary>
-				/// <param name="value1">The new left-top color.</param>
-				/// <param name="value2">The new right bottom color.</param>
-				void					SetColors(Color value1, Color value2);
+				/// <param name="value">The new shadow color.</param>
+				void					SetColor(Color value);
 
 				/// <summary>
-				/// Get the shape.
+				/// Get the thickness.
 				/// </summary>
-				/// <returns>The shape.</returns>
-				ElementShape			GetShape();
+				/// <returns>The thickness.</returns>
+				vint					GetThickness();
 				/// <summary>
-				/// Set the shape.
+				/// Set the thickness.
 				/// </summary>
-				/// <param name="value">The new shape.</param>
-				void					SetShape(ElementShape value);
+				/// <param name="value">The new thickness.</param>
+				void					SetThickness(vint value);
 			};
 			
 			/// <summary>
@@ -6973,13 +6961,22 @@ Basic Compositions
 			class GuiBoundsComposition : public GuiGraphicsSite, public Description<GuiBoundsComposition>
 			{
 			protected:
+				bool								sizeAffectParent = true;
 				Rect								compositionBounds;
 				Margin								alignmentToParent{ -1,-1,-1,-1 };
 				
 			public:
 				GuiBoundsComposition();
 				~GuiBoundsComposition();
+
+				/// <summary>Get if the parent composition's size calculation is aware of the configuration of this composition. If you want to bind Bounds, PreferredMinSize, AlignmentToParent or other similar properties to some properties of parent compositions, this property should be set to false to prevent from infinite size glowing.</summary>
+				/// <returns>Returns true if it is awared.</returns>
+				bool								GetSizeAffectParent();
+				/// <summary>Set if the parent composition's size calculation is aware of the configuration of this composition.</summary>
+				/// <param name="value">Set to true to be awared.</param>
+				void								SetSizeAffectParent(bool value);
 				
+				bool								IsSizeAffectParent()override;
 				Rect								GetPreferredBounds()override;
 				Rect								GetBounds()override;
 				/// <summary>Set the expected bounds.</summary>
@@ -7985,7 +7982,7 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\CONTROLS\TEMPLATES\GUICONTROLTEMPLATES.H
+.\CONTROLS\TEMPLATES\GUICONTROLSHARED.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -7995,8 +7992,8 @@ GacUI::Template System
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATES
-#define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATES
+#ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLSHARED
+#define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLSHARED
 
 
 namespace vl
@@ -8005,14 +8002,8 @@ namespace vl
 	{
 		namespace controls
 		{
-			class GuiSelectableButton;
-			class GuiListControl;
-			class GuiComboBoxListControl;
-			class GuiTextList;
 			class GuiControlHost;
 			class GuiCustomControl;
-			class GuiTabPage;
-			class GuiScroll;
 
 			/// <summary>The visual state for button.</summary>
 			enum class ButtonState
@@ -8113,16 +8104,55 @@ namespace vl
 				virtual void							Detach(GuiInstanceRootObject* rootObject);
 			};
 
+/***********************************************************************
+Animation
+***********************************************************************/
+
+			/// <summary>Animation.</summary>
+			class IGuiAnimation abstract : public virtual IDescriptable, public Description<IGuiAnimation>
+			{
+			public:
+				/// <summary>Called when the animation is about to play the first frame.</summary>
+				virtual void							Start() = 0;
+
+				/// <summary>Called when the animation is about to pause.</summary>
+				virtual void							Pause() = 0;
+
+				/// <summary>Called when the animation is about to resume.</summary>
+				virtual void							Resume() = 0;
+
+				/// <summary>Play the animation. The animation should calculate the time itself to determine the content of the current state of animating objects.</summary>
+				virtual void							Run() = 0;
+
+				/// <summary>Returns true if the animation has ended.</summary>
+				virtual bool							GetStopped() = 0;
+			};
+
+/***********************************************************************
+Root Object
+***********************************************************************/
+
+			class RootObjectTimerCallback;
+
 			/// <summary>Represnets a root GUI object.</summary>
 			class GuiInstanceRootObject abstract : public Description<GuiInstanceRootObject>
 			{
+				friend class RootObjectTimerCallback;
 				typedef collections::List<Ptr<description::IValueSubscription>>		SubscriptionList;
 			protected:
 				Ptr<GuiResourcePathResolver>					resourceResolver;
 				SubscriptionList								subscriptions;
 				collections::SortedList<GuiComponent*>			components;
+				Ptr<RootObjectTimerCallback>					timerCallback;
+				collections::SortedList<Ptr<IGuiAnimation>>		runningAnimations;
+				collections::SortedList<Ptr<IGuiAnimation>>		pendingAnimations;
 				bool											finalized = false;
 
+				virtual controls::GuiControlHost*				GetControlHostForInstance() = 0;
+				bool											InstallTimerCallback(controls::GuiControlHost* controlHost);
+				bool											UninstallTimerCallback(controls::GuiControlHost* controlHost);
+				void											OnControlHostForInstanceChanged();
+				void											StartPendingAnimations();
 			public:
 				GuiInstanceRootObject();
 				~GuiInstanceRootObject();
@@ -8165,9 +8195,90 @@ namespace vl
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="controlHost">The controlHost to add.</param>
 				bool											AddControlHostComponent(GuiControlHost* controlHost);
-			};
 
+				/// <summary>Add an animation. The animation will be paused if the root object is removed from a window.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="animation">The animation.</param>
+				bool											AddAnimation(Ptr<IGuiAnimation> animation);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\CONTROLS\TEMPLATES\GUIANIMATION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Template System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUIANIMATION
+#define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUIANIMATION
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			class GuiWaitAnimation abstract : public virtual IGuiAnimation, public Description<GuiWaitAnimation>
+			{
+			protected:
+				DateTime						startTime;
+				vuint64_t						length = 0;
+				bool							running = false;
+
+			public:
+				GuiWaitAnimation(vuint64_t _length);
+				~GuiWaitAnimation();
+
+				void							Start()override;
+				void							Pause()override;
+				void							Resume()override;
+				void							Run()override;
+				bool							GetStopped()override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\CONTROLS\TEMPLATES\GUICONTROLTEMPLATES.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Template System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATES
+#define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATES
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
 			class GuiButton;
+			class GuiSelectableButton;
+			class GuiListControl;
+			class GuiComboBoxListControl;
+			class GuiTextList;
+			class GuiTabPage;
+			class GuiScroll;
 		}
 
 		namespace templates
@@ -8256,6 +8367,9 @@ GuiTemplate
 			/// <summary>Represents a user customizable template.</summary>
 			class GuiTemplate : public compositions::GuiBoundsComposition, public controls::GuiInstanceRootObject, public Description<GuiTemplate>
 			{
+			protected:
+				controls::GuiControlHost*		GetControlHostForInstance()override;
+				void							OnParentLineChanged()override;
 			public:
 				/// <summary>Create a template.</summary>
 				GuiTemplate();
@@ -8706,6 +8820,7 @@ namespace vl
 				ThemeTemplates*														previous = nullptr;
 				ThemeTemplates*														next = nullptr;
 
+				controls::GuiControlHost*											GetControlHostForInstance()override;
 			public:
 				~ThemeTemplates();
 
@@ -8765,44 +8880,33 @@ Animation
 ***********************************************************************/
 
 			/// <summary>
-			/// Represents an animation. Use [M:vl.presentation.compositions.GuiGraphicsHost.GetAnimationManager] to access this object.
+			/// Represents a timer callback object.
 			/// </summary>
-			class IGuiGraphicsAnimation : public virtual IDescriptable, public Description<IGuiGraphicsAnimation>
+			class IGuiGraphicsTimerCallback : public virtual IDescriptable, public Description<IGuiGraphicsTimerCallback>
 			{
 			public:
-				/// <summary>Get the total length.</summary>
-				/// <returns>The total length.</returns>
-				virtual vint					GetTotalLength()=0;
-				/// <summary>Get the current position. Value in [0, TotalLength-1]. This function doesn't return a internal state. It return the suggested current position at the moment this function is called.</summary>
-				/// <returns>The current position.</returns>
-				virtual vint					GetCurrentPosition()=0;
-				/// <summary>Display a state in the animation with the specified current position and the specified total length.</summary>
-				/// <param name="currentPosition">The current position. When this function is called by [T:vl.presentation.compositions.GuiGraphicsAnimationManager], this value comes from <see cref="IGuiGraphicsAnimation::GetCurrentPosition"/>.</param>
-				/// <param name="totalLength">The total length. When this function is called by [T:vl.presentation.compositions.GuiGraphicsAnimationManager], this value comes from <see cref="IGuiGraphicsAnimation::GetTotalLength"/>.</param>
-				virtual void					Play(vint currentPosition, vint totalLength)=0;
-				/// <summary>Stop the animation.</summary>
-				virtual void					Stop()=0;
+				/// <summary>Called periodically.</summary>
+				/// <returns>Returns false to indicate that this callback need to be removed.</returns>
+				virtual bool					Play() = 0;
 			};
 
 			/// <summary>
-			/// Animation manager.
+			/// Timer callback manager.
 			/// </summary>
-			class GuiGraphicsAnimationManager : public Object, public Description<GuiGraphicsAnimationManager>
+			class GuiGraphicsTimerManager : public Object, public Description<GuiGraphicsTimerManager>
 			{
-				typedef collections::List<Ptr<IGuiGraphicsAnimation>>		AnimationList;
+				typedef collections::List<Ptr<IGuiGraphicsTimerCallback>>		CallbackList;
 			protected:
-				AnimationList					playingAnimations;
-			public:
-				GuiGraphicsAnimationManager();
-				~GuiGraphicsAnimationManager();
+				CallbackList					callbacks;
 
-				/// <summary>Add a new animation.</summary>
-				/// <param name="animation">The new animation to add.</param>
-				void							AddAnimation(Ptr<IGuiGraphicsAnimation> animation);
-				/// <summary>Test is the animation manager contains any alive animation.</summary>
-				/// <returns>Returns true if the animation manager contains any alive animation.</returns>
-				bool							HasAnimation();
-				/// <summary>Play all alive animations. Any animation that comes to the end will be removed.</summary>
+			public:
+				GuiGraphicsTimerManager();
+				~GuiGraphicsTimerManager();
+
+				/// <summary>Add a new callback.</summary>
+				/// <param name="callback">The new callback to add.</param>
+				void							AddCallback(Ptr<IGuiGraphicsTimerCallback> callback);
+				/// <summary>Called periodically.</summary>
 				void							Play();
 			};
 
@@ -8922,7 +9026,7 @@ Host
 				Point									caretPoint;
 				vuint64_t								lastCaretTime;
 
-				GuiGraphicsAnimationManager				animationManager;
+				GuiGraphicsTimerManager					timerManager;
 				GuiGraphicsComposition*					mouseCaptureComposition;
 				CompositionList							mouseEnterCompositions;
 
@@ -9018,37 +9122,12 @@ Host
 				/// <param name="referenceComposition">The point space. If this argument is null, the "value" argument will use the point space of the client area in the main composition.</param>
 				void									SetCaretPoint(Point value, GuiGraphicsComposition* referenceComposition=0);
 
-				/// <summary>Get the animation manager.</summary>
-				/// <returns>The animation manager.</returns>
-				GuiGraphicsAnimationManager*			GetAnimationManager();
+				/// <summary>Get the timer manager.</summary>
+				/// <returns>The timer manager.</returns>
+				GuiGraphicsTimerManager*				GetTimerManager();
 				/// <summary>Notify that a composition is going to disconnect from this graphics host. Generally this happens when a composition's parent line changes.</summary>
 				/// <param name="composition">The composition to disconnect</param>
 				void									DisconnectComposition(GuiGraphicsComposition* composition);
-			};
-
-/***********************************************************************
-Animation Helpers
-***********************************************************************/
-			
-			/// <summary>
-			/// Represents a time based animation.
-			/// </summary>
-			class GuiTimeBasedAnimation : public IGuiGraphicsAnimation, public Description<GuiTimeBasedAnimation>
-			{
-			protected:
-				vuint64_t						startTime;
-				vint							length;
-			public:
-				/// <summary>Create an animation with a specified length in milliseconds.</summary>
-				/// <param name="totalMilliseconds">The specified length in milliseconds.</param>
-				GuiTimeBasedAnimation(vint totalMilliseconds);
-				~GuiTimeBasedAnimation();
-
-				/// <summary>Restart an animation with a specified length in milliseconds.</summary>
-				/// <param name="totalMilliseconds">The specified length in milliseconds. If the value is -1, it will use the previous length.</param>
-				void							Restart(vint totalMilliseconds=-1);
-				vint							GetTotalLength()override;
-				vint							GetCurrentPosition()override;
 			};
 
 /***********************************************************************
@@ -9364,6 +9443,9 @@ Basic Construction
 			/// <summary>Represnets a user customizable control.</summary>
 			class GuiCustomControl : public GuiControl, public GuiInstanceRootObject, public AggregatableDescription<GuiCustomControl>
 			{
+			protected:
+				controls::GuiControlHost*				GetControlHostForInstance()override;
+				void									OnParentLineChanged()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -10340,7 +10422,8 @@ Control Host
 				Ptr<INativeDelay>								tooltipOpenDelay;
 				Ptr<INativeDelay>								tooltipCloseDelay;
 				Point											tooltipLocation;
-				
+
+				controls::GuiControlHost*						GetControlHostForInstance()override;
 				GuiControl*										GetTooltipOwner(Point location);
 				void											MoveIntoTooltipControl(GuiControl* tooltipControl, Point location);
 				void											MouseMoving(const NativeWindowMouseInfo& info)override;
@@ -10439,9 +10522,9 @@ Control Host
 				/// <summary>Attach or detach the <see cref="compositions::IGuiShortcutKeyManager"/> associated with this control host. When this control host is disposing, the associated shortcut key manager will be deleted if exists.</summary>
 				/// <param name="value">The shortcut key manager. Set to null to detach the previous shortcut key manager from this control host.</param>
 				void											SetShortcutKeyManager(compositions::IGuiShortcutKeyManager* value);
-				/// <summary>Get the animation manager.</summary>
-				/// <returns>The animation manager.</returns>
-				compositions::GuiGraphicsAnimationManager*		GetAnimationManager();
+				/// <summary>Get the timer manager.</summary>
+				/// <returns>The timer manager.</returns>
+				compositions::GuiGraphicsTimerManager*			GetTimerManager();
 
 				/// <summary>Get the client size of the window.</summary>
 				/// <returns>The client size of the window.</returns>
@@ -10749,6 +10832,7 @@ Application
 				GuiApplication();
 				~GuiApplication();
 
+				INativeWindow*									GetThreadContextNativeWindow(GuiControlHost* controlHost);
 				void											RegisterWindow(GuiWindow* window);
 				void											UnregisterWindow(GuiWindow* window);
 				void											RegisterPopupOpened(GuiPopup* popup);
@@ -10796,12 +10880,12 @@ Application
 				void											InvokeAsync(const Func<void()>& proc);
 				/// <summary>Invoke a specified function in the main thread.</summary>
 				/// <param name="proc">The specified function.</param>
-				void											InvokeInMainThread(const Func<void()>& proc);
+				void											InvokeInMainThread(GuiControlHost* controlHost, const Func<void()>& proc);
 				/// <summary>Invoke a specified function in the main thread and wait for the function to complete or timeout.</summary>
 				/// <returns>Return true if the function complete. Return false if the function has not completed during a specified period of time.</returns>
 				/// <param name="proc">The specified function.</param>
 				/// <param name="milliseconds">The specified period of time to wait. Set to -1 (default value) to wait forever until the function completed.</param>
-				bool											InvokeInMainThreadAndWait(const Func<void()>& proc, vint milliseconds=-1);
+				bool											InvokeInMainThreadAndWait(GuiControlHost* controlHost, const Func<void()>& proc, vint milliseconds=-1);
 				/// <summary>Delay execute a specified function with an specified argument asynchronisly.</summary>
 				/// <returns>The Delay execution controller for this task.</returns>
 				/// <param name="proc">The specified function.</param>
@@ -10814,13 +10898,13 @@ Application
 				Ptr<INativeDelay>								DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds);
 				/// <summary>Run the specified function in the main thread. If the caller is in the main thread, then run the specified function directly.</summary>
 				/// <param name="proc">The specified function.</param>
-				void											RunGuiTask(const Func<void()>& proc);
+				void											RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc);
 
 				template<typename T>
-				T RunGuiValue(const Func<T()>& proc)
+				T RunGuiValue(GuiControlHost* controlHost, const Func<T()>& proc)
 				{
 					T result;
-					RunGuiTask([&result, &proc]()
+					RunGuiTask(controlHost, [&result, &proc]()
 					{
 						result=proc();
 					});
@@ -10828,15 +10912,15 @@ Application
 				}
 
 				template<typename T>
-				void InvokeLambdaInMainThread(const T& proc)
+				void InvokeLambdaInMainThread(GuiControlHost* controlHost, const T& proc)
 				{
-					InvokeInMainThread(Func<void()>(proc));
+					InvokeInMainThread(controlHost, Func<void()>(proc));
 				}
 				
 				template<typename T>
-				bool InvokeLambdaInMainThreadAndWait(const T& proc, vint milliseconds=-1)
+				bool InvokeLambdaInMainThreadAndWait(GuiControlHost* controlHost, const T& proc, vint milliseconds=-1)
 				{
-					return InvokeInMainThreadAndWait(Func<void()>(proc), milliseconds);
+					return InvokeInMainThreadAndWait(controlHost, Func<void()>(proc), milliseconds);
 				}
 			};
 
@@ -17422,7 +17506,6 @@ Serialization
 External Functions
 ***********************************************************************/
 
-			extern presentation::compositions::GuiGraphicsAnimationManager*	GuiControlHost_GetAnimationManager(presentation::controls::GuiControlHost* thisObject);
 			extern Ptr<presentation::INativeImage>							INativeImage_Constructor(const WString& path);
 			extern presentation::INativeCursor*								INativeCursor_Constructor1();
 			extern presentation::INativeCursor*								INativeCursor_Constructor2(presentation::INativeCursor::SystemCursorType type);

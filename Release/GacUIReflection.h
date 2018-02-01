@@ -180,7 +180,7 @@ Type List (Elements)
 			F(presentation::elements::GuiSolidBackgroundElement)\
 			F(presentation::elements::GuiGradientBackgroundElement)\
 			F(presentation::elements::GuiGradientBackgroundElement::Direction)\
-			F(presentation::elements::GuiRadialGradientBackgroundElement)\
+			F(presentation::elements::GuiInnerShadowElement)\
 			F(presentation::elements::GuiSolidLabelElement)\
 			F(presentation::elements::GuiImageFrameElement)\
 			F(presentation::elements::GuiPolygonElement)\
@@ -227,8 +227,6 @@ Type List (Compositions)
 			F(presentation::compositions::GuiRepeatCompositionBase)\
 			F(presentation::compositions::GuiRepeatStackComposition)\
 			F(presentation::compositions::GuiRepeatFlowComposition)\
-			F(presentation::compositions::IGuiGraphicsAnimation)\
-			F(presentation::compositions::GuiGraphicsAnimationManager)\
 			F(presentation::compositions::IGuiShortcutKeyItem)\
 			F(presentation::compositions::IGuiShortcutKeyManager)\
 			F(presentation::compositions::GuiShortcutKeyManager)\
@@ -265,6 +263,7 @@ Type List (Templates)
 			F(presentation::controls::ITabCommandExecutor)\
 			F(presentation::controls::IDatePickerCommandExecutor)\
 			F(presentation::controls::GuiComponent)\
+			F(presentation::controls::IGuiAnimation)\
 			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::templates::GuiTemplate)\
 			F(presentation::templates::GuiListItemTemplate)\
@@ -615,27 +614,32 @@ Macros
 Interface Proxy (Compositions)
 ***********************************************************************/
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::compositions::IGuiGraphicsAnimation)
-				vint GetTotalLength()override
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::IGuiAnimation)
+				void Start()override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTotalLength);
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Start);
 				}
 
-				vint GetCurrentPosition()override
+				void Pause()override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCurrentPosition);
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Pause);
 				}
 
-				void Play(vint currentPosition, vint totalLength)override
+				void Resume()override
 				{
-					INVOKE_INTERFACE_PROXY(Play, currentPosition, totalLength);
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Resume);
 				}
 
-				void Stop()override
+				void Run()override
 				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(Stop);
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Run);
 				}
-			END_INTERFACE_PROXY(presentation::compositions::IGuiGraphicsAnimation)
+
+				bool GetStopped()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetStopped);
+				}
+			END_INTERFACE_PROXY(presentation::controls::IGuiAnimation)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::compositions::IGuiAxis)
 				presentation::Size RealSizeToVirtualSize(presentation::Size size)override

@@ -531,7 +531,9 @@ Coroutine (State Machine)
 
 			class StateMachine : public Object, public AggregatableDescription<StateMachine>
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				friend struct CustomTypeDescriptorSelector<StateMachine>;
+#endif
 			protected:
 				bool									stateMachineInitialized = false;
 				bool									stateMachineStopped = false;

@@ -3156,51 +3156,39 @@ GuiGradientBackgroundElement
 			}
 
 /***********************************************************************
-GuiRadialGradientBackgroundElement
+GuiInnerShadowElement
 ***********************************************************************/
 
-			GuiRadialGradientBackgroundElement::GuiRadialGradientBackgroundElement()
+			GuiInnerShadowElement::GuiInnerShadowElement()
 			{
 			}
 
-			Color GuiRadialGradientBackgroundElement::GetColor1()
+			Color GuiInnerShadowElement::GetColor()
 			{
-				return color1;
+				return color;
 			}
 
-			void GuiRadialGradientBackgroundElement::SetColor1(Color value)
+			void GuiInnerShadowElement::SetColor(Color value)
 			{
-				SetColors(value, color2);
-			}
-
-			Color GuiRadialGradientBackgroundElement::GetColor2()
-			{
-				return color2;
-			}
-
-			void GuiRadialGradientBackgroundElement::SetColor2(Color value)
-			{
-				SetColors(color1, value);
-			}
-
-			void GuiRadialGradientBackgroundElement::SetColors(Color value1, Color value2)
-			{
-				if(color1!=value1 || color2!=value2)
+				if (color != value)
 				{
-					color1=value1;
-					color2=value2;
+					color = value;
 					InvokeOnElementStateChanged();
 				}
 			}
-			
-			ElementShape GuiRadialGradientBackgroundElement::GetShape()
+
+			vint GuiInnerShadowElement::GetThickness()
 			{
-				return shape;
+				return thickness;
 			}
 
-			void GuiRadialGradientBackgroundElement::SetShape(ElementShape value)
+			void GuiInnerShadowElement::SetThickness(vint value)
 			{
-				shape=value;
+				if (thickness != value)
+				{
+					thickness = value;
+					InvokeOnElementStateChanged();
+				}
 			}
 
 /***********************************************************************
@@ -3507,6 +3495,7 @@ GuiPolygonElement
 			void GuiPolygonElement::SetPointsArray(const PointArray& value)
 			{
 				CopyFrom(points, value);
+				InvokeOnElementStateChanged();
 			}
 
 			Color GuiPolygonElement::GetBorderColor()
@@ -5404,1116 +5393,6 @@ DocumentModel
 }
 
 /***********************************************************************
-.\CONTROLS\GUILABELCONTROLS.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			using namespace elements;
-			using namespace compositions;
-			using namespace collections;
-			using namespace reflection::description;
-
-/***********************************************************************
-GuiLabel
-***********************************************************************/
-
-			void GuiLabel::BeforeControlTemplateUninstalled_()
-			{
-				textColorConsisted = (textColor == GetControlTemplateObject()->GetDefaultTextColor());
-			}
-
-			void GuiLabel::AfterControlTemplateInstalled_(bool initialize)
-			{
-				auto ct = GetControlTemplateObject();
-				if (initialize || textColorConsisted)
-				{
-					SetTextColor(ct->GetDefaultTextColor());
-				}
-				else
-				{
-					ct->SetTextColor(textColor);
-				}
-			}
-
-			GuiLabel::GuiLabel(theme::ThemeName themeName)
-				:GuiControl(themeName)
-			{
-			}
-
-			GuiLabel::~GuiLabel()
-			{
-			}
-
-			Color GuiLabel::GetTextColor()
-			{
-				return textColor;
-			}
-
-			void GuiLabel::SetTextColor(Color value)
-			{
-				if (textColor != value)
-				{
-					textColor = value;
-					GetControlTemplateObject()->SetTextColor(textColor);
-				}
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\CONTROLS\GUIWINDOWCONTROLS.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			using namespace elements;
-			using namespace compositions;
-			using namespace collections;
-			using namespace reflection::description;
-
-/***********************************************************************
-GuiControlHost
-***********************************************************************/
-
-			void GuiControlHost::OnNativeWindowChanged()
-			{
-			}
-
-			void GuiControlHost::OnVisualStatusChanged()
-			{
-			}
-
-			GuiControl* GuiControlHost::GetTooltipOwner(Point location)
-			{
-				GuiGraphicsComposition* composition=this->GetBoundsComposition()->FindComposition(location, false);
-				if(composition)
-				{
-					GuiControl* control=composition->GetRelatedControl();
-					while(control)
-					{
-						if(control->GetTooltipControl())
-						{
-							return control;
-						}
-						control=control->GetParent();
-					}
-				}
-				return 0;
-			}
-
-			void GuiControlHost::MoveIntoTooltipControl(GuiControl* tooltipControl, Point location)
-			{
-				if(tooltipLocation!=location)
-				{
-					tooltipLocation=location;
-					{
-						GuiControl* currentOwner=GetApplication()->GetTooltipOwner();
-						if(currentOwner && currentOwner!=tooltipControl)
-						{
-							if(tooltipCloseDelay)
-							{
-								tooltipCloseDelay->Cancel();
-								tooltipCloseDelay=0;
-							}
-							GetApplication()->DelayExecuteInMainThread([=]()
-							{
-								currentOwner->CloseTooltip();
-							}, TooltipDelayCloseTime);
-						}
-					}
-					if(!tooltipControl)
-					{
-						if(tooltipOpenDelay)
-						{
-							tooltipOpenDelay->Cancel();
-							tooltipOpenDelay=0;
-						}
-					}
-					else if(tooltipOpenDelay)
-					{
-						tooltipOpenDelay->Delay(TooltipDelayOpenTime);
-					}
-					else if(GetApplication()->GetTooltipOwner()!=tooltipControl)
-					{
-						tooltipOpenDelay=GetApplication()->DelayExecuteInMainThread([this]()
-						{
-							GuiControl* owner=GetTooltipOwner(tooltipLocation);
-							if(owner)
-							{
-								Point offset=owner->GetBoundsComposition()->GetGlobalBounds().LeftTop();
-								Point p(tooltipLocation.x-offset.x, tooltipLocation.y-offset.y+24);
-								owner->DisplayTooltip(p);
-								tooltipOpenDelay=0;
-
-								tooltipCloseDelay=GetApplication()->DelayExecuteInMainThread([this, owner]()
-								{
-									owner->CloseTooltip();
-								}, TooltipDelayLifeTime);
-							}
-						}, TooltipDelayOpenTime);
-					}
-				}
-			}
-
-			void GuiControlHost::MouseMoving(const NativeWindowMouseInfo& info)
-			{
-				if(!info.left && !info.middle && !info.right)
-				{
-					GuiControl* tooltipControl=GetTooltipOwner(tooltipLocation);
-					MoveIntoTooltipControl(tooltipControl, Point(info.x, info.y));
-				}
-			}
-
-			void GuiControlHost::MouseLeaved()
-			{
-				MoveIntoTooltipControl(0, Point(-1, -1));
-			}
-
-			void GuiControlHost::Moved()
-			{
-				OnVisualStatusChanged();
-			}
-
-			void GuiControlHost::Enabled()
-			{
-				GuiControl::SetEnabled(true);
-				OnVisualStatusChanged();
-			}
-
-			void GuiControlHost::Disabled()
-			{
-				GuiControl::SetEnabled(false);
-				OnVisualStatusChanged();
-			}
-
-			void GuiControlHost::GotFocus()
-			{
-				WindowGotFocus.Execute(GetNotifyEventArguments());
-				OnVisualStatusChanged();
-			}
-
-			void GuiControlHost::LostFocus()
-			{
-				WindowLostFocus.Execute(GetNotifyEventArguments());
-				OnVisualStatusChanged();
-			}
-
-			void GuiControlHost::Activated()
-			{
-				WindowActivated.Execute(GetNotifyEventArguments());
-				OnVisualStatusChanged();
-			}
-
-			void GuiControlHost::Deactivated()
-			{
-				WindowDeactivated.Execute(GetNotifyEventArguments());
-				OnVisualStatusChanged();
-			}
-
-			void GuiControlHost::Opened()
-			{
-				WindowOpened.Execute(GetNotifyEventArguments());
-			}
-
-			void GuiControlHost::Closing(bool& cancel)
-			{
-				GuiRequestEventArgs arguments(boundsComposition);
-				arguments.cancel=cancel;
-				WindowClosing.Execute(arguments);
-				if(!arguments.handled)
-				{
-					cancel=arguments.cancel;
-				}
-			}
-
-			void GuiControlHost::Closed()
-			{
-				WindowClosed.Execute(GetNotifyEventArguments());
-			}
-
-			void GuiControlHost::Destroying()
-			{
-				WindowDestroying.Execute(GetNotifyEventArguments());
-				SetNativeWindow(0);
-			}
-
-			GuiControlHost::GuiControlHost(theme::ThemeName themeName)
-				:GuiControl(themeName)
-			{
-				boundsComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				
-				WindowGotFocus.SetAssociatedComposition(boundsComposition);
-				WindowLostFocus.SetAssociatedComposition(boundsComposition);
-				WindowActivated.SetAssociatedComposition(boundsComposition);
-				WindowDeactivated.SetAssociatedComposition(boundsComposition);
-				WindowOpened.SetAssociatedComposition(boundsComposition);
-				WindowClosing.SetAssociatedComposition(boundsComposition);
-				WindowClosed.SetAssociatedComposition(boundsComposition);
-				WindowDestroying.SetAssociatedComposition(boundsComposition);
-
-				host=new GuiGraphicsHost;
-				host->GetMainComposition()->AddChild(boundsComposition);
-				sharedPtrDestructorProc = 0;
-			}
-
-			GuiControlHost::~GuiControlHost()
-			{
-				host->GetMainComposition()->RemoveChild(boundsComposition);
-				FinalizeInstanceRecursively(this);
-				OnBeforeReleaseGraphicsHost();
-				delete host;
-			}
-
-			compositions::GuiGraphicsHost* GuiControlHost::GetGraphicsHost()
-			{
-				return host;
-			}
-
-			compositions::GuiGraphicsComposition* GuiControlHost::GetMainComposition()
-			{
-				return host->GetMainComposition();
-			}
-
-			INativeWindow* GuiControlHost::GetNativeWindow()
-			{
-				return host->GetNativeWindow();
-			}
-
-			void GuiControlHost::SetNativeWindow(INativeWindow* window)
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->UninstallListener(this);
-				}
-				host->SetNativeWindow(window);
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->InstallListener(this);
-				}
-				OnNativeWindowChanged();
-			}
-
-			void GuiControlHost::ForceCalculateSizeImmediately()
-			{
-				boundsComposition->ForceCalculateSizeImmediately();
-				SetBounds(GetBounds());
-			}
-
-			bool GuiControlHost::GetEnabled()
-			{
-				if(host->GetNativeWindow())
-				{
-					return host->GetNativeWindow()->IsEnabled();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiControlHost::SetEnabled(bool value)
-			{
-				if(host->GetNativeWindow())
-				{
-					if(value)
-					{
-						host->GetNativeWindow()->Enable();
-					}
-					else
-					{
-						host->GetNativeWindow()->Disable();
-					}
-				}
-			}
-
-			bool GuiControlHost::GetFocused()
-			{
-				if(host->GetNativeWindow())
-				{
-					return host->GetNativeWindow()->IsFocused();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiControlHost::SetFocused()
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->SetFocus();
-				}
-			}
-
-			bool GuiControlHost::GetActivated()
-			{
-				if(host->GetNativeWindow())
-				{
-					return host->GetNativeWindow()->IsActivated();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiControlHost::SetActivated()
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->SetActivate();
-				}
-			}
-
-			bool GuiControlHost::GetShowInTaskBar()
-			{
-				if(host->GetNativeWindow())
-				{
-					return host->GetNativeWindow()->IsAppearedInTaskBar();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiControlHost::SetShowInTaskBar(bool value)
-			{
-				if(host->GetNativeWindow())
-				{
-					if(value)
-					{
-						host->GetNativeWindow()->ShowInTaskBar();
-					}
-					else
-					{
-						host->GetNativeWindow()->HideInTaskBar();
-					}
-				}
-			}
-
-			bool GuiControlHost::GetEnabledActivate()
-			{
-				if(host->GetNativeWindow())
-				{
-					return host->GetNativeWindow()->IsEnabledActivate();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiControlHost::SetEnabledActivate(bool value)
-			{
-				if(host->GetNativeWindow())
-				{
-					if(value)
-					{
-						host->GetNativeWindow()->EnableActivate();
-					}
-					else
-					{
-						host->GetNativeWindow()->DisableActivate();
-					}
-				}
-			}
-
-			bool GuiControlHost::GetTopMost()
-			{
-				if(host->GetNativeWindow())
-				{
-					return host->GetNativeWindow()->GetTopMost();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiControlHost::SetTopMost(bool topmost)
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->SetTopMost(topmost);
-				}
-			}
-
-			compositions::IGuiShortcutKeyManager* GuiControlHost::GetShortcutKeyManager()
-			{
-				return host->GetShortcutKeyManager();
-			}
-
-			void GuiControlHost::SetShortcutKeyManager(compositions::IGuiShortcutKeyManager* value)
-			{
-				host->SetShortcutKeyManager(value);
-			}
-
-			compositions::GuiGraphicsAnimationManager* GuiControlHost::GetAnimationManager()
-			{
-				return host->GetAnimationManager();
-			}
-
-			Size GuiControlHost::GetClientSize()
-			{
-				if(host->GetNativeWindow())
-				{
-					return host->GetNativeWindow()->GetClientSize();
-				}
-				else
-				{
-					return Size(0, 0);
-				}
-			}
-
-			void GuiControlHost::SetClientSize(Size value)
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->SetClientSize(value);
-				}
-			}
-
-			Rect GuiControlHost::GetBounds()
-			{
-				if(host->GetNativeWindow())
-				{
-					return host->GetNativeWindow()->GetBounds();
-				}
-				else
-				{
-					return Rect();
-				}
-			}
-
-			void GuiControlHost::SetBounds(Rect value)
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->SetBounds(value);
-				}
-			}
-
-			GuiControlHost* GuiControlHost::GetRelatedControlHost()
-			{
-				return this;
-			}
-
-			const WString& GuiControlHost::GetText()
-			{
-				WString result;
-				if(host->GetNativeWindow())
-				{
-					result=host->GetNativeWindow()->GetTitle();
-				}
-				if(result!=GuiControl::GetText())
-				{
-					GuiControl::SetText(result);
-				}
-				return GuiControl::GetText();
-			}
-
-			void GuiControlHost::SetText(const WString& value)
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->SetTitle(value);
-					GuiControl::SetText(value);
-				}
-			}
-
-			INativeScreen* GuiControlHost::GetRelatedScreen()
-			{
-				if(host->GetNativeWindow())
-				{
-					return GetCurrentController()->ScreenService()->GetScreen(host->GetNativeWindow());
-				}
-				else
-				{
-					return 0;
-				}
-			}
-
-			void GuiControlHost::Show()
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->Show();
-				}
-			}
-
-			void GuiControlHost::ShowDeactivated()
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->ShowDeactivated();
-				}
-			}
-
-			void GuiControlHost::ShowRestored()
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->ShowRestored();
-				}
-			}
-
-			void GuiControlHost::ShowMaximized()
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->ShowMaximized();
-				}
-			}
-
-			void GuiControlHost::ShowMinimized()
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->ShowMinimized();
-				}
-			}
-
-			void GuiControlHost::Hide()
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->Hide();
-				}
-			}
-
-			void GuiControlHost::Close()
-			{
-				INativeWindow* window=host->GetNativeWindow();
-				if(window)
-				{
-					if(GetCurrentController()->WindowService()->GetMainWindow()!=window)
-					{
-						window->Hide();
-					}
-					else
-					{
-						SetNativeWindow(0);
-						GetCurrentController()->WindowService()->DestroyNativeWindow(window);
-					}
-				}
-			}
-
-			bool GuiControlHost::GetOpening()
-			{
-				INativeWindow* window=host->GetNativeWindow();
-				if(window)
-				{
-					return window->IsVisible();
-				}
-				return false;
-			}
-
-/***********************************************************************
-GuiWindow
-***********************************************************************/
-
-			void GuiWindow::BeforeControlTemplateUninstalled_()
-			{
-			}
-
-			void GuiWindow::AfterControlTemplateInstalled_(bool initialize)
-			{
-				auto ct = GetControlTemplateObject();
-#define FIX_WINDOW_PROPERTY(VARIABLE, NAME) \
-				switch (ct->Get ## NAME ## Option()) \
-				{ \
-				case templates::BoolOption::AlwaysTrue: \
-					VARIABLE = true; \
-					break; \
-				case templates::BoolOption::AlwaysFalse: \
-					VARIABLE = false; \
-					break; \
-				} \
-
-				FIX_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox)
-				FIX_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox)
-				FIX_WINDOW_PROPERTY(hasBorder, Border)
-				FIX_WINDOW_PROPERTY(hasSizeBox, SizeBox)
-				FIX_WINDOW_PROPERTY(isIconVisible, IconVisible)
-				FIX_WINDOW_PROPERTY(hasTitleBar, TitleBar)
-
-#undef FIX_WINDOW_PROPERTY
-				ct->SetMaximizedBox(hasMaximizedBox);
-				ct->SetMinimizedBox(hasMinimizedBox);
-				ct->SetBorder(hasBorder);
-				ct->SetSizeBox(hasSizeBox);
-				ct->SetIconVisible(isIconVisible);
-				ct->SetTitleBar(hasTitleBar);
-				ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
-				SyncNativeWindowProperties();
-			}
-
-			void GuiWindow::SyncNativeWindowProperties()
-			{
-				if (auto window = GetNativeWindow())
-				{
-					if (GetControlTemplateObject()->GetCustomFrameEnabled())
-					{
-						window->EnableCustomFrameMode();
-						window->SetBorder(false);
-					}
-					else
-					{
-						window->DisableCustomFrameMode();
-						window->SetBorder(hasBorder);
-					}
-
-					window->SetMaximizedBox(hasMaximizedBox);
-					window->SetMinimizedBox(hasMinimizedBox);
-					window->SetSizeBox(hasSizeBox);
-					window->SetIconVisible(isIconVisible);
-					window->SetTitleBar(hasTitleBar);
-				}
-			}
-
-			void GuiWindow::Moved()
-			{
-				GuiControlHost::Moved();
-				GetControlTemplateObject()->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
-			}
-
-			void GuiWindow::OnNativeWindowChanged()
-			{
-				SyncNativeWindowProperties();
-				GuiControlHost::OnNativeWindowChanged();
-			}
-
-			void GuiWindow::OnVisualStatusChanged()
-			{
-				GuiControlHost::OnVisualStatusChanged();
-			}
-
-			void GuiWindow::MouseClickedOnOtherWindow(GuiWindow* window)
-			{
-			}
-
-			compositions::GuiGraphicsComposition* GuiWindow::GetAltComposition()
-			{
-				return boundsComposition;
-			}
-
-			compositions::IGuiAltActionHost* GuiWindow::GetPreviousAltHost()
-			{
-				return previousAltHost;
-			}
-
-			void GuiWindow::OnActivatedAltHost(IGuiAltActionHost* previousHost)
-			{
-				previousAltHost = previousHost;
-			}
-
-			void GuiWindow::OnDeactivatedAltHost()
-			{
-				previousAltHost = 0;
-			}
-
-			void GuiWindow::CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)
-			{
-				IGuiAltActionHost::CollectAltActionsFromControl(this, actions);
-			}
-
-			GuiWindow::GuiWindow(theme::ThemeName themeName)
-				:GuiControlHost(themeName)
-				,previousAltHost(0)
-			{
-				INativeWindow* window=GetCurrentController()->WindowService()->CreateNativeWindow();
-				SetNativeWindow(window);
-				GetApplication()->RegisterWindow(this);
-				ClipboardUpdated.SetAssociatedComposition(boundsComposition);
-			}
-
-			GuiWindow::~GuiWindow()
-			{
-				FinalizeAggregation();
-				GetApplication()->UnregisterWindow(this);
-				INativeWindow* window=host->GetNativeWindow();
-				if(window)
-				{
-					SetNativeWindow(0);
-					GetCurrentController()->WindowService()->DestroyNativeWindow(window);
-				}
-			}
-
-			IDescriptable* GuiWindow::QueryService(const WString& identifier)
-			{
-				if (identifier == IGuiAltActionHost::Identifier)
-				{
-					return (IGuiAltActionHost*)this;
-				}
-				else
-				{
-					return GuiControlHost::QueryService(identifier);
-				}
-			}
-
-			void GuiWindow::MoveToScreenCenter()
-			{
-				MoveToScreenCenter(GetRelatedScreen());
-			}
-
-			void GuiWindow::MoveToScreenCenter(INativeScreen* screen)
-			{
-				if (screen)
-				{
-					Rect screenBounds = screen->GetClientBounds();
-					Rect windowBounds = GetBounds();
-					SetBounds(
-						Rect(
-							Point(
-								screenBounds.Left() + (screenBounds.Width() - windowBounds.Width()) / 2,
-								screenBounds.Top() + (screenBounds.Height() - windowBounds.Height()) / 2
-							),
-							windowBounds.GetSize()
-						)
-					);
-				}
-			}
-
-#define IMPL_WINDOW_PROPERTY(VARIABLE, NAME, CONDITION_BREAK) \
-			bool GuiWindow::Get ## NAME() \
-			{ \
-				return VARIABLE; \
-			} \
-			void GuiWindow::Set ## NAME(bool visible) \
-			{ \
-				auto ct = GetControlTemplateObject(); \
-				if (ct->Get ## NAME ## Option() == templates::BoolOption::Customizable) \
-				{ \
-					VARIABLE = visible; \
-					auto ct = GetControlTemplateObject(); \
-					ct->Set ## NAME(visible); \
-					if (auto window = GetNativeWindow()) \
-					{ \
-						CONDITION_BREAK \
-						window->Set ## NAME(visible); \
-					} \
-				} \
-			} \
-
-#define IMPL_WINDOW_PROPERTY_EMPTY_CONDITION
-#define IMPL_WINDOW_PROPERTY_BORDER_CONDITION if (ct->GetCustomFrameEnabled()) return;
-
-			IMPL_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
-			IMPL_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
-			IMPL_WINDOW_PROPERTY(hasBorder, Border, IMPL_WINDOW_PROPERTY_BORDER_CONDITION)
-			IMPL_WINDOW_PROPERTY(hasSizeBox, SizeBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
-			IMPL_WINDOW_PROPERTY(isIconVisible, IconVisible, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
-			IMPL_WINDOW_PROPERTY(hasTitleBar, TitleBar, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
-
-#undef IMPL_WINDOW_PROPERTY_BORDER_CONDITION
-#undef IMPL_WINDOW_PROPERTY_EMPTY_CONDITION
-#undef IMPL_WINDOW_PROPERTY
-
-			void GuiWindow::ShowModal(GuiWindow* owner, const Func<void()>& callback)
-			{
-				owner->SetEnabled(false);
-				GetNativeWindow()->SetParent(owner->GetNativeWindow());
-				auto container = MakePtr<IGuiGraphicsEventHandler::Container>();
-				container->handler = WindowClosed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-				{
-					GetApplication()->InvokeInMainThread([=]()
-					{
-						WindowClosed.Detach(container->handler);
-						container->handler = nullptr;
-						GetNativeWindow()->SetParent(0);
-						callback();
-						owner->SetEnabled(true);
-						owner->SetActivated();
-					});
-				});
-				Show();
-			}
-
-			void GuiWindow::ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callback)
-			{
-				ShowModal(owner, [=]()
-				{
-					callback();
-					delete this;
-				});
-			}
-
-			Ptr<reflection::description::IAsync> GuiWindow::ShowModalAsync(GuiWindow* owner)
-			{
-				auto future = IFuture::Create();
-				ShowModal(owner, [promise = future->GetPromise()]()
-				{
-					promise->SendResult({});
-				});
-				return future;
-			}
-
-/***********************************************************************
-GuiPopup
-***********************************************************************/
-
-			void GuiPopup::MouseClickedOnOtherWindow(GuiWindow* window)
-			{
-				Hide();
-			}
-
-			void GuiPopup::PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				GetApplication()->RegisterPopupOpened(this);
-			}
-
-			void GuiPopup::PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				GetApplication()->RegisterPopupClosed(this);
-				INativeWindow* window=GetNativeWindow();
-				if(window)
-				{
-					window->SetParent(0);
-				}
-			}
-
-			GuiPopup::GuiPopup(theme::ThemeName themeName)
-				:GuiWindow(themeName)
-			{
-				SetMinimizedBox(false);
-				SetMaximizedBox(false);
-				SetSizeBox(false);
-				SetTitleBar(false);
-				SetShowInTaskBar(false);
-
-				WindowOpened.AttachMethod(this, &GuiPopup::PopupOpened);
-				WindowClosed.AttachMethod(this, &GuiPopup::PopupClosed);
-			}
-
-			GuiPopup::~GuiPopup()
-			{
-				GetApplication()->RegisterPopupClosed(this);
-			}
-
-			bool GuiPopup::IsClippedByScreen(Point location)
-			{
-				SetBounds(Rect(location, GetBounds().GetSize()));
-				INativeWindow* window=GetNativeWindow();
-				if(window)
-				{
-					INativeScreen* screen=GetCurrentController()->ScreenService()->GetScreen(window);
-					if(screen)
-					{
-						Rect screenBounds=screen->GetClientBounds();
-						Rect windowBounds=window->GetBounds();
-						return !screenBounds.Contains(windowBounds.LeftTop()) || !screenBounds.Contains(windowBounds.RightBottom());
-					}
-				}
-				return true;
-			}
-
-			void GuiPopup::ShowPopup(Point location, INativeScreen* screen)
-			{
-				INativeWindow* window=GetNativeWindow();
-				if(window)
-				{
-					if (!screen)
-					{
-						SetBounds(Rect(location, GetBounds().GetSize()));
-						screen = GetCurrentController()->ScreenService()->GetScreen(window);
-					}
-
-					if(screen)
-					{
-						Rect screenBounds=screen->GetClientBounds();
-						Size size=window->GetBounds().GetSize();
-
-						if(location.x<screenBounds.x1)
-						{
-							location.x=screenBounds.x1;
-						}
-						else if(location.x+size.x>screenBounds.x2)
-						{
-							location.x=screenBounds.x2-size.x;
-						}
-
-						if(location.y<screenBounds.y1)
-						{
-							location.y=screenBounds.y1;
-						}
-						else if(location.y+size.y>screenBounds.y2)
-						{
-							location.y=screenBounds.y2-size.y;
-						}
-					}
-					SetBounds(Rect(location, GetBounds().GetSize()));
-					bool value=GetNativeWindow()->IsEnabledActivate();
-					ShowDeactivated();
-				}
-			}
-			
-			void GuiPopup::ShowPopup(GuiControl* control, Rect bounds, bool preferredTopBottomSide)
-			{
-				INativeWindow* window=GetNativeWindow();
-				if(window)
-				{
-					Point locations[4];
-					Size size=window->GetBounds().GetSize();
-
-					GuiControlHost* controlHost=control->GetBoundsComposition()->GetRelatedControlHost();
-					if(controlHost)
-					{
-						INativeWindow* controlWindow=controlHost->GetNativeWindow();
-						if(controlWindow)
-						{
-							Point controlClientOffset=control->GetBoundsComposition()->GetGlobalBounds().LeftTop();
-							Point controlWindowOffset=controlWindow->GetClientBoundsInScreen().LeftTop();
-							bounds.x1+=controlClientOffset.x+controlWindowOffset.x;
-							bounds.x2+=controlClientOffset.x+controlWindowOffset.x;
-							bounds.y1+=controlClientOffset.y+controlWindowOffset.y;
-							bounds.y2+=controlClientOffset.y+controlWindowOffset.y;
-
-							if(preferredTopBottomSide)
-							{
-								locations[0]=Point(bounds.x1, bounds.y2);
-								locations[1]=Point(bounds.x2-size.x, bounds.y2);
-								locations[2]=Point(bounds.x1, bounds.y1-size.y);
-								locations[3]=Point(bounds.x2-size.x, bounds.y1-size.y);
-							}
-							else
-							{
-								locations[0]=Point(bounds.x2, bounds.y1);
-								locations[1]=Point(bounds.x2, bounds.y2-size.y);
-								locations[2]=Point(bounds.x1-size.x, bounds.y1);
-								locations[3]=Point(bounds.x1-size.x, bounds.y2-size.y);
-							}
-
-							window->SetParent(controlWindow);
-							for(vint i=0;i<4;i++)
-							{
-								if(!IsClippedByScreen(locations[i]))
-								{
-									ShowPopup(locations[i]);
-									return;
-								}
-							}
-							ShowPopup(locations[0], GetCurrentController()->ScreenService()->GetScreen(controlWindow));
-						}
-					}
-				}
-			}
-
-			void GuiPopup::ShowPopup(GuiControl* control, Point location)
-			{
-				INativeWindow* window=GetNativeWindow();
-				if(window)
-				{
-					Point locations[4];
-					Size size=window->GetBounds().GetSize();
-					Rect controlBounds=control->GetBoundsComposition()->GetGlobalBounds();
-
-					GuiControlHost* controlHost=control->GetBoundsComposition()->GetRelatedControlHost();
-					if(controlHost)
-					{
-						INativeWindow* controlWindow=controlHost->GetNativeWindow();
-						if(controlWindow)
-						{
-							Point controlClientOffset=controlWindow->GetClientBoundsInScreen().LeftTop();
-							vint x=controlBounds.x1+controlClientOffset.x+location.x;
-							vint y=controlBounds.y1+controlClientOffset.y+location.y;
-							window->SetParent(controlWindow);
-							ShowPopup(Point(x, y), GetCurrentController()->ScreenService()->GetScreen(controlWindow));
-						}
-					}
-				}
-			}
-
-			void GuiPopup::ShowPopup(GuiControl* control, bool preferredTopBottomSide)
-			{
-				INativeWindow* window=GetNativeWindow();
-				if(window)
-				{
-					Rect bounds(Point(0, 0), control->GetBoundsComposition()->GetBounds().GetSize());
-					ShowPopup(control, bounds, preferredTopBottomSide);
-				}
-			}
-
-/***********************************************************************
-GuiPopup
-***********************************************************************/
-
-			void GuiTooltip::GlobalTimer()
-			{
-				SetClientSize(GetClientSize());
-			}
-
-			void GuiTooltip::TooltipOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-			}
-
-			void GuiTooltip::TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				SetTemporaryContentControl(0);
-			}
-
-			GuiTooltip::GuiTooltip(theme::ThemeName themeName)
-				:GuiPopup(themeName)
-				,temporaryContentControl(0)
-			{
-				containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				containerComposition->SetPreferredMinSize(Size(20, 10));
-				GetCurrentController()->CallbackService()->InstallListener(this);
-
-				WindowOpened.AttachMethod(this, &GuiTooltip::TooltipOpened);
-				WindowClosed.AttachMethod(this, &GuiTooltip::TooltipClosed);
-			}
-
-			GuiTooltip::~GuiTooltip()
-			{
-				GetCurrentController()->CallbackService()->UninstallListener(this);
-			}
-
-			vint GuiTooltip::GetPreferredContentWidth()
-			{
-				return containerComposition->GetPreferredMinSize().x;
-			}
-
-			void GuiTooltip::SetPreferredContentWidth(vint value)
-			{
-				containerComposition->SetPreferredMinSize(Size(value, 10));
-			}
-
-			GuiControl* GuiTooltip::GetTemporaryContentControl()
-			{
-				return temporaryContentControl;
-			}
-
-			void GuiTooltip::SetTemporaryContentControl(GuiControl* control)
-			{
-				if(temporaryContentControl && HasChild(temporaryContentControl))
-				{
-					containerComposition->RemoveChild(temporaryContentControl->GetBoundsComposition());
-					temporaryContentControl=0;
-				}
-				temporaryContentControl=control;
-				if(control)
-				{
-					control->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					AddChild(control);
-				}
-			}
-		}
-	}
-}
-
-/***********************************************************************
 .\GRAPHICSCOMPOSITION\GUIGRAPHICSAXIS.CPP
 ***********************************************************************/
 
@@ -6940,6 +5819,21 @@ GuiBoundsComposition
 			{
 			}
 
+			bool GuiBoundsComposition::GetSizeAffectParent()
+			{
+				return sizeAffectParent;
+			}
+
+			void GuiBoundsComposition::SetSizeAffectParent(bool value)
+			{
+				sizeAffectParent = value;
+			}
+
+			bool GuiBoundsComposition::IsSizeAffectParent()
+			{
+				return sizeAffectParent;
+			}
+
 			Rect GuiBoundsComposition::GetPreferredBounds()
 			{
 				Rect result = GetBoundsInternal(compositionBounds);
@@ -7035,6 +5929,1522 @@ GuiBoundsComposition
 			bool GuiBoundsComposition::IsAlignedToParent()
 			{
 				return alignmentToParent != Margin(-1, -1, -1, -1);
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\GRAPHICSCOMPOSITION\GUIGRAPHICSFLOWCOMPOSITION.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+			using namespace collections;
+
+/***********************************************************************
+GuiFlowComposition
+***********************************************************************/
+
+			void GuiFlowComposition::UpdateFlowItemBounds(bool forceUpdate)
+			{
+				if (forceUpdate || needUpdate)
+				{
+					needUpdate = false;
+					InvokeOnCompositionStateChanged();
+
+					auto clientMargin = axis->RealMarginToVirtualMargin(extraMargin);
+					if (clientMargin.left < 0) clientMargin.left = 0;
+					if (clientMargin.top < 0) clientMargin.top = 0;
+					if (clientMargin.right < 0) clientMargin.right = 0;
+					if (clientMargin.bottom < 0) clientMargin.bottom = 0;
+
+					auto realFullSize = previousBounds.GetSize();
+					auto clientSize = axis->RealSizeToVirtualSize(realFullSize);
+					clientSize.x -= (clientMargin.left + clientMargin.right);
+					clientSize.y -= (clientMargin.top + clientMargin.bottom);
+
+					flowItemBounds.Resize(flowItems.Count());
+					for (vint i = 0; i < flowItems.Count(); i++)
+					{
+						flowItemBounds[i] = Rect(Point(0, 0), flowItems[i]->GetMinSize());
+					}
+
+					vint currentIndex = 0;
+					vint rowTop = 0;
+
+					while (currentIndex < flowItems.Count())
+					{
+						auto itemSize = axis->RealSizeToVirtualSize(flowItemBounds[currentIndex].GetSize());
+						vint rowWidth = itemSize.x;
+						vint rowHeight = itemSize.y;
+						vint rowItemCount = 1;
+
+						for (vint i = currentIndex + 1; i < flowItems.Count(); i++)
+						{
+							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[i].GetSize());
+							vint itemWidth = itemSize.x + columnPadding;
+							if (rowWidth + itemWidth > clientSize.x)
+							{
+								break;
+							}
+							rowWidth += itemWidth;
+							if (rowHeight < itemSize.y)
+							{
+								rowHeight = itemSize.y;
+							}
+							rowItemCount++;
+						}
+
+						vint baseLine = 0;
+						Array<vint> itemBaseLines(rowItemCount);
+						for (vint i = 0; i < rowItemCount; i++)
+						{
+							vint index = currentIndex + i;
+							vint itemBaseLine = 0;
+							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[index].GetSize());
+
+							auto option = flowItems[index]->GetFlowOption();
+							switch (option.baseline)
+							{
+							case GuiFlowOption::FromTop:
+								itemBaseLine = option.distance;
+								break;
+							case GuiFlowOption::FromBottom:
+								itemBaseLine = itemSize.y - option.distance;
+								break;
+							case GuiFlowOption::Percentage:
+								itemBaseLine = (vint)(itemSize.y*option.percentage);
+								break;
+							}
+
+							itemBaseLines[i] = itemBaseLine;
+							if (baseLine < itemBaseLine)
+							{
+								baseLine = itemBaseLine;
+							}
+						}
+
+						vint rowUsedWidth = 0;
+						for (vint i = 0; i < rowItemCount; i++)
+						{
+							vint index = currentIndex + i;
+							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[index].GetSize());
+
+							vint itemLeft = 0;
+							vint itemTop = rowTop + baseLine - itemBaseLines[i];
+
+							switch (alignment)
+							{
+							case FlowAlignment::Left:
+								itemLeft = rowUsedWidth + i * columnPadding;
+								break;
+							case FlowAlignment::Center:
+								itemLeft = rowUsedWidth + i * columnPadding + (clientSize.x - rowWidth) / 2;
+								break;
+							case FlowAlignment::Extend:
+								if (i == 0)
+								{
+									itemLeft = rowUsedWidth;
+								}
+								else
+								{
+									itemLeft = rowUsedWidth + (vint)((double)(clientSize.x - rowWidth) * i / (rowItemCount - 1)) + i * columnPadding;
+								}
+								break;
+							}
+
+							flowItemBounds[index] = axis->VirtualRectToRealRect(
+								realFullSize,
+								Rect(
+									Point(
+										itemLeft + clientMargin.left,
+										itemTop + clientMargin.top
+									),
+									itemSize
+								)
+							);
+							rowUsedWidth += itemSize.x;
+						}
+
+						rowTop += rowHeight + rowPadding;
+						currentIndex += rowItemCount;
+					}
+
+					minHeight = rowTop == 0 ? 0 : rowTop - rowPadding;
+				}
+			}
+
+			void GuiFlowComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			{
+				UpdateFlowItemBounds(true);
+			}
+
+			void GuiFlowComposition::OnChildInserted(GuiGraphicsComposition* child)
+			{
+				GuiBoundsComposition::OnChildInserted(child);
+				auto item = dynamic_cast<GuiFlowItemComposition*>(child);
+				if (item && !flowItems.Contains(item))
+				{
+					flowItems.Add(item);
+					needUpdate = true;
+				}
+			}
+
+			void GuiFlowComposition::OnChildRemoved(GuiGraphicsComposition* child)
+			{
+				GuiBoundsComposition::OnChildRemoved(child);
+				auto item = dynamic_cast<GuiFlowItemComposition*>(child);
+				if (item)
+				{
+					flowItems.Remove(item);
+					needUpdate = true;
+				}
+			}
+
+			GuiFlowComposition::GuiFlowComposition()
+				:axis(new GuiDefaultAxis)
+			{
+				BoundsChanged.AttachMethod(this, &GuiFlowComposition::OnBoundsChanged);
+			}
+
+			GuiFlowComposition::~GuiFlowComposition()
+			{
+			}
+
+			const GuiFlowComposition::ItemCompositionList& GuiFlowComposition::GetFlowItems()
+			{
+				return flowItems;
+			}
+
+			bool GuiFlowComposition::InsertFlowItem(vint index, GuiFlowItemComposition* item)
+			{
+				index = flowItems.Insert(index, item);
+				if (!AddChild(item))
+				{
+					flowItems.RemoveAt(index);
+					return false;
+				}
+				else
+				{
+					needUpdate = true;
+					return true;
+				}
+			}
+
+
+			Margin GuiFlowComposition::GetExtraMargin()
+			{
+				return extraMargin;
+			}
+
+			void GuiFlowComposition::SetExtraMargin(Margin value)
+			{
+				extraMargin = value;
+				needUpdate = true;
+				InvokeOnCompositionStateChanged();
+			}
+
+			vint GuiFlowComposition::GetRowPadding()
+			{
+				return rowPadding;
+			}
+
+			void GuiFlowComposition::SetRowPadding(vint value)
+			{
+				rowPadding = value;
+				needUpdate = true;
+				InvokeOnCompositionStateChanged();
+			}
+
+			vint GuiFlowComposition::GetColumnPadding()
+			{
+				return columnPadding;
+			}
+
+			void GuiFlowComposition::SetColumnPadding(vint value)
+			{
+				columnPadding = value;
+				needUpdate = true;
+				InvokeOnCompositionStateChanged();
+			}
+
+			Ptr<IGuiAxis> GuiFlowComposition::GetAxis()
+			{
+				return axis;
+			}
+
+			void GuiFlowComposition::SetAxis(Ptr<IGuiAxis> value)
+			{
+				if (value)
+				{
+					axis = value;
+					needUpdate = true;
+					InvokeOnCompositionStateChanged();
+				}
+			}
+
+			FlowAlignment GuiFlowComposition::GetAlignment()
+			{
+				return alignment;
+			}
+
+			void GuiFlowComposition::SetAlignment(FlowAlignment value)
+			{
+				alignment = value;
+				needUpdate = true;
+				InvokeOnCompositionStateChanged();
+			}
+
+			void GuiFlowComposition::ForceCalculateSizeImmediately()
+			{
+				GuiBoundsComposition::ForceCalculateSizeImmediately();
+				UpdateFlowItemBounds(true);
+			}
+			
+			Size GuiFlowComposition::GetMinPreferredClientSize()
+			{
+				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
+				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
+				{
+					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
+					if (minSize.x < clientSize.x) minSize.x = clientSize.x;
+					if (minSize.y < clientSize.y) minSize.y = clientSize.y;
+				}
+
+				vint x = 0;
+				vint y = 0;
+				if (extraMargin.left > 0) x += extraMargin.left;
+				if (extraMargin.right > 0) x += extraMargin.right;
+				if (extraMargin.top > 0) y += extraMargin.top;
+				if (extraMargin.bottom > 0) y += extraMargin.bottom;
+				return minSize + Size(x, y);
+			}
+
+			Rect GuiFlowComposition::GetBounds()
+			{
+				if (!needUpdate)
+				{
+					for (vint i = 0; i < flowItems.Count(); i++)
+					{
+						if (flowItemBounds[i].GetSize() != flowItems[i]->GetMinSize())
+						{
+							needUpdate = true;
+							break;
+						}
+					}
+				}
+
+				if (needUpdate)
+				{
+					UpdateFlowItemBounds(true);
+				}
+
+				bounds = GuiBoundsComposition::GetBounds();
+				return bounds;
+			}
+
+/***********************************************************************
+GuiFlowItemComposition
+***********************************************************************/
+
+			void GuiFlowItemComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
+			{
+				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				flowParent = newParent == 0 ? 0 : dynamic_cast<GuiFlowComposition*>(newParent);
+			}
+
+			Size GuiFlowItemComposition::GetMinSize()
+			{
+				return GetBoundsInternal(bounds).GetSize();
+			}
+
+			GuiFlowItemComposition::GuiFlowItemComposition()
+			{
+				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			}
+
+			GuiFlowItemComposition::~GuiFlowItemComposition()
+			{
+			}
+			
+			bool GuiFlowItemComposition::IsSizeAffectParent()
+			{
+				return false;
+			}
+
+			Rect GuiFlowItemComposition::GetBounds()
+			{
+				Rect result = bounds;
+				if(flowParent)
+				{
+					flowParent->UpdateFlowItemBounds(false);
+					vint index = flowParent->flowItems.IndexOf(this);
+					if (index != -1)
+					{
+						result = flowParent->flowItemBounds[index];
+					}
+
+					result = Rect(
+						result.Left() - extraMargin.left,
+						result.Top() - extraMargin.top,
+						result.Right() + extraMargin.right,
+						result.Bottom() + extraMargin.bottom
+						);
+				}
+				UpdatePreviousBounds(result);
+				return result;
+			}
+
+			void GuiFlowItemComposition::SetBounds(Rect value)
+			{
+				bounds = value;
+				InvokeOnCompositionStateChanged();
+			}
+
+			Margin GuiFlowItemComposition::GetExtraMargin()
+			{
+				return extraMargin;
+			}
+
+			void GuiFlowItemComposition::SetExtraMargin(Margin value)
+			{
+				extraMargin = value;
+				InvokeOnCompositionStateChanged();
+			}
+
+			GuiFlowOption GuiFlowItemComposition::GetFlowOption()
+			{
+				return option;
+			}
+
+			void GuiFlowItemComposition::SetFlowOption(GuiFlowOption value)
+			{
+				option = value;
+				if (flowParent)
+				{
+					flowParent->needUpdate = true;
+					InvokeOnCompositionStateChanged();
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\GUILABELCONTROLS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			using namespace elements;
+			using namespace compositions;
+			using namespace collections;
+			using namespace reflection::description;
+
+/***********************************************************************
+GuiLabel
+***********************************************************************/
+
+			void GuiLabel::BeforeControlTemplateUninstalled_()
+			{
+				textColorConsisted = (textColor == GetControlTemplateObject()->GetDefaultTextColor());
+			}
+
+			void GuiLabel::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				if (initialize || textColorConsisted)
+				{
+					SetTextColor(ct->GetDefaultTextColor());
+				}
+				else
+				{
+					ct->SetTextColor(textColor);
+				}
+			}
+
+			GuiLabel::GuiLabel(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
+			}
+
+			GuiLabel::~GuiLabel()
+			{
+			}
+
+			Color GuiLabel::GetTextColor()
+			{
+				return textColor;
+			}
+
+			void GuiLabel::SetTextColor(Color value)
+			{
+				if (textColor != value)
+				{
+					textColor = value;
+					GetControlTemplateObject()->SetTextColor(textColor);
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\GUIWINDOWCONTROLS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			using namespace elements;
+			using namespace compositions;
+			using namespace collections;
+			using namespace reflection::description;
+
+/***********************************************************************
+GuiControlHost
+***********************************************************************/
+
+			void GuiControlHost::OnNativeWindowChanged()
+			{
+			}
+
+			void GuiControlHost::OnVisualStatusChanged()
+			{
+			}
+
+			controls::GuiControlHost* GuiControlHost::GetControlHostForInstance()
+			{
+				return this;
+			}
+
+			GuiControl* GuiControlHost::GetTooltipOwner(Point location)
+			{
+				GuiGraphicsComposition* composition=this->GetBoundsComposition()->FindComposition(location, false);
+				if(composition)
+				{
+					GuiControl* control=composition->GetRelatedControl();
+					while(control)
+					{
+						if(control->GetTooltipControl())
+						{
+							return control;
+						}
+						control=control->GetParent();
+					}
+				}
+				return 0;
+			}
+
+			void GuiControlHost::MoveIntoTooltipControl(GuiControl* tooltipControl, Point location)
+			{
+				if(tooltipLocation!=location)
+				{
+					tooltipLocation=location;
+					{
+						GuiControl* currentOwner=GetApplication()->GetTooltipOwner();
+						if(currentOwner && currentOwner!=tooltipControl)
+						{
+							if(tooltipCloseDelay)
+							{
+								tooltipCloseDelay->Cancel();
+								tooltipCloseDelay=0;
+							}
+							GetApplication()->DelayExecuteInMainThread([=]()
+							{
+								currentOwner->CloseTooltip();
+							}, TooltipDelayCloseTime);
+						}
+					}
+					if(!tooltipControl)
+					{
+						if(tooltipOpenDelay)
+						{
+							tooltipOpenDelay->Cancel();
+							tooltipOpenDelay=0;
+						}
+					}
+					else if(tooltipOpenDelay)
+					{
+						tooltipOpenDelay->Delay(TooltipDelayOpenTime);
+					}
+					else if(GetApplication()->GetTooltipOwner()!=tooltipControl)
+					{
+						tooltipOpenDelay=GetApplication()->DelayExecuteInMainThread([this]()
+						{
+							GuiControl* owner=GetTooltipOwner(tooltipLocation);
+							if(owner)
+							{
+								Point offset=owner->GetBoundsComposition()->GetGlobalBounds().LeftTop();
+								Point p(tooltipLocation.x-offset.x, tooltipLocation.y-offset.y+24);
+								owner->DisplayTooltip(p);
+								tooltipOpenDelay=0;
+
+								tooltipCloseDelay=GetApplication()->DelayExecuteInMainThread([this, owner]()
+								{
+									owner->CloseTooltip();
+								}, TooltipDelayLifeTime);
+							}
+						}, TooltipDelayOpenTime);
+					}
+				}
+			}
+
+			void GuiControlHost::MouseMoving(const NativeWindowMouseInfo& info)
+			{
+				if(!info.left && !info.middle && !info.right)
+				{
+					GuiControl* tooltipControl=GetTooltipOwner(tooltipLocation);
+					MoveIntoTooltipControl(tooltipControl, Point(info.x, info.y));
+				}
+			}
+
+			void GuiControlHost::MouseLeaved()
+			{
+				MoveIntoTooltipControl(0, Point(-1, -1));
+			}
+
+			void GuiControlHost::Moved()
+			{
+				OnVisualStatusChanged();
+			}
+
+			void GuiControlHost::Enabled()
+			{
+				GuiControl::SetEnabled(true);
+				OnVisualStatusChanged();
+			}
+
+			void GuiControlHost::Disabled()
+			{
+				GuiControl::SetEnabled(false);
+				OnVisualStatusChanged();
+			}
+
+			void GuiControlHost::GotFocus()
+			{
+				WindowGotFocus.Execute(GetNotifyEventArguments());
+				OnVisualStatusChanged();
+			}
+
+			void GuiControlHost::LostFocus()
+			{
+				WindowLostFocus.Execute(GetNotifyEventArguments());
+				OnVisualStatusChanged();
+			}
+
+			void GuiControlHost::Activated()
+			{
+				WindowActivated.Execute(GetNotifyEventArguments());
+				OnVisualStatusChanged();
+			}
+
+			void GuiControlHost::Deactivated()
+			{
+				WindowDeactivated.Execute(GetNotifyEventArguments());
+				OnVisualStatusChanged();
+			}
+
+			void GuiControlHost::Opened()
+			{
+				WindowOpened.Execute(GetNotifyEventArguments());
+			}
+
+			void GuiControlHost::Closing(bool& cancel)
+			{
+				GuiRequestEventArgs arguments(boundsComposition);
+				arguments.cancel=cancel;
+				WindowClosing.Execute(arguments);
+				if(!arguments.handled)
+				{
+					cancel=arguments.cancel;
+				}
+			}
+
+			void GuiControlHost::Closed()
+			{
+				WindowClosed.Execute(GetNotifyEventArguments());
+			}
+
+			void GuiControlHost::Destroying()
+			{
+				WindowDestroying.Execute(GetNotifyEventArguments());
+				SetNativeWindow(0);
+			}
+
+			GuiControlHost::GuiControlHost(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
+				boundsComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				
+				WindowGotFocus.SetAssociatedComposition(boundsComposition);
+				WindowLostFocus.SetAssociatedComposition(boundsComposition);
+				WindowActivated.SetAssociatedComposition(boundsComposition);
+				WindowDeactivated.SetAssociatedComposition(boundsComposition);
+				WindowOpened.SetAssociatedComposition(boundsComposition);
+				WindowClosing.SetAssociatedComposition(boundsComposition);
+				WindowClosed.SetAssociatedComposition(boundsComposition);
+				WindowDestroying.SetAssociatedComposition(boundsComposition);
+
+				host=new GuiGraphicsHost;
+				host->GetMainComposition()->AddChild(boundsComposition);
+				sharedPtrDestructorProc = 0;
+			}
+
+			GuiControlHost::~GuiControlHost()
+			{
+				host->GetMainComposition()->RemoveChild(boundsComposition);
+				FinalizeInstanceRecursively(this);
+				OnBeforeReleaseGraphicsHost();
+				delete host;
+			}
+
+			compositions::GuiGraphicsHost* GuiControlHost::GetGraphicsHost()
+			{
+				return host;
+			}
+
+			compositions::GuiGraphicsComposition* GuiControlHost::GetMainComposition()
+			{
+				return host->GetMainComposition();
+			}
+
+			INativeWindow* GuiControlHost::GetNativeWindow()
+			{
+				return host->GetNativeWindow();
+			}
+
+			void GuiControlHost::SetNativeWindow(INativeWindow* window)
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->UninstallListener(this);
+				}
+				host->SetNativeWindow(window);
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->InstallListener(this);
+				}
+				OnNativeWindowChanged();
+			}
+
+			void GuiControlHost::ForceCalculateSizeImmediately()
+			{
+				boundsComposition->ForceCalculateSizeImmediately();
+				SetBounds(GetBounds());
+			}
+
+			bool GuiControlHost::GetEnabled()
+			{
+				if(host->GetNativeWindow())
+				{
+					return host->GetNativeWindow()->IsEnabled();
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			void GuiControlHost::SetEnabled(bool value)
+			{
+				if(host->GetNativeWindow())
+				{
+					if(value)
+					{
+						host->GetNativeWindow()->Enable();
+					}
+					else
+					{
+						host->GetNativeWindow()->Disable();
+					}
+				}
+			}
+
+			bool GuiControlHost::GetFocused()
+			{
+				if(host->GetNativeWindow())
+				{
+					return host->GetNativeWindow()->IsFocused();
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			void GuiControlHost::SetFocused()
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->SetFocus();
+				}
+			}
+
+			bool GuiControlHost::GetActivated()
+			{
+				if(host->GetNativeWindow())
+				{
+					return host->GetNativeWindow()->IsActivated();
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			void GuiControlHost::SetActivated()
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->SetActivate();
+				}
+			}
+
+			bool GuiControlHost::GetShowInTaskBar()
+			{
+				if(host->GetNativeWindow())
+				{
+					return host->GetNativeWindow()->IsAppearedInTaskBar();
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			void GuiControlHost::SetShowInTaskBar(bool value)
+			{
+				if(host->GetNativeWindow())
+				{
+					if(value)
+					{
+						host->GetNativeWindow()->ShowInTaskBar();
+					}
+					else
+					{
+						host->GetNativeWindow()->HideInTaskBar();
+					}
+				}
+			}
+
+			bool GuiControlHost::GetEnabledActivate()
+			{
+				if(host->GetNativeWindow())
+				{
+					return host->GetNativeWindow()->IsEnabledActivate();
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			void GuiControlHost::SetEnabledActivate(bool value)
+			{
+				if(host->GetNativeWindow())
+				{
+					if(value)
+					{
+						host->GetNativeWindow()->EnableActivate();
+					}
+					else
+					{
+						host->GetNativeWindow()->DisableActivate();
+					}
+				}
+			}
+
+			bool GuiControlHost::GetTopMost()
+			{
+				if(host->GetNativeWindow())
+				{
+					return host->GetNativeWindow()->GetTopMost();
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			void GuiControlHost::SetTopMost(bool topmost)
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->SetTopMost(topmost);
+				}
+			}
+
+			compositions::IGuiShortcutKeyManager* GuiControlHost::GetShortcutKeyManager()
+			{
+				return host->GetShortcutKeyManager();
+			}
+
+			void GuiControlHost::SetShortcutKeyManager(compositions::IGuiShortcutKeyManager* value)
+			{
+				host->SetShortcutKeyManager(value);
+			}
+
+			compositions::GuiGraphicsTimerManager* GuiControlHost::GetTimerManager()
+			{
+				return host->GetTimerManager();
+			}
+
+			Size GuiControlHost::GetClientSize()
+			{
+				if(host->GetNativeWindow())
+				{
+					return host->GetNativeWindow()->GetClientSize();
+				}
+				else
+				{
+					return Size(0, 0);
+				}
+			}
+
+			void GuiControlHost::SetClientSize(Size value)
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->SetClientSize(value);
+				}
+			}
+
+			Rect GuiControlHost::GetBounds()
+			{
+				if(host->GetNativeWindow())
+				{
+					return host->GetNativeWindow()->GetBounds();
+				}
+				else
+				{
+					return Rect();
+				}
+			}
+
+			void GuiControlHost::SetBounds(Rect value)
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->SetBounds(value);
+				}
+			}
+
+			GuiControlHost* GuiControlHost::GetRelatedControlHost()
+			{
+				return this;
+			}
+
+			const WString& GuiControlHost::GetText()
+			{
+				WString result;
+				if(host->GetNativeWindow())
+				{
+					result=host->GetNativeWindow()->GetTitle();
+				}
+				if(result!=GuiControl::GetText())
+				{
+					GuiControl::SetText(result);
+				}
+				return GuiControl::GetText();
+			}
+
+			void GuiControlHost::SetText(const WString& value)
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->SetTitle(value);
+					GuiControl::SetText(value);
+				}
+			}
+
+			INativeScreen* GuiControlHost::GetRelatedScreen()
+			{
+				if(host->GetNativeWindow())
+				{
+					return GetCurrentController()->ScreenService()->GetScreen(host->GetNativeWindow());
+				}
+				else
+				{
+					return 0;
+				}
+			}
+
+			void GuiControlHost::Show()
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->Show();
+				}
+			}
+
+			void GuiControlHost::ShowDeactivated()
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->ShowDeactivated();
+				}
+			}
+
+			void GuiControlHost::ShowRestored()
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->ShowRestored();
+				}
+			}
+
+			void GuiControlHost::ShowMaximized()
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->ShowMaximized();
+				}
+			}
+
+			void GuiControlHost::ShowMinimized()
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->ShowMinimized();
+				}
+			}
+
+			void GuiControlHost::Hide()
+			{
+				if(host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->Hide();
+				}
+			}
+
+			void GuiControlHost::Close()
+			{
+				INativeWindow* window=host->GetNativeWindow();
+				if(window)
+				{
+					if(GetCurrentController()->WindowService()->GetMainWindow()!=window)
+					{
+						window->Hide();
+					}
+					else
+					{
+						SetNativeWindow(0);
+						GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+					}
+				}
+			}
+
+			bool GuiControlHost::GetOpening()
+			{
+				INativeWindow* window=host->GetNativeWindow();
+				if(window)
+				{
+					return window->IsVisible();
+				}
+				return false;
+			}
+
+/***********************************************************************
+GuiWindow
+***********************************************************************/
+
+			void GuiWindow::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiWindow::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+#define FIX_WINDOW_PROPERTY(VARIABLE, NAME) \
+				switch (ct->Get ## NAME ## Option()) \
+				{ \
+				case templates::BoolOption::AlwaysTrue: \
+					VARIABLE = true; \
+					break; \
+				case templates::BoolOption::AlwaysFalse: \
+					VARIABLE = false; \
+					break; \
+				} \
+
+				FIX_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox)
+				FIX_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox)
+				FIX_WINDOW_PROPERTY(hasBorder, Border)
+				FIX_WINDOW_PROPERTY(hasSizeBox, SizeBox)
+				FIX_WINDOW_PROPERTY(isIconVisible, IconVisible)
+				FIX_WINDOW_PROPERTY(hasTitleBar, TitleBar)
+
+#undef FIX_WINDOW_PROPERTY
+				ct->SetMaximizedBox(hasMaximizedBox);
+				ct->SetMinimizedBox(hasMinimizedBox);
+				ct->SetBorder(hasBorder);
+				ct->SetSizeBox(hasSizeBox);
+				ct->SetIconVisible(isIconVisible);
+				ct->SetTitleBar(hasTitleBar);
+				ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+				SyncNativeWindowProperties();
+			}
+
+			void GuiWindow::SyncNativeWindowProperties()
+			{
+				if (auto window = GetNativeWindow())
+				{
+					if (GetControlTemplateObject()->GetCustomFrameEnabled())
+					{
+						window->EnableCustomFrameMode();
+						window->SetBorder(false);
+					}
+					else
+					{
+						window->DisableCustomFrameMode();
+						window->SetBorder(hasBorder);
+					}
+
+					window->SetMaximizedBox(hasMaximizedBox);
+					window->SetMinimizedBox(hasMinimizedBox);
+					window->SetSizeBox(hasSizeBox);
+					window->SetIconVisible(isIconVisible);
+					window->SetTitleBar(hasTitleBar);
+				}
+			}
+
+			void GuiWindow::Moved()
+			{
+				GuiControlHost::Moved();
+				GetControlTemplateObject()->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+			}
+
+			void GuiWindow::OnNativeWindowChanged()
+			{
+				SyncNativeWindowProperties();
+				GuiControlHost::OnNativeWindowChanged();
+			}
+
+			void GuiWindow::OnVisualStatusChanged()
+			{
+				GuiControlHost::OnVisualStatusChanged();
+			}
+
+			void GuiWindow::MouseClickedOnOtherWindow(GuiWindow* window)
+			{
+			}
+
+			compositions::GuiGraphicsComposition* GuiWindow::GetAltComposition()
+			{
+				return boundsComposition;
+			}
+
+			compositions::IGuiAltActionHost* GuiWindow::GetPreviousAltHost()
+			{
+				return previousAltHost;
+			}
+
+			void GuiWindow::OnActivatedAltHost(IGuiAltActionHost* previousHost)
+			{
+				previousAltHost = previousHost;
+			}
+
+			void GuiWindow::OnDeactivatedAltHost()
+			{
+				previousAltHost = 0;
+			}
+
+			void GuiWindow::CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)
+			{
+				IGuiAltActionHost::CollectAltActionsFromControl(this, actions);
+			}
+
+			GuiWindow::GuiWindow(theme::ThemeName themeName)
+				:GuiControlHost(themeName)
+				,previousAltHost(0)
+			{
+				INativeWindow* window=GetCurrentController()->WindowService()->CreateNativeWindow();
+				SetNativeWindow(window);
+				GetApplication()->RegisterWindow(this);
+				ClipboardUpdated.SetAssociatedComposition(boundsComposition);
+			}
+
+			GuiWindow::~GuiWindow()
+			{
+				FinalizeAggregation();
+				GetApplication()->UnregisterWindow(this);
+				INativeWindow* window=host->GetNativeWindow();
+				if(window)
+				{
+					SetNativeWindow(0);
+					GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+				}
+			}
+
+			IDescriptable* GuiWindow::QueryService(const WString& identifier)
+			{
+				if (identifier == IGuiAltActionHost::Identifier)
+				{
+					return (IGuiAltActionHost*)this;
+				}
+				else
+				{
+					return GuiControlHost::QueryService(identifier);
+				}
+			}
+
+			void GuiWindow::MoveToScreenCenter()
+			{
+				MoveToScreenCenter(GetRelatedScreen());
+			}
+
+			void GuiWindow::MoveToScreenCenter(INativeScreen* screen)
+			{
+				if (screen)
+				{
+					Rect screenBounds = screen->GetClientBounds();
+					Rect windowBounds = GetBounds();
+					SetBounds(
+						Rect(
+							Point(
+								screenBounds.Left() + (screenBounds.Width() - windowBounds.Width()) / 2,
+								screenBounds.Top() + (screenBounds.Height() - windowBounds.Height()) / 2
+							),
+							windowBounds.GetSize()
+						)
+					);
+				}
+			}
+
+#define IMPL_WINDOW_PROPERTY(VARIABLE, NAME, CONDITION_BREAK) \
+			bool GuiWindow::Get ## NAME() \
+			{ \
+				return VARIABLE; \
+			} \
+			void GuiWindow::Set ## NAME(bool visible) \
+			{ \
+				auto ct = GetControlTemplateObject(); \
+				if (ct->Get ## NAME ## Option() == templates::BoolOption::Customizable) \
+				{ \
+					VARIABLE = visible; \
+					auto ct = GetControlTemplateObject(); \
+					ct->Set ## NAME(visible); \
+					if (auto window = GetNativeWindow()) \
+					{ \
+						CONDITION_BREAK \
+						window->Set ## NAME(visible); \
+					} \
+				} \
+			} \
+
+#define IMPL_WINDOW_PROPERTY_EMPTY_CONDITION
+#define IMPL_WINDOW_PROPERTY_BORDER_CONDITION if (ct->GetCustomFrameEnabled()) return;
+
+			IMPL_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
+			IMPL_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
+			IMPL_WINDOW_PROPERTY(hasBorder, Border, IMPL_WINDOW_PROPERTY_BORDER_CONDITION)
+			IMPL_WINDOW_PROPERTY(hasSizeBox, SizeBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
+			IMPL_WINDOW_PROPERTY(isIconVisible, IconVisible, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
+			IMPL_WINDOW_PROPERTY(hasTitleBar, TitleBar, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
+
+#undef IMPL_WINDOW_PROPERTY_BORDER_CONDITION
+#undef IMPL_WINDOW_PROPERTY_EMPTY_CONDITION
+#undef IMPL_WINDOW_PROPERTY
+
+			void GuiWindow::ShowModal(GuiWindow* owner, const Func<void()>& callback)
+			{
+				owner->SetEnabled(false);
+				GetNativeWindow()->SetParent(owner->GetNativeWindow());
+				auto container = MakePtr<IGuiGraphicsEventHandler::Container>();
+				container->handler = WindowClosed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+				{
+					GetApplication()->InvokeInMainThread(this, [=]()
+					{
+						WindowClosed.Detach(container->handler);
+						container->handler = nullptr;
+						GetNativeWindow()->SetParent(0);
+						callback();
+						owner->SetEnabled(true);
+						owner->SetActivated();
+					});
+				});
+				Show();
+			}
+
+			void GuiWindow::ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callback)
+			{
+				ShowModal(owner, [=]()
+				{
+					callback();
+					delete this;
+				});
+			}
+
+			Ptr<reflection::description::IAsync> GuiWindow::ShowModalAsync(GuiWindow* owner)
+			{
+				auto future = IFuture::Create();
+				ShowModal(owner, [promise = future->GetPromise()]()
+				{
+					promise->SendResult({});
+				});
+				return future;
+			}
+
+/***********************************************************************
+GuiPopup
+***********************************************************************/
+
+			void GuiPopup::MouseClickedOnOtherWindow(GuiWindow* window)
+			{
+				Hide();
+			}
+
+			void GuiPopup::PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				GetApplication()->RegisterPopupOpened(this);
+			}
+
+			void GuiPopup::PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				GetApplication()->RegisterPopupClosed(this);
+				INativeWindow* window=GetNativeWindow();
+				if(window)
+				{
+					window->SetParent(0);
+				}
+			}
+
+			GuiPopup::GuiPopup(theme::ThemeName themeName)
+				:GuiWindow(themeName)
+			{
+				SetMinimizedBox(false);
+				SetMaximizedBox(false);
+				SetSizeBox(false);
+				SetTitleBar(false);
+				SetShowInTaskBar(false);
+
+				WindowOpened.AttachMethod(this, &GuiPopup::PopupOpened);
+				WindowClosed.AttachMethod(this, &GuiPopup::PopupClosed);
+			}
+
+			GuiPopup::~GuiPopup()
+			{
+				GetApplication()->RegisterPopupClosed(this);
+			}
+
+			bool GuiPopup::IsClippedByScreen(Point location)
+			{
+				SetBounds(Rect(location, GetBounds().GetSize()));
+				INativeWindow* window=GetNativeWindow();
+				if(window)
+				{
+					INativeScreen* screen=GetCurrentController()->ScreenService()->GetScreen(window);
+					if(screen)
+					{
+						Rect screenBounds=screen->GetClientBounds();
+						Rect windowBounds=window->GetBounds();
+						return !screenBounds.Contains(windowBounds.LeftTop()) || !screenBounds.Contains(windowBounds.RightBottom());
+					}
+				}
+				return true;
+			}
+
+			void GuiPopup::ShowPopup(Point location, INativeScreen* screen)
+			{
+				INativeWindow* window=GetNativeWindow();
+				if(window)
+				{
+					if (!screen)
+					{
+						SetBounds(Rect(location, GetBounds().GetSize()));
+						screen = GetCurrentController()->ScreenService()->GetScreen(window);
+					}
+
+					if(screen)
+					{
+						Rect screenBounds=screen->GetClientBounds();
+						Size size=window->GetBounds().GetSize();
+
+						if(location.x<screenBounds.x1)
+						{
+							location.x=screenBounds.x1;
+						}
+						else if(location.x+size.x>screenBounds.x2)
+						{
+							location.x=screenBounds.x2-size.x;
+						}
+
+						if(location.y<screenBounds.y1)
+						{
+							location.y=screenBounds.y1;
+						}
+						else if(location.y+size.y>screenBounds.y2)
+						{
+							location.y=screenBounds.y2-size.y;
+						}
+					}
+					SetBounds(Rect(location, GetBounds().GetSize()));
+					bool value=GetNativeWindow()->IsEnabledActivate();
+					ShowDeactivated();
+				}
+			}
+			
+			void GuiPopup::ShowPopup(GuiControl* control, Rect bounds, bool preferredTopBottomSide)
+			{
+				INativeWindow* window=GetNativeWindow();
+				if(window)
+				{
+					Point locations[4];
+					Size size=window->GetBounds().GetSize();
+
+					GuiControlHost* controlHost=control->GetBoundsComposition()->GetRelatedControlHost();
+					if(controlHost)
+					{
+						INativeWindow* controlWindow=controlHost->GetNativeWindow();
+						if(controlWindow)
+						{
+							Point controlClientOffset=control->GetBoundsComposition()->GetGlobalBounds().LeftTop();
+							Point controlWindowOffset=controlWindow->GetClientBoundsInScreen().LeftTop();
+							bounds.x1+=controlClientOffset.x+controlWindowOffset.x;
+							bounds.x2+=controlClientOffset.x+controlWindowOffset.x;
+							bounds.y1+=controlClientOffset.y+controlWindowOffset.y;
+							bounds.y2+=controlClientOffset.y+controlWindowOffset.y;
+
+							if(preferredTopBottomSide)
+							{
+								locations[0]=Point(bounds.x1, bounds.y2);
+								locations[1]=Point(bounds.x2-size.x, bounds.y2);
+								locations[2]=Point(bounds.x1, bounds.y1-size.y);
+								locations[3]=Point(bounds.x2-size.x, bounds.y1-size.y);
+							}
+							else
+							{
+								locations[0]=Point(bounds.x2, bounds.y1);
+								locations[1]=Point(bounds.x2, bounds.y2-size.y);
+								locations[2]=Point(bounds.x1-size.x, bounds.y1);
+								locations[3]=Point(bounds.x1-size.x, bounds.y2-size.y);
+							}
+
+							window->SetParent(controlWindow);
+							for(vint i=0;i<4;i++)
+							{
+								if(!IsClippedByScreen(locations[i]))
+								{
+									ShowPopup(locations[i]);
+									return;
+								}
+							}
+							ShowPopup(locations[0], GetCurrentController()->ScreenService()->GetScreen(controlWindow));
+						}
+					}
+				}
+			}
+
+			void GuiPopup::ShowPopup(GuiControl* control, Point location)
+			{
+				INativeWindow* window=GetNativeWindow();
+				if(window)
+				{
+					Point locations[4];
+					Size size=window->GetBounds().GetSize();
+					Rect controlBounds=control->GetBoundsComposition()->GetGlobalBounds();
+
+					GuiControlHost* controlHost=control->GetBoundsComposition()->GetRelatedControlHost();
+					if(controlHost)
+					{
+						INativeWindow* controlWindow=controlHost->GetNativeWindow();
+						if(controlWindow)
+						{
+							Point controlClientOffset=controlWindow->GetClientBoundsInScreen().LeftTop();
+							vint x=controlBounds.x1+controlClientOffset.x+location.x;
+							vint y=controlBounds.y1+controlClientOffset.y+location.y;
+							window->SetParent(controlWindow);
+							ShowPopup(Point(x, y), GetCurrentController()->ScreenService()->GetScreen(controlWindow));
+						}
+					}
+				}
+			}
+
+			void GuiPopup::ShowPopup(GuiControl* control, bool preferredTopBottomSide)
+			{
+				INativeWindow* window=GetNativeWindow();
+				if(window)
+				{
+					Rect bounds(Point(0, 0), control->GetBoundsComposition()->GetBounds().GetSize());
+					ShowPopup(control, bounds, preferredTopBottomSide);
+				}
+			}
+
+/***********************************************************************
+GuiPopup
+***********************************************************************/
+
+			void GuiTooltip::GlobalTimer()
+			{
+				SetClientSize(GetClientSize());
+			}
+
+			void GuiTooltip::TooltipOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+			}
+
+			void GuiTooltip::TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				SetTemporaryContentControl(0);
+			}
+
+			GuiTooltip::GuiTooltip(theme::ThemeName themeName)
+				:GuiPopup(themeName)
+				,temporaryContentControl(0)
+			{
+				containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->SetPreferredMinSize(Size(20, 10));
+				GetCurrentController()->CallbackService()->InstallListener(this);
+
+				WindowOpened.AttachMethod(this, &GuiTooltip::TooltipOpened);
+				WindowClosed.AttachMethod(this, &GuiTooltip::TooltipClosed);
+			}
+
+			GuiTooltip::~GuiTooltip()
+			{
+				GetCurrentController()->CallbackService()->UninstallListener(this);
+			}
+
+			vint GuiTooltip::GetPreferredContentWidth()
+			{
+				return containerComposition->GetPreferredMinSize().x;
+			}
+
+			void GuiTooltip::SetPreferredContentWidth(vint value)
+			{
+				containerComposition->SetPreferredMinSize(Size(value, 10));
+			}
+
+			GuiControl* GuiTooltip::GetTemporaryContentControl()
+			{
+				return temporaryContentControl;
+			}
+
+			void GuiTooltip::SetTemporaryContentControl(GuiControl* control)
+			{
+				if(temporaryContentControl && HasChild(temporaryContentControl))
+				{
+					containerComposition->RemoveChild(temporaryContentControl->GetBoundsComposition());
+					temporaryContentControl=0;
+				}
+				temporaryContentControl=control;
+				if(control)
+				{
+					control->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					AddChild(control);
+				}
 			}
 		}
 	}
@@ -8116,407 +8526,6 @@ Helper Functions
 }
 
 /***********************************************************************
-.\GRAPHICSCOMPOSITION\GUIGRAPHICSFLOWCOMPOSITION.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace compositions
-		{
-			using namespace collections;
-
-/***********************************************************************
-GuiFlowComposition
-***********************************************************************/
-
-			void GuiFlowComposition::UpdateFlowItemBounds(bool forceUpdate)
-			{
-				if (forceUpdate || needUpdate)
-				{
-					needUpdate = false;
-					InvokeOnCompositionStateChanged();
-
-					auto clientMargin = axis->RealMarginToVirtualMargin(extraMargin);
-					if (clientMargin.left < 0) clientMargin.left = 0;
-					if (clientMargin.top < 0) clientMargin.top = 0;
-					if (clientMargin.right < 0) clientMargin.right = 0;
-					if (clientMargin.bottom < 0) clientMargin.bottom = 0;
-
-					auto realFullSize = previousBounds.GetSize();
-					auto clientSize = axis->RealSizeToVirtualSize(realFullSize);
-					clientSize.x -= (clientMargin.left + clientMargin.right);
-					clientSize.y -= (clientMargin.top + clientMargin.bottom);
-
-					flowItemBounds.Resize(flowItems.Count());
-					for (vint i = 0; i < flowItems.Count(); i++)
-					{
-						flowItemBounds[i] = Rect(Point(0, 0), flowItems[i]->GetMinSize());
-					}
-
-					vint currentIndex = 0;
-					vint rowTop = 0;
-
-					while (currentIndex < flowItems.Count())
-					{
-						auto itemSize = axis->RealSizeToVirtualSize(flowItemBounds[currentIndex].GetSize());
-						vint rowWidth = itemSize.x;
-						vint rowHeight = itemSize.y;
-						vint rowItemCount = 1;
-
-						for (vint i = currentIndex + 1; i < flowItems.Count(); i++)
-						{
-							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[i].GetSize());
-							vint itemWidth = itemSize.x + columnPadding;
-							if (rowWidth + itemWidth > clientSize.x)
-							{
-								break;
-							}
-							rowWidth += itemWidth;
-							if (rowHeight < itemSize.y)
-							{
-								rowHeight = itemSize.y;
-							}
-							rowItemCount++;
-						}
-
-						vint baseLine = 0;
-						Array<vint> itemBaseLines(rowItemCount);
-						for (vint i = 0; i < rowItemCount; i++)
-						{
-							vint index = currentIndex + i;
-							vint itemBaseLine = 0;
-							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[index].GetSize());
-
-							auto option = flowItems[index]->GetFlowOption();
-							switch (option.baseline)
-							{
-							case GuiFlowOption::FromTop:
-								itemBaseLine = option.distance;
-								break;
-							case GuiFlowOption::FromBottom:
-								itemBaseLine = itemSize.y - option.distance;
-								break;
-							case GuiFlowOption::Percentage:
-								itemBaseLine = (vint)(itemSize.y*option.percentage);
-								break;
-							}
-
-							itemBaseLines[i] = itemBaseLine;
-							if (baseLine < itemBaseLine)
-							{
-								baseLine = itemBaseLine;
-							}
-						}
-
-						vint rowUsedWidth = 0;
-						for (vint i = 0; i < rowItemCount; i++)
-						{
-							vint index = currentIndex + i;
-							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[index].GetSize());
-
-							vint itemLeft = 0;
-							vint itemTop = rowTop + baseLine - itemBaseLines[i];
-
-							switch (alignment)
-							{
-							case FlowAlignment::Left:
-								itemLeft = rowUsedWidth + i * columnPadding;
-								break;
-							case FlowAlignment::Center:
-								itemLeft = rowUsedWidth + i * columnPadding + (clientSize.x - rowWidth) / 2;
-								break;
-							case FlowAlignment::Extend:
-								if (i == 0)
-								{
-									itemLeft = rowUsedWidth;
-								}
-								else
-								{
-									itemLeft = rowUsedWidth + (vint)((double)(clientSize.x - rowWidth) * i / (rowItemCount - 1)) + i * columnPadding;
-								}
-								break;
-							}
-
-							flowItemBounds[index] = axis->VirtualRectToRealRect(
-								realFullSize,
-								Rect(
-									Point(
-										itemLeft + clientMargin.left,
-										itemTop + clientMargin.top
-									),
-									itemSize
-								)
-							);
-							rowUsedWidth += itemSize.x;
-						}
-
-						rowTop += rowHeight + rowPadding;
-						currentIndex += rowItemCount;
-					}
-
-					minHeight = rowTop == 0 ? 0 : rowTop - rowPadding;
-				}
-			}
-
-			void GuiFlowComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-			{
-				UpdateFlowItemBounds(true);
-			}
-
-			void GuiFlowComposition::OnChildInserted(GuiGraphicsComposition* child)
-			{
-				GuiBoundsComposition::OnChildInserted(child);
-				auto item = dynamic_cast<GuiFlowItemComposition*>(child);
-				if (item && !flowItems.Contains(item))
-				{
-					flowItems.Add(item);
-					needUpdate = true;
-				}
-			}
-
-			void GuiFlowComposition::OnChildRemoved(GuiGraphicsComposition* child)
-			{
-				GuiBoundsComposition::OnChildRemoved(child);
-				auto item = dynamic_cast<GuiFlowItemComposition*>(child);
-				if (item)
-				{
-					flowItems.Remove(item);
-					needUpdate = true;
-				}
-			}
-
-			GuiFlowComposition::GuiFlowComposition()
-				:axis(new GuiDefaultAxis)
-			{
-				BoundsChanged.AttachMethod(this, &GuiFlowComposition::OnBoundsChanged);
-			}
-
-			GuiFlowComposition::~GuiFlowComposition()
-			{
-			}
-
-			const GuiFlowComposition::ItemCompositionList& GuiFlowComposition::GetFlowItems()
-			{
-				return flowItems;
-			}
-
-			bool GuiFlowComposition::InsertFlowItem(vint index, GuiFlowItemComposition* item)
-			{
-				index = flowItems.Insert(index, item);
-				if (!AddChild(item))
-				{
-					flowItems.RemoveAt(index);
-					return false;
-				}
-				else
-				{
-					needUpdate = true;
-					return true;
-				}
-			}
-
-
-			Margin GuiFlowComposition::GetExtraMargin()
-			{
-				return extraMargin;
-			}
-
-			void GuiFlowComposition::SetExtraMargin(Margin value)
-			{
-				extraMargin = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
-			}
-
-			vint GuiFlowComposition::GetRowPadding()
-			{
-				return rowPadding;
-			}
-
-			void GuiFlowComposition::SetRowPadding(vint value)
-			{
-				rowPadding = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
-			}
-
-			vint GuiFlowComposition::GetColumnPadding()
-			{
-				return columnPadding;
-			}
-
-			void GuiFlowComposition::SetColumnPadding(vint value)
-			{
-				columnPadding = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
-			}
-
-			Ptr<IGuiAxis> GuiFlowComposition::GetAxis()
-			{
-				return axis;
-			}
-
-			void GuiFlowComposition::SetAxis(Ptr<IGuiAxis> value)
-			{
-				if (value)
-				{
-					axis = value;
-					needUpdate = true;
-					InvokeOnCompositionStateChanged();
-				}
-			}
-
-			FlowAlignment GuiFlowComposition::GetAlignment()
-			{
-				return alignment;
-			}
-
-			void GuiFlowComposition::SetAlignment(FlowAlignment value)
-			{
-				alignment = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
-			}
-
-			void GuiFlowComposition::ForceCalculateSizeImmediately()
-			{
-				GuiBoundsComposition::ForceCalculateSizeImmediately();
-				UpdateFlowItemBounds(true);
-			}
-			
-			Size GuiFlowComposition::GetMinPreferredClientSize()
-			{
-				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
-				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
-				{
-					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
-					if (minSize.x < clientSize.x) minSize.x = clientSize.x;
-					if (minSize.y < clientSize.y) minSize.y = clientSize.y;
-				}
-
-				vint x = 0;
-				vint y = 0;
-				if (extraMargin.left > 0) x += extraMargin.left;
-				if (extraMargin.right > 0) x += extraMargin.right;
-				if (extraMargin.top > 0) y += extraMargin.top;
-				if (extraMargin.bottom > 0) y += extraMargin.bottom;
-				return minSize + Size(x, y);
-			}
-
-			Rect GuiFlowComposition::GetBounds()
-			{
-				if (!needUpdate)
-				{
-					for (vint i = 0; i < flowItems.Count(); i++)
-					{
-						if (flowItemBounds[i].GetSize() != flowItems[i]->GetMinSize())
-						{
-							needUpdate = true;
-							break;
-						}
-					}
-				}
-
-				if (needUpdate)
-				{
-					UpdateFlowItemBounds(true);
-				}
-
-				bounds = GuiBoundsComposition::GetBounds();
-				return bounds;
-			}
-
-/***********************************************************************
-GuiFlowItemComposition
-***********************************************************************/
-
-			void GuiFlowItemComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
-			{
-				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
-				flowParent = newParent == 0 ? 0 : dynamic_cast<GuiFlowComposition*>(newParent);
-			}
-
-			Size GuiFlowItemComposition::GetMinSize()
-			{
-				return GetBoundsInternal(bounds).GetSize();
-			}
-
-			GuiFlowItemComposition::GuiFlowItemComposition()
-			{
-				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-			}
-
-			GuiFlowItemComposition::~GuiFlowItemComposition()
-			{
-			}
-			
-			bool GuiFlowItemComposition::IsSizeAffectParent()
-			{
-				return false;
-			}
-
-			Rect GuiFlowItemComposition::GetBounds()
-			{
-				Rect result = bounds;
-				if(flowParent)
-				{
-					flowParent->UpdateFlowItemBounds(false);
-					vint index = flowParent->flowItems.IndexOf(this);
-					if (index != -1)
-					{
-						result = flowParent->flowItemBounds[index];
-					}
-
-					result = Rect(
-						result.Left() - extraMargin.left,
-						result.Top() - extraMargin.top,
-						result.Right() + extraMargin.right,
-						result.Bottom() + extraMargin.bottom
-						);
-				}
-				UpdatePreviousBounds(result);
-				return result;
-			}
-
-			void GuiFlowItemComposition::SetBounds(Rect value)
-			{
-				bounds = value;
-				InvokeOnCompositionStateChanged();
-			}
-
-			Margin GuiFlowItemComposition::GetExtraMargin()
-			{
-				return extraMargin;
-			}
-
-			void GuiFlowItemComposition::SetExtraMargin(Margin value)
-			{
-				extraMargin = value;
-				InvokeOnCompositionStateChanged();
-			}
-
-			GuiFlowOption GuiFlowItemComposition::GetFlowOption()
-			{
-				return option;
-			}
-
-			void GuiFlowItemComposition::SetFlowOption(GuiFlowOption value)
-			{
-				option = value;
-				if (flowParent)
-				{
-					flowParent->needUpdate = true;
-					InvokeOnCompositionStateChanged();
-				}
-			}
-		}
-	}
-}
-
-/***********************************************************************
 .\CONTROLS\GUIAPPLICATION.CPP
 ***********************************************************************/
 
@@ -8598,6 +8607,11 @@ GuiApplication
 				GetCurrentController()->CallbackService()->UninstallListener(this);
 			}
 
+			INativeWindow* GuiApplication::GetThreadContextNativeWindow(GuiControlHost* controlHost)
+			{
+				return nullptr;
+			}
+
 			void GuiApplication::RegisterWindow(GuiWindow* window)
 			{
 				windows.Add(window);
@@ -8660,11 +8674,11 @@ GuiApplication
 
 			void GuiApplication::Run(GuiWindow* _mainWindow)
 			{
-				if(!mainWindow)
+				if (!mainWindow)
 				{
-					mainWindow=_mainWindow;
+					mainWindow = _mainWindow;
 					GetCurrentController()->WindowService()->Run(mainWindow->GetNativeWindow());
-					mainWindow=0;
+					mainWindow = nullptr;
 				}
 			}
 
@@ -8680,13 +8694,13 @@ GuiApplication
 
 			GuiWindow* GuiApplication::GetWindow(Point location)
 			{
-				INativeWindow* nativeWindow=GetCurrentController()->WindowService()->GetWindow(location);
-				if(nativeWindow)
+				INativeWindow* nativeWindow = GetCurrentController()->WindowService()->GetWindow(location);
+				if (nativeWindow)
 				{
-					for(vint i=0;i<windows.Count();i++)
+					for (vint i = 0; i < windows.Count(); i++)
 					{
-						GuiWindow* window=windows[i];
-						if(window->GetNativeWindow()==nativeWindow)
+						GuiWindow* window = windows[i];
+						if (window->GetNativeWindow() == nativeWindow)
 						{
 							return window;
 						}
@@ -8779,14 +8793,14 @@ GuiApplication
 				GetCurrentController()->AsyncService()->InvokeAsync(proc);
 			}
 
-			void GuiApplication::InvokeInMainThread(const Func<void()>& proc)
+			void GuiApplication::InvokeInMainThread(GuiControlHost* controlHost, const Func<void()>& proc)
 			{
-				GetCurrentController()->AsyncService()->InvokeInMainThread(proc);
+				GetCurrentController()->AsyncService()->InvokeInMainThread(GetThreadContextNativeWindow(controlHost), proc);
 			}
 
-			bool GuiApplication::InvokeInMainThreadAndWait(const Func<void()>& proc, vint milliseconds)
+			bool GuiApplication::InvokeInMainThreadAndWait(GuiControlHost* controlHost, const Func<void()>& proc, vint milliseconds)
 			{
-				return GetCurrentController()->AsyncService()->InvokeInMainThreadAndWait(proc, milliseconds);
+				return GetCurrentController()->AsyncService()->InvokeInMainThreadAndWait(GetThreadContextNativeWindow(controlHost), proc, milliseconds);
 			}
 
 			Ptr<INativeDelay> GuiApplication::DelayExecute(const Func<void()>& proc, vint milliseconds)
@@ -8799,7 +8813,7 @@ GuiApplication
 				return GetCurrentController()->AsyncService()->DelayExecuteInMainThread(proc, milliseconds);
 			}
 
-			void GuiApplication::RunGuiTask(const Func<void()>& proc)
+			void GuiApplication::RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc)
 			{
 				if(IsInMainThread())
 				{
@@ -8807,7 +8821,7 @@ GuiApplication
 				}
 				else
 				{
-					InvokeInMainThreadAndWait([&proc]()
+					InvokeInMainThreadAndWait(controlHost, [&proc]()
 					{
 						proc();
 					});
@@ -8967,7 +8981,7 @@ GuiApplicationMain
 			public:
 				void Execute(const Func<void()>& callback)override
 				{
-					GetApplication()->InvokeInMainThread(callback);
+					GetApplication()->InvokeInMainThread(GetApplication()->GetMainWindow(), callback);
 				}
 
 				void ExecuteInBackground(const Func<void()>& callback)override
@@ -9540,6 +9554,17 @@ GuiControl
 GuiCustomControl
 ***********************************************************************/
 
+			controls::GuiControlHost* GuiCustomControl::GetControlHostForInstance()
+			{
+				return GetRelatedControlHost();
+			}
+
+			void GuiCustomControl::OnParentLineChanged()
+			{
+				GuiControl::OnParentLineChanged();
+				OnControlHostForInstanceChanged();
+			}
+
 			GuiCustomControl::GuiCustomControl(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
@@ -9549,6 +9574,292 @@ GuiCustomControl
 			{
 				FinalizeAggregation();
 				FinalizeInstanceRecursively(this);
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\TEMPLATES\GUICONTROLSHARED.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			using namespace reflection::description;
+			using namespace compositions;
+
+/***********************************************************************
+GuiComponent
+***********************************************************************/
+			
+			GuiComponent::GuiComponent()
+			{
+			}
+
+			GuiComponent::~GuiComponent()
+			{
+			}
+
+			void GuiComponent::Attach(GuiInstanceRootObject* rootObject)
+			{
+			}
+
+			void GuiComponent::Detach(GuiInstanceRootObject* rootObject)
+			{
+			}
+
+/***********************************************************************
+GuiInstanceRootObject
+***********************************************************************/
+
+			class RootObjectTimerCallback : public Object, public IGuiGraphicsTimerCallback
+			{
+			public:
+				GuiControlHost*					controlHost;
+				GuiInstanceRootObject*			rootObject;
+				bool							alive = true;
+
+				RootObjectTimerCallback(GuiInstanceRootObject* _rootObject, GuiControlHost* _controlHost)
+					:rootObject(_rootObject)
+					, controlHost(_controlHost)
+				{
+				}
+
+				bool Play()override
+				{
+					if (alive)
+					{
+						for (vint i = rootObject->runningAnimations.Count() - 1; i >= 0; i--)
+						{
+							auto animation = rootObject->runningAnimations[i];
+							animation->Run();
+							if (animation->GetStopped())
+							{
+								rootObject->runningAnimations.RemoveAt(i);
+							}
+						}
+
+						if (rootObject->runningAnimations.Count() == 0)
+						{
+							rootObject->UninstallTimerCallback(nullptr);
+							return false;
+						}
+					}
+					return alive;
+				}
+			};
+			
+			bool GuiInstanceRootObject::InstallTimerCallback(controls::GuiControlHost* controlHost)
+			{
+				if (!timerCallback)
+				{
+					timerCallback = new RootObjectTimerCallback(this, controlHost);
+					controlHost->GetTimerManager()->AddCallback(timerCallback);
+					return true;
+				}
+				return false;
+			}
+
+			bool GuiInstanceRootObject::UninstallTimerCallback(controls::GuiControlHost* controlHost)
+			{
+				if (timerCallback && timerCallback->controlHost != controlHost)
+				{
+					timerCallback->alive = false;
+					timerCallback = nullptr;
+					return true;
+				}
+				return false;
+			}
+
+			void GuiInstanceRootObject::OnControlHostForInstanceChanged()
+			{
+				auto controlHost = GetControlHostForInstance();
+				if (UninstallTimerCallback(controlHost))
+				{
+					FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
+					{
+						animation->Pause();
+					}
+				}
+
+				if (controlHost)
+				{
+					if (InstallTimerCallback(controlHost))
+					{
+						FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
+						{
+							animation->Resume();
+						}
+						StartPendingAnimations();
+					}
+				}
+			}
+
+			void GuiInstanceRootObject::StartPendingAnimations()
+			{
+				FOREACH(Ptr<IGuiAnimation>, animation, pendingAnimations)
+				{
+					animation->Start();
+				}
+
+				CopyFrom(runningAnimations, pendingAnimations, true);
+				pendingAnimations.Clear();
+			}
+
+			GuiInstanceRootObject::GuiInstanceRootObject()
+			{
+			}
+
+			GuiInstanceRootObject::~GuiInstanceRootObject()
+			{
+				UninstallTimerCallback(nullptr);
+			}
+
+			void GuiInstanceRootObject::FinalizeInstance()
+			{
+				if (!finalized)
+				{
+					finalized = true;
+
+					FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
+					{
+						subscription->Close();
+					}
+					FOREACH(GuiComponent*, component, components)
+					{
+						component->Detach(this);
+					}
+
+					subscriptions.Clear();
+					for (vint i = 0; i<components.Count(); i++)
+					{
+						delete components[i];
+					}
+					components.Clear();
+				}
+			}
+
+			bool GuiInstanceRootObject::IsFinalized()
+			{
+				return finalized;
+			}
+
+			void GuiInstanceRootObject::FinalizeInstanceRecursively(templates::GuiTemplate* thisObject)
+			{
+				if (!finalized)
+				{
+					NotifyFinalizeInstance(thisObject);
+				}
+			}
+
+			void GuiInstanceRootObject::FinalizeInstanceRecursively(GuiCustomControl* thisObject)
+			{
+				if (!finalized)
+				{
+					NotifyFinalizeInstance(thisObject);
+				}
+			}
+
+			void GuiInstanceRootObject::FinalizeInstanceRecursively(GuiControlHost* thisObject)
+			{
+				if (!finalized)
+				{
+					NotifyFinalizeInstance(thisObject);
+				}
+			}
+
+			void GuiInstanceRootObject::FinalizeGeneralInstance(GuiInstanceRootObject* thisObject)
+			{
+			}
+
+			void GuiInstanceRootObject::SetResourceResolver(Ptr<GuiResourcePathResolver> resolver)
+			{
+				resourceResolver = resolver;
+			}
+
+			Ptr<DescriptableObject> GuiInstanceRootObject::ResolveResource(const WString& protocol, const WString& path, bool ensureExist)
+			{
+				Ptr<DescriptableObject> object;
+				if (resourceResolver)
+				{
+					object = resourceResolver->ResolveResource(protocol, path);
+				}
+				if (ensureExist && !object)
+				{
+					throw ArgumentException(L"Resource \"" + protocol + L"://" + path + L"\" does not exist.");
+				}
+				return object;
+			}
+
+			Ptr<description::IValueSubscription> GuiInstanceRootObject::AddSubscription(Ptr<description::IValueSubscription> subscription)
+			{
+				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddSubscription(Ptr<IValueSubscription>)#Cannot add subscription after finalizing.");
+				if (subscriptions.Contains(subscription.Obj()))
+				{
+					return nullptr;
+				}
+				else
+				{
+					subscriptions.Add(subscription);
+					subscription->Open();
+					subscription->Update();
+					return subscription;
+				}
+			}
+
+			void GuiInstanceRootObject::UpdateSubscriptions()
+			{
+				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
+				{
+					subscription->Update();
+				}
+			}
+
+			bool GuiInstanceRootObject::AddComponent(GuiComponent* component)
+			{
+				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddComponent(GuiComponent*)#Cannot add component after finalizing.");
+				if(components.Contains(component))
+				{
+					return false;
+				}
+				else
+				{
+					components.Add(component);
+					component->Attach(this);
+					return true;
+				}
+			}
+
+			bool GuiInstanceRootObject::AddControlHostComponent(GuiControlHost* controlHost)
+			{
+				return AddComponent(new GuiObjectComponent<GuiControlHost>(controlHost));
+			}
+
+			bool GuiInstanceRootObject::AddAnimation(Ptr<IGuiAnimation> animation)
+			{
+				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddAnimation(Ptr<IGuiAnimation>)#Cannot add animation after finalizing.");
+				if (runningAnimations.Contains(animation.Obj()) || pendingAnimations.Contains(animation.Obj()))
+				{
+					return false;
+				}
+				else
+				{
+					pendingAnimations.Add(animation);
+
+					if (auto controlHost = GetControlHostForInstance())
+					{
+						if (InstallTimerCallback(controlHost))
+						{
+							StartPendingAnimations();
+						}
+					}
+
+					return true;
+				}
 			}
 		}
 	}
@@ -9656,6 +9967,11 @@ namespace vl
 				}
 			};
 
+			controls::GuiControlHost* ThemeTemplates::GetControlHostForInstance()
+			{
+				return nullptr;
+			}
+
 			ThemeTemplates::~ThemeTemplates()
 			{
 				FinalizeAggregation();
@@ -9712,39 +10028,30 @@ namespace vl
 			using namespace theme;
 
 /***********************************************************************
-GuiGraphicsAnimationManager
+GuiGraphicsTimerManager
 ***********************************************************************/
 
-			GuiGraphicsAnimationManager::GuiGraphicsAnimationManager()
+			GuiGraphicsTimerManager::GuiGraphicsTimerManager()
 			{
 			}
 
-			GuiGraphicsAnimationManager::~GuiGraphicsAnimationManager()
+			GuiGraphicsTimerManager::~GuiGraphicsTimerManager()
 			{
 			}
 
-			void GuiGraphicsAnimationManager::AddAnimation(Ptr<IGuiGraphicsAnimation> animation)
+			void GuiGraphicsTimerManager::AddCallback(Ptr<IGuiGraphicsTimerCallback> callback)
 			{
-				playingAnimations.Add(animation);
+				callbacks.Add(callback);
 			}
 
-			bool GuiGraphicsAnimationManager::HasAnimation()
+			void GuiGraphicsTimerManager::Play()
 			{
-				return playingAnimations.Count()>0;
-			}
-
-			void GuiGraphicsAnimationManager::Play()
-			{
-				for(vint i=playingAnimations.Count()-1;i>=0;i--)
+				for (vint i = callbacks.Count() - 1; i >= 0; i--)
 				{
-					Ptr<IGuiGraphicsAnimation> animation=playingAnimations[i];
-					vint totalLength=animation->GetTotalLength();
-					vint currentPosition=animation->GetCurrentPosition();
-					animation->Play(currentPosition, totalLength);
-					if(currentPosition>=totalLength)
+					auto callback = callbacks[i];
+					if (!callback->Play())
 					{
-						playingAnimations.RemoveAt(i);
-						animation->Stop();
+						callbacks.RemoveAt(i);
 					}
 				}
 			}
@@ -10532,10 +10839,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::GlobalTimer()
 			{
-				if(animationManager.HasAnimation())
-				{
-					animationManager.Play();
-				}
+				timerManager.Play();
 
 				DateTime now=DateTime::UtcTime();
 				if(now.totalMilliseconds-lastCaretTime>=CaretInterval)
@@ -10713,48 +11017,14 @@ GuiGraphicsHost
 				}
 			}
 
-			GuiGraphicsAnimationManager* GuiGraphicsHost::GetAnimationManager()
+			GuiGraphicsTimerManager* GuiGraphicsHost::GetTimerManager()
 			{
-				return &animationManager;
+				return &timerManager;
 			}
 
 			void GuiGraphicsHost::DisconnectComposition(GuiGraphicsComposition* composition)
 			{
 				DisconnectCompositionInternal(composition);
-			}
-
-/***********************************************************************
-GuiTimeBasedAnimation
-***********************************************************************/
-
-			GuiTimeBasedAnimation::GuiTimeBasedAnimation(vint totalMilliseconds)
-				:startTime(0)
-				,length(totalMilliseconds)
-			{
-				Restart();
-			}
-
-			GuiTimeBasedAnimation::~GuiTimeBasedAnimation()
-			{
-			}
-
-			void GuiTimeBasedAnimation::Restart(vint totalMilliseconds)
-			{
-				startTime=DateTime::LocalTime().totalMilliseconds;
-				if(totalMilliseconds>-1)
-				{
-					length=totalMilliseconds;
-				}
-			}
-
-			vint GuiTimeBasedAnimation::GetTotalLength()
-			{
-				return length;
-			}
-
-			vint GuiTimeBasedAnimation::GetCurrentPosition()
-			{
-				return (vint)(DateTime::LocalTime().totalMilliseconds-startTime);
 			}
 
 /***********************************************************************
@@ -12773,163 +13043,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		namespace controls
-		{
-			using namespace reflection::description;
-			using namespace compositions;
-
-/***********************************************************************
-GuiComponent
-***********************************************************************/
-			
-			GuiComponent::GuiComponent()
-			{
-			}
-
-			GuiComponent::~GuiComponent()
-			{
-			}
-
-			void GuiComponent::Attach(GuiInstanceRootObject* rootObject)
-			{
-			}
-
-			void GuiComponent::Detach(GuiInstanceRootObject* rootObject)
-			{
-			}
-
-/***********************************************************************
-GuiInstanceRootObject
-***********************************************************************/
-
-			GuiInstanceRootObject::GuiInstanceRootObject()
-			{
-			}
-
-			GuiInstanceRootObject::~GuiInstanceRootObject()
-			{
-			}
-
-			void GuiInstanceRootObject::FinalizeInstance()
-			{
-				if (!finalized)
-				{
-					finalized = true;
-
-					FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
-					{
-						subscription->Close();
-					}
-					FOREACH(GuiComponent*, component, components)
-					{
-						component->Detach(this);
-					}
-
-					subscriptions.Clear();
-					for (vint i = 0; i<components.Count(); i++)
-					{
-						delete components[i];
-					}
-					components.Clear();
-				}
-			}
-
-			bool GuiInstanceRootObject::IsFinalized()
-			{
-				return finalized;
-			}
-
-			void GuiInstanceRootObject::FinalizeInstanceRecursively(templates::GuiTemplate* thisObject)
-			{
-				if (!finalized)
-				{
-					NotifyFinalizeInstance(thisObject);
-				}
-			}
-
-			void GuiInstanceRootObject::FinalizeInstanceRecursively(GuiCustomControl* thisObject)
-			{
-				if (!finalized)
-				{
-					NotifyFinalizeInstance(thisObject);
-				}
-			}
-
-			void GuiInstanceRootObject::FinalizeInstanceRecursively(GuiControlHost* thisObject)
-			{
-				if (!finalized)
-				{
-					NotifyFinalizeInstance(thisObject);
-				}
-			}
-
-			void GuiInstanceRootObject::FinalizeGeneralInstance(GuiInstanceRootObject* thisObject)
-			{
-			}
-
-			void GuiInstanceRootObject::SetResourceResolver(Ptr<GuiResourcePathResolver> resolver)
-			{
-				resourceResolver = resolver;
-			}
-
-			Ptr<DescriptableObject> GuiInstanceRootObject::ResolveResource(const WString& protocol, const WString& path, bool ensureExist)
-			{
-				Ptr<DescriptableObject> object;
-				if (resourceResolver)
-				{
-					object = resourceResolver->ResolveResource(protocol, path);
-				}
-				if (ensureExist && !object)
-				{
-					throw ArgumentException(L"Resource \"" + protocol + L"://" + path + L"\" does not exist.");
-				}
-				return object;
-			}
-
-			Ptr<description::IValueSubscription> GuiInstanceRootObject::AddSubscription(Ptr<description::IValueSubscription> subscription)
-			{
-				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddSubscription(Ptr<IValueSubscription>)#Cannot add subscription after finalizing.");
-				if (subscriptions.Contains(subscription.Obj()))
-				{
-					return nullptr;
-				}
-				else
-				{
-					subscriptions.Add(subscription);
-					subscription->Open();
-					subscription->Update();
-					return subscription;
-				}
-			}
-
-			void GuiInstanceRootObject::UpdateSubscriptions()
-			{
-				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
-				{
-					subscription->Update();
-				}
-			}
-
-			bool GuiInstanceRootObject::AddComponent(GuiComponent* component)
-			{
-				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddComponent(GuiComponent*>)#Cannot add component after finalizing.");
-				if(components.Contains(component))
-				{
-					return false;
-				}
-				else
-				{
-					components.Add(component);
-					component->Attach(this);
-					return true;
-				}
-			}
-
-			bool GuiInstanceRootObject::AddControlHostComponent(GuiControlHost* controlHost)
-			{
-				return AddComponent(new GuiObjectComponent<GuiControlHost>(controlHost));
-			}
-		}
 		namespace templates
 		{
 			using namespace collections;
@@ -12942,6 +13055,17 @@ GuiTemplate
 ***********************************************************************/
 
 			GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
+
+			controls::GuiControlHost* GuiTemplate::GetControlHostForInstance()
+			{
+				return GetRelatedControlHost();
+			}
+
+			void GuiTemplate::OnParentLineChanged()
+			{
+				GuiBoundsComposition::OnParentLineChanged();
+				OnControlHostForInstanceChanged();
+			}
 
 			GuiTemplate::GuiTemplate()
 			{
@@ -15884,7 +16008,7 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				GetApplication()->InvokeLambdaInMainThread([=]()
+				GetApplication()->InvokeLambdaInMainThread(GetRelatedControlHost(), [=]()
 				{
 					AdoptSubMenuSize();
 				});
@@ -24217,6 +24341,78 @@ GuiSinglelineTextBox
 }
 
 /***********************************************************************
+.\CONTROLS\TEMPLATES\GUIANIMATION.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+
+/***********************************************************************
+GuiWaitAnimation
+***********************************************************************/
+
+			GuiWaitAnimation::GuiWaitAnimation(vuint64_t _length)
+			{
+
+			}
+
+			GuiWaitAnimation::~GuiWaitAnimation()
+			{
+			}
+
+			void GuiWaitAnimation::Start()
+			{
+				startTime = DateTime::LocalTime();
+				running = true;
+			}
+
+			void GuiWaitAnimation::Pause()
+			{
+				running = false;
+				auto currentTime = DateTime::LocalTime();
+				auto delta = currentTime.totalMilliseconds - startTime.totalMilliseconds;
+				if (length > delta)
+				{
+					length -= delta;
+				}
+				else
+				{
+					length = 0;
+				}
+			}
+
+			void GuiWaitAnimation::Resume()
+			{
+				startTime = DateTime::LocalTime();
+				running = true;
+			}
+
+			void GuiWaitAnimation::Run()
+			{
+			}
+
+			bool GuiWaitAnimation::GetStopped()
+			{
+				if (running)
+				{
+					auto currentTime = DateTime::LocalTime();
+					auto delta = currentTime.totalMilliseconds - startTime.totalMilliseconds;
+					return length <= delta;
+				}
+				else
+				{
+					return length == 0;
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************
 .\CONTROLS\TEXTEDITORPACKAGE\EDITORCALLBACK\GUITEXTUNDOREDO.CPP
 ***********************************************************************/
 
@@ -25878,7 +26074,7 @@ GuiGrammarAutoComplete
 			{
 				if(element && elementModifyLock)
 				{
-					GetApplication()->InvokeInMainThread([=]()
+					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=]()
 					{
 						// submit a task if the RepeatingParsingExecutor notices a new parsing result
 						SubmitTask(arguments);
@@ -26557,7 +26753,7 @@ GuiGrammarAutoComplete
 				if(newContext.modifiedNode)
 				{
 					OnContextFinishedAsync(context);
-					GetApplication()->InvokeInMainThread([=]()
+					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=]()
 					{
 						PostList(newContext, byGlobalCorrection);
 					});
@@ -30944,11 +31140,6 @@ Serialization (GlobalStringKey)
 /***********************************************************************
 External Functions (Basic)
 ***********************************************************************/
-
-			GuiGraphicsAnimationManager* GuiControlHost_GetAnimationManager(GuiControlHost* thisObject)
-			{
-				return thisObject->GetGraphicsHost()->GetAnimationManager();
-			}
 
 			Ptr<INativeImage> INativeImage_Constructor(const WString& path)
 			{

@@ -601,8 +601,8 @@ namespace vl
 				void									ExecuteAsyncTasks();
 				bool									IsInMainThread()override;
 				void									InvokeAsync(const Func<void()>& proc)override;
-				void									InvokeInMainThread(const Func<void()>& proc)override;
-				bool									InvokeInMainThreadAndWait(const Func<void()>& proc, vint milliseconds)override;
+				void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
+				bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
 				Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
 				Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
 			};
@@ -1303,7 +1303,7 @@ namespace vl
 				DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, IWindowsDirect2DRenderTarget)\
 			protected:\
 				TBRUSHPROPERTY			oldColor;\
-				TBRUSH*					brush;\
+				TBRUSH*					brush = nullptr;\
 				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);\
 				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);\
 				void					InitializeInternal();\
@@ -1330,8 +1330,8 @@ Renderers
 			protected:
 				Color					oldColor1;
 				Color					oldColor2;
-				ID2D1SolidColorBrush*	brush1;
-				ID2D1SolidColorBrush*	brush2;
+				ID2D1SolidColorBrush*	brush1 = nullptr;
+				ID2D1SolidColorBrush*	brush2 = nullptr;
 
 				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
 				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
@@ -1351,8 +1351,8 @@ Renderers
 			protected:
 				Color					oldColor1;
 				Color					oldColor2;
-				ID2D1SolidColorBrush*	brush1;
-				ID2D1SolidColorBrush*	brush2;
+				ID2D1SolidColorBrush*	brush1 = nullptr;
+				ID2D1SolidColorBrush*	brush2 = nullptr;
 
 				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
 				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
@@ -1377,10 +1377,26 @@ Renderers
 				DEFINE_BRUSH_ELEMENT_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, ID2D1LinearGradientBrush, ColorPair)
 			};
 
-			class GuiRadialGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiInnerShadowElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
 				typedef collections::Pair<Color, Color> ColorPair;
-				DEFINE_BRUSH_ELEMENT_RENDERER(GuiRadialGradientBackgroundElement, GuiRadialGradientBackgroundElementRenderer, ID2D1RadialGradientBrush, ColorPair)
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsDirect2DRenderTarget)
+			protected:
+				Color							oldColor;
+				Color							transparentColor;
+				ID2D1LinearGradientBrush*		linearBrush = nullptr;
+				ID2D1RadialGradientBrush*		radialBrush = nullptr;
+
+				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+				GuiInnerShadowElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
 			};
 
 			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
@@ -1390,10 +1406,10 @@ Renderers
 				Color							oldColor;
 				FontProperties					oldFont;
 				WString							oldText;
-				ID2D1SolidColorBrush*			brush;
-				Direct2DTextFormatPackage*		textFormat;
-				IDWriteTextLayout*				textLayout;
-				vint								oldMaxWidth;
+				ID2D1SolidColorBrush*			brush = nullptr;
+				Direct2DTextFormatPackage*		textFormat = nullptr;
+				IDWriteTextLayout*				textLayout = nullptr;
+				vint							oldMaxWidth = -1;
 
 				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
 				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
@@ -1437,8 +1453,8 @@ Renderers
 			protected:
 				Color							oldBorderColor;
 				Color							oldBackgroundColor;
-				ID2D1SolidColorBrush*			borderBrush;
-				ID2D1SolidColorBrush*			backgroundBrush;
+				ID2D1SolidColorBrush*			borderBrush = nullptr;
+				ID2D1SolidColorBrush*			backgroundBrush = nullptr;
 				collections::Array<Point>		oldPoints;
 				ComPtr<ID2D1PathGeometry>		geometry;
 
@@ -1741,22 +1757,6 @@ Renderers
 			{
 				DEFINE_GUI_GRAPHICS_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiRadialGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiRadialGradientBackgroundElement, GuiRadialGradientBackgroundElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				Color					oldColor;
-				Ptr<windows::WinPen>	pen;
-				Ptr<windows::WinBrush>	brush;
-
 				void					InitializeInternal();
 				void					FinalizeInternal();
 				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);

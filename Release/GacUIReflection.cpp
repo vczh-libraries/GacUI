@@ -401,8 +401,8 @@ Type Declaration
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeAsyncService)
 				CLASS_MEMBER_METHOD(IsInMainThread, {L"type"})
 				CLASS_MEMBER_METHOD(InvokeAsync, {L"proc"})
-				CLASS_MEMBER_METHOD(InvokeInMainThread, {L"proc"})
-				CLASS_MEMBER_METHOD(InvokeInMainThreadAndWait, {L"proc" _ L"milliseconds"})
+				CLASS_MEMBER_METHOD(InvokeInMainThread, {L"window" _ L"proc"})
+				CLASS_MEMBER_METHOD(InvokeInMainThreadAndWait, {L"window" _ L"proc" _ L"milliseconds"})
 				CLASS_MEMBER_METHOD(DelayExecute, {L"proc" _ L"milliseconds"})
 				CLASS_MEMBER_METHOD(DelayExecuteInMainThread, {L"proc" _ L"milliseconds"})
 			END_INTERFACE_MEMBER(INativeAsyncService)
@@ -947,6 +947,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiGraphicsSite)
 				CLASS_MEMBER_CONSTRUCTOR(GuiBoundsComposition*(), NO_PARAMETER)
 
+				CLASS_MEMBER_PROPERTY_FAST(SizeAffectParent)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
 				CLASS_MEMBER_PROPERTY_FAST(AlignmentToParent)
 				
@@ -1156,20 +1157,6 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatFlowComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiRepeatFlowComposition)
 
-			BEGIN_INTERFACE_MEMBER(IGuiGraphicsAnimation)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TotalLength)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(CurrentPosition)
-
-				CLASS_MEMBER_METHOD(Play, {L"currentPosition" _ L"totalLength"})
-				CLASS_MEMBER_METHOD(Stop, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IGuiGraphicsAnimation)
-
-			BEGIN_CLASS_MEMBER(GuiGraphicsAnimationManager)
-				CLASS_MEMBER_METHOD(AddAnimation, {L"animation"})
-				CLASS_MEMBER_METHOD(HasAnimation, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(Play, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiGraphicsAnimationManager)
-
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiShortcutKeyItem)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Manager)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
@@ -1322,10 +1309,11 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CloseTooltip, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(IsInMainThread, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(InvokeAsync, {L"proc"})
-				CLASS_MEMBER_METHOD(InvokeInMainThread, {L"proc"})
-				CLASS_MEMBER_METHOD(InvokeInMainThreadAndWait, {L"proc" _ L"milliseconds"})
+				CLASS_MEMBER_METHOD(InvokeInMainThread, {L"controlHost" _ L"proc"})
+				CLASS_MEMBER_METHOD(InvokeInMainThreadAndWait, {L"controlHost" _ L"proc" _ L"milliseconds"})
 				CLASS_MEMBER_METHOD(DelayExecute, {L"proc" _ L"milliseconds"})
 				CLASS_MEMBER_METHOD(DelayExecuteInMainThread, {L"proc" _ L"milliseconds"})
+				CLASS_MEMBER_METHOD(RunGuiTask, { L"controlHost" _ L"proc" })
 			END_CLASS_MEMBER(GuiApplication)
 
 			BEGIN_ENUM_ITEM(ThemeName)
@@ -1568,7 +1556,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(ClientSize)
 				CLASS_MEMBER_PROPERTY_FAST(Bounds)
 				CLASS_MEMBER_PROPERTY_FAST(ShortcutKeyManager)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(AnimationManager)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedScreen)
 
 				CLASS_MEMBER_METHOD(ForceCalculateSizeImmediately, NO_PARAMETER)
@@ -2679,16 +2666,13 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Shape)
 			END_CLASS_MEMBER(GuiGradientBackgroundElement)
 
-			BEGIN_CLASS_MEMBER(GuiRadialGradientBackgroundElement)
+			BEGIN_CLASS_MEMBER(GuiInnerShadowElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiRadialGradientBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiRadialGradientBackgroundElement>)
-				
-				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiInnerShadowElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiInnerShadowElement>)
 
-				CLASS_MEMBER_PROPERTY_FAST(Color1)
-				CLASS_MEMBER_PROPERTY_FAST(Color2)
-				CLASS_MEMBER_PROPERTY_FAST(Shape)
-			END_CLASS_MEMBER(GuiRadialGradientBackgroundElement)
+				CLASS_MEMBER_PROPERTY_FAST(Color)
+				CLASS_MEMBER_PROPERTY_FAST(Thickness)
+			END_CLASS_MEMBER(GuiInnerShadowElement)
 
 			BEGIN_ENUM_ITEM(GuiGradientBackgroundElement::Direction)
 				ENUM_ITEM_NAMESPACE(GuiGradientBackgroundElement)
@@ -3150,6 +3134,16 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiComponent)
 			END_CLASS_MEMBER(GuiComponent)
 
+			BEGIN_INTERFACE_MEMBER(IGuiAnimation)
+				CLASS_MEMBER_BASE(IDescriptable)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Stopped)
+
+				CLASS_MEMBER_METHOD(Start, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Pause, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Resume, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Run, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IGuiAnimation)
+
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
 				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiTemplate*))
 				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiCustomControl*))
@@ -3162,6 +3156,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(UpdateSubscriptions, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(AddComponent, {L"component"})
 				CLASS_MEMBER_METHOD(AddControlHostComponent, {L"controlHost"})
+				CLASS_MEMBER_METHOD(AddAnimation, { L"animation" })
 			END_CLASS_MEMBER(GuiInstanceRootObject)
 
 			BEGIN_CLASS_MEMBER(GuiTemplate)

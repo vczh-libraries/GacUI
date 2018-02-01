@@ -1246,7 +1246,6 @@ IMPLEMENT_BRUSH_ELEMENT_RENDERER
 				CreateBrush(newRenderTarget);\
 			}\
 			TRENDERER::TRENDERER()\
-				:brush(0)\
 			{\
 			}\
 			void TRENDERER::Render(Rect bounds)\
@@ -1295,36 +1294,6 @@ IMPLEMENT_BRUSH_ELEMENT_RENDERER
 				if(_renderTarget && brush)\
 				{\
 					_renderTarget->DestroyDirect2DLinearBrush(oldColor.key, oldColor.value);\
-					brush=0;\
-				}\
-			}\
-			void TRENDERER::OnElementStateChanged()\
-			{\
-				if(renderTarget)\
-				{\
-					Pair<Color, Color> color=Pair<Color, Color>(element->GetColor1(), element->GetColor2());\
-					if(oldColor!=color)\
-					{\
-						DestroyBrush(renderTarget);\
-						CreateBrush(renderTarget);\
-					}\
-				}\
-			}\
-
-#define IMPLEMENT_BRUSH_ELEMENT_RENDERER_RADIAL_GRADIENT_BRUSH(TRENDERER)\
-			void TRENDERER::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget)\
-				{\
-					oldColor=Pair<Color, Color>(element->GetColor1(), element->GetColor2());\
-					brush=_renderTarget->CreateDirect2DRadialBrush(oldColor.key, oldColor.value);\
-				}\
-			}\
-			void TRENDERER::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget && brush)\
-				{\
-					_renderTarget->DestroyDirect2DRadialBrush(oldColor.key, oldColor.value);\
 					brush=0;\
 				}\
 			}\
@@ -1400,12 +1369,12 @@ Gui3DBorderElementRenderer
 					if(brush1)
 					{
 						_renderTarget->DestroyDirect2DBrush(oldColor1);
-						brush1=0;
+						brush1 = nullptr;
 					}
 					if(brush2)
 					{
 						_renderTarget->DestroyDirect2DBrush(oldColor2);
-						brush2=0;
+						brush2 = nullptr;
 					}
 				}
 			}
@@ -1426,8 +1395,6 @@ Gui3DBorderElementRenderer
 			}
 
 			Gui3DBorderElementRenderer::Gui3DBorderElementRenderer()
-				:brush1(0)
-				,brush2(0)
 			{
 			}
 
@@ -1478,12 +1445,12 @@ Gui3DSplitterElementRenderer
 					if(brush1)
 					{
 						_renderTarget->DestroyDirect2DBrush(oldColor1);
-						brush1=0;
+						brush1 = nullptr;
 					}
 					if(brush2)
 					{
 						_renderTarget->DestroyDirect2DBrush(oldColor2);
-						brush2=0;
+						brush2 = nullptr;
 					}
 				}
 			}
@@ -1504,8 +1471,6 @@ Gui3DSplitterElementRenderer
 			}
 
 			Gui3DSplitterElementRenderer::Gui3DSplitterElementRenderer()
-				:brush1(0)
-				,brush2(0)
 			{
 			}
 
@@ -1668,46 +1633,130 @@ GuiGradientBackgroundElementRenderer
 			}
 
 /***********************************************************************
-GuiRadialGradientBackgroundElementRenderer
+GuiInnerShadowElementRenderer
 ***********************************************************************/
 
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER_RADIAL_GRADIENT_BRUSH(GuiRadialGradientBackgroundElementRenderer)
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiRadialGradientBackgroundElementRenderer)
+			void GuiInnerShadowElementRenderer::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)
 			{
-				D2D1_POINT_2F center;
-				center.x = ((FLOAT)bounds.x1 + (FLOAT)bounds.x2) / 2;
-				center.y = ((FLOAT)bounds.y1 + (FLOAT)bounds.y2) / 2;
-				brush->SetCenter(center);
-				brush->SetRadiusX((FLOAT)bounds.Width() / 2);
-				brush->SetRadiusY((FLOAT)bounds.Height() / 2);
-
-				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
-				auto shape = element->GetShape();
-
-				switch(shape.shapeType)
+				if (_renderTarget)
 				{
-				case ElementShapeType::Rectangle:
-					d2dRenderTarget->FillRectangle(
-						D2D1::RectF((FLOAT)bounds.x1, (FLOAT)bounds.y1, (FLOAT)bounds.x2, (FLOAT)bounds.y2),
-						brush
-						);
-					break;
-				case ElementShapeType::Ellipse:
-					d2dRenderTarget->FillEllipse(
-						D2D1::Ellipse(D2D1::Point2F((bounds.x1+bounds.x2)/2.0f, (bounds.y1+bounds.y2)/2.0f), bounds.Width()/2.0f, bounds.Height()/2.0f),
-						brush
-						);
-					break;
-				case ElementShapeType::RoundRect:
-					d2dRenderTarget->FillRoundedRectangle(
-						D2D1::RoundedRect(
-							D2D1::RectF((FLOAT)bounds.x1 + 0.5f, (FLOAT)bounds.y1 + 0.5f, (FLOAT)bounds.x2 - 0.5f, (FLOAT)bounds.y2 - 0.5f),
-							(FLOAT)shape.radiusX,
-							(FLOAT)shape.radiusY
-							),
-						brush
-						);
-					break;
+					oldColor = element->GetColor();
+					transparentColor = Color(oldColor.r, oldColor.g, oldColor.b, 0);
+					linearBrush = _renderTarget->CreateDirect2DLinearBrush(transparentColor, oldColor);
+					radialBrush = _renderTarget->CreateDirect2DRadialBrush(transparentColor, oldColor);
+				}
+			}
+
+			void GuiInnerShadowElementRenderer::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			{
+				if (_renderTarget)
+				{
+					_renderTarget->DestroyDirect2DLinearBrush(transparentColor, oldColor);
+					_renderTarget->DestroyDirect2DRadialBrush(transparentColor, oldColor);
+
+					linearBrush = nullptr;
+					radialBrush = nullptr;
+				}
+			}
+
+			void GuiInnerShadowElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiInnerShadowElementRenderer::FinalizeInternal()
+			{
+				DestroyBrush(renderTarget);
+			}
+
+			void GuiInnerShadowElementRenderer::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
+			{
+				DestroyBrush(oldRenderTarget);
+				CreateBrush(newRenderTarget);
+			}
+			
+			GuiInnerShadowElementRenderer::GuiInnerShadowElementRenderer()
+			{
+			}
+			
+			void GuiInnerShadowElementRenderer::Render(Rect bounds)
+			{
+				vint w = bounds.Width();
+				vint h = bounds.Height();
+				vint t = element->GetThickness();
+				vint bW = w - 2 * t;
+				vint bH = h - 2 * t;
+				if (bW > 0 && bH > 0)
+				{
+					vint x1 = bounds.Left();
+					vint x4 = bounds.Right();
+					vint x2 = x1 + t;
+					vint x3 = x4 - t;
+
+					vint y1 = bounds.Top();
+					vint y4 = bounds.Bottom();
+					vint y2 = y1 + t;
+					vint y3 = y4 - t;
+
+					auto d2dRenderTarget = renderTarget->GetDirect2DRenderTarget();
+					{
+						// top
+						linearBrush->SetStartPoint(D2D1::Point2F((FLOAT)x2, (FLOAT)y2));
+						linearBrush->SetEndPoint(D2D1::Point2F((FLOAT)x2, (FLOAT)y1));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x2, (FLOAT)y1, (FLOAT)x3, (FLOAT)y2), linearBrush);
+					}
+					{
+						// bottom
+						linearBrush->SetStartPoint(D2D1::Point2F((FLOAT)x2, (FLOAT)y3));
+						linearBrush->SetEndPoint(D2D1::Point2F((FLOAT)x2, (FLOAT)y4));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x2, (FLOAT)y3, (FLOAT)x3, (FLOAT)y4), linearBrush);
+					}
+					{
+						// left
+						linearBrush->SetStartPoint(D2D1::Point2F((FLOAT)x2, (FLOAT)y2));
+						linearBrush->SetEndPoint(D2D1::Point2F((FLOAT)x1, (FLOAT)y2));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x1, (FLOAT)y2, (FLOAT)x2, (FLOAT)y3), linearBrush);
+					}
+					{
+						// right
+						linearBrush->SetStartPoint(D2D1::Point2F((FLOAT)x3, (FLOAT)y2));
+						linearBrush->SetEndPoint(D2D1::Point2F((FLOAT)x4, (FLOAT)y2));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x3, (FLOAT)y2, (FLOAT)x4, (FLOAT)y3), linearBrush);
+					}
+
+					radialBrush->SetRadiusX((FLOAT)t);
+					radialBrush->SetRadiusY((FLOAT)t);
+					{
+						// left-top
+						radialBrush->SetCenter(D2D1::Point2F((FLOAT)x2, (FLOAT)y2));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x1, (FLOAT)y1, (FLOAT)x2, (FLOAT)y2), radialBrush);
+					}
+					{
+						// left-bottom
+						radialBrush->SetCenter(D2D1::Point2F((FLOAT)x3, (FLOAT)y2));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x3, (FLOAT)y1, (FLOAT)x4, (FLOAT)y2), radialBrush);
+					}
+					{
+						// right-top
+						radialBrush->SetCenter(D2D1::Point2F((FLOAT)x2, (FLOAT)y3));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x1, (FLOAT)y3, (FLOAT)x2, (FLOAT)y4), radialBrush);
+					}
+					{
+						// right-bottom
+						radialBrush->SetCenter(D2D1::Point2F((FLOAT)x3, (FLOAT)y3));
+						d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)x3, (FLOAT)y3, (FLOAT)x4, (FLOAT)y4), radialBrush);
+					}
+				}
+			}
+
+			void GuiInnerShadowElementRenderer::OnElementStateChanged()
+			{
+				if (renderTarget)
+				{
+					if (oldColor != element->GetColor())
+					{
+						DestroyBrush(renderTarget);
+						CreateBrush(renderTarget);
+					}
 				}
 			}
 
@@ -1729,7 +1778,7 @@ GuiSolidLabelElementRenderer
 				if(_renderTarget && brush)
 				{
 					_renderTarget->DestroyDirect2DBrush(oldColor);
-					brush=0;
+					brush = nullptr;
 				}
 			}
 
@@ -1749,7 +1798,7 @@ GuiSolidLabelElementRenderer
 				{
 					IWindowsDirect2DResourceManager* resourceManager=GetWindowsDirect2DResourceManager();
 					resourceManager->DestroyDirect2DTextFormat(oldFont);
-					textFormat=0;
+					textFormat = nullptr;
 				}
 			}
 
@@ -1793,7 +1842,7 @@ GuiSolidLabelElementRenderer
 				if(textLayout)
 				{
 					textLayout->Release();
-					textLayout=0;
+					textLayout = nullptr;
 				}
 			}
 
@@ -1873,11 +1922,6 @@ GuiSolidLabelElementRenderer
 			}
 
 			GuiSolidLabelElementRenderer::GuiSolidLabelElementRenderer()
-				:brush(0)
-				,textFormat(0)
-				,textLayout(0)
-				,oldText(L"")
-				,oldMaxWidth(-1)
 			{
 			}
 
@@ -2184,7 +2228,7 @@ GuiPolygonElementRenderer
 			{
 				if(geometry)
 				{
-					geometry=0;
+					geometry = nullptr;
 				}
 			}
 
@@ -2270,9 +2314,6 @@ GuiPolygonElementRenderer
 			}
 
 			GuiPolygonElementRenderer::GuiPolygonElementRenderer()
-				:borderBrush(0)
-				,backgroundBrush(0)
-				,geometry(0)
 			{
 			}
 
@@ -4362,7 +4403,7 @@ void RendererMainDirect2D()
 	elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
 	elements_windows_d2d::GuiSolidBackgroundElementRenderer::Register();
 	elements_windows_d2d::GuiGradientBackgroundElementRenderer::Register();
-	elements_windows_d2d::GuiRadialGradientBackgroundElementRenderer::Register();
+	elements_windows_d2d::GuiInnerShadowElementRenderer::Register();
 	elements_windows_d2d::GuiSolidLabelElementRenderer::Register();
 	elements_windows_d2d::GuiImageFrameElementRenderer::Register();
 	elements_windows_d2d::GuiPolygonElementRenderer::Register();
@@ -9560,112 +9601,6 @@ GuiGradientBackgroundElementRenderer
 			}
 
 /***********************************************************************
-GuiRadialGradientBackgroundElementRenderer
-***********************************************************************/
-
-			void GuiRadialGradientBackgroundElementRenderer::InitializeInternal()
-			{
-				IWindowsGDIResourceManager* resourceManager = GetWindowsGDIResourceManager();
-				oldColor = element->GetColor2();
-				pen = resourceManager->CreateGdiPen(oldColor);
-				brush = resourceManager->CreateGdiBrush(oldColor);
-			}
-
-			void GuiRadialGradientBackgroundElementRenderer::FinalizeInternal()
-			{
-				IWindowsGDIResourceManager* resourceManager = GetWindowsGDIResourceManager();
-				resourceManager->DestroyGdiPen(oldColor);
-				resourceManager->DestroyGdiBrush(oldColor);
-			}
-
-			void GuiRadialGradientBackgroundElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
-			{
-			}
-
-			void GuiRadialGradientBackgroundElementRenderer::Render(Rect bounds)
-			{
-				Color color1 = element->GetColor1();
-				Color color2 = element->GetColor2();
-				if (color1.a > 0 || color2.a > 0)
-				{
-					Ptr<WinRegion> targetRegion, oldRegion, newRegion;
-					auto shape = element->GetShape();
-					switch (shape.shapeType)
-					{
-					case ElementShapeType::Rectangle:
-						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, true);
-						break;
-					case ElementShapeType::Ellipse:
-						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, false);
-						break;
-					case ElementShapeType::RoundRect:
-						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, shape.radiusX * 2, shape.radiusY * 2);
-						break;
-					}
-
-					oldRegion = renderTarget->GetDC()->GetClipRegion();
-					newRegion = new WinRegion(oldRegion, targetRegion, RGN_AND);
-					renderTarget->GetDC()->ClipRegion(newRegion);
-
-					renderTarget->GetDC()->SetPen(pen);
-					renderTarget->GetDC()->SetBrush(brush);
-					renderTarget->GetDC()->FillRect(bounds.Left(), bounds.Top(), bounds.Right(), bounds.Bottom());
-					{
-						const vint triangleCount = 64;
-						TRIVERTEX vertices[triangleCount + 1];
-						GRADIENT_TRIANGLE triangles[triangleCount];
-
-						vint cx = (bounds.x1 + bounds.x2) / 2;
-						vint cy = (bounds.y1 + bounds.y2) / 2;
-						vint rx = bounds.Width() / 2;
-						vint ry = bounds.Height() / 2;
-						for (vint i = 0; i < triangleCount; i++)
-						{
-							vertices[i].Red = color2.r << 8;
-							vertices[i].Green = color2.g << 8;
-							vertices[i].Blue = color2.b << 8;
-							vertices[i].Alpha = color2.a << 8;
-
-							double theta = 3.1416 * 2 * i / triangleCount;
-							vertices[i].x = (LONG)(cx + cos(theta) * rx);
-							vertices[i].y = (LONG)(cy + sin(theta) * ry);
-						}
-						vertices[triangleCount].Red = color1.r << 8;
-						vertices[triangleCount].Green = color1.g << 8;
-						vertices[triangleCount].Blue = color1.b << 8;
-						vertices[triangleCount].Alpha = color1.a << 8;
-						vertices[triangleCount].x = (LONG)cx;
-						vertices[triangleCount].y = (LONG)cy;
-
-						for (vint i = 0; i < triangleCount; i++)
-						{
-							triangles[i].Vertex1 = (ULONG)triangleCount;
-							triangles[i].Vertex2 = (ULONG)i;
-							triangles[i].Vertex3 = (ULONG)(i + 1) % triangleCount;
-						}
-
-						renderTarget->GetDC()->GradientTriangle(vertices, sizeof(vertices) / sizeof(*vertices), triangles, sizeof(triangles) / sizeof(*triangles));
-					}
-
-					renderTarget->GetDC()->ClipRegion(oldRegion);
-				}
-			}
-
-			void GuiRadialGradientBackgroundElementRenderer::OnElementStateChanged()
-			{
-				Color color = element->GetColor2();
-				if (oldColor != color)
-				{
-					IWindowsGDIResourceManager* resourceManager = GetWindowsGDIResourceManager();
-					resourceManager->DestroyGdiPen(oldColor);
-					resourceManager->DestroyGdiBrush(oldColor);
-					oldColor = color;
-					pen = resourceManager->CreateGdiPen(oldColor);
-					brush = resourceManager->CreateGdiBrush(oldColor);
-				}
-			}
-
-/***********************************************************************
 GuiSolidLabelElementRenderer
 ***********************************************************************/
 
@@ -10742,7 +10677,6 @@ void RendererMainGDI()
 	elements_windows_gdi::Gui3DSplitterElementRenderer::Register();
 	elements_windows_gdi::GuiSolidBackgroundElementRenderer::Register();
 	elements_windows_gdi::GuiGradientBackgroundElementRenderer::Register();
-	elements_windows_gdi::GuiRadialGradientBackgroundElementRenderer::Register();
 	elements_windows_gdi::GuiSolidLabelElementRenderer::Register();
 	elements_windows_gdi::GuiImageFrameElementRenderer::Register();
 	elements_windows_gdi::GuiPolygonElementRenderer::Register();
@@ -11119,7 +11053,7 @@ WindowsAsyncService
 				ThreadPoolLite::Queue(proc);
 			}
 
-			void WindowsAsyncService::InvokeInMainThread(const Func<void()>& proc)
+			void WindowsAsyncService::InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)
 			{
 				SPIN_LOCK(taskListLock)
 				{
@@ -11128,7 +11062,7 @@ WindowsAsyncService
 				}
 			}
 
-			bool WindowsAsyncService::InvokeInMainThreadAndWait(const Func<void()>& proc, vint milliseconds)
+			bool WindowsAsyncService::InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)
 			{
 				Semaphore semaphore;
 				semaphore.Create(0, 1);
