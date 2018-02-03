@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUIANIMATION
 
 #include "GuiControlShared.h"
+#include "../../../Import/VlppWorkflowLibrary.h"
 
 namespace vl
 {
@@ -25,7 +26,7 @@ namespace vl
 				public:
 				};
 
-				typedef Func<Ptr<IGuiAnimation>(IImpl*)>	Creator;
+				typedef Func<Ptr<description::ICoroutine>(IImpl*)>	Creator;
 
 				static void					Wait(IImpl* impl, vuint64_t milliseconds);
 				static void					PlayAndWait(IImpl* impl, Ptr<IGuiAnimation> animation);
