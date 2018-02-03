@@ -39,6 +39,20 @@
                 var y = cast int Math::Round(sin * radiusOrbit + cx);
                 ball.AlignmentToParent = {left:(x - radiusBall) top:(y - radiusBall) right:-1 bottom:-1};
                 
+                var alpha = 1.0;
+                if (circleRatio < 0.05)
+                {
+                  alpha = circleRatio * 20;
+                }
+                else if (circleRatio > 0.95)
+                {
+                  alpha = (1 - circleRatio) * 20;
+                }
+                
+                var element = cast (SolidBackground^) ball.OwnedElement;
+                var color = element.Color;
+                element.Color = {r:color.r g:color.g b:color.b a:(cast UInt8 Math::Round(alpha * 255))};
+                
                 if (not ball.Visible)
                 {
                   ball.Visible = true;
