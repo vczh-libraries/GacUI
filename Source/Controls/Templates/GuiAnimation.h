@@ -24,6 +24,9 @@ namespace vl
 				class IImpl : public virtual IGuiAnimation, public Description<IImpl>
 				{
 				public:
+					virtual void			OnPlayAndWait(Ptr<IGuiAnimation> animation) = 0;
+					virtual void			OnPlayInGroup(Ptr<IGuiAnimation> animation, vint groupId) = 0;
+					virtual void			OnWaitForGroup(vint groupId) = 0;
 				};
 
 				typedef Func<Ptr<description::ICoroutine>(IImpl*)>	Creator;

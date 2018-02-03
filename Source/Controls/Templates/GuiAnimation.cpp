@@ -146,24 +146,77 @@ IGuiAnimation
 IGuiAnimationCoroutine
 ***********************************************************************/
 
+			class GuiCoroutineAnimation : public Object, public virtual IGuiAnimationCoroutine::IImpl
+			{
+			protected:
+				IGuiAnimationCoroutine::Creator				creator;
+
+			public:
+				GuiCoroutineAnimation(const IGuiAnimationCoroutine::Creator& _creator)
+					:creator(_creator)
+				{
+				}
+
+				~GuiCoroutineAnimation()
+				{
+				}
+
+				void OnPlayAndWait(Ptr<IGuiAnimation> animation)override
+				{
+				}
+
+				void OnPlayInGroup(Ptr<IGuiAnimation> animation, vint groupId)override
+				{
+				}
+
+				void OnWaitForGroup(vint groupId)override
+				{
+				}
+
+				void Start()override
+				{
+				}
+
+				void Pause()override
+				{
+				}
+
+				void Resume()override
+				{
+				}
+
+				void Run()override
+				{
+				}
+
+				bool GetStopped()override
+				{
+				}
+			};
+
 			void IGuiAnimationCoroutine::Wait(IImpl* impl, vuint64_t milliseconds)
 			{
+				return PlayAndWait(impl, IGuiAnimation::CreateAnimation({}, milliseconds));
 			}
 
 			void IGuiAnimationCoroutine::PlayAndWait(IImpl* impl, Ptr<IGuiAnimation> animation)
 			{
+				impl->OnPlayAndWait(animation);
 			}
 
 			void IGuiAnimationCoroutine::PlayInGroup(IImpl* impl, Ptr<IGuiAnimation> animation, vint groupId)
 			{
+				impl->OnPlayInGroup(animation, groupId);
 			}
 
 			void IGuiAnimationCoroutine::WaitForGroup(IImpl* impl, vint groupId)
 			{
+				impl->OnWaitForGroup(groupId);
 			}
 
 			Ptr<IGuiAnimation> IGuiAnimationCoroutine::Create(const Creator& creator)
 			{
+				return new GuiCoroutineAnimation(creator);
 			}
 		}
 	}
