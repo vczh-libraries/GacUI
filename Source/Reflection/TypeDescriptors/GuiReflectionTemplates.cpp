@@ -90,6 +90,18 @@ Type Declaration
 				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(CreateAnimation, { L"run" }, Ptr<IGuiAnimation>(*)(const Func<void(vuint64_t)>&))
 			END_INTERFACE_MEMBER(IGuiAnimation)
 
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAnimationCoroutine::IImpl)
+				CLASS_MEMBER_BASE(IGuiAnimation)
+			END_INTERFACE_MEMBER(IGuiAnimationCoroutine::IImpl)
+
+			BEGIN_CLASS_MEMBER(IGuiAnimationCoroutine)
+				CLASS_MEMBER_STATIC_METHOD(Wait, { L"impl" _ L"milliseconds" })
+				CLASS_MEMBER_STATIC_METHOD(PlayAndWait, { L"impl" _ L"animation" })
+				CLASS_MEMBER_STATIC_METHOD(PlayInGroup, { L"impl" _ L"animation" _ L"groupId" })
+				CLASS_MEMBER_STATIC_METHOD(WaitForGroup, { L"impl" _ L"groupId" })
+				CLASS_MEMBER_STATIC_METHOD(Create, { L"creator" })
+			END_CLASS_MEMBER(IGuiAnimationCoroutine)
+
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
 				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiTemplate*))
 				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiCustomControl*))

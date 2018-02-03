@@ -196,6 +196,8 @@ Type List (Templates)
 			F(presentation::controls::IDatePickerCommandExecutor)\
 			F(presentation::controls::GuiComponent)\
 			F(presentation::controls::IGuiAnimation)\
+			F(presentation::controls::IGuiAnimationCoroutine::IImpl)\
+			F(presentation::controls::IGuiAnimationCoroutine)\
 			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::templates::GuiTemplate)\
 			F(presentation::templates::GuiListItemTemplate)\

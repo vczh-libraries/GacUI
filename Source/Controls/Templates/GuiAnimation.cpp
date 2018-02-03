@@ -141,6 +141,30 @@ IGuiAnimation
 			{
 				return new GuiInfiniteAnimation(run);
 			}
+
+/***********************************************************************
+IGuiAnimationCoroutine
+***********************************************************************/
+
+			void IGuiAnimationCoroutine::Wait(IImpl* impl, vuint64_t milliseconds)
+			{
+			}
+
+			void IGuiAnimationCoroutine::PlayAndWait(IImpl* impl, Ptr<IGuiAnimation> animation)
+			{
+			}
+
+			void IGuiAnimationCoroutine::PlayInGroup(IImpl* impl, Ptr<IGuiAnimation> animation, vint groupId)
+			{
+			}
+
+			void IGuiAnimationCoroutine::WaitForGroup(IImpl* impl, vint groupId)
+			{
+			}
+
+			Ptr<IGuiAnimation> IGuiAnimationCoroutine::Create(const Creator& creator)
+			{
+			}
 		}
 	}
 }
