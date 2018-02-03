@@ -9,7 +9,7 @@
             return IGuiAnimation::CreateAnimation(
               func (time: UInt64): void
               {
-                var angle = (cast int time) * Math::Pi() * 2;
+                var angle = (cast double time) / 1600 * Math::Pi() * 2;
                 var sin = Math::Sin(angle);
                 var cos = Math::Cos(angle);
                 
@@ -29,6 +29,7 @@
           ${
             while (true)
             {
+              $Wait (cast UInt64 500);
               $PlayAndWait CreateCircleAnimation(container, ball);
             }
           }
