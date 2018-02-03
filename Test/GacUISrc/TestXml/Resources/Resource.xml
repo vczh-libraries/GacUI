@@ -19,13 +19,20 @@
                 var radiusBall = (ball.Bounds.x2 - ball.Bounds.x1) / 2;
                 var radiusOrbit = Math::Min(cx, cy) - radiusBall;
                 
-                var x = cast int (cos * radiusOrbit + cx);
-                var y = cast int (sin * radiusOrbit + cx);
-                ball.AlignmentToParent = {left:(cx + x + radiusBall) top:(cy + y + radiusBall) right:-1 bottom:-1};
+                var x = cast int Math::Round(cos * radiusOrbit + cx);
+                var y = cast int Math::Round(sin * radiusOrbit + cx);
+                ball.AlignmentToParent = {left:(x - radiusBall) top:(y - radiusBall) right:-1 bottom:-1};
               });
           }
         ]]>
       </ref.Members>
+      <ref.Ctor>
+        <![CDATA[
+          {
+            self.AddAnimation(CreateCircleAnimation(containerMA, ballMA));
+          }
+        ]]>
+      </ref.Ctor>
       <Window ref.Name="self" Text="GacUI XML资源临时测试" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
 
@@ -34,9 +41,9 @@
 
           <att.Pages>
             <TabPage Text="Manual Animation">
-              <BoundsComposition AlignmentToParent="left:10 top:10 right:-1 bottom:-1" PreferredMinSize="x:200 y:200">
+              <BoundsComposition ref.Name="containerMA" AlignmentToParent="left:10 top:10 right:-1 bottom:-1" PreferredMinSize="x:200 y:200">
                 <SolidBackground Color="#FFC929"/>
-                <BoundsComposition PreferredMinSize="x:16 y:16">
+                <BoundsComposition ref.Name="ballMA" PreferredMinSize="x:16 y:16">
                   <SolidBackground Shape="shapeType:Ellipse" Color="#3F48CC"/>
                 </BoundsComposition>
               </BoundsComposition>
