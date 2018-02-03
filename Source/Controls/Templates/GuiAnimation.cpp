@@ -228,23 +228,51 @@ IGuiAnimationCoroutine
 
 				void Run()override
 				{
+					CHECK_ERROR(coroutine, L"GuiCoroutineAnimation::Run()#Cannot be called before calling Start.");
+
+					if (waitingAnimation)
+					{
+						waitingAnimation->Run();
+						if (waitingAnimation->GetStopped())
+						{
+							waitingAnimation = nullptr;
+						}
+					}
+
+					for (vint i = groupAnimations.Count() - 1; i >= 0; i--)
+					{
+						auto& animations = groupAnimations.GetByIndex(i);
+						for (vint j = animations.Count() - 1; j >= 0; j--)
+						{
+							auto animation = animations[j];
+							animation->Run();
+							if (animation->GetStopped())
+							{
+								groupAnimations.Remove(i, animation.Obj());
+							}
+						}
+					}
+
+					if (waitingGroup != -1 && !groupAnimations.Keys().Contains(waitingGroup))
+					{
+						waitingGroup = -1;
+					}
+
+					if (coroutine->GetStatus() == CoroutineStatus::Waiting)
+					{
+						if (waitingAnimation || waitingGroup != -1)
+						{
+							return;
+						}
+						coroutine->Resume(true, nullptr);
+					}
 				}
 
 				bool GetStopped()override
 				{
 					if (!coroutine) return false;
 					if (coroutine->GetStatus() != CoroutineStatus::Stopped) return false;
-					if (waitingAnimation && !waitingAnimation->GetStopped()) return false;
-					for (vint i = 0; i < groupAnimations.Count(); i++)
-					{
-						FOREACH(Ptr<IGuiAnimation>, animation, groupAnimations.GetByIndex(i))
-						{
-							if (!animation->GetStopped())
-							{
-								return false;
-							}
-						}
-					}
+					if (waitingAnimation || groupAnimations.Count() > 0) return false;
 					return true;
 				}
 			};
