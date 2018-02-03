@@ -4,12 +4,13 @@
       <ref.Members>
         <![CDATA[
           @cpp:Private
-          static func CreateCircleAnimation(container: GuiBoundsComposition*, ball: GuiBoundsComposition*): IGuiAnimation^
+          static func BallAnimation(container: GuiBoundsComposition*, ball: GuiBoundsComposition*): IGuiAnimation^
           {
             return IGuiAnimation::CreateAnimation(
               func (time: UInt64): void
               {
-                var angle = (cast double time) / 1600 * Math::Pi() * 2;
+                var circleRatio = (cast double time) / 2000;
+                var angle = circleRatio * Math::Pi() * 2 + Math::Pi() * 1.5;
                 var sin = Math::Sin(angle);
                 var cos = Math::Cos(angle);
                 
@@ -21,16 +22,50 @@
                 var x = cast int Math::Round(cos * radiusOrbit + cx);
                 var y = cast int Math::Round(sin * radiusOrbit + cx);
                 ball.AlignmentToParent = {left:(x - radiusBall) top:(y - radiusBall) right:-1 bottom:-1};
-              }, cast UInt64 1600);
+                
+                if (not ball.Visible)
+                {
+                  ball.Visible = true;
+                }
+              }, cast UInt64 2000);
           }
           
           @cpp:Private
-          static func WaitingAnimation(container: GuiBoundsComposition*, ball: GuiBoundsComposition*): IGuiAnimation^
+          static func BallAnimationWithDelay(container: GuiBoundsComposition*, ball: GuiBoundsComposition*, delay: int): IGuiAnimation^
           ${
+            $Wait (cast UInt64 delay);
+            $PlayAndWait BallAnimation(container, ball);
+            ball.Visible = false;
+          }
+          
+          @cpp:Private
+          static func WaitingAnimation(container: GuiBoundsComposition*): IGuiAnimation^
+          ${
+            var balls = {} of GuiBoundsComposition*[];
+            for (i in range [0, 10))
+            {
+              var ball = new GuiBoundsComposition*();
+              balls.Add(ball);
+              
+              ball.Visible = false;
+              ball.PreferredMinSize = {x:16 y:16};
+              
+              var element = new SolidBackground^();
+              element.Shape = {shapeType:Ellipse};
+              element.Color = cast Color "#3F48CC";
+              ball.OwnedElement = element;
+              
+              container.AddChild(ball);
+            }
+            
             while (true)
             {
               $Wait (cast UInt64 500);
-              $PlayAndWait CreateCircleAnimation(container, ball);
+              for (i in range [0, balls.Count))
+              {
+                $PlayInGroup BallAnimationWithDelay(container, balls[i], 120 * i), 0;
+              }
+              $WaitForGroup 0;
             }
           }
         ]]>
@@ -38,7 +73,7 @@
       <ref.Ctor>
         <![CDATA[
           {
-            self.AddAnimation(WaitingAnimation(animationBackground, animationBall));
+            self.AddAnimation(WaitingAnimation(animationBackground));
           }
         ]]>
       </ref.Ctor>
@@ -52,9 +87,6 @@
             <TabPage Text="Complex Animation">
               <BoundsComposition ref.Name="animationBackground" AlignmentToParent="left:10 top:10 right:-1 bottom:-1" PreferredMinSize="x:200 y:200">
                 <SolidBackground Color="#FFC929"/>
-                <BoundsComposition ref.Name="animationBall" PreferredMinSize="x:16 y:16">
-                  <SolidBackground Shape="shapeType:Ellipse" Color="#3F48CC"/>
-                </BoundsComposition>
               </BoundsComposition>
             </TabPage>
 
