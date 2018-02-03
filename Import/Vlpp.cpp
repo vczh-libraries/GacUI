@@ -4601,7 +4601,7 @@ GlobalStorage
 	}
 
 /***********************************************************************
-辅助函数
+Helper Functions
 ***********************************************************************/
 
 	GlobalStorage* GetGlobalStorage(const wchar_t* key)
@@ -5851,7 +5851,7 @@ namespace vl
 			using namespace collections;
 
 /***********************************************************************
-自举
+Bootstrap
 ***********************************************************************/
 
 			Ptr<ParsingDefinition> CreateParserDefinition()
@@ -21179,7 +21179,7 @@ Automaton
 		}
 
 /***********************************************************************
-辅助函数
+Helpers
 ***********************************************************************/
 
 		bool PureEpsilonChecker(Transition* transition)
@@ -21223,7 +21223,7 @@ Automaton
 			}
 		}
 
-		//递归保证转换先后顺序
+		// Collect epsilon states and non-epsilon transitions, their order are maintained to match the e-NFA
 		void CollectEpsilon(State* targetState, State* sourceState, bool(*epsilonChecker)(Transition*), List<State*>& epsilonStates, List<Transition*>& transitions)
 		{
 			if(!epsilonStates.Contains(sourceState))
@@ -21254,9 +21254,9 @@ Automaton
 		Automaton::Ref EpsilonNfaToNfa(Automaton::Ref source, bool(*epsilonChecker)(Transition*), Dictionary<State*, State*>& nfaStateMap)
 		{
 			Automaton::Ref target=new Automaton;
-			Dictionary<State*, State*> stateMap;	//source->target
-			List<State*> epsilonStates;				//每次迭代当前状态的epsilon闭包
-			List<Transition*> transitions;			//每次迭代当前状态的epsilon闭包的转换集合
+			Dictionary<State*, State*> stateMap;	// source->target
+			List<State*> epsilonStates;				// current epsilon closure
+			List<Transition*> transitions;			// current non-epsilon transitions
 
 			stateMap.Add(source->startState, target->NewState());
 			nfaStateMap.Add(stateMap[source->startState], source->startState);
@@ -21265,7 +21265,7 @@ Automaton
 
 			for(vint i=0;i<target->states.Count();i++)
 			{
-				//清空epsilonStates并包含自己
+				// Clear cache
 				State* targetState=target->states[i].Obj();
 				State* sourceState=nfaStateMap[targetState];
 				if(sourceState->finalState)
@@ -21275,20 +21275,20 @@ Automaton
 				epsilonStates.Clear();
 				transitions.Clear();
 
-				//对所有产生的epsilonStates进行遍历，计算出该状态的一次epsilon直接目标加进去，并继续迭代
+				// Collect epsilon states and non-epsilon transitions
 				CollectEpsilon(targetState, sourceState, epsilonChecker, epsilonStates, transitions);
 
-				//遍历所有epsilon闭包转换
+				// Iterate through all non-epsilon transitions
 				for(vint j=0;j<transitions.Count();j++)
 				{
 					Transition* transition=transitions[j];
-					//寻找到一个非epsilon闭包的时候更新映射
+					// Create and map a new target state if a new non-epsilon state is found in the e-NFA
 					if(!stateMap.Keys().Contains(transition->target))
 					{
 						stateMap.Add(transition->target, target->NewState());
 						nfaStateMap.Add(stateMap[transition->target], transition->target);
 					}
-					//将该转换复制到新状态机里
+					// Copy transition to connect between two non-epsilon state
 					Transition* newTransition=target->NewTransition(targetState, stateMap[transition->target]);
 					newTransition->capture=transition->capture;
 					newTransition->index=transition->index;
@@ -21303,7 +21303,7 @@ Automaton
 		{
 			Automaton::Ref target=new Automaton;
 			Group<Transition*, Transition*> nfaTransitions;
-			List<Transition*> transitionClasses;//保证转换先后顺序不被nfaTransitions.Keys破坏
+			List<Transition*> transitionClasses; // Maintain order for nfaTransitions.Keys
 
 			CopyFrom(target->captureNames, source->captureNames);
 			State* startState=target->NewState();
@@ -21321,16 +21321,16 @@ Automaton
 				nfaTransitions.Clear();
 				transitionClasses.Clear();
 
-				//对该DFA状态的所有等价NFA状态进行遍历
+				// Iterate through all NFA states which represent the DFA state
 				const List<State*>& nfaStates=dfaStateMap[currentState];
 				for(vint j=0;j<nfaStates.Count();j++)
 				{
 					State* nfaState=nfaStates.Get(j);
-					//对每一个NFA状态的所有转换进行遍历
+					// Iterate through all transitions from those NFA states
 					for(vint k=0;k<nfaState->transitions.Count();k++)
 					{
 						Transition* nfaTransition=nfaState->transitions[k];
-						//检查该NFA转换类型是否已经具有已经被记录
+						// Check if there is any key in nfaTransitions that has the same input as the current transition
 						Transition* transitionClass=0;
 						for(vint l=0;l<nfaTransitions.Keys().Count();l++)
 						{
@@ -21341,22 +21341,22 @@ Automaton
 								break;
 							}
 						}
-						//不存在则创建一个转换类型
+						// Create a new key if not
 						if(transitionClass==0)
 						{
 							transitionClass=nfaTransition;
 							transitionClasses.Add(transitionClass);
 						}
-						//注册转换
+						// Group the transition
 						nfaTransitions.Add(transitionClass, nfaTransition);
 					}
 				}
 
-				//遍历所有种类的NFA转换
+				// Iterate through all key transition that represent all existing transition inputs from the same state
 				for(vint j=0;j<transitionClasses.Count();j++)
 				{
 					const List<Transition*>& transitionSet=nfaTransitions[transitionClasses[j]];
-					//对所有转换的NFA目标状态集合进行排序
+					// Sort all target states and keep unique
 					transitionTargets.Clear();
 					for(vint l=0;l<transitionSet.Count();l++)
 					{
@@ -21366,13 +21366,13 @@ Automaton
 							transitionTargets.Add(nfaState);
 						}
 					}
-					//判断转换类的所有转换的NFA目标状态组成的集合是否已经有一个对应的DFA状态
+					// Check if these NFA states represent a created DFA state
 					State* dfaState=0;
 					for(vint k=0;k<dfaStateMap.Count();k++)
 					{
-						//将DFA的等价NFA状态集合进行排序
+						// Sort NFA states for a certain DFA state
 						CopyFrom(relativeStates, dfaStateMap.GetByIndex(k));
-						//比较两者是否相等
+						// Compare two NFA states set
 						if(relativeStates.Count()==transitionTargets.Count())
 						{
 							bool equal=true;
@@ -21391,7 +21391,7 @@ Automaton
 							}
 						}
 					}
-					//不存在等价DFA状态则创建一个
+					// Create a new DFA state if there is not
 					if(!dfaState)
 					{
 						dfaState=target->NewState();
@@ -21404,7 +21404,7 @@ Automaton
 							}
 						}
 					}
-					//将该转换复制到新状态机里
+					// Create corresponding DFA transition
 					Transition* transitionClass=transitionClasses[j];
 					Transition* newTransition=target->NewTransition(currentState, dfaState);
 					newTransition->capture=transitionClass->capture;
@@ -22363,7 +22363,7 @@ namespace vl
 	{
 
 /***********************************************************************
-辅助函数
+Helper Functions
 ***********************************************************************/
 
 		bool IsChar(const wchar_t*& input, wchar_t c)
@@ -24165,7 +24165,7 @@ PureInterpretor
 			charSetCount=subsets.Count()+1;
 			startState=dfa->states.IndexOf(dfa->startState);
 
-			//填充字符映射表
+			// Map char to input index (equivalent char class)
 			for(vint i=0;i<SupportedCharCount;i++)
 			{
 				charMap[i]=charSetCount-1;
@@ -24179,7 +24179,7 @@ PureInterpretor
 				}
 			}
 			
-			//构造状态转换表
+			// Create transitions from DFA, using input index to represent input char
 			transition=new vint*[stateCount];
 			for(vint i=0;i<stateCount;i++)
 			{
@@ -24211,7 +24211,7 @@ PureInterpretor
 				}
 			}
 
-			//填充终结状态表
+			// Mark final states
 			finalState=new bool[stateCount];
 			for(vint i=0;i<stateCount;i++)
 			{
@@ -25161,7 +25161,7 @@ RegexLexer
 		RegexLexer::RegexLexer(const collections::IEnumerable<WString>& tokens)
 			:pure(0)
 		{
-			//构造所有DFA
+			// Build DFA for all tokens
 			List<Expression::Ref> expressions;
 			List<Automaton::Ref> dfas;
 			CharRange::List subsets;
@@ -25187,7 +25187,7 @@ RegexLexer
 				dfas.Add(dfa);
 			}
 
-			//为每一个DFA设置标记
+			// Mark all states in DFAs
 			for(vint i=0;i<dfas.Count();i++)
 			{
 				Automaton::Ref dfa=dfas[i];
@@ -25204,7 +25204,7 @@ RegexLexer
 				}
 			}
 
-			//将DFA组合成大的e-NFA
+			// Connect all DFAs to an e-NFA
 			Automaton::Ref bigEnfa=new Automaton;
 			for(vint i=0;i<dfas.Count();i++)
 			{
@@ -25217,7 +25217,7 @@ RegexLexer
 				bigEnfa->NewEpsilon(bigEnfa->startState, dfas[i]->startState);
 			}
 
-			//转换成DFA
+			// Build a single DFA out of the e-NFA
 			Dictionary<State*, State*> nfaStateMap;
 			Group<State*, State*> dfaStateMap;
 			Automaton::Ref bigNfa=EpsilonNfaToNfa(bigEnfa, PureEpsilonChecker, nfaStateMap);
@@ -25241,7 +25241,7 @@ RegexLexer
 				dfaStateMap.Keys()[i]->userData=userData;
 			}
 
-			//构造状态机
+			// Build state machine
 			pure=new PureInterpretor(bigDfa, subsets);
 			stateTokens.Resize(bigDfa->states.Count());
 			for(vint i=0;i<stateTokens.Count();i++)
@@ -25283,18 +25283,10 @@ namespace vl
 {
 	namespace regex_internal
 	{
-		using namespace collections;
 
 /***********************************************************************
-回溯辅助数据结构
+Data Structures for Backtracking
 ***********************************************************************/
-
-		class SaverBase
-		{
-		public:
-			bool					available;
-			vint					previous;
-		};
 
 		class StateSaver
 		{
@@ -25306,43 +25298,60 @@ namespace vl
 				Other
 			};
 
-			const wchar_t*			reading;					//当前字符串位置
-			State*					currentState;				//当前状态
-			vint					minTransition;				//最小可用转换
-			vint					captureCount;				//有效capture数量
-			vint					stateSaverCount;			//有效回溯状态数量
-			vint					extensionSaverAvailable;	//有效未封闭扩展功能数量
-			vint					extensionSaverCount;		//所有未封闭扩展功能数量
-			StateStoreType			storeType;					//保存状态的原因
+			const wchar_t*			reading;					// Current reading position
+			State*					currentState;				// Current state
+			vint					minTransition;				// The first transition to backtrack
+			vint					captureCount;				// Available capture count			(the list size may larger than this)
+			vint					stateSaverCount;			// Available saver count			(the list size may larger than this)
+			vint					extensionSaverAvailable;	// Available extension saver count	(the list size may larger than this)
+			vint					extensionSaverCount;		// Available extension saver count	(during executing)
+			StateStoreType			storeType;					// Reason to keep this record
 
 			bool operator==(const StateSaver& saver)const
 			{
 				return
-					reading==saver.reading &&
-					currentState==saver.currentState &&
-					minTransition==saver.minTransition &&
-					captureCount==saver.captureCount;
+					reading == saver.reading &&
+					currentState == saver.currentState &&
+					minTransition == saver.minTransition &&
+					captureCount == saver.captureCount;
 			}
 		};
 
-		class ExtensionSaver : public SaverBase
+		class ExtensionSaver
 		{
 		public:
-			vint					captureListIndex;
-			Transition*				transition;
-			const wchar_t*			reading;
+			vint					previous;					// Previous extension saver index
+			vint					captureListIndex;			// Where to write the captured text
+			Transition*				transition;					// The extension begin transition (Capture, Positive, Negative)
+			const wchar_t*			reading;					// The reading position
 
 			bool operator==(const ExtensionSaver& saver)const
 			{
 				return
-					captureListIndex==saver.captureListIndex &&
-					transition==saver.transition &&
-					reading==saver.reading;
+					captureListIndex == saver.captureListIndex &&
+					transition == saver.transition &&
+					reading == saver.reading;
 			}
 		};
+	}
 
-		template<typename T, typename K>
-		void Push(List<T, K>& elements, vint& available, vint& count, const T& element)
+	template<>
+	struct POD<regex_internal::StateSaver>
+	{
+		static const bool Result = true;
+	};
+
+	template<>
+	struct POD<regex_internal::ExtensionSaver>
+	{
+		static const bool Result = true;
+	};
+
+	namespace regex_internal
+	{
+		using namespace collections;
+
+		void Push(List<ExtensionSaver>& elements, vint& available, vint& count, const ExtensionSaver& element)
 		{
 			if(elements.Count()==count)
 			{
@@ -25352,15 +25361,14 @@ namespace vl
 			{
 				elements[count]=element;
 			}
-			T& current=elements[count];
+			ExtensionSaver& current=elements[count];
 			current.previous=available;
 			available=count++;
 		}
 
-		template<typename T, typename K>
-		T Pop(List<T, K>& elements, vint& available, vint& count)
+		ExtensionSaver Pop(List<ExtensionSaver>& elements, vint& available, vint& count)
 		{
-			T& current=elements[available];
+			ExtensionSaver& current=elements[available];
 			available=current.previous;
 			return current;
 		}
@@ -25385,18 +25393,6 @@ namespace vl
 			return elements[--count];
 		}
 	}
-
-	template<>
-	struct POD<regex_internal::StateSaver>
-	{
-		static const bool Result=true;
-	};
-
-	template<>
-	struct POD<regex_internal::ExtensionSaver>
-	{
-		static const bool Result=true;
-	};
 
 	namespace regex_internal
 	{
@@ -25465,23 +25461,24 @@ RichInterpretor
 			currentState.stateSaverCount=0;
 			currentState.storeType=StateSaver::Other;
 
-			while(!currentState.currentState->finalState)
+			while (!currentState.currentState->finalState)
 			{
-				bool found=false;
-				StateSaver oldState=currentState;
-				//开始遍历转换
-				for(vint i=currentState.minTransition;i<currentState.currentState->transitions.Count();i++)
+				bool found = false; // true means at least one transition matches the input
+				StateSaver oldState = currentState;
+				// Iterate through all transitions from the current state
+				for (vint i = currentState.minTransition; i < currentState.currentState->transitions.Count(); i++)
 				{
-					Transition* transition=currentState.currentState->transitions[i];
-					switch(transition->type)
+					Transition* transition = currentState.currentState->transitions[i];
+					switch (transition->type)
 					{
 					case Transition::Chars:
 						{
-							CharRange range=transition->range;
-							found=
-								range.begin<=*currentState.reading && 
-								range.end>=*currentState.reading;
-							if(found)
+							// match the input if the current character fall into the range
+							CharRange range = transition->range;
+							found =
+								range.begin <= *currentState.reading &&
+								range.end >= *currentState.reading;
+							if (found)
 							{
 								currentState.reading++;
 							}
@@ -25489,54 +25486,65 @@ RichInterpretor
 						break;
 					case Transition::BeginString:
 						{
-							found=currentState.reading==start;
+							// match the input if this is the first character, and it is not consumed
+							found = currentState.reading == start;
 						}
 						break;
 					case Transition::EndString:
 						{
-							found=*currentState.reading==L'\0';
+							// match the input if this is after the last character, and it is not consumed
+							found = *currentState.reading == L'\0';
 						}
 						break;
 					case Transition::Nop:
 						{
-							found=true;
+							// match without any condition
+							found = true;
 						}
 						break;
 					case Transition::Capture:
 						{
+							// Push the capture information
 							ExtensionSaver saver;
-							saver.captureListIndex=currentState.captureCount;
-							saver.reading=currentState.reading;
-							saver.transition=transition;
+							saver.captureListIndex = currentState.captureCount;
+							saver.reading = currentState.reading;
+							saver.transition = transition;
 							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
 
+							// Push the capture record, and it will be written if the input matches the regex
 							CaptureRecord capture;
-							capture.capture=transition->capture;
-							capture.start=currentState.reading-start;
-							capture.length=-1;
+							capture.capture = transition->capture;
+							capture.start = currentState.reading - start;
+							capture.length = -1;
 							PushNonSaver(result.captures, currentState.captureCount, capture);
 
-							found=true;
+							found = true;
 						}
 						break;
 					case Transition::Match:
 						{
-							vint index=0;
-							for(vint j=0;j<currentState.captureCount;j++)
+							vint index = 0;
+							for (vint j = 0; j < currentState.captureCount; j++)
 							{
-								CaptureRecord& capture=result.captures[j];
-								if(capture.capture==transition->capture)
+								CaptureRecord& capture = result.captures[j];
+								// If the capture name matched
+								if (capture.capture == transition->capture)
 								{
-									if(capture.length!=-1 && (transition->index==-1 || transition->index==index))
+									// If the capture index matched, or it is -1
+									if (capture.length != -1 && (transition->index == -1 || transition->index == index))
 									{
-										if(wcsncmp(start+capture.start, currentState.reading, capture.length)==0)
+										// If the captured text matched
+										if (wcsncmp(start + capture.start, currentState.reading, capture.length) == 0)
 										{
-											currentState.reading+=capture.length;
-											found=true;
+											// Consume so much input
+											currentState.reading += capture.length;
+											found = true;
 											break;
 										}
 									}
-									if(transition->index!=-1 && index==transition->index)
+
+									// Fail if f the captured text with the specified name and index doesn't match
+									if (transition->index != -1 && index == transition->index)
 									{
 										break;
 									}
@@ -25550,71 +25558,82 @@ RichInterpretor
 						break;
 					case Transition::Positive:
 						{
+							// Push the positive lookahead information
 							ExtensionSaver saver;
-							saver.captureListIndex=-1;
-							saver.reading=currentState.reading;
-							saver.transition=transition;
+							saver.captureListIndex = -1;
+							saver.reading = currentState.reading;
+							saver.transition = transition;
 							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
-							//Positive的oldState一定会被push
-							oldState.storeType=StateSaver::Positive;
-							found=true;
+
+							// Set found = true so that PushNonSaver(oldState) happens later
+							oldState.storeType = StateSaver::Positive;
+							found = true;
 						}
 						break;
 					case Transition::Negative:
 						{
+							// Push the positive lookahead information
+
 							ExtensionSaver saver;
-							saver.captureListIndex=-1;
-							saver.reading=currentState.reading;
-							saver.transition=transition;
+							saver.captureListIndex = -1;
+							saver.reading = currentState.reading;
+							saver.transition = transition;
 							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
-							//Negative的oldState一定会被push
-							oldState.storeType=StateSaver::Negative;
-							found=true;
+
+							// Set found = true so that PushNonSaver(oldState) happens later
+							oldState.storeType = StateSaver::Negative;
+							found = true;
 						}
 						break;
 					case Transition::NegativeFail:
 						{
-							//只有在回溯的时候NegativeFail才会被考虑
+							// NegativeFail will be used when the nagative lookahead failed
 						}
 						break;
 					case Transition::End:
 						{
-							ExtensionSaver extensionSaver=Pop(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount);
-							switch(extensionSaver.transition->type)
+							// Find the corresponding extension saver so that we can know how to deal with a matched sub regex that ends here
+							ExtensionSaver extensionSaver = Pop(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount);
+							switch (extensionSaver.transition->type)
 							{
 							case Transition::Capture:
 								{
-									CaptureRecord& capture=result.captures[extensionSaver.captureListIndex];
-									capture.length=(currentState.reading-start)-capture.start;
-									found=true;
+									// Write the captured text
+									CaptureRecord& capture = result.captures[extensionSaver.captureListIndex];
+									capture.length = (currentState.reading - start) - capture.start;
+									found = true;
 								}
 								break;
 							case Transition::Positive:
-								for(vint j=currentState.stateSaverCount-1;j>=0;j--)
+								// Find the last positive lookahead state saver
+								for (vint j = currentState.stateSaverCount - 1; j >= 0; j--)
 								{
-									StateSaver& stateSaver=stateSavers[j];
-									if(stateSaver.storeType==StateSaver::Positive)
+									StateSaver& stateSaver = stateSavers[j];
+									if (stateSaver.storeType == StateSaver::Positive)
 									{
-										oldState.reading=stateSaver.reading;
-										oldState.stateSaverCount=j;
-										currentState.reading=stateSaver.reading;
-										currentState.stateSaverCount=j;
+										// restore the parsing state just before matching the positive lookahead, since positive lookahead doesn't consume input
+										oldState.reading = stateSaver.reading;
+										oldState.stateSaverCount = j;
+										currentState.reading = stateSaver.reading;
+										currentState.stateSaverCount = j;
 										break;
 									}
 								}
-								found=true;
+								found = true;
 								break;
 							case Transition::Negative:
-								for(vint j=currentState.stateSaverCount-1;j>=0;j--)
+								// Find the last negative lookahead state saver
+								for (vint j = currentState.stateSaverCount - 1; j >= 0; j--)
 								{
-									StateSaver& stateSaver=stateSavers[j];
-									if(stateSaver.storeType==StateSaver::Negative)
+									StateSaver& stateSaver = stateSavers[j];
+									if (stateSaver.storeType == StateSaver::Negative)
 									{
-										oldState=stateSaver;
-										oldState.storeType=StateSaver::Other;
-										currentState=stateSaver;
-										currentState.storeType=StateSaver::Other;
-										i=currentState.minTransition-1;
+										// restore the parsing state just before matching the negative lookahead, since positive lookahead doesn't consume input
+										oldState = stateSaver;
+										oldState.storeType = StateSaver::Other;
+										currentState = stateSaver;
+										currentState.storeType = StateSaver::Other;
+										i = currentState.minTransition - 1;
 										break;
 									}
 								}
@@ -25625,40 +25644,45 @@ RichInterpretor
 						break;
 					default:;
 					}
-					//寻找成功，在必要的时候保存当前的回溯状态
-					if(found)
+					
+					// Save the parsing state when necessary
+					if (found)
 					{
-						UserData* data=(UserData*)currentState.currentState->userData;
-						if(data->NeedKeepState)
+						UserData* data = (UserData*)currentState.currentState->userData;
+						if (data->NeedKeepState)
 						{
-							oldState.minTransition=i+1;
+							oldState.minTransition = i + 1;
 							PushNonSaver(stateSavers, currentState.stateSaverCount, oldState);
 						}
-						currentState.currentState=transition->target;
-						currentState.minTransition=0;
+						currentState.currentState = transition->target;
+						currentState.minTransition = 0;
 						break;
 					}
 				}
-				if(!found)
+
+				// If no transition from the current state can be used
+				if (!found)
 				{
-					//存在回溯记录则回溯
-					if(currentState.stateSaverCount)
+					// If there is a chance to do backtracking
+					if (currentState.stateSaverCount)
 					{
-						//恢复Negative失败状态的时候要移动到NegativeFail后面
-						currentState=PopNonSaver(stateSavers, currentState.stateSaverCount);
-						//minTransition总是被+1后保存，因此直接-1总是有效值
-						if(currentState.currentState->transitions[currentState.minTransition-1]->type==Transition::Negative)
+						currentState = PopNonSaver(stateSavers, currentState.stateSaverCount);
+						// minTransition - 1 is always valid since the value is stored with adding 1
+						// So minTransition - 1 record the transition, which is the reason the parsing state is saved
+						if (currentState.currentState->transitions[currentState.minTransition - 1]->type == Transition::Negative)
 						{
-							//寻找NegativeFail
-							for(vint i=0;i<currentState.currentState->transitions.Count();i++)
+							// Find the next NegativeFail transition
+							// Because when a negative lookahead regex failed to match, it is actually succeeded
+							// Since a negative lookahead means we don't want to match this regex
+							for (vint i = 0; i < currentState.currentState->transitions.Count(); i++)
 							{
-								Transition* transition=currentState.currentState->transitions[i];
-								if(transition->type==Transition::NegativeFail)
+								Transition* transition = currentState.currentState->transitions[i];
+								if (transition->type == Transition::NegativeFail)
 								{
-									//将当前状态移动到NegativeFail后面
-									currentState.currentState=transition->target;
-									currentState.minTransition=0;
-									currentState.storeType=StateSaver::Other;
+									// Restore the state to the target of NegativeFail to let the parsing continue
+									currentState.currentState = transition->target;
+									currentState.minTransition = 0;
+									currentState.storeType = StateSaver::Other;
 									break;
 								}
 							}
@@ -25671,12 +25695,12 @@ RichInterpretor
 				}
 			}
 
-			//判断是否成功并且处理返回结果
-			if(currentState.currentState->finalState)
+			if (currentState.currentState->finalState)
 			{
-				result.start=input-start;
-				result.length=(currentState.reading-start)-result.start;
-				for(vint i=result.captures.Count()-1;i>=currentState.captureCount;i--)
+				// Keep available captures if succeeded
+				result.start = input - start;
+				result.length = (currentState.reading - start) - result.start;
+				for (vint i = result.captures.Count() - 1; i >= currentState.captureCount; i--)
 				{
 					result.captures.RemoveAt(i);
 				}
@@ -25684,6 +25708,7 @@ RichInterpretor
 			}
 			else
 			{
+				// Clear captures if failed
 				result.captures.Clear();
 				return false;
 			}
@@ -25818,7 +25843,7 @@ RegexNode
 		}
 
 /***********************************************************************
-外部函数
+Regex Writer
 ***********************************************************************/
 
 		RegexNode rCapture(const WString& name, const RegexNode& node)

@@ -12,12 +12,14 @@ Developer: Zihan Chen(vczh)
 Framework::Basic
 
 Classes:
-	NotCopyable									：不可复制对象
-	Error										：内部错误，检查到了不可出现的变量、参数或状态错误
-	Object										：对象基类
+	NotCopyable									: Object inherits from this type cannot be copied
+	Error										: Error, unlike exception, is not encouraged to catch
+	Object										: Base class of all classes
 
 Macros:
-	CHECK_ERROR(CONDITION,DESCRIPTION)			：检查内部错误
+	CHECK_ERROR(CONDITION,DESCRIPTION)			: Assert, throws an Error if failed
+	CHECK_FAIL(DESCRIPTION)						: Force an assert failure
+	SCOPE_VARIABLE(TYPE,VARIABLE,VALUE){ ... }	: Scoped variable
 ***********************************************************************/
 
 #ifndef VCZH_BASIC
@@ -79,7 +81,7 @@ namespace vl
 {
 
 /***********************************************************************
-32位/64位兼容
+x86 and x64 Compatbility
 ***********************************************************************/
 
 #if defined VCZH_MSVC
@@ -163,7 +165,7 @@ namespace vl
 #endif
 
 /***********************************************************************
-基础
+Basic Types
 ***********************************************************************/
 
 	class NotCopyable
@@ -199,7 +201,7 @@ namespace vl
 		for(TYPE VARIABLE = VALUE;__scope_variable_flag__;__scope_variable_flag__=false)
 
 /***********************************************************************
-类型计算
+Type Traits
 ***********************************************************************/
 	
 	template<typename T>
@@ -298,7 +300,7 @@ namespace vl
 	};
 
 /***********************************************************************
-基础
+Basic Types
 ***********************************************************************/
 
 	/// <summary>Base type of all classes.</summary>
@@ -560,7 +562,7 @@ namespace vl
 	};
 
 /***********************************************************************
-配置
+Type Traits
 ***********************************************************************/
 
 	/// <summary>Get the index type of a value for containers.</summary>
@@ -610,7 +612,7 @@ namespace vl
 	template<typename T>struct POD<const volatile T>{static const bool Result=POD<T>::Result;};
 
 /***********************************************************************
-时间
+Date and Time
 ***********************************************************************/
 
 	/// <summary>A type representing the combination of date and time.</summary>
@@ -678,7 +680,7 @@ namespace vl
 	};
 
 /***********************************************************************
-接口
+Interface
 ***********************************************************************/
 	
 	/// <summary>Base type of all interfaces. All interface types are encouraged to be virtual inherited.</summary>
@@ -689,7 +691,7 @@ namespace vl
 	};
 
 /***********************************************************************
-类型萃取
+Type Traits
 ***********************************************************************/
 
 	struct YesType{};
@@ -746,7 +748,7 @@ Developer: Zihan Chen(vczh)
 Data Structure::Pair
 
 Classes:
-	Pair<K, V>							：二元组
+	Pair<K, V>							: Pair
 ***********************************************************************/
 
 #ifndef VCZH_COLLECTIONS_PAIR
@@ -859,7 +861,7 @@ Developer: Zihan Chen(vczh)
 Data Structure::Smart Pointer
 
 Classes:
-	Ptr<T>							：智能指针
+	Ptr<T>							: Shared Pointer
 ***********************************************************************/
 
 #ifndef VCZH_POINTER
@@ -1486,8 +1488,8 @@ Developer: Zihan Chen(vczh)
 Data Structure::Interfaces
 
 Interfaces:
-	IEnumerator<T>									：枚举器
-	IEnumerable<T>									：可枚举对象
+	IEnumerator<T>									: Enumerator interface
+	IEnumerable<T>									: Enumerable object interface
 ***********************************************************************/
 
 #ifndef VCZH_COLLECTIONS_INTERFACES
@@ -1500,7 +1502,7 @@ namespace vl
 	{
 
 /***********************************************************************
-接口
+Interfaces
 ***********************************************************************/
 
 		/// <summary>Enumerator.</summary>
@@ -1543,7 +1545,7 @@ namespace vl
 		};
 
 /***********************************************************************
-随机存取
+Random Access
 ***********************************************************************/
 
 		namespace randomaccess_internal
@@ -1599,11 +1601,11 @@ Developer: Zihan Chen(vczh)
 Data Structure::List
 
 Classes:
-	ListStore<T,PODType>				：列表存储复制算法
-	ListBase<T,K>						：列表基类
-	Array<T,K>							：数组
-	List<T,K>							：列表
-	SortedList<T,K>						：有序列表
+	ListStore<T,PODType>				: Array copy helper functions
+	ListBase<T,K>						: Base class for array
+	Array<T,K>							: Array
+	List<T,K>							: List
+	SortedList<T,K>						: List with item order maintained
 ***********************************************************************/
 
 #ifndef VCZH_COLLECTIONS_LIST
@@ -2508,8 +2510,8 @@ Developer: Zihan Chen(vczh)
 Data Structure::Dictionary
 
 Classes:
-	Dictionary<KT, VT, KK, VK>					：映射
-	Group<KT, VT, KK, VK>						：多重映射
+	Dictionary<KT, VT, KK, VK>					: One to one mapping
+	Group<KT, VT, KK, VK>						: One to many mapping
 ***********************************************************************/
 
 #ifndef VCZH_COLLECTIONS_DICTIONARY
@@ -2985,7 +2987,7 @@ namespace vl
 		};
 
 /***********************************************************************
-辅助函数
+GroupInnerJoin
 ***********************************************************************/
 
 		template<
@@ -3062,7 +3064,7 @@ namespace vl
 		}
 
 /***********************************************************************
-随机访问
+Random Access
 ***********************************************************************/
 		namespace randomaccess_internal
 		{
@@ -3117,7 +3119,7 @@ namespace vl
 	{
 
 /***********************************************************************
-容器复制
+Copy Functions for Containers
 ***********************************************************************/
 
 		namespace copyfrom_internal
@@ -3301,7 +3303,7 @@ namespace vl
 	{
 
 /***********************************************************************
-空迭代器
+EmptyEnumerable
 ***********************************************************************/
 
 		template<typename T>
@@ -3347,7 +3349,7 @@ namespace vl
 		};
 
 /***********************************************************************
-递增数组迭代器
+RangeEnumerator
 ***********************************************************************/
 
 		template<typename T>
@@ -3412,7 +3414,7 @@ namespace vl
 		};
 
 /***********************************************************************
-自包含迭代器
+ContainerEnumerator
 ***********************************************************************/
 
 		template<typename T, typename TContainer>
@@ -3462,7 +3464,7 @@ namespace vl
 		};
 
 /***********************************************************************
-迭代器比较
+CompareEnumerable
 ***********************************************************************/
 
 		template<typename T, typename U>
@@ -3632,11 +3634,10 @@ Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
 Data Structure::Operations
 
-扩展：
-	实现一个函数重载IteratorType CreateForEachIterator(const CollectionType& collection);
-	CollectionType是所需要的容器类型
-	IteratorType继承自ForEachIterator<T>
-	必须写在vl::collections命名空间里
+In order to let a container support FOREACH and FOREACH_INDEXER��
+	Implement a global function overloading: IteratorType vl::collections::CreateForEachIterator(const CollectionType& collection);
+	CollectionType is the container type
+	IteratorType should inherit from ForEachIterator<T>
 ***********************************************************************/
 
 #ifndef VCZH_COLLECTIONS_FOREACH
@@ -3648,7 +3649,7 @@ namespace vl
 	{
 
 /***********************************************************************
-ForEach基础设施
+ForEachIterator
 ***********************************************************************/
 
 		template<typename T>
@@ -3664,7 +3665,7 @@ ForEach基础设施
 		};
 
 /***********************************************************************
-IEnumerable<T>支持
+ForEachIterator for IEnumerable
 ***********************************************************************/
 
 		template<typename T>
@@ -3704,7 +3705,7 @@ IEnumerable<T>支持
 		}
 
 /***********************************************************************
-ForEach宏
+FOREACH and FOREACH_INDEXER
 ***********************************************************************/
 
 #define FOREACH(TYPE, VARIABLE, COLLECTION)\
@@ -4345,11 +4346,11 @@ Developer: Zihan Chen(vczh)
 Framework::Function
 
 Classes:
-	Func<function-type>									：函数对象
+	Func<function-type>									: Functor
 
 Functions:
-	Curry :: (A->B) -> A -> B							：参数拆分
-	Combine :: (A->B) -> (A->C) -> (B->C->D) -> (A->D)	：函数组合
+	Curry :: (A->B) -> A -> B							: Currying
+	Combine :: (A->B) -> (A->C) -> (B->C->D) -> (A->D)	: Combine multiple functors using an operator
 ***********************************************************************/
 #ifndef VCZH_FUNCTION
 #define VCZH_FUNCTION
@@ -4943,7 +4944,7 @@ Developer: Zihan Chen(vczh)
 Framework::Event
 
 Classes:
-	Event<function-type>									：事件对象
+	Event<function-type>									: Event object, which is a functor with no return value, executing multiple functors stored inside
 ***********************************************************************/
 #ifndef VCZH_EVENT
 #define VCZH_EVENT
@@ -5054,7 +5055,7 @@ Developer: Zihan Chen(vczh)
 Framework::Lazy Evaluation
 
 Classes:
-	Lazy<T>									：惰性对象
+	Lazy<T>									: Object with lazy evaluation
 
 ***********************************************************************/
 
@@ -5173,8 +5174,8 @@ Developer: Zihan Chen(vczh)
 Data Structure::String
 
 Classes:
-	AString										：Mbcs字符串
-	WString										：Utf-16字符串
+	AString										: Mbcs using the code page of the current locale
+	WString										: UTF-16 (for Windows), or UTF-32 (for Linux and macOS)
 ***********************************************************************/
 
 #ifndef VCZH_STRING
@@ -6507,8 +6508,7 @@ Developer: Zihan Chen(vczh)
 Framework::Exception
 
 Classes:
-	Exception									：异常
-	ArgumentException							：预料的的参数错误
+	Exception									: Exception
 ***********************************************************************/
 
 #ifndef VCZH_EXCEPTION
@@ -6567,7 +6567,7 @@ Developer: Zihan Chen(vczh)
 Framework::Global Storage
 
 Classes:
-	GlobalStorage							：全局对象
+	GlobalStorage							: Global storage accessable by name, each storage will be initialized on the first access, and all storages will be released by FinalizeGlobalStorage
 
 ***********************************************************************/
 
@@ -6983,12 +6983,12 @@ Developer: Zihan Chen(vczh)
 Regex::Regular Expression
 
 Classes:
-	RegexString						：字符串匹配结果
-	RegexMatch						：匹配结果
-	Regex							：正则表达式引擎
-	RegexToken						：词法记号
-	RegexTokens						：词法记号表
-	RegexLexer						：词法分析器
+	RegexString						: String Fragment
+	RegexMatch						: Match Result
+	Regex							: Regular Expression
+	RegexToken						: Token
+	RegexTokens						: Token Stream
+	RegexLexer						: Tokenizer
 ***********************************************************************/
 
 #ifndef VCZH_REGEX_REGEX
@@ -7009,7 +7009,7 @@ namespace vl
 	{
 
 /***********************************************************************
-正则表达式引擎数据结构
+Data Structure
 ***********************************************************************/
 
 		/// <summary>A type representing a fragment of the input string.</summary>
@@ -7071,7 +7071,7 @@ namespace vl
 		};
 
 /***********************************************************************
-正则表达式引擎
+Regex
 ***********************************************************************/
 
 		/// <summary><![CDATA[
@@ -7177,7 +7177,7 @@ namespace vl
 		};
 
 /***********************************************************************
-正则表达式词法分析器
+Tokenizer
 ***********************************************************************/
 
 		/// <summary>A token.</summary>
@@ -7362,7 +7362,7 @@ namespace vl
 	{
 
 /***********************************************************************
-基础数据结构
+Data Structure
 ***********************************************************************/
 
 		class CharRange
@@ -7410,13 +7410,13 @@ Developer: Zihan Chen(vczh)
 Regex::RegexAutomaton
 
 Classes:
-	State						：状态
-	Transition					：转换
-	Automaton					：状态机
+	State						: State
+	Transition					: Transation
+	Automaton					: Automaton
 
 Functions:
-	EpsilonNfaToNfa				：去Epsilon
-	NfaToDfa					：NFA转DFA
+	EpsilonNfaToNfa				: Copy and remove epsilon states and transitions from an NFA
+	NfaToDfa					: Convert an NFA to a DFA
 ***********************************************************************/
 
 #ifndef VCZH_REGEX_REGEXAUTOMATON
@@ -7435,17 +7435,17 @@ namespace vl
 		public:
 			enum Type
 			{
-				Chars,				//range为字符范围
+				Chars,				// Character range transition
 				Epsilon,
 				BeginString,
 				EndString,
-				Nop,				//无动作（不可消除epsilon，用来控制优先级）
-				Capture,			//capture为捕获频道
-				Match,				//capture为捕获频道，index为匹配的位置，-1代表匹配频道下面的所有项目
-				Positive,			//正向匹配
-				Negative,			//反向匹配
-				NegativeFail,		//反向匹配失败
-				End					//Capture, Position, Negative
+				Nop,				// Non-epsilon transition with no input
+				Capture,			// Begin capture transition
+				Match,				// Capture matching transition
+				Positive,			// Begin positive lookahead
+				Negative,			// Begin negative lookahead
+				NegativeFail,		// Negative lookahead failure
+				End					// For Capture, Position, Negative
 			};
 
 			State*								source;
@@ -7511,23 +7511,23 @@ Developer: Zihan Chen(vczh)
 Regex::RegexExpression
 
 Classes:
-	Expression						：表达式基类					|
-	CharSetExpression				：字符集表达式				| a, [a-b], [^a-b0_9], \.rnt\/()+*?{}[]<>^$!=SsDdLlWw, [\rnt-[]\/^$]
-	LoopExpression					：循环表达式					| a{3}, a{3,}, a{1,3}, a+, a*, a?, LOOP?
-	SequenceExpression				：顺序表达式					| ab
-	AlternateExpression				：选择表达式					| a|b
-	BeginExpression					：【非纯】字符串起始表达式	| ^
-	EndExpression					：【非纯】字符串末尾表达式	| $
-	CaptureExpression				：【非纯】捕获表达式			| (<name>expr), (?expr)
-	MatchExpression					：【非纯】匹配表达式			| (<$name>), (<$name;i>), (<$i>)
-	PositiveExpression				：【非纯】正向预查表达式		| (=expr)
-	NegativeExpression				：【非纯】反向预查表达式		| (!expr)
-	UsingExpression					：引用表达式					| (<#name1>expr)...(<&name1>)...
+	Expression						: Base class of expressions	|
+	CharSetExpression				: Character set				| a, [a-b], [^a-b0_9], \.rnt\/()+*?{}[]<>^$!=SsDdLlWw, [\rnt-[]\/^$]
+	LoopExpression					: Repeat					| a{3}, a{3,}, a{1,3}, a+, a*, a?, LOOP?
+	SequenceExpression				: Sequence of two regex		| ab
+	AlternateExpression				: Alternative of two regex	| a|b
+	BeginExpression					: <Rich> String begin		| ^
+	EndExpression					: <Rich> String end			| $
+	CaptureExpression				: <Rich> Capture			| (<name>expr), (?expr)
+	MatchExpression					: <Rich> Capture matching	| (<$name>), (<$name;i>), (<$i>)
+	PositiveExpression				: <Rich> Positive lookahead	| (=expr)
+	NegativeExpression				: <Rich> Negative lookahead	| (!expr)
+	UsingExpression					: refer a regex				| (<#name1>expr)...(<&name1>)...
 
-	RegexExpression					：正则表达式
+	RegexExpression					: Regular Expression
 
 Functions:
-	ParseRegexExpression			：将字符串分析为RegexExpression对象，如果语法有问题则抛异常
+	ParseRegexExpression			: Regex Syntax Analyzer
 ***********************************************************************/
 
 #ifndef VCZH_REGEX_REGEXEXPRESSION
@@ -7541,7 +7541,7 @@ namespace vl
 		class IRegexExpressionAlgorithm;
 
 /***********************************************************************
-正则表达式表达式树
+Regex Expression AST
 ***********************************************************************/
 
 		class Expression : public Object, private NotCopyable
@@ -7573,10 +7573,10 @@ namespace vl
 		class LoopExpression : public Expression
 		{
 		public:
-			Expression::Ref				expression;		//被循环表达式
-			vint							min;			//下限
-			vint							max;			//上限，-1代表无限
-			bool						preferLong;		//长匹配优先
+			Expression::Ref				expression;		// The regex to loop
+			vint						min;			// Minimum count of looping
+			vint						max;			// Maximum count of looping, -1 for infinite
+			bool						preferLong;		// Prefer longer matching
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -7584,8 +7584,8 @@ namespace vl
 		class SequenceExpression : public Expression
 		{
 		public:
-			Expression::Ref				left;			//左表达式
-			Expression::Ref				right;			//右表达式
+			Expression::Ref				left;			// First regex to match
+			Expression::Ref				right;			// Last regex to match
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -7593,8 +7593,8 @@ namespace vl
 		class AlternateExpression : public Expression
 		{
 		public:
-			Expression::Ref				left;			//左表达式
-			Expression::Ref				right;			//右表达式
+			Expression::Ref				left;			// First regex to match
+			Expression::Ref				right;			// Last regex to match
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -7616,8 +7616,8 @@ namespace vl
 		class CaptureExpression : public Expression
 		{
 		public:
-			WString						name;			//捕获名，空代表缺省捕获
-			Expression::Ref				expression;		//被捕获表达式
+			WString						name;			// Capture name, empty for anonymous capture
+			Expression::Ref				expression;		// Regex to match
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -7625,8 +7625,8 @@ namespace vl
 		class MatchExpression : public Expression
 		{
 		public:
-			WString						name;			//捕获名，空代表缺省捕获
-			vint							index;			//捕获序号，-1代表非空捕获的所有项
+			WString						name;			// Capture name, empty for anonymous
+			vint						index;			// The index of captured text to match associated the name, -1 for all of them
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -7634,7 +7634,7 @@ namespace vl
 		class PositiveExpression : public Expression
 		{
 		public:
-			Expression::Ref				expression;		//正向匹配表达式
+			Expression::Ref				expression;		// Regex to match
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -7642,7 +7642,7 @@ namespace vl
 		class NegativeExpression : public Expression
 		{
 		public:
-			Expression::Ref				expression;		//反向匹配表达式
+			Expression::Ref				expression;		// Regex to match
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -7650,7 +7650,7 @@ namespace vl
 		class UsingExpression : public Expression
 		{
 		public:
-			WString						name;			//引用名
+			WString						name;			// Name of the regex to refer
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -7660,14 +7660,14 @@ namespace vl
 		public:
 			typedef Ptr<RegexExpression>						Ref;
 
-			Expression::Map				definitions;	//命名子表达式
-			Expression::Ref				expression;		//主表达式
+			Expression::Map				definitions;	// Named regex to be referred
+			Expression::Ref				expression;		// Regex to match
 
 			Expression::Ref				Merge();
 		};
 
 /***********************************************************************
-算法基类
+Visitor
 ***********************************************************************/
 
 		class IRegexExpressionAlgorithm : public Interface
@@ -7864,7 +7864,7 @@ namespace vl
 		};
 
 /***********************************************************************
-辅助函数
+Helper Functions
 ***********************************************************************/
 
 		extern Ptr<LoopExpression>		ParseLoop(const wchar_t*& input);
@@ -7894,7 +7894,7 @@ Developer: Zihan Chen(vczh)
 Regex::RegexInterpretor
 
 Classes:
-	PureInterpretor					：正则表达式纯模拟器
+	PureInterpretor					: Pure regular expression interpretor
 ***********************************************************************/
 
 #ifndef VCZH_REGEX_REGEXPURE
@@ -7959,7 +7959,7 @@ Developer: Zihan Chen(vczh)
 Regex::RegexInterpretor
 
 Classes:
-	RichInterpretor					：正则表达式完全模拟器
+	RichInterpretor					: Rich regular expression interpretor
 ***********************************************************************/
 
 #ifndef VCZH_REGEX_REGEXRICH
@@ -8086,7 +8086,7 @@ Developer: Zihan Chen(vczh)
 Stream::Interfaces
 
 Interfaces:
-	IStream							：流
+	IStream							: Stream
 ***********************************************************************/
 
 #ifndef VCZH_STREAM_INTERFACES
@@ -8206,12 +8206,13 @@ Developer: Zihan Chen(vczh)
 Stream::Accessor
 
 Classes:
-	TextReader						：字符串阅读器
-	TextWriter						：字符串书写器
-	StreamReader					：流阅读器
-	StreamWriter					：流书写器
-	EncoderStream					：编码流
-	DecoderStream					：解码流
+	TextReader						: Text reader base class
+	TextWriter						: Text writer base class
+	StringReader					: Text reader from a string
+	StreamReader					: Text reader from a stream
+	StreamWriter					: Text writer to a stream
+	EncoderStream					: Stream that takes an encoder to translate another stream
+	DecoderStream					: Stream that takes a decoder to translate another stream
 ***********************************************************************/
 
 #ifndef VCZH_STREAM_ACCESSOR
@@ -8224,7 +8225,7 @@ namespace vl
 	{
 
 /***********************************************************************
-流控制器
+Text Related
 ***********************************************************************/
 
 		/// <summary>Text reader. All line breaks are normalized to CRLF regardless the format in the source.</summary>
@@ -8331,7 +8332,7 @@ namespace vl
 		};
 
 /***********************************************************************
-编码解码
+Encoding Related
 ***********************************************************************/
 
 		/// <summary>Encoder stream, a writable stream using an [T:vl.stream.IEncoder] to transform content.</summary>
@@ -9592,7 +9593,7 @@ Developer: Zihan Chen(vczh)
 Stream::BroadcastStream
 
 Interfaces:
-	BroadcastStream					：广播流
+	BroadcastStream					: Stream that copy the written data to multiple streams
 ***********************************************************************/
 
 #ifndef VCZH_STREAM_BROADCASTSTREAM
@@ -9649,7 +9650,7 @@ Developer: Zihan Chen(vczh)
 Stream::CacheStream
 
 Interfaces:
-	CacheStream						：缓冲流
+	CacheStream						: Stream that provide a cache for reading and writing
 ***********************************************************************/
 
 #ifndef VCZH_STREAM_CACHESTREAM
@@ -9841,7 +9842,7 @@ Developer: Zihan Chen(vczh)
 Stream::FileStream
 
 Interfaces:
-	FileStream						：文件流
+	FileStream						: File stream
 ***********************************************************************/
 
 #ifndef VCZH_STREAM_FILESTREAM
@@ -9907,7 +9908,7 @@ Developer: Zihan Chen(vczh)
 Stream::MemoryStream
 
 Interfaces:
-	MemoryStream					：内存流
+	MemoryStream					: Memory stream
 ***********************************************************************/
 
 #ifndef VCZH_STREAM_MEMORYSTREAM
@@ -9966,7 +9967,7 @@ Developer: Zihan Chen(vczh)
 Stream::MemoryWrapperStream
 
 Interfaces:
-	MemoryWrapperStream				：内存代理流
+	MemoryWrapperStream				: Memory stream which manipulate a given buffer
 ***********************************************************************/
 
 #ifndef VCZH_STREAM_MEMORYWRAPPERSTREAM
@@ -10021,18 +10022,18 @@ Developer: Zihan Chen(vczh)
 Stream::CharFormat
 
 Classes:
-	CharEncoder									：字符串编码器基类
-	CharDecoder									：字符串解码器基类
-	MbcsEncoder									：Mbcs编码器
-	MbcsDecoder									：Mbcs解码器
-	Utf16Encoder								：Utf16编码器
-	Utf16Decoder								：Utf16解码器
-	Utf16BEEncoder								：Utf16 Big Endian编码器
-	Utf16BEDecoder								：Utf16 Big Endian解码器
-	Utf8Encoder									：Utf8编码器
-	Utf8Decoder									：Utf8解码器
-	BomEncoder									：BOM相关编码器
-	BomDecoder									：BOM相关解码器
+	CharEncoder									: Encoder to translate from wchar_t to some specified format
+	CharDecoder									: Decoder to transate from some specified format to wchar_t
+	MbcsEncoder									: Mbcs encoder (using the code page of the current locale)
+	MbcsDecoder									: Mbcs decoder (using the code page of the current locale)
+	Utf16Encoder								: UTF-16 encoder
+	Utf16Decoder								: UTF-16 decoder
+	Utf16BEEncoder								: UTF-16 encoder with big endian
+	Utf16BEDecoder								: UTF-16 decoder with big endian
+	Utf8Encoder									: UTF-8 encoder
+	Utf8Decoder									: UTF-8 decoder
+	BomEncoder									: Character encoder which writes a BOM before the text
+	BomDecoder									: Character decoder which reads a BOM from the data to know the encoding
 ***********************************************************************/
 
 #ifndef VCZH_STREAM_CHARFORMAT
@@ -10044,8 +10045,8 @@ namespace vl
 	namespace stream
 	{
 
-		/*编码资料
-		UCS-4和UTF-8的对应关系:
+		/*
+		How UCS-4 translate to UTF-8
 		U-00000000 - U-0000007F:  0xxxxxxx
 		U-00000080 - U-000007FF:  110xxxxx 10xxxxxx
 		U-00000800 - U-0000FFFF:  1110xxxx 10xxxxxx 10xxxxxx
@@ -10060,7 +10061,7 @@ namespace vl
 		*/
 
 /***********************************************************************
-字符串编码解码基类
+Char Encoder and Decoder
 ***********************************************************************/
 
 		/// <summary>Base type of all character encoder.</summary>
@@ -11290,7 +11291,7 @@ General Syntax Tree
 		};
 
 /***********************************************************************
-语法树基础设施
+AST Building Block
 ***********************************************************************/
 
 		/// <summary>Base type of all strong typed syntax tree. Normally all strong typed syntax tree are generated from a grammar file using ParserGen.exe in Tools project. See [T:vl.parsing.tabling.ParsingTable] for details.</summary>
@@ -11517,7 +11518,7 @@ namespace vl
 		{
 
 /***********************************************************************
-属性标记
+Attributes
 ***********************************************************************/
 
 			class ParsingDefinitionAttribute : public ParsingTreeCustomBase
@@ -11535,7 +11536,7 @@ namespace vl
 			};
 
 /***********************************************************************
-类型结构
+Type
 ***********************************************************************/
 
 			class ParsingDefinitionPrimitiveType;
@@ -11591,7 +11592,7 @@ namespace vl
 			};
 
 /***********************************************************************
-类型定义
+Type Definition
 ***********************************************************************/
 
 			class ParsingDefinitionClassMemberDefinition;
@@ -11657,7 +11658,7 @@ namespace vl
 			};
 
 /***********************************************************************
-文法规则
+Grammar
 ***********************************************************************/
 
 			class ParsingDefinitionPrimitiveGrammar;
@@ -11779,7 +11780,7 @@ namespace vl
 			};
 
 /***********************************************************************
-文法结构
+Token and Rule
 ***********************************************************************/
 
 			class ParsingDefinitionTokenDefinition : public ParsingDefinitionBase
@@ -11807,7 +11808,7 @@ namespace vl
 			};
 
 /***********************************************************************
-构造器（属性标记）
+Attribute Writer
 ***********************************************************************/
 
 			class ParsingDefinitionAttributeWriter : public Object
@@ -11827,7 +11828,7 @@ namespace vl
 			extern ParsingDefinitionAttributeWriter				Attribute(const WString& name);
 
 /***********************************************************************
-构造器（类型结构）
+Type Writer
 ***********************************************************************/
 
 			class ParsingDefinitionTypeWriter : public Object
@@ -11851,7 +11852,7 @@ namespace vl
 			extern ParsingDefinitionTypeWriter					TokenType();
 
 /***********************************************************************
-构造器（类型定义）
+Type Definition Writer
 ***********************************************************************/
 
 			class ParsingDefinitionTypeDefinitionWriter : public Object
@@ -11899,7 +11900,7 @@ namespace vl
 			extern ParsingDefinitionEnumDefinitionWriter		Enum(const WString& name);
 
 /***********************************************************************
-构造器（文法规则）
+Grammar Writer
 ***********************************************************************/
 
 			class ParsingDefinitionGrammarWriter : public Object
@@ -11930,7 +11931,7 @@ namespace vl
 			extern ParsingDefinitionGrammarWriter				Opt(const ParsingDefinitionGrammarWriter& writer);
 
 /***********************************************************************
-构造器（文法结构）
+Token and Rule Writer
 ***********************************************************************/
 
 			class ParsingDefinitionWriter;
@@ -11978,7 +11979,7 @@ namespace vl
 			};
 
 /***********************************************************************
-辅助函数
+Helper Functions
 ***********************************************************************/
 
 			extern WString										TypeToString(ParsingDefinitionType* type);
@@ -11990,7 +11991,7 @@ namespace vl
 			extern WString										SerializeString(const WString& value);
 
 /***********************************************************************
-自举
+Bootstrap
 ***********************************************************************/
 			
 			extern Ptr<ParsingDefinition>						CreateParserDefinition();
@@ -12024,7 +12025,7 @@ namespace vl
 		{
 
 /***********************************************************************
-符号表关联对象
+DefinitionTypeScopePair
 ***********************************************************************/
 
 			class ParsingSymbol;
@@ -12063,7 +12064,7 @@ namespace vl
 			};
 
 /***********************************************************************
-符号表
+ParsingSymbol Management
 ***********************************************************************/
 
 			class ParsingSymbol : public Object
@@ -12162,7 +12163,7 @@ namespace vl
 			};
 
 /***********************************************************************
-语义分析
+Semantic Analyzer
 ***********************************************************************/
 
 			extern WString						GetTypeFullName(ParsingSymbol* type);
@@ -12202,7 +12203,7 @@ namespace vl
 		{
 
 /***********************************************************************
-跳转表
+Parsing Table
 ***********************************************************************/
 
 			/// <summary><![CDATA[
@@ -12759,7 +12760,7 @@ namespace vl
 			};
 
 /***********************************************************************
-辅助函数
+Helper Functions
 ***********************************************************************/
 
 			extern void										Log(Ptr<ParsingTable> table, stream::TextWriter& writer);
@@ -12792,7 +12793,7 @@ namespace vl
 		{
 
 /***********************************************************************
-状态机
+Automaton
 ***********************************************************************/
 
 			class Action;
@@ -12937,7 +12938,7 @@ namespace vl
 			};
 
 /***********************************************************************
-辅助函数（搜索闭包）
+Helper: Closuer Searching
 ***********************************************************************/
 
 			struct ClosureItem
@@ -12971,14 +12972,14 @@ namespace vl
 			extern void												RemoveEpsilonTransitions(collections::Dictionary<State*, State*>& oldNewStateMap, collections::List<State*>& scanningStates, Ptr<Automaton> automaton);
 
 /***********************************************************************
-辅助函数（合并状态）
+Helper: State Merging
 ***********************************************************************/
 			
 			extern void												DeleteUnnecessaryStates(Ptr<Automaton> automaton, Ptr<RuleInfo> ruleInfo, collections::List<State*>& newStates);
 			extern void												MergeStates(Ptr<Automaton> automaton, Ptr<RuleInfo> ruleInfo, collections::List<State*>& newStates);
 
 /***********************************************************************
-辅助函数（创建状态机）
+Helper: Automaton Building
 ***********************************************************************/
 			
 			extern Ptr<Automaton>									CreateEpsilonPDA(Ptr<definitions::ParsingDefinition> definition, ParsingSymbolManager* manager);
@@ -12988,7 +12989,7 @@ namespace vl
 			extern void												MarkLeftRecursiveInJointPDA(Ptr<Automaton> jointPDA, collections::List<Ptr<ParsingError>>& errors);
 
 /***********************************************************************
-辅助函数（输出跳转表）
+Helper: Parsing Table Generating
 ***********************************************************************/
 
 			extern WString											GetTypeNameForCreateInstruction(ParsingSymbol* type);
@@ -13024,7 +13025,7 @@ namespace vl
 		{
 
 /***********************************************************************
-语法分析器
+Syntax Analyzer
 ***********************************************************************/
 			
 			class ParsingTokenWalker : public Object
@@ -13265,7 +13266,7 @@ namespace vl
 			};
 
 /***********************************************************************
-语法树生成器
+AST Generating
 ***********************************************************************/
 
 			class ParsingTransitionProcessor : public Object
@@ -13337,7 +13338,7 @@ Developer: Zihan Chen(vczh)
 Stream::RecorderStream
 
 Interfaces:
-	RecorderStream					：备份流
+	RecorderStream					: A readable stream that will copy the data to another stream on the fly
 ***********************************************************************/
 
 #ifndef VCZH_STREAM_RECORDERSTREAM
@@ -13391,7 +13392,7 @@ Developer: Zihan Chen(vczh)
 Framework::Threading
 
 Classes:
-	Thread										：线程
+	Thread										: Thread
 	CriticalSection
 	Mutex
 	Semaphore
@@ -13406,7 +13407,7 @@ namespace vl
 {
 	
 /***********************************************************************
-内核模式对象
+Kernel Mode Objects
 ***********************************************************************/
 
 	namespace threading_internal
@@ -13638,7 +13639,7 @@ namespace vl
 	};
 
 /***********************************************************************
-线程池
+Thread Pool
 ***********************************************************************/
 
 	/// <summary>A light-weight thread pool.</summary>
@@ -13673,7 +13674,7 @@ namespace vl
 	};
 
 /***********************************************************************
-进程内对象
+Kernel Mode Objects in Process
 ***********************************************************************/
 
 	/// <summary><![CDATA[
@@ -13816,7 +13817,7 @@ namespace vl
 	};
 
 /***********************************************************************
-用户模式对象
+User Mode Objects
 ***********************************************************************/
 
 	typedef long LockedInt;
@@ -18298,7 +18299,7 @@ namespace vl
 		{
 
 /***********************************************************************
-语法分析器通用策略
+Parser
 ***********************************************************************/
 
 			/// <summary>Base type of all parser strategy.</summary>
@@ -18329,7 +18330,7 @@ namespace vl
 			};
 
 /***********************************************************************
-语法分析器策略
+Parser with different strategies
 ***********************************************************************/
 
 			/// <summary>A strict parse. It doesn't allow ambiguity and error recovery.</summary>
@@ -18434,7 +18435,7 @@ namespace vl
 			};
 
 /***********************************************************************
-辅助函数
+Helper Functions
 ***********************************************************************/
 			
 			/// <summary>Create the correct strict parser from a parsing table.</summary>
@@ -18456,7 +18457,7 @@ namespace vl
 }
 
 /***********************************************************************
-反射
+Reflection for AST
 ***********************************************************************/
 
 #ifndef VCZH_DEBUG_NO_REFLECTION

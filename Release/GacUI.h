@@ -1121,10 +1121,7 @@ Developer: Zihan Chen(vczh)
 GacUI::Native Window
 
 Interfaces:
-  INativeWindow							：窗口适配器
-  INativeWindowListener					：窗口事件监听器
-  INativeController						：全局控制器
-  INativeControllerListener				：全局事件监听器
+  INativeController						: Interface for Operating System abstraction
 
 Renderers:
   GUI_GRAPHICS_RENDERER_GDI

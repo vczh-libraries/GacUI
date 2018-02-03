@@ -15,34 +15,34 @@ Developer: Zihan Chen(vczh)
 GacUI::GDI Helper Library
 
 Classes:
-  WinRegion				：图形区域
-  WinTransform			：坐标变换
-  WinBrush				：图形画刷
-  WinPen				：图形画笔
-  WinFont				：字体
-  WinDC					：设备上下文
-  WinControlDC			：控件DC
-  WinImageDC			：图形DC
-  WinProxyDC			：代理DC
-  WinDIB				：设备无关位图
-  WinMetaFileBuilder	：图形元文件编辑器
-  WinMetaFile			：图形元文件
-  WinBitmap				：位图
+  WinRegion				: Region
+  WinTransform			: Vertex Transformation
+  WinBrush				: Brush for filling geometries
+  WinPen				: Pen for filling lines
+  WinFont				: Font
+  WinDC					: Device Context
+  WinControlDC			: Device Context from HWND
+  WinImageDC			: Device Context from images
+  WinProxyDC			: Device Context from HDC
+  WinDIB				: Device Independent Bitmap
+  WinMetaFileBuilder	: Metafile Builder
+  WinMetaFile			: Metafile Image
+  WinBitmap				: Bitmap
 
 Comments:
   WinDC::PolyDraw
-    Points				：点数组
-	Actions				：一个说明点数组中点的作用的数组，可以是如下内容：
-		PT_MOVETO		：消耗1个点执行MoveTo
-		PT_LINETO		：消耗1个点执行LineTo
-		PT_BEZIERTO		：消耗3个点完成Bezier曲线
-		其中后两个值可以跟PT_CLOSEFIGURE进行or混合，以便让这个点跟最后一个PT_MOVETO或MoveTo的点连线组成封闭曲线
-	PointCount			：点数组中点的数量
+    Points				: Points
+	Actions				: How to deal with points
+		PT_MOVETO		：MoveTo and consume 1 point
+		PT_LINETO		：LineTo and consume 1 point
+		PT_BEZIERTO		：Draw a bezier curve and consume 3 points
+		PT_LINETO and PT_BEZIERTO can be mixed with PT_CLOSFIGURE to close the geometry begins from the last PT_MOVETO that happened
+	PointCount			: Point count
   WinDC::DrawBuffer
-    Format: 参见DrawText函数
+    Format: See DrawText
   Pen：
 	Style：
-		PS_SOLID、PS_DASH、PS_DOT、PS_DASHDOT、PS_DASHDOTDOT、PS_USERSTYLE(Geometric画笔有效)
+		PS_SOLID、PS_DASH、PS_DOT、PS_DASHDOT、PS_DASHDOTDOT、PS_USERSTYLE (for Geometric pen)
 	EndCap：
 		PS_ENDCAP_ROUND、PS_ENDCAP_SQUARE、PS_ENDCAP_FLAT
 	Join：
@@ -58,9 +58,8 @@ Comments:
 		BLACKNESS、DSTINVERT、MERGECOPY、MERGEPAINT、NOTSRCCOPY、NOTSRCERASE、
 		PATCOPY、PATINVERT、PATPAINT、SRCAND、SRCCOPY、SRCERASE、SRCINVERT、SRCPAINT、WHITENESS
   WinDIB：
-	TransformAlphaChannel()：	用于在修改非alpha图片的alpha通道后转换为alpha图片
-	Generate×××()：			用于自动生成非alpha图片的alpha通道值
-	被WinDC的Draw绘制的时候，alpha图片和非alpha图片会有不同的效果
+	TransformAlphaChannel()：	Convert to an GDI compatible bitmap with alpha channel after all pixels are filled.
+	Generate×××()：				Predefined alpha channel generation, TransformAlphaChannel should be called after that
 *******************************************************************************/
 
 #ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDI
@@ -76,7 +75,7 @@ namespace vl
 		{
 
 /*********************************************************************************************************
-图形
+Geometry
 *********************************************************************************************************/
 
 			class WinRegion : public Object
@@ -129,7 +128,7 @@ namespace vl
 			};
 		
 /*********************************************************************************************************
-图像
+Images
 *********************************************************************************************************/
 
 			class WinDC;
@@ -232,7 +231,7 @@ namespace vl
 			};
 
 /*********************************************************************************************************
-材料
+Resources
 *********************************************************************************************************/
 
 			class WinBrush : public Object
@@ -286,7 +285,7 @@ namespace vl
 			};
 
 /*********************************************************************************************************
-设备上下文
+Device Context
 *********************************************************************************************************/
 
 			extern WinBrush::Ptr		CreateDefaultBrush();
