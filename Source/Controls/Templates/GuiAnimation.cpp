@@ -124,7 +124,7 @@ GuiInfiniteAnimation
 
 				bool GetStopped()override
 				{
-					return true;
+					return false;
 				}
 			};
 
