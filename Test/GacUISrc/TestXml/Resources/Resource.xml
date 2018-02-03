@@ -4,12 +4,28 @@
       <ref.Members>
         <![CDATA[
           @cpp:Private
+          static func F(x: double): double
+          {
+            var y = x * x * 2;
+            return y;
+          }
+        
+          @cpp:Private
           static func BallAnimation(container: GuiBoundsComposition*, ball: GuiBoundsComposition*): IGuiAnimation^
           {
             return IGuiAnimation::CreateAnimation(
               func (time: UInt64): void
               {
                 var circleRatio = (cast double time) / 2000;
+                if (circleRatio < 0.5)
+                {
+                  circleRatio = F(circleRatio);
+                }
+                else
+                {
+                  circleRatio = 1 - F(1 - circleRatio);
+                }
+                
                 var angle = circleRatio * Math::Pi() * 2 + Math::Pi() * 1.5;
                 var sin = Math::Sin(angle);
                 var cos = Math::Cos(angle);
@@ -42,7 +58,7 @@
           static func WaitingAnimation(container: GuiBoundsComposition*): IGuiAnimation^
           ${
             var balls = {} of GuiBoundsComposition*[];
-            for (i in range [0, 10))
+            for (i in range [0, 8))
             {
               var ball = new GuiBoundsComposition*();
               balls.Add(ball);
@@ -63,7 +79,7 @@
               $Wait (cast UInt64 500);
               for (i in range [0, balls.Count))
               {
-                $PlayInGroup BallAnimationWithDelay(container, balls[i], 120 * i), 0;
+                $PlayInGroup BallAnimationWithDelay(container, balls[i], 150 * i), 0;
               }
               $WaitForGroup 0;
             }
