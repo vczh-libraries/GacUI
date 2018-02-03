@@ -8,61 +8,135 @@ namespace vl
 		{
 
 /***********************************************************************
-GuiWaitAnimation
+GuiTimedAnimation
 ***********************************************************************/
 
-			GuiWaitAnimation::GuiWaitAnimation(vuint64_t _length)
+			class GuiTimedAnimation : public Object, public virtual IGuiAnimation
 			{
+			protected:
+				DateTime						startTime;
+				vuint64_t						time;
+				bool							running = false;
 
-			}
-
-			GuiWaitAnimation::~GuiWaitAnimation()
-			{
-			}
-
-			void GuiWaitAnimation::Start()
-			{
-				startTime = DateTime::LocalTime();
-				running = true;
-			}
-
-			void GuiWaitAnimation::Pause()
-			{
-				running = false;
-				auto currentTime = DateTime::LocalTime();
-				auto delta = currentTime.totalMilliseconds - startTime.totalMilliseconds;
-				if (length > delta)
+			public:
+				GuiTimedAnimation()
 				{
-					length -= delta;
 				}
-				else
+
+				~GuiTimedAnimation()
 				{
-					length = 0;
 				}
+
+				void Start()override
+				{
+					startTime = DateTime::LocalTime();
+					time = 0;
+					running = true;
+				}
+
+				void Pause()override
+				{
+					time = GetTime();
+					running = false;
+				}
+
+				void Resume()override
+				{
+					startTime = DateTime::LocalTime();
+					running = true;
+				}
+
+				vuint64_t GetTime()
+				{
+					if (running)
+					{
+						return time + (DateTime::LocalTime().totalMilliseconds - startTime.totalMilliseconds);
+					}
+					else
+					{
+						return time;
+					}
+				}
+			};
+
+/***********************************************************************
+GuiFiniteAnimation
+***********************************************************************/
+
+			class GuiFiniteAnimation : public GuiTimedAnimation
+			{
+			protected:
+				vuint64_t						length = 0;
+				Func<void(vuint64_t)>			run;
+
+			public:
+				GuiFiniteAnimation(const Func<void(vuint64_t)>& _run, vuint64_t _length)
+					:run(_run)
+					, length(_length)
+				{
+				}
+
+				~GuiFiniteAnimation()
+				{
+				}
+
+				void Run()override
+				{
+					auto currentTime = GetTime();
+					if (currentTime < length)
+					{
+						run(currentTime);
+					}
+				}
+
+				bool GetStopped()override
+				{
+					return GetTime() >= length;
+				}
+			};
+
+/***********************************************************************
+GuiInfiniteAnimation
+***********************************************************************/
+
+			class GuiInfiniteAnimation : public GuiTimedAnimation
+			{
+			protected:
+				Func<void(vuint64_t)>			run;
+
+			public:
+				GuiInfiniteAnimation(const Func<void(vuint64_t)>& _run)
+					:run(_run)
+				{
+				}
+
+				~GuiInfiniteAnimation()
+				{
+				}
+
+				void Run()override
+				{
+					run(GetTime());
+				}
+
+				bool GetStopped()override
+				{
+					return true;
+				}
+			};
+
+/***********************************************************************
+IGuiAnimation
+***********************************************************************/
+
+			Ptr<IGuiAnimation> IGuiAnimation::CreateAnimation(const Func<void(vuint64_t)>& run, vuint64_t milliseconds)
+			{
+				return new GuiFiniteAnimation(run, milliseconds);
 			}
 
-			void GuiWaitAnimation::Resume()
+			Ptr<IGuiAnimation> IGuiAnimation::CreateAnimation(const Func<void(vuint64_t)>& run)
 			{
-				startTime = DateTime::LocalTime();
-				running = true;
-			}
-
-			void GuiWaitAnimation::Run()
-			{
-			}
-
-			bool GuiWaitAnimation::GetStopped()
-			{
-				if (running)
-				{
-					auto currentTime = DateTime::LocalTime();
-					auto delta = currentTime.totalMilliseconds - startTime.totalMilliseconds;
-					return length <= delta;
-				}
-				else
-				{
-					return length == 0;
-				}
+				return new GuiInfiniteAnimation(run);
 			}
 		}
 	}

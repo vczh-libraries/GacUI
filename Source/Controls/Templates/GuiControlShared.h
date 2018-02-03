@@ -141,6 +141,12 @@ Animation
 
 				/// <summary>Returns true if the animation has ended.</summary>
 				virtual bool							GetStopped() = 0;
+
+				/// <summary>Create a finite animation.</summary>
+				static Ptr<IGuiAnimation>				CreateAnimation(const Func<void(vuint64_t)>& run, vuint64_t milliseconds);
+
+				/// <summary>Create an infinite animation.</summary>
+				static Ptr<IGuiAnimation>				CreateAnimation(const Func<void(vuint64_t)>& run);
 			};
 
 /***********************************************************************

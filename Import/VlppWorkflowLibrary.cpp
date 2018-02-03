@@ -771,6 +771,51 @@ Libraries
 				};
 			}
 
+			DateTime Sys::GetLocalTime()
+			{
+				return DateTime::LocalTime();
+			}
+
+			DateTime Sys::GetUtcTime()
+			{
+				return DateTime::UtcTime();
+			}
+
+			DateTime Sys::ToLocalTime(DateTime dt)
+			{
+				return dt.ToLocalTime();
+			}
+
+			DateTime Sys::ToUtcTime(DateTime dt)
+			{
+				return dt.ToUtcTime();
+			}
+
+			DateTime Sys::Forward(DateTime dt, vuint64_t milliseconds)
+			{
+				return dt.Forward(milliseconds);
+			}
+
+			DateTime Sys::Backward(DateTime dt, vuint64_t milliseconds)
+			{
+				return dt.Backward(milliseconds);
+			}
+
+			DateTime Sys::CreateDateTime(vint year, vint month, vint day)
+			{
+				return DateTime::FromDateTime(year, month, day);
+			}
+
+			DateTime Sys::CreateDateTime(vint year, vint month, vint day, vint hour, vint minute, vint second, vint milliseconds)
+			{
+				return DateTime::FromDateTime(year, month, day, hour, minute, second, milliseconds);
+			}
+
+			DateTime Sys::CreateDateTime(vuint64_t filetime)
+			{
+				return DateTime::FromFileTime(filetime);
+			}
+
 			Ptr<IValueEnumerable> Sys::ReverseEnumerable(Ptr<IValueEnumerable> value)
 			{
 				auto list = value.Cast<IValueReadonlyList>();
@@ -905,9 +950,22 @@ WfLoadLibraryTypes
 				DEFINE_COMPARE(DateTime)
 #undef DEFINE_COMPARE
 #pragma pop_macro("CompareString")
+
+				CLASS_MEMBER_STATIC_METHOD(GetLocalTime, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(GetUtcTime, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(ToLocalTime, { L"dt" })
+				CLASS_MEMBER_STATIC_METHOD(ToUtcTime, { L"dt" })
+				CLASS_MEMBER_STATIC_METHOD(Forward, { L"dt" _ L"milliseconds" })
+				CLASS_MEMBER_STATIC_METHOD(Backward, { L"dt" _ L"milliseconds" })
+
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(CreateDateTime, {L"year" _ L"month" _ L"day" }, DateTime(*)(vint, vint, vint))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(CreateDateTime, { L"year" _ L"month" _ L"day" _ L"hour" _ L"minute" _ L"second" _ L"milliseconds" }, DateTime(*)(vint, vint, vint, vint, vint, vint, vint))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(CreateDateTime, { L"filetime" }, DateTime(*)(vuint64_t))
 			END_CLASS_MEMBER(Sys)
 
 			BEGIN_CLASS_MEMBER(Math)
+				CLASS_MEMBER_STATIC_METHOD(Pi, NO_PARAMETER)
+
 				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint8_t(*)(vint8_t))
 				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint16_t(*)(vint16_t))
 				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint32_t(*)(vint32_t))

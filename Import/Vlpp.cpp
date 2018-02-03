@@ -12132,6 +12132,8 @@ LoadPredefinedTypes
 				STRUCT_MEMBER(minute)
 				STRUCT_MEMBER(second)
 				STRUCT_MEMBER(milliseconds)
+				STRUCT_MEMBER(totalMilliseconds)
+				STRUCT_MEMBER(filetime)
 			END_STRUCT_MEMBER(DateTime)
 
 			BEGIN_INTERFACE_MEMBER(IValueEnumerator)

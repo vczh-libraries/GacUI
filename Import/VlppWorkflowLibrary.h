@@ -566,12 +566,24 @@ Libraries
 				DEFINE_COMPARE(DateTime)
 #undef DEFINE_COMPARE
 
+				static DateTime		GetLocalTime();
+				static DateTime		GetUtcTime();
+				static DateTime		ToLocalTime(DateTime dt);
+				static DateTime		ToUtcTime(DateTime dt);
+				static DateTime		Forward(DateTime dt, vuint64_t milliseconds);
+				static DateTime		Backward(DateTime dt, vuint64_t milliseconds);
+				static DateTime		CreateDateTime(vint year, vint month, vint day);
+				static DateTime		CreateDateTime(vint year, vint month, vint day, vint hour, vint minute, vint second, vint milliseconds);
+				static DateTime		CreateDateTime(vuint64_t filetime);
+
 				static Ptr<IValueEnumerable>		ReverseEnumerable(Ptr<IValueEnumerable> value);
 			};
 
 			class Math : public Description<Math>
 			{
 			public:
+				static double		Pi()							{ return ASin(1) * 2; }
+
 				static vint8_t		Abs(vint8_t value)				{ return value > 0 ? value : -value; }
 				static vint16_t		Abs(vint16_t value)				{ return value > 0 ? value : -value; }
 				static vint32_t		Abs(vint32_t value)				{ return value > 0 ? value : -value; }

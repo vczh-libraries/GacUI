@@ -17,23 +17,6 @@ namespace vl
 	{
 		namespace controls
 		{
-			class GuiWaitAnimation abstract : public virtual IGuiAnimation, public Description<GuiWaitAnimation>
-			{
-			protected:
-				DateTime						startTime;
-				vuint64_t						length = 0;
-				bool							running = false;
-
-			public:
-				GuiWaitAnimation(vuint64_t _length);
-				~GuiWaitAnimation();
-
-				void							Start()override;
-				void							Pause()override;
-				void							Resume()override;
-				void							Run()override;
-				bool							GetStopped()override;
-			};
 		}
 	}
 }

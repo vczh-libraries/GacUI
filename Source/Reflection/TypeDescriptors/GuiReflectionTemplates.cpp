@@ -85,6 +85,9 @@ Type Declaration
 				CLASS_MEMBER_METHOD(Pause, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Resume, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Run, NO_PARAMETER)
+
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(CreateAnimation, { L"run" _ L"milliseconds" }, Ptr<IGuiAnimation>(*)(const Func<void(vuint64_t)>&, vuint64_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(CreateAnimation, { L"run" }, Ptr<IGuiAnimation>(*)(const Func<void(vuint64_t)>&))
 			END_INTERFACE_MEMBER(IGuiAnimation)
 
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)

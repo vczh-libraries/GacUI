@@ -1,6 +1,18 @@
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+      <ref.Members>
+        <![CDATA[
+          [cpp:Private]
+          func CreateCircleAnimation(container: BoundsComposition*, ball: BoundsComposition*): IGuiAnimation^
+          {
+            return IGuiAnimation::CreateAnimation(
+              func (time: UInt64): void
+              {
+              });
+          }
+        ]]>
+      </ref.Members>
       <Window ref.Name="self" Text="GacUI XML资源临时测试" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
 
