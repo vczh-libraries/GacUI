@@ -9,6 +9,12 @@
 
           <att.Pages>
             <TabPage Text="Manual Animation">
+              <BoundsComposition AlignmentToParent="left:10 top:10 right:-1 bottom:-1" PreferredMinSize="x:200 y:200">
+                <SolidBackground Color="#FFC929"/>
+                <BoundsComposition PreferredMinSize="x:16 y:16">
+                  <SolidBackground Shape="shapeType:Ellipse" Color="#3F48CC"/>
+                </BoundsComposition>
+              </BoundsComposition>
             </TabPage>
 
             <TabPage Text="Gradient Animation">
