@@ -83,7 +83,7 @@ GuiFiniteAnimation
 				void Run()override
 				{
 					auto currentTime = GetTime();
-					if (currentTime < length)
+					if (currentTime < length && run)
 					{
 						run(currentTime);
 					}
@@ -116,7 +116,10 @@ GuiInfiniteAnimation
 
 				void Run()override
 				{
-					run(GetTime());
+					if (run)
+					{
+						run(GetTime());
+					}
 				}
 
 				bool GetStopped()override
