@@ -6,6 +6,8 @@ namespace vl
 	{
 		namespace controls
 		{
+			using namespace collections;
+			using namespace reflection::description;
 
 /***********************************************************************
 GuiTimedAnimation
@@ -150,6 +152,11 @@ IGuiAnimationCoroutine
 			{
 			protected:
 				IGuiAnimationCoroutine::Creator				creator;
+				Ptr<ICoroutine>								coroutine;
+
+				Ptr<IGuiAnimation>							waitingAnimation;
+				vint										waitingGroup = -1;
+				Group<vint, Ptr<IGuiAnimation>>				groupAnimations;
 
 			public:
 				GuiCoroutineAnimation(const IGuiAnimationCoroutine::Creator& _creator)
@@ -163,26 +170,60 @@ IGuiAnimationCoroutine
 
 				void OnPlayAndWait(Ptr<IGuiAnimation> animation)override
 				{
+					CHECK_ERROR(!waitingAnimation && waitingGroup == -1, L"GuiCoroutineAnimation::OnPlayAndWait(Ptr<IGuiAnimation>)#Cannot be called when an animation or a group has already been waiting for.");
+					waitingAnimation = animation;
+					waitingAnimation->Start();
 				}
 
 				void OnPlayInGroup(Ptr<IGuiAnimation> animation, vint groupId)override
 				{
+					groupAnimations.Add(groupId, animation);
+					animation->Start();
 				}
 
 				void OnWaitForGroup(vint groupId)override
 				{
+					CHECK_ERROR(!waitingAnimation && waitingGroup == -1, L"GuiCoroutineAnimation::OnWaitForGroup(vint)#Cannot be called when an animation or a group has already been waiting for.");
+					if (groupAnimations.Keys().Contains(groupId))
+					{
+						waitingGroup = groupId;
+					}
 				}
 
 				void Start()override
 				{
+					CHECK_ERROR(!coroutine, L"GuiCoroutineAnimation::Start()#Cannot be called more than once.");
+					coroutine = creator(this);
 				}
 
 				void Pause()override
 				{
+					if (waitingAnimation)
+					{
+						waitingAnimation->Pause();
+					}
+					for (vint i = 0; i < groupAnimations.Count(); i++)
+					{
+						FOREACH(Ptr<IGuiAnimation>, animation, groupAnimations.GetByIndex(i))
+						{
+							animation->Pause();
+						}
+					}
 				}
 
 				void Resume()override
 				{
+					if (waitingAnimation)
+					{
+						waitingAnimation->Resume();
+					}
+					for (vint i = 0; i < groupAnimations.Count(); i++)
+					{
+						FOREACH(Ptr<IGuiAnimation>, animation, groupAnimations.GetByIndex(i))
+						{
+							animation->Resume();
+						}
+					}
 				}
 
 				void Run()override
@@ -191,6 +232,20 @@ IGuiAnimationCoroutine
 
 				bool GetStopped()override
 				{
+					if (!coroutine) return false;
+					if (coroutine->GetStatus() != CoroutineStatus::Stopped) return false;
+					if (waitingAnimation && !waitingAnimation->GetStopped()) return false;
+					for (vint i = 0; i < groupAnimations.Count(); i++)
+					{
+						FOREACH(Ptr<IGuiAnimation>, animation, groupAnimations.GetByIndex(i))
+						{
+							if (!animation->GetStopped())
+							{
+								return false;
+							}
+						}
+					}
+					return true;
 				}
 			};
 
