@@ -4,13 +4,12 @@
       <ref.Members>
         <![CDATA[
           @cpp:Private
-          func CreateCircleAnimation(container: GuiBoundsComposition*, ball: GuiBoundsComposition*): IGuiAnimation^
+          static func CreateCircleAnimation(container: GuiBoundsComposition*, ball: GuiBoundsComposition*): IGuiAnimation^
           {
             return IGuiAnimation::CreateAnimation(
               func (time: UInt64): void
               {
-                var circleTime = (cast double (time % (cast UInt64 1600))) / 1600;
-                var angle = circleTime * Math::Pi() * 2;
+                var angle = (cast int time) * Math::Pi() * 2;
                 var sin = Math::Sin(angle);
                 var cos = Math::Cos(angle);
                 
@@ -22,14 +21,23 @@
                 var x = cast int Math::Round(cos * radiusOrbit + cx);
                 var y = cast int Math::Round(sin * radiusOrbit + cx);
                 ball.AlignmentToParent = {left:(x - radiusBall) top:(y - radiusBall) right:-1 bottom:-1};
-              });
+              }, cast UInt64 1600);
+          }
+          
+          @cpp:Private
+          static func WaitingAnimation(container: GuiBoundsComposition*, ball: GuiBoundsComposition*): IGuiAnimation^
+          ${
+            while (true)
+            {
+              $PlayAndWait CreateCircleAnimation(container, ball);
+            }
           }
         ]]>
       </ref.Members>
       <ref.Ctor>
         <![CDATA[
           {
-            self.AddAnimation(CreateCircleAnimation(containerMA, ballMA));
+            self.AddAnimation(WaitingAnimation(animationBackground, animationBall));
           }
         ]]>
       </ref.Ctor>
@@ -40,19 +48,16 @@
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
 
           <att.Pages>
-            <TabPage Text="Manual Animation">
-              <BoundsComposition ref.Name="containerMA" AlignmentToParent="left:10 top:10 right:-1 bottom:-1" PreferredMinSize="x:200 y:200">
+            <TabPage Text="Complex Animation">
+              <BoundsComposition ref.Name="animationBackground" AlignmentToParent="left:10 top:10 right:-1 bottom:-1" PreferredMinSize="x:200 y:200">
                 <SolidBackground Color="#FFC929"/>
-                <BoundsComposition ref.Name="ballMA" PreferredMinSize="x:16 y:16">
+                <BoundsComposition ref.Name="animationBall" PreferredMinSize="x:16 y:16">
                   <SolidBackground Shape="shapeType:Ellipse" Color="#3F48CC"/>
                 </BoundsComposition>
               </BoundsComposition>
             </TabPage>
 
             <TabPage Text="Gradient Animation">
-            </TabPage>
-
-            <TabPage Text="Complex Animation">
             </TabPage>
           </att.Pages>
         </Tab>

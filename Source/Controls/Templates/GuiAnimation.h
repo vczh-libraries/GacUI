@@ -31,10 +31,10 @@ namespace vl
 
 				typedef Func<Ptr<description::ICoroutine>(IImpl*)>	Creator;
 
-				static void					Wait(IImpl* impl, vuint64_t milliseconds);
-				static void					PlayAndWait(IImpl* impl, Ptr<IGuiAnimation> animation);
-				static void					PlayInGroup(IImpl* impl, Ptr<IGuiAnimation> animation, vint groupId);
-				static void					WaitForGroup(IImpl* impl, vint groupId);
+				static void					WaitAndPause(IImpl* impl, vuint64_t milliseconds);
+				static void					PlayAndWaitAndPause(IImpl* impl, Ptr<IGuiAnimation> animation);
+				static void					PlayInGroupAndPause(IImpl* impl, Ptr<IGuiAnimation> animation, vint groupId);
+				static void					WaitForGroupAndPause(IImpl* impl, vint groupId);
 				static Ptr<IGuiAnimation>	Create(const Creator& creator);
 			};
 		}

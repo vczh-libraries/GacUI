@@ -95,10 +95,10 @@ Type Declaration
 			END_INTERFACE_MEMBER(IGuiAnimationCoroutine::IImpl)
 
 			BEGIN_CLASS_MEMBER(IGuiAnimationCoroutine)
-				CLASS_MEMBER_STATIC_METHOD(Wait, { L"impl" _ L"milliseconds" })
-				CLASS_MEMBER_STATIC_METHOD(PlayAndWait, { L"impl" _ L"animation" })
-				CLASS_MEMBER_STATIC_METHOD(PlayInGroup, { L"impl" _ L"animation" _ L"groupId" })
-				CLASS_MEMBER_STATIC_METHOD(WaitForGroup, { L"impl" _ L"groupId" })
+				CLASS_MEMBER_STATIC_METHOD(WaitAndPause, { L"impl" _ L"milliseconds" })
+				CLASS_MEMBER_STATIC_METHOD(PlayAndWaitAndPause, { L"impl" _ L"animation" })
+				CLASS_MEMBER_STATIC_METHOD(PlayInGroupAndPause, { L"impl" _ L"animation" _ L"groupId" })
+				CLASS_MEMBER_STATIC_METHOD(WaitForGroupAndPause, { L"impl" _ L"groupId" })
 				CLASS_MEMBER_STATIC_METHOD(Create, { L"creator" })
 			END_CLASS_MEMBER(IGuiAnimationCoroutine)
 

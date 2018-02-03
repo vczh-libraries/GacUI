@@ -277,22 +277,22 @@ IGuiAnimationCoroutine
 				}
 			};
 
-			void IGuiAnimationCoroutine::Wait(IImpl* impl, vuint64_t milliseconds)
+			void IGuiAnimationCoroutine::WaitAndPause(IImpl* impl, vuint64_t milliseconds)
 			{
-				return PlayAndWait(impl, IGuiAnimation::CreateAnimation({}, milliseconds));
+				return PlayAndWaitAndPause(impl, IGuiAnimation::CreateAnimation({}, milliseconds));
 			}
 
-			void IGuiAnimationCoroutine::PlayAndWait(IImpl* impl, Ptr<IGuiAnimation> animation)
+			void IGuiAnimationCoroutine::PlayAndWaitAndPause(IImpl* impl, Ptr<IGuiAnimation> animation)
 			{
 				impl->OnPlayAndWait(animation);
 			}
 
-			void IGuiAnimationCoroutine::PlayInGroup(IImpl* impl, Ptr<IGuiAnimation> animation, vint groupId)
+			void IGuiAnimationCoroutine::PlayInGroupAndPause(IImpl* impl, Ptr<IGuiAnimation> animation, vint groupId)
 			{
 				impl->OnPlayInGroup(animation, groupId);
 			}
 
-			void IGuiAnimationCoroutine::WaitForGroup(IImpl* impl, vint groupId)
+			void IGuiAnimationCoroutine::WaitForGroupAndPause(IImpl* impl, vint groupId)
 			{
 				impl->OnWaitForGroup(groupId);
 			}
