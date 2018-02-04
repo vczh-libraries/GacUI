@@ -3142,7 +3142,22 @@ Type Declaration
 				CLASS_MEMBER_METHOD(Pause, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Resume, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Run, NO_PARAMETER)
+
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(CreateAnimation, { L"run" _ L"milliseconds" }, Ptr<IGuiAnimation>(*)(const Func<void(vuint64_t)>&, vuint64_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(CreateAnimation, { L"run" }, Ptr<IGuiAnimation>(*)(const Func<void(vuint64_t)>&))
 			END_INTERFACE_MEMBER(IGuiAnimation)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAnimationCoroutine::IImpl)
+				CLASS_MEMBER_BASE(IGuiAnimation)
+			END_INTERFACE_MEMBER(IGuiAnimationCoroutine::IImpl)
+
+			BEGIN_CLASS_MEMBER(IGuiAnimationCoroutine)
+				CLASS_MEMBER_STATIC_METHOD(WaitAndPause, { L"impl" _ L"milliseconds" })
+				CLASS_MEMBER_STATIC_METHOD(PlayAndWaitAndPause, { L"impl" _ L"animation" })
+				CLASS_MEMBER_STATIC_METHOD(PlayInGroupAndPause, { L"impl" _ L"animation" _ L"groupId" })
+				CLASS_MEMBER_STATIC_METHOD(WaitForGroupAndPause, { L"impl" _ L"groupId" })
+				CLASS_MEMBER_STATIC_METHOD(Create, { L"creator" })
+			END_CLASS_MEMBER(IGuiAnimationCoroutine)
 
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
 				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiTemplate*))

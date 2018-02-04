@@ -8123,6 +8123,12 @@ Animation
 
 				/// <summary>Returns true if the animation has ended.</summary>
 				virtual bool							GetStopped() = 0;
+
+				/// <summary>Create a finite animation.</summary>
+				static Ptr<IGuiAnimation>				CreateAnimation(const Func<void(vuint64_t)>& run, vuint64_t milliseconds);
+
+				/// <summary>Create an infinite animation.</summary>
+				static Ptr<IGuiAnimation>				CreateAnimation(const Func<void(vuint64_t)>& run);
 			};
 
 /***********************************************************************
@@ -8225,22 +8231,24 @@ namespace vl
 	{
 		namespace controls
 		{
-			class GuiWaitAnimation abstract : public virtual IGuiAnimation, public Description<GuiWaitAnimation>
+			class IGuiAnimationCoroutine : public Object, public Description<IGuiAnimationCoroutine>
 			{
-			protected:
-				DateTime						startTime;
-				vuint64_t						length = 0;
-				bool							running = false;
-
 			public:
-				GuiWaitAnimation(vuint64_t _length);
-				~GuiWaitAnimation();
+				class IImpl : public virtual IGuiAnimation, public Description<IImpl>
+				{
+				public:
+					virtual void			OnPlayAndWait(Ptr<IGuiAnimation> animation) = 0;
+					virtual void			OnPlayInGroup(Ptr<IGuiAnimation> animation, vint groupId) = 0;
+					virtual void			OnWaitForGroup(vint groupId) = 0;
+				};
 
-				void							Start()override;
-				void							Pause()override;
-				void							Resume()override;
-				void							Run()override;
-				bool							GetStopped()override;
+				typedef Func<Ptr<description::ICoroutine>(IImpl*)>	Creator;
+
+				static void					WaitAndPause(IImpl* impl, vuint64_t milliseconds);
+				static void					PlayAndWaitAndPause(IImpl* impl, Ptr<IGuiAnimation> animation);
+				static void					PlayInGroupAndPause(IImpl* impl, Ptr<IGuiAnimation> animation, vint groupId);
+				static void					WaitForGroupAndPause(IImpl* impl, vint groupId);
+				static Ptr<IGuiAnimation>	Create(const Creator& creator);
 			};
 		}
 	}
