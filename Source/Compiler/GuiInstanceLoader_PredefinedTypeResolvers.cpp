@@ -692,18 +692,23 @@ Animation Type Resolver (Animation)
 			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
 			{
 				bool generateImpl = true;
+				auto path = Path_InstanceClass;
+				auto assemblyType = GuiInstanceCompiledWorkflow::InstanceClass;
+
 				switch (context.passIndex)
 				{
 				case Instance_CollectEventHandlers:
 				case Instance_CollectInstanceTypes:
 					generateImpl = false;
+					path = Path_TemporaryClass;
+					assemblyType = GuiInstanceCompiledWorkflow::TemporaryClass;
 				case Instance_GenerateInstanceClass:
 					{
 						if (auto obj = resource->GetContent().Cast<GuiInstanceGradientAnimation>())
 						{
 							if (auto module = obj->Compile(context, L"<animation>" + obj->className, generateImpl, errors))
 							{
-								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass, obj->tagPosition);
+								Workflow_AddModule(context, path, module, assemblyType, obj->tagPosition);
 							}
 						}
 					}

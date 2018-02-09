@@ -164,11 +164,16 @@ GuiInstanceGradientAnimation
 					}
 					{
 						// prop Interpolation : (func(double):double) = <VALUE> {const, not observe}
-						auto prop = MakePtr<WfAutoPropertyDeclaration>();
-						addDecl(prop);
+						auto var = MakePtr<WfVariableDeclaration>();
+						addDecl(var);
 
-						prop->name.value = L"Interpolation";
-						prop->type = GetTypeFromTypeInfo(TypeInfoRetriver<Func<double(double)>>::CreateTypeInfo().Obj());
+						auto att = MakePtr<WfAttribute>();
+						att->category.value = L"cpp";
+						att->name.value = L"Private";
+						var->attributes.Add(att);
+
+						var->name.value = L"Interpolation";
+						var->type = GetTypeFromTypeInfo(TypeInfoRetriver<Func<double(double)>>::CreateTypeInfo().Obj());
 						if (interpolation == L"" || !generateImpl)
 						{
 							auto ref = MakePtr<WfOrderedNameExpression>();
@@ -177,14 +182,12 @@ GuiInstanceGradientAnimation
 							auto lambda = MakePtr<WfOrderedLambdaExpression>();
 							lambda->body = ref;
 
-							prop->expression = lambda;
+							var->expression = lambda;
 						}
 						else
 						{
-							prop->expression = Workflow_ParseExpression(precompileContext, interpolationPosition.originalLocation, interpolation, interpolationPosition, errors);
+							var->expression = Workflow_ParseExpression(precompileContext, interpolationPosition.originalLocation, interpolation, interpolationPosition, errors);
 						}
-						prop->configConst = WfAPConst::Readonly;
-						prop->configObserve = WfAPObserve::NotObservable;
 					}
 					{
 						// func GetDistance(<animation>begin : <TYPE>, <animation>end : <TYPE>) : double
