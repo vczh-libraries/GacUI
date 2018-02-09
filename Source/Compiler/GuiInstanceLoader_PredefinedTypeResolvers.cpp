@@ -321,8 +321,7 @@ Shared Script Type Resolver (Script)
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
 			{
-				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
-				if (xml)
+				if (auto xml = resource->GetContent().Cast<XmlDocument>())
 				{
 					auto schema = GuiInstanceSharedScript::LoadFromXml(resource, xml, errors);
 					return schema;
@@ -567,8 +566,7 @@ Instance Type Resolver (Instance)
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
 			{
-				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
-				if (xml)
+				if (auto xml = resource->GetContent().Cast<XmlDocument>())
 				{
 					Ptr<GuiInstanceContext> context = GuiInstanceContext::LoadFromXml(resource, xml, errors);
 					return context;
@@ -632,8 +630,7 @@ Instance Style Type Resolver (InstanceStyle)
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
 			{
-				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
-				if (xml)
+				if (auto xml = resource->GetContent().Cast<XmlDocument>())
 				{
 					auto context = GuiInstanceStyleContext::LoadFromXml(resource, xml, errors);
 					return context;
@@ -685,7 +682,15 @@ Animation Type Resolver (Animation)
 
 			PassSupport GetPassSupport(vint passIndex)override
 			{
-				return NotSupported;
+				switch (passIndex)
+				{
+				//case Instance_CollectInstanceTypes:
+				//case Instance_CollectEventHandlers:
+				//case Instance_GenerateInstanceClass:
+				//	return PerResource;
+				default:
+					return NotSupported;
+				}
 			}
 
 			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
@@ -695,7 +700,7 @@ Animation Type Resolver (Animation)
 
 			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
 			{
-				throw 0;
+				CHECK_FAIL(L"GuiResourceAnimationTypeResolver::PerPassPrecompile(GuiResourcePrecompileContext&, GuiResourceError::List&)#This function should not be called.");
 			}
 
 			IGuiResourceTypeResolver_Precompile* Precompile()override
@@ -719,10 +724,19 @@ Animation Type Resolver (Animation)
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
 			{
-				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
-				if (xml)
+				if (auto xml = resource->GetContent().Cast<XmlDocument>())
 				{
-					return xml;
+					if (xml->rootElement->name.value == L"Gradient")
+					{
+						return GuiInstanceGradientAnimation::LoadFromXml(resource, xml, errors);
+					}
+					else
+					{
+						errors.Add({
+							{ {resource }, xml->rootElement->codeRange.start },
+							L"Precompile: Unknown animation type: \"" + xml->rootElement->name.value + L"\"."
+							});
+					}
 				}
 				return nullptr;
 			}

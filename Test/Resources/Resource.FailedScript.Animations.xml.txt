@@ -1,0 +1,7 @@
+a1 # .\Resource.FailedScript.Animations.xml
+(3, 5): Precompile: Unknown animation type: "UnknownAnimation".
+a2 # .\Resource.FailedScript.Animations.xml
+(7, 5): Precompile: Missing required attribute: "ref.Class".
+(7, 5): Precompile: Missing required attribute: "Type".
+a3 # .\Resource.FailedScript.Animations.xml
+(12, 7): Precompile: Interpolation function should be contained in a CDATA section.

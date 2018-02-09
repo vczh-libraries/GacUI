@@ -17,12 +17,20 @@ namespace vl
 	{
 		class GuiInstanceAnimation : public Object, public Description<GuiInstanceAnimation>
 		{
-
+		public:
 		};
 
 		class GuiInstanceGradientAnimation : public GuiInstanceAnimation, public Description<GuiInstanceGradientAnimation>
 		{
 		public:
+			WString className;
+			WString typeName;
+			WString interpolation;
+
+			GuiResourceTextPos classPosition;
+			GuiResourceTextPos typePosition;
+			GuiResourceTextPos interpolationPosition;
+
 			static Ptr<GuiInstanceGradientAnimation>	LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<parsing::xml::XmlElement>				SaveToXml();
 		};

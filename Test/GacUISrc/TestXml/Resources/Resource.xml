@@ -23,6 +23,11 @@
 
   <Animation name="ColorAnimation">
     <Gradient ref.Class="demo::ColorAnimation" Type="demo::ColorDef">
+      <Interpolation>
+        <![CDATA[
+          [$1]
+        ]]>
+      </Interpolation>
     </Gradient>
   </Animation>
   
