@@ -1,4 +1,31 @@
 <Resource>
+  <Script name="ColorDef">
+    <Workflow>
+      <![CDATA[
+        module Animation;
+
+        using system::*;
+        using presentation::*;
+
+        namespace demo
+        {
+          class ColorDef
+          {
+            prop Top : Color = cast Color "#000000" {}
+            prop Bottom : Color = cast Color "#000000" {}
+            prop Shadow : Color = cast Color "#000000" {}
+            prop Thiciness : int = 0 {}
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
+  <Animation name="ColorAnimation">
+    <Gradient ref.Class="demo::ColorAnimation" Type="demo::ColorDef">
+    </Gradient>
+  </Animation>
+  
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
       <ref.Members>

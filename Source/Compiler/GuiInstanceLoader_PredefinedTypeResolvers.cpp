@@ -1,6 +1,7 @@
 #include "GuiInstanceLoader.h"
 #include "InstanceQuery/GuiInstanceQuery.h"
 #include "GuiInstanceSharedScript.h"
+#include "GuiInstanceAnimation.h"
 #include "WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
 #include "../Reflection/GuiInstanceCompiledWorkflow.h"
 #include "../Resources/GuiParserManager.h"
@@ -326,7 +327,7 @@ Shared Script Type Resolver (Script)
 					auto schema = GuiInstanceSharedScript::LoadFromXml(resource, xml, errors);
 					return schema;
 				}
-				return 0;
+				return nullptr;
 			}
 		};
 
@@ -561,7 +562,7 @@ Instance Type Resolver (Instance)
 				{
 					return obj->SaveToXml();
 				}
-				return 0;
+				return nullptr;
 			}
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
@@ -572,7 +573,7 @@ Instance Type Resolver (Instance)
 					Ptr<GuiInstanceContext> context = GuiInstanceContext::LoadFromXml(resource, xml, errors);
 					return context;
 				}
-				return 0;
+				return nullptr;
 			}
 		};
 
@@ -584,7 +585,7 @@ Instance Type Resolver (Instance)
 Instance Style Type Resolver (InstanceStyle)
 ***********************************************************************/
 
-		class GuiResourceInstanceStyleResolver
+		class GuiResourceInstanceStyleTypeResolver
 			: public Object
 			, public IGuiResourceTypeResolver
 			, private IGuiResourceTypeResolver_IndirectLoad
@@ -626,7 +627,7 @@ Instance Style Type Resolver (InstanceStyle)
 				{
 					return obj->SaveToXml();
 				}
-				return 0;
+				return nullptr;
 			}
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
@@ -637,7 +638,93 @@ Instance Style Type Resolver (InstanceStyle)
 					auto context = GuiInstanceStyleContext::LoadFromXml(resource, xml, errors);
 					return context;
 				}
-				return 0;
+				return nullptr;
+			}
+		};
+
+/***********************************************************************
+Animation Type Resolver (Animation)
+***********************************************************************/
+
+		class GuiResourceAnimationTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_Precompile
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Animation";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return false;
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return false;
+			}
+
+			vint GetMaxPassIndex()override
+			{
+				return Instance_Max;
+			}
+
+			PassSupport GetPassSupport(vint passIndex)override
+			{
+				return NotSupported;
+			}
+
+			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
+			{
+				throw 0;
+			}
+
+			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
+			{
+				throw 0;
+			}
+
+			IGuiResourceTypeResolver_Precompile* Precompile()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			{
+				if (auto obj = content.Cast<GuiInstanceStyleContext>())
+				{
+					return obj->SaveToXml();
+				}
+				return nullptr;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
+			{
+				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
+				if (xml)
+				{
+					return xml;
+				}
+				return nullptr;
 			}
 		};
 
@@ -657,9 +744,10 @@ Plugin
 			void Load()override
 			{
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
-				manager->SetTypeResolver(new GuiResourceInstanceStyleResolver);
 				manager->SetTypeResolver(new GuiResourceSharedScriptTypeResolver);
+				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
+				manager->SetTypeResolver(new GuiResourceInstanceStyleTypeResolver);
+				manager->SetTypeResolver(new GuiResourceAnimationTypeResolver);
 			}
 
 			void Unload()override
