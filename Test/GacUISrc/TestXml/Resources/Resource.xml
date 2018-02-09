@@ -16,6 +16,24 @@
             prop Shadow : Color = cast Color "#000000" {}
             prop Thiciness : int = 0 {}
           }
+          
+          func F(x: double): double
+          {
+            var y = x * x * 2;
+            return y;
+          }
+          
+          func G(x: double): double
+          {
+            if (x < 0.5)
+            {
+              return F(x);
+            }
+            else
+            {
+              return 1 - F(1 - x);
+            }
+          }
         }
       ]]>
     </Workflow>
@@ -24,9 +42,7 @@
   <Animation name="ColorAnimation">
     <Gradient ref.Class="demo::ColorAnimation" Type="demo::ColorDef">
       <Interpolation>
-        <![CDATA[
-          [$1]
-        ]]>
+        <![CDATA[G]]>
       </Interpolation>
     </Gradient>
   </Animation>
@@ -36,27 +52,12 @@
       <ref.Members>
         <![CDATA[
           @cpp:Private
-          static func F(x: double): double
-          {
-            var y = x * x * 2;
-            return y;
-          }
-        
-          @cpp:Private
           static func BallAnimation(container: GuiBoundsComposition*, ball: GuiBoundsComposition*): IGuiAnimation^
           {
             return IGuiAnimation::CreateAnimation(
               func (time: UInt64): void
               {
-                var circleRatio = (cast double time) / 2000;
-                if (circleRatio < 0.5)
-                {
-                  circleRatio = F(circleRatio);
-                }
-                else
-                {
-                  circleRatio = 1 - F(1 - circleRatio);
-                }
+                var circleRatio = G((cast double time) / 2000);
                 
                 var angle = circleRatio * Math::Pi() * 2 + Math::Pi() * 1.5;
                 var sin = Math::Sin(angle);

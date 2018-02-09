@@ -575,10 +575,6 @@ Instance Type Resolver (Instance)
 			}
 		};
 
-#undef Path_Shared
-#undef Path_TemporaryClass
-#undef Path_InstanceClass
-
 /***********************************************************************
 Instance Style Type Resolver (InstanceStyle)
 ***********************************************************************/
@@ -684,10 +680,10 @@ Animation Type Resolver (Animation)
 			{
 				switch (passIndex)
 				{
-				//case Instance_CollectInstanceTypes:
-				//case Instance_CollectEventHandlers:
-				//case Instance_GenerateInstanceClass:
-				//	return PerResource;
+				case Instance_CollectInstanceTypes:
+				case Instance_CollectEventHandlers:
+				case Instance_GenerateInstanceClass:
+					return PerResource;
 				default:
 					return NotSupported;
 				}
@@ -695,7 +691,24 @@ Animation Type Resolver (Animation)
 
 			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
 			{
-				throw 0;
+				bool generateImpl = true;
+				switch (context.passIndex)
+				{
+				case Instance_CollectEventHandlers:
+				case Instance_CollectInstanceTypes:
+					generateImpl = false;
+				case Instance_GenerateInstanceClass:
+					{
+						if (auto obj = resource->GetContent().Cast<GuiInstanceGradientAnimation>())
+						{
+							if (auto module = obj->Compile(context, L"<animation>" + obj->className, generateImpl, errors))
+							{
+								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass, obj->tagPosition);
+							}
+						}
+					}
+					break;
+				}
 			}
 
 			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
@@ -741,6 +754,10 @@ Animation Type Resolver (Animation)
 				return nullptr;
 			}
 		};
+
+#undef Path_Shared
+#undef Path_TemporaryClass
+#undef Path_InstanceClass
 
 /***********************************************************************
 Plugin

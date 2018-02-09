@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEANIMATION
 
 #include "../Resources/GuiResource.h"
+#include "../../Import/VlppWorkflowCompiler.h"
 
 namespace vl
 {
@@ -27,12 +28,14 @@ namespace vl
 			WString typeName;
 			WString interpolation;
 
+			GuiResourceTextPos tagPosition;
 			GuiResourceTextPos classPosition;
 			GuiResourceTextPos typePosition;
 			GuiResourceTextPos interpolationPosition;
 
 			static Ptr<GuiInstanceGradientAnimation>	LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<parsing::xml::XmlElement>				SaveToXml();
+			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors);
 		};
 	}
 }
