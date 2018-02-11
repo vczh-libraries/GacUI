@@ -483,10 +483,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<BottomScrollButtonTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::BottomScrollButtonTemplate* self = static_cast<::darkskin::BottomScrollButtonTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
+		::darkskin::BottomScrollButtonTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::BottomScrollButtonTemplate* __vwsn_this_);
 	public:
 		BottomScrollButtonTemplateConstructor();
@@ -523,12 +523,12 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ButtonTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::ButtonTemplate* self = static_cast<::darkskin::ButtonTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::darkskin::ButtonTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4;
 		void __vwsn_initialize_instance_(::darkskin::ButtonTemplate* __vwsn_this_);
 	public:
 		ButtonTemplateConstructor();
@@ -575,18 +575,18 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CheckBoxTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::CheckBoxTemplate* self = static_cast<::darkskin::CheckBoxTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_10 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::darkskin::CheckBoxTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_10;
 		void __vwsn_initialize_instance_(::darkskin::CheckBoxTemplate* __vwsn_this_);
 	public:
 		CheckBoxTemplateConstructor();
@@ -625,9 +625,9 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CheckItemBackgroundTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::CheckItemBackgroundTemplate* self = static_cast<::darkskin::CheckItemBackgroundTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::CheckItemBackgroundTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
 		void __vwsn_initialize_instance_(::darkskin::CheckItemBackgroundTemplate* __vwsn_this_);
 	public:
 		CheckItemBackgroundTemplateConstructor();
@@ -670,17 +670,17 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ComboBoxTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::ComboBoxTemplate* self = static_cast<::darkskin::ComboBoxTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::ComboBoxTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_8;
 		void __vwsn_initialize_instance_(::darkskin::ComboBoxTemplate* __vwsn_this_);
 	public:
 		ComboBoxTemplateConstructor();
@@ -721,7 +721,7 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CustomControlTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::CustomControlTemplate* __vwsn_precompile_0 = static_cast<::darkskin::CustomControlTemplate*>(nullptr);
+		::darkskin::CustomControlTemplate* __vwsn_precompile_0;
 		void __vwsn_initialize_instance_(::darkskin::CustomControlTemplate* __vwsn_this_);
 	public:
 		CustomControlTemplateConstructor();
@@ -780,7 +780,7 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ThemeConstructor>;
 #endif
 	protected:
-		::darkskin::Theme* __vwsn_precompile_0 = static_cast<::darkskin::Theme*>(nullptr);
+		::darkskin::Theme* __vwsn_precompile_0;
 		void __vwsn_initialize_instance_(::darkskin::Theme* __vwsn_this_);
 	public:
 		ThemeConstructor();
@@ -852,8 +852,8 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DatePickerTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::DatePickerTemplate* self = static_cast<::darkskin::DatePickerTemplate*>(nullptr);
-		::vl::presentation::templates::GuiCommonDatePickerLook* look = static_cast<::vl::presentation::templates::GuiCommonDatePickerLook*>(nullptr);
+		::darkskin::DatePickerTemplate* self;
+		::vl::presentation::templates::GuiCommonDatePickerLook* look;
 		void __vwsn_initialize_instance_(::darkskin::DatePickerTemplate* __vwsn_this_);
 	public:
 		DatePickerTemplateConstructor();
@@ -889,7 +889,7 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentLabelTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::DocumentLabelTemplate* self = static_cast<::darkskin::DocumentLabelTemplate*>(nullptr);
+		::darkskin::DocumentLabelTemplate* self;
 		void __vwsn_initialize_instance_(::darkskin::DocumentLabelTemplate* __vwsn_this_);
 	public:
 		DocumentLabelTemplateConstructor();
@@ -912,10 +912,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTextBoxTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::DocumentTextBoxTemplate* self = static_cast<::darkskin::DocumentTextBoxTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::DocumentTextBoxTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
 		void __vwsn_initialize_instance_(::darkskin::DocumentTextBoxTemplate* __vwsn_this_);
 	public:
 		DocumentTextBoxTemplateConstructor();
@@ -940,11 +940,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentViewerTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::DocumentViewerTemplate* self = static_cast<::darkskin::DocumentViewerTemplate*>(nullptr);
-		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::darkskin::DocumentViewerTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollViewLook* look;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::DocumentViewerTemplate* __vwsn_this_);
 	public:
 		DocumentViewerTemplateConstructor();
@@ -981,13 +981,13 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ExpandingDecoratorTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::ExpandingDecoratorTemplate* self = static_cast<::darkskin::ExpandingDecoratorTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
+		::darkskin::ExpandingDecoratorTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_5;
 		void __vwsn_initialize_instance_(::darkskin::ExpandingDecoratorTemplate* __vwsn_this_);
 	public:
 		ExpandingDecoratorTemplateConstructor();
@@ -1030,15 +1030,15 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GroupBoxTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::GroupBoxTemplate* self = static_cast<::darkskin::GroupBoxTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* titleBounds = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::GroupBoxTemplate* self;
+		::vl::presentation::compositions::GuiBoundsComposition* titleBounds;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_5;
 		void __vwsn_initialize_instance_(::darkskin::GroupBoxTemplate* __vwsn_this_);
 	public:
 		GroupBoxTemplateConstructor();
@@ -1071,9 +1071,9 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollHandleTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::HScrollHandleTemplate* self = static_cast<::darkskin::HScrollHandleTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::darkskin::HScrollHandleTemplate* self;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
 		void __vwsn_initialize_instance_(::darkskin::HScrollHandleTemplate* __vwsn_this_);
 	public:
 		HScrollHandleTemplateConstructor();
@@ -1105,19 +1105,19 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::HScrollTemplate* self = static_cast<::darkskin::HScrollTemplate*>(nullptr);
-		::vl::presentation::templates::GuiCommonScrollBehavior* behavior = static_cast<::vl::presentation::templates::GuiCommonScrollBehavior*>(nullptr);
-		::vl::presentation::controls::GuiButton* buttonDecrease = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::controls::GuiButton* buttonIncrease = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* handleContainer = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiPartialViewComposition* handle = static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiSideAlignedComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiSideAlignedComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_5 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::darkskin::HScrollTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
+		::vl::presentation::controls::GuiButton* buttonDecrease;
+		::vl::presentation::controls::GuiButton* buttonIncrease;
+		::vl::presentation::compositions::GuiBoundsComposition* handleContainer;
+		::vl::presentation::compositions::GuiPartialViewComposition* handle;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
 		void __vwsn_initialize_instance_(::darkskin::HScrollTemplate* __vwsn_this_);
 	public:
 		HScrollTemplateConstructor();
@@ -1151,17 +1151,17 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HTrackerTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::HTrackerTemplate* self = static_cast<::darkskin::HTrackerTemplate*>(nullptr);
-		::vl::presentation::templates::GuiCommonScrollBehavior* behavior = static_cast<::vl::presentation::templates::GuiCommonScrollBehavior*>(nullptr);
-		::vl::presentation::compositions::GuiPartialViewComposition* handle = static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_6 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::darkskin::HTrackerTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
+		::vl::presentation::compositions::GuiPartialViewComposition* handle;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
 		void __vwsn_initialize_instance_(::darkskin::HTrackerTemplate* __vwsn_this_);
 	public:
 		HTrackerTemplateConstructor();
@@ -1190,9 +1190,9 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ItemBackgroundTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::ItemBackgroundTemplate* self = static_cast<::darkskin::ItemBackgroundTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::ItemBackgroundTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
 		void __vwsn_initialize_instance_(::darkskin::ItemBackgroundTemplate* __vwsn_this_);
 	public:
 		ItemBackgroundTemplateConstructor();
@@ -1223,8 +1223,8 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LabelTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::LabelTemplate* self = static_cast<::darkskin::LabelTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::darkskin::LabelTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_0;
 		void __vwsn_initialize_instance_(::darkskin::LabelTemplate* __vwsn_this_);
 	public:
 		LabelTemplateConstructor();
@@ -1257,10 +1257,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LeftScrollButtonTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::LeftScrollButtonTemplate* self = static_cast<::darkskin::LeftScrollButtonTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
+		::darkskin::LeftScrollButtonTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::LeftScrollButtonTemplate* __vwsn_this_);
 	public:
 		LeftScrollButtonTemplateConstructor();
@@ -1313,24 +1313,24 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewColumnHeaderTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::ListViewColumnHeaderTemplate* self = static_cast<::darkskin::ListViewColumnHeaderTemplate*>(nullptr);
-		::vl::presentation::controls::GuiSelectableButton* buttonArrow = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_10 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_12 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_13 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::ListViewColumnHeaderTemplate* self;
+		::vl::presentation::controls::GuiSelectableButton* buttonArrow;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_13;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14;
 		void __vwsn_initialize_instance_(::darkskin::ListViewColumnHeaderTemplate* __vwsn_this_);
 	public:
 		ListViewColumnHeaderTemplateConstructor();
@@ -1383,11 +1383,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::ListViewTemplate* self = static_cast<::darkskin::ListViewTemplate*>(nullptr);
-		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::darkskin::ListViewTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollViewLook* look;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::ListViewTemplate* __vwsn_this_);
 	public:
 		ListViewTemplateConstructor();
@@ -1423,10 +1423,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuBarButtonTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::MenuBarButtonTemplate* self = static_cast<::darkskin::MenuBarButtonTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::darkskin::MenuBarButtonTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::MenuBarButtonTemplate* __vwsn_this_);
 	public:
 		MenuBarButtonTemplateConstructor();
@@ -1485,19 +1485,19 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuItemButtonTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::MenuItemButtonTemplate* self = static_cast<::darkskin::MenuItemButtonTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiSharedSizeItemComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiSharedSizeItemComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_9 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_11 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
+		::darkskin::MenuItemButtonTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_8;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_11;
 		void __vwsn_initialize_instance_(::darkskin::MenuItemButtonTemplate* __vwsn_this_);
 	public:
 		MenuItemButtonTemplateConstructor();
@@ -1547,10 +1547,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuSplitterTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::MenuSplitterTemplate* __vwsn_precompile_0 = static_cast<::darkskin::MenuSplitterTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::darkskin::MenuSplitterTemplate* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
 		void __vwsn_initialize_instance_(::darkskin::MenuSplitterTemplate* __vwsn_this_);
 	public:
 		MenuSplitterTemplateConstructor();
@@ -1575,11 +1575,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MultilineTextBoxTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::MultilineTextBoxTemplate* self = static_cast<::darkskin::MultilineTextBoxTemplate*>(nullptr);
-		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::darkskin::MultilineTextBoxTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollViewLook* look;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::MultilineTextBoxTemplate* __vwsn_this_);
 	public:
 		MultilineTextBoxTemplateConstructor();
@@ -1606,13 +1606,13 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ProgressBarTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::ProgressBarTemplate* self = static_cast<::darkskin::ProgressBarTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiPartialViewComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::ProgressBarTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiPartialViewComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_4;
 		void __vwsn_initialize_instance_(::darkskin::ProgressBarTemplate* __vwsn_this_);
 	public:
 		ProgressBarTemplateConstructor();
@@ -1651,18 +1651,18 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RadioButtonTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::RadioButtonTemplate* self = static_cast<::darkskin::RadioButtonTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_10 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::darkskin::RadioButtonTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_10;
 		void __vwsn_initialize_instance_(::darkskin::RadioButtonTemplate* __vwsn_this_);
 	public:
 		RadioButtonTemplateConstructor();
@@ -1703,10 +1703,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RightScrollButtonTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::RightScrollButtonTemplate* self = static_cast<::darkskin::RightScrollButtonTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
+		::darkskin::RightScrollButtonTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::RightScrollButtonTemplate* __vwsn_this_);
 	public:
 		RightScrollButtonTemplateConstructor();
@@ -1735,11 +1735,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ScrollViewTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::ScrollViewTemplate* self = static_cast<::darkskin::ScrollViewTemplate*>(nullptr);
-		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::darkskin::ScrollViewTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollViewLook* look;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::ScrollViewTemplate* __vwsn_this_);
 	public:
 		ScrollViewTemplateConstructor();
@@ -1770,12 +1770,12 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ShortcutKeyTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::ShortcutKeyTemplate* self = static_cast<::darkskin::ShortcutKeyTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::darkskin::ShortcutKeyTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4;
 		void __vwsn_initialize_instance_(::darkskin::ShortcutKeyTemplate* __vwsn_this_);
 	public:
 		ShortcutKeyTemplateConstructor();
@@ -1804,10 +1804,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SinglelineTextBoxTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::SinglelineTextBoxTemplate* self = static_cast<::darkskin::SinglelineTextBoxTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::SinglelineTextBoxTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
 		void __vwsn_initialize_instance_(::darkskin::SinglelineTextBoxTemplate* __vwsn_this_);
 	public:
 		SinglelineTextBoxTemplateConstructor();
@@ -1838,10 +1838,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabHeaderButtonTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::TabHeaderButtonTemplate* self = static_cast<::darkskin::TabHeaderButtonTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::darkskin::TabHeaderButtonTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::TabHeaderButtonTemplate* __vwsn_this_);
 	public:
 		TabHeaderButtonTemplateConstructor();
@@ -1880,10 +1880,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabHeaderTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::TabHeaderTemplate* self = static_cast<::darkskin::TabHeaderTemplate*>(nullptr);
-		::vl::presentation::controls::GuiTabPage* CurrentTabPage = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
-		::vl::presentation::controls::GuiSelectableButton* __vwsn_precompile_0 = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::darkskin::TabHeaderTemplate* self;
+		::vl::presentation::controls::GuiTabPage* CurrentTabPage;
+		::vl::presentation::controls::GuiSelectableButton* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		void __vwsn_initialize_instance_(::darkskin::TabHeaderTemplate* __vwsn_this_);
 	public:
 		TabHeaderTemplateConstructor();
@@ -1904,11 +1904,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabHeaderTemplate>;
 #endif
 	public:
-		::vl::presentation::controls::ITabCommandExecutor* __vwsn_prop_Commands = static_cast<::vl::presentation::controls::ITabCommandExecutor*>(nullptr);
+		::vl::presentation::controls::ITabCommandExecutor* __vwsn_prop_Commands;
 		::vl::presentation::controls::ITabCommandExecutor* GetCommands();
 		void SetCommands(::vl::presentation::controls::ITabCommandExecutor* __vwsn_value_);
 		::vl::Event<void()> CommandsChanged;
-		::vl::presentation::controls::GuiTabPage* __vwsn_parameter_CurrentTabPage = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
+		::vl::presentation::controls::GuiTabPage* __vwsn_parameter_CurrentTabPage;
 		::vl::presentation::controls::GuiTabPage* GetCurrentTabPage();
 		TabHeaderTemplate(::vl::presentation::controls::GuiTabPage* __vwsn_ctor_parameter_CurrentTabPage);
 		~TabHeaderTemplate();
@@ -1926,16 +1926,16 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::TabTemplate* self = static_cast<::darkskin::TabTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiRepeatFlowComposition* header = static_cast<::vl::presentation::compositions::GuiRepeatFlowComposition*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::TabTemplate* self;
+		::vl::presentation::compositions::GuiRepeatFlowComposition* header;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_6;
 		void __vwsn_initialize_instance_(::darkskin::TabTemplate* __vwsn_this_);
 	public:
 		TabTemplateConstructor();
@@ -1970,11 +1970,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::TextListTemplate* self = static_cast<::darkskin::TextListTemplate*>(nullptr);
-		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::darkskin::TextListTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollViewLook* look;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::TextListTemplate* __vwsn_this_);
 	public:
 		TextListTemplateConstructor();
@@ -2008,11 +2008,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitArrowTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::ToolstripSplitArrowTemplate* self = static_cast<::darkskin::ToolstripSplitArrowTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
+		::darkskin::ToolstripSplitArrowTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_3;
 		void __vwsn_initialize_instance_(::darkskin::ToolstripSplitArrowTemplate* __vwsn_this_);
 	public:
 		ToolstripSplitArrowTemplateConstructor();
@@ -2052,13 +2052,13 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripButtonTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::ToolstripButtonTemplate* self = static_cast<::darkskin::ToolstripButtonTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::ToolstripButtonTemplate* self;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_4;
 		void __vwsn_initialize_instance_(::darkskin::ToolstripButtonTemplate* __vwsn_this_);
 	public:
 		ToolstripButtonTemplateConstructor();
@@ -2109,17 +2109,17 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripDropdownButtonTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::ToolstripDropdownButtonTemplate* self = static_cast<::darkskin::ToolstripDropdownButtonTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>();
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::ToolstripDropdownButtonTemplate* self;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_8;
 		void __vwsn_initialize_instance_(::darkskin::ToolstripDropdownButtonTemplate* __vwsn_this_);
 	public:
 		ToolstripDropdownButtonTemplateConstructor();
@@ -2159,10 +2159,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripMenuTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::ToolstripMenuTemplate* __vwsn_precompile_0 = static_cast<::darkskin::ToolstripMenuTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::ToolstripMenuTemplate* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::ToolstripMenuTemplate* __vwsn_this_);
 	public:
 		ToolstripMenuTemplateConstructor();
@@ -2201,18 +2201,18 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitButtonTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::ToolstripSplitButtonTemplate* self = static_cast<::darkskin::ToolstripSplitButtonTemplate*>(nullptr);
-		::vl::presentation::controls::GuiSelectableButton* buttonArrow = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::ToolstripSplitButtonTemplate* self;
+		::vl::presentation::controls::GuiSelectableButton* buttonArrow;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8;
 		void __vwsn_initialize_instance_(::darkskin::ToolstripSplitButtonTemplate* __vwsn_this_);
 	public:
 		ToolstripSplitButtonTemplateConstructor();
@@ -2251,10 +2251,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitterTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::ToolstripSplitterTemplate* __vwsn_precompile_0 = static_cast<::darkskin::ToolstripSplitterTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::Gui3DSplitterElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::Gui3DSplitterElement>();
+		::darkskin::ToolstripSplitterTemplate* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::Gui3DSplitterElement> __vwsn_precompile_3;
 		void __vwsn_initialize_instance_(::darkskin::ToolstripSplitterTemplate* __vwsn_this_);
 	public:
 		ToolstripSplitterTemplateConstructor();
@@ -2277,8 +2277,8 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::ToolstripTemplate* __vwsn_precompile_0 = static_cast<::darkskin::ToolstripTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::darkskin::ToolstripTemplate* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
 		void __vwsn_initialize_instance_(::darkskin::ToolstripTemplate* __vwsn_this_);
 	public:
 		ToolstripTemplateConstructor();
@@ -2301,11 +2301,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TooltipTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::TooltipTemplate* __vwsn_precompile_0 = static_cast<::darkskin::TooltipTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::TooltipTemplate* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_3;
 		void __vwsn_initialize_instance_(::darkskin::TooltipTemplate* __vwsn_this_);
 	public:
 		TooltipTemplateConstructor();
@@ -2332,10 +2332,10 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TopScrollButtonTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::TopScrollButtonTemplate* self = static_cast<::darkskin::TopScrollButtonTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>();
+		::darkskin::TopScrollButtonTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::TopScrollButtonTemplate* __vwsn_this_);
 	public:
 		TopScrollButtonTemplateConstructor();
@@ -2366,11 +2366,11 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::TreeViewTemplate* self = static_cast<::darkskin::TreeViewTemplate*>(nullptr);
-		::vl::presentation::templates::GuiCommonScrollViewLook* look = static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::darkskin::TreeViewTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollViewLook* look;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
 		void __vwsn_initialize_instance_(::darkskin::TreeViewTemplate* __vwsn_this_);
 	public:
 		TreeViewTemplateConstructor();
@@ -2399,9 +2399,9 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollHandleTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::VScrollHandleTemplate* self = static_cast<::darkskin::VScrollHandleTemplate*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::darkskin::VScrollHandleTemplate* self;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
 		void __vwsn_initialize_instance_(::darkskin::VScrollHandleTemplate* __vwsn_this_);
 	public:
 		VScrollHandleTemplateConstructor();
@@ -2433,19 +2433,19 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::VScrollTemplate* self = static_cast<::darkskin::VScrollTemplate*>(nullptr);
-		::vl::presentation::templates::GuiCommonScrollBehavior* behavior = static_cast<::vl::presentation::templates::GuiCommonScrollBehavior*>(nullptr);
-		::vl::presentation::controls::GuiButton* buttonDecrease = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::controls::GuiButton* buttonIncrease = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* handleContainer = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiPartialViewComposition* handle = static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiSideAlignedComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiSideAlignedComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_5 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::darkskin::VScrollTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
+		::vl::presentation::controls::GuiButton* buttonDecrease;
+		::vl::presentation::controls::GuiButton* buttonIncrease;
+		::vl::presentation::compositions::GuiBoundsComposition* handleContainer;
+		::vl::presentation::compositions::GuiPartialViewComposition* handle;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
 		void __vwsn_initialize_instance_(::darkskin::VScrollTemplate* __vwsn_this_);
 	public:
 		VScrollTemplateConstructor();
@@ -2479,17 +2479,17 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VTrackerTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::VTrackerTemplate* self = static_cast<::darkskin::VTrackerTemplate*>(nullptr);
-		::vl::presentation::templates::GuiCommonScrollBehavior* behavior = static_cast<::vl::presentation::templates::GuiCommonScrollBehavior*>(nullptr);
-		::vl::presentation::compositions::GuiPartialViewComposition* handle = static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_6 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::darkskin::VTrackerTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
+		::vl::presentation::compositions::GuiPartialViewComposition* handle;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
 		void __vwsn_initialize_instance_(::darkskin::VTrackerTemplate* __vwsn_this_);
 	public:
 		VTrackerTemplateConstructor();
@@ -2524,33 +2524,33 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<WindowTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::darkskin::WindowTemplate* self = static_cast<::darkskin::WindowTemplate*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_13 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_15 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_16 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_18 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_19 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_20 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_21 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_23 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_24 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::WindowTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_13;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_15;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_18;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_19;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_20;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_21;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_23;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_24;
 		void __vwsn_initialize_instance_(::darkskin::WindowTemplate* __vwsn_this_);
 	public:
 		WindowTemplateConstructor();
