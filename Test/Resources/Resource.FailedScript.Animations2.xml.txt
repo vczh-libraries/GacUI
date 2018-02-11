@@ -1,2 +1,4 @@
- # .\Resource.FailedScript.Animations2.xml
-(9, 10): Error happened during parsing.
+a1 # .\Resource.FailedScript.Animations2.xml
+(36, 36): Precompile: Type "int" does not exist.
+a2 # .\Resource.FailedScript.Animations2.xml
+(44, 36): Precompile: Type "s1" is not a class.

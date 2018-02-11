@@ -6,21 +6,21 @@
         
         struct s1
         {
-        };
+        }
         
         struct s2
         {
           s : string;
-        };
+        }
         
         struct s3
         {
           i : int;
-        };
+        }
         
         class c1
         {
-          var p1 : s3 = {i:0}
+          var p1 : s3 = {i:0};
           prop p2 : s3 = {i:0} {const}
           prop p3 : s3 = {i:0} {not observe}
 
@@ -49,7 +49,7 @@
   </Animation>
 
   <Animation name="a3">
-    <Gradient ref.Class="a3" Type="int">
+    <Gradient ref.Class="a3" Type="c1">
       <Interpolation><![CDATA[;]]></Interpolation>
       <Targets>
         <Target Name="p1">
