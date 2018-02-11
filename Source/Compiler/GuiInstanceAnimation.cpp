@@ -954,45 +954,11 @@ GuiInstanceGradientAnimation::Compile
 							func->statement = block;
 
 							{
-								auto refBegin = MakePtr<WfReferenceExpression>();
-								refBegin->name.value = L"Begin";
-
-								auto refEnd = MakePtr<WfReferenceExpression>();
-								refEnd->name.value = L"End";
-
-								auto assignExpr = MakePtr<WfBinaryExpression>();
-								assignExpr->first = refBegin;
-								assignExpr->second = refEnd;
-								assignExpr->op = WfBinaryOperator::Assign;
-
-								auto exprStat = MakePtr<WfExpressionStatement>();
-								exprStat->expression = assignExpr;
-
-								block->statements.Add(exprStat);
-							}
-							{
 								auto refEnd = MakePtr<WfReferenceExpression>();
 								refEnd->name.value = L"End";
 
 								auto refTarget = MakePtr<WfReferenceExpression>();
 								refTarget->name.value = L"<ani>target";
-
-								auto assignExpr = MakePtr<WfBinaryExpression>();
-								assignExpr->first = refEnd;
-								assignExpr->second = refTarget;
-								assignExpr->op = WfBinaryOperator::Assign;
-
-								auto exprStat = MakePtr<WfExpressionStatement>();
-								exprStat->expression = assignExpr;
-
-								block->statements.Add(exprStat);
-							}
-							{
-								auto refBegin = MakePtr<WfReferenceExpression>();
-								refBegin->name.value = L"Begin";
-
-								auto refEnd = MakePtr<WfReferenceExpression>();
-								refEnd->name.value = L"End";
 
 								auto refCurrent = MakePtr<WfReferenceExpression>();
 								refCurrent->name.value = L"Current";
@@ -1002,8 +968,8 @@ GuiInstanceGradientAnimation::Compile
 
 								auto callExpr = MakePtr<WfCallExpression>();
 								callExpr->function = refFunc;
-								callExpr->arguments.Add(refBegin);
 								callExpr->arguments.Add(refEnd);
+								callExpr->arguments.Add(refTarget);
 								callExpr->arguments.Add(refCurrent);
 
 								auto refTime = MakePtr<WfReferenceExpression>();
@@ -1034,6 +1000,51 @@ GuiInstanceGradientAnimation::Compile
 								auto varStat = MakePtr<WfVariableStatement>();
 								varStat->variable = varDecl;
 								block->statements.Add(varStat);
+							}
+							{
+								FOREACH(Target, target, targets)
+								{
+									auto refBegin = MakePtr<WfReferenceExpression>();
+									refBegin->name.value = L"Begin";
+
+									auto refBeginProp = MakePtr<WfMemberExpression>();
+									refBeginProp->parent = refBegin;
+									refBeginProp->name.value = target.name;
+
+									auto refCurrent = MakePtr<WfReferenceExpression>();
+									refCurrent->name.value = L"Current";
+
+									auto refCurrentProp = MakePtr<WfMemberExpression>();
+									refCurrentProp->parent = refCurrent;
+									refCurrentProp->name.value = target.name;
+
+									auto assignExpr = MakePtr<WfBinaryExpression>();
+									assignExpr->first = refBeginProp;
+									assignExpr->second = refCurrentProp;
+									assignExpr->op = WfBinaryOperator::Assign;
+
+									auto exprStat = MakePtr<WfExpressionStatement>();
+									exprStat->expression = assignExpr;
+
+									block->statements.Add(exprStat);
+								}
+							}
+							{
+								auto refEnd = MakePtr<WfReferenceExpression>();
+								refEnd->name.value = L"End";
+
+								auto refTarget = MakePtr<WfReferenceExpression>();
+								refTarget->name.value = L"<ani>target";
+
+								auto assignExpr = MakePtr<WfBinaryExpression>();
+								assignExpr->first = refEnd;
+								assignExpr->second = refTarget;
+								assignExpr->op = WfBinaryOperator::Assign;
+
+								auto exprStat = MakePtr<WfExpressionStatement>();
+								exprStat->expression = assignExpr;
+
+								block->statements.Add(exprStat);
 							}
 							{
 								auto refCA = MakePtr<WfChildExpression>();

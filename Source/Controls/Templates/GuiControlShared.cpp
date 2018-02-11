@@ -273,6 +273,22 @@ GuiInstanceRootObject
 					return true;
 				}
 			}
+
+			bool GuiInstanceRootObject::KillAnimation(Ptr<IGuiAnimation> animation)
+			{
+				if (!animation) return false;
+				if (runningAnimations.Contains(animation.Obj()))
+				{
+					runningAnimations.Remove(animation.Obj());
+					return true;
+				}
+				if (pendingAnimations.Contains(animation.Obj()))
+				{
+					pendingAnimations.Remove(animation.Obj());
+					return true;
+				}
+				return false;
+			}
 		}
 	}
 }

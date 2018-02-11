@@ -221,6 +221,11 @@ Root Object
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="animation">The animation.</param>
 				bool											AddAnimation(Ptr<IGuiAnimation> animation);
+
+				/// <summary>Kill an animation.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="animation">The animation.</param>
+				bool											KillAnimation(Ptr<IGuiAnimation> animation);
 			};
 		}
 	}

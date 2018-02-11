@@ -168,12 +168,18 @@
               $WaitForGroup 0;
             }
           }
+          
           @cpp:Private
-          prop GradientColorDef : ColorAnimation^ = new ColorAnimation^(ColorDef::Dark()) {const, not observe}
+          var gradientColorDef : ColorAnimation^ = new ColorAnimation^(ColorDef::Dark());
+          
+          @cpp:Private
+          var lastGradientAnimation : IGuiAnimation^ = null;
           
           func PerformGradientAnimation(target: ColorDef^): void
           {
-            AddAnimation(GradientColorDef.CreateAnimation(target, (cast UInt64 500)));
+            KillAnimation(lastGradientAnimation);
+            lastGradientAnimation = gradientColorDef.CreateAnimation(target, (cast UInt64 500));
+            AddAnimation(lastGradientAnimation);
           }
           
           var counter : int = 0;
@@ -210,9 +216,9 @@
 
                 <Cell Site="row:0 column:0 rowSpan:4">
                   <Bounds PreferredMinSize="x:200 y:200">
-                    <GradientBackground Direction="Slash" Color1-bind="self.GradientColorDef.Current.Top" Color2-bind="self.GradientColorDef.Current.Bottom"/>
+                    <GradientBackground Direction="Slash" Color1-bind="self.gradientColorDef.Current.Top" Color2-bind="self.gradientColorDef.Current.Bottom"/>
                     <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                      <InnerShadow Color-bind="self.GradientColorDef.Current.Shadow" Thickness-bind="self.GradientColorDef.Current.Thickness"/>
+                      <InnerShadow Color-bind="self.gradientColorDef.Current.Shadow" Thickness-bind="self.gradientColorDef.Current.Thickness"/>
                     </Bounds>
                   </Bounds>
                 </Cell>
