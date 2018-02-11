@@ -14,7 +14,7 @@
             prop Top : Color = cast Color "#000000" {}
             prop Bottom : Color = cast Color "#000000" {}
             prop Shadow : Color = cast Color "#000000" {}
-            prop Thiciness : int = 0 {}
+            prop Thickness : int = 0 {}
           }
           
           func F(x: double): double
@@ -48,9 +48,9 @@
         <Target Name="Top"/>
         <Target Name="Bottom"/>
         <Target Name="Shadow"/>
-        <Target Name="Thiciness">
+        <Target Name="Thickness">
           <Interpolation>
-            <![CDATA[[$1]]]>
+            <![CDATA[ [$1] ]]>
           </Interpolation>
         </Target>
       </Targets>
