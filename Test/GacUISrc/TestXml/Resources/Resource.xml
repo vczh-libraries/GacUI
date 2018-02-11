@@ -13,7 +13,7 @@
           {
             prop Top : Color = cast Color "#000000" {}
             prop Bottom : Color = cast Color "#000000" {}
-            prop Shadow : Color = cast Color "#000000" {}
+            prop Shadow : Color = cast Color "#000000A0" {}
             prop Thickness : int = 0 {}
             
             static func Dark() : ColorDef^
@@ -39,7 +39,7 @@
               var def = new ColorDef^();
               def.Top = cast Color "#5555FF";
               def.Bottom = cast Color "#0000FF";
-              def.Thickness = 20;
+              def.Thickness = 10;
               return def;
             }
           }
@@ -173,14 +173,16 @@
           
           func PerformGradientAnimation(target: ColorDef^): void
           {
-            AddAnimation(GradientColorDef.CreateAnimation(target, (cast UInt64 1000)));
+            AddAnimation(GradientColorDef.CreateAnimation(target, (cast UInt64 500)));
           }
+          
+          var counter : int = 0;
         ]]>
       </ref.Members>
       <ref.Ctor>
         <![CDATA[
           {
-            /* self.AddAnimation(WaitingAnimation(animationBackground)); */
+            self.AddAnimation(WaitingAnimation(animationBackground));
           }
         ]]>
       </ref.Ctor>

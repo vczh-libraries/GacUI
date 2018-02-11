@@ -747,32 +747,6 @@ GuiInstanceGradientAnimation::Compile
 									refProp->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
 									refProp->strategy = WfTypeCastingStrategy::Strong;
 
-									auto refInt = MakePtr<WfReferenceExpression>();
-									refInt->name.value = intFunc;
-
-									auto refRatio = MakePtr<WfReferenceExpression>();
-									refRatio->name.value = L"<ani>ratio";
-
-									auto callExpr = MakePtr<WfCallExpression>();
-									callExpr->function = refInt;
-									callExpr->arguments.Add(refRatio);
-
-									auto mulExpr = MakePtr<WfBinaryExpression>();
-									mulExpr->first = refProp;
-									mulExpr->second = callExpr;
-									mulExpr->op = WfBinaryOperator::Mul;
-
-									part1 = mulExpr;
-								}
-								{
-									auto refParent = MakePtr<WfReferenceExpression>();
-									refParent->name.value = L"<ani>begin";
-
-									auto refProp = MakePtr<WfTypeCastingExpression>();
-									refProp->expression = accessor(refParent);
-									refProp->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
-									refProp->strategy = WfTypeCastingStrategy::Strong;
-
 									auto refOne = MakePtr<WfFloatingExpression>();
 									refOne->value.value = L"1.0";
 
@@ -794,6 +768,32 @@ GuiInstanceGradientAnimation::Compile
 									auto mulExpr = MakePtr<WfBinaryExpression>();
 									mulExpr->first = refProp;
 									mulExpr->second = subExpr;
+									mulExpr->op = WfBinaryOperator::Mul;
+
+									part1 = mulExpr;
+								}
+								{
+									auto refParent = MakePtr<WfReferenceExpression>();
+									refParent->name.value = L"<ani>end";
+
+									auto refProp = MakePtr<WfTypeCastingExpression>();
+									refProp->expression = accessor(refParent);
+									refProp->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
+									refProp->strategy = WfTypeCastingStrategy::Strong;
+
+									auto refInt = MakePtr<WfReferenceExpression>();
+									refInt->name.value = intFunc;
+
+									auto refRatio = MakePtr<WfReferenceExpression>();
+									refRatio->name.value = L"<ani>ratio";
+
+									auto callExpr = MakePtr<WfCallExpression>();
+									callExpr->function = refInt;
+									callExpr->arguments.Add(refRatio);
+
+									auto mulExpr = MakePtr<WfBinaryExpression>();
+									mulExpr->first = refProp;
+									mulExpr->second = callExpr;
 									mulExpr->op = WfBinaryOperator::Mul;
 
 									part2 = mulExpr;
@@ -902,7 +902,7 @@ GuiInstanceGradientAnimation::Compile
 							refEnd->name.value = L"End";
 
 							auto refCurrent = MakePtr<WfReferenceExpression>();
-							refCurrent->name.value = L"Begin";
+							refCurrent->name.value = L"Current";
 
 							auto refRatio = MakePtr<WfReferenceExpression>();
 							refRatio->name.value = L"<ani>ratio";
