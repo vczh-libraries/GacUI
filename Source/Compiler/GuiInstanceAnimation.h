@@ -24,14 +24,24 @@ namespace vl
 		class GuiInstanceGradientAnimation : public GuiInstanceAnimation, public Description<GuiInstanceGradientAnimation>
 		{
 		public:
-			WString className;
-			WString typeName;
-			WString interpolation;
+			struct Target
+			{
+				WString									name;
+				WString									interpolation;
 
-			GuiResourceTextPos tagPosition;
-			GuiResourceTextPos classPosition;
-			GuiResourceTextPos typePosition;
-			GuiResourceTextPos interpolationPosition;
+				GuiResourceTextPos						namePosition;
+				GuiResourceTextPos						interpolationPosition;
+			};
+
+			WString										className;
+			WString										typeName;
+			WString										interpolation;
+			collections::List<Target>					targets;
+
+			GuiResourceTextPos							tagPosition;
+			GuiResourceTextPos							classPosition;
+			GuiResourceTextPos							typePosition;
+			GuiResourceTextPos							interpolationPosition;
 
 			static Ptr<GuiInstanceGradientAnimation>	LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<parsing::xml::XmlElement>				SaveToXml();

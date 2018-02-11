@@ -3,5 +3,7 @@ a1 # .\Resource.FailedScript.Animations.xml
 a2 # .\Resource.FailedScript.Animations.xml
 (7, 5): Precompile: Missing required attribute: "ref.Class".
 (7, 5): Precompile: Missing required attribute: "Type".
+(7, 5): Precompile: Missing required element: "Targets".
 a3 # .\Resource.FailedScript.Animations.xml
 (12, 7): Precompile: Interpolation function should be contained in a CDATA section.
+(13, 7): Precompile: Missing required element: "Target" in "Targets".

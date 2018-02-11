@@ -44,6 +44,16 @@
       <Interpolation>
         <![CDATA[G]]>
       </Interpolation>
+      <Targets>
+        <Target Name="Top"/>
+        <Target Name="Bottom"/>
+        <Target Name="Shadow"/>
+        <Target Name="Thiciness">
+          <Interpolation>
+            <![CDATA[[$1]]]>
+          </Interpolation>
+        </Target>
+      </Targets>
     </Gradient>
   </Animation>
   

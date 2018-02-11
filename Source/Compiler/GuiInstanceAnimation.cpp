@@ -64,6 +64,62 @@ GuiInstanceGradientAnimation
 				}
 			}
 
+			if (auto targetsElement = XmlGetElement(xml->rootElement, L"Targets"))
+			{
+				FOREACH(Ptr<XmlElement>, targetElement, XmlGetElements(targetsElement, L"Target"))
+				{
+					Target target;
+
+					if (auto nameAttr = XmlGetAttribute(targetElement, L"Name"))
+					{
+						target.name = nameAttr->value.value;
+						target.namePosition = { { resource },nameAttr->value.codeRange.start };
+						target.namePosition.column += 1;
+					}
+					else
+					{
+						errors.Add({
+							{ { resource },targetElement->codeRange.start },
+							L"Precompile: Missing required attribute: \"Name\"."
+							});
+					}
+
+					if (auto interpolationElement = XmlGetElement(targetElement, L"Interpolation"))
+					{
+						if (auto cdata = interpolationElement->subNodes[0].Cast<XmlCData>())
+						{
+							target.interpolation = cdata->content.value;
+							target.interpolationPosition = { { resource },cdata->codeRange.start };
+							target.interpolationPosition.column += 9; // <![CDATA[
+						}
+						else
+						{
+							errors.Add({
+								{ { resource },interpolationElement->codeRange.start },
+								L"Precompile: Interpolation function should be contained in a CDATA section."
+								});
+						}
+					}
+
+					animation->targets.Add(target);
+				}
+
+				if (animation->targets.Count() == 0)
+				{
+					errors.Add({
+						{ { resource },targetsElement->codeRange.start },
+						L"Precompile: Missing required element: \"Target\" in \"Targets\"."
+						});
+				}
+			}
+			else
+			{
+				errors.Add({
+					{ { resource },xml->rootElement->codeRange.start },
+					L"Precompile: Missing required element: \"Targets\"."
+					});
+			}
+
 			return animation;
 		}
 
@@ -91,6 +147,34 @@ GuiInstanceGradientAnimation
 				auto cdata = MakePtr<XmlCData>();
 				cdata->content.value = interpolation;
 				interpolationElement->subNodes.Add(cdata);
+			}
+			{
+				auto targetsElement = MakePtr<XmlElement>();
+				targetsElement->name.value = L"Targets";
+				gradientElement->subNodes.Add(targetsElement);
+
+				FOREACH(Target, target, targets)
+				{
+					auto targetElement = MakePtr<XmlElement>();
+					targetElement->name.value = L"Target";
+					targetsElement->subNodes.Add(targetElement);
+					{
+						auto nameAttr = MakePtr<XmlAttribute>();
+						nameAttr->name.value = L"Name";
+						nameAttr->value.value = target.name;
+						targetElement->attributes.Add(nameAttr);
+					}
+					if (target.interpolation != L"")
+					{
+						auto interpolationElement = MakePtr<XmlElement>();
+						interpolationElement->name.value = L"Interpolation";
+						targetElement->subNodes.Add(interpolationElement);
+
+						auto cdata = MakePtr<XmlCData>();
+						cdata->content.value = target.interpolation;
+						interpolationElement->subNodes.Add(cdata);
+					}
+				}
 			}
 			return gradientElement;
 		}
@@ -189,6 +273,7 @@ GuiInstanceGradientAnimation
 							var->expression = Workflow_ParseExpression(precompileContext, interpolationPosition.originalLocation, interpolation, interpolationPosition, errors);
 						}
 					}
+
 					{
 						// func GetDistance(<animation>begin : <TYPE>, <animation>end : <TYPE>) : double
 						auto func = MakePtr<WfFunctionDeclaration>();

@@ -10,6 +10,7 @@
   <Animation name="a3">
     <Gradient ref.Class="a" Type="b">
       <Interpolation>[$1]</Interpolation>
+      <Targets/>
     </Gradient>
   </Animation>
 </Resource>
