@@ -4,8 +4,14 @@
       <![CDATA[
         module Test;
         
+        struct e
+        {
+        }
+        
         struct s1
         {
+          e1 : e;
+          e2 : e;
         }
         
         struct s2
@@ -58,6 +64,7 @@
         <Target Name="p4"/>
         <Target Name="p5"/>
         <Target Name="p6"/>
+        <Target Name="p7"/>
       </Targets>
     </Gradient>
   </Animation>

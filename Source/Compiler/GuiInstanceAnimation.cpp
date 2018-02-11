@@ -195,23 +195,26 @@ GuiInstanceGradientAnimation
 			return false;
 		}
 
-		void GuiInstanceGradientAnimation::ValidateStructMembers(GuiResourceTextPos namePosition, description::ITypeDescriptor* td, const WString& prefix, GuiResourceError::List& errors)
+		vint GuiInstanceGradientAnimation::ValidateStructMembers(GuiResourceTextPos namePosition, description::ITypeDescriptor* td, const WString& prefix, GuiResourceError::List& errors)
 		{
+			vint members = 0;
 			vint count = td->GetPropertyCount();
 			for (vint i = 0; i < count; i++)
 			{
 				auto propInfo = td->GetProperty(i);
-				ValidatePropertyType(namePosition, propInfo->GetReturn(), prefix + L"." + propInfo->GetName(), errors);
+				members += ValidatePropertyType(namePosition, propInfo->GetReturn(), prefix + L"." + propInfo->GetName(), errors);
 			}
 
 			count = td->GetBaseTypeDescriptorCount();
 			for (vint i = 0; i<count; i++)
 			{
-				ValidateStructMembers(namePosition, td->GetBaseTypeDescriptor(i), prefix, errors);
+				members += ValidateStructMembers(namePosition, td->GetBaseTypeDescriptor(i), prefix, errors);
 			}
+
+			return members;
 		}
 
-		void GuiInstanceGradientAnimation::ValidatePropertyType(GuiResourceTextPos namePosition, description::ITypeInfo* typeInfo, const WString& prefix, GuiResourceError::List& errors)
+		vint GuiInstanceGradientAnimation::ValidatePropertyType(GuiResourceTextPos namePosition, description::ITypeInfo* typeInfo, const WString& prefix, GuiResourceError::List& errors, bool rootValue)
 		{
 			auto td = typeInfo->GetTypeDescriptor();
 			switch (td->GetTypeDescriptorFlags())
@@ -219,16 +222,21 @@ GuiInstanceGradientAnimation
 			case TypeDescriptorFlags::Primitive:
 				if (IsSupportedPrimitiveType(td))
 				{
-					return;
+					return 1;
 				}
 				break;
 			case TypeDescriptorFlags::Struct:
 				{
-					ValidateStructMembers(namePosition, td, prefix, errors);
-					return;
+					vint members = ValidateStructMembers(namePosition, td, prefix, errors);
+					if (rootValue && members == 0)
+					{
+						errors.Add({ namePosition,L"Precompile: Property \"" + prefix + L"\" of type \"" + typeInfo->GetTypeFriendlyName() + L"\" in class \"" + typeName + L"\" is not supported. A struct should at least has one numeric primitive member to perform gradual changing." });
+					}
+					return members;
 				}
 			}
 			errors.Add({ namePosition,L"Precompile: Property \"" + prefix + L"\" of type \"" + typeInfo->GetTypeFriendlyName() + L"\" in class \"" + typeName + L"\" is not supported. Only numeric types and structs are able to perform gradual changing." });
+			return 0;
 		}
 
 		Ptr<workflow::WfModule> GuiInstanceGradientAnimation::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors)
@@ -344,7 +352,7 @@ GuiInstanceGradientAnimation
 							{
 								errors.Add({ target.namePosition,L"Precompile: Property \"" + target.name + L"\" is not supported. An writable property with event is expected." });
 							}
-							ValidatePropertyType(target.namePosition, propInfo->GetReturn(), propInfo->GetName(), errors);
+							ValidatePropertyType(target.namePosition, propInfo->GetReturn(), propInfo->GetName(), errors, true);
 
 							Ptr<WfExpression> interpolation;
 							if (target.interpolation != L"" && generateImpl)
