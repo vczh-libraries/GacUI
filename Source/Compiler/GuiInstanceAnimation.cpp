@@ -11,9 +11,9 @@ namespace vl
 		using namespace workflow;
 		using namespace workflow::analyzer;
 
-/***********************************************************************
-GuiInstanceGradientAnimation
-***********************************************************************/
+		/***********************************************************************
+		GuiInstanceGradientAnimation
+		***********************************************************************/
 
 		Ptr<GuiInstanceGradientAnimation> GuiInstanceGradientAnimation::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
@@ -206,7 +206,7 @@ GuiInstanceGradientAnimation
 			}
 
 			count = td->GetBaseTypeDescriptorCount();
-			for (vint i = 0; i<count; i++)
+			for (vint i = 0; i < count; i++)
 			{
 				members += ValidateStructMembers(namePosition, td->GetBaseTypeDescriptor(i), prefix, errors);
 			}
@@ -226,23 +226,23 @@ GuiInstanceGradientAnimation
 				}
 				break;
 			case TypeDescriptorFlags::Struct:
+			{
+				vint members = ValidateStructMembers(namePosition, td, prefix, errors);
+				if (rootValue && members == 0)
 				{
-					vint members = ValidateStructMembers(namePosition, td, prefix, errors);
-					if (rootValue && members == 0)
-					{
-						errors.Add({ namePosition,L"Precompile: Property \"" + prefix + L"\" of type \"" + typeInfo->GetTypeFriendlyName() + L"\" in class \"" + typeName + L"\" is not supported. A struct should at least has one numeric primitive member to perform gradual changing." });
-					}
-					return members;
+					errors.Add({ namePosition,L"Precompile: Property \"" + prefix + L"\" of type \"" + typeInfo->GetTypeFriendlyName() + L"\" in class \"" + typeName + L"\" is not supported. A struct should at least has one numeric primitive member to perform gradual changing." });
 				}
+				return members;
+			}
 			}
 			errors.Add({ namePosition,L"Precompile: Property \"" + prefix + L"\" of type \"" + typeInfo->GetTypeFriendlyName() + L"\" in class \"" + typeName + L"\" is not supported. Only numeric types and structs are able to perform gradual changing." });
 			return 0;
 		}
 
-		void GuiInstanceGradientAnimation::EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo)
+		void GuiInstanceGradientAnimation::EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo, description::IPropertyInfo* originPropInfo)
 		{
 			auto td = propInfo->GetReturn()->GetTypeDescriptor();
-			auto newAccessor= [=](Ptr<WfExpression> expression)
+			auto newAccessor = [=](Ptr<WfExpression> expression)
 			{
 				auto member = MakePtr<WfMemberExpression>();
 				member->parent = accessor(expression);
@@ -253,15 +253,15 @@ GuiInstanceGradientAnimation
 			switch (td->GetTypeDescriptorFlags())
 			{
 			case TypeDescriptorFlags::Primitive:
-				callback(newAccessor, propInfo);
+				callback(newAccessor, propInfo, originPropInfo);
 				break;
 			case TypeDescriptorFlags::Struct:
-				EnumerateMembers(callback, newAccessor, td);
+				EnumerateMembers(callback, newAccessor, td, originPropInfo);
 				break;
 			}
 		}
 
-		void GuiInstanceGradientAnimation::EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::ITypeDescriptor* td)
+		void GuiInstanceGradientAnimation::EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::ITypeDescriptor* td, description::IPropertyInfo* originPropInfo)
 		{
 			vint count = td->GetPropertyCount();
 			for (vint i = 0; i < count; i++)
@@ -271,13 +271,13 @@ GuiInstanceGradientAnimation
 				{
 					continue;
 				}
-				EnumerateMembers(callback, accessor, propInfo);
+				EnumerateMembers(callback, accessor, propInfo, originPropInfo);
 			}
 
 			count = td->GetBaseTypeDescriptorCount();
-			for (vint i = 0; i<count; i++)
+			for (vint i = 0; i < count; i++)
 			{
-				EnumerateMembers(callback, accessor, td->GetBaseTypeDescriptor(i));
+				EnumerateMembers(callback, accessor, td->GetBaseTypeDescriptor(i), originPropInfo);
 			}
 		}
 
@@ -286,7 +286,7 @@ GuiInstanceGradientAnimation
 			FOREACH(Target, target, targets)
 			{
 				auto propInfo = td->GetPropertyByName(target.name, true);
-				EnumerateMembers(callback, [](auto x) {return x; }, propInfo);
+				EnumerateMembers(callback, [](auto x) {return x; }, propInfo, propInfo);
 			}
 		}
 
@@ -409,8 +409,10 @@ GuiInstanceGradientAnimation
 						prop->configConst = WfAPConst::Writable;
 						prop->configObserve = WfAPObserve::Observable;
 					}
+
+					auto createIntVar = [&](const WString& name, const WString& interpolation, GuiResourceTextPos interpolationPosition)
 					{
-						// prop Interpolation : (func(double):double) = <VALUE> {const, not observe}
+						// prop <ani-int> : (func(double):double) = <VALUE> {const, not observe}
 						auto var = MakePtr<WfVariableDeclaration>();
 						addDecl(var);
 
@@ -419,7 +421,7 @@ GuiInstanceGradientAnimation
 						att->name.value = L"Private";
 						var->attributes.Add(att);
 
-						var->name.value = L"<ani>interpolation";
+						var->name.value = L"<ani-int>" + name;
 						var->type = GetTypeFromTypeInfo(TypeInfoRetriver<Func<double(double)>>::CreateTypeInfo().Obj());
 						if (interpolation == L"" || !generateImpl)
 						{
@@ -434,6 +436,14 @@ GuiInstanceGradientAnimation
 						else
 						{
 							var->expression = Workflow_ParseExpression(precompileContext, interpolationPosition.originalLocation, interpolation, interpolationPosition, errors);
+						}
+					};
+					createIntVar(L"", interpolation, interpolationPosition);
+					FOREACH(Target, target, targets)
+					{
+						if (target.interpolation != L"")
+						{
+							createIntVar(target.name, target.interpolation, target.interpolationPosition);
 						}
 					}
 
@@ -515,7 +525,7 @@ GuiInstanceGradientAnimation
 								declStat->variable = varScale;
 								block->statements.Add(declStat);
 							}
-							EnumerateProperties([&](EnumerateMemberAccessor accessor, description::IPropertyInfo*)
+							EnumerateProperties([&](EnumerateMemberAccessor accessor, description::IPropertyInfo*, description::IPropertyInfo* propInfo)
 							{
 								auto subBlock = MakePtr<WfBlockStatement>();
 								block->statements.Add(subBlock);
@@ -665,8 +675,17 @@ GuiInstanceGradientAnimation
 
 							SortedList<WString> varNames;
 
-							EnumerateProperties([&](EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo)
+							EnumerateProperties([&](EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo, description::IPropertyInfo* originPropInfo)
 							{
+								WString intFunc = L"<ani-int>";
+								if (From(targets).Any([=](const Target& target)
+									{
+										return target.name == originPropInfo->GetName() && target.interpolation != L"";
+									}))
+								{
+									intFunc += originPropInfo->GetName();
+								}
+
 								Ptr<WfExpression> part1, part2, propChain;
 								{
 									auto refParent = MakePtr<WfReferenceExpression>();
@@ -677,12 +696,19 @@ GuiInstanceGradientAnimation
 									refProp->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
 									refProp->strategy = WfTypeCastingStrategy::Strong;
 
+									auto refInt = MakePtr<WfReferenceExpression>();
+									refInt->name.value = intFunc;
+
 									auto refRatio = MakePtr<WfReferenceExpression>();
 									refRatio->name.value = L"<ani>ratio";
 
+									auto callExpr = MakePtr<WfCallExpression>();
+									callExpr->function = refInt;
+									callExpr->arguments.Add(refRatio);
+
 									auto mulExpr = MakePtr<WfBinaryExpression>();
 									mulExpr->first = refProp;
-									mulExpr->second = refRatio;
+									mulExpr->second = callExpr;
 									mulExpr->op = WfBinaryOperator::Mul;
 
 									part1 = mulExpr;
@@ -699,12 +725,19 @@ GuiInstanceGradientAnimation
 									auto refOne = MakePtr<WfFloatingExpression>();
 									refOne->value.value = L"1.0";
 
+									auto refInt = MakePtr<WfReferenceExpression>();
+									refInt->name.value = intFunc;
+
 									auto refRatio = MakePtr<WfReferenceExpression>();
 									refRatio->name.value = L"<ani>ratio";
 
+									auto callExpr = MakePtr<WfCallExpression>();
+									callExpr->function = refInt;
+									callExpr->arguments.Add(refRatio);
+
 									auto subExpr = MakePtr<WfBinaryExpression>();
 									subExpr->first = refOne;
-									subExpr->second = refRatio;
+									subExpr->second = callExpr;
 									subExpr->op = WfBinaryOperator::Sub;
 
 									auto mulExpr = MakePtr<WfBinaryExpression>();

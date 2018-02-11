@@ -34,7 +34,7 @@ namespace vl
 			};
 
 			using EnumerateMemberAccessor = const Func<Ptr<workflow::WfExpression>(Ptr<workflow::WfExpression>)>&;
-			using EnumerateMemberCallback = const Func<void(EnumerateMemberAccessor, description::IPropertyInfo*)>&;
+			using EnumerateMemberCallback = const Func<void(EnumerateMemberAccessor, description::IPropertyInfo*, description::IPropertyInfo*)>&;
 
 			WString										className;
 			WString										typeName;
@@ -53,8 +53,8 @@ namespace vl
 			vint										ValidateStructMembers(GuiResourceTextPos namePosition, description::ITypeDescriptor* td, const WString& prefix, GuiResourceError::List& errors);
 			vint										ValidatePropertyType(GuiResourceTextPos namePosition, description::ITypeInfo* typeInfo, const WString& prefix, GuiResourceError::List& errors, bool rootValue = false);
 
-			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo);
-			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::ITypeDescriptor* td);
+			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo, description::IPropertyInfo* originPropInfo);
+			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::ITypeDescriptor* td, description::IPropertyInfo* originPropInfo);
 			void										EnumerateProperties(EnumerateMemberCallback callback, description::ITypeDescriptor* td);
 			Ptr<workflow::WfExpression>					InitStruct(description::IPropertyInfo* propInfo, const WString& prefix, collections::SortedList<WString>& varNames);
 			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors);
