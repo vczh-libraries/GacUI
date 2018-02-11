@@ -433,6 +433,12 @@ GuiInstanceGradientAnimation
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
+						{
+							auto argument = MakePtr<WfFunctionArgument>();
+							argument->name.value = L"<animation>current";
+							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
+							func->arguments.Add(argument);
+						}
 						func->returnType = GetTypeFromTypeInfo(typeInfoDouble.Obj());
 
 						if (generateImpl)
@@ -451,6 +457,90 @@ GuiInstanceGradientAnimation
 								declStat->variable = varScale;
 								block->statements.Add(declStat);
 							}
+							EnumerateProperties([=](EnumerateMemberAccessor accessor)
+							{
+								auto subBlock = MakePtr<WfBlockStatement>();
+								block->statements.Add(subBlock);
+
+								auto createVariable = [=](const WString& first, const WString& second, const WString& variable)
+								{
+									auto refBegin = MakePtr<WfReferenceExpression>();
+									refBegin->name.value = first;
+
+									auto firstExpr = MakePtr<WfTypeCastingExpression>();
+									firstExpr->expression = accessor(refBegin);
+									firstExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
+									firstExpr->strategy = WfTypeCastingStrategy::Strong;
+
+									auto refEnd = MakePtr<WfReferenceExpression>();
+									refEnd->name.value = second;
+
+									auto secondExpr = MakePtr<WfTypeCastingExpression>();
+									secondExpr->expression = accessor(refEnd);
+									secondExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
+									secondExpr->strategy = WfTypeCastingStrategy::Strong;
+
+									auto subExpr = MakePtr<WfBinaryExpression>();
+									subExpr->first = firstExpr;
+									subExpr->second = secondExpr;
+									subExpr->op = WfBinaryOperator::Sub;
+
+									auto refAbs = MakePtr<WfChildExpression>();
+									refAbs->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
+									refAbs->name.value = L"Abs";
+
+									auto callExpr = MakePtr<WfCallExpression>();
+									callExpr->function = refAbs;
+									callExpr->arguments.Add(subExpr);
+
+									auto varRef = MakePtr<WfVariableDeclaration>();
+									varRef->name.value = variable;
+									varRef->expression = callExpr;
+
+									auto declStat = MakePtr<WfVariableStatement>();
+									declStat->variable = varRef;
+									subBlock->statements.Add(declStat);
+								};
+								createVariable(L"<animation>begin", L"<animation>end", L"<animation>ref");
+								createVariable(L"<animation>current", L"<animation>end", L"<animation>cur");
+								{
+									auto refRef = MakePtr<WfReferenceExpression>();
+									refRef->name.value = L"<animation>ref";
+
+									auto refCur = MakePtr<WfReferenceExpression>();
+									refCur->name.value = L"<animation>cur";
+
+									auto divExpr = MakePtr<WfBinaryExpression>();
+									divExpr->first = refCur;
+									divExpr->second = refRef;
+									divExpr->op = WfBinaryOperator::Div;
+
+									auto refMax = MakePtr<WfChildExpression>();
+									refMax->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
+									refMax->name.value = L"Max";
+
+									auto refScale = MakePtr<WfReferenceExpression>();
+									refScale->name.value = L"<animation>scale";
+
+									auto callExpr = MakePtr<WfCallExpression>();
+									callExpr->function = refMax;
+									callExpr->arguments.Add(refScale);
+									callExpr->arguments.Add(divExpr);
+
+									auto refScale2 = MakePtr<WfReferenceExpression>();
+									refScale2->name.value = L"<animation>scale";
+
+									auto assignExpr = MakePtr<WfBinaryExpression>();
+									assignExpr->first = refScale2;
+									assignExpr->second = callExpr;
+									assignExpr->op = WfBinaryOperator::Assign;
+
+									auto exprStat = MakePtr<WfExpressionStatement>();
+									exprStat->expression = assignExpr;
+
+									subBlock->statements.Add(exprStat);
+								}
+							}, td);
 							{
 								auto refOne = MakePtr<WfFloatingExpression>();
 								refOne->value.value = L"1.0";
