@@ -1,5 +1,6 @@
 #include "GuiInstanceAnimation.h"
 #include "WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
+#include "../Controls/Templates/GuiAnimation.h"
 
 namespace vl
 {
@@ -10,10 +11,11 @@ namespace vl
 		using namespace parsing::xml;
 		using namespace workflow;
 		using namespace workflow::analyzer;
+		using namespace presentation::controls;
 
-		/***********************************************************************
-		GuiInstanceGradientAnimation
-		***********************************************************************/
+/***********************************************************************
+GuiInstanceGradientAnimation::LoadFromXml
+***********************************************************************/
 
 		Ptr<GuiInstanceGradientAnimation> GuiInstanceGradientAnimation::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
@@ -124,6 +126,10 @@ namespace vl
 			return animation;
 		}
 
+/***********************************************************************
+GuiInstanceGradientAnimation::SaveToXml
+***********************************************************************/
+
 		Ptr<parsing::xml::XmlElement> GuiInstanceGradientAnimation::SaveToXml()
 		{
 			auto gradientElement = MakePtr<XmlElement>();
@@ -179,6 +185,10 @@ namespace vl
 			}
 			return gradientElement;
 		}
+
+/***********************************************************************
+GuiInstanceGradientAnimation::ValidatePropertyType
+***********************************************************************/
 
 		bool GuiInstanceGradientAnimation::IsSupportedPrimitiveType(description::ITypeDescriptor* td)
 		{
@@ -239,6 +249,10 @@ namespace vl
 			return 0;
 		}
 
+/***********************************************************************
+GuiInstanceGradientAnimation::EnumerateMembers
+***********************************************************************/
+
 		void GuiInstanceGradientAnimation::EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo, description::IPropertyInfo* originPropInfo)
 		{
 			auto td = propInfo->GetReturn()->GetTypeDescriptor();
@@ -289,6 +303,10 @@ namespace vl
 				EnumerateMembers(callback, [](auto x) {return x; }, propInfo, propInfo);
 			}
 		}
+
+/***********************************************************************
+GuiInstanceGradientAnimation::InitStruct
+***********************************************************************/
 
 		Ptr<workflow::WfExpression> GuiInstanceGradientAnimation::InitStruct(description::IPropertyInfo* propInfo, const WString& prefix, collections::SortedList<WString>& varNames)
 		{
@@ -341,6 +359,10 @@ namespace vl
 				return ref;
 			}
 		}
+
+/***********************************************************************
+GuiInstanceGradientAnimation::Compile
+***********************************************************************/
 
 		Ptr<workflow::WfModule> GuiInstanceGradientAnimation::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors)
 		{
@@ -846,6 +868,42 @@ namespace vl
 							exprStat->expression = callExpr;
 
 							block->statements.Add(exprStat);
+						}
+						else
+						{
+							func->statement = notImplemented();
+						}
+					}
+					{
+						// func CreateAnimation(<ani>begin : <TYPE>, <ani>end : <TYPE>, <ani>time : UInt64) : IGuiAnimation^
+						auto func = MakePtr<WfFunctionDeclaration>();
+						addDecl(func);
+
+						func->anonymity = WfFunctionAnonymity::Named;
+						func->name.value = L"CreateAnimation";
+						{
+							auto argument = MakePtr<WfFunctionArgument>();
+							argument->name.value = L"<ani>begin";
+							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
+							func->arguments.Add(argument);
+						}
+						{
+							auto argument = MakePtr<WfFunctionArgument>();
+							argument->name.value = L"<ani>end";
+							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
+							func->arguments.Add(argument);
+						}
+						{
+							auto argument = MakePtr<WfFunctionArgument>();
+							argument->name.value = L"<ani>ratio";
+							argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<vuint64_t>::CreateTypeInfo().Obj());
+							func->arguments.Add(argument);
+						}
+						func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<IGuiAnimation>>::CreateTypeInfo().Obj());
+
+						if (generateImpl)
+						{
+							func->statement = notImplemented();
 						}
 						else
 						{
