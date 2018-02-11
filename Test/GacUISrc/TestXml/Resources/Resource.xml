@@ -20,7 +20,7 @@
             {
               var def = new ColorDef^();
               def.Top = cast Color "#9999FF";
-              def.Bottom = cast Color "#7777FF";
+              def.Bottom = cast Color "#5555FF";
               def.Thickness = 0;
               return def;
             }
@@ -29,7 +29,7 @@
             {
               var def = new ColorDef^();
               def.Top = cast Color "#DDDDFF";
-              def.Bottom = cast Color "#BBBBFF";
+              def.Bottom = cast Color "#9999FF";
               def.Thickness = 0;
               return def;
             }
@@ -38,7 +38,7 @@
             {
               var def = new ColorDef^();
               def.Top = cast Color "#5555FF";
-              def.Bottom = cast Color "#3333FF";
+              def.Bottom = cast Color "#0000FF";
               def.Thickness = 20;
               return def;
             }
@@ -203,7 +203,10 @@
 
                 <Cell Site="row:0 column:0 rowSpan:4">
                   <Bounds PreferredMinSize="x:200 y:200">
-
+                    <GradientBackground Direction="Slash" Color1-bind="self.GradientColorDef.Top" Color2-bind="self.GradientColorDef.Bottom"/>
+                    <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                      <InnerShadow Color-bind="self.GradientColorDef.Shadow" Thickness-bind="self.GradientColorDef.Thickness"/>
+                    </Bounds>
                   </Bounds>
                 </Cell>
 
