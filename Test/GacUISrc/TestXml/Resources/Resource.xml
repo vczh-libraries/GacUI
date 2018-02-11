@@ -169,7 +169,12 @@
             }
           }
           @cpp:Private
-          prop GradientColorDef : ColorDef^ = ColorDef::Dark() {const, not observe}
+          prop GradientColorDef : ColorAnimation^ = new ColorAnimation^(ColorDef::Dark()) {const, not observe}
+          
+          func PerformGradientAnimation(target: ColorDef^): void
+          {
+            AddAnimation(GradientColorDef.CreateAnimation(target, (cast UInt64 1000)));
+          }
         ]]>
       </ref.Members>
       <ref.Ctor>
@@ -203,25 +208,25 @@
 
                 <Cell Site="row:0 column:0 rowSpan:4">
                   <Bounds PreferredMinSize="x:200 y:200">
-                    <GradientBackground Direction="Slash" Color1-bind="self.GradientColorDef.Top" Color2-bind="self.GradientColorDef.Bottom"/>
+                    <GradientBackground Direction="Slash" Color1-bind="self.GradientColorDef.Current.Top" Color2-bind="self.GradientColorDef.Current.Bottom"/>
                     <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                      <InnerShadow Color-bind="self.GradientColorDef.Shadow" Thickness-bind="self.GradientColorDef.Thickness"/>
+                      <InnerShadow Color-bind="self.GradientColorDef.Current.Shadow" Thickness-bind="self.GradientColorDef.Current.Thickness"/>
                     </Bounds>
                   </Bounds>
                 </Cell>
 
                 <Cell Site="row:0 column:1">
-                  <Button Text="Dark">
+                  <Button Text="Dark" ev.Clicked-eval="self.PerformGradientAnimation(ColorDef::Dark());">
                     <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   </Button>
                 </Cell>
                 <Cell Site="row:1 column:1">
-                  <Button Text="Light">
+                  <Button Text="Light" ev.Clicked-eval="self.PerformGradientAnimation(ColorDef::Light());">
                     <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   </Button>
                 </Cell>
                 <Cell Site="row:2 column:1">
-                  <Button Text="Sink">
+                  <Button Text="Sink" ev.Clicked-eval="self.PerformGradientAnimation(ColorDef::Sink());">
                     <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   </Button>
                 </Cell>
