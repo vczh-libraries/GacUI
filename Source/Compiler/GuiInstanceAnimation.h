@@ -56,6 +56,7 @@ namespace vl
 			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo);
 			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::ITypeDescriptor* td);
 			void										EnumerateProperties(EnumerateMemberCallback callback, description::ITypeDescriptor* td);
+			Ptr<workflow::WfExpression>					InitStruct(description::IPropertyInfo* propInfo, const WString& prefix, collections::SortedList<WString>& varNames);
 			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors);
 		};
 	}

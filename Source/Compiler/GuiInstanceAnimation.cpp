@@ -290,6 +290,58 @@ GuiInstanceGradientAnimation
 			}
 		}
 
+		Ptr<workflow::WfExpression> GuiInstanceGradientAnimation::InitStruct(description::IPropertyInfo* propInfo, const WString& prefix, collections::SortedList<WString>& varNames)
+		{
+			auto td = propInfo->GetReturn()->GetTypeDescriptor();
+			auto name = prefix + L"_" + propInfo->GetName();
+
+			if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Primitive)
+			{
+				if (!varNames.Contains(name))
+				{
+					return nullptr;
+				}
+				auto ref = MakePtr<WfReferenceExpression>();
+				ref->name.value = L"<ani>" + name;
+				return ref;
+			}
+			else
+			{
+				List<ITypeDescriptor*> tds;
+				tds.Add(td);
+				auto ref = MakePtr<WfConstructorExpression>();
+
+				for (vint i = 0; i < tds.Count(); i++)
+				{
+					auto currentTd = tds[i];
+					vint count = currentTd->GetBaseTypeDescriptorCount();
+					for (vint j = 0; j < count; j++)
+					{
+						tds.Add(currentTd->GetBaseTypeDescriptor(j));
+					}
+
+					count = currentTd->GetPropertyCount();
+					for (vint j = 0; j < count; j++)
+					{
+						auto currentPropInfo = currentTd->GetProperty(j);
+						if (auto expr = InitStruct(currentPropInfo, name, varNames))
+						{
+							auto pair = MakePtr<WfConstructorArgument>();
+
+							auto refName = MakePtr<WfReferenceExpression>();
+							refName->name.value = currentPropInfo->GetName();
+
+							pair->key = refName;
+							pair->value = expr;
+							ref->arguments.Add(pair);
+						}
+					}
+				}
+
+				return ref;
+			}
+		}
+
 		Ptr<workflow::WfModule> GuiInstanceGradientAnimation::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors)
 		{
 			if (auto td = description::GetTypeDescriptor(typeName))
@@ -690,6 +742,25 @@ GuiInstanceGradientAnimation
 								declStat->variable = varRef;
 								block->statements.Add(declStat);
 							}, td);
+
+							FOREACH(Target, target, targets)
+							{
+								auto refCurrent = MakePtr<WfReferenceExpression>();
+								refCurrent->name.value = L"<ani>current";
+
+								auto refProp = MakePtr<WfMemberExpression>();
+								refProp->parent = refCurrent;
+								refProp->name.value = target.name;
+
+								auto assignExpr = MakePtr<WfBinaryExpression>();
+								assignExpr->first = refProp;
+								assignExpr->second = InitStruct(td->GetPropertyByName(target.name, true), L"", varNames);
+								assignExpr->op = WfBinaryOperator::Assign;
+
+								auto exprStat = MakePtr<WfExpressionStatement>();
+								exprStat->expression = assignExpr;
+								block->statements.Add(exprStat);
+							}
 						}
 						else
 						{
