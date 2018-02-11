@@ -435,7 +435,47 @@ GuiInstanceGradientAnimation
 						}
 						func->returnType = GetTypeFromTypeInfo(typeInfoDouble.Obj());
 
-						func->statement = notImplemented();
+						if (generateImpl)
+						{
+							auto block = MakePtr<WfBlockStatement>();
+							func->statement = block;
+							{
+								auto refZero = MakePtr<WfFloatingExpression>();
+								refZero->value.value = L"0.0";
+
+								auto varScale = MakePtr<WfVariableDeclaration>();
+								varScale->name.value = L"<animation>scale";
+								varScale->expression = refZero;
+
+								auto declStat = MakePtr<WfVariableStatement>();
+								declStat->variable = varScale;
+								block->statements.Add(declStat);
+							}
+							{
+								auto refOne = MakePtr<WfFloatingExpression>();
+								refOne->value.value = L"1.0";
+
+								auto refScale = MakePtr<WfReferenceExpression>();
+								refScale->name.value = L"<animation>scale";
+
+								auto refMin = MakePtr<WfChildExpression>();
+								refMin->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
+								refMin->name.value = L"Min";
+
+								auto callExpr = MakePtr<WfCallExpression>();
+								callExpr->function = refMin;
+								callExpr->arguments.Add(refOne);
+								callExpr->arguments.Add(refScale);
+
+								auto returnStat = MakePtr<WfReturnStatement>();
+								returnStat->expression = callExpr;
+								block->statements.Add(returnStat);
+							}
+						}
+						else
+						{
+							func->statement = notImplemented();
+						}
 					}
 					{
 						// func Interpolate(<animation>begin : <TYPE>, <animation>end : <TYPE>, <animation>current : <TYPE>, <animation>ratio : double) : void
@@ -470,7 +510,15 @@ GuiInstanceGradientAnimation
 						}
 						func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 
-						func->statement = notImplemented();
+						if (generateImpl)
+						{
+							auto block = MakePtr<WfBlockStatement>();
+							func->statement = block;
+						}
+						else
+						{
+							func->statement = notImplemented();
+						}
 					}
 					{
 						// func Interpolate(<animation>ratio : double) : void
@@ -487,35 +535,42 @@ GuiInstanceGradientAnimation
 						}
 						func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 
-						auto block = MakePtr<WfBlockStatement>();
-						func->statement = block;
+						if (generateImpl)
+						{
+							auto block = MakePtr<WfBlockStatement>();
+							func->statement = block;
 
-						auto refBegin = MakePtr<WfReferenceExpression>();
-						refBegin->name.value = L"Begin";
+							auto refBegin = MakePtr<WfReferenceExpression>();
+							refBegin->name.value = L"Begin";
 
-						auto refEnd = MakePtr<WfReferenceExpression>();
-						refEnd->name.value = L"End";
+							auto refEnd = MakePtr<WfReferenceExpression>();
+							refEnd->name.value = L"End";
 
-						auto refCurrent = MakePtr<WfReferenceExpression>();
-						refCurrent->name.value = L"Begin";
+							auto refCurrent = MakePtr<WfReferenceExpression>();
+							refCurrent->name.value = L"Begin";
 
-						auto refRatio = MakePtr<WfReferenceExpression>();
-						refRatio->name.value = L"<animation>ratio";
+							auto refRatio = MakePtr<WfReferenceExpression>();
+							refRatio->name.value = L"<animation>ratio";
 
-						auto refFunc = MakePtr<WfReferenceExpression>();
-						refFunc->name.value = L"Interpolate";
+							auto refFunc = MakePtr<WfReferenceExpression>();
+							refFunc->name.value = L"Interpolate";
 
-						auto callExpr = MakePtr<WfCallExpression>();
-						callExpr->function = refFunc;
-						callExpr->arguments.Add(refBegin);
-						callExpr->arguments.Add(refEnd);
-						callExpr->arguments.Add(refCurrent);
-						callExpr->arguments.Add(refRatio);
+							auto callExpr = MakePtr<WfCallExpression>();
+							callExpr->function = refFunc;
+							callExpr->arguments.Add(refBegin);
+							callExpr->arguments.Add(refEnd);
+							callExpr->arguments.Add(refCurrent);
+							callExpr->arguments.Add(refRatio);
 
-						auto exprStat = MakePtr<WfExpressionStatement>();
-						exprStat->expression = callExpr;
+							auto exprStat = MakePtr<WfExpressionStatement>();
+							exprStat->expression = callExpr;
 
-						block->statements.Add(exprStat);
+							block->statements.Add(exprStat);
+						}
+						else
+						{
+							func->statement = notImplemented();
+						}
 					}
 
 					return module;
