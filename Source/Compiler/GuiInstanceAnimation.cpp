@@ -242,19 +242,21 @@ GuiInstanceGradientAnimation
 		void GuiInstanceGradientAnimation::EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo)
 		{
 			auto td = propInfo->GetReturn()->GetTypeDescriptor();
+			auto newAccessor= [=](Ptr<WfExpression> expression)
+			{
+				auto member = MakePtr<WfMemberExpression>();
+				member->parent = accessor(expression);
+				member->name.value = propInfo->GetName();
+				return member;
+			};
+
 			switch (td->GetTypeDescriptorFlags())
 			{
 			case TypeDescriptorFlags::Primitive:
-				callback([=](Ptr<WfExpression> expression)
-				{
-					auto member = MakePtr<WfMemberExpression>();
-					member->parent = accessor(expression);
-					member->name.value = propInfo->GetName();
-					return member;
-				});
+				callback(newAccessor);
 				break;
 			case TypeDescriptorFlags::Struct:
-				EnumerateMembers(callback, accessor, td);
+				EnumerateMembers(callback, newAccessor, td);
 				break;
 			}
 		}
@@ -265,6 +267,10 @@ GuiInstanceGradientAnimation
 			for (vint i = 0; i < count; i++)
 			{
 				auto propInfo = td->GetProperty(i);
+				if (propInfo->GetName() == L"value" && propInfo->GetOwnerTypeDescriptor() == description::GetTypeDescriptor<Color>())
+				{
+					continue;
+				}
 				EnumerateMembers(callback, accessor, propInfo);
 			}
 
