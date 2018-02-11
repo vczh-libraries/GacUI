@@ -239,6 +239,51 @@ GuiInstanceGradientAnimation
 			return 0;
 		}
 
+		void GuiInstanceGradientAnimation::EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo)
+		{
+			auto td = propInfo->GetReturn()->GetTypeDescriptor();
+			switch (td->GetTypeDescriptorFlags())
+			{
+			case TypeDescriptorFlags::Primitive:
+				callback([=](Ptr<WfExpression> expression)
+				{
+					auto member = MakePtr<WfMemberExpression>();
+					member->parent = accessor(expression);
+					member->name.value = propInfo->GetName();
+					return member;
+				});
+				break;
+			case TypeDescriptorFlags::Struct:
+				EnumerateMembers(callback, accessor, td);
+				break;
+			}
+		}
+
+		void GuiInstanceGradientAnimation::EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::ITypeDescriptor* td)
+		{
+			vint count = td->GetPropertyCount();
+			for (vint i = 0; i < count; i++)
+			{
+				auto propInfo = td->GetProperty(i);
+				EnumerateMembers(callback, accessor, propInfo);
+			}
+
+			count = td->GetBaseTypeDescriptorCount();
+			for (vint i = 0; i<count; i++)
+			{
+				EnumerateMembers(callback, accessor, td->GetBaseTypeDescriptor(i));
+			}
+		}
+
+		void GuiInstanceGradientAnimation::EnumerateProperties(EnumerateMemberCallback callback, description::ITypeDescriptor* td)
+		{
+			FOREACH(Target, target, targets)
+			{
+				auto propInfo = td->GetPropertyByName(target.name, true);
+				EnumerateMembers(callback, [](auto x) {return x; }, propInfo);
+			}
+		}
+
 		Ptr<workflow::WfModule> GuiInstanceGradientAnimation::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors)
 		{
 			if (auto td = description::GetTypeDescriptor(typeName))
@@ -316,7 +361,7 @@ GuiInstanceGradientAnimation
 						att->name.value = L"Private";
 						var->attributes.Add(att);
 
-						var->name.value = L"Interpolation";
+						var->name.value = L"<animation>interpolation";
 						var->type = GetTypeFromTypeInfo(TypeInfoRetriver<Func<double(double)>>::CreateTypeInfo().Obj());
 						if (interpolation == L"" || !generateImpl)
 						{
@@ -370,12 +415,12 @@ GuiInstanceGradientAnimation
 					}
 
 					{
-						// func GetDistance(<animation>begin : <TYPE>, <animation>end : <TYPE>) : double
+						// func GetTimeScale(<animation>begin : <TYPE>, <animation>end : <TYPE>, <animation>current : <TYPE>) : double
 						auto func = MakePtr<WfFunctionDeclaration>();
 						addDecl(func);
 
 						func->anonymity = WfFunctionAnonymity::Named;
-						func->name.value = L"GetDistance";
+						func->name.value = L"GetTimeScale";
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
 							argument->name.value = L"<animation>begin";
@@ -398,7 +443,7 @@ GuiInstanceGradientAnimation
 						addDecl(func);
 
 						func->anonymity = WfFunctionAnonymity::Named;
-						func->name.value = L"GetDistance";
+						func->name.value = L"Interpolate";
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
 							argument->name.value = L"<animation>begin";

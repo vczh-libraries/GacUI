@@ -33,6 +33,9 @@ namespace vl
 				GuiResourceTextPos						interpolationPosition;
 			};
 
+			using EnumerateMemberAccessor = const Func<Ptr<workflow::WfExpression>(Ptr<workflow::WfExpression>)>&;
+			using EnumerateMemberCallback = const Func<void(EnumerateMemberAccessor)>&;
+
 			WString										className;
 			WString										typeName;
 			WString										interpolation;
@@ -49,6 +52,10 @@ namespace vl
 			bool										IsSupportedPrimitiveType(description::ITypeDescriptor* td);
 			vint										ValidateStructMembers(GuiResourceTextPos namePosition, description::ITypeDescriptor* td, const WString& prefix, GuiResourceError::List& errors);
 			vint										ValidatePropertyType(GuiResourceTextPos namePosition, description::ITypeInfo* typeInfo, const WString& prefix, GuiResourceError::List& errors, bool rootValue = false);
+
+			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo);
+			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::ITypeDescriptor* td);
+			void										EnumerateProperties(EnumerateMemberCallback callback, description::ITypeDescriptor* td);
 			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors);
 		};
 	}
