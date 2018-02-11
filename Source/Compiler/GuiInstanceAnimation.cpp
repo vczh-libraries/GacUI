@@ -892,7 +892,7 @@ GuiInstanceGradientAnimation::Compile
 						}
 					}
 					{
-						// func CreateAnimation(<ani>begin : <TYPE>, <ani>end : <TYPE>, <ani>time : UInt64) : IGuiAnimation^
+						// func CreateAnimation(<ani>target : <TYPE>, <ani>time : UInt64) : IGuiAnimation^
 						auto func = MakePtr<WfFunctionDeclaration>();
 						addDecl(func);
 
@@ -900,19 +900,13 @@ GuiInstanceGradientAnimation::Compile
 						func->name.value = L"CreateAnimation";
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<ani>begin";
+							argument->name.value = L"<ani>target";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<ani>end";
-							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
-							func->arguments.Add(argument);
-						}
-						{
-							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<ani>ratio";
+							argument->name.value = L"<ani>time";
 							argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<vuint64_t>::CreateTypeInfo().Obj());
 							func->arguments.Add(argument);
 						}
@@ -920,7 +914,158 @@ GuiInstanceGradientAnimation::Compile
 
 						if (generateImpl)
 						{
-							func->statement = notImplemented();
+							auto block = MakePtr<WfBlockStatement>();
+							func->statement = block;
+
+							{
+								auto refBegin = MakePtr<WfReferenceExpression>();
+								refBegin->name.value = L"Begin";
+
+								auto refEnd = MakePtr<WfReferenceExpression>();
+								refEnd->name.value = L"End";
+
+								auto assignExpr = MakePtr<WfBinaryExpression>();
+								assignExpr->first = refBegin;
+								assignExpr->second = refEnd;
+								assignExpr->op = WfBinaryOperator::Assign;
+
+								auto exprStat = MakePtr<WfExpressionStatement>();
+								exprStat->expression = assignExpr;
+
+								block->statements.Add(exprStat);
+							}
+							{
+								auto refEnd = MakePtr<WfReferenceExpression>();
+								refEnd->name.value = L"End";
+
+								auto refTarget = MakePtr<WfReferenceExpression>();
+								refTarget->name.value = L"<ani>target";
+
+								auto assignExpr = MakePtr<WfBinaryExpression>();
+								assignExpr->first = refEnd;
+								assignExpr->second = refTarget;
+								assignExpr->op = WfBinaryOperator::Assign;
+
+								auto exprStat = MakePtr<WfExpressionStatement>();
+								exprStat->expression = assignExpr;
+
+								block->statements.Add(exprStat);
+							}
+							{
+								auto refBegin = MakePtr<WfReferenceExpression>();
+								refBegin->name.value = L"Begin";
+
+								auto refEnd = MakePtr<WfReferenceExpression>();
+								refEnd->name.value = L"End";
+
+								auto refCurrent = MakePtr<WfReferenceExpression>();
+								refCurrent->name.value = L"Current";
+
+								auto refFunc = MakePtr<WfReferenceExpression>();
+								refFunc->name.value = L"GetTimeScale";
+
+								auto callExpr = MakePtr<WfCallExpression>();
+								callExpr->function = refFunc;
+								callExpr->arguments.Add(refBegin);
+								callExpr->arguments.Add(refEnd);
+								callExpr->arguments.Add(refCurrent);
+
+								auto refTime = MakePtr<WfReferenceExpression>();
+								refTime->name.value = L"<ani>time";
+
+								auto mulExpr = MakePtr<WfBinaryExpression>();
+								mulExpr->first = refTime;
+								mulExpr->second = callExpr;
+								mulExpr->op = WfBinaryOperator::Mul;
+
+								auto refRound = MakePtr<WfChildExpression>();
+								refRound->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
+								refRound->name.value = L"Round";
+
+								auto callRoundExpr = MakePtr<WfCallExpression>();
+								callRoundExpr->function = refRound;
+								callRoundExpr->arguments.Add(mulExpr);
+
+								auto castExpr = MakePtr<WfTypeCastingExpression>();
+								castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<vuint64_t>::CreateTypeInfo().Obj());
+								castExpr->expression = callRoundExpr;
+								castExpr->strategy = WfTypeCastingStrategy::Strong;
+
+								auto varDecl = MakePtr<WfVariableDeclaration>();
+								varDecl->name.value = L"<ani>scaledTime";
+								varDecl->expression = castExpr;
+
+								auto varStat = MakePtr<WfVariableStatement>();
+								varStat->variable = varDecl;
+								block->statements.Add(varStat);
+							}
+							{
+								auto refCA = MakePtr<WfChildExpression>();
+								refCA->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<IGuiAnimation>());
+								refCA->name.value = L"CreateAnimation";
+
+								auto funcExpr = MakePtr<WfFunctionExpression>();
+								{
+									auto funcDecl = MakePtr<WfFunctionDeclaration>();
+									funcExpr->function = funcDecl;
+
+									funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
+									{
+										auto argument = MakePtr<WfFunctionArgument>();
+										argument->name.value = L"<ani>currentTime";
+										argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<vuint64_t>::CreateTypeInfo().Obj());
+										funcDecl->arguments.Add(argument);
+									}
+									funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
+
+									auto subBlock = MakePtr<WfBlockStatement>();
+									funcDecl->statement = subBlock;
+
+									{
+										auto refCurrentTime = MakePtr<WfReferenceExpression>();
+										refCurrentTime->name.value = L"<ani>currentTime";
+
+										auto firstExpr = MakePtr<WfTypeCastingExpression>();
+										firstExpr->expression = refCurrentTime;
+										firstExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
+										firstExpr->strategy = WfTypeCastingStrategy::Strong;
+
+										auto refTime = MakePtr<WfReferenceExpression>();
+										refTime->name.value = L"<ani>time";
+
+										auto secondExpr = MakePtr<WfTypeCastingExpression>();
+										secondExpr->expression = refTime;
+										secondExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
+										secondExpr->strategy = WfTypeCastingStrategy::Strong;
+
+										auto divExpr = MakePtr<WfBinaryExpression>();
+										divExpr->first = firstExpr;
+										divExpr->second = secondExpr;
+										divExpr->op = WfBinaryOperator::Div;
+
+										auto refInt = MakePtr<WfReferenceExpression>();
+										refInt->name.value = L"Interpolate";
+
+										auto callExpr = MakePtr<WfCallExpression>();
+										callExpr->function = refInt;
+										callExpr->arguments.Add(divExpr);
+
+										auto exprStat = MakePtr<WfExpressionStatement>();
+										exprStat->expression = callExpr;
+
+										subBlock->statements.Add(exprStat);
+									}
+								}
+
+								auto callExpr = MakePtr<WfCallExpression>();
+								callExpr->function = refCA;
+								callExpr->arguments.Add(funcExpr);
+
+								auto returnStat = MakePtr<WfReturnStatement>();
+								returnStat->expression = callExpr;
+
+								block->statements.Add(returnStat);
+							}
 						}
 						else
 						{
@@ -981,7 +1126,7 @@ GuiInstanceGradientAnimation::Compile
 										refPropProp->name.value = target.name;
 
 										auto refCurrent = MakePtr<WfReferenceExpression>();
-										refCurrent->name.value = propName;
+										refCurrent->name.value = L"<ani>current";
 
 										auto refCurrentProp = MakePtr<WfMemberExpression>();
 										refCurrentProp->parent = refCurrent;
