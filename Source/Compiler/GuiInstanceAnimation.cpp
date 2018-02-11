@@ -799,13 +799,37 @@ GuiInstanceGradientAnimation::Compile
 									part2 = mulExpr;
 								}
 
-								auto addExpr = MakePtr<WfBinaryExpression>();
-								addExpr->first = part1;
-								addExpr->second = part2;
-								addExpr->op = WfBinaryOperator::Add;
+								Ptr<WfExpression> exprMixed;
+								{
+									auto addExpr = MakePtr<WfBinaryExpression>();
+									addExpr->first = part1;
+									addExpr->second = part2;
+									addExpr->op = WfBinaryOperator::Add;
+
+									if (propInfo->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<double>())
+									{
+										exprMixed = addExpr;
+									}
+									else if(propInfo->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<double>())
+									{
+										exprMixed = addExpr;
+									}
+									else
+									{
+										auto refRound = MakePtr<WfChildExpression>();
+										refRound->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
+										refRound->name.value = L"Round";
+
+										auto callRoundExpr = MakePtr<WfCallExpression>();
+										callRoundExpr->function = refRound;
+										callRoundExpr->arguments.Add(addExpr);
+
+										exprMixed = callRoundExpr;
+									}
+								}
 
 								auto castExpr = MakePtr<WfTypeCastingExpression>();
-								castExpr->expression = addExpr;
+								castExpr->expression = exprMixed;
 								castExpr->type = GetTypeFromTypeInfo(propInfo->GetReturn());
 								castExpr->strategy = WfTypeCastingStrategy::Strong;
 
@@ -1069,9 +1093,13 @@ GuiInstanceGradientAnimation::Compile
 									}
 								}
 
+								auto refTime = MakePtr<WfReferenceExpression>();
+								refTime->name.value = L"<ani>time";
+
 								auto callExpr = MakePtr<WfCallExpression>();
 								callExpr->function = refCA;
 								callExpr->arguments.Add(funcExpr);
+								callExpr->arguments.Add(refTime);
 
 								auto returnStat = MakePtr<WfReturnStatement>();
 								returnStat->expression = callExpr;

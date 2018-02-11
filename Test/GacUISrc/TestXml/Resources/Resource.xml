@@ -180,7 +180,7 @@
       <ref.Ctor>
         <![CDATA[
           {
-            self.AddAnimation(WaitingAnimation(animationBackground));
+            /* self.AddAnimation(WaitingAnimation(animationBackground)); */
           }
         ]]>
       </ref.Ctor>
