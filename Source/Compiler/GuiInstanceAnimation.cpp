@@ -370,6 +370,23 @@ GuiInstanceGradientAnimation::Compile
 			{
 				if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class)
 				{
+					{
+						if (auto ctorGroup = td->GetConstructorGroup())
+						{
+							vint count = ctorGroup->GetMethodCount();
+							for (vint i = 0; i < count; i++)
+							{
+								auto ctor = ctorGroup->GetMethod(i);
+								if (ctor->GetReturn()->GetDecorator() == ITypeInfo::SharedPtr && ctor->GetParameterCount() == 0)
+								{
+									goto CTOR_CHECK_PASS;
+								}
+							}
+						}
+						errors.Add({ typePosition,L"Precompile: Class \"" + typeName + L"\" should have a default constructor which returns a shared pointer and has no arguments." });
+					CTOR_CHECK_PASS:;
+					}
+
 					auto module = MakePtr<WfModule>();
 					module->name.value = moduleName;
 					auto animationClass = Workflow_InstallClass(className, module);
@@ -925,7 +942,63 @@ GuiInstanceGradientAnimation::Compile
 
 						if (generateImpl)
 						{
-							func->statement = notImplemented();
+							auto block = MakePtr<WfBlockStatement>();
+							func->statement = block;
+
+							{
+								List<WString> propNames;
+								propNames.Add(L"Begin");
+								propNames.Add(L"End");
+								propNames.Add(L"Current");
+
+								FOREACH(WString, propName, propNames)
+								{
+									{
+										auto newExpr = MakePtr<WfNewClassExpression>();
+										newExpr->type = GetTypeFromTypeInfo(typeInfo.Obj());
+
+										auto refProp = MakePtr<WfReferenceExpression>();
+										refProp->name.value = propName;
+
+										auto assignExpr = MakePtr<WfBinaryExpression>();
+										assignExpr->first = refProp;
+										assignExpr->second = newExpr;
+										assignExpr->op = WfBinaryOperator::Assign;
+
+										auto exprStat = MakePtr<WfExpressionStatement>();
+										exprStat->expression = assignExpr;
+
+										block->statements.Add(exprStat);
+									}
+									
+									FOREACH(Target, target, targets)
+									{
+										auto refProp = MakePtr<WfReferenceExpression>();
+										refProp->name.value = propName;
+
+										auto refPropProp = MakePtr<WfMemberExpression>();
+										refPropProp->parent = refProp;
+										refPropProp->name.value = target.name;
+
+										auto refCurrent = MakePtr<WfReferenceExpression>();
+										refCurrent->name.value = propName;
+
+										auto refCurrentProp = MakePtr<WfMemberExpression>();
+										refCurrentProp->parent = refCurrent;
+										refCurrentProp->name.value = target.name;
+
+										auto assignExpr = MakePtr<WfBinaryExpression>();
+										assignExpr->first = refPropProp;
+										assignExpr->second = refCurrentProp;
+										assignExpr->op = WfBinaryOperator::Assign;
+
+										auto exprStat = MakePtr<WfExpressionStatement>();
+										exprStat->expression = assignExpr;
+
+										block->statements.Add(exprStat);
+									}
+								}
+							}
 						}
 						else
 						{
