@@ -12118,6 +12118,10 @@ namespace darkskin
 	}
 
 	BottomScrollButtonTemplateConstructor::BottomScrollButtonTemplateConstructor()
+		: self(static_cast<::darkskin::BottomScrollButtonTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
 	{
 	}
 
@@ -12214,6 +12218,12 @@ Class (::darkskin::ButtonTemplateConstructor)
 	}
 
 	ButtonTemplateConstructor::ButtonTemplateConstructor()
+		: self(static_cast<::darkskin::ButtonTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -12388,6 +12398,18 @@ Class (::darkskin::CheckBoxTemplateConstructor)
 	}
 
 	CheckBoxTemplateConstructor::CheckBoxTemplateConstructor()
+		: self(static_cast<::darkskin::CheckBoxTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_7(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_9(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_10(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -12443,6 +12465,9 @@ Class (::darkskin::CheckItemBackgroundTemplateConstructor)
 	}
 
 	CheckItemBackgroundTemplateConstructor::CheckItemBackgroundTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::CheckItemBackgroundTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
 	{
 	}
 
@@ -12622,6 +12647,17 @@ Class (::darkskin::ComboBoxTemplateConstructor)
 	}
 
 	ComboBoxTemplateConstructor::ComboBoxTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::ComboBoxTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_6(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_8(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
 	{
 	}
 
@@ -12655,6 +12691,7 @@ Class (::darkskin::CustomControlTemplateConstructor)
 	}
 
 	CustomControlTemplateConstructor::CustomControlTemplateConstructor()
+		: __vwsn_precompile_0(static_cast<::darkskin::CustomControlTemplate*>(nullptr))
 	{
 	}
 
@@ -12793,6 +12830,7 @@ Class (::darkskin::ThemeConstructor)
 	}
 
 	ThemeConstructor::ThemeConstructor()
+		: __vwsn_precompile_0(static_cast<::darkskin::Theme*>(nullptr))
 	{
 	}
 
@@ -12867,6 +12905,8 @@ Class (::darkskin::DatePickerTemplateConstructor)
 	}
 
 	DatePickerTemplateConstructor::DatePickerTemplateConstructor()
+		: self(static_cast<::darkskin::DatePickerTemplate*>(nullptr))
+		, look(static_cast<::vl::presentation::templates::GuiCommonDatePickerLook*>(nullptr))
 	{
 	}
 
@@ -12906,6 +12946,7 @@ Class (::darkskin::DocumentLabelTemplateConstructor)
 	}
 
 	DocumentLabelTemplateConstructor::DocumentLabelTemplateConstructor()
+		: self(static_cast<::darkskin::DocumentLabelTemplate*>(nullptr))
 	{
 	}
 
@@ -12975,6 +13016,10 @@ Class (::darkskin::DocumentTextBoxTemplateConstructor)
 	}
 
 	DocumentTextBoxTemplateConstructor::DocumentTextBoxTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::DocumentTextBoxTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
 	{
 	}
 
@@ -13063,6 +13108,11 @@ Class (::darkskin::DocumentViewerTemplateConstructor)
 	}
 
 	DocumentViewerTemplateConstructor::DocumentViewerTemplateConstructor()
+		: self(static_cast<::darkskin::DocumentViewerTemplate*>(nullptr))
+		, look(static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
 	{
 	}
 
@@ -13186,6 +13236,13 @@ Class (::darkskin::ExpandingDecoratorTemplateConstructor)
 	}
 
 	ExpandingDecoratorTemplateConstructor::ExpandingDecoratorTemplateConstructor()
+		: self(static_cast<::darkskin::ExpandingDecoratorTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
 	{
 	}
 
@@ -13307,6 +13364,15 @@ Class (::darkskin::GroupBoxTemplateConstructor)
 	}
 
 	GroupBoxTemplateConstructor::GroupBoxTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::GroupBoxTemplate*>(nullptr))
+		, titleBounds(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -13359,6 +13425,9 @@ Class (::darkskin::HScrollHandleTemplateConstructor)
 	}
 
 	HScrollHandleTemplateConstructor::HScrollHandleTemplateConstructor()
+		: self(static_cast<::darkskin::HScrollHandleTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
 	{
 	}
 
@@ -13492,6 +13561,19 @@ Class (::darkskin::HScrollTemplateConstructor)
 	}
 
 	HScrollTemplateConstructor::HScrollTemplateConstructor()
+		: self(static_cast<::darkskin::HScrollTemplate*>(nullptr))
+		, behavior(static_cast<::vl::presentation::templates::GuiCommonScrollBehavior*>(nullptr))
+		, buttonDecrease(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, buttonIncrease(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, handleContainer(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, handle(static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiSideAlignedComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiSideAlignedComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -13624,6 +13706,17 @@ Class (::darkskin::HTrackerTemplateConstructor)
 	}
 
 	HTrackerTemplateConstructor::HTrackerTemplateConstructor()
+		: self(static_cast<::darkskin::HTrackerTemplate*>(nullptr))
+		, behavior(static_cast<::vl::presentation::templates::GuiCommonScrollBehavior*>(nullptr))
+		, handle(static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_5(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_6(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -13686,6 +13779,9 @@ Class (::darkskin::ItemBackgroundTemplateConstructor)
 	}
 
 	ItemBackgroundTemplateConstructor::ItemBackgroundTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::ItemBackgroundTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
 	{
 	}
 
@@ -13741,6 +13837,8 @@ Class (::darkskin::LabelTemplateConstructor)
 	}
 
 	LabelTemplateConstructor::LabelTemplateConstructor()
+		: self(static_cast<::darkskin::LabelTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -13820,6 +13918,10 @@ Class (::darkskin::LeftScrollButtonTemplateConstructor)
 	}
 
 	LeftScrollButtonTemplateConstructor::LeftScrollButtonTemplateConstructor()
+		: self(static_cast<::darkskin::LeftScrollButtonTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
 	{
 	}
 
@@ -14081,6 +14183,24 @@ Class (::darkskin::ListViewColumnHeaderTemplateConstructor)
 	}
 
 	ListViewColumnHeaderTemplateConstructor::ListViewColumnHeaderTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::ListViewColumnHeaderTemplate*>(nullptr))
+		, buttonArrow(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_8(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
+		, __vwsn_precompile_9(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_10(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
+		, __vwsn_precompile_11(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_12(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+		, __vwsn_precompile_13(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_14(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -14178,6 +14298,11 @@ Class (::darkskin::ListViewTemplateConstructor)
 	}
 
 	ListViewTemplateConstructor::ListViewTemplateConstructor()
+		: self(static_cast<::darkskin::ListViewTemplate*>(nullptr))
+		, look(static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
 	{
 	}
 
@@ -14258,6 +14383,10 @@ Class (::darkskin::MenuBarButtonTemplateConstructor)
 	}
 
 	MenuBarButtonTemplateConstructor::MenuBarButtonTemplateConstructor()
+		: self(static_cast<::darkskin::MenuBarButtonTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -14479,6 +14608,19 @@ Class (::darkskin::MenuItemButtonTemplateConstructor)
 	}
 
 	MenuItemButtonTemplateConstructor::MenuItemButtonTemplateConstructor()
+		: self(static_cast<::darkskin::MenuItemButtonTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>())
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiSharedSizeItemComposition*>(nullptr))
+		, __vwsn_precompile_6(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiSharedSizeItemComposition*>(nullptr))
+		, __vwsn_precompile_9(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+		, __vwsn_precompile_10(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_11(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
 	{
 	}
 
@@ -14539,6 +14681,10 @@ Class (::darkskin::MenuSplitterTemplateConstructor)
 	}
 
 	MenuSplitterTemplateConstructor::MenuSplitterTemplateConstructor()
+		: __vwsn_precompile_0(static_cast<::darkskin::MenuSplitterTemplate*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
 	{
 	}
 
@@ -14627,6 +14773,11 @@ Class (::darkskin::MultilineTextBoxTemplateConstructor)
 	}
 
 	MultilineTextBoxTemplateConstructor::MultilineTextBoxTemplateConstructor()
+		: self(static_cast<::darkskin::MultilineTextBoxTemplate*>(nullptr))
+		, look(static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
 	{
 	}
 
@@ -14713,6 +14864,13 @@ Class (::darkskin::ProgressBarTemplateConstructor)
 	}
 
 	ProgressBarTemplateConstructor::ProgressBarTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::ProgressBarTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr))
+		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
 	{
 	}
 
@@ -14884,6 +15042,18 @@ Class (::darkskin::RadioButtonTemplateConstructor)
 	}
 
 	RadioButtonTemplateConstructor::RadioButtonTemplateConstructor()
+		: self(static_cast<::darkskin::RadioButtonTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_7(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_9(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_10(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -14963,6 +15133,10 @@ Class (::darkskin::RightScrollButtonTemplateConstructor)
 	}
 
 	RightScrollButtonTemplateConstructor::RightScrollButtonTemplateConstructor()
+		: self(static_cast<::darkskin::RightScrollButtonTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
 	{
 	}
 
@@ -15045,6 +15219,11 @@ Class (::darkskin::ScrollViewTemplateConstructor)
 	}
 
 	ScrollViewTemplateConstructor::ScrollViewTemplateConstructor()
+		: self(static_cast<::darkskin::ScrollViewTemplate*>(nullptr))
+		, look(static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
 	{
 	}
 
@@ -15134,6 +15313,12 @@ Class (::darkskin::ShortcutKeyTemplateConstructor)
 	}
 
 	ShortcutKeyTemplateConstructor::ShortcutKeyTemplateConstructor()
+		: self(static_cast<::darkskin::ShortcutKeyTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -15203,6 +15388,10 @@ Class (::darkskin::SinglelineTextBoxTemplateConstructor)
 	}
 
 	SinglelineTextBoxTemplateConstructor::SinglelineTextBoxTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::SinglelineTextBoxTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
 	{
 	}
 
@@ -15280,6 +15469,10 @@ Class (::darkskin::TabHeaderButtonTemplateConstructor)
 	}
 
 	TabHeaderButtonTemplateConstructor::TabHeaderButtonTemplateConstructor()
+		: self(static_cast<::darkskin::TabHeaderButtonTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -15349,6 +15542,10 @@ Class (::darkskin::TabHeaderTemplateConstructor)
 	}
 
 	TabHeaderTemplateConstructor::TabHeaderTemplateConstructor()
+		: self(static_cast<::darkskin::TabHeaderTemplate*>(nullptr))
+		, CurrentTabPage(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -15375,6 +15572,8 @@ Class (::darkskin::TabHeaderTemplate)
 	}
 
 	TabHeaderTemplate::TabHeaderTemplate(::vl::presentation::controls::GuiTabPage* __vwsn_ctor_parameter_CurrentTabPage)
+		: __vwsn_prop_Commands(static_cast<::vl::presentation::controls::ITabCommandExecutor*>(nullptr))
+		, __vwsn_parameter_CurrentTabPage(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
 	{
 		(this->__vwsn_parameter_CurrentTabPage = __vwsn_ctor_parameter_CurrentTabPage);
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::TabHeaderTemplate", false));
@@ -15506,6 +15705,16 @@ Class (::darkskin::TabTemplateConstructor)
 	}
 
 	TabTemplateConstructor::TabTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::TabTemplate*>(nullptr))
+		, header(static_cast<::vl::presentation::compositions::GuiRepeatFlowComposition*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_6(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
 	{
 	}
 
@@ -15624,6 +15833,11 @@ Class (::darkskin::TextListTemplateConstructor)
 	}
 
 	TextListTemplateConstructor::TextListTemplateConstructor()
+		: self(static_cast<::darkskin::TextListTemplate*>(nullptr))
+		, look(static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
 	{
 	}
 
@@ -15715,6 +15929,11 @@ Class (::darkskin::ToolstripSplitArrowTemplateConstructor)
 	}
 
 	ToolstripSplitArrowTemplateConstructor::ToolstripSplitArrowTemplateConstructor()
+		: self(static_cast<::darkskin::ToolstripSplitArrowTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
 	{
 	}
 
@@ -15821,6 +16040,13 @@ Class (::darkskin::ToolstripButtonTemplateConstructor)
 	}
 
 	ToolstripButtonTemplateConstructor::ToolstripButtonTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::ToolstripButtonTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>())
 	{
 	}
 
@@ -15985,6 +16211,17 @@ Class (::darkskin::ToolstripDropdownButtonTemplateConstructor)
 	}
 
 	ToolstripDropdownButtonTemplateConstructor::ToolstripDropdownButtonTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::ToolstripDropdownButtonTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>())
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_6(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_8(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
 	{
 	}
 
@@ -16048,6 +16285,10 @@ Class (::darkskin::ToolstripMenuTemplateConstructor)
 	}
 
 	ToolstripMenuTemplateConstructor::ToolstripMenuTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::darkskin::ToolstripMenuTemplate*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
 	{
 	}
 
@@ -16204,6 +16445,18 @@ Class (::darkskin::ToolstripSplitButtonTemplateConstructor)
 	}
 
 	ToolstripSplitButtonTemplateConstructor::ToolstripSplitButtonTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::ToolstripSplitButtonTemplate*>(nullptr))
+		, buttonArrow(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>())
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_7(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -16267,6 +16520,10 @@ Class (::darkskin::ToolstripSplitterTemplateConstructor)
 	}
 
 	ToolstripSplitterTemplateConstructor::ToolstripSplitterTemplateConstructor()
+		: __vwsn_precompile_0(static_cast<::darkskin::ToolstripSplitterTemplate*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::Gui3DSplitterElement>())
 	{
 	}
 
@@ -16310,6 +16567,8 @@ Class (::darkskin::ToolstripTemplateConstructor)
 	}
 
 	ToolstripTemplateConstructor::ToolstripTemplateConstructor()
+		: __vwsn_precompile_0(static_cast<::darkskin::ToolstripTemplate*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
 	{
 	}
 
@@ -16380,6 +16639,11 @@ Class (::darkskin::TooltipTemplateConstructor)
 	}
 
 	TooltipTemplateConstructor::TooltipTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::darkskin::TooltipTemplate*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
 	{
 	}
 
@@ -16459,6 +16723,10 @@ Class (::darkskin::TopScrollButtonTemplateConstructor)
 	}
 
 	TopScrollButtonTemplateConstructor::TopScrollButtonTemplateConstructor()
+		: self(static_cast<::darkskin::TopScrollButtonTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiPolygonElement>())
 	{
 	}
 
@@ -16550,6 +16818,11 @@ Class (::darkskin::TreeViewTemplateConstructor)
 	}
 
 	TreeViewTemplateConstructor::TreeViewTemplateConstructor()
+		: self(static_cast<::darkskin::TreeViewTemplate*>(nullptr))
+		, look(static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
 	{
 	}
 
@@ -16602,6 +16875,9 @@ Class (::darkskin::VScrollHandleTemplateConstructor)
 	}
 
 	VScrollHandleTemplateConstructor::VScrollHandleTemplateConstructor()
+		: self(static_cast<::darkskin::VScrollHandleTemplate*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
 	{
 	}
 
@@ -16735,6 +17011,19 @@ Class (::darkskin::VScrollTemplateConstructor)
 	}
 
 	VScrollTemplateConstructor::VScrollTemplateConstructor()
+		: self(static_cast<::darkskin::VScrollTemplate*>(nullptr))
+		, behavior(static_cast<::vl::presentation::templates::GuiCommonScrollBehavior*>(nullptr))
+		, buttonDecrease(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, buttonIncrease(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, handleContainer(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, handle(static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiSideAlignedComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiSideAlignedComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -16867,6 +17156,17 @@ Class (::darkskin::VTrackerTemplateConstructor)
 	}
 
 	VTrackerTemplateConstructor::VTrackerTemplateConstructor()
+		: self(static_cast<::darkskin::VTrackerTemplate*>(nullptr))
+		, behavior(static_cast<::vl::presentation::templates::GuiCommonScrollBehavior*>(nullptr))
+		, handle(static_cast<::vl::presentation::compositions::GuiPartialViewComposition*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_5(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_6(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -17205,6 +17505,33 @@ Class (::darkskin::WindowTemplateConstructor)
 	}
 
 	WindowTemplateConstructor::WindowTemplateConstructor()
+		: container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, self(static_cast<::darkskin::WindowTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_9(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_10(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_11(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_12(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_13(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_14(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_15(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_16(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_17(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_18(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_19(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_20(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_21(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_22(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_23(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+		, __vwsn_precompile_24(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 	{
 	}
 

@@ -3172,6 +3172,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(AddComponent, {L"component"})
 				CLASS_MEMBER_METHOD(AddControlHostComponent, {L"controlHost"})
 				CLASS_MEMBER_METHOD(AddAnimation, { L"animation" })
+				CLASS_MEMBER_METHOD(KillAnimation, { L"animation" })
 			END_CLASS_MEMBER(GuiInstanceRootObject)
 
 			BEGIN_CLASS_MEMBER(GuiTemplate)

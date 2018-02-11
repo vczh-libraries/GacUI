@@ -8152,7 +8152,7 @@ Root Object
 				bool											finalized = false;
 
 				virtual controls::GuiControlHost*				GetControlHostForInstance() = 0;
-				bool											InstallTimerCallback(controls::GuiControlHost* controlHost);
+				void											InstallTimerCallback(controls::GuiControlHost* controlHost);
 				bool											UninstallTimerCallback(controls::GuiControlHost* controlHost);
 				void											OnControlHostForInstanceChanged();
 				void											StartPendingAnimations();
@@ -8203,6 +8203,11 @@ Root Object
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="animation">The animation.</param>
 				bool											AddAnimation(Ptr<IGuiAnimation> animation);
+
+				/// <summary>Kill an animation.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="animation">The animation.</param>
+				bool											KillAnimation(Ptr<IGuiAnimation> animation);
 			};
 		}
 	}

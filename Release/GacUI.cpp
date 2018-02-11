@@ -9653,15 +9653,13 @@ GuiInstanceRootObject
 				}
 			};
 			
-			bool GuiInstanceRootObject::InstallTimerCallback(controls::GuiControlHost* controlHost)
+			void GuiInstanceRootObject::InstallTimerCallback(controls::GuiControlHost* controlHost)
 			{
 				if (!timerCallback)
 				{
 					timerCallback = new RootObjectTimerCallback(this, controlHost);
 					controlHost->GetTimerManager()->AddCallback(timerCallback);
-					return true;
 				}
-				return false;
 			}
 
 			bool GuiInstanceRootObject::UninstallTimerCallback(controls::GuiControlHost* controlHost)
@@ -9688,14 +9686,12 @@ GuiInstanceRootObject
 
 				if (controlHost)
 				{
-					if (InstallTimerCallback(controlHost))
+					InstallTimerCallback(controlHost);
+					FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
 					{
-						FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
-						{
-							animation->Resume();
-						}
-						StartPendingAnimations();
+						animation->Resume();
 					}
+					StartPendingAnimations();
 				}
 			}
 
@@ -9852,14 +9848,27 @@ GuiInstanceRootObject
 
 					if (auto controlHost = GetControlHostForInstance())
 					{
-						if (InstallTimerCallback(controlHost))
-						{
-							StartPendingAnimations();
-						}
+						InstallTimerCallback(controlHost);
+						StartPendingAnimations();
 					}
-
 					return true;
 				}
+			}
+
+			bool GuiInstanceRootObject::KillAnimation(Ptr<IGuiAnimation> animation)
+			{
+				if (!animation) return false;
+				if (runningAnimations.Contains(animation.Obj()))
+				{
+					runningAnimations.Remove(animation.Obj());
+					return true;
+				}
+				if (pendingAnimations.Contains(animation.Obj()))
+				{
+					pendingAnimations.Remove(animation.Obj());
+					return true;
+				}
+				return false;
 			}
 		}
 	}
