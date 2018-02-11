@@ -367,7 +367,7 @@ GuiInstanceGradientAnimation
 						att->name.value = L"Private";
 						var->attributes.Add(att);
 
-						var->name.value = L"<animation>interpolation";
+						var->name.value = L"<ani>interpolation";
 						var->type = GetTypeFromTypeInfo(TypeInfoRetriver<Func<double(double)>>::CreateTypeInfo().Obj());
 						if (interpolation == L"" || !generateImpl)
 						{
@@ -421,7 +421,7 @@ GuiInstanceGradientAnimation
 					}
 
 					{
-						// func GetTimeScale(<animation>begin : <TYPE>, <animation>end : <TYPE>, <animation>current : <TYPE>) : double
+						// func GetTimeScale(<ani>begin : <TYPE>, <ani>end : <TYPE>, <ani>current : <TYPE>) : double
 						auto func = MakePtr<WfFunctionDeclaration>();
 						addDecl(func);
 
@@ -429,19 +429,19 @@ GuiInstanceGradientAnimation
 						func->name.value = L"GetTimeScale";
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<animation>begin";
+							argument->name.value = L"<ani>begin";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<animation>end";
+							argument->name.value = L"<ani>end";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<animation>current";
+							argument->name.value = L"<ani>current";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
@@ -456,7 +456,7 @@ GuiInstanceGradientAnimation
 								refZero->value.value = L"0.0";
 
 								auto varScale = MakePtr<WfVariableDeclaration>();
-								varScale->name.value = L"<animation>scale";
+								varScale->name.value = L"<ani>scale";
 								varScale->expression = refZero;
 
 								auto declStat = MakePtr<WfVariableStatement>();
@@ -507,14 +507,14 @@ GuiInstanceGradientAnimation
 									declStat->variable = varRef;
 									subBlock->statements.Add(declStat);
 								};
-								createVariable(L"<animation>begin", L"<animation>end", L"<animation>ref");
-								createVariable(L"<animation>current", L"<animation>end", L"<animation>cur");
+								createVariable(L"<ani>begin", L"<ani>end", L"<ani>ref");
+								createVariable(L"<ani>current", L"<ani>end", L"<ani>cur");
 								{
 									auto refRef = MakePtr<WfReferenceExpression>();
-									refRef->name.value = L"<animation>ref";
+									refRef->name.value = L"<ani>ref";
 
 									auto refCur = MakePtr<WfReferenceExpression>();
-									refCur->name.value = L"<animation>cur";
+									refCur->name.value = L"<ani>cur";
 
 									auto divExpr = MakePtr<WfBinaryExpression>();
 									divExpr->first = refCur;
@@ -526,7 +526,7 @@ GuiInstanceGradientAnimation
 									refMax->name.value = L"Max";
 
 									auto refScale = MakePtr<WfReferenceExpression>();
-									refScale->name.value = L"<animation>scale";
+									refScale->name.value = L"<ani>scale";
 
 									auto callExpr = MakePtr<WfCallExpression>();
 									callExpr->function = refMax;
@@ -534,7 +534,7 @@ GuiInstanceGradientAnimation
 									callExpr->arguments.Add(divExpr);
 
 									auto refScale2 = MakePtr<WfReferenceExpression>();
-									refScale2->name.value = L"<animation>scale";
+									refScale2->name.value = L"<ani>scale";
 
 									auto assignExpr = MakePtr<WfBinaryExpression>();
 									assignExpr->first = refScale2;
@@ -552,7 +552,7 @@ GuiInstanceGradientAnimation
 								refOne->value.value = L"1.0";
 
 								auto refScale = MakePtr<WfReferenceExpression>();
-								refScale->name.value = L"<animation>scale";
+								refScale->name.value = L"<ani>scale";
 
 								auto refMin = MakePtr<WfChildExpression>();
 								refMin->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
@@ -574,7 +574,7 @@ GuiInstanceGradientAnimation
 						}
 					}
 					{
-						// func Interpolate(<animation>begin : <TYPE>, <animation>end : <TYPE>, <animation>current : <TYPE>, <animation>ratio : double) : void
+						// func Interpolate(<ani>begin : <TYPE>, <ani>end : <TYPE>, <ani>current : <TYPE>, <ani>ratio : double) : void
 						auto func = MakePtr<WfFunctionDeclaration>();
 						addDecl(func);
 
@@ -582,25 +582,25 @@ GuiInstanceGradientAnimation
 						func->name.value = L"Interpolate";
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<animation>begin";
+							argument->name.value = L"<ani>begin";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<animation>end";
+							argument->name.value = L"<ani>end";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<animation>current";
+							argument->name.value = L"<ani>current";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<animation>ratio";
+							argument->name.value = L"<ani>ratio";
 							argument->type = GetTypeFromTypeInfo(typeInfoDouble.Obj());
 							func->arguments.Add(argument);
 						}
@@ -618,7 +618,7 @@ GuiInstanceGradientAnimation
 								Ptr<WfExpression> part1, part2, propChain;
 								{
 									auto refParent = MakePtr<WfReferenceExpression>();
-									refParent->name.value = L"<animation>begin";
+									refParent->name.value = L"<ani>begin";
 
 									auto refProp = MakePtr<WfTypeCastingExpression>();
 									refProp->expression = (propChain = accessor(refParent));
@@ -626,7 +626,7 @@ GuiInstanceGradientAnimation
 									refProp->strategy = WfTypeCastingStrategy::Strong;
 
 									auto refRatio = MakePtr<WfReferenceExpression>();
-									refRatio->name.value = L"<animation>ratio";
+									refRatio->name.value = L"<ani>ratio";
 
 									auto mulExpr = MakePtr<WfBinaryExpression>();
 									mulExpr->first = refProp;
@@ -637,7 +637,7 @@ GuiInstanceGradientAnimation
 								}
 								{
 									auto refParent = MakePtr<WfReferenceExpression>();
-									refParent->name.value = L"<animation>begin";
+									refParent->name.value = L"<ani>begin";
 
 									auto refProp = MakePtr<WfTypeCastingExpression>();
 									refProp->expression = accessor(refParent);
@@ -648,7 +648,7 @@ GuiInstanceGradientAnimation
 									refOne->value.value = L"1.0";
 
 									auto refRatio = MakePtr<WfReferenceExpression>();
-									refRatio->name.value = L"<animation>ratio";
+									refRatio->name.value = L"<ani>ratio";
 
 									auto subExpr = MakePtr<WfBinaryExpression>();
 									subExpr->first = refOne;
@@ -682,7 +682,7 @@ GuiInstanceGradientAnimation
 										propChain = member->parent;
 									}
 									varNames.Add(name);
-									varRef->name.value = L"<animation>" + name;
+									varRef->name.value = L"<ani>" + name;
 								}
 								varRef->expression = castExpr;
 
@@ -697,7 +697,7 @@ GuiInstanceGradientAnimation
 						}
 					}
 					{
-						// func Interpolate(<animation>ratio : double) : void
+						// func Interpolate(<ani>ratio : double) : void
 						auto func = MakePtr<WfFunctionDeclaration>();
 						addDecl(func);
 
@@ -705,7 +705,7 @@ GuiInstanceGradientAnimation
 						func->name.value = L"Interpolate";
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<animation>ratio";
+							argument->name.value = L"<ani>ratio";
 							argument->type = GetTypeFromTypeInfo(typeInfoDouble.Obj());
 							func->arguments.Add(argument);
 						}
@@ -726,7 +726,7 @@ GuiInstanceGradientAnimation
 							refCurrent->name.value = L"Begin";
 
 							auto refRatio = MakePtr<WfReferenceExpression>();
-							refRatio->name.value = L"<animation>ratio";
+							refRatio->name.value = L"<ani>ratio";
 
 							auto refFunc = MakePtr<WfReferenceExpression>();
 							refFunc->name.value = L"Interpolate";
