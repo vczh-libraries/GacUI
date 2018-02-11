@@ -910,6 +910,28 @@ GuiInstanceGradientAnimation::Compile
 							func->statement = notImplemented();
 						}
 					}
+					{
+						// new (<ani>current : <TYPE>)
+						auto func = MakePtr<WfConstructorDeclaration>();
+						addDecl(func);
+
+						func->constructorType = WfConstructorType::Undefined;
+						{
+							auto argument = MakePtr<WfFunctionArgument>();
+							argument->name.value = L"<ani>current";
+							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
+							func->arguments.Add(argument);
+						}
+
+						if (generateImpl)
+						{
+							func->statement = notImplemented();
+						}
+						else
+						{
+							func->statement = notImplemented();
+						}
+					}
 
 					return module;
 				}
