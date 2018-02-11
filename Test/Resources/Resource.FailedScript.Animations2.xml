@@ -27,6 +27,7 @@
           prop p4 : s1 = {} {}
           prop p5 : string = "" {}
           prop p6 : s2 = {s:""} {}
+          prop p7 : c1^ = null {}
         }
       ]]>
     </Workflow>

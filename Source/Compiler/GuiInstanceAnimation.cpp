@@ -180,6 +180,57 @@ GuiInstanceGradientAnimation
 			return gradientElement;
 		}
 
+		bool GuiInstanceGradientAnimation::IsSupportedPrimitiveType(description::ITypeDescriptor* td)
+		{
+			if (td == description::GetTypeDescriptor<vint8_t>()) return true;
+			if (td == description::GetTypeDescriptor<vint16_t>()) return true;
+			if (td == description::GetTypeDescriptor<vint32_t>()) return true;
+			if (td == description::GetTypeDescriptor<vint64_t>()) return true;
+			if (td == description::GetTypeDescriptor<vuint8_t>()) return true;
+			if (td == description::GetTypeDescriptor<vuint16_t>()) return true;
+			if (td == description::GetTypeDescriptor<vuint32_t>()) return true;
+			if (td == description::GetTypeDescriptor<vuint64_t>()) return true;
+			if (td == description::GetTypeDescriptor<float>()) return true;
+			if (td == description::GetTypeDescriptor<double>()) return true;
+			return false;
+		}
+
+		void GuiInstanceGradientAnimation::ValidateStructMembers(GuiResourceTextPos namePosition, description::ITypeDescriptor* td, const WString& prefix, GuiResourceError::List& errors)
+		{
+			vint count = td->GetPropertyCount();
+			for (vint i = 0; i < count; i++)
+			{
+				auto propInfo = td->GetProperty(i);
+				ValidatePropertyType(namePosition, propInfo->GetReturn(), prefix + L"." + propInfo->GetName(), errors);
+			}
+
+			count = td->GetBaseTypeDescriptorCount();
+			for (vint i = 0; i<count; i++)
+			{
+				ValidateStructMembers(namePosition, td->GetBaseTypeDescriptor(i), prefix, errors);
+			}
+		}
+
+		void GuiInstanceGradientAnimation::ValidatePropertyType(GuiResourceTextPos namePosition, description::ITypeInfo* typeInfo, const WString& prefix, GuiResourceError::List& errors)
+		{
+			auto td = typeInfo->GetTypeDescriptor();
+			switch (td->GetTypeDescriptorFlags())
+			{
+			case TypeDescriptorFlags::Primitive:
+				if (IsSupportedPrimitiveType(td))
+				{
+					return;
+				}
+				break;
+			case TypeDescriptorFlags::Struct:
+				{
+					ValidateStructMembers(namePosition, td, prefix, errors);
+					return;
+				}
+			}
+			errors.Add({ namePosition,L"Precompile: Property \"" + prefix + L"\" of type \"" + typeInfo->GetTypeFriendlyName() + L"\" in class \"" + typeName + L"\" is not supported. Only numeric types and structs are able to perform gradual changing." });
+		}
+
 		Ptr<workflow::WfModule> GuiInstanceGradientAnimation::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors)
 		{
 			if (auto td = description::GetTypeDescriptor(typeName))
@@ -293,6 +344,7 @@ GuiInstanceGradientAnimation
 							{
 								errors.Add({ target.namePosition,L"Precompile: Property \"" + target.name + L"\" is not supported. An writable property with event is expected." });
 							}
+							ValidatePropertyType(target.namePosition, propInfo->GetReturn(), propInfo->GetName(), errors);
 
 							Ptr<WfExpression> interpolation;
 							if (target.interpolation != L"" && generateImpl)
