@@ -438,7 +438,7 @@ GuiInstanceGradientAnimation
 						func->statement = notImplemented();
 					}
 					{
-						// func Interpolate(<animation>begin : <TYPE>, <animation>end : <TYPE>, <animation>out : <TYPE>, <animation>ratio : double) : void
+						// func Interpolate(<animation>begin : <TYPE>, <animation>end : <TYPE>, <animation>current : <TYPE>, <animation>ratio : double) : void
 						auto func = MakePtr<WfFunctionDeclaration>();
 						addDecl(func);
 
@@ -458,7 +458,7 @@ GuiInstanceGradientAnimation
 						}
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<animation>out";
+							argument->name.value = L"<animation>current";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
@@ -471,6 +471,51 @@ GuiInstanceGradientAnimation
 						func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 
 						func->statement = notImplemented();
+					}
+					{
+						// func Interpolate(<animation>ratio : double) : void
+						auto func = MakePtr<WfFunctionDeclaration>();
+						addDecl(func);
+
+						func->anonymity = WfFunctionAnonymity::Named;
+						func->name.value = L"Interpolate";
+						{
+							auto argument = MakePtr<WfFunctionArgument>();
+							argument->name.value = L"<animation>ratio";
+							argument->type = GetTypeFromTypeInfo(typeInfoDouble.Obj());
+							func->arguments.Add(argument);
+						}
+						func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
+
+						auto block = MakePtr<WfBlockStatement>();
+						func->statement = block;
+
+						auto refBegin = MakePtr<WfReferenceExpression>();
+						refBegin->name.value = L"Begin";
+
+						auto refEnd = MakePtr<WfReferenceExpression>();
+						refEnd->name.value = L"End";
+
+						auto refCurrent = MakePtr<WfReferenceExpression>();
+						refCurrent->name.value = L"Begin";
+
+						auto refRatio = MakePtr<WfReferenceExpression>();
+						refRatio->name.value = L"<animation>ratio";
+
+						auto refFunc = MakePtr<WfReferenceExpression>();
+						refFunc->name.value = L"Interpolate";
+
+						auto callExpr = MakePtr<WfCallExpression>();
+						callExpr->function = refFunc;
+						callExpr->arguments.Add(refBegin);
+						callExpr->arguments.Add(refEnd);
+						callExpr->arguments.Add(refCurrent);
+						callExpr->arguments.Add(refRatio);
+
+						auto exprStat = MakePtr<WfExpressionStatement>();
+						exprStat->expression = callExpr;
+
+						block->statements.Add(exprStat);
 					}
 
 					return module;
