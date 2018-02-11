@@ -87,6 +87,9 @@
     <Xml Include="Resources\FullControlTest\ElementTabPage.xml">
       <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
+    <Xml Include="Resources\FullControlTest\AnimationTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png">

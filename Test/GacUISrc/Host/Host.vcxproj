@@ -226,6 +226,7 @@
   <ItemGroup>
     <Xml Include="Resources\DarkSkin\DarkSkin.xml" />
     <Xml Include="Resources\DarkSkin\Resource.xml" />
+    <Xml Include="Resources\FullControlTest\AnimationTabPage.xml" />
     <Xml Include="Resources\FullControlTest\DataGridComponents.xml" />
     <Xml Include="Resources\FullControlTest\DataGridTabPage.xml" />
     <Xml Include="Resources\FullControlTest\DocumentComponents.xml" />
