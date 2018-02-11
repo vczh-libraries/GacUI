@@ -614,12 +614,24 @@ GuiInstanceGradientAnimation::Compile
 									auto refRef = MakePtr<WfReferenceExpression>();
 									refRef->name.value = L"<ani>ref";
 
+									auto refEpsilon = MakePtr<WfFloatingExpression>();
+									refEpsilon->value.value = L"0.000001";
+
+									auto refMaxEpsilon = MakePtr<WfChildExpression>();
+									refMaxEpsilon->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
+									refMaxEpsilon->name.value = L"Max";
+
+									auto callExprEpsilon = MakePtr<WfCallExpression>();
+									callExprEpsilon->function = refMaxEpsilon;
+									callExprEpsilon->arguments.Add(refRef);
+									callExprEpsilon->arguments.Add(refEpsilon);
+
 									auto refCur = MakePtr<WfReferenceExpression>();
 									refCur->name.value = L"<ani>cur";
 
 									auto divExpr = MakePtr<WfBinaryExpression>();
 									divExpr->first = refCur;
-									divExpr->second = refRef;
+									divExpr->second = callExprEpsilon;
 									divExpr->op = WfBinaryOperator::Div;
 
 									auto refMax = MakePtr<WfChildExpression>();
