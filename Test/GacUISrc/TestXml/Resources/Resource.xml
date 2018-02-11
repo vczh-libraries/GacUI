@@ -15,6 +15,33 @@
             prop Bottom : Color = cast Color "#000000" {}
             prop Shadow : Color = cast Color "#000000" {}
             prop Thickness : int = 0 {}
+            
+            static func Dark() : ColorDef^
+            {
+              var def = new ColorDef^();
+              def.Top = cast Color "#9999FF";
+              def.Bottom = cast Color "#7777FF";
+              def.Thickness = 0;
+              return def;
+            }
+            
+            static func Light() : ColorDef^
+            {
+              var def = new ColorDef^();
+              def.Top = cast Color "#DDDDFF";
+              def.Bottom = cast Color "#BBBBFF";
+              def.Thickness = 0;
+              return def;
+            }
+            
+            static func Sink() : ColorDef^
+            {
+              var def = new ColorDef^();
+              def.Top = cast Color "#5555FF";
+              def.Bottom = cast Color "#3333FF";
+              def.Thickness = 20;
+              return def;
+            }
           }
           
           func F(x: double): double
@@ -141,6 +168,8 @@
               $WaitForGroup 0;
             }
           }
+          @cpp:Private
+          prop GradientColorDef : ColorDef^ = ColorDef::Dark() {const, not observe}
         ]]>
       </ref.Members>
       <ref.Ctor>
