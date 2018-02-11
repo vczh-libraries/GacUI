@@ -1,0 +1,76 @@
+<Resource>
+  <Script>
+    <Workflow>
+      <![CDATA[
+        module Test;
+        
+        struct s1
+        {
+        };
+        
+        struct s2
+        {
+          s : string;
+        };
+        
+        struct s3
+        {
+          i : int;
+        };
+        
+        class c1
+        {
+          var p1 : s3 = {i:0}
+          prop p2 : s3 = {i:0} {const}
+          prop p3 : s3 = {i:0} {not observe}
+
+          prop p4 : s1 = {} {}
+          prop p5 : string = "" {}
+          prop p6 : s2 = {s:""} {}
+        }
+      ]]>
+    </Workflow>
+  </Script>
+  
+  <Animation name="a1">
+    <Gradient ref.Class="a1" Type="int">
+      <Targets>
+        <Target Name="Unexisting"/>
+      </Targets>
+    </Gradient>
+  </Animation>
+
+  <Animation name="a2">
+    <Gradient ref.Class="a2" Type="s1">
+      <Targets>
+        <Target Name="Unexisting"/>
+      </Targets>
+    </Gradient>
+  </Animation>
+
+  <Animation name="a3">
+    <Gradient ref.Class="a3" Type="int">
+      <Interpolation><![CDATA[;]]></Interpolation>
+      <Targets>
+        <Target Name="p1">
+          <Interpolation><![CDATA[;]]></Interpolation>
+        </Target>
+        <Target Name="p2">
+          <Interpolation><![CDATA[;]]></Interpolation>
+        </Target>
+        <Target Name="p3">
+          <Interpolation><![CDATA[;]]></Interpolation>
+        </Target>
+        <Target Name="p4">
+          <Interpolation><![CDATA[;]]></Interpolation>
+        </Target>
+        <Target Name="p5">
+          <Interpolation><![CDATA[;]]></Interpolation>
+        </Target>
+        <Target Name="p6">
+          <Interpolation><![CDATA[;]]></Interpolation>
+        </Target>
+      </Targets>
+    </Gradient>
+  </Animation>
+</Resource>

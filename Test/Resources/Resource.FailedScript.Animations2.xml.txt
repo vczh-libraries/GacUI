@@ -1,0 +1,2 @@
+ # .\Resource.FailedScript.Animations2.xml
+(9, 10): Error happened during parsing.

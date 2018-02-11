@@ -9,8 +9,18 @@
 
   <Animation name="a3">
     <Gradient ref.Class="a" Type="b">
-      <Interpolation>[$1]</Interpolation>
       <Targets/>
+    </Gradient>
+  </Animation>
+
+  <Animation name="a4">
+    <Gradient ref.Class="a" Type="b">
+      <Interpolation>[$1]</Interpolation>
+      <Targets>
+        <Target name="a">
+          <Interpolation>[$1]</Interpolation>
+        </Target>
+      </Targets>
     </Gradient>
   </Animation>
 </Resource>
