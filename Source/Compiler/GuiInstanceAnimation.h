@@ -34,7 +34,7 @@ namespace vl
 			};
 
 			using EnumerateMemberAccessor = const Func<Ptr<workflow::WfExpression>(Ptr<workflow::WfExpression>)>&;
-			using EnumerateMemberCallback = const Func<void(EnumerateMemberAccessor)>&;
+			using EnumerateMemberCallback = const Func<void(EnumerateMemberAccessor, description::IPropertyInfo*)>&;
 
 			WString										className;
 			WString										typeName;

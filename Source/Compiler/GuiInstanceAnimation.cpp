@@ -253,7 +253,7 @@ GuiInstanceGradientAnimation
 			switch (td->GetTypeDescriptorFlags())
 			{
 			case TypeDescriptorFlags::Primitive:
-				callback(newAccessor);
+				callback(newAccessor, propInfo);
 				break;
 			case TypeDescriptorFlags::Struct:
 				EnumerateMembers(callback, newAccessor, td);
@@ -463,7 +463,7 @@ GuiInstanceGradientAnimation
 								declStat->variable = varScale;
 								block->statements.Add(declStat);
 							}
-							EnumerateProperties([=](EnumerateMemberAccessor accessor)
+							EnumerateProperties([&](EnumerateMemberAccessor accessor, description::IPropertyInfo*)
 							{
 								auto subBlock = MakePtr<WfBlockStatement>();
 								block->statements.Add(subBlock);
@@ -610,6 +610,86 @@ GuiInstanceGradientAnimation
 						{
 							auto block = MakePtr<WfBlockStatement>();
 							func->statement = block;
+
+							SortedList<WString> varNames;
+
+							EnumerateProperties([&](EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo)
+							{
+								Ptr<WfExpression> part1, part2, propChain;
+								{
+									auto refParent = MakePtr<WfReferenceExpression>();
+									refParent->name.value = L"<animation>begin";
+
+									auto refProp = MakePtr<WfTypeCastingExpression>();
+									refProp->expression = (propChain = accessor(refParent));
+									refProp->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
+									refProp->strategy = WfTypeCastingStrategy::Strong;
+
+									auto refRatio = MakePtr<WfReferenceExpression>();
+									refRatio->name.value = L"<animation>ratio";
+
+									auto mulExpr = MakePtr<WfBinaryExpression>();
+									mulExpr->first = refProp;
+									mulExpr->second = refRatio;
+									mulExpr->op = WfBinaryOperator::Mul;
+
+									part1 = mulExpr;
+								}
+								{
+									auto refParent = MakePtr<WfReferenceExpression>();
+									refParent->name.value = L"<animation>begin";
+
+									auto refProp = MakePtr<WfTypeCastingExpression>();
+									refProp->expression = accessor(refParent);
+									refProp->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
+									refProp->strategy = WfTypeCastingStrategy::Strong;
+
+									auto refOne = MakePtr<WfFloatingExpression>();
+									refOne->value.value = L"1.0";
+
+									auto refRatio = MakePtr<WfReferenceExpression>();
+									refRatio->name.value = L"<animation>ratio";
+
+									auto subExpr = MakePtr<WfBinaryExpression>();
+									subExpr->first = refOne;
+									subExpr->second = refRatio;
+									subExpr->op = WfBinaryOperator::Sub;
+
+									auto mulExpr = MakePtr<WfBinaryExpression>();
+									mulExpr->first = refProp;
+									mulExpr->second = subExpr;
+									mulExpr->op = WfBinaryOperator::Mul;
+
+									part2 = mulExpr;
+								}
+
+								auto addExpr = MakePtr<WfBinaryExpression>();
+								addExpr->first = part1;
+								addExpr->second = part2;
+								addExpr->op = WfBinaryOperator::Add;
+
+								auto castExpr = MakePtr<WfTypeCastingExpression>();
+								castExpr->expression = addExpr;
+								castExpr->type = GetTypeFromTypeInfo(propInfo->GetReturn());
+								castExpr->strategy = WfTypeCastingStrategy::Strong;
+
+								auto varRef = MakePtr<WfVariableDeclaration>();
+								{
+									WString name = L"";
+									while (auto member = propChain.Cast<WfMemberExpression>())
+									{
+										name = L"_" + member->name.value + name;
+										propChain = member->parent;
+									}
+									varNames.Add(name);
+									varRef->name.value = L"<animation>" + name;
+								}
+								varRef->expression = castExpr;
+
+								auto declStat = MakePtr<WfVariableStatement>();
+								declStat->variable = varRef;
+								block->statements.Add(declStat);
+							}, td);
 						}
 						else
 						{
