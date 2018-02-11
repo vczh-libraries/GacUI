@@ -157,13 +157,49 @@
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
 
           <att.Pages>
+            <TabPage Text="Gradient Animation">
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+                <att.Rows>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Rows>
+                
+                <att.Columns>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Absolute absolute:100</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Columns>
+
+                <Cell Site="row:0 column:0 rowSpan:4">
+                  <Bounds PreferredMinSize="x:200 y:200">
+
+                  </Bounds>
+                </Cell>
+
+                <Cell Site="row:0 column:1">
+                  <Button Text="Dark">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  </Button>
+                </Cell>
+                <Cell Site="row:1 column:1">
+                  <Button Text="Light">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  </Button>
+                </Cell>
+                <Cell Site="row:2 column:1">
+                  <Button Text="Sink">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  </Button>
+                </Cell>
+              </Table>
+            </TabPage>
+            
             <TabPage Text="Complex Animation">
               <BoundsComposition ref.Name="animationBackground" AlignmentToParent="left:10 top:10 right:-1 bottom:-1" PreferredMinSize="x:200 y:200">
                 <SolidBackground Color="#FFC929"/>
               </BoundsComposition>
-            </TabPage>
-
-            <TabPage Text="Gradient Animation">
             </TabPage>
           </att.Pages>
         </Tab>
