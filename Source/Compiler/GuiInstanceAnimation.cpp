@@ -6,6 +6,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace reflection::description;
+		using namespace collections;
 		using namespace parsing::xml;
 		using namespace workflow;
 		using namespace workflow::analyzer;
@@ -271,6 +272,40 @@ GuiInstanceGradientAnimation
 						else
 						{
 							var->expression = Workflow_ParseExpression(precompileContext, interpolationPosition.originalLocation, interpolation, interpolationPosition, errors);
+						}
+					}
+
+					List<IPropertyInfo*> props;
+					List<Ptr<WfExpression>> interpolations;
+					FOREACH(Target, target, targets)
+					{
+						if (auto propInfo = td->GetPropertyByName(target.name, true))
+						{
+							if (!propInfo->GetGetter())
+							{
+								errors.Add({ target.namePosition,L"Precompile: Variable \"" + target.name + L"\" is not supported. An writable property with event is expected." });
+							}
+							else if (!propInfo->GetSetter())
+							{
+								errors.Add({ target.namePosition,L"Precompile: Readonly property \"" + target.name + L"\" is not supported. An writable property with event is expected." });
+							}
+							else if (!propInfo->GetValueChangedEvent())
+							{
+								errors.Add({ target.namePosition,L"Precompile: Property \"" + target.name + L"\" is not supported. An writable property with event is expected." });
+							}
+
+							Ptr<WfExpression> interpolation;
+							if (target.interpolation != L"" && generateImpl)
+							{
+								interpolation = Workflow_ParseExpression(precompileContext, target.interpolationPosition.originalLocation, target.interpolation, target.interpolationPosition, errors);
+							}
+
+							props.Add(propInfo);
+							interpolations.Add(interpolation);
+						}
+						else
+						{
+							errors.Add({ target.namePosition,L"Precompile: Property \"" + target.name + L"\" does not exist." });
 						}
 					}
 

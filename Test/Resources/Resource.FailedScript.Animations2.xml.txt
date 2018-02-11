@@ -2,3 +2,7 @@ a1 # .\Resource.FailedScript.Animations2.xml
 (36, 36): Precompile: Type "int" does not exist.
 a2 # .\Resource.FailedScript.Animations2.xml
 (44, 36): Precompile: Type "s1" is not a class.
+a3 # .\Resource.FailedScript.Animations2.xml
+(54, 23): Precompile: Variable "p1" is not supported. An writable property with event is expected.
+(55, 23): Precompile: Readonly property "p2" is not supported. An writable property with event is expected.
+(56, 23): Precompile: Property "p3" is not supported. An writable property with event is expected.

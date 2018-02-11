@@ -50,26 +50,13 @@
 
   <Animation name="a3">
     <Gradient ref.Class="a3" Type="c1">
-      <Interpolation><![CDATA[;]]></Interpolation>
       <Targets>
-        <Target Name="p1">
-          <Interpolation><![CDATA[;]]></Interpolation>
-        </Target>
-        <Target Name="p2">
-          <Interpolation><![CDATA[;]]></Interpolation>
-        </Target>
-        <Target Name="p3">
-          <Interpolation><![CDATA[;]]></Interpolation>
-        </Target>
-        <Target Name="p4">
-          <Interpolation><![CDATA[;]]></Interpolation>
-        </Target>
-        <Target Name="p5">
-          <Interpolation><![CDATA[;]]></Interpolation>
-        </Target>
-        <Target Name="p6">
-          <Interpolation><![CDATA[;]]></Interpolation>
-        </Target>
+        <Target Name="p1"/>
+        <Target Name="p2"/>
+        <Target Name="p3"/>
+        <Target Name="p4"/>
+        <Target Name="p5"/>
+        <Target Name="p6"/>
       </Targets>
     </Gradient>
   </Animation>
