@@ -86,7 +86,7 @@
     </Animation>
 
     <Instance name="AnimationTabPageResource">
-      <Instance ref.Class="demo::AnimationTabPage" xmlns:demo="demo::*">
+      <Instance ref.CodeBehind="false" ref.Class="demo::AnimationTabPage" xmlns:demo="demo::*">
         <ref.Members>
           <![CDATA[
             @cpp:Private

@@ -37,6 +37,8 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(::demo::AnimationTabPage)
+			DECL_TYPE_INFO(::demo::AnimationTabPageConstructor)
 			DECL_TYPE_INFO(::demo::CategoryDisplayer)
 			DECL_TYPE_INFO(::demo::CategoryDisplayerConstructor)
 			DECL_TYPE_INFO(::demo::CategoryEditor)
@@ -45,6 +47,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::CategoryItemTemplateConstructor)
 			DECL_TYPE_INFO(::demo::CategoryVisualizer)
 			DECL_TYPE_INFO(::demo::CategoryVisualizerConstructor)
+			DECL_TYPE_INFO(::demo::ColorAnimation)
+			DECL_TYPE_INFO(::demo::ColorDef)
 			DECL_TYPE_INFO(::demo::DataGridTabPage)
 			DECL_TYPE_INFO(::demo::DataGridTabPageConstructor)
 			DECL_TYPE_INFO(::demo::DateEditor)
