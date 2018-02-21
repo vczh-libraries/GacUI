@@ -317,6 +317,180 @@ GuiToolstripButton
 					return GuiMenuButton::QueryService(identifier);
 				}
 			}
+
+/***********************************************************************
+GuiToolstripNestedContainer
+***********************************************************************/
+
+			void GuiToolstripNestedContainer::UpdateLayout()
+			{
+				if (callback)
+				{
+					callback->UpdateLayout();
+				}
+			}
+
+			void GuiToolstripNestedContainer::SetCallback(IToolstripUpdateLayout* _callback)
+			{
+				callback = _callback;
+			}
+
+			GuiToolstripNestedContainer::GuiToolstripNestedContainer(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
+			}
+
+			GuiToolstripNestedContainer::~GuiToolstripNestedContainer()
+			{
+			}
+
+			IDescriptable* GuiToolstripNestedContainer::QueryService(const WString& identifier)
+			{
+				if (identifier == IToolstripUpdateLayoutInvoker::Identifier)
+				{
+					return (IToolstripUpdateLayoutInvoker*)this;
+				}
+				else
+				{
+					return GuiControl::QueryService(identifier);
+				}
+			}
+
+/***********************************************************************
+GuiToolstripGroupContainer::GroupCollection
+***********************************************************************/
+
+			void GuiToolstripGroupContainer::GroupCollection::BeforeRemove(vint index, GuiControl* const& child)
+			{
+				throw 0;
+				GuiToolstripCollectionBase::BeforeRemove(index, child);
+			}
+
+			void GuiToolstripGroupContainer::GroupCollection::AfterInsert(vint index, GuiControl* const& child)
+			{
+				throw 0;
+				GuiToolstripCollectionBase::AfterInsert(index, child);
+			}
+
+			GuiToolstripGroupContainer::GroupCollection::GroupCollection(GuiToolstripGroupContainer* _container)
+				:GuiToolstripCollectionBase(_container)
+				, container(_container)
+			{
+			}
+
+			GuiToolstripGroupContainer::GroupCollection::~GroupCollection()
+			{
+			}
+
+			GuiToolstripGroupContainer::ControlTemplatePropertyType GuiToolstripGroupContainer::GroupCollection::GetSplitterTemplate()
+			{
+				return splitterTemplate;
+			}
+
+			void GuiToolstripGroupContainer::GroupCollection::SetSplitterTemplate(const ControlTemplatePropertyType& value)
+			{
+				splitterTemplate = value;
+				RebuildSplitters();
+			}
+
+			void GuiToolstripGroupContainer::GroupCollection::RebuildSplitters()
+			{
+				auto stack = container->stackComposition;
+				vint count = stack->GetStackItems().Count();
+				for (vint i = 1; i < count; i += 2)
+				{
+					auto stackItem = stack->GetStackItems()[i];
+					{
+						auto control = stackItem->Children()[0]->GetAssociatedControl();
+						CHECK_ERROR(control != nullptr, L"GuiToolstripGroupContainer::GroupCollection::RebuildSplitters()#Internal error");
+						stackItem->RemoveChild(control->GetBoundsComposition());
+						delete control;
+					}
+					{
+						auto control = new GuiControl(container->splitterThemeName);
+						if (splitterTemplate)
+						{
+							control->SetControlTemplate(splitterTemplate);
+						}
+						control->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						stackItem->AddChild(control->GetBoundsComposition());
+					}
+				}
+			}
+
+/***********************************************************************
+GuiToolstripGroupContainer
+***********************************************************************/
+
+			void GuiToolstripGroupContainer::OnParentLineChanged()
+			{
+				auto newSplitterThemeName = splitterThemeName;
+				if (auto service = QueryTypedService<IGuiMenuService>())
+				{
+					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
+					{
+						newSplitterThemeName = theme::ThemeName::MenuSplitter;
+					}
+					else
+					{
+						newSplitterThemeName = theme::ThemeName::ToolstripSplitter;
+					}
+				}
+
+				if (splitterThemeName != splitterThemeName)
+				{
+					if (splitterThemeName == theme::ThemeName::MenuSplitter)
+					{
+						stackComposition->SetDirection(GuiStackComposition::Vertical);
+					}
+					else
+					{
+						stackComposition->SetDirection(GuiStackComposition::Horizontal);
+					}
+
+					splitterThemeName = splitterThemeName;
+					groupCollection->RebuildSplitters();
+					UpdateLayout();
+				}
+
+				GuiControl::OnParentLineChanged();
+			}
+
+			GuiToolstripGroupContainer::GuiToolstripGroupContainer(theme::ThemeName themeName)
+				:GuiToolstripNestedContainer(themeName)
+				, splitterThemeName(theme::ThemeName::MenuSplitter)
+			{
+				stackComposition = new GuiStackComposition;
+				stackComposition->SetDirection(GuiStackComposition::Horizontal);
+				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->AddChild(stackComposition);
+
+				groupCollection = new GroupCollection(this);
+			}
+
+			GuiToolstripGroupContainer::~GuiToolstripGroupContainer()
+			{
+			}
+
+			GuiToolstripGroupContainer::ControlTemplatePropertyType GuiToolstripGroupContainer::GetSplitterTemplate()
+			{
+				return groupCollection->GetSplitterTemplate();
+			}
+
+			void GuiToolstripGroupContainer::SetSplitterTemplate(const ControlTemplatePropertyType& value)
+			{
+				groupCollection->SetSplitterTemplate(value);
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiToolstripGroupContainer::GetToolstripItems()
+			{
+				return *groupCollection.Obj();
+			}
+
+/***********************************************************************
+GuiToolstripGroup
+***********************************************************************/
 		}
 	}
 }

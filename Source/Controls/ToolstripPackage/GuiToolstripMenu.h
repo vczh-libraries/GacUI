@@ -51,7 +51,7 @@ Toolstrip Item Collection
 			public:
 
 			protected:
-				IToolstripUpdateLayout *						contentCallback;
+				IToolstripUpdateLayout *					contentCallback;
 
 				void										InvokeUpdateLayout();
 				void										OnInterestingMenuButtonPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -185,22 +185,59 @@ Toolstrip Component
 Toolstrip Group
 ***********************************************************************/
 
-			class GuiToolstripGroupContainer : public GuiControl, private collections::ObservableListBase<GuiControl*>, public Description<GuiToolstripGroupContainer>
+			class GuiToolstripNestedContainer : public GuiControl, protected IToolstripUpdateLayout, protected IToolstripUpdateLayoutInvoker
 			{
-			private:
+			protected:
+				IToolstripUpdateLayout*							callback = nullptr;
+
+				void											UpdateLayout()override;
+				void											SetCallback(IToolstripUpdateLayout* _callback)override;
+			public:
+				GuiToolstripNestedContainer(theme::ThemeName themeName);
+				~GuiToolstripNestedContainer();
+
+				IDescriptable*									QueryService(const WString& identifier)override;
+			};
+
+			class GuiToolstripGroupContainer : public GuiToolstripNestedContainer, public Description<GuiToolstripGroupContainer>
+			{
+			protected:
+				class GroupCollection : public GuiToolstripCollectionBase
+				{
+				protected:
+					GuiToolstripGroupContainer*					container;
+					ControlTemplatePropertyType					splitterTemplate;
+
+					void										BeforeRemove(vint index, GuiControl* const& child)override;
+					void										AfterInsert(vint index, GuiControl* const& child)override;
+				public:
+					GroupCollection(GuiToolstripGroupContainer* _container);
+					~GroupCollection();
+
+					ControlTemplatePropertyType					GetSplitterTemplate();
+					void										SetSplitterTemplate(const ControlTemplatePropertyType& value);
+					void										RebuildSplitters();
+				};
 
 			protected:
 				compositions::GuiStackComposition*				stackComposition;
+				theme::ThemeName								splitterThemeName;
+				Ptr<GroupCollection>							groupCollection;
 
+				void											OnParentLineChanged()override;
 			public:
 				GuiToolstripGroupContainer(theme::ThemeName themeName);
 				~GuiToolstripGroupContainer();
 
 				ControlTemplatePropertyType						GetSplitterTemplate();
 				void											SetSplitterTemplate(const ControlTemplatePropertyType& value);
+
+				/// <summary>Get all managed child controls ordered by their positions.</summary>
+				/// <returns>All managed child controls.</returns>
+				collections::ObservableListBase<GuiControl*>&	GetToolstripItems();
 			};
 
-			class GuiToolstripGroup : public GuiControl, public Description<GuiToolstripGroup>
+			class GuiToolstripGroup : public GuiToolstripNestedContainer, public Description<GuiToolstripGroup>
 			{
 			public:
 			};
