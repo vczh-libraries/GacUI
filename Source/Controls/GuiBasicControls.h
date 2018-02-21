@@ -38,8 +38,10 @@ Basic Construction
 			{
 				friend class compositions::GuiGraphicsComposition;
 
+			protected:
 				using ControlList = collections::List<GuiControl*>;
 				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
+
 			private:
 				theme::ThemeName						controlThemeName;
 				ControlTemplatePropertyType				controlTemplate;

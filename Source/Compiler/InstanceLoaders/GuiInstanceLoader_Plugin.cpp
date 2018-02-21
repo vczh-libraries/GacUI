@@ -6,7 +6,6 @@ GuiInstanceLoader_Plugin.cpp
 		default: GuiComponent*
 GuiInstanceLoader_TemplateControl
 	GuiControl
-		ctor: ControlTemplate(ItemTemplate<T>)
 GuiInstanceLoader_Compositions.cpp
 	GuiAxis
 		ctor: AxisDirection

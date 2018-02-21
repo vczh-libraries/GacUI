@@ -28,29 +28,51 @@ namespace vl
 Toolstrip Item Collection
 ***********************************************************************/
 
-			/// <summary>Toolstrip item collection.</summary>
-			class GuiToolstripCollection : public collections::ObservableListBase<GuiControl*>
+			/// <summary>IToolstripUpdateLayout is required for all menu item container.</summary>
+			class IToolstripUpdateLayout : public IDescriptable
 			{
 			public:
-				class IContentCallback : public Interface
-				{
-				public:
-					virtual void							UpdateLayout()=0;
-				};
+				virtual void								UpdateLayout() = 0;
+			};
+
+			/// <summary>IToolstripUpdateLayout is required for a menu item which want to force the container to redo layout.</summary>
+			class IToolstripUpdateLayoutInvoker : public IDescriptable
+			{
+			public:
+				/// <summary>The identifier for this service.</summary>
+				static const wchar_t* const					Identifier;
+
+				virtual void								SetCallback(IToolstripUpdateLayout* callback) = 0;
+			};
+
+			/// <summary>Toolstrip item collection.</summary>
+			class GuiToolstripCollectionBase : public collections::ObservableListBase<GuiControl*>
+			{
+			public:
+
 			protected:
-				IContentCallback*							contentCallback;
-				compositions::GuiStackComposition*			stackComposition;
+				IToolstripUpdateLayout *						contentCallback;
 
 				void										InvokeUpdateLayout();
 				void										OnInterestingMenuButtonPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				bool										QueryInsert(vint index, GuiControl* const& child)override;
-				bool										QueryRemove(vint index, GuiControl* const& child)override;
-				void										BeforeInsert(vint index, GuiControl* const& child)override;
 				void										BeforeRemove(vint index, GuiControl* const& child)override;
 				void										AfterInsert(vint index, GuiControl* const& child)override;
 				void										AfterRemove(vint index, vint count)override;
 			public:
-				GuiToolstripCollection(IContentCallback* _contentCallback, compositions::GuiStackComposition* _stackComposition);
+				GuiToolstripCollectionBase(IToolstripUpdateLayout* _contentCallback);
+				~GuiToolstripCollectionBase();
+			};
+
+			/// <summary>Toolstrip item collection.</summary>
+			class GuiToolstripCollection : public GuiToolstripCollectionBase
+			{
+			protected:
+				compositions::GuiStackComposition*			stackComposition;
+
+				void										BeforeRemove(vint index, GuiControl* const& child)override;
+				void										AfterInsert(vint index, GuiControl* const& child)override;
+			public:
+				GuiToolstripCollection(IToolstripUpdateLayout* _contentCallback, compositions::GuiStackComposition* _stackComposition);
 				~GuiToolstripCollection();
 			};
 
@@ -59,14 +81,14 @@ Toolstrip Container
 ***********************************************************************/
 
 			/// <summary>Toolstrip menu.</summary>
-			class GuiToolstripMenu : public GuiMenu, protected GuiToolstripCollection::IContentCallback,  Description<GuiToolstripMenu>
+			class GuiToolstripMenu : public GuiMenu, protected IToolstripUpdateLayout,  Description<GuiToolstripMenu>
 			{
 			protected:
-				compositions::GuiSharedSizeRootComposition*	sharedSizeRootComposition;
-				compositions::GuiStackComposition*			stackComposition;
-				Ptr<GuiToolstripCollection>					toolstripItems;
+				compositions::GuiSharedSizeRootComposition*		sharedSizeRootComposition;
+				compositions::GuiStackComposition*				stackComposition;
+				Ptr<GuiToolstripCollection>						toolstripItems;
 
-				void										UpdateLayout()override;
+				void											UpdateLayout()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -76,15 +98,15 @@ Toolstrip Container
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
 				/// <returns>All managed child controls.</returns>
-				GuiToolstripCollection&						GetToolstripItems();
+				collections::ObservableListBase<GuiControl*>&	GetToolstripItems();
 			};
 
 			/// <summary>Toolstrip menu bar.</summary>
 			class GuiToolstripMenuBar : public GuiMenuBar, public Description<GuiToolstripMenuBar>
 			{
 			protected:
-				compositions::GuiStackComposition*			stackComposition;
-				Ptr<GuiToolstripCollection>					toolstripItems;
+				compositions::GuiStackComposition*				stackComposition;
+				Ptr<GuiToolstripCollection>						toolstripItems;
 
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
@@ -94,15 +116,15 @@ Toolstrip Container
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
 				/// <returns>All managed child controls.</returns>
-				GuiToolstripCollection&						GetToolstripItems();
+				collections::ObservableListBase<GuiControl*>&	GetToolstripItems();
 			};
 
 			/// <summary>Toolstrip tool bar.</summary>
 			class GuiToolstripToolBar : public GuiControl, public Description<GuiToolstripToolBar>
 			{
 			protected:
-				compositions::GuiStackComposition*			stackComposition;
-				Ptr<GuiToolstripCollection>					toolstripItems;
+				compositions::GuiStackComposition*				stackComposition;
+				Ptr<GuiToolstripCollection>						toolstripItems;
 
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
@@ -112,7 +134,7 @@ Toolstrip Container
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
 				/// <returns>All managed child controls.</returns>
-				GuiToolstripCollection&						GetToolstripItems();
+				collections::ObservableListBase<GuiControl*>&	GetToolstripItems();
 			};
 
 /***********************************************************************
@@ -120,13 +142,16 @@ Toolstrip Component
 ***********************************************************************/
 
 			/// <summary>Toolstrip button that can connect with a <see cref="GuiToolstripCommand"/>.</summary>
-			class GuiToolstripButton : public GuiMenuButton, public Description<GuiToolstripButton>
+			class GuiToolstripButton : public GuiMenuButton, protected IToolstripUpdateLayoutInvoker, public Description<GuiToolstripButton>
 			{
 			protected:
 				GuiToolstripCommand*							command;
+				IToolstripUpdateLayout*							callback = nullptr;
 				Ptr<compositions::IGuiGraphicsEventHandler>		descriptionChangedHandler;
 
+				void											SetCallback(IToolstripUpdateLayout* _callback);
 				void											UpdateCommandContent();
+				void											OnLayoutAwaredPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnCommandDescriptionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
@@ -152,6 +177,32 @@ Toolstrip Component
 				/// <summary>Create the toolstrip sub menu if necessary. The created toolstrip sub menu is owned by this menu button.</summary>
 				/// <param name="subMenuTemplate">The style controller for the toolstrip sub menu. Set to null to use the default control template.</param>
 				void											CreateToolstripSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate);
+
+				IDescriptable*									QueryService(const WString& identifier)override;
+			};
+
+/***********************************************************************
+Toolstrip Group
+***********************************************************************/
+
+			class GuiToolstripGroupContainer : public GuiControl, private collections::ObservableListBase<GuiControl*>, public Description<GuiToolstripGroupContainer>
+			{
+			private:
+
+			protected:
+				compositions::GuiStackComposition*				stackComposition;
+
+			public:
+				GuiToolstripGroupContainer(theme::ThemeName themeName);
+				~GuiToolstripGroupContainer();
+
+				ControlTemplatePropertyType						GetSplitterTemplate();
+				void											SetSplitterTemplate(const ControlTemplatePropertyType& value);
+			};
+
+			class GuiToolstripGroup : public GuiControl, public Description<GuiToolstripGroup>
+			{
+			public:
 			};
 		}
 	}

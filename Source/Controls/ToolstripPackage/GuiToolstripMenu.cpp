@@ -11,10 +11,12 @@ namespace vl
 			using namespace compositions;
 
 /***********************************************************************
-GuiToolstripCollection
+GuiToolstripCollectionBase
 ***********************************************************************/
 
-			void GuiToolstripCollection::InvokeUpdateLayout()
+			const wchar_t* const IToolstripUpdateLayoutInvoker::Identifier = L"vl::presentation::controls::IToolstripUpdateLayoutInvoker";
+
+			void GuiToolstripCollectionBase::InvokeUpdateLayout()
 			{
 				if(contentCallback)
 				{
@@ -22,33 +24,56 @@ GuiToolstripCollection
 				}
 			}
 
-			void GuiToolstripCollection::OnInterestingMenuButtonPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiToolstripCollectionBase::OnInterestingMenuButtonPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				InvokeUpdateLayout();
 			}
 
-			bool GuiToolstripCollection::QueryInsert(vint index, GuiControl* const& child)
+			void GuiToolstripCollectionBase::BeforeRemove(vint index, GuiControl* const& child)
 			{
-				return true;
+				if (auto invoker = child->QueryTypedService<IToolstripUpdateLayoutInvoker>())
+				{
+					invoker->SetCallback(nullptr);
+				}
+				InvokeUpdateLayout();
 			}
 
-			bool GuiToolstripCollection::QueryRemove(vint index, GuiControl* const& child)
+			void GuiToolstripCollectionBase::AfterInsert(vint index, GuiControl* const& child)
 			{
-				return true;
+				if (auto invoker = child->QueryTypedService<IToolstripUpdateLayoutInvoker>())
+				{
+					invoker->SetCallback(contentCallback);
+				}
+				InvokeUpdateLayout();
 			}
 
-			void GuiToolstripCollection::BeforeInsert(vint index, GuiControl* const& child)
+			void GuiToolstripCollectionBase::AfterRemove(vint index, vint count)
+			{
+				InvokeUpdateLayout();
+			}
+
+			GuiToolstripCollectionBase::GuiToolstripCollectionBase(IToolstripUpdateLayout* _contentCallback)
+				:contentCallback(_contentCallback)
 			{
 			}
+
+			GuiToolstripCollectionBase::~GuiToolstripCollectionBase()
+			{
+			}
+
+/***********************************************************************
+GuiToolstripCollection
+***********************************************************************/
 
 			void GuiToolstripCollection::BeforeRemove(vint index, GuiControl* const& child)
 			{
 				GuiStackItemComposition* stackItem = stackComposition->GetStackItems().Get(index);
 				stackComposition->RemoveChild(stackItem);
 				stackItem->RemoveChild(child->GetBoundsComposition());
+
+				GuiToolstripCollectionBase::BeforeRemove(index, child);
 				delete stackItem;
 				delete child;
-				InvokeUpdateLayout();
 			}
 
 			void GuiToolstripCollection::AfterInsert(vint index, GuiControl* const& child)
@@ -58,22 +83,11 @@ GuiToolstripCollection
 				stackItem->AddChild(child->GetBoundsComposition());
 				stackComposition->InsertChild(index, stackItem);
 
-				GuiMenuButton* menuButton=dynamic_cast<GuiMenuButton*>(child);
-				if(menuButton)
-				{
-					menuButton->TextChanged.AttachMethod(this, &GuiToolstripCollection::OnInterestingMenuButtonPropertyChanged);
-					menuButton->ShortcutTextChanged.AttachMethod(this, &GuiToolstripCollection::OnInterestingMenuButtonPropertyChanged);
-				}
-				InvokeUpdateLayout();
+				GuiToolstripCollectionBase::AfterInsert(index, child);
 			}
 
-			void GuiToolstripCollection::AfterRemove(vint index, vint count)
-			{
-				InvokeUpdateLayout();
-			}
-
-			GuiToolstripCollection::GuiToolstripCollection(IContentCallback* _contentCallback, compositions::GuiStackComposition* _stackComposition)
-				:contentCallback(_contentCallback)
+			GuiToolstripCollection::GuiToolstripCollection(IToolstripUpdateLayout* _contentCallback, compositions::GuiStackComposition* _stackComposition)
+				:GuiToolstripCollectionBase(_contentCallback)
 				,stackComposition(_stackComposition)
 			{
 			}
@@ -112,7 +126,7 @@ GuiToolstripMenu
 			{
 			}
 
-			GuiToolstripCollection& GuiToolstripMenu::GetToolstripItems()
+			collections::ObservableListBase<GuiControl*>& GuiToolstripMenu::GetToolstripItems()
 			{
 				return *toolstripItems.Obj();
 			}
@@ -130,14 +144,14 @@ GuiToolstripMenuBar
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				toolstripItems=new GuiToolstripCollection(0, stackComposition);
+				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
 			}
 
 			GuiToolstripMenuBar::~GuiToolstripMenuBar()
 			{
 			}
 
-			GuiToolstripCollection& GuiToolstripMenuBar::GetToolstripItems()
+			collections::ObservableListBase<GuiControl*>& GuiToolstripMenuBar::GetToolstripItems()
 			{
 				return *toolstripItems.Obj();
 			}
@@ -155,14 +169,14 @@ GuiToolstripToolBar
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				toolstripItems=new GuiToolstripCollection(0, stackComposition);
+				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
 			}
 
 			GuiToolstripToolBar::~GuiToolstripToolBar()
 			{
 			}
 
-			GuiToolstripCollection& GuiToolstripToolBar::GetToolstripItems()
+			collections::ObservableListBase<GuiControl*>& GuiToolstripToolBar::GetToolstripItems()
 			{
 				return *toolstripItems.Obj();
 			}
@@ -170,6 +184,11 @@ GuiToolstripToolBar
 /***********************************************************************
 GuiToolstripButton
 ***********************************************************************/
+
+			void GuiToolstripButton::SetCallback(IToolstripUpdateLayout* _callback)
+			{
+				callback = _callback;
+			}
 
 			void GuiToolstripButton::UpdateCommandContent()
 			{
@@ -198,6 +217,14 @@ GuiToolstripButton
 				}
 			}
 
+			void GuiToolstripButton::OnLayoutAwaredPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (callback)
+				{
+					callback->UpdateLayout();
+				}
+			}
+
 			void GuiToolstripButton::OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if(command)
@@ -216,6 +243,8 @@ GuiToolstripButton
 				,command(0)
 			{
 				Clicked.AttachMethod(this, &GuiToolstripButton::OnClicked);
+				TextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
+				ShortcutTextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
 			}
 
 			GuiToolstripButton::~GuiToolstripButton()
@@ -274,6 +303,18 @@ GuiToolstripButton
 						newSubMenu->SetControlTemplate(GetControlTemplateObject()->GetSubMenuTemplate());
 					}
 					SetSubMenu(newSubMenu, true);
+				}
+			}
+
+			IDescriptable* GuiToolstripButton::QueryService(const WString& identifier)
+			{
+				if (identifier == IToolstripUpdateLayoutInvoker::Identifier)
+				{
+					return (IToolstripUpdateLayoutInvoker*)this;
+				}
+				else
+				{
+					return GuiMenuButton::QueryService(identifier);
 				}
 			}
 		}
