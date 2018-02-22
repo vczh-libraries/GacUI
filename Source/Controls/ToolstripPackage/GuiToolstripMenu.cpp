@@ -29,6 +29,11 @@ GuiToolstripCollectionBase
 				InvokeUpdateLayout();
 			}
 
+			bool GuiToolstripCollectionBase::QueryInsert(vint index, GuiControl* const& child)
+			{
+				return !items.Contains(child);
+			}
+
 			void GuiToolstripCollectionBase::BeforeRemove(vint index, GuiControl* const& child)
 			{
 				if (auto invoker = child->QueryTypedService<IToolstripUpdateLayoutInvoker>())
@@ -69,11 +74,9 @@ GuiToolstripCollection
 			{
 				GuiStackItemComposition* stackItem = stackComposition->GetStackItems().Get(index);
 				stackComposition->RemoveChild(stackItem);
-				stackItem->RemoveChild(child->GetBoundsComposition());
 
 				GuiToolstripCollectionBase::BeforeRemove(index, child);
-				delete stackItem;
-				delete child;
+				SafeDeleteComposition(stackItem);
 			}
 
 			void GuiToolstripCollection::AfterInsert(vint index, GuiControl* const& child)
@@ -362,13 +365,42 @@ GuiToolstripGroupContainer::GroupCollection
 
 			void GuiToolstripGroupContainer::GroupCollection::BeforeRemove(vint index, GuiControl* const& child)
 			{
-				throw 0;
+				auto controlStackItem = container->stackComposition->GetStackItems()[index * 2];
+				auto splitterStackItem =
+					container->stackComposition->GetStackItems().Count() == 1 ? nullptr :
+					index == 0 ? container->stackComposition->GetStackItems()[1] :
+					container->stackComposition->GetStackItems()[index * 2 - 1]
+					;
+
+				container->stackComposition->RemoveChild(controlStackItem);
+				if (splitterStackItem) container->stackComposition->RemoveChild(splitterStackItem);
+
 				GuiToolstripCollectionBase::BeforeRemove(index, child);
+
+				SafeDeleteComposition(controlStackItem);
+				SafeDeleteComposition(splitterStackItem);
 			}
 
 			void GuiToolstripGroupContainer::GroupCollection::AfterInsert(vint index, GuiControl* const& child)
 			{
-				throw 0;
+				auto controlStackItem = new GuiStackItemComposition;
+				child->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				controlStackItem->AddChild(child->GetBoundsComposition());
+				container->stackComposition->InsertChild(index * 2, controlStackItem);
+
+				if (container->stackComposition->GetStackItems().Count() > 1)
+				{
+					auto splitterStackItem = new GuiStackItemComposition;
+					auto splitter = new GuiControl(container->splitterThemeName);
+					if (splitterTemplate)
+					{
+						splitter->SetControlTemplate(splitterTemplate);
+					}
+					splitter->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					splitterStackItem->AddChild(splitter->GetBoundsComposition());
+					container->stackComposition->InsertChild(index == 0 ? 1 : index * 2 - 1, splitterStackItem);
+				}
+
 				GuiToolstripCollectionBase::AfterInsert(index, child);
 			}
 
@@ -491,6 +523,51 @@ GuiToolstripGroupContainer
 /***********************************************************************
 GuiToolstripGroup
 ***********************************************************************/
+
+			void GuiToolstripGroup::OnParentLineChanged()
+			{
+				auto direction = stackComposition->GetDirection();
+				if (auto service = QueryTypedService<IGuiMenuService>())
+				{
+					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
+					{
+						direction = GuiStackComposition::Vertical;
+					}
+					else
+					{
+						direction = GuiStackComposition::Horizontal;
+					}
+				}
+
+				if (direction != stackComposition->GetDirection())
+				{
+					stackComposition->SetDirection(direction);
+					UpdateLayout();
+				}
+
+				GuiControl::OnParentLineChanged();
+			}
+
+			GuiToolstripGroup::GuiToolstripGroup(theme::ThemeName themeName)
+				:GuiToolstripNestedContainer(themeName)
+			{
+				stackComposition = new GuiStackComposition;
+				stackComposition->SetDirection(GuiStackComposition::Vertical);
+				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->AddChild(stackComposition);
+
+				toolstripItems = new GuiToolstripCollection(nullptr, stackComposition);
+			}
+
+			GuiToolstripGroup::~GuiToolstripGroup()
+			{
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiToolstripGroup::GetToolstripItems()
+			{
+				return *toolstripItems.Obj();
+			}
 		}
 	}
 }

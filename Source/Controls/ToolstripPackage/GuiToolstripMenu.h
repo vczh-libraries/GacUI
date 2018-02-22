@@ -55,6 +55,7 @@ Toolstrip Item Collection
 
 				void										InvokeUpdateLayout();
 				void										OnInterestingMenuButtonPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				bool										QueryInsert(vint index, GuiControl* const& child)override;
 				void										BeforeRemove(vint index, GuiControl* const& child)override;
 				void										AfterInsert(vint index, GuiControl* const& child)override;
 				void										AfterRemove(vint index, vint count)override;
@@ -199,6 +200,7 @@ Toolstrip Group
 				IDescriptable*									QueryService(const WString& identifier)override;
 			};
 
+			/// <summary>A toolstrip item, which is also a toolstrip item container, automatically maintaining splitters between items.</summary>
 			class GuiToolstripGroupContainer : public GuiToolstripNestedContainer, public Description<GuiToolstripGroupContainer>
 			{
 			protected:
@@ -237,9 +239,21 @@ Toolstrip Group
 				collections::ObservableListBase<GuiControl*>&	GetToolstripItems();
 			};
 
+			/// <summary>A toolstrip item, which is also a toolstrip item container.</summary>
 			class GuiToolstripGroup : public GuiToolstripNestedContainer, public Description<GuiToolstripGroup>
 			{
+			protected:
+				compositions::GuiStackComposition*				stackComposition;
+				Ptr<GuiToolstripCollection>						toolstripItems;
+
+				void											OnParentLineChanged()override;
 			public:
+				GuiToolstripGroup(theme::ThemeName themeName);
+				~GuiToolstripGroup();
+
+				/// <summary>Get all managed child controls ordered by their positions.</summary>
+				/// <returns>All managed child controls.</returns>
+				collections::ObservableListBase<GuiControl*>&	GetToolstripItems();
 			};
 		}
 	}
