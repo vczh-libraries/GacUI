@@ -11002,7 +11002,6 @@ GuiInstanceLoader_Plugin.cpp
 		default: GuiComponent*
 GuiInstanceLoader_TemplateControl
 	GuiControl
-		ctor: ControlTemplate(ItemTemplate<T>)
 GuiInstanceLoader_Compositions.cpp
 	GuiAxis
 		ctor: AxisDirection
@@ -11282,37 +11281,37 @@ GuiPredefinedInstanceLoadersPlugin
 
 					manager->SetLoader(new GuiControlInstanceLoader);
 
-					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,		CustomControl										);
-					ADD_TEMPLATE_CONTROL	(							GuiLabel,				Label												);
-					ADD_TEMPLATE_CONTROL	(							GuiButton,				Button												);
-					ADD_TEMPLATE_CONTROL	(							GuiTabPage,				CustomControl										);
-					ADD_TEMPLATE_CONTROL	(							GuiTab,					Tab													);
-					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		ScrollView											);
-					ADD_TEMPLATE_CONTROL	(							GuiWindow,				Window												);
-					ADD_TEMPLATE_CONTROL	(							GuiTextList,			TextList											);
-					ADD_TEMPLATE_CONTROL	(							GuiBindableTextList,	TextList											);
-					ADD_TEMPLATE_CONTROL	(							GuiListView,			ListView											);
-					ADD_TEMPLATE_CONTROL	(							GuiBindableListView,	ListView											);
-					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,	MultilineTextBox									);
-					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	SinglelineTextBox									);
-					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			DatePicker											);
-					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,		ComboBox,				CreateStandardDataPicker	);
+					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,			CustomControl										);
+					ADD_TEMPLATE_CONTROL	(							GuiLabel,					Label												);
+					ADD_TEMPLATE_CONTROL	(							GuiButton,					Button												);
+					ADD_TEMPLATE_CONTROL	(							GuiTabPage,					CustomControl										);
+					ADD_TEMPLATE_CONTROL	(							GuiTab,						Tab													);
+					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,			ScrollView											);
+					ADD_TEMPLATE_CONTROL	(							GuiWindow,					Window												);
+					ADD_TEMPLATE_CONTROL	(							GuiTextList,				TextList											);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableTextList,		TextList											);
+					ADD_TEMPLATE_CONTROL	(							GuiListView,				ListView											);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableListView,		ListView											);
+					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,		MultilineTextBox									);
+					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,		SinglelineTextBox									);
+					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,				DatePicker											);
+					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,			ComboBox,				CreateStandardDataPicker	);
 
-					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,				GroupBox											);
-					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,				MenuSplitter										);
-					ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,		MenuBarButton										);
-					ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,		MenuItemButton										);
-					ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,		ToolstripDropdownButton								);
-					ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,		ToolstripSplitButton								);
-					ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,				ToolstripSplitter									);
-					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,	CheckBox											);
-					ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,	RadioButton											);
-					ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,				HScroll												);
-					ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,				VScroll												);
-					ADD_VIRTUAL_CONTROL		(DocumentTextBox,			GuiDocumentLabel,		DocumentTextBox										);
-					ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,				HTracker,				InitializeTrackerProgressBar);
-					ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,				VTracker,				InitializeTrackerProgressBar);
-					ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,				ProgressBar,			InitializeTrackerProgressBar);
+					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,					GroupBox											);
+					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,					MenuSplitter										);
+					ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,			MenuBarButton										);
+					ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,			MenuItemButton										);
+					ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,			ToolstripDropdownButton								);
+					ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,			ToolstripSplitButton								);
+					ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,					ToolstripSplitter									);
+					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,		CheckBox											);
+					ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,		RadioButton											);
+					ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,					HScroll												);
+					ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,					VScroll												);
+					ADD_VIRTUAL_CONTROL		(DocumentTextBox,			GuiDocumentLabel,			DocumentTextBox										);
+					ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,					HTracker,				InitializeTrackerProgressBar);
+					ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,					VTracker,				InitializeTrackerProgressBar);
+					ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,					ProgressBar,			InitializeTrackerProgressBar);
 
 					LoadToolstripControls(manager);
 					LoadListControls(manager);
@@ -11701,6 +11700,36 @@ GuiToolstripToolBarInstanceLoader
 #undef BASE_TYPE
 
 /***********************************************************************
+GuiToolstripGroupContainerInstanceLoader
+***********************************************************************/
+
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripGroupContainer>
+			class GuiToolstripGroupContainerInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
+			{
+			public:
+				GuiToolstripGroupContainerInstanceLoader()
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripGroupContainer>::content.typeName, theme::ThemeName::CustomControl)
+				{
+				}
+			};
+#undef BASE_TYPE
+
+/***********************************************************************
+GuiToolstripGroupInstanceLoader
+***********************************************************************/
+
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripGroup>
+			class GuiToolstripGroupInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
+			{
+			public:
+				GuiToolstripGroupInstanceLoader()
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripGroup>::content.typeName, theme::ThemeName::CustomControl)
+				{
+				}
+			};
+#undef BASE_TYPE
+
+/***********************************************************************
 GuiToolstripButtonInstanceLoader
 ***********************************************************************/
 
@@ -11762,6 +11791,8 @@ Initialization
 				manager->SetLoader(new GuiToolstripMenuInstanceLoader);
 				manager->SetLoader(new GuiToolstripMenuBarInstanceLoader);
 				manager->SetLoader(new GuiToolstripToolBarInstanceLoader);
+				manager->SetLoader(new GuiToolstripGroupContainerInstanceLoader);
+				manager->SetLoader(new GuiToolstripGroupInstanceLoader);
 				manager->SetLoader(new GuiToolstripButtonInstanceLoader);
 			}
 		}

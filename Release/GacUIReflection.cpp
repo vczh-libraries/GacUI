@@ -1597,8 +1597,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiWindow)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiPopup)
 
-				CLASS_MEMBER_METHOD(IsClippedByScreen, {L"location"})
 				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"location" _ L"screen"}, void(GuiPopup::*)(Point _ INativeScreen*))
+				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"control" _ L"bounds" _ L"preferredTopBottomSide"}, void(GuiPopup::*)(GuiControl* _ Rect _ bool))
 				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"control" _ L"location"}, void(GuiPopup::*)(GuiControl* _ Point))
 				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"control" _ L"preferredTopBottomSide"}, void(GuiPopup::*)(GuiControl* _ bool))
 			END_CLASS_MEMBER(GuiPopup)
@@ -2113,6 +2113,25 @@ Type Declaration
 				CLASS_MEMBER_METHOD(EnsureToolstripSubMenu, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateToolstripSubMenu, {L"subMenuStyleController"})
 			END_CLASS_MEMBER(GuiToolstripButton)
+
+			BEGIN_CLASS_MEMBER(GuiToolstripNestedContainer)
+				CLASS_MEMBER_BASE(GuiControl)
+			END_CLASS_MEMBER(GuiToolstripGroupContainer)
+
+			BEGIN_CLASS_MEMBER(GuiToolstripGroupContainer)
+				CLASS_MEMBER_BASE(GuiToolstripNestedContainer)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiToolstripGroupContainer)
+
+				CLASS_MEMBER_PROPERTY_FAST(SplitterTemplate)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ToolstripItems)
+			END_CLASS_MEMBER(GuiToolstripGroupContainer)
+
+			BEGIN_CLASS_MEMBER(GuiToolstripGroup)
+				CLASS_MEMBER_BASE(GuiToolstripNestedContainer)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiToolstripGroup)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ToolstripItems)
+			END_CLASS_MEMBER(GuiToolstripGroup)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDocumentItem>(const WString&), { L"name" })

@@ -6584,6 +6584,11 @@ GuiControlHost
 				SetNativeWindow(0);
 			}
 
+			void GuiControlHost::UpdateClientSizeAfterRendering(Size clientSize)
+			{
+				SetClientSize(clientSize);
+			}
+
 			GuiControlHost::GuiControlHost(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
@@ -6598,14 +6603,12 @@ GuiControlHost
 				WindowClosed.SetAssociatedComposition(boundsComposition);
 				WindowDestroying.SetAssociatedComposition(boundsComposition);
 
-				host=new GuiGraphicsHost;
-				host->GetMainComposition()->AddChild(boundsComposition);
+				host=new GuiGraphicsHost(this, boundsComposition);
 				sharedPtrDestructorProc = 0;
 			}
 
 			GuiControlHost::~GuiControlHost()
 			{
-				host->GetMainComposition()->RemoveChild(boundsComposition);
 				FinalizeInstanceRecursively(this);
 				OnBeforeReleaseGraphicsHost();
 				delete host;
@@ -7201,6 +7204,20 @@ GuiWindow
 GuiPopup
 ***********************************************************************/
 
+			void GuiPopup::UpdateClientSizeAfterRendering(Size clientSize)
+			{
+				if (popupType == -1)
+				{
+					GuiWindow::UpdateClientSizeAfterRendering(clientSize);
+				}
+				else
+				{
+					auto window = GetNativeWindow();
+					auto position = CalculatePopupPosition(clientSize, popupType, popupInfo);
+					window->SetBounds(Rect(position, clientSize));
+				}
+			}
+
 			void GuiPopup::MouseClickedOnOtherWindow(GuiWindow* window)
 			{
 				Hide();
@@ -7213,12 +7230,127 @@ GuiPopup
 
 			void GuiPopup::PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
+				popupType = -1;
 				GetApplication()->RegisterPopupClosed(this);
-				INativeWindow* window=GetNativeWindow();
-				if(window)
+				if(auto window = GetNativeWindow())
 				{
-					window->SetParent(0);
+					window->SetParent(nullptr);
 				}
+			}
+
+			Point GuiPopup::CalculatePopupPosition(Size size, Point location, INativeScreen* screen)
+			{
+				Rect screenBounds = screen->GetClientBounds();
+
+				if (location.x < screenBounds.x1)
+				{
+					location.x = screenBounds.x1;
+				}
+				else if (location.x + size.x > screenBounds.x2)
+				{
+					location.x = screenBounds.x2 - size.x;
+				}
+
+				if (location.y < screenBounds.y1)
+				{
+					location.y = screenBounds.y1;
+				}
+				else if (location.y + size.y > screenBounds.y2)
+				{
+					location.y = screenBounds.y2 - size.y;
+				}
+
+				return location;
+			}
+
+			bool GuiPopup::IsClippedByScreen(Size size, Point location, INativeScreen* screen)
+			{
+				Rect screenBounds = screen->GetClientBounds();
+				Rect windowBounds(location, size);
+				return !screenBounds.Contains(windowBounds.LeftTop()) || !screenBounds.Contains(windowBounds.RightBottom());
+			}
+
+			Point GuiPopup::CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, Rect bounds, bool preferredTopBottomSide)
+			{
+				Point controlClientOffset = control->GetBoundsComposition()->GetGlobalBounds().LeftTop();
+				Point controlWindowOffset = controlWindow->GetClientBoundsInScreen().LeftTop();
+				bounds.x1 += controlClientOffset.x + controlWindowOffset.x;
+				bounds.x2 += controlClientOffset.x + controlWindowOffset.x;
+				bounds.y1 += controlClientOffset.y + controlWindowOffset.y;
+				bounds.y2 += controlClientOffset.y + controlWindowOffset.y;
+
+				Point locations[4];
+				if (preferredTopBottomSide)
+				{
+					locations[0] = Point(bounds.x1, bounds.y2);
+					locations[1] = Point(bounds.x2 - size.x, bounds.y2);
+					locations[2] = Point(bounds.x1, bounds.y1 - size.y);
+					locations[3] = Point(bounds.x2 - size.x, bounds.y1 - size.y);
+				}
+				else
+				{
+					locations[0] = Point(bounds.x2, bounds.y1);
+					locations[1] = Point(bounds.x2, bounds.y2 - size.y);
+					locations[2] = Point(bounds.x1 - size.x, bounds.y1);
+					locations[3] = Point(bounds.x1 - size.x, bounds.y2 - size.y);
+				}
+
+				auto screen = GetCurrentController()->ScreenService()->GetScreen(controlWindow);
+				for (vint i = 0; i < 4; i++)
+				{
+					if (!IsClippedByScreen(size, locations[i], screen))
+					{
+						return CalculatePopupPosition(size, locations[i], screen);
+					}
+				}
+				return CalculatePopupPosition(size, locations[0], screen);
+			}
+
+			Point GuiPopup::CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, Point location)
+			{
+				Point locations[4];
+				Rect controlBounds = control->GetBoundsComposition()->GetGlobalBounds();
+
+				Point controlClientOffset = controlWindow->GetClientBoundsInScreen().LeftTop();
+				vint x = controlBounds.x1 + controlClientOffset.x + location.x;
+				vint y = controlBounds.y1 + controlClientOffset.y + location.y;
+				return CalculatePopupPosition(size, Point(x, y), GetCurrentController()->ScreenService()->GetScreen(controlWindow));
+			}
+
+			Point GuiPopup::CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, bool preferredTopBottomSide)
+			{
+				Rect bounds(Point(0, 0), control->GetBoundsComposition()->GetBounds().GetSize());
+				return CalculatePopupPosition(size, control, controlWindow, bounds, preferredTopBottomSide);
+			}
+
+			Point GuiPopup::CalculatePopupPosition(Size size, vint popupType, const PopupInfo& popupInfo)
+			{
+				switch (popupType)
+				{
+				case 1:
+					return CalculatePopupPosition(size, popupInfo._1.location, popupInfo._1.screen);
+				case 2:
+					return CalculatePopupPosition(size, popupInfo._2.control, popupInfo._2.controlWindow, popupInfo._2.bounds, popupInfo._2.preferredTopBottomSide);
+				case 3:
+					return CalculatePopupPosition(size, popupInfo._3.control, popupInfo._3.controlWindow, popupInfo._3.location);
+				case 4:
+					return CalculatePopupPosition(size, popupInfo._4.control, popupInfo._4.controlWindow, popupInfo._4.preferredTopBottomSide);
+				default:
+					CHECK_FAIL(L"vl::presentation::controls::GuiPopup::CalculatePopupPosition(Size, const PopupInfo&)#Internal error.");
+				}
+			}
+
+			void GuiPopup::ShowPopupInternal()
+			{
+				auto window = GetNativeWindow();
+				UpdateClientSizeAfterRendering(window->GetBounds().GetSize());
+				switch (popupType)
+				{
+				case 2: window->SetParent(popupInfo._2.controlWindow); break;
+				case 3: window->SetParent(popupInfo._3.controlWindow); break;
+				case 4: window->SetParent(popupInfo._4.controlWindow); break;
+				}
+				ShowDeactivated();
 			}
 
 			GuiPopup::GuiPopup(theme::ThemeName themeName)
@@ -7239,27 +7371,9 @@ GuiPopup
 				GetApplication()->RegisterPopupClosed(this);
 			}
 
-			bool GuiPopup::IsClippedByScreen(Point location)
-			{
-				SetBounds(Rect(location, GetBounds().GetSize()));
-				INativeWindow* window=GetNativeWindow();
-				if(window)
-				{
-					INativeScreen* screen=GetCurrentController()->ScreenService()->GetScreen(window);
-					if(screen)
-					{
-						Rect screenBounds=screen->GetClientBounds();
-						Rect windowBounds=window->GetBounds();
-						return !screenBounds.Contains(windowBounds.LeftTop()) || !screenBounds.Contains(windowBounds.RightBottom());
-					}
-				}
-				return true;
-			}
-
 			void GuiPopup::ShowPopup(Point location, INativeScreen* screen)
 			{
-				INativeWindow* window=GetNativeWindow();
-				if(window)
+				if (auto window = GetNativeWindow())
 				{
 					if (!screen)
 					{
@@ -7267,81 +7381,27 @@ GuiPopup
 						screen = GetCurrentController()->ScreenService()->GetScreen(window);
 					}
 
-					if(screen)
-					{
-						Rect screenBounds=screen->GetClientBounds();
-						Size size=window->GetBounds().GetSize();
-
-						if(location.x<screenBounds.x1)
-						{
-							location.x=screenBounds.x1;
-						}
-						else if(location.x+size.x>screenBounds.x2)
-						{
-							location.x=screenBounds.x2-size.x;
-						}
-
-						if(location.y<screenBounds.y1)
-						{
-							location.y=screenBounds.y1;
-						}
-						else if(location.y+size.y>screenBounds.y2)
-						{
-							location.y=screenBounds.y2-size.y;
-						}
-					}
-					SetBounds(Rect(location, GetBounds().GetSize()));
-					bool value=GetNativeWindow()->IsEnabledActivate();
-					ShowDeactivated();
+					popupType = 1;
+					popupInfo._1.location = location;
+					popupInfo._1.screen = screen;
+					ShowPopupInternal();
 				}
 			}
 			
 			void GuiPopup::ShowPopup(GuiControl* control, Rect bounds, bool preferredTopBottomSide)
 			{
-				INativeWindow* window=GetNativeWindow();
-				if(window)
+				if (auto window = GetNativeWindow())
 				{
-					Point locations[4];
-					Size size=window->GetBounds().GetSize();
-
-					GuiControlHost* controlHost=control->GetBoundsComposition()->GetRelatedControlHost();
-					if(controlHost)
+					if (auto controlHost = control->GetBoundsComposition()->GetRelatedControlHost())
 					{
-						INativeWindow* controlWindow=controlHost->GetNativeWindow();
-						if(controlWindow)
+						if (auto controlWindow = controlHost->GetNativeWindow())
 						{
-							Point controlClientOffset=control->GetBoundsComposition()->GetGlobalBounds().LeftTop();
-							Point controlWindowOffset=controlWindow->GetClientBoundsInScreen().LeftTop();
-							bounds.x1+=controlClientOffset.x+controlWindowOffset.x;
-							bounds.x2+=controlClientOffset.x+controlWindowOffset.x;
-							bounds.y1+=controlClientOffset.y+controlWindowOffset.y;
-							bounds.y2+=controlClientOffset.y+controlWindowOffset.y;
-
-							if(preferredTopBottomSide)
-							{
-								locations[0]=Point(bounds.x1, bounds.y2);
-								locations[1]=Point(bounds.x2-size.x, bounds.y2);
-								locations[2]=Point(bounds.x1, bounds.y1-size.y);
-								locations[3]=Point(bounds.x2-size.x, bounds.y1-size.y);
-							}
-							else
-							{
-								locations[0]=Point(bounds.x2, bounds.y1);
-								locations[1]=Point(bounds.x2, bounds.y2-size.y);
-								locations[2]=Point(bounds.x1-size.x, bounds.y1);
-								locations[3]=Point(bounds.x1-size.x, bounds.y2-size.y);
-							}
-
-							window->SetParent(controlWindow);
-							for(vint i=0;i<4;i++)
-							{
-								if(!IsClippedByScreen(locations[i]))
-								{
-									ShowPopup(locations[i]);
-									return;
-								}
-							}
-							ShowPopup(locations[0], GetCurrentController()->ScreenService()->GetScreen(controlWindow));
+							popupType = 2;
+							popupInfo._2.control = control;
+							popupInfo._2.controlWindow = controlWindow;
+							popupInfo._2.bounds = bounds;
+							popupInfo._2.preferredTopBottomSide = preferredTopBottomSide;
+							ShowPopupInternal();
 						}
 					}
 				}
@@ -7349,24 +7409,17 @@ GuiPopup
 
 			void GuiPopup::ShowPopup(GuiControl* control, Point location)
 			{
-				INativeWindow* window=GetNativeWindow();
-				if(window)
+				if (auto window = GetNativeWindow())
 				{
-					Point locations[4];
-					Size size=window->GetBounds().GetSize();
-					Rect controlBounds=control->GetBoundsComposition()->GetGlobalBounds();
-
-					GuiControlHost* controlHost=control->GetBoundsComposition()->GetRelatedControlHost();
-					if(controlHost)
+					if (auto controlHost = control->GetBoundsComposition()->GetRelatedControlHost())
 					{
-						INativeWindow* controlWindow=controlHost->GetNativeWindow();
-						if(controlWindow)
+						if (auto controlWindow = controlHost->GetNativeWindow())
 						{
-							Point controlClientOffset=controlWindow->GetClientBoundsInScreen().LeftTop();
-							vint x=controlBounds.x1+controlClientOffset.x+location.x;
-							vint y=controlBounds.y1+controlClientOffset.y+location.y;
-							window->SetParent(controlWindow);
-							ShowPopup(Point(x, y), GetCurrentController()->ScreenService()->GetScreen(controlWindow));
+							popupType = 3;
+							popupInfo._3.control = control;
+							popupInfo._3.controlWindow = controlWindow;
+							popupInfo._3.location = location;
+							ShowPopupInternal();
 						}
 					}
 				}
@@ -7374,11 +7427,19 @@ GuiPopup
 
 			void GuiPopup::ShowPopup(GuiControl* control, bool preferredTopBottomSide)
 			{
-				INativeWindow* window=GetNativeWindow();
-				if(window)
+				if (auto window = GetNativeWindow())
 				{
-					Rect bounds(Point(0, 0), control->GetBoundsComposition()->GetBounds().GetSize());
-					ShowPopup(control, bounds, preferredTopBottomSide);
+					if (auto controlHost = control->GetBoundsComposition()->GetRelatedControlHost())
+					{
+						if (auto controlWindow = controlHost->GetNativeWindow())
+						{
+							popupType = 4;
+							popupInfo._4.control = control;
+							popupInfo._4.controlWindow = controlWindow;
+							popupInfo._4.preferredTopBottomSide = preferredTopBottomSide;
+							ShowPopupInternal();
+						}
+					}
 				}
 			}
 
@@ -7565,15 +7626,7 @@ GuiSharedSizeItemComposition
 GuiSharedSizeRootComposition
 ***********************************************************************/
 
-			GuiSharedSizeRootComposition::GuiSharedSizeRootComposition()
-			{
-			}
-
-			GuiSharedSizeRootComposition::~GuiSharedSizeRootComposition()
-			{
-			}
-
-			void AddSizeComponent(Dictionary<WString, vint>& sizes, const WString& group, vint sizeComponent)
+			void GuiSharedSizeRootComposition::AddSizeComponent(collections::Dictionary<WString, vint>& sizes, const WString& group, vint sizeComponent)
 			{
 				vint index = sizes.Keys().IndexOf(group);
 				if (index == -1)
@@ -7586,10 +7639,8 @@ GuiSharedSizeRootComposition
 				}
 			}
 
-			void GuiSharedSizeRootComposition::ForceCalculateSizeImmediately()
+			void GuiSharedSizeRootComposition::CollectSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights)
 			{
-				Dictionary<WString, vint> widths, heights;
-
 				FOREACH(GuiSharedSizeItemComposition*, item, childItems)
 				{
 					auto group = item->GetGroup();
@@ -7608,7 +7659,10 @@ GuiSharedSizeRootComposition
 
 					item->SetPreferredMinSize(minSize);
 				}
+			}
 
+			void GuiSharedSizeRootComposition::AlignSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights)
+			{
 				FOREACH(GuiSharedSizeItemComposition*, item, childItems)
 				{
 					auto group = item->GetGroup();
@@ -7625,8 +7679,45 @@ GuiSharedSizeRootComposition
 
 					item->SetPreferredMinSize(size);
 				}
+			}
 
+			void GuiSharedSizeRootComposition::UpdateBounds()
+			{
+
+			}
+
+			GuiSharedSizeRootComposition::GuiSharedSizeRootComposition()
+			{
+			}
+
+			GuiSharedSizeRootComposition::~GuiSharedSizeRootComposition()
+			{
+			}
+
+			void GuiSharedSizeRootComposition::ForceCalculateSizeImmediately()
+			{
+				itemWidths.Clear();
+				itemHeights.Clear();
+
+				CollectSizes(itemWidths, itemHeights);
+				AlignSizes(itemWidths, itemHeights);
 				GuiBoundsComposition::ForceCalculateSizeImmediately();
+			}
+
+			Rect GuiSharedSizeRootComposition::GetBounds()
+			{
+				Dictionary<WString, vint> widths, heights;
+				CollectSizes(widths, heights);
+				bool minSizeModified = CompareEnumerable(itemWidths, widths) != 0 || CompareEnumerable(itemHeights, heights) != 0;
+
+				if (minSizeModified)
+				{
+					CopyFrom(itemWidths, widths);
+					CopyFrom(itemHeights, heights);
+					AlignSizes(itemWidths, itemHeights);
+					GuiBoundsComposition::ForceCalculateSizeImmediately();
+				}
+				return GuiBoundsComposition::GetBounds();
 			}
 
 /***********************************************************************
@@ -10863,23 +10954,19 @@ GuiGraphicsHost
 				Render(false);
 			}
 
-			GuiGraphicsHost::GuiGraphicsHost()
-				:shortcutKeyManager(0)
-				,windowComposition(0)
-				,focusedComposition(0)
-				,mouseCaptureComposition(0)
-				,lastCaretTime(0)
-				,currentAltHost(0)
-				,supressAltKey(0)
+			GuiGraphicsHost::GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition)
+				:controlHost(_controlHost)
 			{
 				hostRecord.host = this;
 				windowComposition=new GuiWindowComposition;
 				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				windowComposition->AddChild(boundsComposition);
 				RefreshRelatedHostRecord(nullptr);
 			}
 
 			GuiGraphicsHost::~GuiGraphicsHost()
 			{
+				windowComposition->RemoveChild(windowComposition->Children()[0]);
 				NotifyFinalizeInstance(windowComposition);
 				if(shortcutKeyManager)
 				{
@@ -10936,6 +11023,16 @@ GuiGraphicsHost
 					supressPaint = true;
 					hostRecord.renderTarget->StartRendering();
 					windowComposition->Render(Size());
+					{
+						auto bounds = windowComposition->GetBounds();
+						auto preferred = windowComposition->GetPreferredBounds();
+						auto width = bounds.Width() > preferred.Width() ? bounds.Width() : preferred.Width();
+						auto height = bounds.Height() > preferred.Height() ? bounds.Height() : preferred.Height();
+						if (width != bounds.Width() || height != bounds.Height())
+						{
+							controlHost->UpdateClientSizeAfterRendering(Size(width, height));
+						}
+					}
 					auto result = hostRecord.renderTarget->StopRendering();
 					hostRecord.nativeWindow->RedrawContent();
 					supressPaint = false;
@@ -31014,10 +31111,12 @@ namespace vl
 			using namespace compositions;
 
 /***********************************************************************
-GuiToolstripCollection
+GuiToolstripCollectionBase
 ***********************************************************************/
 
-			void GuiToolstripCollection::InvokeUpdateLayout()
+			const wchar_t* const IToolstripUpdateLayoutInvoker::Identifier = L"vl::presentation::controls::IToolstripUpdateLayoutInvoker";
+
+			void GuiToolstripCollectionBase::InvokeUpdateLayout()
 			{
 				if(contentCallback)
 				{
@@ -31025,33 +31124,59 @@ GuiToolstripCollection
 				}
 			}
 
-			void GuiToolstripCollection::OnInterestingMenuButtonPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiToolstripCollectionBase::OnInterestingMenuButtonPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				InvokeUpdateLayout();
 			}
 
-			bool GuiToolstripCollection::QueryInsert(vint index, GuiControl* const& child)
+			bool GuiToolstripCollectionBase::QueryInsert(vint index, GuiControl* const& child)
 			{
-				return true;
+				return !items.Contains(child);
 			}
 
-			bool GuiToolstripCollection::QueryRemove(vint index, GuiControl* const& child)
+			void GuiToolstripCollectionBase::BeforeRemove(vint index, GuiControl* const& child)
 			{
-				return true;
+				if (auto invoker = child->QueryTypedService<IToolstripUpdateLayoutInvoker>())
+				{
+					invoker->SetCallback(nullptr);
+				}
+				InvokeUpdateLayout();
 			}
 
-			void GuiToolstripCollection::BeforeInsert(vint index, GuiControl* const& child)
+			void GuiToolstripCollectionBase::AfterInsert(vint index, GuiControl* const& child)
+			{
+				if (auto invoker = child->QueryTypedService<IToolstripUpdateLayoutInvoker>())
+				{
+					invoker->SetCallback(contentCallback);
+				}
+				InvokeUpdateLayout();
+			}
+
+			void GuiToolstripCollectionBase::AfterRemove(vint index, vint count)
+			{
+				InvokeUpdateLayout();
+			}
+
+			GuiToolstripCollectionBase::GuiToolstripCollectionBase(IToolstripUpdateLayout* _contentCallback)
+				:contentCallback(_contentCallback)
 			{
 			}
+
+			GuiToolstripCollectionBase::~GuiToolstripCollectionBase()
+			{
+			}
+
+/***********************************************************************
+GuiToolstripCollection
+***********************************************************************/
 
 			void GuiToolstripCollection::BeforeRemove(vint index, GuiControl* const& child)
 			{
 				GuiStackItemComposition* stackItem = stackComposition->GetStackItems().Get(index);
 				stackComposition->RemoveChild(stackItem);
-				stackItem->RemoveChild(child->GetBoundsComposition());
-				delete stackItem;
-				delete child;
-				InvokeUpdateLayout();
+
+				GuiToolstripCollectionBase::BeforeRemove(index, child);
+				SafeDeleteComposition(stackItem);
 			}
 
 			void GuiToolstripCollection::AfterInsert(vint index, GuiControl* const& child)
@@ -31061,22 +31186,11 @@ GuiToolstripCollection
 				stackItem->AddChild(child->GetBoundsComposition());
 				stackComposition->InsertChild(index, stackItem);
 
-				GuiMenuButton* menuButton=dynamic_cast<GuiMenuButton*>(child);
-				if(menuButton)
-				{
-					menuButton->TextChanged.AttachMethod(this, &GuiToolstripCollection::OnInterestingMenuButtonPropertyChanged);
-					menuButton->ShortcutTextChanged.AttachMethod(this, &GuiToolstripCollection::OnInterestingMenuButtonPropertyChanged);
-				}
-				InvokeUpdateLayout();
+				GuiToolstripCollectionBase::AfterInsert(index, child);
 			}
 
-			void GuiToolstripCollection::AfterRemove(vint index, vint count)
-			{
-				InvokeUpdateLayout();
-			}
-
-			GuiToolstripCollection::GuiToolstripCollection(IContentCallback* _contentCallback, compositions::GuiStackComposition* _stackComposition)
-				:contentCallback(_contentCallback)
+			GuiToolstripCollection::GuiToolstripCollection(IToolstripUpdateLayout* _contentCallback, compositions::GuiStackComposition* _stackComposition)
+				:GuiToolstripCollectionBase(_contentCallback)
 				,stackComposition(_stackComposition)
 			{
 			}
@@ -31115,7 +31229,7 @@ GuiToolstripMenu
 			{
 			}
 
-			GuiToolstripCollection& GuiToolstripMenu::GetToolstripItems()
+			collections::ObservableListBase<GuiControl*>& GuiToolstripMenu::GetToolstripItems()
 			{
 				return *toolstripItems.Obj();
 			}
@@ -31133,14 +31247,14 @@ GuiToolstripMenuBar
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				toolstripItems=new GuiToolstripCollection(0, stackComposition);
+				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
 			}
 
 			GuiToolstripMenuBar::~GuiToolstripMenuBar()
 			{
 			}
 
-			GuiToolstripCollection& GuiToolstripMenuBar::GetToolstripItems()
+			collections::ObservableListBase<GuiControl*>& GuiToolstripMenuBar::GetToolstripItems()
 			{
 				return *toolstripItems.Obj();
 			}
@@ -31158,14 +31272,14 @@ GuiToolstripToolBar
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				toolstripItems=new GuiToolstripCollection(0, stackComposition);
+				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
 			}
 
 			GuiToolstripToolBar::~GuiToolstripToolBar()
 			{
 			}
 
-			GuiToolstripCollection& GuiToolstripToolBar::GetToolstripItems()
+			collections::ObservableListBase<GuiControl*>& GuiToolstripToolBar::GetToolstripItems()
 			{
 				return *toolstripItems.Obj();
 			}
@@ -31173,6 +31287,11 @@ GuiToolstripToolBar
 /***********************************************************************
 GuiToolstripButton
 ***********************************************************************/
+
+			void GuiToolstripButton::SetCallback(IToolstripUpdateLayout* _callback)
+			{
+				callback = _callback;
+			}
 
 			void GuiToolstripButton::UpdateCommandContent()
 			{
@@ -31201,6 +31320,14 @@ GuiToolstripButton
 				}
 			}
 
+			void GuiToolstripButton::OnLayoutAwaredPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (callback)
+				{
+					callback->UpdateLayout();
+				}
+			}
+
 			void GuiToolstripButton::OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if(command)
@@ -31219,6 +31346,8 @@ GuiToolstripButton
 				,command(0)
 			{
 				Clicked.AttachMethod(this, &GuiToolstripButton::OnClicked);
+				TextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
+				ShortcutTextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
 			}
 
 			GuiToolstripButton::~GuiToolstripButton()
@@ -31278,6 +31407,260 @@ GuiToolstripButton
 					}
 					SetSubMenu(newSubMenu, true);
 				}
+			}
+
+			IDescriptable* GuiToolstripButton::QueryService(const WString& identifier)
+			{
+				if (identifier == IToolstripUpdateLayoutInvoker::Identifier)
+				{
+					return (IToolstripUpdateLayoutInvoker*)this;
+				}
+				else
+				{
+					return GuiMenuButton::QueryService(identifier);
+				}
+			}
+
+/***********************************************************************
+GuiToolstripNestedContainer
+***********************************************************************/
+
+			void GuiToolstripNestedContainer::UpdateLayout()
+			{
+				if (callback)
+				{
+					callback->UpdateLayout();
+				}
+			}
+
+			void GuiToolstripNestedContainer::SetCallback(IToolstripUpdateLayout* _callback)
+			{
+				callback = _callback;
+			}
+
+			GuiToolstripNestedContainer::GuiToolstripNestedContainer(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
+			}
+
+			GuiToolstripNestedContainer::~GuiToolstripNestedContainer()
+			{
+			}
+
+			IDescriptable* GuiToolstripNestedContainer::QueryService(const WString& identifier)
+			{
+				if (identifier == IToolstripUpdateLayoutInvoker::Identifier)
+				{
+					return (IToolstripUpdateLayoutInvoker*)this;
+				}
+				else
+				{
+					return GuiControl::QueryService(identifier);
+				}
+			}
+
+/***********************************************************************
+GuiToolstripGroupContainer::GroupCollection
+***********************************************************************/
+
+			void GuiToolstripGroupContainer::GroupCollection::BeforeRemove(vint index, GuiControl* const& child)
+			{
+				auto controlStackItem = container->stackComposition->GetStackItems()[index * 2];
+				auto splitterStackItem =
+					container->stackComposition->GetStackItems().Count() == 1 ? nullptr :
+					index == 0 ? container->stackComposition->GetStackItems()[1] :
+					container->stackComposition->GetStackItems()[index * 2 - 1]
+					;
+
+				container->stackComposition->RemoveChild(controlStackItem);
+				if (splitterStackItem) container->stackComposition->RemoveChild(splitterStackItem);
+
+				GuiToolstripCollectionBase::BeforeRemove(index, child);
+
+				SafeDeleteComposition(controlStackItem);
+				SafeDeleteComposition(splitterStackItem);
+			}
+
+			void GuiToolstripGroupContainer::GroupCollection::AfterInsert(vint index, GuiControl* const& child)
+			{
+				auto controlStackItem = new GuiStackItemComposition;
+				child->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				controlStackItem->AddChild(child->GetBoundsComposition());
+
+				if (container->stackComposition->GetStackItems().Count() > 0)
+				{
+					auto splitterStackItem = new GuiStackItemComposition;
+					auto splitter = new GuiControl(container->splitterThemeName);
+					if (splitterTemplate)
+					{
+						splitter->SetControlTemplate(splitterTemplate);
+					}
+					splitter->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					splitterStackItem->AddChild(splitter->GetBoundsComposition());
+					container->stackComposition->InsertChild(index == 0 ? 1 : index * 2 - 1, splitterStackItem);
+				}
+
+				container->stackComposition->InsertChild(index * 2, controlStackItem);
+
+				GuiToolstripCollectionBase::AfterInsert(index, child);
+			}
+
+			GuiToolstripGroupContainer::GroupCollection::GroupCollection(GuiToolstripGroupContainer* _container)
+				:GuiToolstripCollectionBase(_container)
+				, container(_container)
+			{
+			}
+
+			GuiToolstripGroupContainer::GroupCollection::~GroupCollection()
+			{
+			}
+
+			GuiToolstripGroupContainer::ControlTemplatePropertyType GuiToolstripGroupContainer::GroupCollection::GetSplitterTemplate()
+			{
+				return splitterTemplate;
+			}
+
+			void GuiToolstripGroupContainer::GroupCollection::SetSplitterTemplate(const ControlTemplatePropertyType& value)
+			{
+				splitterTemplate = value;
+				RebuildSplitters();
+			}
+
+			void GuiToolstripGroupContainer::GroupCollection::RebuildSplitters()
+			{
+				auto stack = container->stackComposition;
+				vint count = stack->GetStackItems().Count();
+				for (vint i = 1; i < count; i += 2)
+				{
+					auto stackItem = stack->GetStackItems()[i];
+					{
+						auto control = stackItem->Children()[0]->GetAssociatedControl();
+						CHECK_ERROR(control != nullptr, L"GuiToolstripGroupContainer::GroupCollection::RebuildSplitters()#Internal error");
+						stackItem->RemoveChild(control->GetBoundsComposition());
+						delete control;
+					}
+					{
+						auto control = new GuiControl(container->splitterThemeName);
+						if (splitterTemplate)
+						{
+							control->SetControlTemplate(splitterTemplate);
+						}
+						control->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						stackItem->AddChild(control->GetBoundsComposition());
+					}
+				}
+			}
+
+/***********************************************************************
+GuiToolstripGroupContainer
+***********************************************************************/
+
+			void GuiToolstripGroupContainer::OnParentLineChanged()
+			{
+				auto direction = GuiStackComposition::Horizontal;
+				if (auto service = QueryTypedService<IGuiMenuService>())
+				{
+					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
+					{
+						direction = GuiStackComposition::Vertical;
+					}
+				}
+
+				if (direction != stackComposition->GetDirection())
+				{
+					if (direction == GuiStackComposition::Vertical)
+					{
+						splitterThemeName = theme::ThemeName::MenuSplitter;
+					}
+					else
+					{
+						splitterThemeName = theme::ThemeName::ToolstripSplitter;
+					}
+
+					stackComposition->SetDirection(direction);
+					splitterThemeName = splitterThemeName;
+					groupCollection->RebuildSplitters();
+					UpdateLayout();
+				}
+
+				GuiControl::OnParentLineChanged();
+			}
+
+			GuiToolstripGroupContainer::GuiToolstripGroupContainer(theme::ThemeName themeName)
+				:GuiToolstripNestedContainer(themeName)
+				, splitterThemeName(theme::ThemeName::ToolstripSplitter)
+			{
+				stackComposition = new GuiStackComposition;
+				stackComposition->SetDirection(GuiStackComposition::Horizontal);
+				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->AddChild(stackComposition);
+
+				groupCollection = new GroupCollection(this);
+			}
+
+			GuiToolstripGroupContainer::~GuiToolstripGroupContainer()
+			{
+			}
+
+			GuiToolstripGroupContainer::ControlTemplatePropertyType GuiToolstripGroupContainer::GetSplitterTemplate()
+			{
+				return groupCollection->GetSplitterTemplate();
+			}
+
+			void GuiToolstripGroupContainer::SetSplitterTemplate(const ControlTemplatePropertyType& value)
+			{
+				groupCollection->SetSplitterTemplate(value);
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiToolstripGroupContainer::GetToolstripItems()
+			{
+				return *groupCollection.Obj();
+			}
+
+/***********************************************************************
+GuiToolstripGroup
+***********************************************************************/
+
+			void GuiToolstripGroup::OnParentLineChanged()
+			{
+				auto direction = GuiStackComposition::Horizontal;
+				if (auto service = QueryTypedService<IGuiMenuService>())
+				{
+					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
+					{
+						direction = GuiStackComposition::Vertical;
+					}
+				}
+
+				if (direction != stackComposition->GetDirection())
+				{
+					stackComposition->SetDirection(direction);
+					UpdateLayout();
+				}
+
+				GuiControl::OnParentLineChanged();
+			}
+
+			GuiToolstripGroup::GuiToolstripGroup(theme::ThemeName themeName)
+				:GuiToolstripNestedContainer(themeName)
+			{
+				stackComposition = new GuiStackComposition;
+				stackComposition->SetDirection(GuiStackComposition::Horizontal);
+				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->AddChild(stackComposition);
+
+				toolstripItems = new GuiToolstripCollection(nullptr, stackComposition);
+			}
+
+			GuiToolstripGroup::~GuiToolstripGroup()
+			{
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiToolstripGroup::GetToolstripItems()
+			{
+				return *toolstripItems.Obj();
 			}
 		}
 	}
