@@ -197,14 +197,12 @@ GuiControlHost
 				WindowClosed.SetAssociatedComposition(boundsComposition);
 				WindowDestroying.SetAssociatedComposition(boundsComposition);
 
-				host=new GuiGraphicsHost;
-				host->GetMainComposition()->AddChild(boundsComposition);
+				host=new GuiGraphicsHost(this, boundsComposition);
 				sharedPtrDestructorProc = 0;
 			}
 
 			GuiControlHost::~GuiControlHost()
 			{
-				host->GetMainComposition()->RemoveChild(boundsComposition);
 				FinalizeInstanceRecursively(this);
 				OnBeforeReleaseGraphicsHost();
 				delete host;

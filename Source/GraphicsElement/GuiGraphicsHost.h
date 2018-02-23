@@ -166,23 +166,24 @@ Host
 				bool									supressPaint = false;
 				bool									needRender = true;
 
-				IGuiShortcutKeyManager*					shortcutKeyManager;
-				GuiWindowComposition*					windowComposition;
-				GuiGraphicsComposition*					focusedComposition;
+				IGuiShortcutKeyManager*					shortcutKeyManager = nullptr;
+				controls::GuiControlHost*				controlHost = nullptr;
+				GuiWindowComposition*					windowComposition = nullptr;
+				GuiGraphicsComposition*					focusedComposition = nullptr;
 				Size									previousClientSize;
 				Size									minSize;
 				Point									caretPoint;
-				vuint64_t								lastCaretTime;
+				vuint64_t								lastCaretTime = 0;
 
 				GuiGraphicsTimerManager					timerManager;
-				GuiGraphicsComposition*					mouseCaptureComposition;
+				GuiGraphicsComposition*					mouseCaptureComposition = nullptr;
 				CompositionList							mouseEnterCompositions;
 
-				IGuiAltActionHost*						currentAltHost;
+				IGuiAltActionHost*						currentAltHost = nullptr;
 				AltActionMap							currentActiveAltActions;
 				AltControlMap							currentActiveAltTitles;
 				WString									currentAltPrefix;
-				vint									supressAltKey;
+				vint									supressAltKey = 0;
 
 				void									EnterAltHost(IGuiAltActionHost* host);
 				void									LeaveAltHost();
@@ -231,7 +232,7 @@ Host
 
 				void									GlobalTimer()override;
 			public:
-				GuiGraphicsHost();
+				GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition);
 				~GuiGraphicsHost();
 
 				/// <summary>Get the associated window.</summary>

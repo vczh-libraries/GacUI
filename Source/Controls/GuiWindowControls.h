@@ -27,6 +27,7 @@ Control Host
 			/// </summary>
 			class GuiControlHost : public GuiControl, public GuiInstanceRootObject, protected INativeWindowListener, public Description<GuiControlHost>
 			{
+				friend class compositions::GuiGraphicsHost;
 			protected:
 				compositions::GuiGraphicsHost*					host;
 

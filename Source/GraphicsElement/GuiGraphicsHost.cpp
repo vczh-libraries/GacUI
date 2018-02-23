@@ -840,23 +840,19 @@ GuiGraphicsHost
 				Render(false);
 			}
 
-			GuiGraphicsHost::GuiGraphicsHost()
-				:shortcutKeyManager(0)
-				,windowComposition(0)
-				,focusedComposition(0)
-				,mouseCaptureComposition(0)
-				,lastCaretTime(0)
-				,currentAltHost(0)
-				,supressAltKey(0)
+			GuiGraphicsHost::GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition)
+				:controlHost(_controlHost)
 			{
 				hostRecord.host = this;
 				windowComposition=new GuiWindowComposition;
 				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				windowComposition->AddChild(boundsComposition);
 				RefreshRelatedHostRecord(nullptr);
 			}
 
 			GuiGraphicsHost::~GuiGraphicsHost()
 			{
+				windowComposition->RemoveChild(windowComposition->Children()[0]);
 				NotifyFinalizeInstance(windowComposition);
 				if(shortcutKeyManager)
 				{
@@ -913,6 +909,16 @@ GuiGraphicsHost
 					supressPaint = true;
 					hostRecord.renderTarget->StartRendering();
 					windowComposition->Render(Size());
+					{
+						auto bounds = windowComposition->GetBounds();
+						auto preferred = windowComposition->GetPreferredBounds();
+						auto width = bounds.Width() > preferred.Width() ? bounds.Width() : preferred.Width();
+						auto height = bounds.Height() > preferred.Height() ? bounds.Height() : preferred.Height();
+						if (width != bounds.Width() || height != bounds.Height())
+						{
+							controlHost->SetClientSize(Size(width, height));
+						}
+					}
 					auto result = hostRecord.renderTarget->StopRendering();
 					hostRecord.nativeWindow->RedrawContent();
 					supressPaint = false;
