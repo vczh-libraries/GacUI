@@ -438,19 +438,19 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandViewOnly" Text="Preview" Image-uri="res://ToolbarImages/ViewOnly">
+    <ToolstripCommand ref.Name="commandViewOnly" Text="Preview" Image-uri="res://ToolbarImages/ViewOnly" ShortcutBuilder="Ctrl+Shift+P">
       <ev.Executed-eval>
         <![CDATA[self.SetEditMode(ViewOnly);]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandSelectable" Text="Selectable" Image-uri="res://ToolbarImages/Selectable">
+    <ToolstripCommand ref.Name="commandSelectable" Text="Selectable" Image-uri="res://ToolbarImages/Selectable" ShortcutBuilder="Ctrl+Shift+S">
       <ev.Executed-eval>
         <![CDATA[self.SetEditMode(Selectable);]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable">
+    <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable" ShortcutBuilder="Ctrl+Shift+E">
       <ev.Executed-eval>
         <![CDATA[self.SetEditMode(Editable);]]>
       </ev.Executed-eval>

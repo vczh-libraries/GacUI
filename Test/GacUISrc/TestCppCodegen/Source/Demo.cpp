@@ -7815,6 +7815,9 @@ Class (::demo::DocumentTabPageConstructor)
 		}
 		(this->commandViewOnly = new ::vl::presentation::controls::GuiToolstripCommand());
 		{
+			::vl::__vwsn::This(this->commandViewOnly)->SetShortcutBuilder(::vl::WString(L"Ctrl+Shift+P", false));
+		}
+		{
 			::vl::__vwsn::This(this->commandViewOnly)->SetText(::vl::WString(L"Preview", false));
 		}
 		{
@@ -7822,12 +7825,18 @@ Class (::demo::DocumentTabPageConstructor)
 		}
 		(this->commandSelectable = new ::vl::presentation::controls::GuiToolstripCommand());
 		{
+			::vl::__vwsn::This(this->commandSelectable)->SetShortcutBuilder(::vl::WString(L"Ctrl+Shift+S", false));
+		}
+		{
 			::vl::__vwsn::This(this->commandSelectable)->SetText(::vl::WString(L"Selectable", false));
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandSelectable));
 		}
 		(this->commandEditable = new ::vl::presentation::controls::GuiToolstripCommand());
+		{
+			::vl::__vwsn::This(this->commandEditable)->SetShortcutBuilder(::vl::WString(L"Ctrl+Shift+E", false));
+		}
 		{
 			::vl::__vwsn::This(this->commandEditable)->SetText(::vl::WString(L"Editable", false));
 		}
