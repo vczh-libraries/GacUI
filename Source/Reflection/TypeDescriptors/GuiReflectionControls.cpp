@@ -348,8 +348,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiWindow)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiPopup)
 
-				CLASS_MEMBER_METHOD(IsClippedByScreen, {L"location"})
 				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"location" _ L"screen"}, void(GuiPopup::*)(Point _ INativeScreen*))
+				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"control" _ L"bounds" _ L"preferredTopBottomSide"}, void(GuiPopup::*)(GuiControl* _ Rect _ bool))
 				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"control" _ L"location"}, void(GuiPopup::*)(GuiControl* _ Point))
 				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"control" _ L"preferredTopBottomSide"}, void(GuiPopup::*)(GuiControl* _ bool))
 			END_CLASS_MEMBER(GuiPopup)

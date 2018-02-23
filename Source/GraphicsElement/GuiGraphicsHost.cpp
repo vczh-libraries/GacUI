@@ -916,7 +916,7 @@ GuiGraphicsHost
 						auto height = bounds.Height() > preferred.Height() ? bounds.Height() : preferred.Height();
 						if (width != bounds.Width() || height != bounds.Height())
 						{
-							controlHost->SetClientSize(Size(width, height));
+							controlHost->UpdateClientSizeAfterRendering(Size(width, height));
 						}
 					}
 					auto result = hostRecord.renderTarget->StopRendering();

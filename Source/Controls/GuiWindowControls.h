@@ -58,6 +58,8 @@ Control Host
 				void											Closing(bool& cancel)override;
 				void											Closed()override;
 				void											Destroying()override;
+
+				virtual void									UpdateClientSizeAfterRendering(Size clientSize);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -330,10 +332,18 @@ Window
 			class GuiPopup : public GuiWindow, public Description<GuiPopup>
 			{
 			protected:
-				void									MouseClickedOnOtherWindow(GuiWindow* window)override;
+				bool									autoAdjustPopupPosition = false;
 
+				void									UpdateClientSizeAfterRendering(Size clientSize)override;
+				void									MouseClickedOnOtherWindow(GuiWindow* window)override;
 				void									PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+				static bool								IsClippedByScreen(Size size, Point location, INativeScreen* screen);
+				static Point							CalculatePopupPosition(Size size, Point location, INativeScreen* screen);
+				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, Rect bounds, bool preferredTopBottomSide);
+				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, Point location);
+				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, bool preferredTopBottomSide);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
