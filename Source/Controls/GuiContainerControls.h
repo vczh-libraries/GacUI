@@ -143,7 +143,7 @@ Scroll View
 				GuiScrollView(theme::ThemeName themeName);
 				~GuiScrollView();
 
-				virtual void							SetFont(const FontProperties& value);
+				virtual void							SetFont(const FontProperties& value)override;
 
 				/// <summary>Force to update contents and scroll bars.</summary>
 				void									CalculateView();

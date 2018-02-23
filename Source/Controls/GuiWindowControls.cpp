@@ -579,6 +579,7 @@ GuiWindow
 				case templates::BoolOption::AlwaysFalse: \
 					VARIABLE = false; \
 					break; \
+				default:; \
 				} \
 
 				FIX_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox)
