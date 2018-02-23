@@ -301,10 +301,6 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,		SinglelineTextBox									);
 					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,				DatePicker											);
 					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,			ComboBox,				CreateStandardDataPicker	);
-					ADD_TEMPLATE_CONTROL	(							GuiToolstripMenuBar,		MenuBar												);
-					ADD_TEMPLATE_CONTROL	(							GuiToolstripToolBar,		ToolstripToolBar									);
-					ADD_TEMPLATE_CONTROL	(							GuiToolstripGroupContainer, CustomControl										);
-					ADD_TEMPLATE_CONTROL	(							GuiToolstripGroup,			CustomControl										);
 
 					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,					GroupBox											);
 					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,					MenuSplitter										);

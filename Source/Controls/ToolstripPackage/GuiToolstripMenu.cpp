@@ -386,9 +386,8 @@ GuiToolstripGroupContainer::GroupCollection
 				auto controlStackItem = new GuiStackItemComposition;
 				child->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				controlStackItem->AddChild(child->GetBoundsComposition());
-				container->stackComposition->InsertChild(index * 2, controlStackItem);
 
-				if (container->stackComposition->GetStackItems().Count() > 1)
+				if (container->stackComposition->GetStackItems().Count() > 0)
 				{
 					auto splitterStackItem = new GuiStackItemComposition;
 					auto splitter = new GuiControl(container->splitterThemeName);
@@ -400,6 +399,8 @@ GuiToolstripGroupContainer::GroupCollection
 					splitterStackItem->AddChild(splitter->GetBoundsComposition());
 					container->stackComposition->InsertChild(index == 0 ? 1 : index * 2 - 1, splitterStackItem);
 				}
+
+				container->stackComposition->InsertChild(index * 2, controlStackItem);
 
 				GuiToolstripCollectionBase::AfterInsert(index, child);
 			}
