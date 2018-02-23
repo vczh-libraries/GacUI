@@ -820,7 +820,7 @@ GuiPopup
 
 			void GuiPopup::PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				autoAdjustPopupPosition = false;
+				popupType = -1;
 				GetApplication()->RegisterPopupClosed(this);
 				if(auto window = GetNativeWindow())
 				{
@@ -913,6 +913,38 @@ GuiPopup
 				return CalculatePopupPosition(size, control, controlWindow, bounds, preferredTopBottomSide);
 			}
 
+			Point GuiPopup::CalculatePopupPosition(Size size, vint popupType, const PopupInfo& popupInfo)
+			{
+				switch (popupType)
+				{
+				case 1:
+					return CalculatePopupPosition(size, popupInfo._1.location, popupInfo._1.screen);
+				case 2:
+					return CalculatePopupPosition(size, popupInfo._2.control, popupInfo._2.controlWindow, popupInfo._2.bounds, popupInfo._2.preferredTopBottomSide);
+				case 3:
+					return CalculatePopupPosition(size, popupInfo._3.control, popupInfo._3.controlWindow, popupInfo._3.location);
+				case 4:
+					return CalculatePopupPosition(size, popupInfo._4.control, popupInfo._4.controlWindow, popupInfo._4.preferredTopBottomSide);
+				default:
+					CHECK_FAIL(L"vl::presentation::controls::GuiPopup::CalculatePopupPosition(Size, const PopupInfo&)#Internal error.");
+				}
+			}
+
+			void GuiPopup::ShowPopupInternal()
+			{
+				auto window = GetNativeWindow();
+				auto size = window->GetBounds().GetSize();
+				auto position = CalculatePopupPosition(size, popupType, popupInfo);
+				window->SetBounds(Rect(position, size));
+				switch (popupType)
+				{
+				case 2: window->SetParent(popupInfo._2.controlWindow); break;
+				case 3: window->SetParent(popupInfo._3.controlWindow); break;
+				case 4: window->SetParent(popupInfo._4.controlWindow); break;
+				}
+				ShowDeactivated();
+			}
+
 			GuiPopup::GuiPopup(theme::ThemeName themeName)
 				:GuiWindow(themeName)
 			{
@@ -941,10 +973,10 @@ GuiPopup
 						screen = GetCurrentController()->ScreenService()->GetScreen(window);
 					}
 
-					auto size = window->GetBounds().GetSize();
-					auto position = CalculatePopupPosition(size, location, screen);
-					window->SetBounds(Rect(position, size));
-					ShowDeactivated();
+					popupType = 1;
+					popupInfo._1.location = location;
+					popupInfo._1.screen = screen;
+					ShowPopupInternal();
 				}
 			}
 			
@@ -956,11 +988,12 @@ GuiPopup
 					{
 						if (auto controlWindow = controlHost->GetNativeWindow())
 						{
-							auto size = window->GetBounds().GetSize();
-							auto position = CalculatePopupPosition(size, control, controlWindow, bounds, preferredTopBottomSide);
-							window->SetBounds(Rect(position, size));
-							window->SetParent(controlWindow);
-							ShowDeactivated();
+							popupType = 2;
+							popupInfo._2.control = control;
+							popupInfo._2.controlWindow = controlWindow;
+							popupInfo._2.bounds = bounds;
+							popupInfo._2.preferredTopBottomSide = preferredTopBottomSide;
+							ShowPopupInternal();
 						}
 					}
 				}
@@ -974,11 +1007,11 @@ GuiPopup
 					{
 						if (auto controlWindow = controlHost->GetNativeWindow())
 						{
-							auto size = window->GetBounds().GetSize();
-							auto position = CalculatePopupPosition(size, control, controlWindow, location);
-							window->SetBounds(Rect(position, size));
-							window->SetParent(controlWindow);
-							ShowDeactivated();
+							popupType = 3;
+							popupInfo._3.control = control;
+							popupInfo._3.controlWindow = controlWindow;
+							popupInfo._3.location = location;
+							ShowPopupInternal();
 						}
 					}
 				}
@@ -992,11 +1025,11 @@ GuiPopup
 					{
 						if (auto controlWindow = controlHost->GetNativeWindow())
 						{
-							auto size = window->GetBounds().GetSize();
-							auto position = CalculatePopupPosition(size, control, controlWindow, preferredTopBottomSide);
-							window->SetBounds(Rect(position, size));
-							window->SetParent(controlWindow);
-							ShowDeactivated();
+							popupType = 4;
+							popupInfo._4.control = control;
+							popupInfo._4.controlWindow = controlWindow;
+							popupInfo._4.preferredTopBottomSide = preferredTopBottomSide;
+							ShowPopupInternal();
 						}
 					}
 				}

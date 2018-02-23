@@ -332,7 +332,18 @@ Window
 			class GuiPopup : public GuiWindow, public Description<GuiPopup>
 			{
 			protected:
-				bool									autoAdjustPopupPosition = false;
+				union PopupInfo
+				{
+					struct { Point location; INativeScreen* screen; } _1;
+					struct { GuiControl* control; INativeWindow* controlWindow; Rect bounds; bool preferredTopBottomSide; } _2;
+					struct { GuiControl* control; INativeWindow* controlWindow; Point location; } _3;
+					struct { GuiControl* control; INativeWindow* controlWindow; bool preferredTopBottomSide; } _4;
+
+					PopupInfo() {}
+				};
+			protected:
+				vint									popupType = -1;
+				PopupInfo								popupInfo;
 
 				void									UpdateClientSizeAfterRendering(Size clientSize)override;
 				void									MouseClickedOnOtherWindow(GuiWindow* window)override;
@@ -344,6 +355,9 @@ Window
 				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, Rect bounds, bool preferredTopBottomSide);
 				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, Point location);
 				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, bool preferredTopBottomSide);
+				static Point							CalculatePopupPosition(Size size, vint popupType, const PopupInfo& popupInfo);
+
+				void									ShowPopupInternal();
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
