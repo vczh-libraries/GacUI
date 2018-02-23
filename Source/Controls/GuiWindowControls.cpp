@@ -805,7 +805,16 @@ GuiPopup
 
 			void GuiPopup::UpdateClientSizeAfterRendering(Size clientSize)
 			{
-				SetClientSize(clientSize);
+				if (popupType == -1)
+				{
+					GuiWindow::UpdateClientSizeAfterRendering(clientSize);
+				}
+				else
+				{
+					auto window = GetNativeWindow();
+					auto position = CalculatePopupPosition(clientSize, popupType, popupInfo);
+					window->SetBounds(Rect(position, clientSize));
+				}
 			}
 
 			void GuiPopup::MouseClickedOnOtherWindow(GuiWindow* window)
@@ -933,9 +942,7 @@ GuiPopup
 			void GuiPopup::ShowPopupInternal()
 			{
 				auto window = GetNativeWindow();
-				auto size = window->GetBounds().GetSize();
-				auto position = CalculatePopupPosition(size, popupType, popupInfo);
-				window->SetBounds(Rect(position, size));
+				UpdateClientSizeAfterRendering(window->GetBounds().GetSize());
 				switch (popupType)
 				{
 				case 2: window->SetParent(popupInfo._2.controlWindow); break;
