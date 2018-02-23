@@ -316,6 +316,9 @@ Type List (Controls)
 			F(presentation::controls::GuiToolstripMenuBar)\
 			F(presentation::controls::GuiToolstripToolBar)\
 			F(presentation::controls::GuiToolstripButton)\
+			F(presentation::controls::GuiToolstripNestedContainer)\
+			F(presentation::controls::GuiToolstripGroupContainer)\
+			F(presentation::controls::GuiToolstripGroup)\
 			F(presentation::controls::GuiDocumentItem)\
 			F(presentation::controls::GuiDocumentCommonInterface)\
 			F(presentation::controls::GuiDocumentCommonInterface::EditMode)\

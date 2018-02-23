@@ -132,36 +132,6 @@ GuiToolstripMenuInstanceLoader
 #undef BASE_TYPE
 
 /***********************************************************************
-GuiToolstripMenuBarInstanceLoader
-***********************************************************************/
-
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenuBar>
-			class GuiToolstripMenuBarInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
-			{
-			public:
-				GuiToolstripMenuBarInstanceLoader()
-					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripMenuBar>::content.typeName, theme::ThemeName::MenuBar)
-				{
-				}
-			};
-#undef BASE_TYPE
-
-/***********************************************************************
-GuiToolstripToolBarInstanceLoader
-***********************************************************************/
-
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripToolBar>
-			class GuiToolstripToolBarInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
-			{
-			public:
-				GuiToolstripToolBarInstanceLoader()
-					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripToolBar>::content.typeName, theme::ThemeName::ToolstripToolBar)
-				{
-				}
-			};
-#undef BASE_TYPE
-
-/***********************************************************************
 GuiToolstripButtonInstanceLoader
 ***********************************************************************/
 
@@ -221,8 +191,6 @@ Initialization
 			void LoadToolstripControls(IGuiInstanceLoaderManager* manager)
 			{
 				manager->SetLoader(new GuiToolstripMenuInstanceLoader);
-				manager->SetLoader(new GuiToolstripMenuBarInstanceLoader);
-				manager->SetLoader(new GuiToolstripToolBarInstanceLoader);
 				manager->SetLoader(new GuiToolstripButtonInstanceLoader);
 			}
 		}

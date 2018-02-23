@@ -865,6 +865,25 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CreateToolstripSubMenu, {L"subMenuStyleController"})
 			END_CLASS_MEMBER(GuiToolstripButton)
 
+			BEGIN_CLASS_MEMBER(GuiToolstripNestedContainer)
+				CLASS_MEMBER_BASE(GuiControl)
+			END_CLASS_MEMBER(GuiToolstripGroupContainer)
+
+			BEGIN_CLASS_MEMBER(GuiToolstripGroupContainer)
+				CLASS_MEMBER_BASE(GuiToolstripNestedContainer)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiToolstripGroupContainer)
+
+				CLASS_MEMBER_PROPERTY_FAST(SplitterTemplate)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ToolstripItems)
+			END_CLASS_MEMBER(GuiToolstripGroupContainer)
+
+			BEGIN_CLASS_MEMBER(GuiToolstripGroup)
+				CLASS_MEMBER_BASE(GuiToolstripNestedContainer)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiToolstripGroup)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ToolstripItems)
+			END_CLASS_MEMBER(GuiToolstripGroup)
+
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDocumentItem>(const WString&), { L"name" })
 

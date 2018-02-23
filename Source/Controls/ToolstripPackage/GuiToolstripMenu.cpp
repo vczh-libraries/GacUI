@@ -456,30 +456,27 @@ GuiToolstripGroupContainer
 
 			void GuiToolstripGroupContainer::OnParentLineChanged()
 			{
-				auto newSplitterThemeName = splitterThemeName;
+				auto direction = GuiStackComposition::Horizontal;
 				if (auto service = QueryTypedService<IGuiMenuService>())
 				{
 					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
 					{
-						newSplitterThemeName = theme::ThemeName::MenuSplitter;
-					}
-					else
-					{
-						newSplitterThemeName = theme::ThemeName::ToolstripSplitter;
+						direction = GuiStackComposition::Vertical;
 					}
 				}
 
-				if (splitterThemeName != splitterThemeName)
+				if (direction != stackComposition->GetDirection())
 				{
-					if (splitterThemeName == theme::ThemeName::MenuSplitter)
+					if (direction == GuiStackComposition::Vertical)
 					{
-						stackComposition->SetDirection(GuiStackComposition::Vertical);
+						splitterThemeName = theme::ThemeName::MenuSplitter;
 					}
 					else
 					{
-						stackComposition->SetDirection(GuiStackComposition::Horizontal);
+						splitterThemeName = theme::ThemeName::ToolstripSplitter;
 					}
 
+					stackComposition->SetDirection(direction);
 					splitterThemeName = splitterThemeName;
 					groupCollection->RebuildSplitters();
 					UpdateLayout();
@@ -490,7 +487,7 @@ GuiToolstripGroupContainer
 
 			GuiToolstripGroupContainer::GuiToolstripGroupContainer(theme::ThemeName themeName)
 				:GuiToolstripNestedContainer(themeName)
-				, splitterThemeName(theme::ThemeName::MenuSplitter)
+				, splitterThemeName(theme::ThemeName::ToolstripSplitter)
 			{
 				stackComposition = new GuiStackComposition;
 				stackComposition->SetDirection(GuiStackComposition::Horizontal);
@@ -526,16 +523,12 @@ GuiToolstripGroup
 
 			void GuiToolstripGroup::OnParentLineChanged()
 			{
-				auto direction = stackComposition->GetDirection();
+				auto direction = GuiStackComposition::Horizontal;
 				if (auto service = QueryTypedService<IGuiMenuService>())
 				{
 					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
 					{
 						direction = GuiStackComposition::Vertical;
-					}
-					else
-					{
-						direction = GuiStackComposition::Horizontal;
 					}
 				}
 
@@ -552,7 +545,7 @@ GuiToolstripGroup
 				:GuiToolstripNestedContainer(themeName)
 			{
 				stackComposition = new GuiStackComposition;
-				stackComposition->SetDirection(GuiStackComposition::Vertical);
+				stackComposition->SetDirection(GuiStackComposition::Horizontal);
 				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
