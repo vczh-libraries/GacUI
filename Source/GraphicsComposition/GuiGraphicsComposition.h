@@ -79,13 +79,20 @@ namespace vl
 			{
 				friend class GuiSharedSizeItemComposition;
 			protected:
+				collections::Dictionary<WString, vint>				itemWidths;
+				collections::Dictionary<WString, vint>				itemHeights;
 				collections::List<GuiSharedSizeItemComposition*>	childItems;
 
+				void												AddSizeComponent(collections::Dictionary<WString, vint>& sizes, const WString& group, vint sizeComponent);
+				void												CollectSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights);
+				void												AlignSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights);
+				void												UpdateBounds();
 			public:
 				GuiSharedSizeRootComposition();
 				~GuiSharedSizeRootComposition();
 
 				void												ForceCalculateSizeImmediately()override;
+				Rect												GetBounds()override;
 			};
 
 			/// <summary>A base class for all bindable repeat compositions.</summary>

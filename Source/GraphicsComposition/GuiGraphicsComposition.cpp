@@ -112,15 +112,7 @@ GuiSharedSizeItemComposition
 GuiSharedSizeRootComposition
 ***********************************************************************/
 
-			GuiSharedSizeRootComposition::GuiSharedSizeRootComposition()
-			{
-			}
-
-			GuiSharedSizeRootComposition::~GuiSharedSizeRootComposition()
-			{
-			}
-
-			void AddSizeComponent(Dictionary<WString, vint>& sizes, const WString& group, vint sizeComponent)
+			void GuiSharedSizeRootComposition::AddSizeComponent(collections::Dictionary<WString, vint>& sizes, const WString& group, vint sizeComponent)
 			{
 				vint index = sizes.Keys().IndexOf(group);
 				if (index == -1)
@@ -133,10 +125,8 @@ GuiSharedSizeRootComposition
 				}
 			}
 
-			void GuiSharedSizeRootComposition::ForceCalculateSizeImmediately()
+			void GuiSharedSizeRootComposition::CollectSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights)
 			{
-				Dictionary<WString, vint> widths, heights;
-
 				FOREACH(GuiSharedSizeItemComposition*, item, childItems)
 				{
 					auto group = item->GetGroup();
@@ -155,7 +145,10 @@ GuiSharedSizeRootComposition
 
 					item->SetPreferredMinSize(minSize);
 				}
+			}
 
+			void GuiSharedSizeRootComposition::AlignSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights)
+			{
 				FOREACH(GuiSharedSizeItemComposition*, item, childItems)
 				{
 					auto group = item->GetGroup();
@@ -172,8 +165,45 @@ GuiSharedSizeRootComposition
 
 					item->SetPreferredMinSize(size);
 				}
+			}
 
+			void GuiSharedSizeRootComposition::UpdateBounds()
+			{
+
+			}
+
+			GuiSharedSizeRootComposition::GuiSharedSizeRootComposition()
+			{
+			}
+
+			GuiSharedSizeRootComposition::~GuiSharedSizeRootComposition()
+			{
+			}
+
+			void GuiSharedSizeRootComposition::ForceCalculateSizeImmediately()
+			{
+				itemWidths.Clear();
+				itemHeights.Clear();
+
+				CollectSizes(itemWidths, itemHeights);
+				AlignSizes(itemWidths, itemHeights);
 				GuiBoundsComposition::ForceCalculateSizeImmediately();
+			}
+
+			Rect GuiSharedSizeRootComposition::GetBounds()
+			{
+				Dictionary<WString, vint> widths, heights;
+				CollectSizes(widths, heights);
+				bool minSizeModified = CompareEnumerable(itemWidths, widths) != 0 || CompareEnumerable(itemHeights, heights) != 0;
+
+				if (minSizeModified)
+				{
+					CopyFrom(itemWidths, widths);
+					CopyFrom(itemHeights, heights);
+					AlignSizes(itemWidths, itemHeights);
+					GuiBoundsComposition::ForceCalculateSizeImmediately();
+				}
+				return GuiBoundsComposition::GetBounds();
 			}
 
 /***********************************************************************
