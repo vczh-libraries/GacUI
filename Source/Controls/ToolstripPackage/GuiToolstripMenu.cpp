@@ -24,11 +24,6 @@ GuiToolstripCollectionBase
 				}
 			}
 
-			void GuiToolstripCollectionBase::OnInterestingMenuButtonPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				InvokeUpdateLayout();
-			}
-
 			bool GuiToolstripCollectionBase::QueryInsert(vint index, GuiControl* const& child)
 			{
 				return !items.Contains(child);
@@ -70,22 +65,54 @@ GuiToolstripCollectionBase
 GuiToolstripCollection
 ***********************************************************************/
 
+			void GuiToolstripCollection::UpdateItemVisibility(vint index, GuiControl* child)
+			{
+				auto stackItem = stackComposition->GetStackItems()[index];
+				if (child->GetVisible())
+				{
+					stackItem->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					child->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				}
+				else
+				{
+					stackItem->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
+					child->GetBoundsComposition()->SetAlignmentToParent(Margin(-1, -1, -1, -1));
+				}
+			}
+
+			void GuiToolstripCollection::OnItemVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				auto child = sender->GetRelatedControl();
+				vint index = IndexOf(child);
+				UpdateItemVisibility(index, child);
+				InvokeUpdateLayout();
+			}
+
 			void GuiToolstripCollection::BeforeRemove(vint index, GuiControl* const& child)
 			{
 				GuiStackItemComposition* stackItem = stackComposition->GetStackItems().Get(index);
 				stackComposition->RemoveChild(stackItem);
-
+				{
+					auto eventHandler = eventHandlers[index];
+					child->VisibleChanged.Detach(eventHandler);
+					eventHandlers.RemoveAt(index);
+				}
 				GuiToolstripCollectionBase::BeforeRemove(index, child);
 				SafeDeleteComposition(stackItem);
 			}
 
 			void GuiToolstripCollection::AfterInsert(vint index, GuiControl* const& child)
 			{
-				GuiStackItemComposition* stackItem=new GuiStackItemComposition;
-				child->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				stackItem->AddChild(child->GetBoundsComposition());
-				stackComposition->InsertChild(index, stackItem);
-
+				{
+					GuiStackItemComposition* stackItem = new GuiStackItemComposition;
+					stackItem->AddChild(child->GetBoundsComposition());
+					stackComposition->InsertChild(index, stackItem);
+				}
+				{
+					auto eventHandler = child->VisibleChanged.AttachMethod(this, &GuiToolstripCollection::OnItemVisibleChanged);
+					eventHandlers.Insert(index, eventHandler);
+				}
+				UpdateItemVisibility(index, child);
 				GuiToolstripCollectionBase::AfterInsert(index, child);
 			}
 

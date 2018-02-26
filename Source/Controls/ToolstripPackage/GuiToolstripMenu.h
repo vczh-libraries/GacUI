@@ -54,7 +54,6 @@ Toolstrip Item Collection
 				IToolstripUpdateLayout *					contentCallback;
 
 				void										InvokeUpdateLayout();
-				void										OnInterestingMenuButtonPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				bool										QueryInsert(vint index, GuiControl* const& child)override;
 				void										BeforeRemove(vint index, GuiControl* const& child)override;
 				void										AfterInsert(vint index, GuiControl* const& child)override;
@@ -67,9 +66,13 @@ Toolstrip Item Collection
 			/// <summary>Toolstrip item collection.</summary>
 			class GuiToolstripCollection : public GuiToolstripCollectionBase
 			{
+				using EventHandlerList = collections::List<Ptr<compositions::IGuiGraphicsEventHandler>>;
 			protected:
 				compositions::GuiStackComposition*			stackComposition;
+				EventHandlerList							eventHandlers;
 
+				void										UpdateItemVisibility(vint index, GuiControl* child);
+				void										OnItemVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										BeforeRemove(vint index, GuiControl* const& child)override;
 				void										AfterInsert(vint index, GuiControl* const& child)override;
 			public:
