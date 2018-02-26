@@ -1,253 +1,55 @@
 <Resource>
-  <Script name="ColorDef">
-    <Workflow>
-      <![CDATA[
-        module Animation;
-
-        using system::*;
-        using presentation::*;
-
-        namespace demo
-        {
-          class ColorDef
-          {
-            prop Top : Color = cast Color "#000000" {}
-            prop Bottom : Color = cast Color "#000000" {}
-            prop Shadow : Color = cast Color "#000000A0" {}
-            prop Thickness : int = 0 {}
-            
-            static func Dark() : ColorDef^
-            {
-              var def = new ColorDef^();
-              def.Top = cast Color "#9999FF";
-              def.Bottom = cast Color "#5555FF";
-              def.Thickness = 0;
-              return def;
-            }
-            
-            static func Light() : ColorDef^
-            {
-              var def = new ColorDef^();
-              def.Top = cast Color "#DDDDFF";
-              def.Bottom = cast Color "#9999FF";
-              def.Thickness = 0;
-              return def;
-            }
-            
-            static func Sink() : ColorDef^
-            {
-              var def = new ColorDef^();
-              def.Top = cast Color "#5555FF";
-              def.Bottom = cast Color "#0000FF";
-              def.Thickness = 10;
-              return def;
-            }
-          }
-          
-          func F(x: double): double
-          {
-            var y = x * x * 2;
-            return y;
-          }
-          
-          func G(x: double): double
-          {
-            if (x < 0.5)
-            {
-              return F(x);
-            }
-            else
-            {
-              return 1 - F(1 - x);
-            }
-          }
-        }
-      ]]>
-    </Workflow>
-  </Script>
-
-  <Animation name="ColorAnimation">
-    <Gradient ref.Class="demo::ColorAnimation" Type="demo::ColorDef">
-      <Interpolation>
-        <![CDATA[G]]>
-      </Interpolation>
-      <Targets>
-        <Target Name="Top"/>
-        <Target Name="Bottom"/>
-        <Target Name="Shadow"/>
-        <Target Name="Thickness">
-          <Interpolation>
-            <![CDATA[ [$1] ]]>
-          </Interpolation>
-        </Target>
-      </Targets>
-    </Gradient>
-  </Animation>
-  
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <ref.Members>
-        <![CDATA[
-          @cpp:Private
-          static func BallAnimation(container: GuiBoundsComposition*, ball: GuiBoundsComposition*): IGuiAnimation^
-          {
-            return IGuiAnimation::CreateAnimation(
-              func (time: UInt64): void
-              {
-                var circleRatio = G((cast double time) / 2000);
-                
-                var angle = circleRatio * Math::Pi() * 2 + Math::Pi() * 1.5;
-                var sin = Math::Sin(angle);
-                var cos = Math::Cos(angle);
-                
-                var cx = (container.Bounds.x2 - container.Bounds.x1) / 2;
-                var cy = (container.Bounds.y2 - container.Bounds.y1) / 2;
-                var radiusBall = (ball.Bounds.x2 - ball.Bounds.x1) / 2;
-                var radiusOrbit = Math::Min(cx, cy) - radiusBall;
-                
-                var x = cast int Math::Round(cos * radiusOrbit + cx);
-                var y = cast int Math::Round(sin * radiusOrbit + cx);
-                ball.AlignmentToParent = {left:(x - radiusBall) top:(y - radiusBall) right:-1 bottom:-1};
-                
-                var alpha = 1.0;
-                if (circleRatio < 0.05)
-                {
-                  alpha = circleRatio * 20;
-                }
-                else if (circleRatio > 0.95)
-                {
-                  alpha = (1 - circleRatio) * 20;
-                }
-                
-                var element = cast (SolidBackground^) ball.OwnedElement;
-                var color = element.Color;
-                element.Color = {r:color.r g:color.g b:color.b a:(cast UInt8 Math::Round(alpha * 255))};
-                
-                if (not ball.Visible)
-                {
-                  ball.Visible = true;
-                }
-              }, cast UInt64 2000);
-          }
-          
-          @cpp:Private
-          static func BallAnimationWithDelay(container: GuiBoundsComposition*, ball: GuiBoundsComposition*, delay: int): IGuiAnimation^
-          ${
-            $Wait (cast UInt64 delay);
-            $PlayAndWait BallAnimation(container, ball);
-            ball.Visible = false;
-          }
-          
-          @cpp:Private
-          static func WaitingAnimation(container: GuiBoundsComposition*): IGuiAnimation^
-          ${
-            var balls = {} of GuiBoundsComposition*[];
-            for (i in range [0, 8))
-            {
-              var ball = new GuiBoundsComposition*();
-              balls.Add(ball);
-              
-              ball.Visible = false;
-              ball.PreferredMinSize = {x:16 y:16};
-              
-              var element = new SolidBackground^();
-              element.Shape = {shapeType:Ellipse};
-              element.Color = cast Color "#3F48CC";
-              ball.OwnedElement = element;
-              
-              container.AddChild(ball);
-            }
-            
-            while (true)
-            {
-              $Wait (cast UInt64 500);
-              for (i in range [0, balls.Count))
-              {
-                $PlayInGroup BallAnimationWithDelay(container, balls[i], 150 * i), 0;
-              }
-              $WaitForGroup 0;
-            }
-          }
-          
-          @cpp:Private
-          var gradientColorDef : ColorAnimation^ = new ColorAnimation^(ColorDef::Dark());
-          
-          @cpp:Private
-          var lastGradientAnimation : IGuiAnimation^ = null;
-          
-          func PerformGradientAnimation(target: ColorDef^): void
-          {
-            KillAnimation(lastGradientAnimation);
-            lastGradientAnimation = gradientColorDef.CreateAnimation(target, (cast UInt64 500));
-            AddAnimation(lastGradientAnimation);
-          }
-          
-          var counter : int = 0;
-        ]]>
-      </ref.Members>
-      <ref.Ctor>
-        <![CDATA[
-          {
-            self.AddAnimation(WaitingAnimation(animationBackground));
-          }
-        ]]>
-      </ref.Ctor>
       <Window ref.Name="self" Text="GacUI XML资源临时测试" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
 
-        <Tab>
-          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+          <Cell Site="row:0 column:0">
+            <ToolstripMenuBar>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <MenuBarButton Text="Items">
+                <att.SubMenu-set>
+                  <MenuItemButton Text="Item 1"/>
+                  <MenuItemButton Text="Item 2"/>
+                  <MenuItemButton Text="Item 3"/>
+                  <MenuItemButton Text="Item 4"/>
+                  <MenuItemButton Text="Item 5"/>
+                  <MenuItemButton Text="Item 6"/>
+                  <MenuItemButton Text="Item 7"/>
+                  <MenuItemButton Text="Item 8"/>
+                  <MenuItemButton Text="Item 9"/>
+                  <MenuItemButton Text="Item 10"/>
+                </att.SubMenu-set>
+              </MenuBarButton>
+            </ToolstripMenuBar>
+          </Cell>
 
-          <att.Pages>
-            <TabPage Text="Gradient Animation">
-              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
-                <att.Rows>
-                  <_>composeType:MinSize</_>
-                  <_>composeType:MinSize</_>
-                  <_>composeType:MinSize</_>
-                  <_>composeType:Percentage percentage:1.0</_>
-                </att.Rows>
-                
-                <att.Columns>
-                  <_>composeType:MinSize</_>
-                  <_>composeType:Absolute absolute:100</_>
-                  <_>composeType:Percentage percentage:1.0</_>
-                </att.Columns>
-
-                <Cell Site="row:0 column:0 rowSpan:4">
-                  <Bounds PreferredMinSize="x:200 y:200">
-                    <GradientBackground Direction="Slash" Color1-bind="self.gradientColorDef.Current.Top" Color2-bind="self.gradientColorDef.Current.Bottom"/>
-                    <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                      <InnerShadow Color-bind="self.gradientColorDef.Current.Shadow" Thickness-bind="self.gradientColorDef.Current.Thickness"/>
-                    </Bounds>
-                  </Bounds>
-                </Cell>
-
-                <Cell Site="row:0 column:1">
-                  <Button Text="Dark" ev.Clicked-eval="self.PerformGradientAnimation(ColorDef::Dark());">
-                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                  </Button>
-                </Cell>
-                <Cell Site="row:1 column:1">
-                  <Button Text="Light" ev.Clicked-eval="self.PerformGradientAnimation(ColorDef::Light());">
-                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                  </Button>
-                </Cell>
-                <Cell Site="row:2 column:1">
-                  <Button Text="Sink" ev.Clicked-eval="self.PerformGradientAnimation(ColorDef::Sink());">
-                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                  </Button>
-                </Cell>
-              </Table>
-            </TabPage>
-            
-            <TabPage Text="Complex Animation">
-              <BoundsComposition ref.Name="animationBackground" AlignmentToParent="left:10 top:10 right:-1 bottom:-1" PreferredMinSize="x:200 y:200">
-                <SolidBackground Color="#FFC929"/>
-              </BoundsComposition>
-            </TabPage>
-          </att.Pages>
-        </Tab>
+          <Cell Site="row:1 column:0">
+            <TextList View="Check">
+              <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+              <att.Items>
+                <TextItem Text="Item 1" Checked="true"/>
+                <TextItem Text="Item 2" Checked="true"/>
+                <TextItem Text="Item 3" Checked="true"/>
+                <TextItem Text="Item 4" Checked="true"/>
+                <TextItem Text="Item 5" Checked="true"/>
+                <TextItem Text="Item 6" Checked="true"/>
+                <TextItem Text="Item 7" Checked="true"/>
+                <TextItem Text="Item 8" Checked="true"/>
+                <TextItem Text="Item 9" Checked="true"/>
+                <TextItem Text="Item 10" Checked="true"/>
+              </att.Items>
+            </TextList>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>
