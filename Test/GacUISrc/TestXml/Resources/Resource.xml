@@ -15,7 +15,7 @@
           <Cell Site="row:0 column:0">
             <ToolstripMenuBar>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <MenuBarButton Text="Items">
+              <MenuBarButton ref.Name="menuItems" Text="Items">
                 <att.SubMenu-set>
                   <MenuItemButton Text="Item 1"/>
                   <MenuItemButton Text="Item 2"/>
@@ -33,7 +33,7 @@
           </Cell>
 
           <Cell Site="row:1 column:0">
-            <TextList View="Check">
+            <TextList ref.Name="checkList" View="Check">
               <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
               <att.Items>
                 <TextItem Text="Item 1" Checked="true"/>
@@ -47,6 +47,15 @@
                 <TextItem Text="Item 9" Checked="true"/>
                 <TextItem Text="Item 10" Checked="true"/>
               </att.Items>
+              <ev.ItemChecked-eval>
+                <![CDATA[
+                  {
+                    var checked = checkList.Items[arguments.itemIndex].Checked;
+                    var menuItem = cast (GuiToolstripButton*) menuItems.ToolstripSubMenu.ToolstripItems[arguments.itemIndex];
+                    menuItem.Visible = checked;
+                  }
+                ]]>
+              </ev.ItemChecked-eval>
             </TextList>
           </Cell>
         </Table>
