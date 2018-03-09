@@ -15,6 +15,7 @@ Interfaces:
 #include "GuiGraphicsStackComposition.h"
 #include "GuiGraphicsFlowComposition.h"
 #include "GuiGraphicsSpecializedComposition.h"
+#include "GuiGraphicsResponsiveComposition.h"
 
 namespace vl
 {

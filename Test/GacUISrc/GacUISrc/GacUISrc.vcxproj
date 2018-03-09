@@ -375,6 +375,7 @@
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsCompositionBase.cpp" />
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsEventReceiver.cpp" />
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsResponsiveComposition.cpp" />
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsSpecializedComposition.cpp" />
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsStackComposition.cpp" />
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsTableComposition.cpp" />
@@ -569,6 +570,7 @@
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsCompositionBase.h" />
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsEventReceiver.h" />
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsResponsiveComposition.h" />
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsSpecializedComposition.h" />
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsStackComposition.h" />
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsTableComposition.h" />

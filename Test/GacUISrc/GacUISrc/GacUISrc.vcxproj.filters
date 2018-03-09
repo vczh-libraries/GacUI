@@ -486,6 +486,9 @@
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceAnimation.cpp">
       <Filter>GacUI\Compiler</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsResponsiveComposition.cpp">
+      <Filter>GacUI\GraphicsComposition</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
@@ -787,6 +790,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceAnimation.h">
       <Filter>GacUI\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsResponsiveComposition.h">
+      <Filter>GacUI\GraphicsComposition</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
