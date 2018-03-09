@@ -352,6 +352,30 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatFlowComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiRepeatFlowComposition)
 
+			BEGIN_CLASS_MEMBER(GuiResponsiveCompositionBase)
+				CLASS_MEMBER_BASE(GuiBoundsComposition)
+			END_CLASS_MEMBER(GuiResponsiveCompositionBase)
+
+			BEGIN_CLASS_MEMBER(GuiResponsiveViewComposition)
+				CLASS_MEMBER_BASE(GuiResponsiveCompositionBase)
+				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveViewComposition*(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiResponsiveViewComposition)
+
+			BEGIN_CLASS_MEMBER(GuiFixedLayoutComposition)
+				CLASS_MEMBER_BASE(GuiResponsiveCompositionBase)
+				CLASS_MEMBER_CONSTRUCTOR(GuiFixedLayoutComposition*(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiFixedLayoutComposition)
+
+			BEGIN_CLASS_MEMBER(GuiResponsiveStackComposition)
+				CLASS_MEMBER_BASE(GuiResponsiveCompositionBase)
+				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveStackComposition*(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiResponsiveStackComposition)
+
+			BEGIN_CLASS_MEMBER(GuiResponsiveGroupComposition)
+				CLASS_MEMBER_BASE(GuiResponsiveCompositionBase)
+				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveGroupComposition*(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiResponsiveGroupComposition)
+
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiShortcutKeyItem)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Manager)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)

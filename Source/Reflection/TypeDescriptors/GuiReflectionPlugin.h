@@ -159,6 +159,11 @@ Type List (Compositions)
 			F(presentation::compositions::GuiRepeatCompositionBase)\
 			F(presentation::compositions::GuiRepeatStackComposition)\
 			F(presentation::compositions::GuiRepeatFlowComposition)\
+			F(presentation::compositions::GuiResponsiveCompositionBase)\
+			F(presentation::compositions::GuiResponsiveViewComposition)\
+			F(presentation::compositions::GuiFixedLayoutComposition)\
+			F(presentation::compositions::GuiResponsiveStackComposition)\
+			F(presentation::compositions::GuiResponsiveGroupComposition)\
 			F(presentation::compositions::IGuiShortcutKeyItem)\
 			F(presentation::compositions::IGuiShortcutKeyManager)\
 			F(presentation::compositions::GuiShortcutKeyManager)\
