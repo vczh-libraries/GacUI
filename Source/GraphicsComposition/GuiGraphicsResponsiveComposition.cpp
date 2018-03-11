@@ -32,15 +32,35 @@ GuiResponsiveViewComposition
 			}
 
 /***********************************************************************
-GuiFixedLayoutComposition
+GuiResponsiveFixedComposition
 ***********************************************************************/
 
-			GuiFixedLayoutComposition::GuiFixedLayoutComposition()
+			GuiResponsiveFixedComposition::GuiResponsiveFixedComposition()
 			{
 			}
 
-			GuiFixedLayoutComposition::~GuiFixedLayoutComposition()
+			GuiResponsiveFixedComposition::~GuiResponsiveFixedComposition()
 			{
+			}
+
+			vint GuiResponsiveFixedComposition::GetLevelCount()
+			{
+				return 1;
+			}
+
+			vint GuiResponsiveFixedComposition::GetCurrentLevel()
+			{
+				return 0;
+			}
+
+			bool GuiResponsiveFixedComposition::LevelDown()
+			{
+				return false;
+			}
+
+			bool GuiResponsiveFixedComposition::LevelUp()
+			{
+				return false;
 			}
 
 /***********************************************************************

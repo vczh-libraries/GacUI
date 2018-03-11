@@ -361,10 +361,10 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveViewComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiResponsiveViewComposition)
 
-			BEGIN_CLASS_MEMBER(GuiFixedLayoutComposition)
+			BEGIN_CLASS_MEMBER(GuiResponsiveFixedComposition)
 				CLASS_MEMBER_BASE(GuiResponsiveCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiFixedLayoutComposition*(), NO_PARAMETER)
-			END_CLASS_MEMBER(GuiFixedLayoutComposition)
+			END_CLASS_MEMBER(GuiResponsiveFixedComposition)
 
 			BEGIN_CLASS_MEMBER(GuiResponsiveStackComposition)
 				CLASS_MEMBER_BASE(GuiResponsiveCompositionBase)

@@ -17,12 +17,39 @@ namespace vl
 	{
 		namespace compositions
 		{
+			enum class ResponsiveDirection
+			{
+				Horizontal,
+				Vertical,
+				Both,
+			};
+
 			/// <summary>Base class for responsive layout compositions.</summary>
 			class GuiResponsiveCompositionBase abstract : public GuiBoundsComposition, public Description<GuiResponsiveCompositionBase>
 			{
 			public:
 				GuiResponsiveCompositionBase();
 				~GuiResponsiveCompositionBase();
+
+				virtual vint					GetLevelCount() = 0;
+				virtual vint					GetCurrentLevel() = 0;
+				virtual bool					LevelDown() = 0;
+				virtual bool					LevelUp() = 0;
+			};
+
+			class GuiResponsiveSharedCollection : public collections::ObservableListBase<controls::GuiControl*>
+			{
+			};
+
+			class GuiResponsiveViewCollection : public collections::ObservableListBase<GuiResponsiveCompositionBase*>
+			{
+			};
+
+			class GuiResponsiveSharedComposition : public GuiBoundsComposition, public Description<GuiResponsiveSharedComposition>
+			{
+			public:
+				GuiResponsiveSharedComposition(controls::GuiControl* _shared);
+				~GuiResponsiveSharedComposition();
 			};
 
 			/// <summary>A responsive layout composition defined by views of different sizes.</summary>
@@ -31,14 +58,30 @@ namespace vl
 			public:
 				GuiResponsiveViewComposition();
 				~GuiResponsiveViewComposition();
+
+				vint																GetLevelCount()override;
+				vint																GetCurrentLevel()override;
+				bool																LevelDown()override;
+				bool																LevelUp()override;
+
+				collections::ObservableListBase<controls::GuiControl*>&				GetSharedControls();
+				collections::ObservableListBase<GuiResponsiveCompositionBase*>&		GetViews();
+
+				ResponsiveDirection													GetDirection();
+				void																SetDirection(ResponsiveDirection value);
 			};
 
 			/// <summary>A responsive layout composition which stop parent responsive composition to search its children.</summary>
-			class GuiFixedLayoutComposition : public GuiResponsiveCompositionBase, public Description<GuiFixedLayoutComposition>
+			class GuiResponsiveFixedComposition : public GuiResponsiveCompositionBase, public Description<GuiResponsiveFixedComposition>
 			{
 			public:
-				GuiFixedLayoutComposition();
-				~GuiFixedLayoutComposition();
+				GuiResponsiveFixedComposition();
+				~GuiResponsiveFixedComposition();
+
+				vint					GetLevelCount()override;
+				vint					GetCurrentLevel()override;
+				bool					LevelDown()override;
+				bool					LevelUp()override;
 			};
 
 			/// <summary>A responsive layout composition which change its size by changing children's views one by one in one direction.</summary>
@@ -47,6 +90,14 @@ namespace vl
 			public:
 				GuiResponsiveStackComposition();
 				~GuiResponsiveStackComposition();
+
+				vint					GetLevelCount()override;
+				vint					GetCurrentLevel()override;
+				bool					LevelDown()override;
+				bool					LevelUp()override;
+
+				ResponsiveDirection		GetDirection();
+				void					SetDirection(ResponsiveDirection value);
 			};
 
 			/// <summary>A responsive layout composition which change its size by changing children's views at the same time.</summary>
@@ -55,6 +106,14 @@ namespace vl
 			public:
 				GuiResponsiveGroupComposition();
 				~GuiResponsiveGroupComposition();
+
+				vint					GetLevelCount()override;
+				vint					GetCurrentLevel()override;
+				bool					LevelDown()override;
+				bool					LevelUp()override;
+
+				ResponsiveDirection		GetDirection();
+				void					SetDirection(ResponsiveDirection value);
 			};
 		}
 	}
