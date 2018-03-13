@@ -27,6 +27,13 @@ namespace vl
 			/// <summary>Base class for responsive layout compositions.</summary>
 			class GuiResponsiveCompositionBase abstract : public GuiBoundsComposition, public Description<GuiResponsiveCompositionBase>
 			{
+			protected:
+				GuiResponsiveCompositionBase*	responsiveParent = nullptr;
+
+				void							OnParentLineChanged()override;
+				virtual void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
+				virtual void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
+
 			public:
 				GuiResponsiveCompositionBase();
 				~GuiResponsiveCompositionBase();
