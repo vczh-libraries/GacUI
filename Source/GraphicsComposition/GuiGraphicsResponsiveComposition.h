@@ -29,6 +29,7 @@ namespace vl
 			{
 			protected:
 				GuiResponsiveCompositionBase*	responsiveParent = nullptr;
+				ResponsiveDirection				direction = ResponsiveDirection::Both;
 
 				void							OnParentLineChanged()override;
 				virtual void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
@@ -42,6 +43,9 @@ namespace vl
 				virtual vint					GetCurrentLevel() = 0;
 				virtual bool					LevelDown() = 0;
 				virtual bool					LevelUp() = 0;
+
+				ResponsiveDirection				GetDirection();
+				void							SetDirection(ResponsiveDirection value);
 			};
 
 			class GuiResponsiveSharedCollection : public collections::ObservableListBase<controls::GuiControl*>
@@ -73,9 +77,6 @@ namespace vl
 
 				collections::ObservableListBase<controls::GuiControl*>&				GetSharedControls();
 				collections::ObservableListBase<GuiResponsiveCompositionBase*>&		GetViews();
-
-				ResponsiveDirection													GetDirection();
-				void																SetDirection(ResponsiveDirection value);
 			};
 
 			/// <summary>A responsive layout composition which stop parent responsive composition to search its children.</summary>
@@ -102,9 +103,6 @@ namespace vl
 				vint					GetCurrentLevel()override;
 				bool					LevelDown()override;
 				bool					LevelUp()override;
-
-				ResponsiveDirection		GetDirection();
-				void					SetDirection(ResponsiveDirection value);
 			};
 
 			/// <summary>A responsive layout composition which change its size by changing children's views at the same time.</summary>
@@ -118,9 +116,6 @@ namespace vl
 				vint					GetCurrentLevel()override;
 				bool					LevelDown()override;
 				bool					LevelUp()override;
-
-				ResponsiveDirection		GetDirection();
-				void					SetDirection(ResponsiveDirection value);
 			};
 		}
 	}

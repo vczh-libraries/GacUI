@@ -47,6 +47,16 @@ GuiResponsiveCompositionBase
 			{
 			}
 
+			ResponsiveDirection GuiResponsiveCompositionBase::GetDirection()
+			{
+				return direction;
+			}
+
+			void GuiResponsiveCompositionBase::SetDirection(ResponsiveDirection value)
+			{
+				direction = value;
+			}
+
 /***********************************************************************
 GuiResponsiveViewComposition
 ***********************************************************************/
@@ -85,16 +95,6 @@ GuiResponsiveViewComposition
 			}
 
 			collections::ObservableListBase<GuiResponsiveCompositionBase*>& GuiResponsiveViewComposition::GetViews()
-			{
-				throw 0;
-			}
-
-			ResponsiveDirection GuiResponsiveViewComposition::GetDirection()
-			{
-				throw 0;
-			}
-
-			void GuiResponsiveViewComposition::SetDirection(ResponsiveDirection value)
 			{
 				throw 0;
 			}
@@ -163,16 +163,6 @@ GuiResponsiveStackComposition
 				throw 0;
 			}
 
-			ResponsiveDirection GuiResponsiveStackComposition::GetDirection()
-			{
-				throw 0;
-			}
-
-			void GuiResponsiveStackComposition::SetDirection(ResponsiveDirection value)
-			{
-				throw 0;
-			}
-
 /***********************************************************************
 GuiResponsiveGroupComposition
 ***********************************************************************/
@@ -201,16 +191,6 @@ GuiResponsiveGroupComposition
 			}
 
 			bool GuiResponsiveGroupComposition::LevelUp()
-			{
-				throw 0;
-			}
-
-			ResponsiveDirection GuiResponsiveGroupComposition::GetDirection()
-			{
-				throw 0;
-			}
-
-			void GuiResponsiveGroupComposition::SetDirection(ResponsiveDirection value)
 			{
 				throw 0;
 			}

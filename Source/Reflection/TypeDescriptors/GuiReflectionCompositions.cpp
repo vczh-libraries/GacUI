@@ -9,6 +9,7 @@ namespace vl
 			using namespace collections;
 			using namespace presentation;
 			using namespace presentation::compositions;
+			using namespace presentation::controls;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
@@ -352,13 +353,33 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatFlowComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiRepeatFlowComposition)
 
+			BEGIN_ENUM_ITEM(ResponsiveDirection)
+				ENUM_CLASS_ITEM(Horizontal)
+				ENUM_CLASS_ITEM(Vertical)
+				ENUM_CLASS_ITEM(Both)
+			END_ENUM_ITEM(ResponsiveDirection)
+
 			BEGIN_CLASS_MEMBER(GuiResponsiveCompositionBase)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(LevelCount)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(CurrentLevel)
+				CLASS_MEMBER_PROPERTY_FAST(Direction)
+				CLASS_MEMBER_METHOD(LevelDown, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(LevelUp, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiResponsiveCompositionBase)
+
+			BEGIN_CLASS_MEMBER(GuiResponsiveSharedComposition)
+				CLASS_MEMBER_BASE(GuiBoundsComposition)
+				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveSharedComposition*(GuiControl*), { L"shared" })
+			END_CLASS_MEMBER(GuiResponsiveSharedComposition)
 
 			BEGIN_CLASS_MEMBER(GuiResponsiveViewComposition)
 				CLASS_MEMBER_BASE(GuiResponsiveCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveViewComposition*(), NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(SharedControls)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Views)
 			END_CLASS_MEMBER(GuiResponsiveViewComposition)
 
 			BEGIN_CLASS_MEMBER(GuiResponsiveFixedComposition)
