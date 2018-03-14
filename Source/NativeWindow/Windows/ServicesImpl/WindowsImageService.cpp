@@ -101,7 +101,7 @@ WindowsImageFrame
 			Ptr<INativeImageFrameCache> WindowsImageFrame::GetCache(void* key)
 			{
 				vint index=caches.Keys().IndexOf(key);
-				return index==-1?0:caches.Values().Get(index);
+				return index==-1?nullptr:caches.Values().Get(index);
 			}
 
 			Ptr<INativeImageFrameCache> WindowsImageFrame::RemoveCache(void* key)

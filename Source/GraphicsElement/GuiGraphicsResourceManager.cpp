@@ -55,7 +55,7 @@ GuiGraphicsResourceManager
 			IGuiGraphicsRendererFactory* GuiGraphicsResourceManager::GetRendererFactory(const WString& elementTypeName)
 			{
 				vint index=rendererFactories.Keys().IndexOf(elementTypeName);
-				return index==-1?0:rendererFactories.Values().Get(index).Obj();
+				return index==-1?nullptr:rendererFactories.Values().Get(index).Obj();
 			}
 
 			GuiGraphicsResourceManager* guiGraphicsResourceManager=0;
