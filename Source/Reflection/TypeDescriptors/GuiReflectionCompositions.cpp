@@ -363,7 +363,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiResponsiveFixedComposition)
 				CLASS_MEMBER_BASE(GuiResponsiveCompositionBase)
-				CLASS_MEMBER_CONSTRUCTOR(GuiFixedLayoutComposition*(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveFixedComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiResponsiveFixedComposition)
 
 			BEGIN_CLASS_MEMBER(GuiResponsiveStackComposition)
