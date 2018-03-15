@@ -19,9 +19,9 @@ namespace vl
 		{
 			enum class ResponsiveDirection
 			{
-				Horizontal,
-				Vertical,
-				Both,
+				Horizontal = 1,
+				Vertical = 2,
+				Both = 3,
 			};
 
 			/// <summary>Base class for responsive layout compositions.</summary>

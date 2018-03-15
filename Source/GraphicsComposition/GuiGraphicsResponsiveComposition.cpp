@@ -79,7 +79,12 @@ GuiResponsiveCompositionBase
 
 			void GuiResponsiveCompositionBase::SetDirection(ResponsiveDirection value)
 			{
-				direction = value;
+				if (direction != value)
+				{
+					direction = value;
+					OnResponsiveChildLevelUpdated();
+					NotifyLevelUpdated();
+				}
 			}
 
 /***********************************************************************
@@ -176,15 +181,23 @@ GuiResponsiveFixedComposition
 GuiResponsiveStackComposition
 ***********************************************************************/
 
+#define DEFINE_AVAILABLE \
+			auto availables = From(responsiveChildren) \
+				.Where([=](GuiResponsiveCompositionBase* child) \
+				{ \
+					return ((vint)direction & (vint)child->GetDirection()) != 0; \
+				}) \
+
 			void GuiResponsiveStackComposition::CalculateLevelCount()
 			{
-				if (responsiveChildren.Count() == 0)
+				DEFINE_AVAILABLE;
+				if (availables.IsEmpty())
 				{
 					levelCount = 1;
 				}
 				else
 				{
-					levelCount = From(responsiveChildren)
+					levelCount = availables
 						.Select([](GuiResponsiveCompositionBase* child)
 							{
 								return child->GetLevelCount();
@@ -198,13 +211,14 @@ GuiResponsiveStackComposition
 
 			void GuiResponsiveStackComposition::CalculateCurrentLevel()
 			{
-				if (responsiveChildren.Count() == 0)
+				DEFINE_AVAILABLE;
+				if (availables.IsEmpty())
 				{
 					currentLevel = 0;
 				}
 				else
 				{
-					currentLevel = From(responsiveChildren)
+					currentLevel = availables
 						.Select([](GuiResponsiveCompositionBase* child)
 							{
 								return child->GetCurrentLevel() + 1;
@@ -266,13 +280,14 @@ GuiResponsiveGroupComposition
 
 			void GuiResponsiveGroupComposition::CalculateLevelCount()
 			{
-				if (responsiveChildren.Count() == 0)
+				DEFINE_AVAILABLE;
+				if (availables.IsEmpty())
 				{
 					levelCount = 1;
 				}
 				else
 				{
-					levelCount = From(responsiveChildren)
+					levelCount = availables
 						.Select([](GuiResponsiveCompositionBase* child)
 							{
 								return child->GetLevelCount();
@@ -283,13 +298,14 @@ GuiResponsiveGroupComposition
 
 			void GuiResponsiveGroupComposition::CalculateCurrentLevel()
 			{
-				if (responsiveChildren.Count() == 0)
+				DEFINE_AVAILABLE;
+				if (availables.IsEmpty())
 				{
 					currentLevel = 0;
 				}
 				else
 				{
-					currentLevel = From(responsiveChildren)
+					currentLevel = availables
 						.Select([](GuiResponsiveCompositionBase* child)
 							{
 								return child->GetCurrentLevel();
@@ -361,6 +377,8 @@ GuiResponsiveGroupComposition
 				CalculateCurrentLevel();
 				return level != currentLevel;
 			}
+
+#undef DEFINE_AVAILABLE
 		}
 	}
 }
