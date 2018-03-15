@@ -32,8 +32,11 @@ namespace vl
 				ResponsiveDirection				direction = ResponsiveDirection::Both;
 
 				void							OnParentLineChanged()override;
+				void							NotifyLevelUpdated();
+
 				virtual void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
 				virtual void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
+				virtual void					OnResponsiveChildLevelUpdated();
 
 			public:
 				GuiResponsiveCompositionBase();
@@ -66,6 +69,16 @@ namespace vl
 			/// <summary>A responsive layout composition defined by views of different sizes.</summary>
 			class GuiResponsiveViewComposition : public GuiResponsiveCompositionBase, public Description<GuiResponsiveViewComposition>
 			{
+			protected:
+				vint								levelCount = 1;
+				vint								currentLevel = 0;
+				GuiResponsiveSharedCollection		sharedControls;
+				GuiResponsiveViewCollection			views;
+
+				void								CalculateLevelCount();
+				void								CalculateCurrentLevel();
+				void								OnResponsiveChildLevelUpdated();
+
 			public:
 				GuiResponsiveViewComposition();
 				~GuiResponsiveViewComposition();
@@ -95,6 +108,18 @@ namespace vl
 			/// <summary>A responsive layout composition which change its size by changing children's views one by one in one direction.</summary>
 			class GuiResponsiveStackComposition : public GuiResponsiveCompositionBase, public Description<GuiResponsiveStackComposition>
 			{
+				using ResponsiveChildList = collections::List<GuiResponsiveCompositionBase*>;
+			protected:
+				vint					levelCount = 1;
+				vint					currentLevel = 0;
+				ResponsiveChildList		responsiveChildren;
+
+				void					CalculateLevelCount();
+				void					CalculateCurrentLevel();
+				void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
+				void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
+				void					OnResponsiveChildLevelUpdated();
+
 			public:
 				GuiResponsiveStackComposition();
 				~GuiResponsiveStackComposition();
@@ -108,6 +133,18 @@ namespace vl
 			/// <summary>A responsive layout composition which change its size by changing children's views at the same time.</summary>
 			class GuiResponsiveGroupComposition : public GuiResponsiveCompositionBase, public Description<GuiResponsiveGroupComposition>
 			{
+				using ResponsiveChildList = collections::List<GuiResponsiveCompositionBase*>;
+			protected:
+				vint					levelCount = 1;
+				vint					currentLevel = 0;
+				ResponsiveChildList		responsiveChildren;
+
+				void					CalculateLevelCount();
+				void					CalculateCurrentLevel();
+				void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
+				void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
+				void					OnResponsiveChildLevelUpdated();
+
 			public:
 				GuiResponsiveGroupComposition();
 				~GuiResponsiveGroupComposition();
