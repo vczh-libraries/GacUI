@@ -184,11 +184,15 @@ GuiResponsiveStackComposition
 				}
 				else
 				{
-					levelCount = 0;
-					FOREACH(GuiResponsiveCompositionBase*, child, responsiveChildren)
-					{
-						levelCount += child->GetLevelCount();
-					}
+					levelCount = From(responsiveChildren)
+						.Select([](GuiResponsiveCompositionBase* child)
+							{
+								return child->GetLevelCount();
+							})
+						.Aggregate([](vint a, vint b)
+							{
+								return a + b;
+							});
 				}
 			}
 
@@ -200,7 +204,15 @@ GuiResponsiveStackComposition
 				}
 				else
 				{
-					throw 0;
+					currentLevel = From(responsiveChildren)
+						.Select([](GuiResponsiveCompositionBase* child)
+							{
+								return child->GetCurrentLevel() + 1;
+							})
+						.Aggregate([](vint a, vint b)
+							{
+								return a + b;
+							}) - 1;
 				}
 			}
 
@@ -260,15 +272,12 @@ GuiResponsiveGroupComposition
 				}
 				else
 				{
-					levelCount = 0;
-					FOREACH(GuiResponsiveCompositionBase*, child, responsiveChildren)
-					{
-						vint level = child->GetLevelCount();
-						if (levelCount < level)
-						{
-							levelCount = level;
-						}
-					}
+					levelCount = From(responsiveChildren)
+						.Select([](GuiResponsiveCompositionBase* child)
+							{
+								return child->GetLevelCount();
+							})
+						.Max();
 				}
 			}
 
@@ -280,7 +289,12 @@ GuiResponsiveGroupComposition
 				}
 				else
 				{
-					throw 0;
+					currentLevel = From(responsiveChildren)
+						.Select([](GuiResponsiveCompositionBase* child)
+							{
+								return child->GetCurrentLevel();
+							})
+						.Max();
 				}
 			}
 
