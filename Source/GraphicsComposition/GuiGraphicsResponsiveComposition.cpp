@@ -334,12 +334,32 @@ GuiResponsiveGroupComposition
 
 			bool GuiResponsiveGroupComposition::LevelDown()
 			{
-				throw 0;
+				vint level = currentLevel;
+				FOREACH(GuiResponsiveCompositionBase*, child, responsiveChildren)
+				{
+					if (child->GetCurrentLevel() == level)
+					{
+						child->LevelDown();
+					}
+				}
+
+				CalculateCurrentLevel();
+				return level != currentLevel;
 			}
 
 			bool GuiResponsiveGroupComposition::LevelUp()
 			{
-				throw 0;
+				vint level = currentLevel;
+				FOREACH(GuiResponsiveCompositionBase*, child, responsiveChildren)
+				{
+					while (child->GetCurrentLevel() <= level)
+					{
+						child->LevelUp();
+					}
+				}
+
+				CalculateCurrentLevel();
+				return level != currentLevel;
 			}
 		}
 	}
