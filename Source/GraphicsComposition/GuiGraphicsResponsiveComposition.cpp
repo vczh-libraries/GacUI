@@ -6,6 +6,7 @@ namespace vl
 	{
 		namespace compositions
 		{
+			using namespace collections;
 
 /***********************************************************************
 GuiResponsiveCompositionBase
@@ -246,6 +247,52 @@ GuiResponsiveStackComposition
 				CalculateCurrentLevel();
 			}
 
+			bool GuiResponsiveStackComposition::ChangeLevel(bool levelDown)
+			{
+				DEFINE_AVAILABLE;
+
+				vint level = currentLevel;
+				SortedList<GuiResponsiveCompositionBase*> ignored;
+				while (true)
+				{
+					GuiResponsiveCompositionBase* selected = false;
+					vint size = 0;
+
+					FOREACH(GuiResponsiveCompositionBase*, child, availables)
+					{
+						if (!ignored.Contains(child))
+						{
+							Size childSize = child->GetPreferredBounds().GetSize();
+							vint childSizeToCompare =
+								direction == ResponsiveDirection::Horizontal ? childSize.x :
+								direction == ResponsiveDirection::Vertical ? childSize.y :
+								childSize.x * childSize.y;
+
+							if (!selected || (levelDown ? size < childSizeToCompare : size > childSizeToCompare))
+							{
+								selected = child;
+								size = childSizeToCompare;
+							}
+						}
+					}
+
+					if (selected)
+					{
+						if (!(levelDown ? selected->LevelDown() : selected->LevelUp()))
+						{
+							ignored.Add(selected);
+						}
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				CalculateCurrentLevel();
+				return level != currentLevel;
+			}
+
 			GuiResponsiveStackComposition::GuiResponsiveStackComposition()
 			{
 			}
@@ -266,12 +313,12 @@ GuiResponsiveStackComposition
 
 			bool GuiResponsiveStackComposition::LevelDown()
 			{
-				throw 0;
+				return ChangeLevel(true);
 			}
 
 			bool GuiResponsiveStackComposition::LevelUp()
 			{
-				throw 0;
+				return ChangeLevel(false);
 			}
 
 /***********************************************************************
@@ -350,10 +397,11 @@ GuiResponsiveGroupComposition
 
 			bool GuiResponsiveGroupComposition::LevelDown()
 			{
+				DEFINE_AVAILABLE;
 				vint level = currentLevel;
-				FOREACH(GuiResponsiveCompositionBase*, child, responsiveChildren)
+				FOREACH(GuiResponsiveCompositionBase*, child, availables)
 				{
-					if (child->GetCurrentLevel() == level)
+					if (child->GetCurrentLevel() >= level)
 					{
 						child->LevelDown();
 					}
@@ -365,8 +413,9 @@ GuiResponsiveGroupComposition
 
 			bool GuiResponsiveGroupComposition::LevelUp()
 			{
+				DEFINE_AVAILABLE;
 				vint level = currentLevel;
-				FOREACH(GuiResponsiveCompositionBase*, child, responsiveChildren)
+				FOREACH(GuiResponsiveCompositionBase*, child, availables)
 				{
 					while (child->GetCurrentLevel() <= level)
 					{

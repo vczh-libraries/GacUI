@@ -119,6 +119,7 @@ namespace vl
 				void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
 				void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
 				void					OnResponsiveChildLevelUpdated();
+				bool					ChangeLevel(bool levelDown);
 
 			public:
 				GuiResponsiveStackComposition();
