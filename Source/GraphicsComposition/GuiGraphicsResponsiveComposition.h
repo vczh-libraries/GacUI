@@ -33,25 +33,25 @@ GuiResponsiveCompositionBase
 			class GuiResponsiveCompositionBase abstract : public GuiBoundsComposition, public Description<GuiResponsiveCompositionBase>
 			{
 			protected:
-				GuiResponsiveCompositionBase*	responsiveParent = nullptr;
-				ResponsiveDirection				direction = ResponsiveDirection::Both;
+				GuiResponsiveCompositionBase*		responsiveParent = nullptr;
+				ResponsiveDirection					direction = ResponsiveDirection::Both;
 
-				void							OnParentLineChanged()override;
-				virtual void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
-				virtual void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
-				virtual void					OnResponsiveChildLevelUpdated();
+				void								OnParentLineChanged()override;
+				virtual void						OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
+				virtual void						OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
+				virtual void						OnResponsiveChildLevelUpdated();
 
 			public:
 				GuiResponsiveCompositionBase();
 				~GuiResponsiveCompositionBase();
 
-				virtual vint					GetLevelCount() = 0;
-				virtual vint					GetCurrentLevel() = 0;
-				virtual bool					LevelDown() = 0;
-				virtual bool					LevelUp() = 0;
+				virtual vint						GetLevelCount() = 0;
+				virtual vint						GetCurrentLevel() = 0;
+				virtual bool						LevelDown() = 0;
+				virtual bool						LevelUp() = 0;
 
-				ResponsiveDirection				GetDirection();
-				void							SetDirection(ResponsiveDirection value);
+				ResponsiveDirection					GetDirection();
+				void								SetDirection(ResponsiveDirection value);
 			};
 
 /***********************************************************************
@@ -97,6 +97,8 @@ GuiResponsiveViewComposition
 			{
 			protected:
 				controls::GuiControl*				shared;
+
+				void								OnParentLineChanged()override;
 
 			public:
 				GuiResponsiveSharedComposition(controls::GuiControl* _shared);

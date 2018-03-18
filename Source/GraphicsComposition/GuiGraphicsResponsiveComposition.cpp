@@ -1,4 +1,5 @@
 #include "GuiGraphicsResponsiveComposition.h"
+#include "../Controls/GuiBasicControls.h"
 
 namespace vl
 {
@@ -15,28 +16,32 @@ GuiResponsiveCompositionBase
 			void GuiResponsiveCompositionBase::OnParentLineChanged()
 			{
 				GuiBoundsComposition::OnParentLineChanged();
-				auto parent = GetParent();
-				while (parent)
+				GuiResponsiveCompositionBase* responsive = nullptr;
 				{
-					if (auto responsive = dynamic_cast<GuiResponsiveCompositionBase*>(parent))
+					auto parent = GetParent();
+					while (parent)
 					{
-						if (responsiveParent != responsive)
+						if (responsive = dynamic_cast<GuiResponsiveCompositionBase*>(parent))
 						{
-							if (responsiveParent)
-							{
-								responsiveParent->OnResponsiveChildRemoved(this);
-								responsiveParent->OnResponsiveChildLevelUpdated();
-							}
-							responsiveParent = responsive;
-							if (responsiveParent)
-							{
-								responsiveParent->OnResponsiveChildInserted(this);
-								responsiveParent->OnResponsiveChildLevelUpdated();
-							}
+							break;
 						}
-						break;
+						parent = parent->GetParent();
 					}
-					parent = parent->GetParent();
+				}
+
+				if (responsiveParent != responsive)
+				{
+					if (responsiveParent)
+					{
+						responsiveParent->OnResponsiveChildRemoved(this);
+						responsiveParent->OnResponsiveChildLevelUpdated();
+					}
+					responsiveParent = responsive;
+					if (responsiveParent)
+					{
+						responsiveParent->OnResponsiveChildInserted(this);
+						responsiveParent->OnResponsiveChildLevelUpdated();
+					}
 				}
 			}
 
@@ -58,6 +63,7 @@ GuiResponsiveCompositionBase
 
 			GuiResponsiveCompositionBase::GuiResponsiveCompositionBase()
 			{
+				SetMinSizeLimitation(LimitToElementAndChildren);
 			}
 
 			GuiResponsiveCompositionBase::~GuiResponsiveCompositionBase()
@@ -84,7 +90,7 @@ GuiResponsiveSharedCollection
 
 			bool GuiResponsiveSharedCollection::QueryInsert(vint index, controls::GuiControl* const& value)
 			{
-				return !Contains(value);
+				return !Contains(value) && !value->GetBoundsComposition()->GetParent();
 			}
 
 			void GuiResponsiveSharedCollection::BeforeInsert(vint index, controls::GuiControl* const& value)
@@ -124,7 +130,7 @@ GuiResponsiveViewCollection
 
 			bool GuiResponsiveViewCollection::QueryInsert(vint index, GuiResponsiveCompositionBase* const& value)
 			{
-				return !Contains(value);
+				return !Contains(value) && value->GetParent();
 			}
 
 			void GuiResponsiveViewCollection::BeforeInsert(vint index, GuiResponsiveCompositionBase* const& value)
@@ -162,9 +168,48 @@ GuiResponsiveViewCollection
 GuiResponsiveSharedComposition
 ***********************************************************************/
 
+			void GuiResponsiveSharedComposition::OnParentLineChanged()
+			{
+				GuiBoundsComposition::OnParentLineChanged();
+				GuiResponsiveViewComposition* view = nullptr;
+				{
+					auto parent = GetParent();
+					while (parent)
+					{
+						if (view = dynamic_cast<GuiResponsiveViewComposition*>(parent))
+						{
+							break;
+						}
+						parent = parent->GetParent();
+					}
+				}
+
+				auto sharedParent = shared->GetBoundsComposition()->GetParent();
+				if (sharedParent == this)
+				{
+					if (!view)
+					{
+						RemoveChild(shared->GetBoundsComposition());
+					}
+				}
+				else if (sharedParent == nullptr)
+				{
+					if (view)
+					{
+						shared->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						AddChild(shared->GetBoundsComposition());
+					}
+				}
+				else
+				{
+					CHECK_FAIL(L"GuiResponsiveSharedComposition::OnParentLineChanged()#The specified shared control has not been released. This usually means this control is not in GuiResponsiveViewComposition::GetSharedControls().");
+				}
+			}
+
 			GuiResponsiveSharedComposition::GuiResponsiveSharedComposition(controls::GuiControl* _shared)
 				:shared(_shared)
 			{
+				SetMinSizeLimitation(LimitToElementAndChildren);
 			}
 
 			GuiResponsiveSharedComposition::~GuiResponsiveSharedComposition()
@@ -242,6 +287,19 @@ GuiResponsiveViewComposition
 
 			GuiResponsiveViewComposition::~GuiResponsiveViewComposition()
 			{
+				if (currentView)
+				{
+					RemoveChild(currentView);
+				}
+
+				for (vint i = 0; i < views.Count(); i++)
+				{
+					SafeDeleteComposition(views[i]);
+				}
+				for (vint i = 0; i < sharedControls.Count(); i++)
+				{
+					SafeDeleteControl(sharedControls[i]);
+				}
 			}
 
 			vint GuiResponsiveViewComposition::GetLevelCount()
@@ -256,12 +314,40 @@ GuiResponsiveViewComposition
 
 			bool GuiResponsiveViewComposition::LevelDown()
 			{
-				throw 0;
+				vint level = currentLevel;
+				skipUpdatingLevels = true;
+				if (!currentView->LevelDown())
+				{
+					vint index = views.IndexOf(currentView);
+					if (index > 0)
+					{
+						RemoveChild(currentView);
+						currentView = views[index - 1];
+						currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						CalculateCurrentLevel();
+					}
+				}
+				skipUpdatingLevels = false;
+				return level != currentLevel;
 			}
 
 			bool GuiResponsiveViewComposition::LevelUp()
 			{
-				throw 0;
+				vint level = currentLevel;
+				skipUpdatingLevels = true;
+				if (!currentView->LevelUp())
+				{
+					vint index = views.IndexOf(currentView);
+					if (index < views.Count() + 1)
+					{
+						RemoveChild(currentView);
+						currentView = views[index + 1];
+						currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						CalculateCurrentLevel();
+					}
+				}
+				skipUpdatingLevels = false;
+				return level != currentLevel;
 			}
 
 			collections::ObservableListBase<controls::GuiControl*>& GuiResponsiveViewComposition::GetSharedControls()
