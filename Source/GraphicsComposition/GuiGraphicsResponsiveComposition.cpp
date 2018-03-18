@@ -106,6 +106,7 @@ GuiResponsiveSharedCollection
 
 			void GuiResponsiveSharedCollection::BeforeRemove(vint index, controls::GuiControl* const& value)
 			{
+				CHECK_ERROR(!value->GetBoundsComposition()->GetParent(), L"GuiResponsiveSharedCollection::BeforeRemove(vint, GuiResponsiveSharedCollection* const&)#Cannot remove a shared control that is current in use.");
 				view->skipUpdatingLevels = true;
 			}
 
@@ -140,12 +141,19 @@ GuiResponsiveViewCollection
 
 			void GuiResponsiveViewCollection::AfterInsert(vint index, GuiResponsiveCompositionBase* const& value)
 			{
+				if (!view->currentView)
+				{
+					view->currentView = value;
+					view->currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					view->AddChild(view->currentView);
+				}
 				view->skipUpdatingLevels = false;
 				view->OnResponsiveChildLevelUpdated();
 			}
 
 			void GuiResponsiveViewCollection::BeforeRemove(vint index, GuiResponsiveCompositionBase* const& value)
 			{
+				CHECK_ERROR(!value->GetParent(), L"GuiResponsiveViewCollection::BeforeRemove(vint, GuiResponsiveCompositionBase* const&)#Cannot remove a view that is current in use.");
 				view->skipUpdatingLevels = true;
 			}
 
@@ -343,6 +351,7 @@ GuiResponsiveViewComposition
 						RemoveChild(currentView);
 						currentView = views[index + 1];
 						currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						AddChild(currentView);
 						CalculateCurrentLevel();
 					}
 				}
