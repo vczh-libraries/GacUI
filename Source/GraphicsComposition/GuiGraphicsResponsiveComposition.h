@@ -17,6 +17,11 @@ namespace vl
 	{
 		namespace compositions
 		{
+
+/***********************************************************************
+GuiResponsiveCompositionBase
+***********************************************************************/
+
 			enum class ResponsiveDirection
 			{
 				Horizontal = 1,
@@ -32,8 +37,6 @@ namespace vl
 				ResponsiveDirection				direction = ResponsiveDirection::Both;
 
 				void							OnParentLineChanged()override;
-				void							NotifyLevelUpdated();
-
 				virtual void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
 				virtual void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
 				virtual void					OnResponsiveChildLevelUpdated();
@@ -51,16 +54,50 @@ namespace vl
 				void							SetDirection(ResponsiveDirection value);
 			};
 
+/***********************************************************************
+GuiResponsiveViewComposition
+***********************************************************************/
+
+			class GuiResponsiveViewComposition;
+			class GuiResponsiveSharedComposition;
+
 			class GuiResponsiveSharedCollection : public collections::ObservableListBase<controls::GuiControl*>
 			{
+			protected:
+				GuiResponsiveViewComposition*		view = nullptr;
+
+				bool								QueryInsert(vint index, controls::GuiControl* const& value)override;
+				void								BeforeInsert(vint index, controls::GuiControl* const& value)override;
+				void								AfterInsert(vint index, controls::GuiControl* const& value)override;
+				void								BeforeRemove(vint index, controls::GuiControl* const& value)override;
+				void								AfterRemove(vint index, vint count)override;
+
+			public:
+				GuiResponsiveSharedCollection(GuiResponsiveViewComposition* _view);
+				~GuiResponsiveSharedCollection();
 			};
 
 			class GuiResponsiveViewCollection : public collections::ObservableListBase<GuiResponsiveCompositionBase*>
 			{
+			protected:
+				GuiResponsiveViewComposition*		view = nullptr;
+
+				bool								QueryInsert(vint index, GuiResponsiveCompositionBase* const& value)override;
+				void								BeforeInsert(vint index, GuiResponsiveCompositionBase* const& value)override;
+				void								AfterInsert(vint index, GuiResponsiveCompositionBase* const& value)override;
+				void								BeforeRemove(vint index, GuiResponsiveCompositionBase* const& value)override;
+				void								AfterRemove(vint index, vint count)override;
+
+			public:
+				GuiResponsiveViewCollection(GuiResponsiveViewComposition* _view);
+				~GuiResponsiveViewCollection();
 			};
 
 			class GuiResponsiveSharedComposition : public GuiBoundsComposition, public Description<GuiResponsiveSharedComposition>
 			{
+			protected:
+				controls::GuiControl*				shared;
+
 			public:
 				GuiResponsiveSharedComposition(controls::GuiControl* _shared);
 				~GuiResponsiveSharedComposition();
@@ -69,9 +106,13 @@ namespace vl
 			/// <summary>A responsive layout composition defined by views of different sizes.</summary>
 			class GuiResponsiveViewComposition : public GuiResponsiveCompositionBase, public Description<GuiResponsiveViewComposition>
 			{
+				friend class GuiResponsiveSharedCollection;
+				friend class GuiResponsiveViewCollection;
 			protected:
 				vint								levelCount = 1;
 				vint								currentLevel = 0;
+				bool								skipUpdatingLevels = false;
+				GuiResponsiveCompositionBase*		currentView = nullptr;
 				GuiResponsiveSharedCollection		sharedControls;
 				GuiResponsiveViewCollection			views;
 
@@ -92,9 +133,16 @@ namespace vl
 				collections::ObservableListBase<GuiResponsiveCompositionBase*>&		GetViews();
 			};
 
+/***********************************************************************
+Others
+***********************************************************************/
+
 			/// <summary>A responsive layout composition which stop parent responsive composition to search its children.</summary>
 			class GuiResponsiveFixedComposition : public GuiResponsiveCompositionBase, public Description<GuiResponsiveFixedComposition>
 			{
+			protected:
+				void					OnResponsiveChildLevelUpdated()override;
+
 			public:
 				GuiResponsiveFixedComposition();
 				~GuiResponsiveFixedComposition();

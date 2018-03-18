@@ -40,19 +40,6 @@ GuiResponsiveCompositionBase
 				}
 			}
 
-			void GuiResponsiveCompositionBase::NotifyLevelUpdated()
-			{
-				auto current = this;
-				while (current)
-				{
-					if (current->responsiveParent)
-					{
-						current->responsiveParent->OnResponsiveChildLevelUpdated();
-					}
-					current = current->responsiveParent;
-				}
-			}
-
 			void GuiResponsiveCompositionBase::OnResponsiveChildInserted(GuiResponsiveCompositionBase* child)
 			{
 			}
@@ -63,6 +50,10 @@ GuiResponsiveCompositionBase
 
 			void GuiResponsiveCompositionBase::OnResponsiveChildLevelUpdated()
 			{
+				if (responsiveParent)
+				{
+					responsiveParent->OnResponsiveChildLevelUpdated();
+				}
 			}
 
 			GuiResponsiveCompositionBase::GuiResponsiveCompositionBase()
@@ -84,8 +75,100 @@ GuiResponsiveCompositionBase
 				{
 					direction = value;
 					OnResponsiveChildLevelUpdated();
-					NotifyLevelUpdated();
 				}
+			}
+
+/***********************************************************************
+GuiResponsiveSharedCollection
+***********************************************************************/
+
+			bool GuiResponsiveSharedCollection::QueryInsert(vint index, controls::GuiControl* const& value)
+			{
+				return !Contains(value);
+			}
+
+			void GuiResponsiveSharedCollection::BeforeInsert(vint index, controls::GuiControl* const& value)
+			{
+				view->skipUpdatingLevels = true;
+			}
+
+			void GuiResponsiveSharedCollection::AfterInsert(vint index, controls::GuiControl* const& value)
+			{
+				view->skipUpdatingLevels = false;
+				view->OnResponsiveChildLevelUpdated();
+			}
+
+			void GuiResponsiveSharedCollection::BeforeRemove(vint index, controls::GuiControl* const& value)
+			{
+				view->skipUpdatingLevels = true;
+			}
+
+			void GuiResponsiveSharedCollection::AfterRemove(vint index, vint count)
+			{
+				view->skipUpdatingLevels = false;
+				view->OnResponsiveChildLevelUpdated();
+			}
+
+			GuiResponsiveSharedCollection::GuiResponsiveSharedCollection(GuiResponsiveViewComposition* _view)
+				:view(_view)
+			{
+			}
+
+			GuiResponsiveSharedCollection::~GuiResponsiveSharedCollection()
+			{
+			}
+
+/***********************************************************************
+GuiResponsiveViewCollection
+***********************************************************************/
+
+			bool GuiResponsiveViewCollection::QueryInsert(vint index, GuiResponsiveCompositionBase* const& value)
+			{
+				return !Contains(value);
+			}
+
+			void GuiResponsiveViewCollection::BeforeInsert(vint index, GuiResponsiveCompositionBase* const& value)
+			{
+				view->skipUpdatingLevels = true;
+			}
+
+			void GuiResponsiveViewCollection::AfterInsert(vint index, GuiResponsiveCompositionBase* const& value)
+			{
+				view->skipUpdatingLevels = false;
+				view->OnResponsiveChildLevelUpdated();
+			}
+
+			void GuiResponsiveViewCollection::BeforeRemove(vint index, GuiResponsiveCompositionBase* const& value)
+			{
+				view->skipUpdatingLevels = true;
+			}
+
+			void GuiResponsiveViewCollection::AfterRemove(vint index, vint count)
+			{
+				view->skipUpdatingLevels = false;
+				view->OnResponsiveChildLevelUpdated();
+			}
+
+			GuiResponsiveViewCollection::GuiResponsiveViewCollection(GuiResponsiveViewComposition* _view)
+				:view(_view)
+			{
+			}
+
+			GuiResponsiveViewCollection::~GuiResponsiveViewCollection()
+			{
+			}
+
+/***********************************************************************
+GuiResponsiveSharedComposition
+***********************************************************************/
+
+			GuiResponsiveSharedComposition::GuiResponsiveSharedComposition(controls::GuiControl* _shared)
+				:shared(_shared)
+			{
+			}
+
+			GuiResponsiveSharedComposition::~GuiResponsiveSharedComposition()
+			{
 			}
 
 /***********************************************************************
@@ -94,21 +177,66 @@ GuiResponsiveViewComposition
 
 			void GuiResponsiveViewComposition::CalculateLevelCount()
 			{
-				throw 0;
+				if (views.Count() == 0)
+				{
+					levelCount = 1;
+				}
+				else
+				{
+					levelCount = 0;
+					for (vint i = 0; i < views.Count(); i++)
+					{
+						auto view = views[i];
+						if (((vint)direction & (vint)view->GetDirection()) != 0)
+						{
+							levelCount += view->GetLevelCount();
+						}
+						else
+						{
+							levelCount += 1;
+						}
+					}
+				}
 			}
 
 			void GuiResponsiveViewComposition::CalculateCurrentLevel()
 			{
-				throw 0;
+				currentLevel = 0;
+				for (vint i = views.Count() - 1; i >= 0; i--)
+				{
+					auto view = views[i];
+					if (((vint)direction & (vint)view->GetDirection()) != 0)
+					{
+						if (currentView == view)
+						{
+							levelCount += view->GetCurrentLevel() + 1;
+						}
+						else
+						{
+							levelCount += view->GetLevelCount();
+						}
+					}
+					else
+					{
+						levelCount++;
+					}
+				}
+				currentLevel--;
 			}
 
 			void GuiResponsiveViewComposition::OnResponsiveChildLevelUpdated()
 			{
-				CalculateLevelCount();
-				CalculateCurrentLevel();
+				if (!skipUpdatingLevels)
+				{
+					CalculateLevelCount();
+					CalculateCurrentLevel();
+					GuiResponsiveCompositionBase::OnResponsiveChildLevelUpdated();
+				}
 			}
 
 			GuiResponsiveViewComposition::GuiResponsiveViewComposition()
+				:sharedControls(this)
+				, views(this)
 			{
 			}
 
@@ -149,6 +277,10 @@ GuiResponsiveViewComposition
 /***********************************************************************
 GuiResponsiveFixedComposition
 ***********************************************************************/
+
+			void GuiResponsiveFixedComposition::OnResponsiveChildLevelUpdated()
+			{
+			}
 
 			GuiResponsiveFixedComposition::GuiResponsiveFixedComposition()
 			{
@@ -245,6 +377,7 @@ GuiResponsiveStackComposition
 			{
 				CalculateLevelCount();
 				CalculateCurrentLevel();
+				GuiResponsiveCompositionBase::OnResponsiveChildLevelUpdated();
 			}
 
 			bool GuiResponsiveStackComposition::ChangeLevel(bool levelDown)
@@ -375,6 +508,7 @@ GuiResponsiveGroupComposition
 			{
 				CalculateLevelCount();
 				CalculateCurrentLevel();
+				GuiResponsiveCompositionBase::OnResponsiveChildLevelUpdated();
 			}
 
 			GuiResponsiveGroupComposition::GuiResponsiveGroupComposition()
