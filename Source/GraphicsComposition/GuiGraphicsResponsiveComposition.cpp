@@ -90,7 +90,7 @@ GuiResponsiveSharedCollection
 
 			void GuiResponsiveSharedCollection::BeforeInsert(vint index, controls::GuiControl* const& value)
 			{
-				CHECK_ERROR(!value->GetBoundsComposition()->GetParent(), L"GuiResponsiveSharedCollection::BeforeInsert(vint, GuiResponsiveSharedCollection* const&)#Cannot insert a shared control that is current in use.");
+				CHECK_ERROR(!value->GetBoundsComposition()->GetParent(), L"GuiResponsiveSharedCollection::BeforeInsert(vint, GuiResponsiveSharedCollection* const&)#Cannot insert a shared control that is currently in use.");
 			}
 
 			void GuiResponsiveSharedCollection::AfterInsert(vint index, controls::GuiControl* const& value)
@@ -100,7 +100,7 @@ GuiResponsiveSharedCollection
 
 			void GuiResponsiveSharedCollection::BeforeRemove(vint index, controls::GuiControl* const& value)
 			{
-				CHECK_ERROR(!value->GetBoundsComposition()->GetParent(), L"GuiResponsiveSharedCollection::BeforeRemove(vint, GuiResponsiveSharedCollection* const&)#Cannot remove a shared control that is current in use.");
+				CHECK_ERROR(!value->GetBoundsComposition()->GetParent(), L"GuiResponsiveSharedCollection::BeforeRemove(vint, GuiResponsiveSharedCollection* const&)#Cannot remove a shared control that is currently in use.");
 			}
 
 			void GuiResponsiveSharedCollection::AfterRemove(vint index, vint count)
@@ -123,7 +123,7 @@ GuiResponsiveViewCollection
 
 			void GuiResponsiveViewCollection::BeforeInsert(vint index, GuiResponsiveCompositionBase* const& value)
 			{
-				CHECK_ERROR(!value->GetParent(), L"GuiResponsiveViewCollection::BeforeRemove(vint, GuiResponsiveCompositionBase* const&)#Cannot insert a view that is current in use.");
+				CHECK_ERROR(!value->GetParent(), L"GuiResponsiveViewCollection::BeforeRemove(vint, GuiResponsiveCompositionBase* const&)#Cannot insert a view that is currently in use.");
 			}
 
 			void GuiResponsiveViewCollection::AfterInsert(vint index, GuiResponsiveCompositionBase* const& value)
@@ -141,7 +141,7 @@ GuiResponsiveViewCollection
 
 			void GuiResponsiveViewCollection::BeforeRemove(vint index, GuiResponsiveCompositionBase* const& value)
 			{
-				CHECK_ERROR(!value->GetParent(), L"GuiResponsiveViewCollection::BeforeRemove(vint, GuiResponsiveCompositionBase* const&)#Cannot remove a view that is current in use.");
+				CHECK_ERROR(!value->GetParent(), L"GuiResponsiveViewCollection::BeforeRemove(vint, GuiResponsiveCompositionBase* const&)#Cannot remove a view that is currently in use.");
 			}
 
 			void GuiResponsiveViewCollection::AfterRemove(vint index, vint count)
