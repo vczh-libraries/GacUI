@@ -88,31 +88,23 @@ GuiResponsiveCompositionBase
 GuiResponsiveSharedCollection
 ***********************************************************************/
 
-			bool GuiResponsiveSharedCollection::QueryInsert(vint index, controls::GuiControl* const& value)
-			{
-				return !Contains(value) && !value->GetBoundsComposition()->GetParent();
-			}
-
 			void GuiResponsiveSharedCollection::BeforeInsert(vint index, controls::GuiControl* const& value)
 			{
-				view->skipUpdatingLevels = true;
+				CHECK_ERROR(!value->GetBoundsComposition()->GetParent(), L"GuiResponsiveSharedCollection::BeforeInsert(vint, GuiResponsiveSharedCollection* const&)#Cannot insert a shared control that is current in use.");
 			}
 
 			void GuiResponsiveSharedCollection::AfterInsert(vint index, controls::GuiControl* const& value)
 			{
-				view->skipUpdatingLevels = false;
 				view->OnResponsiveChildLevelUpdated();
 			}
 
 			void GuiResponsiveSharedCollection::BeforeRemove(vint index, controls::GuiControl* const& value)
 			{
 				CHECK_ERROR(!value->GetBoundsComposition()->GetParent(), L"GuiResponsiveSharedCollection::BeforeRemove(vint, GuiResponsiveSharedCollection* const&)#Cannot remove a shared control that is current in use.");
-				view->skipUpdatingLevels = true;
 			}
 
 			void GuiResponsiveSharedCollection::AfterRemove(vint index, vint count)
 			{
-				view->skipUpdatingLevels = false;
 				view->OnResponsiveChildLevelUpdated();
 			}
 
@@ -129,37 +121,31 @@ GuiResponsiveSharedCollection
 GuiResponsiveViewCollection
 ***********************************************************************/
 
-			bool GuiResponsiveViewCollection::QueryInsert(vint index, GuiResponsiveCompositionBase* const& value)
-			{
-				return !Contains(value) && value->GetParent();
-			}
-
 			void GuiResponsiveViewCollection::BeforeInsert(vint index, GuiResponsiveCompositionBase* const& value)
 			{
-				view->skipUpdatingLevels = true;
+				CHECK_ERROR(!value->GetParent(), L"GuiResponsiveViewCollection::BeforeRemove(vint, GuiResponsiveCompositionBase* const&)#Cannot insert a view that is current in use.");
 			}
 
 			void GuiResponsiveViewCollection::AfterInsert(vint index, GuiResponsiveCompositionBase* const& value)
 			{
 				if (!view->currentView)
 				{
+					view->skipUpdatingLevels = true;
 					view->currentView = value;
 					view->currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					view->AddChild(view->currentView);
+					view->skipUpdatingLevels = false;
 				}
-				view->skipUpdatingLevels = false;
 				view->OnResponsiveChildLevelUpdated();
 			}
 
 			void GuiResponsiveViewCollection::BeforeRemove(vint index, GuiResponsiveCompositionBase* const& value)
 			{
 				CHECK_ERROR(!value->GetParent(), L"GuiResponsiveViewCollection::BeforeRemove(vint, GuiResponsiveCompositionBase* const&)#Cannot remove a view that is current in use.");
-				view->skipUpdatingLevels = true;
 			}
 
 			void GuiResponsiveViewCollection::AfterRemove(vint index, vint count)
 			{
-				view->skipUpdatingLevels = false;
 				view->OnResponsiveChildLevelUpdated();
 			}
 
@@ -204,6 +190,7 @@ GuiResponsiveSharedComposition
 				{
 					if (view)
 					{
+						CHECK_ERROR(view->GetSharedControls().Contains(shared), L"GuiResponsiveSharedComposition::OnParentLineChanged()#The specified shared control is not in GuiResponsiveViewComposition::GetSharedControls().");
 						shared->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						AddChild(shared->GetBoundsComposition());
 					}

@@ -66,7 +66,6 @@ GuiResponsiveViewComposition
 			protected:
 				GuiResponsiveViewComposition*		view = nullptr;
 
-				bool								QueryInsert(vint index, controls::GuiControl* const& value)override;
 				void								BeforeInsert(vint index, controls::GuiControl* const& value)override;
 				void								AfterInsert(vint index, controls::GuiControl* const& value)override;
 				void								BeforeRemove(vint index, controls::GuiControl* const& value)override;
@@ -82,7 +81,6 @@ GuiResponsiveViewComposition
 			protected:
 				GuiResponsiveViewComposition*		view = nullptr;
 
-				bool								QueryInsert(vint index, GuiResponsiveCompositionBase* const& value)override;
 				void								BeforeInsert(vint index, GuiResponsiveCompositionBase* const& value)override;
 				void								AfterInsert(vint index, GuiResponsiveCompositionBase* const& value)override;
 				void								BeforeRemove(vint index, GuiResponsiveCompositionBase* const& value)override;
