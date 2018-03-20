@@ -26,18 +26,49 @@
             <Bounds MinSizeLimitation="LimitToElementAndChildren" InternalMargin="left:1 top:1 right:1 bottom:1">
               <SolidBorder Color="#00FF00"/>
               <ResponsiveView ref.Name="responsive">
+                <att.SharedControls>
+                  <DocumentTextBox ref.Name="documentBox"/>
+                </att.SharedControls>
                 <att.Views>
                   <ResponsiveFixed>
-                    <Label Text="Pen Pineapple Apple Pen"/>
+                    <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Direction="Vertical">
+                      <StackItem>
+                        <Label Text="Pen Pineapple Apple Pen"/>
+                      </StackItem>
+                      <StackItem>
+                        <ResponsiveShared Shared-eval="documentBox" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                      </StackItem>
+                    </Stack>
                   </ResponsiveFixed>
                   <ResponsiveFixed>
-                    <Label Text="Pineapple Pen"/>
+                    <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Direction="Vertical">
+                      <StackItem>
+                        <Label Text="Pineapple Pen"/>
+                      </StackItem>
+                      <StackItem>
+                        <ResponsiveShared Shared-eval="documentBox" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                      </StackItem>
+                    </Stack>
                   </ResponsiveFixed>
                   <ResponsiveFixed>
-                    <Label Text="Apple"/>
+                    <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Direction="Vertical">
+                      <StackItem>
+                        <Label Text="Apple"/>
+                      </StackItem>
+                      <StackItem>
+                        <ResponsiveShared Shared-eval="documentBox" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                      </StackItem>
+                    </Stack>
                   </ResponsiveFixed>
                   <ResponsiveFixed>
-                    <Label Text="Pen"/>
+                    <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Direction="Vertical">
+                      <StackItem>
+                        <Label Text="Pen"/>
+                      </StackItem>
+                      <StackItem>
+                        <ResponsiveShared Shared-eval="documentBox" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                      </StackItem>
+                    </Stack>
                   </ResponsiveFixed>
                 </att.Views>
               </ResponsiveView>

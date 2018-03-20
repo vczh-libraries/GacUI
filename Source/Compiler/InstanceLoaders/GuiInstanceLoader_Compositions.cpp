@@ -554,12 +554,18 @@ GuiResponsiveSharedCompositionInstanceLoader
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
 						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						info->bindability = GuiInstancePropertyInfo::Bindable;
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
+				bool CanCreate(const TypeInfo& typeInfo)override
+				{
+					return typeName == typeInfo.typeName;
+				}
+
+				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
 				{
 					if (CanCreate(typeInfo))
 					{
@@ -567,7 +573,7 @@ GuiResponsiveSharedCompositionInstanceLoader
 						if (indexShared != -1)
 						{
 							auto createExpr = MakePtr<WfNewClassExpression>();
-							createExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiResponsiveSharedComposition>>::CreateTypeInfo().Obj());
+							createExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<GuiResponsiveSharedComposition*>::CreateTypeInfo().Obj());
 							createExpr->arguments.Add(arguments.GetByIndex(indexShared)[0].expression);
 
 							auto refVariable = MakePtr<WfReferenceExpression>();
@@ -597,6 +603,7 @@ Initialization
 				manager->SetLoader(new GuiCompositionInstanceLoader);
 				manager->SetLoader(new GuiTableCompositionInstanceLoader);
 				manager->SetLoader(new GuiCellCompositionInstanceLoader);
+				manager->SetLoader(new GuiResponsiveSharedCompositionInstanceLoader);
 			}
 		}
 	}
