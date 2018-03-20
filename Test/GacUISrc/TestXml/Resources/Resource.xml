@@ -33,7 +33,7 @@
                   <ResponsiveFixed>
                     <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Direction="Vertical" MinSizeLimitation="LimitToElementAndChildren" Padding="5">
                       <StackItem>
-                        <Label Text="Pen Pineapple Apple Pen"/>
+                        <Label Text-format="Pen Pineapple Apple Pen: $(documentBox.Text)"/>
                       </StackItem>
                       <StackItem>
                         <ResponsiveShared Shared-ref="documentBox" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -43,7 +43,7 @@
                   <ResponsiveFixed>
                     <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Direction="Vertical" MinSizeLimitation="LimitToElementAndChildren" Padding="5">
                       <StackItem>
-                        <Label Text="Pineapple Pen"/>
+                        <Label Text-format="Pineapple Pen: $(documentBox.Text)"/>
                       </StackItem>
                       <StackItem>
                         <ResponsiveShared Shared-ref="documentBox" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -53,7 +53,7 @@
                   <ResponsiveFixed>
                     <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Direction="Vertical" MinSizeLimitation="LimitToElementAndChildren" Padding="5">
                       <StackItem>
-                        <Label Text="Apple"/>
+                        <Label Text-format="Apple: $(documentBox.Text)"/>
                       </StackItem>
                       <StackItem>
                         <ResponsiveShared Shared-ref="documentBox" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -63,7 +63,7 @@
                   <ResponsiveFixed>
                     <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Direction="Vertical" MinSizeLimitation="LimitToElementAndChildren" Padding="5">
                       <StackItem>
-                        <Label Text="Pen"/>
+                        <Label Text-format="Pen: $(documentBox.Text)"/>
                       </StackItem>
                       <StackItem>
                         <ResponsiveShared Shared-ref="documentBox" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>

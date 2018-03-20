@@ -65,6 +65,7 @@ GuiResponsiveCompositionBase
 			GuiResponsiveCompositionBase::GuiResponsiveCompositionBase()
 			{
 				SetMinSizeLimitation(LimitToElementAndChildren);
+				SetPreferredMinSize(Size(1, 1));
 			}
 
 			GuiResponsiveCompositionBase::~GuiResponsiveCompositionBase()
