@@ -165,20 +165,17 @@ GuiResponsiveSharedComposition
 
 			void GuiResponsiveSharedComposition::SetSharedControl()
 			{
-				if (shared)
+				if (shared && view && !view->destructing)
 				{
 					auto sharedParent = shared->GetBoundsComposition()->GetParent();
-					if (view)
-					{
-						CHECK_ERROR(view->sharedControls.Contains(shared), L"GuiResponsiveSharedComposition::SetSharedControl()#The specified shared control is not in GuiResponsiveViewComposition::GetSharedControls().");
-						CHECK_ERROR(!sharedParent || sharedParent == this, L"GuiResponsiveSharedComposition::SetSharedControl()#The specified shared control has not been released. This usually means this control is not in GuiResponsiveViewComposition::GetSharedControls().");
+					CHECK_ERROR(view->sharedControls.Contains(shared), L"GuiResponsiveSharedComposition::SetSharedControl()#The specified shared control is not in GuiResponsiveViewComposition::GetSharedControls().");
+					CHECK_ERROR(!sharedParent || sharedParent == this, L"GuiResponsiveSharedComposition::SetSharedControl()#The specified shared control has not been released. This usually means this control is not in GuiResponsiveViewComposition::GetSharedControls().");
 
-						if (!sharedParent)
-						{
-							shared->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-							AddChild(shared->GetBoundsComposition());
-							view->usedSharedControls.Add(shared);
-						}
+					if (!sharedParent)
+					{
+						shared->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						AddChild(shared->GetBoundsComposition());
+						view->usedSharedControls.Add(shared);
 					}
 				}
 			}
@@ -186,8 +183,12 @@ GuiResponsiveSharedComposition
 			void GuiResponsiveSharedComposition::OnParentLineChanged()
 			{
 				GuiBoundsComposition::OnParentLineChanged();
-				GuiResponsiveViewComposition* currentView = nullptr;
+				if (view && view->destructing)
+				{
+					return;
+				}
 
+				GuiResponsiveViewComposition* currentView = nullptr;
 				{
 					auto parent = GetParent();
 					while (parent)
@@ -305,17 +306,19 @@ GuiResponsiveViewComposition
 
 			GuiResponsiveViewComposition::~GuiResponsiveViewComposition()
 			{
-				FOREACH(GuiControl*, shared, From(sharedControls).Except(usedSharedControls))
-				{
-					SafeDeleteControl(shared);
-				}
+				destructing = true;
 
 				FOREACH(GuiResponsiveCompositionBase*, view, views)
 				{
-					if (!view->GetParent())
+					if (view != currentView)
 					{
 						SafeDeleteComposition(view);
 					}
+				}
+
+				FOREACH(GuiControl*, shared, From(sharedControls).Except(usedSharedControls))
+				{
+					SafeDeleteControl(shared);
 				}
 			}
 

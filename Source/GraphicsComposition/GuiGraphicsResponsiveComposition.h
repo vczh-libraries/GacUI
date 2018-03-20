@@ -124,6 +124,7 @@ GuiResponsiveViewComposition
 				ControlSet							usedSharedControls;
 				GuiResponsiveSharedCollection		sharedControls;
 				GuiResponsiveViewCollection			views;
+				bool								destructing = false;
 
 				void								CalculateLevelCount();
 				void								CalculateCurrentLevel();
