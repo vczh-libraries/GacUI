@@ -273,16 +273,16 @@ GuiResponsiveViewComposition
 					{
 						if (currentView == view)
 						{
-							levelCount += view->GetCurrentLevel() + 1;
+							currentLevel += view->GetCurrentLevel() + 1;
 						}
 						else
 						{
-							levelCount += view->GetLevelCount();
+							currentLevel += view->GetLevelCount();
 						}
 					}
 					else
 					{
-						levelCount++;
+						currentLevel++;
 					}
 				}
 				currentLevel--;
@@ -339,11 +339,12 @@ GuiResponsiveViewComposition
 				if (!currentView->LevelDown())
 				{
 					vint index = views.IndexOf(currentView);
-					if (index > 0)
+					if (index < views.Count() - 1)
 					{
 						RemoveChild(currentView);
-						currentView = views[index - 1];
+						currentView = views[index + 1];
 						currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						AddChild(currentView);
 						CalculateCurrentLevel();
 					}
 				}
@@ -358,10 +359,10 @@ GuiResponsiveViewComposition
 				if (!currentView->LevelUp())
 				{
 					vint index = views.IndexOf(currentView);
-					if (index < views.Count() + 1)
+					if (index > 0)
 					{
 						RemoveChild(currentView);
-						currentView = views[index + 1];
+						currentView = views[index - 1];
 						currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						AddChild(currentView);
 						CalculateCurrentLevel();

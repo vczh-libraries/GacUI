@@ -27,7 +27,7 @@
               <SolidBorder Color="#00FF00"/>
               <ResponsiveView ref.Name="responsive">
                 <att.SharedControls>
-                  <DocumentTextBox ref.Name="documentBox"/>
+                  <DocumentTextBox ref.Name="documentBox" EditMode="Editable" Text="Edit me!"/>
                 </att.SharedControls>
                 <att.Views>
                   <ResponsiveFixed>
