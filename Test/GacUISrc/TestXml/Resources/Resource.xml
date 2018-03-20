@@ -3,15 +3,13 @@
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
       <ref.Members>
         <![CDATA[
-          {
-            @cpp:Private
-            event LevelUpdated();
-          }
+          @cpp:Private
+          event LevelUpdated();
         ]]>
       </ref.Members>
       <Window ref.Name="self" Text="GacUI XML资源临时测试" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellSpan="5">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
@@ -25,7 +23,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0 rowSpan:5">
-            <ResponsiveView>
+            <ResponsiveView ref.Name="responsive">
               <att.Views>
                 <ResponsiveFixed>
                   <Label Text="Pen Pineapple Apple Pen"/>
@@ -48,6 +46,8 @@
               <ev.Clicked-eval>
                 <![CDATA[
                   {
+                    responsive.LevelUp();
+                    self.LevelUpdated();
                   }
                 ]]>
               </ev.Clicked-eval>
@@ -59,6 +59,8 @@
               <ev.Clicked-eval>
                 <![CDATA[
                   {
+                    responsive.LevelDown();
+                    self.LevelUpdated();
                   }
                 ]]>
               </ev.Clicked-eval>
@@ -66,11 +68,11 @@
           </Cell>
 
           <Cell Site="row:2 column:1">
-            <Label Text-bind="$'LevelCount: $(self.observe as _(responsive.LevelCount on _.Levelupdated))'"/>
+            <Label Text-bind="$'LevelCount: $(self.observe as _(responsive.LevelCount on _.LevelUpdated))'"/>
           </Cell>
 
           <Cell Site="row:3 column:1">
-            <Label Text-bind="$'CurrentLevel: $(self.observe as _(responsive.CurrentLevel on _.Levelupdated))'"/>
+            <Label Text-bind="$'CurrentLevel: $(self.observe as _(responsive.CurrentLevel on _.LevelUpdated))'"/>
           </Cell>
         </Table>
       </Window>
