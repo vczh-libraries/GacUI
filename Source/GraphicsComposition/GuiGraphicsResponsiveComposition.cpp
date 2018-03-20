@@ -338,7 +338,7 @@ GuiResponsiveViewComposition
 			{
 				vint level = currentLevel;
 				skipUpdatingLevels = true;
-				if (!currentView->LevelDown())
+				if (((vint)direction & (vint)currentView->GetDirection()) != 0 && !currentView->LevelDown())
 				{
 					vint index = views.IndexOf(currentView);
 					if (index < views.Count() - 1)
@@ -358,7 +358,7 @@ GuiResponsiveViewComposition
 			{
 				vint level = currentLevel;
 				skipUpdatingLevels = true;
-				if (!currentView->LevelUp())
+				if (((vint)direction & (vint)currentView->GetDirection()) != 0 && !currentView->LevelUp())
 				{
 					vint index = views.IndexOf(currentView);
 					if (index > 0)
