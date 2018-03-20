@@ -23,22 +23,25 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0 rowSpan:5">
-            <ResponsiveView ref.Name="responsive">
-              <att.Views>
-                <ResponsiveFixed>
-                  <Label Text="Pen Pineapple Apple Pen"/>
-                </ResponsiveFixed>
-                <ResponsiveFixed>
-                  <Label Text="Pineapple Pen"/>
-                </ResponsiveFixed>
-                <ResponsiveFixed>
-                  <Label Text="Apple"/>
-                </ResponsiveFixed>
-                <ResponsiveFixed>
-                  <Label Text="Pen"/>
-                </ResponsiveFixed>
-              </att.Views>
-            </ResponsiveView>
+            <Bounds MinSizeLimitation="LimitToElementAndChildren" InternalMargin="left:1 top:1 right:1 bottom:1">
+              <SolidBorder Color="#00FF00"/>
+              <ResponsiveView ref.Name="responsive">
+                <att.Views>
+                  <ResponsiveFixed>
+                    <Label Text="Pen Pineapple Apple Pen"/>
+                  </ResponsiveFixed>
+                  <ResponsiveFixed>
+                    <Label Text="Pineapple Pen"/>
+                  </ResponsiveFixed>
+                  <ResponsiveFixed>
+                    <Label Text="Apple"/>
+                  </ResponsiveFixed>
+                  <ResponsiveFixed>
+                    <Label Text="Pen"/>
+                  </ResponsiveFixed>
+                </att.Views>
+              </ResponsiveView>
+            </Bounds>
           </Cell>
 
           <Cell Site="row:0 column:1">

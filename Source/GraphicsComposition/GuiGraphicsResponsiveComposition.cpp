@@ -8,6 +8,7 @@ namespace vl
 		namespace compositions
 		{
 			using namespace collections;
+			using namespace controls;
 
 /***********************************************************************
 GuiResponsiveCompositionBase
@@ -282,18 +283,20 @@ GuiResponsiveViewComposition
 
 			GuiResponsiveViewComposition::~GuiResponsiveViewComposition()
 			{
-				if (currentView)
+				FOREACH(GuiControl*, shared, sharedControls)
 				{
-					RemoveChild(currentView);
+					if (!shared->GetBoundsComposition()->GetParent())
+					{
+						SafeDeleteControl(shared);
+					}
 				}
 
-				for (vint i = 0; i < views.Count(); i++)
+				FOREACH(GuiResponsiveCompositionBase*, view, views)
 				{
-					SafeDeleteComposition(views[i]);
-				}
-				for (vint i = 0; i < sharedControls.Count(); i++)
-				{
-					SafeDeleteControl(sharedControls[i]);
+					if (!view->GetParent())
+					{
+						SafeDeleteComposition(view);
+					}
 				}
 			}
 
