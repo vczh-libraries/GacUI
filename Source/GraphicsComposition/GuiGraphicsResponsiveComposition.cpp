@@ -163,10 +163,41 @@ GuiResponsiveViewCollection
 GuiResponsiveSharedComposition
 ***********************************************************************/
 
+			void GuiResponsiveSharedComposition::SetSharedControl()
+			{
+				if (shared)
+				{
+					if (view)
+					{
+						CHECK_ERROR(view->GetSharedControls().Contains(shared), L"GuiResponsiveSharedComposition::SetSharedControl()#The specified shared control is not in GuiResponsiveViewComposition::GetSharedControls().");
+					}
+
+					auto sharedParent = shared->GetBoundsComposition()->GetParent();
+					CHECK_ERROR(!sharedParent || sharedParent == this, L"GuiResponsiveSharedComposition::SetSharedControl()#The specified shared control has not been released. This usually means this control is not in GuiResponsiveViewComposition::GetSharedControls().");
+
+					if (sharedParent)
+					{
+						if (!view)
+						{
+							RemoveChild(shared->GetBoundsComposition());
+						}
+					}
+					else
+					{
+						if (view)
+						{
+							shared->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+							AddChild(shared->GetBoundsComposition());
+						}
+					}
+				}
+			}
+
 			void GuiResponsiveSharedComposition::OnParentLineChanged()
 			{
 				GuiBoundsComposition::OnParentLineChanged();
-				GuiResponsiveViewComposition* view = nullptr;
+				view = nullptr;
+
 				{
 					auto parent = GetParent();
 					while (parent)
@@ -178,38 +209,27 @@ GuiResponsiveSharedComposition
 						parent = parent->GetParent();
 					}
 				}
-
-				auto sharedParent = shared->GetBoundsComposition()->GetParent();
-				if (sharedParent == this)
-				{
-					if (!view)
-					{
-						RemoveChild(shared->GetBoundsComposition());
-					}
-				}
-				else if (sharedParent == nullptr)
-				{
-					if (view)
-					{
-						CHECK_ERROR(view->GetSharedControls().Contains(shared), L"GuiResponsiveSharedComposition::OnParentLineChanged()#The specified shared control is not in GuiResponsiveViewComposition::GetSharedControls().");
-						shared->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						AddChild(shared->GetBoundsComposition());
-					}
-				}
-				else
-				{
-					CHECK_FAIL(L"GuiResponsiveSharedComposition::OnParentLineChanged()#The specified shared control has not been released. This usually means this control is not in GuiResponsiveViewComposition::GetSharedControls().");
-				}
 			}
 
-			GuiResponsiveSharedComposition::GuiResponsiveSharedComposition(controls::GuiControl* _shared)
-				:shared(_shared)
+			GuiResponsiveSharedComposition::GuiResponsiveSharedComposition()
 			{
 				SetMinSizeLimitation(LimitToElementAndChildren);
 			}
 
 			GuiResponsiveSharedComposition::~GuiResponsiveSharedComposition()
 			{
+			}
+			
+			controls::GuiControl* GuiResponsiveSharedComposition::GetShared()
+			{
+				return shared;
+			}
+
+			void GuiResponsiveSharedComposition::SetShared(controls::GuiControl* value)
+			{
+				CHECK_ERROR(!shared || !shared->GetBoundsComposition()->GetParent(), L"GuiResponsiveSharedComposition::SetShared(GuiControl*)#Cannot replace a shared control that is currently in use.");
+				shared = value;
+				SetSharedControl();
 			}
 
 /***********************************************************************

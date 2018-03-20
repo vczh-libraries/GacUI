@@ -371,7 +371,8 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiResponsiveSharedComposition)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
-				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveSharedComposition*(GuiControl*), { L"shared" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveSharedComposition*(), NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_FAST(Shared)
 			END_CLASS_MEMBER(GuiResponsiveSharedComposition)
 
 			BEGIN_CLASS_MEMBER(GuiResponsiveViewComposition)

@@ -94,13 +94,18 @@ GuiResponsiveViewComposition
 			class GuiResponsiveSharedComposition : public GuiBoundsComposition, public Description<GuiResponsiveSharedComposition>
 			{
 			protected:
-				controls::GuiControl*				shared;
+				GuiResponsiveViewComposition*		view = nullptr;
+				controls::GuiControl*				shared = nullptr;
 
+				void								SetSharedControl();
 				void								OnParentLineChanged()override;
 
 			public:
-				GuiResponsiveSharedComposition(controls::GuiControl* _shared);
+				GuiResponsiveSharedComposition();
 				~GuiResponsiveSharedComposition();
+
+				controls::GuiControl*				GetShared();
+				void								SetShared(controls::GuiControl* value);
 			};
 
 			/// <summary>A responsive layout composition defined by views of different sizes.</summary>
