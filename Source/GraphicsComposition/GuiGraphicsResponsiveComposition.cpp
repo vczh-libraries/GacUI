@@ -274,6 +274,7 @@ GuiResponsiveViewComposition
 						if (currentView == view)
 						{
 							currentLevel += view->GetCurrentLevel() + 1;
+							break;
 						}
 						else
 						{
