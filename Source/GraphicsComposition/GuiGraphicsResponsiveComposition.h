@@ -113,11 +113,15 @@ GuiResponsiveViewComposition
 			{
 				friend class GuiResponsiveSharedCollection;
 				friend class GuiResponsiveViewCollection;
+				friend class GuiResponsiveSharedComposition;
+				using ControlSet = collections::SortedList<controls::GuiControl*>;
 			protected:
 				vint								levelCount = 1;
 				vint								currentLevel = 0;
 				bool								skipUpdatingLevels = false;
 				GuiResponsiveCompositionBase*		currentView = nullptr;
+
+				ControlSet							usedSharedControls;
 				GuiResponsiveSharedCollection		sharedControls;
 				GuiResponsiveViewCollection			views;
 
