@@ -243,10 +243,40 @@
               <SolidBorder Color="#00FF00"/>
               <ResponsiveGroup ref.Name="responsive">
                 <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Padding="10" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
-                  <StackItem><ResponsiveView><att.Views><ResponsiveFixed><Label Text="Pen Pineapple Apple Pen"/></ResponsiveFixed></att.Views></ResponsiveView></StackItem>
-                  <StackItem><ResponsiveView><att.Views><ResponsiveFixed><Label Text="Pineapple Pen"/></ResponsiveFixed></att.Views></ResponsiveView></StackItem>
-                  <StackItem><ResponsiveView><att.Views><ResponsiveFixed><Label Text="Apple"/></ResponsiveFixed></att.Views></ResponsiveView></StackItem>
-                  <StackItem><ResponsiveView><att.Views><ResponsiveFixed><Label Text="Pen"/></ResponsiveFixed></att.Views></ResponsiveView></StackItem>
+                  <StackItem>
+                    <ResponsiveView>
+                      <att.Views>
+                        <ResponsiveFixed><Label Text="Pen Pineapple Apple Pen"/></ResponsiveFixed>
+                        <ResponsiveFixed><Label Text="Pineapple Pen"/></ResponsiveFixed>
+                        <ResponsiveFixed><Label Text="Apple"/></ResponsiveFixed>
+                        <ResponsiveFixed><Label Text="Pen"/></ResponsiveFixed>
+                      </att.Views>
+                    </ResponsiveView>
+                  </StackItem>
+                  <StackItem>
+                    <ResponsiveView>
+                      <att.Views>
+                        <ResponsiveFixed><Label Text="Pineapple Pen"/></ResponsiveFixed>
+                        <ResponsiveFixed><Label Text="Apple"/></ResponsiveFixed>
+                        <ResponsiveFixed><Label Text="Pen"/></ResponsiveFixed>
+                      </att.Views>
+                    </ResponsiveView>
+                  </StackItem>
+                  <StackItem>
+                    <ResponsiveView>
+                      <att.Views>
+                        <ResponsiveFixed><Label Text="Apple"/></ResponsiveFixed>
+                        <ResponsiveFixed><Label Text="Pen"/></ResponsiveFixed>
+                      </att.Views>
+                    </ResponsiveView>
+                  </StackItem>
+                  <StackItem>
+                    <ResponsiveView>
+                      <att.Views>
+                        <ResponsiveFixed><Label Text="Pen"/></ResponsiveFixed>
+                      </att.Views>
+                    </ResponsiveView>
+                  </StackItem>
                 </Stack>
               </ResponsiveGroup>
             </Bounds>
