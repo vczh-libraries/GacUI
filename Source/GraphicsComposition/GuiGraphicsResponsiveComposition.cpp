@@ -443,12 +443,12 @@ GuiResponsiveStackComposition
 					levelCount = availables
 						.Select([](GuiResponsiveCompositionBase* child)
 							{
-								return child->GetLevelCount();
+								return child->GetLevelCount() - 1;
 							})
 						.Aggregate([](vint a, vint b)
 							{
 								return a + b;
-							});
+							}) + 1;
 				}
 			}
 
@@ -464,12 +464,12 @@ GuiResponsiveStackComposition
 					currentLevel = availables
 						.Select([](GuiResponsiveCompositionBase* child)
 							{
-								return child->GetCurrentLevel() + 1;
+								return child->GetCurrentLevel();
 							})
 						.Aggregate([](vint a, vint b)
 							{
 								return a + b;
-							}) - 1;
+							});
 				}
 			}
 
