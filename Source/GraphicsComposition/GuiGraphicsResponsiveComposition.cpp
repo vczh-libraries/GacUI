@@ -519,16 +519,17 @@ GuiResponsiveStackComposition
 						}
 					}
 
-					if (selected)
+					if (!selected)
 					{
-						if (!(levelDown ? selected->LevelDown() : selected->LevelUp()))
-						{
-							ignored.Add(selected);
-						}
+						break;
+					}
+					else if (levelDown ? selected->LevelDown() : selected->LevelUp())
+					{
+						break;
 					}
 					else
 					{
-						break;
+						ignored.Add(selected);
 					}
 				}
 
