@@ -1,15 +1,14 @@
 <Resource>
-  <Instance name="MainWindowResource">
-    <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+  <Instance name="ResponsiveViewResource">
+    <Instance ref.Class="demo::ResponsiveViewControl">
       <ref.Members>
         <![CDATA[
           @cpp:Private
           event LevelUpdated();
         ]]>
       </ref.Members>
-      <Window ref.Name="self" Text="GacUI XML资源临时测试" ClientSize="x:640 y:480">
-        <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+      <CustomControl ref.Name="self">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
@@ -107,6 +106,35 @@
 
           <Cell Site="row:3 column:1">
             <Label Text-bind="$'CurrentLevel: $(self.observe as _(responsive.CurrentLevel on _.LevelUpdated))'"/>
+          </Cell>
+        </Table>
+      </CustomControl>
+    </Instance>
+  </Instance>
+  
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+      <ref.Members>
+        <![CDATA[
+          @cpp:Private
+          event LevelUpdated();
+        ]]>
+      </ref.Members>
+      <Window ref.Name="self" Text="GacUI XML资源临时测试" ClientSize="x:640 y:480">
+        <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <demo:ResponsiveViewControl>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </demo:ResponsiveViewControl>
           </Cell>
         </Table>
       </Window>
