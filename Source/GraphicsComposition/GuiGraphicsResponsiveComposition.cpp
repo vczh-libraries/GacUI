@@ -648,7 +648,10 @@ GuiResponsiveGroupComposition
 				{
 					if (child->GetCurrentLevel() >= level)
 					{
-						child->LevelDown();
+						if (!child->LevelDown())
+						{
+							break;
+						}
 					}
 				}
 
@@ -664,7 +667,10 @@ GuiResponsiveGroupComposition
 				{
 					while (child->GetCurrentLevel() <= level)
 					{
-						child->LevelUp();
+						if (!child->LevelUp())
+						{
+							break;
+						}
 					}
 				}
 
