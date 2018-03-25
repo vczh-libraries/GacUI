@@ -1,12 +1,6 @@
 <Resource>
   <Instance name="ResponsiveViewResource">
     <Instance ref.Class="demo::ResponsiveViewControl">
-      <ref.Members>
-        <![CDATA[
-          @cpp:Private
-          event LevelUpdated();
-        ]]>
-      </ref.Members>
       <CustomControl ref.Name="self">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
@@ -75,29 +69,11 @@
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <Button Text="LevelUp();">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    responsive.LevelUp();
-                    self.LevelUpdated();
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
+            <Button Text="LevelUp();" ev.Clicked-eval="responsive.LevelUp();"/>
           </Cell>
 
           <Cell Site="row:1 column:1">
-            <Button Text="LevelDown();">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    responsive.LevelDown();
-                    self.LevelUpdated();
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
+            <Button Text="LevelDown();" ev.Clicked-eval="responsive.LevelDown();"/>
           </Cell>
 
           <Cell Site="row:2 column:1">
@@ -114,12 +90,6 @@
 
   <Instance name="ResponsiveStackResource">
     <Instance ref.Class="demo::ResponsiveStackControl">
-      <ref.Members>
-        <![CDATA[
-          @cpp:Private
-          event LevelUpdated();
-        ]]>
-      </ref.Members>
       <CustomControl ref.Name="self">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
@@ -179,29 +149,11 @@
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <Button Text="LevelUp();">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    responsive.LevelUp();
-                    self.LevelUpdated();
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
+            <Button Text="LevelUp();" ev.Clicked-eval="responsive.LevelUp();"/>
           </Cell>
 
           <Cell Site="row:1 column:1">
-            <Button Text="LevelDown();">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    responsive.LevelDown();
-                    self.LevelUpdated();
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
+            <Button Text="LevelDown();" ev.Clicked-eval="responsive.LevelDown();"/>
           </Cell>
 
           <Cell Site="row:2 column:1">
@@ -218,12 +170,6 @@
 
   <Instance name="ResponsiveGroupResource">
     <Instance ref.Class="demo::ResponsiveGroupControl">
-      <ref.Members>
-        <![CDATA[
-          @cpp:Private
-          event LevelUpdated();
-        ]]>
-      </ref.Members>
       <CustomControl ref.Name="self">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
@@ -283,29 +229,11 @@
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <Button Text="LevelUp();">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    responsive.LevelUp();
-                    self.LevelUpdated();
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
+            <Button Text="LevelUp();" ev.Clicked-eval="responsive.LevelUp();"/>
           </Cell>
 
           <Cell Site="row:1 column:1">
-            <Button Text="LevelDown();">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    responsive.LevelDown();
-                    self.LevelUpdated();
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
+            <Button Text="LevelDown();" ev.Clicked-eval="responsive.LevelDown();"/>
           </Cell>
 
           <Cell Site="row:2 column:1">
