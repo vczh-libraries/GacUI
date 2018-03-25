@@ -240,8 +240,9 @@ GuiResponsiveSharedComposition
 GuiResponsiveViewComposition
 ***********************************************************************/
 
-			void GuiResponsiveViewComposition::CalculateLevelCount()
+			bool GuiResponsiveViewComposition::CalculateLevelCount()
 			{
+				vint old = levelCount;
 				if (views.Count() == 0)
 				{
 					levelCount = 1;
@@ -262,10 +263,18 @@ GuiResponsiveViewComposition
 						}
 					}
 				}
+
+				if (old != levelCount)
+				{
+					LevelCountChanged.Execute(GuiEventArgs(this));
+					return true;
+				}
+				return false;
 			}
 
-			void GuiResponsiveViewComposition::CalculateCurrentLevel()
+			bool GuiResponsiveViewComposition::CalculateCurrentLevel()
 			{
+				vint old = currentLevel;
 				currentLevel = 0;
 				for (vint i = views.Count() - 1; i >= 0; i--)
 				{
@@ -288,6 +297,13 @@ GuiResponsiveViewComposition
 					}
 				}
 				currentLevel--;
+
+				if (old != currentLevel)
+				{
+					CurrentLevelChanged.Execute(GuiEventArgs(this));
+					return true;
+				}
+				return false;
 			}
 
 			void GuiResponsiveViewComposition::OnResponsiveChildLevelUpdated()
@@ -336,7 +352,6 @@ GuiResponsiveViewComposition
 
 			bool GuiResponsiveViewComposition::LevelDown()
 			{
-				vint level = currentLevel;
 				skipUpdatingLevels = true;
 				if (((vint)direction & (vint)currentView->GetDirection()) != 0 && !currentView->LevelDown())
 				{
@@ -347,16 +362,14 @@ GuiResponsiveViewComposition
 						currentView = views[index + 1];
 						currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						AddChild(currentView);
-						CalculateCurrentLevel();
 					}
 				}
 				skipUpdatingLevels = false;
-				return level != currentLevel;
+				return CalculateCurrentLevel();
 			}
 
 			bool GuiResponsiveViewComposition::LevelUp()
 			{
-				vint level = currentLevel;
 				skipUpdatingLevels = true;
 				if (((vint)direction & (vint)currentView->GetDirection()) != 0 && !currentView->LevelUp())
 				{
@@ -367,11 +380,10 @@ GuiResponsiveViewComposition
 						currentView = views[index - 1];
 						currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						AddChild(currentView);
-						CalculateCurrentLevel();
 					}
 				}
 				skipUpdatingLevels = false;
-				return level != currentLevel;
+				return CalculateCurrentLevel();
 			}
 
 			collections::ObservableListBase<controls::GuiControl*>& GuiResponsiveViewComposition::GetSharedControls()
@@ -431,8 +443,9 @@ GuiResponsiveStackComposition
 					return ((vint)direction & (vint)child->GetDirection()) != 0; \
 				}) \
 
-			void GuiResponsiveStackComposition::CalculateLevelCount()
+			bool GuiResponsiveStackComposition::CalculateLevelCount()
 			{
+				vint old = levelCount;
 				DEFINE_AVAILABLE;
 				if (availables.IsEmpty())
 				{
@@ -450,10 +463,18 @@ GuiResponsiveStackComposition
 								return a + b;
 							}) + 1;
 				}
+
+				if (old != levelCount)
+				{
+					LevelCountChanged.Execute(GuiEventArgs(this));
+					return true;
+				}
+				return false;
 			}
 
-			void GuiResponsiveStackComposition::CalculateCurrentLevel()
+			bool GuiResponsiveStackComposition::CalculateCurrentLevel()
 			{
+				vint old = currentLevel;
 				DEFINE_AVAILABLE;
 				if (availables.IsEmpty())
 				{
@@ -471,6 +492,13 @@ GuiResponsiveStackComposition
 								return a + b;
 							});
 				}
+
+				if (old != currentLevel)
+				{
+					CurrentLevelChanged.Execute(GuiEventArgs(this));
+					return true;
+				}
+				return false;
 			}
 
 			void GuiResponsiveStackComposition::OnResponsiveChildInserted(GuiResponsiveCompositionBase* child)
@@ -494,7 +522,6 @@ GuiResponsiveStackComposition
 			{
 				DEFINE_AVAILABLE;
 
-				vint level = currentLevel;
 				SortedList<GuiResponsiveCompositionBase*> ignored;
 				while (true)
 				{
@@ -533,8 +560,7 @@ GuiResponsiveStackComposition
 					}
 				}
 
-				CalculateCurrentLevel();
-				return level != currentLevel;
+				return CalculateCurrentLevel();
 			}
 
 			GuiResponsiveStackComposition::GuiResponsiveStackComposition()
@@ -569,8 +595,9 @@ GuiResponsiveStackComposition
 GuiResponsiveGroupComposition
 ***********************************************************************/
 
-			void GuiResponsiveGroupComposition::CalculateLevelCount()
+			bool GuiResponsiveGroupComposition::CalculateLevelCount()
 			{
+				vint old = levelCount;
 				DEFINE_AVAILABLE;
 				if (availables.IsEmpty())
 				{
@@ -585,10 +612,18 @@ GuiResponsiveGroupComposition
 							})
 						.Max();
 				}
+
+				if (old != levelCount)
+				{
+					LevelCountChanged.Execute(GuiEventArgs(this));
+					return true;
+				}
+				return false;
 			}
 
-			void GuiResponsiveGroupComposition::CalculateCurrentLevel()
+			bool GuiResponsiveGroupComposition::CalculateCurrentLevel()
 			{
+				vint old = currentLevel;
 				DEFINE_AVAILABLE;
 				if (availables.IsEmpty())
 				{
@@ -603,6 +638,13 @@ GuiResponsiveGroupComposition
 							})
 						.Max();
 				}
+
+				if (old != currentLevel)
+				{
+					CurrentLevelChanged.Execute(GuiEventArgs(this));
+					return true;
+				}
+				return false;
 			}
 
 			void GuiResponsiveGroupComposition::OnResponsiveChildInserted(GuiResponsiveCompositionBase* child)
@@ -655,8 +697,7 @@ GuiResponsiveGroupComposition
 					}
 				}
 
-				CalculateCurrentLevel();
-				return level != currentLevel;
+				return CalculateCurrentLevel();
 			}
 
 			bool GuiResponsiveGroupComposition::LevelUp()
@@ -674,8 +715,7 @@ GuiResponsiveGroupComposition
 					}
 				}
 
-				CalculateCurrentLevel();
-				return level != currentLevel;
+				return CalculateCurrentLevel();
 			}
 
 #undef DEFINE_AVAILABLE

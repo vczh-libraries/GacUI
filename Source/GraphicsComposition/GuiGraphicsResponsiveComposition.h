@@ -45,6 +45,9 @@ GuiResponsiveCompositionBase
 				GuiResponsiveCompositionBase();
 				~GuiResponsiveCompositionBase();
 
+				GuiNotifyEvent						LevelCountChanged;
+				GuiNotifyEvent						CurrentLevelChanged;
+
 				virtual vint						GetLevelCount() = 0;
 				virtual vint						GetCurrentLevel() = 0;
 				virtual bool						LevelDown() = 0;
@@ -126,8 +129,8 @@ GuiResponsiveViewComposition
 				GuiResponsiveViewCollection			views;
 				bool								destructing = false;
 
-				void								CalculateLevelCount();
-				void								CalculateCurrentLevel();
+				bool								CalculateLevelCount();
+				bool								CalculateCurrentLevel();
 				void								OnResponsiveChildLevelUpdated();
 
 			public:
@@ -172,8 +175,8 @@ Others
 				vint					currentLevel = 0;
 				ResponsiveChildList		responsiveChildren;
 
-				void					CalculateLevelCount();
-				void					CalculateCurrentLevel();
+				bool					CalculateLevelCount();
+				bool					CalculateCurrentLevel();
 				void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
 				void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
 				void					OnResponsiveChildLevelUpdated();
@@ -198,8 +201,8 @@ Others
 				vint					currentLevel = 0;
 				ResponsiveChildList		responsiveChildren;
 
-				void					CalculateLevelCount();
-				void					CalculateCurrentLevel();
+				bool					CalculateLevelCount();
+				bool					CalculateCurrentLevel();
 				void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
 				void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
 				void					OnResponsiveChildLevelUpdated();

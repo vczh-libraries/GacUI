@@ -101,11 +101,11 @@
           </Cell>
 
           <Cell Site="row:2 column:1">
-            <Label Text-bind="$'LevelCount: $(self.observe as _(responsive.LevelCount on _.LevelUpdated))'"/>
+            <Label Text-format="LevelCount: $(responsive.LevelCount)"/>
           </Cell>
 
           <Cell Site="row:3 column:1">
-            <Label Text-bind="$'CurrentLevel: $(self.observe as _(responsive.CurrentLevel on _.LevelUpdated))'"/>
+            <Label Text-format="CurrentLevel: $(responsive.CurrentLevel)"/>
           </Cell>
         </Table>
       </CustomControl>
@@ -205,11 +205,11 @@
           </Cell>
 
           <Cell Site="row:2 column:1">
-            <Label Text-bind="$'LevelCount: $(self.observe as _(responsive.LevelCount on _.LevelUpdated))'"/>
+            <Label Text-format="LevelCount: $(responsive.LevelCount)"/>
           </Cell>
 
           <Cell Site="row:3 column:1">
-            <Label Text-bind="$'CurrentLevel: $(self.observe as _(responsive.CurrentLevel on _.LevelUpdated))'"/>
+            <Label Text-format="CurrentLevel: $(responsive.CurrentLevel)"/>
           </Cell>
         </Table>
       </CustomControl>
@@ -309,11 +309,11 @@
           </Cell>
 
           <Cell Site="row:2 column:1">
-            <Label Text-bind="$'LevelCount: $(self.observe as _(responsive.LevelCount on _.LevelUpdated))'"/>
+            <Label Text-format="LevelCount: $(responsive.LevelCount)"/>
           </Cell>
 
           <Cell Site="row:3 column:1">
-            <Label Text-bind="$'CurrentLevel: $(self.observe as _(responsive.CurrentLevel on _.LevelUpdated))'"/>
+            <Label Text-format="CurrentLevel: $(responsive.CurrentLevel)"/>
           </Cell>
         </Table>
       </CustomControl>
