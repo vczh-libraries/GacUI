@@ -256,7 +256,7 @@
           event LevelUpdated();
         ]]>
       </ref.Members>
-      <Window ref.Name="self" Text="GacUI XML资源临时测试" ClientSize="x:640 y:480">
+      <Window ref.Name="self" Text-eval="Sys::LoremIpsumTitle(20)" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
