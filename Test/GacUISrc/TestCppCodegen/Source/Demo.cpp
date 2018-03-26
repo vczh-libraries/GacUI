@@ -7630,7 +7630,7 @@ namespace demo
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
 		}
 		{
-			(this->dataGrid = new ::vl::presentation::controls::GuiBindableDataGrid(::vl::presentation::theme::ThemeName::ListView, ::vl::reflection::description::Value()));
+			(this->dataGrid = new ::vl::presentation::controls::GuiBindableDataGrid(::vl::presentation::theme::ThemeName::ListView));
 		}
 		{
 			::vl::__vwsn::This(this->dataGrid)->SetSmallImageProperty(LAMBDA(::vl_workflow_global::__vwsnf1_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(this)));
