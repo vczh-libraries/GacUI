@@ -560,6 +560,12 @@ Libraries
 				static WString		Right(const WString& value, vint length)			{ return value.Right(length); }
 				static WString		Mid(const WString& value, vint start, vint length)	{ return value.Sub(start, length); }
 				static vint			Find(const WString& value, const WString& substr)	{ return INVLOC.FindFirst(value, substr, Locale::Normalization::None).key; }
+				static WString		UCase(const WString& value)							{ return wupper(value); }
+				static WString		LCase(const WString& value)							{ return wlower(value); }
+
+				static WString		LoremIpsumTitle(vint bestLength)					{ return vl::LoremIpsumTitle(bestLength); }
+				static WString		LoremIpsumSentence(vint bestLength)					{ return vl::LoremIpsumSentence(bestLength); }
+				static WString		LoremIpsumParagraph(vint bestLength)				{ return vl::LoremIpsumParagraph(bestLength); }
 
 #define DEFINE_COMPARE(TYPE) static vint Compare(TYPE a, TYPE b);
 				REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_COMPARE)

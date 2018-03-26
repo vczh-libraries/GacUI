@@ -940,6 +940,11 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_STATIC_METHOD(Right, { L"value" _ L"length" })
 				CLASS_MEMBER_STATIC_METHOD(Mid, { L"value" _ L"start" _ L"length" })
 				CLASS_MEMBER_STATIC_METHOD(Find, { L"value" _ L"substr" })
+				CLASS_MEMBER_STATIC_METHOD(UCase, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(LCase, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(LoremIpsumTitle, { L"bestLength" })
+				CLASS_MEMBER_STATIC_METHOD(LoremIpsumSentence, { L"bestLength" })
+				CLASS_MEMBER_STATIC_METHOD(LoremIpsumParagraph, { L"bestLength" })
 				CLASS_MEMBER_STATIC_METHOD(ReverseEnumerable, { L"value" })
 #pragma push_macro("CompareString")
 #if defined CompareString
