@@ -1,7 +1,7 @@
 <Folder>
   <Folder name="ResponsiveComponents">
     <Instance name="ResponsiveViewResource">
-      <Instance ref.Class="demo::ResponsiveViewControl">
+      <Instance ref.CodeBehind="false" ref.Class="demo::ResponsiveViewControl">
         <CustomControl ref.Name="self">
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
             <att.Rows>
@@ -90,7 +90,7 @@
     </Instance>
 
     <Instance name="ResponsiveStackResource">
-      <Instance ref.Class="demo::ResponsiveStackControl">
+      <Instance ref.CodeBehind="false" ref.Class="demo::ResponsiveStackControl">
         <CustomControl ref.Name="self">
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
             <att.Rows>
@@ -170,7 +170,7 @@
     </Instance>
 
     <Instance name="ResponsiveGroupResource">
-      <Instance ref.Class="demo::ResponsiveGroupControl">
+      <Instance ref.CodeBehind="false" ref.Class="demo::ResponsiveGroupControl">
         <CustomControl ref.Name="self">
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
             <att.Rows>

@@ -12,8 +12,5 @@ https://github.com/vczh-libraries
 
 #include "Demo.h"
 #include "MainWindow.h"
-#include "ResponsiveGroupControl.h"
-#include "ResponsiveStackControl.h"
-#include "ResponsiveViewControl.h"
 
 #endif
