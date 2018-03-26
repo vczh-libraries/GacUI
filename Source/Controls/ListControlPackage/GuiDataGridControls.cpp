@@ -209,9 +209,11 @@ DefaultDataGridItemTemplate
 
 					SelectedChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnSelectedChanged);
 					FontChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnFontChanged);
+					ContextChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnContextChanged);
 
 					SelectedChanged.Execute(compositions::GuiEventArgs(this));
 					FontChanged.Execute(compositions::GuiEventArgs(this));
+					ContextChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
 				void DefaultDataGridItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -231,6 +233,18 @@ DefaultDataGridItemTemplate
 					if (currentEditor)
 					{
 						currentEditor->GetTemplate()->SetFont(GetFont());
+					}
+				}
+
+				void DefaultDataGridItemTemplate::OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					{
+						visualizer->GetTemplate()->SetContext(GetContext());
+					}
+					if (currentEditor)
+					{
+						currentEditor->GetTemplate()->SetContext(GetContext());
 					}
 				}
 
@@ -279,6 +293,8 @@ DefaultDataGridItemTemplate
 					{
 						auto cell = textTable->GetSitedCell(0, column);
 						auto* editorBounds = currentEditor->GetTemplate();
+						editorBounds->SetFont(GetFont());
+						editorBounds->SetContext(GetContext());
 						if (editorBounds->GetParent() && editorBounds->GetParent() != cell)
 						{
 							editorBounds->GetParent()->RemoveChild(editorBounds);

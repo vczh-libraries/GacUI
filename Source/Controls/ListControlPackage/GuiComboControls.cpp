@@ -127,6 +127,7 @@ GuiComboBoxListControl
 								itemStyleController = style;
 								itemStyleController->SetText(GetText());
 								itemStyleController->SetFont(GetFont());
+								itemStyleController->SetContext(GetContext());
 								itemStyleController->SetVisuallyEnabled(GetVisuallyEnabled());
 								itemStyleController->SetAlignmentToParent(Margin(0, 0, 0, 0));
 								containerComposition->AddChild(itemStyleController);
@@ -185,6 +186,15 @@ GuiComboBoxListControl
 				AdoptSubMenuSize();
 			}
 
+			void GuiComboBoxListControl::OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (itemStyleController)
+				{
+					itemStyleController->SetContext(GetContext());
+				}
+				AdoptSubMenuSize();
+			}
+
 			void GuiComboBoxListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if (itemStyleController)
@@ -219,6 +229,7 @@ GuiComboBoxListControl
 			{
 				TextChanged.AttachMethod(this, &GuiComboBoxListControl::OnTextChanged);
 				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
+				ContextChanged.AttachMethod(this, &GuiComboBoxListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiComboBoxListControl::OnVisuallyEnabledChanged);
 
 				containedListControl->SetMultiSelect(false);

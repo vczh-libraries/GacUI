@@ -252,6 +252,14 @@ GuiListControl
 				}
 			}
 
+			void GuiListControl::OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				{
+					style->SetContext(GetContext());
+				}
+			}
+
 			void GuiListControl::OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
 				if (itemArranger && GetVisuallyEnabled())
@@ -362,6 +370,7 @@ GuiListControl
 				, itemProvider(_itemProvider)
 			{
 				FontChanged.AttachMethod(this, &GuiListControl::OnFontChanged);
+				ContextChanged.AttachMethod(this, &GuiListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
 				containerComposition->BoundsChanged.AttachMethod(this, &GuiListControl::OnClientBoundsChanged);
 
