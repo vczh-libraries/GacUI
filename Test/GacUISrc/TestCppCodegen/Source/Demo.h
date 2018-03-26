@@ -82,12 +82,28 @@ namespace vl_workflow_global
 	struct __vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf150_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
 	struct __vwsnf151_Demo_demo_RepeatItemTemplateConstructor___vwsn_initialize_instance__;
-	struct __vwsnf152_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-	struct __vwsnf153_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-	struct __vwsnf154_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-	struct __vwsnf155_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-	struct __vwsnf156_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf152_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf153_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf154_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf155_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf156_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf157_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf158_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf159_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf160_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf161_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf162_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf163_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf164_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf165_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf166_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf167_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+	struct __vwsnf168_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf169_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf170_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf171_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf172_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf17_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf1_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
@@ -240,8 +256,18 @@ namespace vl_workflow_global
 	class __vwsnc60_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc61_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc62_Demo_demo_RepeatItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc63_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc63_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc64_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc65_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc66_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc67_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc68_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc69_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc6_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc70_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc71_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc72_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc73_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc7_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc8_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc9_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -313,6 +339,14 @@ namespace demo
 	class HyperlinkWindow;
 	class RepeatItemTemplateConstructor;
 	class RepeatItemTemplate;
+	class ResponsiveGroupControlConstructor;
+	class ResponsiveGroupControl;
+	class ResponsiveStackControlConstructor;
+	class ResponsiveStackControl;
+	class ResponsiveTabPageConstructor;
+	class ResponsiveTabPage;
+	class ResponsiveViewControlConstructor;
+	class ResponsiveViewControl;
 	class TextBoxTabPageConstructor;
 	class TextBoxTabPage;
 	class MyTextItem;
@@ -895,7 +929,8 @@ namespace demo
 		::demo::TextBoxTabPage* __vwsn_precompile_11;
 		::demo::ElementTabPage* __vwsn_precompile_12;
 		::demo::AnimationTabPage* __vwsn_precompile_13;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14;
+		::demo::ResponsiveTabPage* __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15;
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_);
 	public:
 		MainWindowConstructor();
@@ -1728,14 +1763,237 @@ namespace demo
 		~RepeatItemTemplate();
 	};
 
+	class ResponsiveGroupControlConstructor : public ::vl::Object, public ::vl::reflection::Description<ResponsiveGroupControlConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc63_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc64_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf152_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf153_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf154_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf155_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveGroupControlConstructor>;
+#endif
+	protected:
+		::demo::ResponsiveGroupControl* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_9;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_11;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_13;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_15;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_17;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_18;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_19;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_20;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_21;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_22;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_23;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_24;
+		::vl::presentation::compositions::GuiResponsiveGroupComposition* responsive;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_25;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_26;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_27;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_28;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_29;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_30;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_31;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_32;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_33;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_34;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_35;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_36;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_37;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_38;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_39;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_40;
+		void __vwsn_initialize_instance_(::demo::ResponsiveGroupControl* __vwsn_this_);
+	public:
+		ResponsiveGroupControlConstructor();
+	};
+
+	class ResponsiveStackControlConstructor : public ::vl::Object, public ::vl::reflection::Description<ResponsiveStackControlConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc65_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc66_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf156_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf157_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf158_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf159_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveStackControlConstructor>;
+#endif
+	protected:
+		::demo::ResponsiveStackControl* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_9;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_11;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_13;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_15;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_17;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_18;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_19;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_20;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_21;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_22;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_23;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_24;
+		::vl::presentation::compositions::GuiResponsiveStackComposition* responsive;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_25;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_26;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_27;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_28;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_29;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_30;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_31;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_32;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_33;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_34;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_35;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_36;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_37;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_38;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_39;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_40;
+		void __vwsn_initialize_instance_(::demo::ResponsiveStackControl* __vwsn_this_);
+	public:
+		ResponsiveStackControlConstructor();
+	};
+
+	class ResponsiveTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<ResponsiveTabPageConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveTabPageConstructor>;
+#endif
+	protected:
+		::demo::ResponsiveTabPage* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_2;
+		::demo::ResponsiveViewControl* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_7;
+		::demo::ResponsiveStackControl* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_12;
+		::demo::ResponsiveGroupControl* __vwsn_precompile_13;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15;
+		void __vwsn_initialize_instance_(::demo::ResponsiveTabPage* __vwsn_this_);
+	public:
+		ResponsiveTabPageConstructor();
+	};
+
+	class ResponsiveTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ResponsiveTabPageConstructor, public ::vl::reflection::Description<ResponsiveTabPage>
+	{
+		friend class ::demo::ResponsiveTabPageConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveTabPage>;
+#endif
+	public:
+		ResponsiveTabPage();
+		~ResponsiveTabPage();
+	};
+
+	class ResponsiveViewControlConstructor : public ::vl::Object, public ::vl::reflection::Description<ResponsiveViewControlConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc67_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc68_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc69_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc70_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc71_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc72_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf160_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf161_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf162_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf163_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf164_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf165_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf166_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf167_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveViewControlConstructor>;
+#endif
+	protected:
+		::demo::ResponsiveViewControl* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_6;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiResponsiveSharedComposition* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_12;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_13;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiResponsiveSharedComposition* __vwsn_precompile_15;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_17;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_18;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_19;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_20;
+		::vl::presentation::compositions::GuiResponsiveSharedComposition* __vwsn_precompile_21;
+		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_22;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_23;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_24;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* responsive;
+		::vl::presentation::controls::GuiDocumentLabel* documentBox;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_25;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_26;
+		::vl::presentation::compositions::GuiResponsiveSharedComposition* __vwsn_precompile_27;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_28;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_29;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_30;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_31;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_32;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_33;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_34;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_35;
+		void __vwsn_initialize_instance_(::demo::ResponsiveViewControl* __vwsn_this_);
+	public:
+		ResponsiveViewControlConstructor();
+	};
+
 	class TextBoxTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextBoxTabPageConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc63_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf152_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf153_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf154_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf155_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf156_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc73_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf168_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf169_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf170_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf171_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf172_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxTabPageConstructor>;
 #endif
@@ -1776,12 +2034,12 @@ namespace demo
 	class TextBoxTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextBoxTabPageConstructor, public ::vl::reflection::Description<TextBoxTabPage>
 	{
 		friend class ::demo::TextBoxTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc63_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf152_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf153_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf154_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf155_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf156_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc73_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf168_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf169_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf170_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf171_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf172_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxTabPage>;
 #endif
@@ -2429,49 +2687,166 @@ Closures
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf152_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	struct __vwsnf152_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__
 	{
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+		::demo::ResponsiveGroupControlConstructor* __vwsnthis_0;
 
-		__vwsnf152_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf152_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf153_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	struct __vwsnf153_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__
 	{
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+		::demo::ResponsiveGroupControlConstructor* __vwsnthis_0;
 
-		__vwsnf153_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf153_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf154_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveGroupControlConstructor* __vwsnthis_0;
+
+		__vwsnf154_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf154_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	struct __vwsnf155_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__
 	{
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+		::demo::ResponsiveGroupControlConstructor* __vwsnthis_0;
 
-		__vwsnf154_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf155_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf156_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveStackControlConstructor* __vwsnthis_0;
+
+		__vwsnf156_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf155_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	struct __vwsnf157_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__
 	{
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+		::demo::ResponsiveStackControlConstructor* __vwsnthis_0;
 
-		__vwsnf155_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf157_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0);
 
-		void operator()() const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf156_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	struct __vwsnf158_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveStackControlConstructor* __vwsnthis_0;
+
+		__vwsnf158_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf159_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveStackControlConstructor* __vwsnthis_0;
+
+		__vwsnf159_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf160_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnf160_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf161_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnf161_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf162_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnf162_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf163_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnf163_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf164_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnf164_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf165_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnf165_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf166_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnf166_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf167_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__
+	{
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnf167_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf168_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
 	{
 		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
 
-		__vwsnf156_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf168_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()() const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf169_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf169_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -2481,6 +2856,33 @@ Closures
 		__vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
 		::vl::presentation::templates::GuiGridEditorTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+	};
+
+	struct __vwsnf170_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf170_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf171_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf171_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf172_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf172_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
 	};
 
 	struct __vwsnf17_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -4348,14 +4750,122 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc63_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc63_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+		::demo::ResponsiveGroupControlConstructor* __vwsnthis_0;
 
-		__vwsnc63_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnc63_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::compositions::GuiResponsiveGroupComposition* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc64_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ResponsiveGroupControlConstructor* __vwsnthis_0;
+
+		__vwsnc64_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::compositions::GuiResponsiveGroupComposition* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc65_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ResponsiveStackControlConstructor* __vwsnthis_0;
+
+		__vwsnc65_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::compositions::GuiResponsiveStackComposition* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc66_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ResponsiveStackControlConstructor* __vwsnthis_0;
+
+		__vwsnc66_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::compositions::GuiResponsiveStackComposition* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc67_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnc67_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiDocumentLabel* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc68_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnc68_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiDocumentLabel* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc69_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnc69_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiDocumentLabel* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
@@ -4374,6 +4884,78 @@ Closures
 		__vwsnc6_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
 		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc70_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnc70_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiDocumentLabel* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc71_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnc71_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc72_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ResponsiveViewControlConstructor* __vwsnthis_0;
+
+		__vwsnc72_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc73_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnc73_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;

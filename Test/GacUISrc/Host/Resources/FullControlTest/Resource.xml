@@ -30,6 +30,7 @@
             <demo:TextBoxTabPage Alt="D"/>
             <demo:ElementTabPage Alt="E"/>
             <demo:AnimationTabPage Alt="A"/>
+            <demo:ResponsiveTabPage Alt="R"/>
           </att.Pages>
         </Tab>
       </Window>
@@ -44,6 +45,7 @@
   <Instance name="DocumentTabPageResource" content="File">DocumentTabPage.xml</Instance>
   <Instance name="ElementTabPageResource" content="File">ElementTabPage.xml</Instance>
   <Folder name="AnimationTabPage" content="Link">AnimationTabPage.xml</Folder>
+  <Folder name="ResponsiveTabPage" content="Link">ResponsiveTabPage.xml</Folder>
   <Folder name="TextBoxComponents" content="Link">TextBoxTabPage.xml</Folder>
   <Folder name="DataGridComponents" content="Link">DataGridComponents.xml</Folder>
   <Folder name="RepeatComponents" content="Link">RepeatComponents.xml</Folder>
