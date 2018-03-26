@@ -156,6 +156,7 @@ GuiListControl
 			void GuiListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style)
 			{
 				style->SetFont(GetFont());
+				style->SetContext(GetContext());
 				style->SetText(itemProvider->GetTextValue(itemIndex));
 				style->SetVisuallyEnabled(GetVisuallyEnabled());
 				style->SetSelected(false);
