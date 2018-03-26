@@ -33,7 +33,6 @@ Datagrid Interfaces
 				public:
 					virtual GuiListControl::IItemProvider*				GetItemProvider() = 0;
 					virtual templates::GuiListViewTemplate*				GetListViewControlTemplate() = 0;
-					virtual description::Value							GetViewModelContext() = 0;
 					virtual void										RequestSaveData() = 0;
 				};
 
@@ -113,10 +112,6 @@ Datagrid Interfaces
 				public:
 					/// <summary>The identifier for this view.</summary>
 					static const wchar_t* const							Identifier;
-
-					/// <summary>Get the view model context. It is used to create data visualizers and data editors.</summary>
-					/// <returns>The view model context.</returns>
-					virtual description::Value							GetViewModelContext() = 0;
 
 					/// <summary>Test is a column sortable.</summary>
 					/// <returns>Returns true if this column is sortable.</returns>

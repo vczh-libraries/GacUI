@@ -975,11 +975,6 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetListViewControlTemplate);
 				}
 
-				presentation::description::Value GetViewModelContext()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetViewModelContext);
-				}
-
 				void RequestSaveData()override
 				{
 					INVOKE_INTERFACE_PROXY_NOPARAMS(RequestSaveData);
@@ -988,11 +983,6 @@ Interface Proxy (Controls)
 			END_INTERFACE_PROXY(presentation::controls::list::IDataGridContext)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataGridView)
-
-				description::Value GetViewModelContext()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetViewModelContext);
-				}
 
 				bool IsColumnSortable(vint column)override
 				{

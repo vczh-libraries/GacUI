@@ -1024,7 +1024,6 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListViewControlTemplate)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModelContext)
 				CLASS_MEMBER_METHOD(RequestSaveData, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IDataGridContext)
 
@@ -1064,9 +1063,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(IDescriptable)
 				INTERFACE_IDENTIFIER(vl::presentation::controls::list::IDataGridView)
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModelContext)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SortedColumn)
-
 				CLASS_MEMBER_METHOD(IsColumnSortable, {L"column"})
 				CLASS_MEMBER_METHOD(SortByColumn, {L"column" _ L"ascending"})
 				CLASS_MEMBER_METHOD(IsSortOrderAscending, NO_PARAMETER)
@@ -1276,7 +1273,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualDataGrid)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiBindableDataGrid, const Value&, viewModelContext)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_1(GuiBindableDataGrid, const Value&)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DataColumns)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Columns)

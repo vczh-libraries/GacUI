@@ -94,7 +94,6 @@ GuiVirtualDataGrid
 
 			public:
 				templates::GuiListViewTemplate*							GetListViewControlTemplate()override;
-				description::Value										GetViewModelContext()override;
 				void													RequestSaveData()override;
 
 			public:

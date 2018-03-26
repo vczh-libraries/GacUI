@@ -635,10 +635,9 @@ DataProvider
 					}
 				}
 
-				DataProvider::DataProvider(const description::Value& _viewModelContext)
+				DataProvider::DataProvider()
 					:dataColumns(this)
 					, columns(this)
-					, viewModelContext(_viewModelContext)
 				{
 					RebuildFilter();
 					ReorderRows(false);
@@ -786,11 +785,6 @@ DataProvider
 
 				// ===================== list::IDataGridView =====================
 
-				description::Value DataProvider::GetViewModelContext()
-				{
-					return viewModelContext;
-				}
-
 				bool DataProvider::IsColumnSortable(vint column)
 				{
 					return columns[column]->GetSorter();
@@ -889,8 +883,8 @@ DataProvider
 GuiBindableDataGrid
 ***********************************************************************/
 
-			GuiBindableDataGrid::GuiBindableDataGrid(theme::ThemeName themeName, const description::Value& _viewModelContext)
-				:GuiVirtualDataGrid(themeName, new list::DataProvider(_viewModelContext))
+			GuiBindableDataGrid::GuiBindableDataGrid(theme::ThemeName themeName)
+				:GuiVirtualDataGrid(themeName, new list::DataProvider)
 			{
 				dataProvider = dynamic_cast<list::DataProvider*>(GetItemProvider());
 			}

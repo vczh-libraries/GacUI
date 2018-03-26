@@ -430,11 +430,6 @@ GuiVirtualDataGrid (IDataGridContext)
 				return GetControlTemplateObject();
 			}
 
-			description::Value GuiVirtualDataGrid::GetViewModelContext()
-			{
-				return dataGridView->GetViewModelContext();
-			}
-
 			void GuiVirtualDataGrid::RequestSaveData()
 			{
 				if (currentEditor && !currentEditorOpeningEditor)

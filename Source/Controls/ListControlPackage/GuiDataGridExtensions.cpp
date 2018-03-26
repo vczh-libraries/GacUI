@@ -80,7 +80,7 @@ DataVisualizerFactory
 
 				DataVisualizerFactory::ItemTemplate* DataVisualizerFactory::CreateItemTemplate(controls::list::IDataGridContext* dataGridContext)
 				{
-					ItemTemplate* itemTemplate = templateFactory(dataGridContext->GetViewModelContext());
+					ItemTemplate* itemTemplate = templateFactory({});
 					CHECK_ERROR(itemTemplate, L"DataVisualizerFactory::CreateItemTemplate(IDataGridContext*)#An instance of GuiGridEditorTemplate is expected.");
 					if (decoratedFactory)
 					{
@@ -212,7 +212,7 @@ DataEditorFactory
 					editor->factory = this;
 					editor->dataGridContext = dataGridContext;
 
-					ItemTemplate* itemTemplate = templateFactory(dataGridContext->GetViewModelContext());
+					ItemTemplate* itemTemplate = templateFactory({});
 					CHECK_ERROR(itemTemplate, L"DataEditorFactory::CreateEditor(IDataGridContext*)#An instance of GuiGridEditorTemplate is expected.");
 					editor->editorTemplate = itemTemplate;
 					return editor;

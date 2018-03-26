@@ -27,8 +27,6 @@ GuiInstanceLoader_List.cpp
 		ctor: _ListControl(GuiListControl*)
 	GuiTreeView, GuiBindableTreeView
 		Nodes: array(Ptr<tree::MemoryNodeProvider>)
-	GuiBindableDataGrid
-		ctor: ViewModelContext
 	tree::TreeNode
 		ctor: Text, Image
 		Tag
