@@ -25,6 +25,7 @@ GuiControl
 			{
 				controlTemplateObject->SetText(text);
 				controlTemplateObject->SetFont(font);
+				controlTemplateObject->SetContext(context);
 				controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
 				controlTemplateObject->SetFocusableComposition(focusableComposition);
 			}
@@ -218,6 +219,7 @@ GuiControl
 					AltChanged.SetAssociatedComposition(boundsComposition);
 					TextChanged.SetAssociatedComposition(boundsComposition);
 					FontChanged.SetAssociatedComposition(boundsComposition);
+					ContextChanged.SetAssociatedComposition(boundsComposition);
 				}
 				font = GetCurrentController()->ResourceService()->GetDefaultFont();
 				sharedPtrDestructorProc = &GuiControl::SharedPtrDestructorProc;
@@ -414,6 +416,24 @@ GuiControl
 						controlTemplateObject->SetFont(font);
 					}
 					FontChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+			
+			description::Value GuiControl::GetContext()
+			{
+				return context;
+			}
+
+			void GuiControl::SetContext(const description::Value& value)
+			{
+				if (context != value)
+				{
+					context = value;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetContext(context);
+					}
+					ContextChanged.Execute(GetNotifyEventArguments());
 				}
 			}
 

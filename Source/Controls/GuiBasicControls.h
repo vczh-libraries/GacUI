@@ -59,6 +59,7 @@ Basic Construction
 				WString									alt;
 				WString									text;
 				FontProperties							font;
+				description::Value						context;
 				compositions::IGuiAltActionHost*		activatingAltHost = nullptr;
 
 				GuiControl*								parent = nullptr;
@@ -116,6 +117,8 @@ Basic Construction
 				compositions::GuiNotifyEvent			TextChanged;
 				/// <summary>Font changed event. This event will be raised when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			FontChanged;
+				/// <summary>Context changed event. This event will be raised when the font of the control is changed.</summary>
+				compositions::GuiNotifyEvent			ContextChanged;
 
 				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
 				/// <returns>The created argument.</returns>
@@ -197,6 +200,12 @@ Basic Construction
 				/// <summary>Set the font to render the text.</summary>
 				/// <param name="value">The font to render the text.</param>
 				virtual void							SetFont(const FontProperties& value);
+				/// <summary>Get the context of this control. The control template and all item templates (if it has) will see this context property.</summary>
+				/// <returns>The context of this context.</returns>
+				virtual description::Value				GetContext();
+				/// <summary>Set the context of this control.</summary>
+				/// <param name="value">The context of this control.</param>
+				virtual void							SetContext(const description::Value& value);
 				/// <summary>Focus this control.</summary>
 				virtual void							SetFocus();
 

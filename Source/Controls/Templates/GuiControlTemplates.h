@@ -121,9 +121,10 @@ GuiTemplate
 				~GuiTemplate();
 				
 #define GuiTemplate_PROPERTIES(F)\
-				F(GuiTemplate,	FontProperties,	Font,				{}	)\
-				F(GuiTemplate,	WString,		Text,				{}	)\
-				F(GuiTemplate,	bool,			VisuallyEnabled,	true)\
+				F(GuiTemplate,	FontProperties,		Font,				{}	)\
+				F(GuiTemplate,	description::Value,	Context,			{}	)\
+				F(GuiTemplate,	WString,			Text,				{}	)\
+				F(GuiTemplate,	bool,				VisuallyEnabled,	true)\
 
 				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
