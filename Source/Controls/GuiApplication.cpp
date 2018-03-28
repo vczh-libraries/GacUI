@@ -504,8 +504,8 @@ GuiApplicationMain
 					GuiMain();
 					IAsyncScheduler::UnregisterDefaultScheduler();
 					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
-					application = nullptr;
 				}
+				application = nullptr;
 
 				DestroyPluginManager();
 				theme::FinalizeTheme();
