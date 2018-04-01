@@ -101,13 +101,13 @@
             <ImageFrame FrameIndex="0" Image-uri="res://Images/Video"/>
           </Cell>
           <Cell Site="row:1 column:0 columnSpan:3">
-            <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Title ?? ''" Color="#FFFFFF"/>
+            <SolidLabel Font-bind="self.Font" Text-bind="ViewModel.Title" Color="#FFFFFF"/>
           </Cell>
           <Cell Site="row:2 column:1">
             <SolidLabel Font-bind="self.Font" Text="by:" Color="#808080"/>
           </Cell>
           <Cell Site="row:2 column:2">
-            <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Author ?? ''" Color="#FFFFFF"/>
+            <SolidLabel Font-bind="self.Font" Text-bind="ViewModel.Author" Color="#FFFFFF"/>
           </Cell>
         </Table>
       </ControlTemplate>
