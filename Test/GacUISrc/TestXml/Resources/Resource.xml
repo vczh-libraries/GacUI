@@ -8,8 +8,9 @@
     <Image name="_6" content="File">Images/6.png</Image>
     <Image name="_7" content="File">Images/7.png</Image>
     <Image name="_8" content="File">Images/8.png</Image>
+    <Image name="Video" content="File">Images/Video.png</Image>
   </Folder>
-  
+
   <Script name="ViewModelScript">
     <Workflow>
       <![CDATA[
@@ -25,6 +26,12 @@
             prop Controller: GuiSelectableButton::GroupController* = null {not observe}
             prop Name: string = "" {not observe}
             prop Image: INativeImage^ = null {not observe}
+          }
+          
+          class VideoViewModel
+          {
+            prop Author: string = "" {not observe}
+            prop Title: string = "" {not observe}
           }
         }
       ]]>
@@ -74,22 +81,66 @@
     </Instance>
   </Instance>
 
+  <Instance name="VideoItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::VideoItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="demo::VideoViewModel"/>
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0 columnSpan:3">
+            <ImageFrame FrameIndex="0" Image-uri="res://Images/Video"/>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:3">
+            <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Title ?? ''" Color="#FFFFFF"/>
+          </Cell>
+          <Cell Site="row:2 column:1">
+            <SolidLabel Font-bind="self.Font" Text="by:" Color="#808080"/>
+          </Cell>
+          <Cell Site="row:2 column:2">
+            <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Author ?? ''" Color="#FFFFFF"/>
+          </Cell>
+        </Table>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:x="presentation::controls::GuiSelectableButton::*">
       <ref.Members>
         <![CDATA[
           var accounts: observe AccountButtonViewModel^[] = {};
+          var videos: observe VideoViewModel^[] = {};
         ]]>
       </ref.Members>
       <ref.Ctor>
         <![CDATA[
-          for(i in range [1, 8])
           {
-            var item = new AccountButtonViewModel^();
-            item.Controller = self.accountController;
-            item.Name = Sys::LoremIpsumTitle(20);
-            item.Image = (cast (GuiImageData^) self.ResolveResource("res", $"Images/_$(i)", true)).Image;
-            self.accounts.Add(item);
+            for (i in range [1, 8])
+            {
+              var item = new AccountButtonViewModel^();
+              item.Controller = self.accountController;
+              item.Name = Sys::LoremIpsumTitle(20);
+              item.Image = (cast (GuiImageData^) self.ResolveResource("res", $"Images/_$(i)", true)).Image;
+              self.accounts.Add(item);
+            }
+          
+            for (i in range (0, 20))
+            {
+              var item = new VideoViewModel^();
+              item.Author = Sys::LoremIpsumTitle(20);
+              item.Title = Sys::LoremIpsumTitle(80);
+              self.videos.Add(item);
+            }
           }
         ]]>
       </ref.Ctor>
@@ -109,6 +160,16 @@
               <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
               <att.ItemTemplate>demo::AccountItemTemplate</att.ItemTemplate>
             </RepeatStack>
+          </Cell>
+
+          <Cell Site="row:0 column:1">
+            <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <RepeatFlow MinSizeLimitation="LimitToElementAndChildren" RowPadding="5" ColumnPadding="5">
+                <att.ItemSource-eval>self.videos</att.ItemSource-eval>
+                <att.ItemTemplate>demo::VideoItemTemplate</att.ItemTemplate>
+              </RepeatFlow>
+            </ScrollContainer>
           </Cell>
         </Table>
       </Window>
