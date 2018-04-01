@@ -16,13 +16,15 @@
         module viewmodel;
         
         using presentation::*;
+        using presentation::controls::*;
         
         namespace demo
         {
           class AccountButtonViewModel
           {
-            prop Name: string = "" {}
-            prop Image: INativeImage^ = null {}
+            prop Controller: GuiSelectableButton::GroupController* = null {not observe}
+            prop Name: string = "" {not observe}
+            prop Image: INativeImage^ = null {not observe}
           }
         }
       ]]>
@@ -63,13 +65,13 @@
     <Instance ref.CodeBehind="false" ref.Class="demo::AccountItemTemplate">
       <ref.Parameter Name="ViewModel" Class="demo::AccountButtonViewModel"/>
       <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
-        <CheckBox ControlTemplate="demo::AccountButtonTemplate" Context-eval="ViewModel"/>
+        <CheckBox ControlTemplate="demo::AccountButtonTemplate" Context-eval="ViewModel" GroupController-eval="ViewModel.Controller"/>
       </ControlTemplate>
     </Instance>
   </Instance>
 
   <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:x="presentation::controls::GuiSelectableButton::*">
       <ref.Members>
         <![CDATA[
           var accounts: observe AccountButtonViewModel^[] = {};
@@ -80,6 +82,7 @@
           for(i in range [1, 8])
           {
             var item = new AccountButtonViewModel^();
+            item.Controller = self.accountController;
             item.Name = Sys::LoremIpsumTitle(20);
             item.Image = (cast (GuiImageData^) self.ResolveResource("res", $"Images/_$(i)", true)).Image;
             self.accounts.Add(item);
@@ -87,6 +90,23 @@
         ]]>
       </ref.Ctor>
       <Window ref.Name="self" Text-eval="Sys::LoremIpsumTitle(20)" ClientSize="x:640 y:480">
+        <x:MutexGroupController ref.Name="accountController"/>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <RepeatStack MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
+              <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
+              <att.ItemTemplate>demo::AccountItemTemplate</att.ItemTemplate>
+            </RepeatStack>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>
