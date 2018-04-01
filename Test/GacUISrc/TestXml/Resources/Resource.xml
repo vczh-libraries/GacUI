@@ -38,6 +38,7 @@
       </ref.Members>
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <att.ViewModel-bind>cast (AccountButtonViewModel^) self.Context</att.ViewModel-bind>
+        <SolidBackground Color="cast Color (self.Selected ? '#FFFFFF' : '#00000000')"/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
@@ -51,15 +52,40 @@
             <ImageFrame FrameIndex="0" Image-bind="self.ViewModel.Image ?? null"/>
           </Cell>
           <Cell Site="row:0 column:1">
-            <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Name ?? ''"/>
+            <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Name ?? ''" Color-bind="cast Color (self.Selected ? '#000000' : '#FFFFFF')"/>
           </Cell>
         </Table>
       </SelectableButtonTemplate>
     </Instance>
   </Instance>
 
+  <Instance name="AccountItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::AccountItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="demo::AccountButtonViewModel"/>
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <CheckBox ControlTemplate="demo::AccountButtonTemplate" Context-eval="ViewModel"/>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
   <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
+      <ref.Members>
+        <![CDATA[
+          var accounts: observe AccountButtonViewModel^[] = {};
+        ]]>
+      </ref.Members>
+      <ref.Ctor>
+        <![CDATA[
+          for(i in range [1, 8])
+          {
+            var item = new AccountButtonViewModel^();
+            item.Name = Sys::LoremIpsumTitle(20);
+            item.Image = (cast (GuiImageData^) self.ResolveResource("res", $"Images/_$(i)", true)).Image;
+            self.accounts.Add(item);
+          }
+        ]]>
+      </ref.Ctor>
       <Window ref.Name="self" Text-eval="Sys::LoremIpsumTitle(20)" ClientSize="x:640 y:480">
       </Window>
     </Instance>
