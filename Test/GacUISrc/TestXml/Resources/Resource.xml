@@ -40,7 +40,7 @@
       </ref.Members>
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <att.ViewModel-bind>cast (AccountButtonViewModel^) self.Context</att.ViewModel-bind>
-        <SolidBackground Color="cast Color (self.Selected ? '#FFFFFF' : '#00000000')"/>
+        <SolidBackground Color-bind="cast Color (self.Selected ? '#FFFFFF' : self.State != ButtonState::Normal ? '#0000FF' : '#00000000')"/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
@@ -54,7 +54,9 @@
             <ImageFrame FrameIndex="0" Image-bind="self.ViewModel.Image ?? null"/>
           </Cell>
           <Cell Site="row:0 column:1">
-            <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Name ?? ''" Color-bind="cast Color (self.Selected ? '#000000' : '#FFFFFF')"/>
+            <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Name ?? ''" Color-bind="cast Color (self.Selected ? '#000000' : '#FFFFFF')">
+              <att.VerticalAlignment>Center</att.VerticalAlignment>
+            </SolidLabel>
           </Cell>
         </Table>
       </SelectableButtonTemplate>
@@ -64,8 +66,10 @@
   <Instance name="AccountItemTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::AccountItemTemplate">
       <ref.Parameter Name="ViewModel" Class="demo::AccountButtonViewModel"/>
-      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
-        <CheckBox ControlTemplate="demo::AccountButtonTemplate" Context-eval="ViewModel" GroupController-eval="ViewModel.Controller"/>
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren" AssociatedCursor-eval="INativeController::GetCurrentController().ResourceService().GetSystemCursor(Hand)">
+        <CheckBox ControlTemplate="demo::AccountButtonTemplate" Context-eval="ViewModel" GroupController-eval="ViewModel.Controller">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </CheckBox>
       </ControlTemplate>
     </Instance>
   </Instance>
@@ -101,7 +105,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <RepeatStack MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
+            <RepeatStack MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical" Padding="5">
               <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
               <att.ItemTemplate>demo::AccountItemTemplate</att.ItemTemplate>
             </RepeatStack>
