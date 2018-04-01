@@ -1,7 +1,65 @@
 <Resource>
+  <Folder name="Images">
+    <Image name="_1" content="File">Images/1.png</Image>
+    <Image name="_2" content="File">Images/2.png</Image>
+    <Image name="_3" content="File">Images/3.png</Image>
+    <Image name="_4" content="File">Images/4.png</Image>
+    <Image name="_5" content="File">Images/5.png</Image>
+    <Image name="_6" content="File">Images/6.png</Image>
+    <Image name="_7" content="File">Images/7.png</Image>
+    <Image name="_8" content="File">Images/8.png</Image>
+  </Folder>
+  
+  <Script name="ViewModelScript">
+    <Workflow>
+      <![CDATA[
+        module viewmodel;
+        
+        using presentation::*;
+        
+        namespace demo
+        {
+          class AccountButtonViewModel
+          {
+            prop Name: string = "" {}
+            prop Image: INativeImage^ = null {}
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
+  <Instance name="AccountButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::AccountButtonTemplate">
+      <ref.Members>
+        <![CDATA[
+          prop ViewModel: AccountButtonViewModel^ = null {}
+        ]]>
+      </ref.Members>
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.ViewModel-bind>cast (AccountButtonViewModel^) self.Context</att.ViewModel-bind>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <ImageFrame FrameIndex="0" Image-bind="self.ViewModel.Image ?? null"/>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Name ?? ''"/>
+          </Cell>
+        </Table>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
 
   <Instance name="MainWindowResource">
-    <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
       <Window ref.Name="self" Text-eval="Sys::LoremIpsumTitle(20)" ClientSize="x:640 y:480">
       </Window>
     </Instance>
