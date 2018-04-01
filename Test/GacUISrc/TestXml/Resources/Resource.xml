@@ -30,8 +30,9 @@
           
           class VideoViewModel
           {
-            prop Author: string = "" {not observe}
-            prop Title: string = "" {not observe}
+            prop Author: string = "" {}
+            prop Title: string = "" {}
+            prop Font: FontProperties = {} {}
           }
         }
       ]]>
@@ -101,13 +102,13 @@
             <ImageFrame Stretch="true" FrameIndex="0" Image-uri="res://Images/Video"/>
           </Cell>
           <Cell Site="row:1 column:0 columnSpan:3">
-            <SolidLabel Text-bind="ViewModel.Title" WrapLine="true" WrapLineHeightCalculation="true" Color="#FFFFFF"/>
+            <SolidLabel Font-bind="ViewModel.Font" Text-bind="ViewModel.Title" WrapLine="true" WrapLineHeightCalculation="true" Color="#FFFFFF"/>
           </Cell>
           <Cell Site="row:2 column:1">
-            <SolidLabel Text="by:" Color="#808080"/>
+            <SolidLabel Font-bind="ViewModel.Font" Text="by:" Color="#808080"/>
           </Cell>
           <Cell Site="row:2 column:2">
-            <SolidLabel Text-bind="ViewModel.Author" Color="#FFFFFF"/>
+            <SolidLabel Font-bind="ViewModel.Font" Text-bind="ViewModel.Author" Color="#FFFFFF"/>
           </Cell>
         </Table>
       </ControlTemplate>
@@ -139,12 +140,13 @@
               var item = new VideoViewModel^();
               item.Author = Sys::LoremIpsumTitle(16);
               item.Title = Sys::LoremIpsumTitle(80);
+              item.Font = self.Font;
               self.videos.Add(item);
             }
           }
         ]]>
       </ref.Ctor>
-      <Window ref.Name="self" Text-eval="Sys::LoremIpsumTitle(20)" ClientSize="x:640 y:480">
+      <Window ref.Name="self" Text-format="Welcome to GacUI Video, $(Sys::LoremIpsumTitle(16))" ClientSize="x:640 y:480">
         <x:MutexGroupController ref.Name="accountController"/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
