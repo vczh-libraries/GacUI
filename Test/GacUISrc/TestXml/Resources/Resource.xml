@@ -156,7 +156,9 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <RepeatStack MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical" Padding="5">
+            <RepeatStack Direction="Vertical" Padding="5">
+              <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
+              <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
               <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
               <att.ItemTemplate>demo::AccountItemTemplate</att.ItemTemplate>
             </RepeatStack>
@@ -165,7 +167,9 @@
           <Cell Site="row:0 column:1">
             <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <RepeatFlow MinSizeLimitation="LimitToElementAndChildren" RowPadding="5" ColumnPadding="5">
+              <RepeatFlow RowPadding="5" ColumnPadding="5">
+              <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
+                <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
                 <att.ItemSource-eval>self.videos</att.ItemSource-eval>
                 <att.ItemTemplate>demo::VideoItemTemplate</att.ItemTemplate>
               </RepeatFlow>
