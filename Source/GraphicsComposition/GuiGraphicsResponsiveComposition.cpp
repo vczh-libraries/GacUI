@@ -731,8 +731,10 @@ namespace vl
 				bool testX = (vint)responsiveTarget->GetDirection() | (vint)ResponsiveDirection::Horizontal;
 				bool testY = (vint)responsiveTarget->GetDirection() | (vint)ResponsiveDirection::Vertical;
 
-				while (true)
+				bool tried = true;
+				while (tried)
 				{
+					tried = false;
 					if (tryLevelDown)
 					{
 						Size lowerLevelSize = responsiveTarget->GetPreferredBounds().GetSize();
@@ -740,6 +742,7 @@ namespace vl
 						{
 							if (responsiveTarget->LevelDown())
 							{
+								tried = true;
 								tryLevelUp = true;
 								upperLevelSize = lowerLevelSize;
 							}
@@ -757,6 +760,7 @@ namespace vl
 						{
 							if (responsiveTarget->LevelUp())
 							{
+								tried = true;
 								tryLevelDown = true;
 							}
 							else
