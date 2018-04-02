@@ -1788,6 +1788,8 @@ GuiSolidLabelElementRenderer
 				{
 					IWindowsDirect2DResourceManager* resourceManager=GetWindowsDirect2DResourceManager();
 					oldFont=element->GetFont();
+					if (oldFont.fontFamily == L"") oldFont.fontFamily = GetCurrentController()->ResourceService()->GetDefaultFont().fontFamily;
+					if (oldFont.size == 0) oldFont.size = 12;
 					textFormat=resourceManager->CreateDirect2DTextFormat(oldFont);
 				}
 			}
@@ -2448,6 +2450,9 @@ GuiColorizedTextElementRenderer
 					resourceManager->DestroyDirect2DCharMeasurer(oldFont);
 				}
 				oldFont=element->GetFont();
+				if (oldFont.fontFamily == L"") oldFont.fontFamily = GetCurrentController()->ResourceService()->GetDefaultFont().fontFamily;
+				if (oldFont.size == 0) oldFont.size = 12;
+
 				textFormat=resourceManager->CreateDirect2DTextFormat(oldFont);
 				element->GetLines().SetCharMeasurer(resourceManager->CreateDirect2DCharMeasurer(oldFont).Obj());
 			}

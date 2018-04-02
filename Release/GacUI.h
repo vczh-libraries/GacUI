@@ -7402,6 +7402,28 @@ Others
 				bool					LevelDown()override;
 				bool					LevelUp()override;
 			};
+
+/***********************************************************************
+GuiResponsiveContainerComposition
+***********************************************************************/
+
+			class GuiResponsiveContainerComposition : public GuiBoundsComposition, public Description<GuiResponsiveContainerComposition>
+			{
+			protected:
+				GuiResponsiveCompositionBase*			responsiveTarget = nullptr;
+				Size									upperLevelSize;
+				bool									tryLevelUp = true;
+				bool									tryLevelDown = true;
+
+				void									OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
+
+			public:
+				GuiResponsiveContainerComposition();
+				~GuiResponsiveContainerComposition();
+
+				GuiResponsiveCompositionBase*			GetResponsiveTarget();
+				void									SetResponsiveTarget(GuiResponsiveCompositionBase* value);
+			};
 		}
 	}
 }
@@ -8619,9 +8641,10 @@ GuiTemplate
 				~GuiTemplate();
 				
 #define GuiTemplate_PROPERTIES(F)\
-				F(GuiTemplate,	FontProperties,	Font,				{}	)\
-				F(GuiTemplate,	WString,		Text,				{}	)\
-				F(GuiTemplate,	bool,			VisuallyEnabled,	true)\
+				F(GuiTemplate,	FontProperties,		Font,				{}	)\
+				F(GuiTemplate,	description::Value,	Context,			{}	)\
+				F(GuiTemplate,	WString,			Text,				{}	)\
+				F(GuiTemplate,	bool,				VisuallyEnabled,	true)\
 
 				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -9507,6 +9530,7 @@ Basic Construction
 				WString									alt;
 				WString									text;
 				FontProperties							font;
+				description::Value						context;
 				compositions::IGuiAltActionHost*		activatingAltHost = nullptr;
 
 				GuiControl*								parent = nullptr;
@@ -9564,6 +9588,8 @@ Basic Construction
 				compositions::GuiNotifyEvent			TextChanged;
 				/// <summary>Font changed event. This event will be raised when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			FontChanged;
+				/// <summary>Context changed event. This event will be raised when the font of the control is changed.</summary>
+				compositions::GuiNotifyEvent			ContextChanged;
 
 				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
 				/// <returns>The created argument.</returns>
@@ -9645,6 +9671,12 @@ Basic Construction
 				/// <summary>Set the font to render the text.</summary>
 				/// <param name="value">The font to render the text.</param>
 				virtual void							SetFont(const FontProperties& value);
+				/// <summary>Get the context of this control. The control template and all item templates (if it has) will see this context property.</summary>
+				/// <returns>The context of this context.</returns>
+				virtual description::Value				GetContext();
+				/// <summary>Set the context of this control.</summary>
+				/// <param name="value">The context of this control.</param>
+				virtual void							SetContext(const description::Value& value);
 				/// <summary>Focus this control.</summary>
 				virtual void							SetFocus();
 
@@ -11551,6 +11583,7 @@ List Control
 				void											OnClientBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void											OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void											OnItemNotifyEvent(compositions::GuiItemNotifyEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											AttachItemEvents(ItemStyle* style);
@@ -15471,6 +15504,7 @@ ComboBox with GuiListControl
 				void										AdoptSubMenuSize();
 				void										OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -15688,7 +15722,6 @@ Datagrid Interfaces
 				public:
 					virtual GuiListControl::IItemProvider*				GetItemProvider() = 0;
 					virtual templates::GuiListViewTemplate*				GetListViewControlTemplate() = 0;
-					virtual description::Value							GetViewModelContext() = 0;
 					virtual void										RequestSaveData() = 0;
 				};
 
@@ -15768,10 +15801,6 @@ Datagrid Interfaces
 				public:
 					/// <summary>The identifier for this view.</summary>
 					static const wchar_t* const							Identifier;
-
-					/// <summary>Get the view model context. It is used to create data visualizers and data editors.</summary>
-					/// <returns>The view model context.</returns>
-					virtual description::Value							GetViewModelContext() = 0;
 
 					/// <summary>Test is a column sortable.</summary>
 					/// <returns>Returns true if this column is sortable.</returns>
@@ -16175,6 +16204,7 @@ DefaultDataGridItemTemplate
 					void												OnInitialize()override;
 					void												OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					DefaultDataGridItemTemplate();
 					~DefaultDataGridItemTemplate();
@@ -16222,7 +16252,6 @@ GuiVirtualDataGrid
 
 			public:
 				templates::GuiListViewTemplate*							GetListViewControlTemplate()override;
-				description::Value										GetViewModelContext()override;
 				void													RequestSaveData()override;
 
 			public:
@@ -16599,7 +16628,6 @@ DataProvider
 					Ptr<description::IValueReadonlyList>					itemSource;
 					Ptr<EventHandler>										itemChangedEventHandler;
 
-					description::Value										viewModelContext;
 					Ptr<IDataFilter>										additionalFilter;
 					Ptr<IDataFilter>										currentFilter;
 					Ptr<IDataSorter>										currentSorter;
@@ -16622,7 +16650,7 @@ DataProvider
 				public:
 					/// <summary>Create a data provider from a <see cref="IDataProvider"/>.</summary>
 					/// <param name="provider">The structured data provider.</param>
-					DataProvider(const description::Value& _viewModelContext);
+					DataProvider();
 					~DataProvider();
 
 					ListViewDataColumns&								GetDataColumns();
@@ -16662,7 +16690,6 @@ DataProvider
 					
 					// ===================== list::IDataGridView =====================
 
-					description::Value									GetViewModelContext()override;
 					bool												IsColumnSortable(vint column)override;
 					void												SortByColumn(vint column, bool ascending)override;
 					vint												GetSortedColumn()override;
@@ -16689,8 +16716,7 @@ GuiBindableDataGrid
 			public:
 				/// <summary>Create a bindable Data grid control.</summary>
 				/// <param name="_controlTemplate">The control template for this control.</param>
-				/// <param name="_viewModelContext">The view mode context, which will be passed to every visualizers and editors in this grid.</param>
-				GuiBindableDataGrid(theme::ThemeName themeName, const description::Value& _viewModelContext = description::Value());
+				GuiBindableDataGrid(theme::ThemeName themeName);
 				~GuiBindableDataGrid();
 
 				/// <summary>Get all data columns indices in columns.</summary>

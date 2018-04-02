@@ -8841,7 +8841,7 @@ GuiResponsiveSharedComposition
 			GuiResponsiveSharedComposition::~GuiResponsiveSharedComposition()
 			{
 			}
-			
+
 			controls::GuiControl* GuiResponsiveSharedComposition::GetShared()
 			{
 				return shared;
@@ -8986,7 +8986,10 @@ GuiResponsiveViewComposition
 					}
 				}
 				skipUpdatingLevels = false;
-				return CalculateCurrentLevel();
+				
+				auto x = CalculateLevelCount();
+				auto y = CalculateCurrentLevel();
+				return x || y;
 			}
 
 			bool GuiResponsiveViewComposition::LevelUp()
@@ -9004,7 +9007,10 @@ GuiResponsiveViewComposition
 					}
 				}
 				skipUpdatingLevels = false;
-				return CalculateCurrentLevel();
+
+				auto x = CalculateLevelCount();
+				auto y = CalculateCurrentLevel();
+				return x || y;
 			}
 
 			collections::ObservableListBase<controls::GuiControl*>& GuiResponsiveViewComposition::GetSharedControls()
@@ -9076,13 +9082,13 @@ GuiResponsiveStackComposition
 				{
 					levelCount = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-							{
-								return child->GetLevelCount() - 1;
-							})
+						{
+							return child->GetLevelCount() - 1;
+						})
 						.Aggregate([](vint a, vint b)
-							{
-								return a + b;
-							}) + 1;
+						{
+							return a + b;
+						}) + 1;
 				}
 
 				if (old != levelCount)
@@ -9105,13 +9111,13 @@ GuiResponsiveStackComposition
 				{
 					currentLevel = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-							{
-								return child->GetCurrentLevel();
-							})
+						{
+							return child->GetCurrentLevel();
+						})
 						.Aggregate([](vint a, vint b)
-							{
-								return a + b;
-							});
+						{
+							return a + b;
+						});
 				}
 
 				if (old != currentLevel)
@@ -9228,9 +9234,9 @@ GuiResponsiveGroupComposition
 				{
 					levelCount = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-							{
-								return child->GetLevelCount();
-							})
+						{
+							return child->GetLevelCount();
+						})
 						.Max();
 				}
 
@@ -9254,9 +9260,9 @@ GuiResponsiveGroupComposition
 				{
 					currentLevel = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-							{
-								return child->GetCurrentLevel();
-							})
+						{
+							return child->GetCurrentLevel();
+						})
 						.Max();
 				}
 
@@ -9340,6 +9346,100 @@ GuiResponsiveGroupComposition
 			}
 
 #undef DEFINE_AVAILABLE
+
+/***********************************************************************
+GuiResponsiveContainerComposition
+***********************************************************************/
+
+			void GuiResponsiveContainerComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			{
+				if (!responsiveTarget) return;
+				Size size = GetBounds().GetSize();
+				bool testX = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Horizontal;
+				bool testY = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Vertical;
+
+				bool tried = true;
+				while (tried)
+				{
+					tried = false;
+					if (tryLevelDown)
+					{
+						responsiveTarget->ForceCalculateSizeImmediately();
+						Size lowerLevelSize = responsiveTarget->GetPreferredBounds().GetSize();
+						if ((testX && size.x < lowerLevelSize.x) || (testY && size.y < lowerLevelSize.y))
+						{
+							if (responsiveTarget->LevelDown())
+							{
+								tried = true;
+								tryLevelUp = true;
+								upperLevelSize = lowerLevelSize;
+							}
+							else
+							{
+								tryLevelDown = false;
+								break;
+							}
+						}
+					}
+
+					if (tryLevelUp)
+					{
+						if ((testX && size.x > upperLevelSize.x) || (testY && size.y > upperLevelSize.y))
+						{
+							if (responsiveTarget->LevelUp())
+							{
+								tried = true;
+								tryLevelDown = true;
+							}
+							else
+							{
+								tryLevelUp = false;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			GuiResponsiveContainerComposition::GuiResponsiveContainerComposition()
+			{
+				BoundsChanged.AttachMethod(this, &GuiResponsiveContainerComposition::OnBoundsChanged);
+			}
+
+			GuiResponsiveContainerComposition::~GuiResponsiveContainerComposition()
+			{
+			}
+
+			GuiResponsiveCompositionBase* GuiResponsiveContainerComposition::GetResponsiveTarget()
+			{
+				return responsiveTarget;
+			}
+
+			void GuiResponsiveContainerComposition::SetResponsiveTarget(GuiResponsiveCompositionBase* value)
+			{
+				if (responsiveTarget != value)
+				{
+					if (responsiveTarget)
+					{
+						RemoveChild(responsiveTarget);
+					}
+
+					responsiveTarget = value;
+					upperLevelSize = Size();
+					tryLevelUp = true;
+					tryLevelDown = true;
+
+					if (responsiveTarget)
+					{
+						responsiveTarget->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						AddChild(responsiveTarget);
+						upperLevelSize = responsiveTarget->GetPreferredBounds().GetSize();
+
+						GuiEventArgs arguments(this);
+						OnBoundsChanged(this, arguments);
+					}
+				}
+			}
 		}
 	}
 }
@@ -9852,8 +9952,8 @@ GuiApplicationMain
 					GuiMain();
 					IAsyncScheduler::UnregisterDefaultScheduler();
 					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
-					application = nullptr;
 				}
+				application = nullptr;
 
 				DestroyPluginManager();
 				theme::FinalizeTheme();
@@ -9899,6 +9999,7 @@ GuiControl
 			{
 				controlTemplateObject->SetText(text);
 				controlTemplateObject->SetFont(font);
+				controlTemplateObject->SetContext(context);
 				controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
 				controlTemplateObject->SetFocusableComposition(focusableComposition);
 			}
@@ -10092,6 +10193,7 @@ GuiControl
 					AltChanged.SetAssociatedComposition(boundsComposition);
 					TextChanged.SetAssociatedComposition(boundsComposition);
 					FontChanged.SetAssociatedComposition(boundsComposition);
+					ContextChanged.SetAssociatedComposition(boundsComposition);
 				}
 				font = GetCurrentController()->ResourceService()->GetDefaultFont();
 				sharedPtrDestructorProc = &GuiControl::SharedPtrDestructorProc;
@@ -10288,6 +10390,24 @@ GuiControl
 						controlTemplateObject->SetFont(font);
 					}
 					FontChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+			
+			description::Value GuiControl::GetContext()
+			{
+				return context;
+			}
+
+			void GuiControl::SetContext(const description::Value& value)
+			{
+				if (context != value)
+				{
+					context = value;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetContext(context);
+					}
+					ContextChanged.Execute(GetNotifyEventArguments());
 				}
 			}
 
@@ -13145,6 +13265,7 @@ GuiListControl
 			void GuiListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style)
 			{
 				style->SetFont(GetFont());
+				style->SetContext(GetContext());
 				style->SetText(itemProvider->GetTextValue(itemIndex));
 				style->SetVisuallyEnabled(GetVisuallyEnabled());
 				style->SetSelected(false);
@@ -13237,6 +13358,14 @@ GuiListControl
 				FOREACH(ItemStyle*, style, visibleStyles.Keys())
 				{
 					style->SetFont(GetFont());
+				}
+			}
+
+			void GuiListControl::OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				{
+					style->SetContext(GetContext());
 				}
 			}
 
@@ -13350,6 +13479,7 @@ GuiListControl
 				, itemProvider(_itemProvider)
 			{
 				FontChanged.AttachMethod(this, &GuiListControl::OnFontChanged);
+				ContextChanged.AttachMethod(this, &GuiListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
 				containerComposition->BoundsChanged.AttachMethod(this, &GuiListControl::OnClientBoundsChanged);
 
@@ -16770,6 +16900,7 @@ GuiComboBoxListControl
 								itemStyleController = style;
 								itemStyleController->SetText(GetText());
 								itemStyleController->SetFont(GetFont());
+								itemStyleController->SetContext(GetContext());
 								itemStyleController->SetVisuallyEnabled(GetVisuallyEnabled());
 								itemStyleController->SetAlignmentToParent(Margin(0, 0, 0, 0));
 								containerComposition->AddChild(itemStyleController);
@@ -16828,6 +16959,15 @@ GuiComboBoxListControl
 				AdoptSubMenuSize();
 			}
 
+			void GuiComboBoxListControl::OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (itemStyleController)
+				{
+					itemStyleController->SetContext(GetContext());
+				}
+				AdoptSubMenuSize();
+			}
+
 			void GuiComboBoxListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if (itemStyleController)
@@ -16862,6 +17002,7 @@ GuiComboBoxListControl
 			{
 				TextChanged.AttachMethod(this, &GuiComboBoxListControl::OnTextChanged);
 				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
+				ContextChanged.AttachMethod(this, &GuiComboBoxListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiComboBoxListControl::OnVisuallyEnabledChanged);
 
 				containedListControl->SetMultiSelect(false);
@@ -19269,10 +19410,9 @@ DataProvider
 					}
 				}
 
-				DataProvider::DataProvider(const description::Value& _viewModelContext)
+				DataProvider::DataProvider()
 					:dataColumns(this)
 					, columns(this)
-					, viewModelContext(_viewModelContext)
 				{
 					RebuildFilter();
 					ReorderRows(false);
@@ -19420,11 +19560,6 @@ DataProvider
 
 				// ===================== list::IDataGridView =====================
 
-				description::Value DataProvider::GetViewModelContext()
-				{
-					return viewModelContext;
-				}
-
 				bool DataProvider::IsColumnSortable(vint column)
 				{
 					return columns[column]->GetSorter();
@@ -19523,8 +19658,8 @@ DataProvider
 GuiBindableDataGrid
 ***********************************************************************/
 
-			GuiBindableDataGrid::GuiBindableDataGrid(theme::ThemeName themeName, const description::Value& _viewModelContext)
-				:GuiVirtualDataGrid(themeName, new list::DataProvider(_viewModelContext))
+			GuiBindableDataGrid::GuiBindableDataGrid(theme::ThemeName themeName)
+				:GuiVirtualDataGrid(themeName, new list::DataProvider)
 			{
 				dataProvider = dynamic_cast<list::DataProvider*>(GetItemProvider());
 			}
@@ -22730,9 +22865,11 @@ DefaultDataGridItemTemplate
 
 					SelectedChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnSelectedChanged);
 					FontChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnFontChanged);
+					ContextChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnContextChanged);
 
 					SelectedChanged.Execute(compositions::GuiEventArgs(this));
 					FontChanged.Execute(compositions::GuiEventArgs(this));
+					ContextChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
 				void DefaultDataGridItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -22752,6 +22889,18 @@ DefaultDataGridItemTemplate
 					if (currentEditor)
 					{
 						currentEditor->GetTemplate()->SetFont(GetFont());
+					}
+				}
+
+				void DefaultDataGridItemTemplate::OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					{
+						visualizer->GetTemplate()->SetContext(GetContext());
+					}
+					if (currentEditor)
+					{
+						currentEditor->GetTemplate()->SetContext(GetContext());
 					}
 				}
 
@@ -22800,6 +22949,8 @@ DefaultDataGridItemTemplate
 					{
 						auto cell = textTable->GetSitedCell(0, column);
 						auto* editorBounds = currentEditor->GetTemplate();
+						editorBounds->SetFont(GetFont());
+						editorBounds->SetContext(GetContext());
 						if (editorBounds->GetParent() && editorBounds->GetParent() != cell)
 						{
 							editorBounds->GetParent()->RemoveChild(editorBounds);
@@ -22949,11 +23100,6 @@ GuiVirtualDataGrid (IDataGridContext)
 			templates::GuiListViewTemplate* GuiVirtualDataGrid::GetListViewControlTemplate()
 			{
 				return GetControlTemplateObject();
-			}
-
-			description::Value GuiVirtualDataGrid::GetViewModelContext()
-			{
-				return dataGridView->GetViewModelContext();
 			}
 
 			void GuiVirtualDataGrid::RequestSaveData()
@@ -23178,7 +23324,7 @@ DataVisualizerFactory
 
 				DataVisualizerFactory::ItemTemplate* DataVisualizerFactory::CreateItemTemplate(controls::list::IDataGridContext* dataGridContext)
 				{
-					ItemTemplate* itemTemplate = templateFactory(dataGridContext->GetViewModelContext());
+					ItemTemplate* itemTemplate = templateFactory({});
 					CHECK_ERROR(itemTemplate, L"DataVisualizerFactory::CreateItemTemplate(IDataGridContext*)#An instance of GuiGridEditorTemplate is expected.");
 					if (decoratedFactory)
 					{
@@ -23310,7 +23456,7 @@ DataEditorFactory
 					editor->factory = this;
 					editor->dataGridContext = dataGridContext;
 
-					ItemTemplate* itemTemplate = templateFactory(dataGridContext->GetViewModelContext());
+					ItemTemplate* itemTemplate = templateFactory({});
 					CHECK_ERROR(itemTemplate, L"DataEditorFactory::CreateEditor(IDataGridContext*)#An instance of GuiGridEditorTemplate is expected.");
 					editor->editorTemplate = itemTemplate;
 					return editor;
