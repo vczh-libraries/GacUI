@@ -15,8 +15,6 @@ GuiInstanceLoader_Compositions.cpp
 		Rows, Columns: array(GuiCellOption)
 	GuiCellComposition
 		Site: SiteValue
-	GuiResponsiveSharedComposition
-		ctor: Shared
 GuiInstanceLoader_Document.cpp
 	GuiDocumentItem
 		default: GuiControl*, GuiGraphicsComposition*

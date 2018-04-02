@@ -11,15 +11,15 @@ i1 # .\Resource.FailedInstance.Control.xml
 (16, 29): Precompile: To use type "presentation::GuiImageData" as a control template or item template, it should have exactly one constructor.
 (16, 29): Precompile: Type "presentation::GuiImageData" cannot be used here because it requires "presentation::templates::GuiListItemTemplate" or its derived classes.
 (19, 29): Precompile: Type "NotExists" does not exist.
-(25, 43): Unrecognizable token: "!".
-(26, 43): Unrecognizable token: "!".
-(29, 26): Precompile: "Wrong URI" is not a valid resource uri.
-(30, 32): Precompile: Type "T3" will never be tried, because "T3", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice.
-(32, 32): Unrecognizable token: "!".
-(33, 32): Precompile: Type "NotExists" does not exist.
-(35, 50): Unrecognizable token: "")".
-(38, 20): Unrecognizable token: "!".
-(51, 17): Precompile: The value of property "Site" of type "presentation::compositions::GuiCellComposition" is not in a correct format: "row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]".
-(52, 17): Precompile: The value of property "Site" of type "presentation::compositions::GuiCellComposition" is not in a correct format: "row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]".
+(25, 35): Unrecognizable token: "!".
+(28, 35): Unrecognizable token: "!".
+(33, 26): Precompile: "Wrong URI" is not a valid resource uri.
+(34, 32): Precompile: Type "T3" will never be tried, because "T3", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice.
+(36, 32): Unrecognizable token: "!".
+(37, 32): Precompile: Type "NotExists" does not exist.
+(39, 50): Unrecognizable token: "")".
+(42, 20): Unrecognizable token: "!".
+(55, 17): Precompile: The value of property "Site" of type "presentation::compositions::GuiCellComposition" is not in a correct format: "row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]".
+(56, 17): Precompile: The value of property "Site" of type "presentation::compositions::GuiCellComposition" is not in a correct format: "row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]".
 t4 # .\Resource.FailedInstance.Control.xml
-(81, 30): Precompile: Type "presentation::templates::GuiButtonTemplate" cannot be used here because it requires "presentation::templates::GuiWindowTemplate" or its derived classes.
+(85, 30): Precompile: Type "presentation::templates::GuiButtonTemplate" cannot be used here because it requires "presentation::templates::GuiWindowTemplate" or its derived classes.

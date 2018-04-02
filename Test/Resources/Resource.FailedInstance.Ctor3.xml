@@ -10,8 +10,12 @@
         <ComboBox>
           <att.ListControl-bind>Constructor Argument Not Bindable</att.ListControl-bind>
         </ComboBox>
+        <TreeView>
+          <att.Nodes>
+            <TreeNode Text-bind="Constructor Argument Not bind-Bindable"/>
+          </att.Nodes>
+        </TreeView>
         <BindableDataGrid>
-          <att.ViewModelContext-bind>Constructor Argument Not bind-Bindable</att.ViewModelContext-bind>
           <att.Text-NotExists>Binder Not Exists</att.Text-NotExists>
           <att.SelectedCell-bind>
             <Button Text="Not A String"/>

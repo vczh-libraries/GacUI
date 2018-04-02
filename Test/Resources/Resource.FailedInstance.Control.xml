@@ -22,9 +22,13 @@
           <att.ItemTemplate-eval>a+b</att.ItemTemplate-eval>
         </BindableTextList>
 
-        <BindableDataGrid Text-eval="Wrong!">
-          <att.ViewModelContext-eval>Wrong!</att.ViewModelContext-eval>
-        </BindableDataGrid>
+        <TreeView Text-eval="Wrong!">
+          <att.Nodes>
+            <TreeNode>
+              <att.Text-eval>Wrong!</att.Text-eval>
+            </TreeNode>
+          </att.Nodes>
+        </TreeView>
 
         <Label Text-uri="Wrong URI">
           <att.ControlTemplate>T3;T3</att.ControlTemplate>
