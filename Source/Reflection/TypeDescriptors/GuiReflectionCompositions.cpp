@@ -398,6 +398,13 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveGroupComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiResponsiveGroupComposition)
 
+			BEGIN_CLASS_MEMBER(GuiResponsiveContainerComposition)
+				CLASS_MEMBER_BASE(GuiBoundsComposition)
+				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveContainerComposition*(), NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_FAST(ResponsiveTarget)
+			END_CLASS_MEMBER(GuiResponsiveContainerComposition)
+
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiShortcutKeyItem)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Manager)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)

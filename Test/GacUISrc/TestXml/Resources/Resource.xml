@@ -159,47 +159,51 @@
       </ref.Ctor>
       <Window ref.Name="self" Text-format="Welcome to GacUI Video, $(Sys::LoremIpsumTitle(16))" ClientSize="x:800 y:600">
         <x:MutexGroupController ref.Name="accountController"/>
-        <ResponsiveView Direction="Horizontal" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <att.SharedControls>
-            <ScrollContainer ref.Name="videoContainer" ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
-              <RepeatFlow RowPadding="5" ColumnPadding="5">
-                <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
-                <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
-                <att.ItemSource-eval>self.videos</att.ItemSource-eval>
-                <att.ItemTemplate>demo::VideoItemTemplate</att.ItemTemplate>
-              </RepeatFlow>
-            </ScrollContainer>
-          </att.SharedControls>
-          <att.Views>
-            <ResponsiveGroup Direction="Horizontal" PreferredMinSize="x:360">
-              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
-                <att.Rows>
-                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
-                </att.Rows>
-                <att.Columns>
-                  <CellOption>composeType:MinSize</CellOption>
-                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
-                </att.Columns>
-
-                <Cell Site="row:0 column:0">
-                  <RepeatStack Direction="Vertical" Padding="5">
+        <ResponsiveContainer AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.ResponsiveTarget>
+            <ResponsiveView Direction="Horizontal">
+              <att.SharedControls>
+                <ScrollContainer ref.Name="videoContainer" ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
+                  <RepeatFlow RowPadding="5" ColumnPadding="5">
                     <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
                     <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
-                    <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
-                    <att.ItemTemplate>demo::AccountItemTemplate</att.ItemTemplate>
-                  </RepeatStack>
-                </Cell>
+                    <att.ItemSource-eval>self.videos</att.ItemSource-eval>
+                    <att.ItemTemplate>demo::VideoItemTemplate</att.ItemTemplate>
+                  </RepeatFlow>
+                </ScrollContainer>
+              </att.SharedControls>
+              <att.Views>
+                <ResponsiveGroup Direction="Horizontal" PreferredMinSize="x:360">
+                  <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+                    <att.Rows>
+                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                    </att.Rows>
+                    <att.Columns>
+                      <CellOption>composeType:MinSize</CellOption>
+                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                    </att.Columns>
 
-                <Cell Site="row:0 column:1">
+                    <Cell Site="row:0 column:0">
+                      <RepeatStack Direction="Vertical" Padding="5">
+                        <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
+                        <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
+                        <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
+                        <att.ItemTemplate>demo::AccountItemTemplate</att.ItemTemplate>
+                      </RepeatStack>
+                    </Cell>
+
+                    <Cell Site="row:0 column:1">
+                      <ResponsiveShared Shared-ref="videoContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                    </Cell>
+                  </Table>
+                </ResponsiveGroup>
+                <ResponsiveFixed>
                   <ResponsiveShared Shared-ref="videoContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                </Cell>
-              </Table>
-            </ResponsiveGroup>
-            <ResponsiveFixed>
-              <ResponsiveShared Shared-ref="videoContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </ResponsiveFixed>
-          </att.Views>
-        </ResponsiveView>
+                </ResponsiveFixed>
+              </att.Views>
+            </ResponsiveView>
+          </att.Content>
+        </att.ResponsiveTarget>
       </Window>
     </Instance>
   </Instance>

@@ -216,6 +216,23 @@ Others
 				bool					LevelDown()override;
 				bool					LevelUp()override;
 			};
+
+/***********************************************************************
+GuiResponsiveContainerComposition
+***********************************************************************/
+
+			class GuiResponsiveContainerComposition : public GuiBoundsComposition, public Description<GuiResponsiveContainerComposition>
+			{
+			protected:
+				GuiResponsiveCompositionBase*			responsiveTarget = nullptr;
+
+			public:
+				GuiResponsiveContainerComposition();
+				~GuiResponsiveContainerComposition();
+
+				GuiResponsiveCompositionBase*			GetResponsiveTarget();
+				void									SetResponsiveTarget(GuiResponsiveCompositionBase* value);
+			};
 		}
 	}
 }

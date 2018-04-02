@@ -719,6 +719,41 @@ GuiResponsiveGroupComposition
 			}
 
 #undef DEFINE_AVAILABLE
+
+/***********************************************************************
+GuiResponsiveContainerComposition
+***********************************************************************/
+
+			GuiResponsiveContainerComposition::GuiResponsiveContainerComposition()
+			{
+				SetMinSizeLimitation(LimitToElementAndChildren);
+			}
+
+			GuiResponsiveContainerComposition::~GuiResponsiveContainerComposition()
+			{
+			}
+
+			GuiResponsiveCompositionBase* GuiResponsiveContainerComposition::GetResponsiveTarget()
+			{
+				return responsiveTarget;
+			}
+
+			void GuiResponsiveContainerComposition::SetResponsiveTarget(GuiResponsiveCompositionBase* value)
+			{
+				if (responsiveTarget != value)
+				{
+					if (responsiveTarget)
+					{
+						RemoveChild(responsiveTarget);
+					}
+					responsiveTarget = value;
+					if (responsiveTarget)
+					{
+						responsiveTarget->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						AddChild(responsiveTarget);
+					}
+				}
+			}
 		}
 	}
 }

@@ -166,6 +166,7 @@ Type List (Compositions)
 			F(presentation::compositions::GuiResponsiveFixedComposition)\
 			F(presentation::compositions::GuiResponsiveStackComposition)\
 			F(presentation::compositions::GuiResponsiveGroupComposition)\
+			F(presentation::compositions::GuiResponsiveContainerComposition)\
 			F(presentation::compositions::IGuiShortcutKeyItem)\
 			F(presentation::compositions::IGuiShortcutKeyManager)\
 			F(presentation::compositions::GuiShortcutKeyManager)\
