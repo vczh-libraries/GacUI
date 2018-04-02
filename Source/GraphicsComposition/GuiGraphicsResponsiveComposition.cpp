@@ -365,7 +365,10 @@ GuiResponsiveViewComposition
 					}
 				}
 				skipUpdatingLevels = false;
-				return CalculateCurrentLevel();
+				
+				auto x = CalculateLevelCount();
+				auto y = CalculateCurrentLevel();
+				return x || y;
 			}
 
 			bool GuiResponsiveViewComposition::LevelUp()
@@ -383,7 +386,10 @@ GuiResponsiveViewComposition
 					}
 				}
 				skipUpdatingLevels = false;
-				return CalculateCurrentLevel();
+
+				auto x = CalculateLevelCount();
+				auto y = CalculateCurrentLevel();
+				return x || y;
 			}
 
 			collections::ObservableListBase<controls::GuiControl*>& GuiResponsiveViewComposition::GetSharedControls()
@@ -737,6 +743,7 @@ GuiResponsiveContainerComposition
 					tried = false;
 					if (tryLevelDown)
 					{
+						responsiveTarget->ForceCalculateSizeImmediately();
 						Size lowerLevelSize = responsiveTarget->GetPreferredBounds().GetSize();
 						if ((testX && size.x < lowerLevelSize.x) || (testY && size.y < lowerLevelSize.y))
 						{
