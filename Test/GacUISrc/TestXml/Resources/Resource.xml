@@ -49,24 +49,35 @@
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <att.ViewModel-bind>cast (AccountButtonViewModel^) self.Context</att.ViewModel-bind>
         <SolidBackground Color-bind="cast Color (self.Selected ? '#FFFFFF' : self.State != ButtonState::Normal ? '#0000FF' : '#00000000')"/>
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
-          <att.Rows>
-            <CellOption>composeType:MinSize</CellOption>
-          </att.Rows>
-          <att.Columns>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-          </att.Columns>
+        <ResponsiveView AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Views>
+            <ResponsiveFixed>
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+                <att.Rows>
+                  <CellOption>composeType:MinSize</CellOption>
+                </att.Rows>
+                <att.Columns>
+                  <CellOption>composeType:MinSize</CellOption>
+                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                </att.Columns>
 
-          <Cell Site="row:0 column:0">
-            <ImageFrame FrameIndex="0" Image-bind="self.ViewModel.Image ?? null"/>
-          </Cell>
-          <Cell Site="row:0 column:1">
-            <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Name ?? ''" Color-bind="cast Color (self.Selected ? '#000000' : '#FFFFFF')">
-              <att.VerticalAlignment>Center</att.VerticalAlignment>
-            </SolidLabel>
-          </Cell>
-        </Table>
+                <Cell Site="row:0 column:0">
+                  <ImageFrame FrameIndex="0" Image-bind="self.ViewModel.Image ?? null"/>
+                </Cell>
+                <Cell Site="row:0 column:1">
+                  <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Name ?? ''" Color-bind="cast Color (self.Selected ? '#000000' : '#FFFFFF')">
+                    <att.VerticalAlignment>Center</att.VerticalAlignment>
+                  </SolidLabel>
+                </Cell>
+              </Table>
+            </ResponsiveFixed>
+            <ResponsiveFixed>
+              <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5">
+                <ImageFrame FrameIndex="0" Image-bind="self.ViewModel.Image ?? null"/>
+              </Bounds>
+            </ResponsiveFixed>
+          </att.Views>
+        </ResponsiveView>
       </SelectableButtonTemplate>
     </Instance>
   </Instance>
@@ -148,36 +159,48 @@
       </ref.Ctor>
       <Window ref.Name="self" Text-format="Welcome to GacUI Video, $(Sys::LoremIpsumTitle(16))" ClientSize="x:640 y:480">
         <x:MutexGroupController ref.Name="accountController"/>
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
-          <att.Rows>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-          </att.Rows>
-          <att.Columns>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-          </att.Columns>
-
-          <Cell Site="row:0 column:0">
-            <RepeatStack Direction="Vertical" Padding="5">
-              <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
-              <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
-              <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
-              <att.ItemTemplate>demo::AccountItemTemplate</att.ItemTemplate>
-            </RepeatStack>
-          </Cell>
-
-          <Cell Site="row:0 column:1">
-            <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
+        <ResponsiveView AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.SharedControls>
+            <ScrollContainer ref.Name="videoContainer" ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <RepeatFlow RowPadding="5" ColumnPadding="5">
-              <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
+                <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
                 <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
                 <att.ItemSource-eval>self.videos</att.ItemSource-eval>
                 <att.ItemTemplate>demo::VideoItemTemplate</att.ItemTemplate>
               </RepeatFlow>
             </ScrollContainer>
-          </Cell>
-        </Table>
+          </att.SharedControls>
+          <att.Views>
+            <ResponsiveGroup>
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+                <att.Rows>
+                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                </att.Rows>
+                <att.Columns>
+                  <CellOption>composeType:MinSize</CellOption>
+                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                </att.Columns>
+
+                <Cell Site="row:0 column:0">
+                  <RepeatStack Direction="Vertical" Padding="5">
+                    <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
+                    <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
+                    <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
+                    <att.ItemTemplate>demo::AccountItemTemplate</att.ItemTemplate>
+                  </RepeatStack>
+                </Cell>
+
+                <Cell Site="row:0 column:1">
+                  <ResponsiveShared Shared-ref="videoContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                </Cell>
+              </Table>
+            </ResponsiveGroup>
+            <ResponsiveFixed>
+              <ResponsiveShared Shared-ref="videoContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </ResponsiveFixed>
+          </att.Views>
+        </ResponsiveView>
       </Window>
     </Instance>
   </Instance>
