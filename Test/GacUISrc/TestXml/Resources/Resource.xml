@@ -162,7 +162,7 @@
         <ResponsiveView Direction="Horizontal" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.SharedControls>
             <ScrollContainer ref.Name="videoContainer" ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
-              <RepeatFlow RowPadding="5" ColumnPadding="5" PreferredMinSize="x:400">
+              <RepeatFlow RowPadding="5" ColumnPadding="5">
                 <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
                 <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
                 <att.ItemSource-eval>self.videos</att.ItemSource-eval>
@@ -171,7 +171,7 @@
             </ScrollContainer>
           </att.SharedControls>
           <att.Views>
-            <ResponsiveGroup Direction="Horizontal">
+            <ResponsiveGroup Direction="Horizontal" PreferredMinSize="x:360">
               <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
                 <att.Rows>
                   <CellOption>composeType:Percentage percentage:1.0</CellOption>
