@@ -72,7 +72,7 @@
               </Table>
             </ResponsiveFixed>
             <ResponsiveFixed>
-              <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5">
+              <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
                 <ImageFrame FrameIndex="0" Image-bind="self.ViewModel.Image ?? null"/>
               </Bounds>
             </ResponsiveFixed>
