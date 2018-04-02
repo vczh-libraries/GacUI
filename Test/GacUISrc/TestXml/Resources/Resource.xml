@@ -202,8 +202,8 @@
                 </ResponsiveFixed>
               </att.Views>
             </ResponsiveView>
-          </att.Content>
-        </att.ResponsiveTarget>
+          </att.ResponsiveTarget>
+        </ResponsiveContainer>
       </Window>
     </Instance>
   </Instance>

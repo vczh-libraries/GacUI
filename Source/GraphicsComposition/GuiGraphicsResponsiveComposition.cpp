@@ -10,9 +10,9 @@ namespace vl
 			using namespace collections;
 			using namespace controls;
 
-/***********************************************************************
-GuiResponsiveCompositionBase
-***********************************************************************/
+			/***********************************************************************
+			GuiResponsiveCompositionBase
+			***********************************************************************/
 
 			void GuiResponsiveCompositionBase::OnParentLineChanged()
 			{
@@ -86,9 +86,9 @@ GuiResponsiveCompositionBase
 				}
 			}
 
-/***********************************************************************
-GuiResponsiveSharedCollection
-***********************************************************************/
+			/***********************************************************************
+			GuiResponsiveSharedCollection
+			***********************************************************************/
 
 			void GuiResponsiveSharedCollection::BeforeInsert(vint index, controls::GuiControl* const& value)
 			{
@@ -119,9 +119,9 @@ GuiResponsiveSharedCollection
 			{
 			}
 
-/***********************************************************************
-GuiResponsiveViewCollection
-***********************************************************************/
+			/***********************************************************************
+			GuiResponsiveViewCollection
+			***********************************************************************/
 
 			void GuiResponsiveViewCollection::BeforeInsert(vint index, GuiResponsiveCompositionBase* const& value)
 			{
@@ -160,9 +160,9 @@ GuiResponsiveViewCollection
 			{
 			}
 
-/***********************************************************************
-GuiResponsiveSharedComposition
-***********************************************************************/
+			/***********************************************************************
+			GuiResponsiveSharedComposition
+			***********************************************************************/
 
 			void GuiResponsiveSharedComposition::SetSharedControl()
 			{
@@ -220,7 +220,7 @@ GuiResponsiveSharedComposition
 			GuiResponsiveSharedComposition::~GuiResponsiveSharedComposition()
 			{
 			}
-			
+
 			controls::GuiControl* GuiResponsiveSharedComposition::GetShared()
 			{
 				return shared;
@@ -236,9 +236,9 @@ GuiResponsiveSharedComposition
 				}
 			}
 
-/***********************************************************************
-GuiResponsiveViewComposition
-***********************************************************************/
+			/***********************************************************************
+			GuiResponsiveViewComposition
+			***********************************************************************/
 
 			bool GuiResponsiveViewComposition::CalculateLevelCount()
 			{
@@ -396,9 +396,9 @@ GuiResponsiveViewComposition
 				return views;
 			}
 
-/***********************************************************************
-GuiResponsiveFixedComposition
-***********************************************************************/
+			/***********************************************************************
+			GuiResponsiveFixedComposition
+			***********************************************************************/
 
 			void GuiResponsiveFixedComposition::OnResponsiveChildLevelUpdated()
 			{
@@ -432,9 +432,9 @@ GuiResponsiveFixedComposition
 				return false;
 			}
 
-/***********************************************************************
-GuiResponsiveStackComposition
-***********************************************************************/
+			/***********************************************************************
+			GuiResponsiveStackComposition
+			***********************************************************************/
 
 #define DEFINE_AVAILABLE \
 			auto availables = From(responsiveChildren) \
@@ -455,13 +455,13 @@ GuiResponsiveStackComposition
 				{
 					levelCount = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-							{
-								return child->GetLevelCount() - 1;
-							})
+					{
+						return child->GetLevelCount() - 1;
+					})
 						.Aggregate([](vint a, vint b)
-							{
-								return a + b;
-							}) + 1;
+					{
+						return a + b;
+					}) + 1;
 				}
 
 				if (old != levelCount)
@@ -484,13 +484,13 @@ GuiResponsiveStackComposition
 				{
 					currentLevel = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-							{
-								return child->GetCurrentLevel();
-							})
+					{
+						return child->GetCurrentLevel();
+					})
 						.Aggregate([](vint a, vint b)
-							{
-								return a + b;
-							});
+					{
+						return a + b;
+					});
 				}
 
 				if (old != currentLevel)
@@ -591,9 +591,9 @@ GuiResponsiveStackComposition
 				return ChangeLevel(false);
 			}
 
-/***********************************************************************
-GuiResponsiveGroupComposition
-***********************************************************************/
+			/***********************************************************************
+			GuiResponsiveGroupComposition
+			***********************************************************************/
 
 			bool GuiResponsiveGroupComposition::CalculateLevelCount()
 			{
@@ -607,9 +607,9 @@ GuiResponsiveGroupComposition
 				{
 					levelCount = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-							{
-								return child->GetLevelCount();
-							})
+					{
+						return child->GetLevelCount();
+					})
 						.Max();
 				}
 
@@ -633,9 +633,9 @@ GuiResponsiveGroupComposition
 				{
 					currentLevel = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-							{
-								return child->GetCurrentLevel();
-							})
+					{
+						return child->GetCurrentLevel();
+					})
 						.Max();
 				}
 
@@ -720,13 +720,59 @@ GuiResponsiveGroupComposition
 
 #undef DEFINE_AVAILABLE
 
-/***********************************************************************
-GuiResponsiveContainerComposition
-***********************************************************************/
+			/***********************************************************************
+			GuiResponsiveContainerComposition
+			***********************************************************************/
+
+			void GuiResponsiveContainerComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			{
+				if (!responsiveTarget) return;
+				Size size = GetBounds().GetSize();
+				bool testX = (vint)responsiveTarget->GetDirection() | (vint)ResponsiveDirection::Horizontal;
+				bool testY = (vint)responsiveTarget->GetDirection() | (vint)ResponsiveDirection::Vertical;
+
+				while (true)
+				{
+					if (tryLevelDown)
+					{
+						Size lowerLevelSize = responsiveTarget->GetPreferredBounds().GetSize();
+						if ((testX && size.x < lowerLevelSize.x) || (testY && size.y < lowerLevelSize.y))
+						{
+							if (responsiveTarget->LevelDown())
+							{
+								tryLevelUp = true;
+								upperLevelSize = lowerLevelSize;
+							}
+							else
+							{
+								tryLevelDown = false;
+								break;
+							}
+						}
+					}
+
+					if (tryLevelUp)
+					{
+						if ((testX && size.x > upperLevelSize.x) || (testY && size.y > upperLevelSize.y))
+						{
+							if (responsiveTarget->LevelUp())
+							{
+								tryLevelDown = true;
+							}
+							else
+							{
+								tryLevelUp = false;
+								break;
+							}
+						}
+					}
+				}
+			}
 
 			GuiResponsiveContainerComposition::GuiResponsiveContainerComposition()
 			{
 				SetMinSizeLimitation(LimitToElementAndChildren);
+				BoundsChanged.AttachMethod(this, &GuiResponsiveContainerComposition::OnBoundsChanged);
 			}
 
 			GuiResponsiveContainerComposition::~GuiResponsiveContainerComposition()
@@ -746,11 +792,20 @@ GuiResponsiveContainerComposition
 					{
 						RemoveChild(responsiveTarget);
 					}
+
 					responsiveTarget = value;
+					upperLevelSize = Size();
+					tryLevelUp = true;
+					tryLevelDown = true;
+
 					if (responsiveTarget)
 					{
 						responsiveTarget->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						AddChild(responsiveTarget);
+						upperLevelSize = responsiveTarget->GetPreferredBounds().GetSize();
+
+						GuiEventArgs arguments(this);
+						OnBoundsChanged(this, arguments);
 					}
 				}
 			}
