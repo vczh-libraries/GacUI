@@ -65,7 +65,7 @@ GuiGeneralUndoRedoProcessor
 				{
 					steps.Clear();
 					firstFutureStep=0;
-					savedStep=-1;
+					savedStep=0;
 				}
 			}
 
