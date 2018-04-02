@@ -10,9 +10,9 @@ namespace vl
 			using namespace collections;
 			using namespace controls;
 
-			/***********************************************************************
-			GuiResponsiveCompositionBase
-			***********************************************************************/
+/***********************************************************************
+GuiResponsiveCompositionBase
+***********************************************************************/
 
 			void GuiResponsiveCompositionBase::OnParentLineChanged()
 			{
@@ -86,9 +86,9 @@ namespace vl
 				}
 			}
 
-			/***********************************************************************
-			GuiResponsiveSharedCollection
-			***********************************************************************/
+/***********************************************************************
+GuiResponsiveSharedCollection
+***********************************************************************/
 
 			void GuiResponsiveSharedCollection::BeforeInsert(vint index, controls::GuiControl* const& value)
 			{
@@ -119,9 +119,9 @@ namespace vl
 			{
 			}
 
-			/***********************************************************************
-			GuiResponsiveViewCollection
-			***********************************************************************/
+/***********************************************************************
+GuiResponsiveViewCollection
+***********************************************************************/
 
 			void GuiResponsiveViewCollection::BeforeInsert(vint index, GuiResponsiveCompositionBase* const& value)
 			{
@@ -160,9 +160,9 @@ namespace vl
 			{
 			}
 
-			/***********************************************************************
-			GuiResponsiveSharedComposition
-			***********************************************************************/
+/***********************************************************************
+GuiResponsiveSharedComposition
+***********************************************************************/
 
 			void GuiResponsiveSharedComposition::SetSharedControl()
 			{
@@ -236,9 +236,9 @@ namespace vl
 				}
 			}
 
-			/***********************************************************************
-			GuiResponsiveViewComposition
-			***********************************************************************/
+/***********************************************************************
+GuiResponsiveViewComposition
+***********************************************************************/
 
 			bool GuiResponsiveViewComposition::CalculateLevelCount()
 			{
@@ -396,9 +396,9 @@ namespace vl
 				return views;
 			}
 
-			/***********************************************************************
-			GuiResponsiveFixedComposition
-			***********************************************************************/
+/***********************************************************************
+GuiResponsiveFixedComposition
+***********************************************************************/
 
 			void GuiResponsiveFixedComposition::OnResponsiveChildLevelUpdated()
 			{
@@ -432,9 +432,9 @@ namespace vl
 				return false;
 			}
 
-			/***********************************************************************
-			GuiResponsiveStackComposition
-			***********************************************************************/
+/***********************************************************************
+GuiResponsiveStackComposition
+***********************************************************************/
 
 #define DEFINE_AVAILABLE \
 			auto availables = From(responsiveChildren) \
@@ -455,13 +455,13 @@ namespace vl
 				{
 					levelCount = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-					{
-						return child->GetLevelCount() - 1;
-					})
+						{
+							return child->GetLevelCount() - 1;
+						})
 						.Aggregate([](vint a, vint b)
-					{
-						return a + b;
-					}) + 1;
+						{
+							return a + b;
+						}) + 1;
 				}
 
 				if (old != levelCount)
@@ -484,13 +484,13 @@ namespace vl
 				{
 					currentLevel = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-					{
-						return child->GetCurrentLevel();
-					})
+						{
+							return child->GetCurrentLevel();
+						})
 						.Aggregate([](vint a, vint b)
-					{
-						return a + b;
-					});
+						{
+							return a + b;
+						});
 				}
 
 				if (old != currentLevel)
@@ -591,9 +591,9 @@ namespace vl
 				return ChangeLevel(false);
 			}
 
-			/***********************************************************************
-			GuiResponsiveGroupComposition
-			***********************************************************************/
+/***********************************************************************
+GuiResponsiveGroupComposition
+***********************************************************************/
 
 			bool GuiResponsiveGroupComposition::CalculateLevelCount()
 			{
@@ -607,9 +607,9 @@ namespace vl
 				{
 					levelCount = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-					{
-						return child->GetLevelCount();
-					})
+						{
+							return child->GetLevelCount();
+						})
 						.Max();
 				}
 
@@ -633,9 +633,9 @@ namespace vl
 				{
 					currentLevel = availables
 						.Select([](GuiResponsiveCompositionBase* child)
-					{
-						return child->GetCurrentLevel();
-					})
+						{
+							return child->GetCurrentLevel();
+						})
 						.Max();
 				}
 
@@ -720,16 +720,16 @@ namespace vl
 
 #undef DEFINE_AVAILABLE
 
-			/***********************************************************************
-			GuiResponsiveContainerComposition
-			***********************************************************************/
+/***********************************************************************
+GuiResponsiveContainerComposition
+***********************************************************************/
 
 			void GuiResponsiveContainerComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 			{
 				if (!responsiveTarget) return;
 				Size size = GetBounds().GetSize();
-				bool testX = (vint)responsiveTarget->GetDirection() | (vint)ResponsiveDirection::Horizontal;
-				bool testY = (vint)responsiveTarget->GetDirection() | (vint)ResponsiveDirection::Vertical;
+				bool testX = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Horizontal;
+				bool testY = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Vertical;
 
 				bool tried = true;
 				while (tried)
@@ -775,7 +775,6 @@ namespace vl
 
 			GuiResponsiveContainerComposition::GuiResponsiveContainerComposition()
 			{
-				SetMinSizeLimitation(LimitToElementAndChildren);
 				BoundsChanged.AttachMethod(this, &GuiResponsiveContainerComposition::OnBoundsChanged);
 			}
 

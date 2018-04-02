@@ -173,7 +173,7 @@
                 </ScrollContainer>
               </att.SharedControls>
               <att.Views>
-                <ResponsiveGroup Direction="Horizontal" PreferredMinSize="x:360">
+                <ResponsiveGroup Direction="Horizontal">
                   <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
                     <att.Rows>
                       <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -192,7 +192,7 @@
                       </RepeatStack>
                     </Cell>
 
-                    <Cell Site="row:0 column:1">
+                    <Cell Site="row:0 column:1" PreferredMinSize="x:420">
                       <ResponsiveShared Shared-ref="videoContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                     </Cell>
                   </Table>
