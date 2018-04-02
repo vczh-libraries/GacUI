@@ -18221,10 +18221,18 @@ CreateBindAttachStatement
 					attach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
 					attach->function = CreateReference(callbackInfo.callbackName);
 
+					auto nullExpr = MakePtr<WfLiteralExpression>();
+					nullExpr->value = WfLiteralValue::Null;
+
+					auto protect = MakePtr<WfBinaryExpression>();
+					protect->first = attach;
+					protect->second = nullExpr;
+					protect->op = WfBinaryOperator::FailedThen;
+
 					auto assign = MakePtr<WfBinaryExpression>();
 					assign->op = WfBinaryOperator::Assign;
 					assign->first = CreateReference(callbackInfo.handlerName);
-					assign->second = attach;
+					assign->second = protect;
 
 					auto stat = MakePtr<WfExpressionStatement>();
 					stat->expression = assign;
@@ -18240,13 +18248,39 @@ CreateBindDetachStatement
 			{
 				FOREACH(CallbackInfo, callbackInfo, info.observeCallbackInfos[observe])
 				{
-					auto detach = MakePtr<WfDetachEventExpression>();
-					detach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
-					detach->handler = CreateReference(callbackInfo.handlerName);
+					auto testNull = MakePtr<WfTypeTestingExpression>();
+					testNull->expression = CreateReference(callbackInfo.handlerName);
+					testNull->test = WfTypeTesting::IsNotNull;
 
-					auto stat = MakePtr<WfExpressionStatement>();
-					stat->expression = detach;
-					block->statements.Add(stat);
+					auto ifStat = MakePtr<WfIfStatement>();
+					ifStat->expression = testNull;
+
+					auto trueBlock = MakePtr<WfBlockStatement>();
+					ifStat->trueBranch = trueBlock;
+
+					block->statements.Add(ifStat);
+					{
+						auto detach = MakePtr<WfDetachEventExpression>();
+						detach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
+						detach->handler = CreateReference(callbackInfo.handlerName);
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = detach;
+						trueBlock->statements.Add(stat);
+					}
+					{
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+
+						auto assignExpr = MakePtr<WfBinaryExpression>();
+						assignExpr->first = CreateReference(callbackInfo.handlerName);
+						assignExpr->second = nullExpr;
+						assignExpr->op = WfBinaryOperator::Assign;
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = assignExpr;
+						trueBlock->statements.Add(stat);
+					}
 				}
 			}
 
@@ -18254,15 +18288,20 @@ CreateBindDetachStatement
 CreateBindCacheAssignStatement
 ***********************************************************************/
 
-			void CreateBindCacheAssignStatement(Ptr<WfBlockStatement> block, WfExpression* observe, BindContext& context)
+			void CreateBindCacheAssignStatement(WfLexicalScopeManager* manager, Ptr<WfBlockStatement> block, WfExpression* observe, BindContext& context)
 			{
 				auto parent = context.observeParents[observe];
 				auto cacheName = context.GetCacheVariableName(context.GetCachedExpressionIndexRecursively(parent, true));
 
+				auto protect = MakePtr<WfBinaryExpression>();
+				protect->first = ExpandObserveExpressionVisitor::Execute(parent, context, false);
+				protect->second = CreateDefaultValue(manager->expressionResolvings[parent].type.Obj());
+				protect->op = WfBinaryOperator::FailedThen;
+
 				auto assign = MakePtr<WfBinaryExpression>();
 				assign->op = WfBinaryOperator::Assign;
 				assign->first = CreateReference(cacheName);
-				assign->second = ExpandObserveExpressionVisitor::Execute(parent, context, false);
+				assign->second = protect;
 
 				auto stat = MakePtr<WfExpressionStatement>();
 				stat->expression = assign;
@@ -18340,7 +18379,7 @@ IValueSubscription::Open
 									if (!assignedParents.Contains(parent))
 									{
 										assignedParents.Add(parent);
-										CreateBindCacheAssignStatement(ifBlock, observe, context);
+										CreateBindCacheAssignStatement(manager, ifBlock, observe, context);
 									}
 								}
 							}
@@ -18694,7 +18733,7 @@ ExpandBindExpression
 										if (!assignedParents.Contains(parent))
 										{
 											assignedParents.Add(parent);
-											CreateBindCacheAssignStatement(block, affectedObserve, context);
+											CreateBindCacheAssignStatement(manager, block, affectedObserve, context);
 										}
 									}
 								}
