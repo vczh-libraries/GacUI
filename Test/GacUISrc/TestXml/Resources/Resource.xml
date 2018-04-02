@@ -49,7 +49,7 @@
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <att.ViewModel-bind>cast (AccountButtonViewModel^) self.Context</att.ViewModel-bind>
         <SolidBackground Color-bind="cast Color (self.Selected ? '#FFFFFF' : self.State != ButtonState::Normal ? '#0000FF' : '#00000000')"/>
-        <ResponsiveView AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <ResponsiveView Direction="Horizontal" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Views>
             <ResponsiveFixed>
               <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
@@ -157,13 +157,12 @@
           }
         ]]>
       </ref.Ctor>
-      <Window ref.Name="self" Text-format="Welcome to GacUI Video, $(Sys::LoremIpsumTitle(16))" ClientSize="x:640 y:480">
+      <Window ref.Name="self" Text-format="Welcome to GacUI Video, $(Sys::LoremIpsumTitle(16))" ClientSize="x:800 y:600">
         <x:MutexGroupController ref.Name="accountController"/>
-        <ResponsiveView AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <ResponsiveView Direction="Horizontal" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.SharedControls>
             <ScrollContainer ref.Name="videoContainer" ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <RepeatFlow RowPadding="5" ColumnPadding="5">
+              <RepeatFlow RowPadding="5" ColumnPadding="5" PreferredMinSize="x:400">
                 <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
                 <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
                 <att.ItemSource-eval>self.videos</att.ItemSource-eval>
@@ -172,7 +171,7 @@
             </ScrollContainer>
           </att.SharedControls>
           <att.Views>
-            <ResponsiveGroup>
+            <ResponsiveGroup Direction="Horizontal">
               <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
                 <att.Rows>
                   <CellOption>composeType:Percentage percentage:1.0</CellOption>
