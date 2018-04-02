@@ -93,6 +93,17 @@
     </Instance>
   </Instance>
 
+  <Instance name="AccountMenuItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::AccountMenuItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="demo::AccountButtonViewModel"/>
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren" AssociatedCursor-eval="INativeController::GetCurrentController().ResourceService().GetSystemCursor(Hand)">
+        <MenuItemButton Text-bind="ViewModel.Name">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </MenuItemButton>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
   <Instance name="VideoItemTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::VideoItemTemplate">
       <ref.Parameter Name="ViewModel" Class="demo::VideoViewModel"/>
@@ -198,7 +209,35 @@
                   </Table>
                 </ResponsiveGroup>
                 <ResponsiveFixed>
-                  <ResponsiveShared Shared-ref="videoContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <Table CellPadding="5" BorderVisible="false" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                    <att.Rows>
+                      <CellOption>composeType:MinSize</CellOption>
+                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                    </att.Rows>
+                    <att.Columns>
+                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                    </att.Columns>
+
+                    <Cell Site="row:0 column:0">
+                      <ToolstripMenuBar>
+                        <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                        <MenuBarButton Text="Subscribed Accounts">
+                          <att.SubMenu-set>
+                            <RepeatStack Direction="Vertical">
+                              <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
+                              <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
+                              <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
+                              <att.ItemTemplate>demo::AccountMenuItemTemplate</att.ItemTemplate>
+                            </RepeatStack>
+                          </att.SubMenu-set>
+                        </MenuBarButton>
+                      </ToolstripMenuBar>
+                    </Cell>
+
+                    <Cell Site="row:1 column:0">
+                      <ResponsiveShared Shared-ref="videoContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                    </Cell>
+                  </Table>
                 </ResponsiveFixed>
               </att.Views>
             </ResponsiveView>
