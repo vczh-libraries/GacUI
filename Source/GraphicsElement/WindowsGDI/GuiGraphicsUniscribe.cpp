@@ -2323,7 +2323,7 @@ UniscribeParagraph (Caret)
 				GetVirtualLineIndexFromTextPos(comparingCaret, frontLine, frontVirtualLine, backVirtualLine);
 				vint virtualLineIndex=preferFrontSide?frontVirtualLine:backVirtualLine;
 
-				Ptr<UniscribeVirtualLine> virtualLine=virtualLineIndex==-1?0:line->virtualLines[virtualLineIndex];
+				Ptr<UniscribeVirtualLine> virtualLine=virtualLineIndex==-1?nullptr:line->virtualLines[virtualLineIndex];
 
 				switch(position)
 				{
