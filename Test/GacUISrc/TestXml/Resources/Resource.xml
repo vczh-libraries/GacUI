@@ -23,9 +23,9 @@
         {
           class AccountButtonViewModel
           {
-            prop Controller: GuiSelectableButton::GroupController* = null {not observe}
-            prop Name: string = "" {not observe}
-            prop Image: INativeImage^ = null {not observe}
+            prop Controller: GuiSelectableButton::GroupController* = null {}
+            prop Name: string = "" {}
+            prop Image: INativeImage^ = null {}
           }
           
           class VideoViewModel
