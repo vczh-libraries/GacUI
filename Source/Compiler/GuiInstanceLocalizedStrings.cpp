@@ -16,6 +16,14 @@ namespace vl
 GuiInstanceLocalizedStrings
 ***********************************************************************/
 
+		WString GuiInstanceLocalizedStrings::Strings::GetLocalesName()
+		{
+			return From(locales).Aggregate(WString(L""), [](const WString& a, const WString& b)
+			{
+				return a == L"" ? b : a + L";" + b;
+			});
+		}
+
 		Ptr<GuiInstanceLocalizedStrings> GuiInstanceLocalizedStrings::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			auto ls = MakePtr<GuiInstanceLocalizedStrings>();
@@ -152,10 +160,7 @@ GuiInstanceLocalizedStrings
 				{
 					auto att = MakePtr<XmlAttribute>();
 					att->name.value = L"Strings";
-					att->value.value = From(lss->locales).Aggregate(WString(L""), [](const WString& a, const WString& b)
-					{
-						return a == L"" ? b : a + L";" + b;
-					});
+					att->value.value = lss->GetLocalesName();
 					xmlStrings->attributes.Add(att);
 				}
 
@@ -336,13 +341,10 @@ GuiInstanceLocalizedStrings
 			vint errorCount = errors.Count();
 			FOREACH(Ptr<Strings>, lss, strings)
 			{
-				auto localesName = From(lss->locales).Aggregate(WString(L""), [](const WString& a, const WString& b)
-				{
-					return a == L"" ? b : a + L";" + b;
-				});
-
 				if (lss != defaultStrings)
 				{
+					auto localesName = lss->GetLocalesName();
+
 					auto missing = From(defaultStrings->items.Keys())
 						.Except(lss->items.Keys())
 						.Aggregate(WString(L""), [](const WString& a, const WString& b)
@@ -386,6 +388,19 @@ GuiInstanceLocalizedStrings
 					{
 						defaultGroups.Add(lssi->name, parameters[index]);
 					}
+				}
+			}
+			if (errors.Count() != errorCount)
+			{
+				return nullptr;
+			}
+
+			auto defaultLocalesName = defaultStrings->GetLocalesName();
+			FOREACH(Ptr<Strings>, lss, strings)
+			{
+				if (lss != defaultStrings)
+				{
+					auto localesName = lss->GetLocalesName();
 				}
 			}
 			if (errors.Count() != errorCount)

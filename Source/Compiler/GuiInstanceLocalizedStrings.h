@@ -34,6 +34,8 @@ namespace vl
 				collections::List<WString>				locales;
 				StringItemMap							items;
 				GuiResourceTextPos						tagPosition;
+
+				WString									GetLocalesName();
 			};
 
 			WString										className;
