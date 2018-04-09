@@ -671,32 +671,25 @@ WorkflowReferenceNamesVisitor
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, resolvingResult.context->localizeds)
 			{
-				WString protocol, path;
-				if (IsResourceUrl(localized->uri.ToString(), protocol, path))
+				auto type = GetTypeDescriptor(localized->className + L"::IStrings");
+				if (!type)
 				{
-					if (auto ls = precompileContext.resolver->ResolveResource(protocol, path).Cast<GuiInstanceLocalizedStrings>())
-					{
-						auto type = GetTypeDescriptor(ls->className + L"::IStrings");
-						if (!type)
-						{
-							errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
-								L"Precompile: Cannot find type \"" +
-								ls->className + L"::IStrings" +
-								L"\"."));
-						}
-						else if (resolvingResult.typeInfos.Keys().Contains(localized->name))
-						{
-							errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
-								L"[INTERNAL-ERROR] Precompile: Parameter \"" +
-								localized->name.ToString() +
-								L"\" conflict with an existing named object."));
-						}
-						else
-						{
-							auto referenceType = Workflow_GetSuggestedParameterType(type);
-							resolvingResult.typeInfos.Add(localized->name, { GlobalStringKey::Get(type->GetTypeName()),referenceType });
-						}
-					}
+					errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
+						L"Precompile: Cannot find type \"" +
+						localized->className + L"::IStrings" +
+						L"\"."));
+				}
+				else if (resolvingResult.typeInfos.Keys().Contains(localized->name))
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
+						L"[INTERNAL-ERROR] Precompile: Parameter \"" +
+						localized->name.ToString() +
+						L"\" conflict with an existing named object."));
+				}
+				else
+				{
+					auto referenceType = Workflow_GetSuggestedParameterType(type);
+					resolvingResult.typeInfos.Add(localized->name, { GlobalStringKey::Get(type->GetTypeName()),referenceType });
 				}
 			}
 			

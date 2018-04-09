@@ -451,7 +451,11 @@ Instance Type Resolver (Instance)
 								WString protocol, path;
 								if (IsResourceUrl(localized->uri.ToString(), protocol, path))
 								{
-									if (!context.resolver->ResolveResource(protocol, path).Cast<GuiInstanceLocalizedStrings>())
+									if (auto ls = context.resolver->ResolveResource(protocol, path).Cast<GuiInstanceLocalizedStrings>())
+									{
+										localized->className = ls->className;
+									}
+									else
 									{
 										errors.Add(GuiResourceError({ resource }, localized->tagPosition,
 											L"Failed to find the localized string referred in attribute \"Uri\": \"" + localized->uri.ToString() + L"\".")

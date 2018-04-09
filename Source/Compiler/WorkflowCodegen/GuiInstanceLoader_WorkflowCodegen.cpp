@@ -520,26 +520,19 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, context->localizeds)
 			{
-				WString protocol, path;
-				if (IsResourceUrl(localized->uri.ToString(), protocol, path))
+				if (auto type = GetTypeDescriptor(localized->className + L"::IStrings"))
 				{
-					if (auto ls = precompileContext.resolver->ResolveResource(protocol, path).Cast<GuiInstanceLocalizedStrings>())
-					{
-						if (auto type = GetTypeDescriptor(ls->className + L"::IStrings"))
-						{
-							auto prop = MakePtr<WfAutoPropertyDeclaration>();
-							addDecl(prop);
+					auto prop = MakePtr<WfAutoPropertyDeclaration>();
+					addDecl(prop);
 
-							prop->name.value = localized->name.ToString();
-							prop->type = GetTypeFromTypeInfo(Workflow_GetSuggestedParameterType(type).Obj());
-							prop->configConst = WfAPConst::Readonly;
-							prop->configObserve = WfAPObserve::Observable;
+					prop->name.value = localized->name.ToString();
+					prop->type = GetTypeFromTypeInfo(Workflow_GetSuggestedParameterType(type).Obj());
+					prop->configConst = WfAPConst::Writable;
+					prop->configObserve = WfAPObserve::Observable;
 
-							auto nullExpr = MakePtr<WfLiteralExpression>();
-							nullExpr->value = WfLiteralValue::Null;
-							prop->expression = nullExpr;
-						}
-					}
+					auto nullExpr = MakePtr<WfLiteralExpression>();
+					nullExpr->value = WfLiteralValue::Null;
+					prop->expression = nullExpr;
 				}
 			}
 

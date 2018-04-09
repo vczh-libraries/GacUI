@@ -196,6 +196,20 @@ WorkflowGenerateBindingVisitor
 		{
 			WorkflowGenerateBindingVisitor visitor(precompileContext, resolvingResult, statements, errors);
 			resolvingResult.context->instance->Accept(&visitor);
+
+			FOREACH(Ptr<GuiInstanceLocalized>, localized, resolvingResult.context->localizeds)
+			{
+				auto code = L"bind(" + localized->className + L"::Get(presentation::controls::GuiApplication::GetApplication().Locale) of (" + localized->className + L"::IStrings^))";
+				if (auto bindExpr = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, localized->tagPosition, errors))
+				{
+					auto instancePropertyInfo = resolvingResult.rootTypeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(localized->name.ToString(), true);
+					if (auto statement = Workflow_InstallBindProperty(precompileContext, resolvingResult, resolvingResult.context->instance->instanceName, instancePropertyInfo, bindExpr))
+					{
+						Workflow_RecordScriptPosition(precompileContext, localized->tagPosition, statement);
+						statements->statements.Add(statement);
+					}
+				}
+			}
 		}
 	}
 }
