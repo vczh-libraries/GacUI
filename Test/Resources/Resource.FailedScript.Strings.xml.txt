@@ -1,0 +1,4 @@
+ # .\Resource.FailedScript.Strings.xml
+(2, 3): Unknown resource type "LocalizedStrings".
+(7, 3): Unknown resource type "LocalizedStrings".
+(12, 3): Unknown resource type "LocalizedStrings".

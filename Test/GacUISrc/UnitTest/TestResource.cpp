@@ -148,3 +148,8 @@ TEST_CASE(Resource_FailedScript_Animations2)
 {
 	LoadResource(L"Resource.FailedScript.Animations2.xml", true);
 }
+
+TEST_CASE(Resource_FailedScript_Strings)
+{
+	LoadResource(L"Resource.FailedScript.Strings.xml", true);
+}

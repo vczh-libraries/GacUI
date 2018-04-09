@@ -2,6 +2,7 @@
 #include "InstanceQuery/GuiInstanceQuery.h"
 #include "GuiInstanceSharedScript.h"
 #include "GuiInstanceAnimation.h"
+#include "GuiInstanceLocalizedStrings.h"
 #include "WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
 #include "../Reflection/GuiInstanceCompiledWorkflow.h"
 #include "../Resources/GuiParserManager.h"
@@ -733,7 +734,7 @@ Animation Type Resolver (Animation)
 
 			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = content.Cast<GuiInstanceStyleContext>())
+				if (auto obj = content.Cast<GuiInstanceGradientAnimation>())
 				{
 					return obj->SaveToXml();
 				}
@@ -755,6 +756,97 @@ Animation Type Resolver (Animation)
 							L"Precompile: Unknown animation type: \"" + xml->rootElement->name.value + L"\"."
 							});
 					}
+				}
+				return nullptr;
+			}
+		};
+
+/***********************************************************************
+Localized Strings Type Resolver (LocalizedStrings)
+***********************************************************************/
+
+		class GuiResourceLocalizedStringsTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_Precompile
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"LocalizedStrings";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return false;
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return false;
+			}
+
+			vint GetMaxPassIndex()override
+			{
+				return Workflow_Collect + 1;
+			}
+
+			PassSupport GetPassSupport(vint passIndex)override
+			{
+				switch (passIndex)
+				{
+				case Workflow_Collect:
+					return PerResource;
+				default:
+					return NotSupported;
+				}
+			}
+
+			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
+			{
+				throw 0;
+			}
+
+			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
+			{
+				CHECK_FAIL(L"GuiResourceLocalizedStringsTypeResolver::PerPassPrecompile(GuiResourcePrecompileContext&, GuiResourceError::List&)#This function should not be called.");
+			}
+
+			IGuiResourceTypeResolver_Precompile* Precompile()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			{
+				if (auto obj = content.Cast<GuiInstanceLocalizedStrings>())
+				{
+					return obj->SaveToXml();
+				}
+				return nullptr;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
+			{
+				if (auto xml = resource->GetContent().Cast<XmlDocument>())
+				{
+					return GuiInstanceLocalizedStrings::LoadFromXml(resource, xml, errors);
 				}
 				return nullptr;
 			}
@@ -784,6 +876,7 @@ Plugin
 				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
 				manager->SetTypeResolver(new GuiResourceInstanceStyleTypeResolver);
 				manager->SetTypeResolver(new GuiResourceAnimationTypeResolver);
+				manager->SetTypeResolver(new GuiResourceLocalizedStringsTypeResolver);
 			}
 
 			void Unload()override
