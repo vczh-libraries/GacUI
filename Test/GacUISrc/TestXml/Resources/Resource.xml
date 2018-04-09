@@ -15,6 +15,10 @@
             }
             return 0;
           }
+          
+          var dateTime: DateTime = Sys::GetLocalTime();
+          var number: int = 2147483647;
+          var currency: double = 1342177.28;
         ]]>
       </ref.Members>
       <Window ref.Name="self" Text-format="Localization" ClientSize="x:640 y:480">
@@ -58,6 +62,22 @@
                 </TextList>
               </att.ListControl>
             </ComboBox>
+          </Cell>
+
+          <Cell Site="row:1 column:0 columnSpan:3">
+            <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.Items>
+                <TextItem Text="ShortDate: "/>
+                <TextItem Text="LongDate: "/>
+                <TextItem Text="YearMonthDate: "/>
+                <TextItem Text="ShortTime: "/>
+                <TextItem Text="LongTime: "/>
+                <TextItem Text="Number: "/>
+                <TextItem Text="Currency: "/>
+                <TextItem Text="Sentence: "/>
+              </att.Items>
+            </TextList>
           </Cell>
         </Table>
       </Window>
