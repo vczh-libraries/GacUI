@@ -1,5 +1,5 @@
 #include "GuiInstanceLocalizedStrings.h"
-#include "GuiInstanceLoader.h"
+#include "WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
 
 namespace vl
 {
@@ -427,6 +427,30 @@ GuiInstanceLocalizedStrings
 			}
 		}
 
+		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfClassMemberKind classMemberKind)
+		{
+			auto func = MakePtr<WfFunctionDeclaration>();
+			func->anonymity = WfFunctionAnonymity::Named;
+			func->name.value = functionName;
+			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+			{
+				auto member = MakePtr<WfClassMember>();
+				member->kind = classMemberKind;
+				func->classMember = member;
+			}
+			for (vint i = 0; i < textDesc->positions.Count(); i++)
+			{
+				auto type = textDesc->parameters[textDesc->positions[i]];
+
+				auto argument = MakePtr<WfFunctionArgument>();
+				argument->name.value = L"<ls>" + itow(i);
+				argument->type = GetTypeFromTypeInfo(type.key.Obj());
+				func->arguments.Add(argument);
+			}
+
+			return func;
+		}
+
 		Ptr<workflow::WfModule> GuiInstanceLocalizedStrings::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
 		{
 			vint errorCount = errors.Count();
@@ -439,6 +463,58 @@ GuiInstanceLocalizedStrings
 
 			auto module = MakePtr<WfModule>();
 			module->name.value = moduleName;
+			auto lsClass = Workflow_InstallClass(className, module);
+			{
+				auto lsInterface = MakePtr<WfClassDeclaration>();
+				lsClass->declarations.Add(lsInterface);
+
+				lsInterface->kind = WfClassKind::Interface;
+				lsInterface->constructorType = WfConstructorType::Undefined;
+				{
+					auto classMember = MakePtr<WfClassMember>();
+					classMember->kind = WfClassMemberKind::Normal;
+					lsInterface->classMember = classMember;
+				}
+
+				auto defaultStrings = GetDefaultStrings();
+				FOREACH(WString, functionName, defaultStrings->items.Keys())
+				{
+					auto func = GenerateFunction(textDescs[{defaultStrings, functionName}], functionName, WfClassMemberKind::Normal);
+					lsInterface->declarations.Add(func);
+				}
+			}
+			{
+				auto func = MakePtr<WfFunctionDeclaration>();
+				lsClass->declarations.Add(func);
+
+				func->anonymity = WfFunctionAnonymity::Named;
+				func->name.value = L"Get";
+				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+				{
+					auto member = MakePtr<WfClassMember>();
+					member->kind = WfClassMemberKind::Static;
+					func->classMember = member;
+				}
+				{
+					auto argument = MakePtr<WfFunctionArgument>();
+					argument->name.value = L"<ls>locale";
+					argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+					func->arguments.Add(argument);
+				}
+
+				auto block = MakePtr<WfBlockStatement>();
+				func->statement = block;
+
+				{
+					auto stringExpr = MakePtr<WfStringExpression>();
+					stringExpr->value.value = L"Not Implemented.";
+
+					auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+					raiseStat->expression = stringExpr;
+					block->statements.Add(raiseStat);
+				}
+			}
+
 			return module;
 		}
 	}
