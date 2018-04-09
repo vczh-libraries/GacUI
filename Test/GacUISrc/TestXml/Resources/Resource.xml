@@ -10,6 +10,8 @@
         <String Name="Number" Text="Number: $(0:Number)"/>
         <String Name="Currency" Text="Currency: $(0:Currency)"/>
         <String Name="Sentence" Text="$($)Good morning, $(0)!$($)"/>
+        <String Name="Title" Text="Localization"/>
+        <String Name="Label" Text="Selected Locale:"/>
       </Strings>
       
       <Strings Locales="zh-CN">
@@ -21,6 +23,8 @@
         <String Name="Number" Text="数字：$(0:Number)"/>
         <String Name="Currency" Text="货币：$(0:Currency)"/>
         <String Name="Sentence" Text="$($)$(0)，早上好！$($)"/>
+        <String Name="Title" Text="本地化"/>
+        <String Name="Label" Text="语言设置："/>
       </Strings>
     </LocalizedStrings>
   </LocalizedStrings>
@@ -47,7 +51,7 @@
         ]]>
       </ref.Members>
       <ref.LocalizedStrings Name="Strings" Uri="res://StringResource" Default="true"/>
-      <Window ref.Name="self" Text="Localization" ClientSize="x:640 y:480">
+      <Window ref.Name="self" Text-str="Title()" ClientSize="x:640 y:480">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
             <_>composeType:MinSize</_>
@@ -60,7 +64,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text="Selected Locale:" VerticalAlignment="Center"/>
+            <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text-str="Label()" VerticalAlignment="Center"/>
           </Cell>
 
           <Cell Site="row:0 column:1">
