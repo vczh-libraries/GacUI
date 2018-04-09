@@ -140,6 +140,16 @@ Instance Namespace
 			GuiResourceTextPos						classPosition;
 		};
 
+		class GuiInstanceLocalized : public Object, public Description<GuiInstanceLocalized>
+		{
+		public:
+			GlobalStringKey							name;
+			GlobalStringKey							uri;
+			GuiResourceTextPos						tagPosition;
+			GuiResourceTextPos						uriPosition;
+			bool									defaultStrings = false;
+		};
+
 /***********************************************************************
 Instance Context
 ***********************************************************************/
@@ -159,6 +169,7 @@ Instance Context
 			};
 			typedef collections::Dictionary<GlobalStringKey, Ptr<NamespaceInfo>>		NamespaceMap;
 			typedef collections::List<Ptr<GuiInstanceParameter>>						ParameterList;
+			typedef collections::List<Ptr<GuiInstanceLocalized>>						LocalizedList;
 			typedef collections::List<Ptr<GuiInstanceStyleContext>>						StyleContextList;
 
 			class ElementName : public Object
@@ -185,6 +196,7 @@ Instance Context
 			collections::List<WString>				stylePaths;
 
 			ParameterList							parameters;
+			LocalizedList							localizeds;
 			WString									memberScript;
 			WString									ctorScript;
 			WString									dtorScript;

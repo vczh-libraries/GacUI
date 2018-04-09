@@ -46,7 +46,7 @@
           var currency: double = 1342177.28;
         ]]>
       </ref.Members>
-      <ref.LocalizedStrings Name="Strings" Path="res://StringResource" Default="true"/>
+      <ref.LocalizedStrings Name="Strings" Uri="res://StringResource" Default="true"/>
       <Window ref.Name="self" Text-format="Localization" ClientSize="x:640 y:480">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
