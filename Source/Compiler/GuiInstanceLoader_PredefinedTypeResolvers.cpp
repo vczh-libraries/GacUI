@@ -821,7 +821,7 @@ Localized Strings Type Resolver (LocalizedStrings)
 					{
 						if (auto obj = resource->GetContent().Cast<GuiInstanceLocalizedStrings>())
 						{
-							if (auto module = obj->Compile(context, L"<animation>" + obj->className, errors))
+							if (auto module = obj->Compile(context, L"<localized-strings>" + obj->className, errors))
 							{
 								Workflow_AddModule(context, Path_Shared, module, GuiInstanceCompiledWorkflow::Shared, obj->tagPosition);
 							}
