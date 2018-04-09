@@ -2,6 +2,21 @@
   
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
+      <ref.Members>
+        <![CDATA[
+          func GetLocaleIndex(locale: Locale): int
+          {
+            for (i in range (0, listLocales.Items.Count))
+            {
+              if (listLocales.Items[i].Text == locale)
+              {
+                return i;
+              }
+            }
+            return 0;
+          }
+        ]]>
+      </ref.Members>
       <Window ref.Name="self" Text-format="Localization" ClientSize="x:640 y:480">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
@@ -22,10 +37,23 @@
             <ComboBox>
               <att.BoundsComposition-set PreferredMinSize="x:120"/>
               <att.ListControl>
-                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                <TextList ref.Name="listLocales" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.SelectedIndex-bind>self.GetLocaleIndex(Application::GetApplication().Locale)</att.SelectedIndex-bind>
+                  <ev.SelectedIndexChanged-eval>
+                    <![CDATA[
+                      {
+                        var index = listLocales.SelectedIndex;
+                        if (index == -1)
+                        {
+                          index = 0;
+                        }
+                        Application::GetApplication().Locale = cast Locale listLocales.Items[index].Text;
+                      }
+                    ]]>
+                  </ev.SelectedIndexChanged-eval>
                   <att.Items>
-                    <TextItem Text="zh-cn"/>
                     <TextItem Text="en-us"/>
+                    <TextItem Text="zh-cn"/>
                   </att.Items>
                 </TextList>
               </att.ListControl>

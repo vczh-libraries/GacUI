@@ -59,12 +59,7 @@ GuiApplication
 			}
 
 			GuiApplication::GuiApplication()
-				:mainWindow(0)
-				,sharedTooltipOwnerWindow(0)
-				,sharedTooltipOwner(0)
-				,sharedTooltipControl(0)
-				,sharedTooltipHovering(false)
-				,sharedTooltipClosing(false)
+				:locale(Locale::UserDefault())
 			{
 				GetCurrentController()->CallbackService()->InstallListener(this);
 			}
@@ -141,6 +136,20 @@ GuiApplication
 				if(sharedTooltipClosing)
 				{
 					CloseTooltip();
+				}
+			}
+
+			Locale GuiApplication::GetLocale()
+			{
+				return locale;
+			}
+
+			void GuiApplication::SetLocale(Locale value)
+			{
+				if (locale != value)
+				{
+					locale = value;
+					LocaleChanged();
 				}
 			}
 

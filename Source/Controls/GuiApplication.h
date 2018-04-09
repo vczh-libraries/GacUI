@@ -37,12 +37,13 @@ Application
 				void											RightButtonUp(Point position)override;
 				void											ClipboardUpdated()override;
 			protected:
-				GuiWindow*										mainWindow;
-				GuiWindow*										sharedTooltipOwnerWindow;
-				GuiControl*										sharedTooltipOwner;
-				GuiTooltip*										sharedTooltipControl;
-				bool											sharedTooltipHovering;
-				bool											sharedTooltipClosing;
+				Locale											locale;
+				GuiWindow*										mainWindow = nullptr;
+				GuiWindow*										sharedTooltipOwnerWindow = nullptr;
+				GuiControl*										sharedTooltipOwner = nullptr;
+				GuiTooltip*										sharedTooltipControl = nullptr;
+				bool											sharedTooltipHovering = false;
+				bool											sharedTooltipClosing = false;
 				collections::List<GuiWindow*>					windows;
 				collections::SortedList<GuiPopup*>				openingPopups;
 
@@ -58,6 +59,16 @@ Application
 				void											TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											TooltipMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
+				/// <summary>Locale changed event.</summary>
+				Event<void()>									LocaleChanged;
+
+				/// <summary>Returns the selected locale for all windows.</summary>
+				/// <returns>The selected locale.</returns>
+				Locale											GetLocale();
+				/// <summary>Set the locale for all windows.</summary>
+				/// <param name="value">The selected locale.</param>
+				void											SetLocale(Locale value);
+
 				/// <summary>Run a <see cref="GuiWindow"/> as the main window and show it. This function can only be called once in the entry point. When the main window is closed or hiden, the Run function will finished, and the application should prepare for finalization.</summary>
 				/// <param name="_mainWindow">The main window.</param>
 				void											Run(GuiWindow* _mainWindow);
