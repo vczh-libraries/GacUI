@@ -1,2 +1,3 @@
 s1 # .\Resource.FailedScript.Strings2.xml
-(3, 5): Missing attribute "DefaultLocale" in "LocalizedStrings".
+(7, 8): Precompile: Missing strings for locale "zh-CN": X.
+(7, 8): Precompile: Unnecessary strings for locale "zh-CN": Y.

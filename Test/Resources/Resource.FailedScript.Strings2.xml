@@ -1,6 +1,6 @@
 <Resource>
   <LocalizedStrings name="s1">
-    <LocalizedStrings DefaultLocale="en-US">
+    <LocalizedStrings ref.Class="demo::s1" DefaultLocale="en-US">
       <Strings Locales="en-US">
         <String Name="X" Text="Y"/>
       </Strings>
