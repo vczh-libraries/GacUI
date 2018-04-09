@@ -1,6 +1,12 @@
 <Resource>
   <LocalizedStrings name="s1">
-    <LocalizedStrings>
+    <LocalizedStrings DefaultLocale="en-US">
+      <Strings Locales="en-US">
+        <String Name="X" Text="Y"/>
+      </Strings>
+      <Strings Locales="zh-CN">
+        <String Name="Y" Text="X"/>
+      </Strings>
     </LocalizedStrings>
   </LocalizedStrings>
 </Resource>

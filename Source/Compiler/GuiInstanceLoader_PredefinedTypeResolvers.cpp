@@ -815,7 +815,20 @@ Localized Strings Type Resolver (LocalizedStrings)
 
 			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
 			{
-				throw 0;
+				switch (context.passIndex)
+				{
+				case Workflow_Collect:
+					{
+						if (auto obj = resource->GetContent().Cast<GuiInstanceLocalizedStrings>())
+						{
+							if (auto module = obj->Compile(context, L"<animation>" + obj->className, errors))
+							{
+								Workflow_AddModule(context, Path_Shared, module, GuiInstanceCompiledWorkflow::Shared, obj->tagPosition);
+							}
+						}
+					}
+					break;
+				}
 			}
 
 			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override

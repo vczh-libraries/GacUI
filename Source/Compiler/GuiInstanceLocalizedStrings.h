@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOCALIZEDSTRINGS
 
 #include "../Resources/GuiResource.h"
+#include "../../Import/VlppWorkflowCompiler.h"
 
 namespace vl
 {
@@ -35,12 +36,14 @@ namespace vl
 				GuiResourceTextPos						tagPosition;
 			};
 
+			WString										className;
 			WString										defaultLocale;
 			collections::List<Ptr<Strings>>				strings;
 			GuiResourceTextPos							tagPosition;
 
 			static Ptr<GuiInstanceLocalizedStrings>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<parsing::xml::XmlElement>				SaveToXml();
+			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
 		};
 	}
 }

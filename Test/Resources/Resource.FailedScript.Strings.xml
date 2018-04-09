@@ -10,14 +10,14 @@
   </LocalizedStrings>
 
   <LocalizedStrings name="s3">
-    <LocalizedStrings DefaultLocale="en-US">
+    <LocalizedStrings DefaultLocale="en-US" ref.Class="demo::s3">
       <X>
       </X>
     </LocalizedStrings>
   </LocalizedStrings>
 
   <LocalizedStrings name="s4">
-    <LocalizedStrings DefaultLocale="en-US">
+    <LocalizedStrings DefaultLocale="en-US" ref.Class="demo::s4">
       <Strings/>
       <Strings Locales="en-US;zh-CN"/>
       <Strings Locales="en-US;ja-JP">

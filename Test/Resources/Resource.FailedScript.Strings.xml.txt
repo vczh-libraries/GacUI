@@ -1,6 +1,7 @@
 s1 # .\Resource.FailedScript.Strings.xml
 (3, 5): The root element of localized strings should be "LocalizedStrings".
 s2 # .\Resource.FailedScript.Strings.xml
+(8, 5): Missing attribute "ref.Class" in "LocalizedStrings".
 (8, 5): Missing attribute "DefaultLocale" in "LocalizedStrings".
 s3 # .\Resource.FailedScript.Strings.xml
 (13, 5): Strings for the default locale "en-US" is not defined.

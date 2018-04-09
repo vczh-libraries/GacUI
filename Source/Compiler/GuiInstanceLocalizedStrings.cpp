@@ -7,6 +7,8 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace parsing::xml;
+		using namespace workflow;
+		using namespace workflow::analyzer;
 
 /***********************************************************************
 GuiInstanceLocalizedStrings
@@ -23,13 +25,30 @@ GuiInstanceLocalizedStrings
 			}
 			ls->tagPosition = { {resource},xml->rootElement->name.codeRange.start };
 
+			auto attClassName = XmlGetAttribute(xml->rootElement, L"ref.Class");
+			if (!attClassName)
+			{
+				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Missing attribute \"ref.Class\" in \"LocalizedStrings\"."));
+			}
+			else
+			{
+				ls->className = attClassName->value.value;
+			}
+
 			auto attDefaultLocale = XmlGetAttribute(xml->rootElement, L"DefaultLocale");
 			if (!attDefaultLocale)
 			{
 				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Missing attribute \"DefaultLocale\" in \"LocalizedStrings\"."));
+			}
+			else
+			{
+				ls->defaultLocale = attDefaultLocale->value.value;
+			}
+
+			if (!attClassName || !attDefaultLocale)
+			{
 				return nullptr;
 			}
-			ls->defaultLocale = attDefaultLocale->value.value;
 
 			SortedList<WString> existingLocales;
 			FOREACH(Ptr<XmlElement>, xmlStrings, XmlGetElements(xml->rootElement))
@@ -158,6 +177,13 @@ GuiInstanceLocalizedStrings
 			}
 
 			return xml;
+		}
+
+		Ptr<workflow::WfModule> GuiInstanceLocalizedStrings::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
+		{
+			auto module = MakePtr<WfModule>();
+			module->name.value = moduleName;
+			return module;
 		}
 	}
 }
