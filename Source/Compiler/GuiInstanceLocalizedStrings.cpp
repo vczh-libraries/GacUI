@@ -192,22 +192,22 @@ GuiInstanceLocalizedStrings
 			return xml;
 		}
 
-		using ParameterPair = Pair<Ptr<ITypeInfo>, WString>;
-		using ParameterList = List<ParameterPair>;
-		using ParameterGroup = Group<WString, ParameterPair>;
+		Ptr<GuiInstanceLocalizedStrings::Strings> GuiInstanceLocalizedStrings::GetDefaultStrings()
+		{
+			return From(strings)
+				.Where([=](Ptr<Strings> strings)
+				{
+					return strings->locales.Contains(defaultLocale);
+				})
+				.First();
+		}
 
-		static bool ParseLocalizedText(
-			const WString& text,
-			ParameterList& parameters,
-			List<vint>& positions,
-			List<WString>& texts,
-			GuiResourceTextPos pos,
-			GuiResourceError::List& errors
-			)
+		Ptr<GuiInstanceLocalizedStrings::TextDesc> GuiInstanceLocalizedStrings::ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors)
 		{
 			const wchar_t* reading = text.Buffer();
 			const wchar_t* textPosCounter = reading;
 			ParsingTextPos formatPos(0, 0);
+			auto textDesc = MakePtr<TextDesc>();
 
 			auto addError = [&](const WString& message)
 			{
@@ -222,7 +222,7 @@ GuiInstanceLocalizedStrings
 				const wchar_t* begin = wcsstr(reading, L"$(");
 				if (begin)
 				{
-					texts.Add(WString(reading, vint(begin - reading)));
+					textDesc->texts.Add(WString(reading, vint(begin - reading)));
 				}
 				else
 				{
@@ -233,7 +233,7 @@ GuiInstanceLocalizedStrings
 				if (!end)
 				{
 					addError(L"Precompile: Does not find matched close bracket.");
-					return false;
+					return nullptr;
 				}
 
 				while (textPosCounter++ < begin + 2)
@@ -252,13 +252,13 @@ GuiInstanceLocalizedStrings
 
 				if (end - begin == 3 && wcsncmp(begin, L"$($)", 4) == 0)
 				{
-					if (texts.Count() > 0)
+					if (textDesc->texts.Count() > 0)
 					{
-						texts[texts.Count() - 1] += L"$";
+						textDesc->texts[textDesc->texts.Count() - 1] += L"$";
 					}
 					else
 					{
-						texts.Add(L"$");
+						textDesc->texts.Add(L"$");
 					}
 				}
 				else
@@ -273,7 +273,7 @@ GuiInstanceLocalizedStrings
 					if (number == numberEnd)
 					{
 						addError(L"Precompile: Unexpected character, the correct format is $(index) or $(index:function).");
-						return false;
+						return nullptr;
 					}
 
 					Ptr<ITypeInfo> type;
@@ -294,55 +294,50 @@ GuiInstanceLocalizedStrings
 							else
 							{
 								addError(L"Precompile: Unknown formatting function name \"" + function + L"\".");
-								return false;
+								return nullptr;
 							}
 						}
 						else
 						{
 							addError(L"Precompile: Unexpected character, the correct format is $(index) or $(index:function).");
-							return false;
+							return nullptr;
 						}
 					}
 					else if (numberEnd != end)
 					{
 						addError(L"Precompile: Unexpected character, the correct format is $(index) or $(index:function).");
-						return false;
+						return nullptr;
 					}
 
 					if (!type)
 					{
 						type = TypeInfoRetriver<WString>::CreateTypeInfo();
 					}
-					parameters.Add({ type,function });
-					positions.Add(wtoi(WString(number, (vint)(numberEnd - number))));
+					textDesc->parameters.Add({ type,function });
+					textDesc->positions.Add(wtoi(WString(number, (vint)(numberEnd - number))));
 				}
 				reading = end;
 			}
 
-			if (*reading || texts.Count() == 0)
+			if (*reading || textDesc->texts.Count() == 0)
 			{
-				texts.Add(reading);
+				textDesc->texts.Add(reading);
 			}
 
-			FOREACH_INDEXER(vint, i, index, From(positions).OrderBy([](vint a, vint b) {return a - b; }))
+			FOREACH_INDEXER(vint, i, index, From(textDesc->positions).OrderBy([](vint a, vint b) {return a - b; }))
 			{
 				if (i != index)
 				{
 					errors.Add({ pos,L"Precompile: Missing parameter \"" + itow(index) + L"\"." });
-					return false;
+					return nullptr;
 				}
 			}
-			return true;
+			return textDesc;
 		}
 
-		Ptr<workflow::WfModule> GuiInstanceLocalizedStrings::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
+		void GuiInstanceLocalizedStrings::Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors)
 		{
-			auto defaultStrings = From(strings)
-				.Where([=](Ptr<Strings> strings)
-				{
-					return strings->locales.Contains(defaultLocale);
-				})
-				.First();
+			auto defaultStrings = GetDefaultStrings();
 
 			vint errorCount = errors.Count();
 			FOREACH(Ptr<Strings>, lss, strings)
@@ -378,27 +373,19 @@ GuiInstanceLocalizedStrings
 			}
 			if (errors.Count() != errorCount)
 			{
-				return nullptr;
+				return;
 			}
 
-			ParameterGroup defaultGroup;
 			FOREACH(Ptr<StringItem>, lssi, defaultStrings->items.Values())
 			{
-				ParameterList parameters;
-				List<vint> positions;
-				List<WString> texts;
-
-				if (ParseLocalizedText(lssi->text, parameters, positions, texts, lssi->textPosition, errors))
+				if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
 				{
-					FOREACH(vint, index, positions)
-					{
-						defaultGroup.Add(lssi->name, parameters[index]);
-					}
+					textDescs.Add({ defaultStrings,lssi->name }, textDesc);
 				}
 			}
 			if (errors.Count() != errorCount)
 			{
-				return nullptr;
+				return;
 			}
 
 			auto defaultLocalesName = defaultStrings->GetLocalesName();
@@ -410,23 +397,19 @@ GuiInstanceLocalizedStrings
 
 					FOREACH(Ptr<StringItem>, lssi, lss->items.Values())
 					{
-						ParameterList parameters;
-						List<vint> positions;
-						List<WString> texts;
-
-						if (ParseLocalizedText(lssi->text, parameters, positions, texts, lssi->textPosition, errors))
+						if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
 						{
-							auto& defaultParameters = defaultGroup[lssi->name];
-							if (defaultParameters.Count() != parameters.Count())
+							auto defaultDesc = textDescs[{defaultStrings, lssi->name}];
+							if (defaultDesc->parameters.Count() != textDesc->parameters.Count())
 							{
 								errors.Add({ lss->tagPosition,L"String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" have different numbers of parameters." });
 							}
 							else
 							{
-								for (vint i = 0; i < parameters.Count(); i++)
+								for (vint i = 0; i < textDesc->parameters.Count(); i++)
 								{
-									auto defaultParameter = defaultParameters[i];
-									auto parameter = parameters[positions[i]];
+									auto defaultParameter = defaultDesc->parameters[defaultDesc->positions[i]];
+									auto parameter = textDesc->parameters[textDesc->positions[i]];
 
 									if (defaultParameter.key->GetTypeDescriptor()->GetTypeName() != parameter.key->GetTypeDescriptor()->GetTypeName())
 									{
@@ -438,6 +421,17 @@ GuiInstanceLocalizedStrings
 					}
 				}
 			}
+			if (errors.Count() != errorCount)
+			{
+				return;
+			}
+		}
+
+		Ptr<workflow::WfModule> GuiInstanceLocalizedStrings::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
+		{
+			vint errorCount = errors.Count();
+			TextDescMap textDescs;
+			Validate(textDescs, precompileContext, errors);
 			if (errors.Count() != errorCount)
 			{
 				return nullptr;
