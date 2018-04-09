@@ -1290,25 +1290,31 @@ Locale
 #endif
 	}
 
-#ifdef VCZH_MSVC
 	WString Locale::FormatNumber(const WString& number)const
 	{
+#ifdef VCZH_MSVC
 		int length=GetNumberFormatEx(localeName.Buffer(), 0, number.Buffer(), NULL, NULL, 0);
 		if(length==0) return L"";
 		Array<wchar_t> buffer(length);
 		GetNumberFormatEx(localeName.Buffer(), 0, number.Buffer(), NULL, &buffer[0], (int)buffer.Count());
 		return &buffer[0];
+#elif defined VCZH_GCC
+		return number;
+#endif
 	}
 
 	WString Locale::FormatCurrency(const WString& currency)const
 	{
+#ifdef VCZH_MSVC
 		int length=GetCurrencyFormatEx(localeName.Buffer(), 0, currency.Buffer(), NULL, NULL, 0);
 		if(length==0) return L"";
 		Array<wchar_t> buffer(length);
 		GetCurrencyFormatEx(localeName.Buffer(), 0, currency.Buffer(), NULL, &buffer[0], (int)buffer.Count());
 		return &buffer[0];
-	}
+#elif defined VCZH_GCC
+		return currency;
 #endif
+	}
 
 	WString Locale::GetShortDayOfWeekName(vint dayOfWeek)const
 	{

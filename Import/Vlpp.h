@@ -6836,7 +6836,7 @@ namespace vl
 		/// <param name="format">The format to use.</param>
 		/// <param name="time">The time to convert.</param>
 		WString						FormatTime(const WString& format, DateTime time)const;
-#ifdef VCZH_MSVC
+
 		/// <summary>Convert a number to a formatted string.</summary>
 		/// <returns>The formatted string.</returns>
 		/// <param name="number">The number to convert.</param>
@@ -6845,7 +6845,6 @@ namespace vl
 		/// <returns>The formatted string.</returns>
 		/// <param name="currency">The currency to convert.</param>
 		WString						FormatCurrency(const WString& currency)const;
-#endif
 
 		/// <summary>Get the short display string of a day of week.</summary>
 		/// <returns>The display string.</returns>

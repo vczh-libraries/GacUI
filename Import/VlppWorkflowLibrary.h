@@ -623,6 +623,31 @@ Libraries
 				static double		Round(double value)				{ return round(value); }
 				static double		Trunc(double value)				{ return trunc(value); }
 			};
+
+			class Localization : public Description<Localization>
+			{
+			public:
+				static Locale							Invariant();
+				static Locale							System();
+				static Locale							User();
+				static collections::LazyList<Locale>	Locales();
+
+				static collections::LazyList<WString>	GetShortDateFormats(Locale locale);
+				static collections::LazyList<WString>	GetLongDateFormats(Locale locale);
+				static collections::LazyList<WString>	GetYearMonthDateFormats(Locale locale);
+				static collections::LazyList<WString>	GetLongTimeFormats(Locale locale);
+				static collections::LazyList<WString>	GetShortTimeFormats(Locale locale);
+
+				static WString							GetShortDayOfWeekName(Locale locale, vint dayOfWeek);
+				static WString							GetLongDayOfWeekName(Locale locale, vint dayOfWeek);
+				static WString							GetShortMonthName(Locale locale, vint month);
+				static WString							GetLongMonthName(Locale locale, vint month);
+
+				static WString							FormatDate(Locale locale, const WString& format, DateTime date);
+				static WString							FormatTime(Locale locale, const WString& format, DateTime date);
+				static WString							FormatNumber(Locale locale, const WString& number);
+				static WString							FormatCurrency(Locale locale, const WString& number);
+			};
 		}
 	}
 }
@@ -661,6 +686,7 @@ Predefined Types
 #define WORKFLOW_LIBRARY_TYPES(F)\
 			F(Sys)							\
 			F(Math)							\
+			F(Localization)					\
 			F(CoroutineStatus)				\
 			F(CoroutineResult)				\
 			F(ICoroutine)					\
