@@ -490,7 +490,15 @@ GuiInstanceLocalizedStrings
 
 				func->anonymity = WfFunctionAnonymity::Named;
 				func->name.value = L"Get";
-				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+				{
+					auto refType = MakePtr<WfReferenceType>();
+					refType->name.value = L"IStrings";
+
+					auto refPointer = MakePtr<WfSharedPointerType>();
+					refPointer->element = refType;
+
+					func->returnType = refPointer;
+				}
 				{
 					auto member = MakePtr<WfClassMember>();
 					member->kind = WfClassMemberKind::Static;
@@ -499,7 +507,7 @@ GuiInstanceLocalizedStrings
 				{
 					auto argument = MakePtr<WfFunctionArgument>();
 					argument->name.value = L"<ls>locale";
-					argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+					argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
 					func->arguments.Add(argument);
 				}
 
