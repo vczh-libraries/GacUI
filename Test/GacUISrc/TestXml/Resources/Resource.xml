@@ -2,25 +2,25 @@
   <LocalizedStrings name="StringResource">
     <LocalizedStrings ref.Class="demo::StringResource" DefaultLocale="en-US">
       <Strings Locales="en-US">
-        <String Name="ShortDate" Text="ShortDate: ${0:ShortDate}"/>
-        <String Name="LongDate" Text="LongDate: ${0:LongDate}"/>
-        <String Name="YearMonthDate" Text="YearMonthDate: ${0:YearMonthDate}"/>
-        <String Name="ShortTime" Text="ShortTime: ${0:ShortTime}"/>
-        <String Name="LongTime" Text="LongTime: ${0:LongTime}"/>
-        <String Name="Number" Text="Number: ${0:Number}"/>
-        <String Name="Currency" Text="Currency: ${0:Currency}"/>
-        <String Name="Sentence" Text="Good morning, ${0}!"/>
+        <String Name="ShortDate" Text="ShortDate: $(0:ShortDate)"/>
+        <String Name="LongDate" Text="LongDate: $(0:LongDate)"/>
+        <String Name="YearMonthDate" Text="YearMonthDate: $(0:YearMonthDate)"/>
+        <String Name="ShortTime" Text="ShortTime: $(0:ShortTime)"/>
+        <String Name="LongTime" Text="LongTime: $(0:LongTime)"/>
+        <String Name="Number" Text="Number: $(0:Number)"/>
+        <String Name="Currency" Text="Currency: $(0:Currency)"/>
+        <String Name="Sentence" Text="$($)Good morning, $(0)!$($)"/>
       </Strings>
       
       <Strings Locales="zh-CN">
-        <String Name="ShortDate" Text="¶ÌÈÕÆÚ£º${0:ShortDate}"/>
-        <String Name="LongDate" Text="³¤ÈÕÆÚ£º${0:LongDate}"/>
-        <String Name="YearMonthDate" Text="ÄêÔÂ£º${0:YearMonthDate}"/>
-        <String Name="ShortTime" Text="¶ÌÊ±¼ä£º${0:ShortTime}"/>
-        <String Name="LongTime" Text="³¤Ê±¼ä£º${0:LongTime}"/>
-        <String Name="Number" Text="Êý×Ö£º${0:Number}"/>
-        <String Name="Currency" Text="»õ±Ò£º${0:Currency}"/>
-        <String Name="Sentence" Text="${0}£¬ÔçÉÏºÃ£¡"/>
+        <String Name="ShortDate" Text="çŸ­æ—¥æœŸï¼š$(0:ShortDate)"/>
+        <String Name="LongDate" Text="é•¿æ—¥æœŸï¼š$(0:LongDate)"/>
+        <String Name="YearMonthDate" Text="å¹´æœˆï¼š$(0:YearMonthDate)"/>
+        <String Name="ShortTime" Text="çŸ­æ—¶é—´ï¼š$(0:ShortTime)"/>
+        <String Name="LongTime" Text="é•¿æ—¶é—´ï¼š$(0:LongTime)"/>
+        <String Name="Number" Text="æ•°å­—ï¼š$(0:Number)"/>
+        <String Name="Currency" Text="è´§å¸ï¼š$(0:Currency)"/>
+        <String Name="Sentence" Text="$($)$(0)ï¼Œæ—©ä¸Šå¥½ï¼$($)"/>
       </Strings>
     </LocalizedStrings>
   </LocalizedStrings>

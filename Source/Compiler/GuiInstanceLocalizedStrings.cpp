@@ -6,9 +6,11 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
+		using namespace parsing;
 		using namespace parsing::xml;
 		using namespace workflow;
 		using namespace workflow::analyzer;
+		using namespace reflection::description;
 
 /***********************************************************************
 GuiInstanceLocalizedStrings
@@ -177,6 +179,139 @@ GuiInstanceLocalizedStrings
 			}
 
 			return xml;
+		}
+
+		using ParameterPair = Pair<Ptr<ITypeInfo>, WString>;
+		using ParameterList = List<ParameterPair>;
+		using ParameterGroup = Group<WString, ParameterPair>();
+
+		static void ParseLocalizedText(
+			const WString& text,
+			ParameterList& parameters,
+			List<vint>& positions,
+			List<WString>& texts,
+			GuiResourceTextPos pos,
+			GuiResourceError::List& errors
+			)
+		{
+			const wchar_t* reading = text.Buffer();
+			const wchar_t* textPosCounter = reading;
+			ParsingTextPos formatPos(0, 0);
+
+			auto addError = [&](const WString& message)
+			{
+				auto errorPos = pos;
+				errorPos.row += formatPos.row;
+				errorPos.column = (formatPos.row == 0 ? errorPos.column : 0) + formatPos.column;
+				errors.Add({ errorPos,message });
+			};
+
+			while (*reading)
+			{
+				const wchar_t* begin = wcsstr(reading, L"$(");
+				if (begin)
+				{
+					texts.Add(WString(reading, vint(begin - reading)));
+				}
+				else
+				{
+					break;
+				}
+
+				const wchar_t* end = wcsstr(begin, L")");
+				if (!end)
+				{
+					addError(L"Precompile: Does not find matched close bracket.");
+					return;
+				}
+
+				while (textPosCounter++ < begin + 2)
+				{
+					switch (textPosCounter[-1])
+					{
+					case '\n':
+						formatPos.row++;
+						formatPos.column = 0;
+						break;
+					default:
+						formatPos.column++;
+						break;
+					}
+				}
+
+				if (end - begin == 4 && wcsncmp(begin, L"$($)", 4) == 0)
+				{
+					if (texts.Count() > 0)
+					{
+						texts[texts.Count() - 1] += L"$";
+					}
+					else
+					{
+						texts.Add(L"$");
+					}
+				}
+				else
+				{
+					const wchar_t* number = begin + 2;
+					const wchar_t* numberEnd = number;
+					while (L'0' <= *numberEnd && *numberEnd < L'9')
+					{
+						numberEnd++;
+					}
+
+					if (number == numberEnd)
+					{
+						addError(L"Precompile: Unexpected character, the correct format is $(index) or $(index:function).");
+						return;
+					}
+
+					Ptr<ITypeInfo> type;
+					WString function;
+					if (*numberEnd == L':')
+					{
+						if (end - numberEnd > 1)
+						{
+							function = WString(numberEnd + 1, (vint)(end - numberEnd - 1));
+							if (function == L"ShortDate" || function == L"LongDate" || function == L"YearMonthDate" || function == L"ShortTime" || function == L"LongTime")
+							{
+								type = TypeInfoRetriver<DateTime>::CreateTypeInfo();
+							}
+							else if (function == L"Number" || function == L"Currency")
+							{
+								type = TypeInfoRetriver<WString>::CreateTypeInfo();
+							}
+							else
+							{
+								addError(L"Precompile: Unknown formatting function name: \"" + function + L"\".");
+								return;
+							}
+						}
+						else
+						{
+							addError(L"Precompile: Unexpected character, the correct format is $(index) or $(index:function).");
+							return;
+						}
+					}
+					else if (numberEnd != end)
+					{
+						addError(L"Precompile: Unexpected character, the correct format is $(index) or $(index:function).");
+						return;
+					}
+
+					if (!type)
+					{
+						type = TypeInfoRetriver<WString>::CreateTypeInfo();
+					}
+					parameters.Add({ type,function });
+					positions.Add(wtoi(WString(number, (vint)(numberEnd - number))));
+				}
+				reading = end;
+			}
+
+			if (*reading || texts.Count() == 0)
+			{
+				texts.Add(reading);
+			}
 		}
 
 		Ptr<workflow::WfModule> GuiInstanceLocalizedStrings::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
