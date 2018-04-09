@@ -20,7 +20,12 @@
     <LocalizedStrings DefaultLocale="en-US">
       <Strings/>
       <Strings Locales="en-US;zh-CN"/>
-      <Strings Locales="en-US;ja-JP"/>
+      <Strings Locales="en-US;ja-JP">
+        <X/>
+        <String/>
+        <String Name="X" Text="Y"/>
+        <String Name="X" Text="Y"/>
+      </Strings>
     </LocalizedStrings>
   </LocalizedStrings>
 </Resource>

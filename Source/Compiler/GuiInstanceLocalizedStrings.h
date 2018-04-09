@@ -18,10 +18,20 @@ namespace vl
 		class GuiInstanceLocalizedStrings : public Object, public Description<GuiInstanceLocalizedStrings>
 		{
 		public:
-			class Strings : public Object
+			class StringItem : public Object
 			{
 			public:
+				WString									name;
+				WString									text;
+				GuiResourceTextPos						textPosition;
+			};
+
+			class Strings : public Object
+			{
+				using StringItemMap = collections::Dictionary<WString, Ptr<StringItem>>;
+			public:
 				collections::List<WString>				locales;
+				StringItemMap							items;
 			};
 
 			WString										defaultLocale;

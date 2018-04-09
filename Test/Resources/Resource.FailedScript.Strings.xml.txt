@@ -8,3 +8,7 @@ s3 # .\Resource.FailedScript.Strings.xml
 s4 # .\Resource.FailedScript.Strings.xml
 (21, 7): Missing attribute "Locales" in "Strings".
 (23, 16): Locale "en-US" already exists.
+(24, 9): Unknown element "X", it should be "String".
+(25, 9): Missing attribute "Name" in "String".
+(25, 9): Missing attribute "Text" in "String".
+(27, 9): String "X" already exists.

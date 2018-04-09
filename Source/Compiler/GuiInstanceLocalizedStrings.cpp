@@ -43,7 +43,6 @@ GuiInstanceLocalizedStrings
 				if (!attLocales)
 				{
 					errors.Add(GuiResourceError({ { resource },xmlStrings->codeRange.start }, L"Missing attribute \"Locales\" in \"Strings\"."));
-					continue;
 				}
 				else
 				{
@@ -60,6 +59,44 @@ GuiInstanceLocalizedStrings
 						else
 						{
 							errors.Add(GuiResourceError({ { resource },attLocales->codeRange.start }, L"Locale \"" + locale + L"\" already exists."));
+						}
+					}
+
+					FOREACH(Ptr<XmlElement>, xmlString, XmlGetElements(xmlStrings))
+					{
+						if (xmlString->name.value != L"String")
+						{
+							errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"Unknown element \"" + xmlString->name.value + L"\", it should be \"String\"."));
+							continue;
+						}
+
+						auto attName = XmlGetAttribute(xmlString, L"Name");
+						auto attText = XmlGetAttribute(xmlString, L"Text");
+
+						if (!attName)
+						{
+							errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"Missing attribute \"Name\" in \"String\"."));
+						}
+						if (!attText)
+						{
+							errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"Missing attribute \"Text\" in \"String\"."));
+						}
+
+						if (attName && attText)
+						{
+							if (strings->items.Keys().Contains(attName->value.value))
+							{
+								errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"String \"" + attName->value.value + L"\" already exists."));
+							}
+							else
+							{
+								auto item = MakePtr<GuiInstanceLocalizedStrings::StringItem>();
+								item->name = attName->value.value;
+								item->text = attText->value.value;
+								item->textPosition = { {resource},attText->value.codeRange.start };
+								item->textPosition.column += 1;
+								strings->items.Add(item->name, item);
+							}
 						}
 					}
 				}
@@ -97,6 +134,24 @@ GuiInstanceLocalizedStrings
 						return a == L"" ? b : a + L";" + b;
 					});
 					xmlStrings->attributes.Add(att);
+				}
+
+				FOREACH(Ptr<GuiInstanceLocalizedStrings::StringItem>, lssi, lss->items.Values())
+				{
+					auto xmlString = MakePtr<XmlElement>();
+					xmlStrings->subNodes.Add(xmlString);
+					{
+						auto att = MakePtr<XmlAttribute>();
+						att->name.value = L"Name";
+						att->value.value = lssi->name;
+						xmlString->attributes.Add(att);
+					}
+					{
+						auto att = MakePtr<XmlAttribute>();
+						att->name.value = L"Text";
+						att->value.value = lssi->text;
+						xmlString->attributes.Add(att);
+					}
 				}
 			}
 
