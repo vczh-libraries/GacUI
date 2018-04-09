@@ -470,6 +470,7 @@ GuiInstanceLocalizedStrings
 
 				lsInterface->kind = WfClassKind::Interface;
 				lsInterface->constructorType = WfConstructorType::Undefined;
+				lsInterface->name.value = L"IStrings";
 				{
 					auto classMember = MakePtr<WfClassMember>();
 					classMember->kind = WfClassMemberKind::Normal;

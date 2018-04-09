@@ -514,6 +514,25 @@ Workflow_GenerateInstanceClass
 			}
 
 			///////////////////////////////////////////////////////////////
+			// ref.LocalizedString (Property)
+			///////////////////////////////////////////////////////////////
+
+			FOREACH(Ptr<GuiInstanceLocalized>, localized, context->localizeds)
+			{
+				auto prop = MakePtr<WfAutoPropertyDeclaration>();
+				addDecl(prop);
+
+				prop->name.value = localized->name.ToString();
+				prop->type = GetTypeFromTypeInfo(resolvingResult.typeInfos[localized->name].typeInfo.Obj());
+				prop->configConst = WfAPConst::Readonly;
+				prop->configObserve = WfAPObserve::Observable;
+
+				auto nullExpr = MakePtr<WfLiteralExpression>();
+				nullExpr->value = WfLiteralValue::Null;
+				prop->expression = nullExpr;
+			}
+
+			///////////////////////////////////////////////////////////////
 			// ref.Parameter (Variable, Getter, CtorArgument)
 			///////////////////////////////////////////////////////////////
 
