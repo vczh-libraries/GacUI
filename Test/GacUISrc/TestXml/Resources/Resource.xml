@@ -2,25 +2,25 @@
   <LocalizedStrings name="StringResource">
     <LocalizedStrings ref.Class="demo::StringResource" DefaultLocale="en-US">
       <Strings Locales="en-US">
-        <String Name="ShortDate" Text="N/A"/>
-        <String Name="LongDate" Text="N/A"/>
-        <String Name="YearMonthDate" Text="N/A"/>
-        <String Name="ShortTime" Text="N/A"/>
-        <String Name="LongTime" Text="N/A"/>
-        <String Name="Number" Text="N/A"/>
-        <String Name="Currency" Text="N/A"/>
-        <String Name="Sentence" Text="N/A"/>
+        <String Name="ShortDate" Text="ShortDate: ${0:ShortDate}"/>
+        <String Name="LongDate" Text="LongDate: ${0:LongDate}"/>
+        <String Name="YearMonthDate" Text="YearMonthDate: ${0:YearMonthDate}"/>
+        <String Name="ShortTime" Text="ShortTime: ${0:ShortTime}"/>
+        <String Name="LongTime" Text="LongTime: ${0:LongTime}"/>
+        <String Name="Number" Text="Number: ${0:Number}"/>
+        <String Name="Currency" Text="Currency: ${0:Currency}"/>
+        <String Name="Sentence" Text="Good morning, ${0}!"/>
       </Strings>
       
       <Strings Locales="zh-CN">
-        <String Name="ShortDate" Text="N/A"/>
-        <String Name="LongDate" Text="N/A"/>
-        <String Name="YearMonthDate" Text="N/A"/>
-        <String Name="ShortTime" Text="N/A"/>
-        <String Name="LongTime" Text="N/A"/>
-        <String Name="Number" Text="N/A"/>
-        <String Name="Currency" Text="N/A"/>
-        <String Name="Sentence" Text="N/A"/>
+        <String Name="ShortDate" Text="短日期：${0:ShortDate}"/>
+        <String Name="LongDate" Text="长日期：${0:LongDate}"/>
+        <String Name="YearMonthDate" Text="年月：${0:YearMonthDate}"/>
+        <String Name="ShortTime" Text="短时间：${0:ShortTime}"/>
+        <String Name="LongTime" Text="长时间：${0:LongTime}"/>
+        <String Name="Number" Text="数字：${0:Number}"/>
+        <String Name="Currency" Text="货币：${0:Currency}"/>
+        <String Name="Sentence" Text="${0}，早上好！"/>
       </Strings>
     </LocalizedStrings>
   </LocalizedStrings>
