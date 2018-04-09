@@ -1,3 +1,11 @@
 s1 # .\Resource.FailedScript.Strings2.xml
 (7, 8): Precompile: Missing strings for locale "zh-CN": X.
 (7, 8): Precompile: Unnecessary strings for locale "zh-CN": Y.
+s2 # .\Resource.FailedScript.Strings2.xml
+(16, 32): Precompile: Does not find matched close bracket.
+(17, 34): Precompile: Unexpected character, the correct format is $(index) or $(index:function).
+(18, 34): Precompile: Unexpected character, the correct format is $(index) or $(index:function).
+(19, 34): Precompile: Unexpected character, the correct format is $(index) or $(index:function).
+(20, 34): Precompile: Unexpected character, the correct format is $(index) or $(index:function).
+(21, 34): Precompile: Unknown formatting function name "X".
+(22, 32): Precompile: Missing parameter "1".

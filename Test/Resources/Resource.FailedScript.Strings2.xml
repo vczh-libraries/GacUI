@@ -14,12 +14,12 @@
     <LocalizedStrings ref.Class="demo::s2" DefaultLocale="en-US">
       <Strings Locales="en-US">
         <String Name="A" Text="$("/>
-        <String Name="A" Text="$()"/>
-        <String Name="A" Text="$(abc)"/>
-        <String Name="A" Text="$(0+)"/>
-        <String Name="A" Text="$(0:)"/>
-        <String Name="A" Text="$(0:X)"/>
-        <String Name="A" Text="$(0)$(2)"/>
+        <String Name="B" Text="$()"/>
+        <String Name="C" Text="$(abc)"/>
+        <String Name="D" Text="$(0+)"/>
+        <String Name="E" Text="$(0:)"/>
+        <String Name="F" Text="$(0:X)"/>
+        <String Name="G" Text="$(0)$(2)"/>
       </Strings>
     </LocalizedStrings>
   </LocalizedStrings>

@@ -183,9 +183,9 @@ GuiInstanceLocalizedStrings
 
 		using ParameterPair = Pair<Ptr<ITypeInfo>, WString>;
 		using ParameterList = List<ParameterPair>;
-		using ParameterGroup = Group<WString, ParameterPair>();
+		using ParameterGroup = Group<WString, ParameterPair>;
 
-		static void ParseLocalizedText(
+		static bool ParseLocalizedText(
 			const WString& text,
 			ParameterList& parameters,
 			List<vint>& positions,
@@ -222,7 +222,7 @@ GuiInstanceLocalizedStrings
 				if (!end)
 				{
 					addError(L"Precompile: Does not find matched close bracket.");
-					return;
+					return false;
 				}
 
 				while (textPosCounter++ < begin + 2)
@@ -262,7 +262,7 @@ GuiInstanceLocalizedStrings
 					if (number == numberEnd)
 					{
 						addError(L"Precompile: Unexpected character, the correct format is $(index) or $(index:function).");
-						return;
+						return false;
 					}
 
 					Ptr<ITypeInfo> type;
@@ -282,20 +282,20 @@ GuiInstanceLocalizedStrings
 							}
 							else
 							{
-								addError(L"Precompile: Unknown formatting function name: \"" + function + L"\".");
-								return;
+								addError(L"Precompile: Unknown formatting function name \"" + function + L"\".");
+								return false;
 							}
 						}
 						else
 						{
 							addError(L"Precompile: Unexpected character, the correct format is $(index) or $(index:function).");
-							return;
+							return false;
 						}
 					}
 					else if (numberEnd != end)
 					{
 						addError(L"Precompile: Unexpected character, the correct format is $(index) or $(index:function).");
-						return;
+						return false;
 					}
 
 					if (!type)
@@ -312,6 +312,16 @@ GuiInstanceLocalizedStrings
 			{
 				texts.Add(reading);
 			}
+
+			FOREACH_INDEXER(vint, i, index, From(positions).OrderBy([](vint a, vint b) {return a - b; }))
+			{
+				if (i != index)
+				{
+					errors.Add({ pos,L"Precompile: Missing parameter \"" + itow(index) + L"\"." });
+					return false;
+				}
+			}
+			return true;
 		}
 
 		Ptr<workflow::WfModule> GuiInstanceLocalizedStrings::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
@@ -355,6 +365,26 @@ GuiInstanceLocalizedStrings
 					if (extra != L"")
 					{
 						errors.Add({ lss->tagPosition,L"Precompile: Unnecessary strings for locale \"" + localesName + L"\": " + extra + L"." });
+					}
+				}
+			}
+			if (errors.Count() != errorCount)
+			{
+				return nullptr;
+			}
+
+			ParameterGroup defaultGroups;
+			FOREACH(Ptr<StringItem>, lssi, defaultStrings->items.Values())
+			{
+				ParameterList parameters;
+				List<vint> positions;
+				List<WString> texts;
+
+				if (ParseLocalizedText(lssi->text, parameters, positions, texts, lssi->textPosition, errors))
+				{
+					FOREACH(vint, index, positions)
+					{
+						defaultGroups.Add(lssi->name, parameters[index]);
 					}
 				}
 			}
