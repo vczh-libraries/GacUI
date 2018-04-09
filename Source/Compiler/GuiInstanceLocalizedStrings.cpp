@@ -147,6 +147,12 @@ GuiInstanceLocalizedStrings
 			xml->name.value = L"LocalizedStrings";
 			{
 				auto att = MakePtr<XmlAttribute>();
+				att->name.value = L"ref.Class";
+				att->value.value = className;
+				xml->attributes.Add(att);
+			}
+			{
+				auto att = MakePtr<XmlAttribute>();
 				att->name.value = L"DefaultLocale";
 				att->value.value = defaultLocale;
 				xml->attributes.Add(att);
