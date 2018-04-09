@@ -436,6 +436,16 @@ Instance Type Resolver (Instance)
 									L"\" should have the class name specified in the ref.Class attribute."));
 							}
 
+							FOREACH_INDEXER(Ptr<GuiInstanceLocalized>, localized, index,
+								From(obj->localizeds).Where([](Ptr<GuiInstanceLocalized> ls) {return ls->defaultStrings; })
+								)
+							{
+								if (index > 0)
+								{
+									errors.Add(GuiResourceError({ resource }, localized->tagPosition, L"Precompile: Only one <ref.LocalizedStrings> can be the default one."));
+								}
+							}
+
 							obj->ApplyStyles(resource, context.resolver, errors);
 
 							types::ResolvingResult resolvingResult;
