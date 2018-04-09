@@ -251,7 +251,7 @@ GuiLocalizedStringInstanceBinder (str)
 			{
 				if (auto expression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, position, errors, { 0,0 }))
 				{
-					Ptr<WfBindExpression> bindExpr;
+					vint errorCount = errors.Count();
 					if (auto callExpr = expression.Cast<WfCallExpression>())
 					{
 						if (auto refExpr = callExpr->function.Cast<WfReferenceExpression>())
@@ -280,9 +280,7 @@ GuiLocalizedStringInstanceBinder (str)
 								refMember->codeRange = refExpr->codeRange;
 
 								callExpr->function = refMember;
-
-								bindExpr = MakePtr<WfBindExpression>();
-								bindExpr->expression = callExpr;
+								goto PASSED;
 							}
 							else
 							{
@@ -303,24 +301,34 @@ GuiLocalizedStringInstanceBinder (str)
 								thisMember->codeRange = refStrings->codeRange;
 
 								memberExpr->parent = thisMember;
-
-								bindExpr = MakePtr<WfBindExpression>();
-								bindExpr->expression = callExpr;
+								goto PASSED;
 							}
 						}
 						
-						if (!bindExpr)
-						{
-							errors.Add({ position,L"Precompiled: The function expression in binding \"-str\" should be a \"<string-name>\" or \"<localized-strings-name>.<string-name>\"." });
-						}
+						errors.Add({ position,L"Precompiled: The function expression in binding \"-str\" should be a \"<string-name>\" or \"<localized-strings-name>.<string-name>\"." });
+					PASSED:;
 					}
 					else
 					{
 						errors.Add({ position,L"Precompiled: Expression in binding \"-str\" should be a function call expression." });
 					}
 
-					if (bindExpr)
+					if (errorCount == errors.Count())
 					{
+						auto stringExpr = MakePtr<WfStringExpression>();
+						stringExpr->value.value = L"";
+						stringExpr->codeRange = expression->codeRange;
+
+						auto recoveryExpr = MakePtr<WfBinaryExpression>();
+						recoveryExpr->op = WfBinaryOperator::FailedThen;
+						recoveryExpr->first = expression;
+						recoveryExpr->second = stringExpr;
+						recoveryExpr->codeRange = expression->codeRange;
+
+						auto bindExpr = MakePtr<WfBindExpression>();
+						bindExpr->expression = recoveryExpr;
+						bindExpr->codeRange = expression->codeRange;
+
 						return Workflow_InstallBindProperty(precompileContext, resolvingResult, variableName, propertyInfo, bindExpr);
 					}
 				}

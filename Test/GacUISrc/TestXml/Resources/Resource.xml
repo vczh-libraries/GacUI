@@ -103,7 +103,7 @@
                 <_ Text-str="Currency(self.currency)"/>
                 <_ Text-str="Sentence('John Smith')"/>
                 <_ Text-str="Strings.Sentence('John Smith')"/>
-                <_ Text-bind="self.Strings.Sentence('John Smith')"/>
+                <_ Text-bind="self.Strings.Sentence('John Smith') ?? ''"/>
               </att.Items>
             </TextList>
           </Cell>
