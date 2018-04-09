@@ -1,4 +1,10 @@
- # .\Resource.FailedScript.Strings.xml
-(2, 3): Unknown resource type "LocalizedStrings".
-(7, 3): Unknown resource type "LocalizedStrings".
-(12, 3): Unknown resource type "LocalizedStrings".
+s1 # .\Resource.FailedScript.Strings.xml
+(3, 5): The root element of localized strings should be "LocalizedStrings".
+s2 # .\Resource.FailedScript.Strings.xml
+(8, 5): Missing attribute "DefaultLocale" in "LocalizedStrings".
+s3 # .\Resource.FailedScript.Strings.xml
+(13, 5): Strings for the default locale "en-US" is not defined.
+(14, 7): Unknown element "X", it should be "Strings".
+s4 # .\Resource.FailedScript.Strings.xml
+(21, 7): Missing attribute "Locales" in "Strings".
+(23, 16): Locale "en-US" already exists.
