@@ -1,5 +1,6 @@
 #include "GuiInstanceLoader_WorkflowCodegen.h"
 #include "../../Reflection/GuiInstanceCompiledWorkflow.h"
+#include "../GuiInstanceLocalizedStrings.h"
 
 namespace vl
 {
@@ -519,17 +520,27 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, context->localizeds)
 			{
-				auto prop = MakePtr<WfAutoPropertyDeclaration>();
-				addDecl(prop);
+				WString protocol, path;
+				if (IsResourceUrl(localized->uri.ToString(), protocol, path))
+				{
+					if (auto ls = precompileContext.resolver->ResolveResource(protocol, path).Cast<GuiInstanceLocalizedStrings>())
+					{
+						if (auto type = GetTypeDescriptor(ls->className + L"::IStrings"))
+						{
+							auto prop = MakePtr<WfAutoPropertyDeclaration>();
+							addDecl(prop);
 
-				prop->name.value = localized->name.ToString();
-				prop->type = GetTypeFromTypeInfo(resolvingResult.typeInfos[localized->name].typeInfo.Obj());
-				prop->configConst = WfAPConst::Readonly;
-				prop->configObserve = WfAPObserve::Observable;
+							prop->name.value = localized->name.ToString();
+							prop->type = GetTypeFromTypeInfo(Workflow_GetSuggestedParameterType(type).Obj());
+							prop->configConst = WfAPConst::Readonly;
+							prop->configObserve = WfAPObserve::Observable;
 
-				auto nullExpr = MakePtr<WfLiteralExpression>();
-				nullExpr->value = WfLiteralValue::Null;
-				prop->expression = nullExpr;
+							auto nullExpr = MakePtr<WfLiteralExpression>();
+							nullExpr->value = WfLiteralValue::Null;
+							prop->expression = nullExpr;
+						}
+					}
+				}
 			}
 
 			///////////////////////////////////////////////////////////////

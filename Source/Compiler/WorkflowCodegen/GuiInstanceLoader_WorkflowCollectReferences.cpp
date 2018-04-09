@@ -1,4 +1,5 @@
 #include "GuiInstanceLoader_WorkflowCodegen.h"
+#include "../GuiInstanceLocalizedStrings.h"
 
 namespace vl
 {
@@ -665,6 +666,49 @@ WorkflowReferenceNamesVisitor
 				{
 					auto referenceType = Workflow_GetSuggestedParameterType(type);
 					resolvingResult.typeInfos.Add(parameter->name, { GlobalStringKey::Get(type->GetTypeName()),referenceType });
+				}
+			}
+
+			FOREACH(Ptr<GuiInstanceLocalized>, localized, resolvingResult.context->localizeds)
+			{
+				WString protocol, path;
+				if (IsResourceUrl(localized->uri.ToString(), protocol, path))
+				{
+					if (auto ls = precompileContext.resolver->ResolveResource(protocol, path).Cast<GuiInstanceLocalizedStrings>())
+					{
+						auto type = GetTypeDescriptor(ls->className + L"::IStrings");
+						if (!type)
+						{
+							errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
+								L"Precompile: Cannot find type \"" +
+								ls->className + L"::IStrings" +
+								L"\"."));
+						}
+						else if (resolvingResult.typeInfos.Keys().Contains(localized->name))
+						{
+							errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
+								L"[INTERNAL-ERROR] Precompile: Parameter \"" +
+								localized->name.ToString() +
+								L"\" conflict with an existing named object."));
+						}
+						else
+						{
+							auto referenceType = Workflow_GetSuggestedParameterType(type);
+							resolvingResult.typeInfos.Add(localized->name, { GlobalStringKey::Get(type->GetTypeName()),referenceType });
+						}
+					}
+					else
+					{
+						errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
+							L"Failed to find the localized string referred in attribute \"Uri\": \"" + localized->uri.ToString() + L"\".")
+							);
+					}
+				}
+				else
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
+						L"Invalid path in attribute \"Uri\": \"" + localized->uri.ToString() + L"\".")
+						);
 				}
 			}
 			
