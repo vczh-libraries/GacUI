@@ -23,4 +23,18 @@
       </Strings>
     </LocalizedStrings>
   </LocalizedStrings>
+
+  <LocalizedStrings name="s3">
+    <LocalizedStrings ref.Class="demo::s3" DefaultLocale="en-US">
+      <Strings Locales="en-US">
+        <String Name="A" Text="$(0:ShortDate) $(1:Number)"/>
+      </Strings>
+      <Strings Locales="zh-CN">
+        <String Name="A" Text="$(0:Number) $(1:ShortDate)"/>
+      </Strings>
+      <Strings Locales="ja-JP">
+        <String Name="A" Text="$(0:LongTime) $(1:Currency)"/>
+      </Strings>
+    </LocalizedStrings>
+  </LocalizedStrings>
 </Resource>
