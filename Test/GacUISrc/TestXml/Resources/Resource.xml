@@ -24,13 +24,13 @@
       <Window ref.Name="self" Text-format="Localization" ClientSize="x:640 y:480">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
           </att.Rows>
           <att.Columns>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
 
           <Cell Site="row:0 column:0">
@@ -56,8 +56,8 @@
               <att.ListControl>
                 <TextList ref.Name="listLocales" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
                   <att.Items>
-                    <TextItem Text="en-US"/>
-                    <TextItem Text="zh-CN"/>
+                    <_ Text="en-US"/>
+                    <_ Text="zh-CN"/>
                   </att.Items>
                 </TextList>
               </att.ListControl>
@@ -68,14 +68,14 @@
             <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.Items>
-                <TextItem Text="ShortDate: "/>
-                <TextItem Text="LongDate: "/>
-                <TextItem Text="YearMonthDate: "/>
-                <TextItem Text="ShortTime: "/>
-                <TextItem Text="LongTime: "/>
-                <TextItem Text="Number: "/>
-                <TextItem Text="Currency: "/>
-                <TextItem Text="Sentence: "/>
+                <_ Text="ShortDate: "/>
+                <_ Text="LongDate: "/>
+                <_ Text="YearMonthDate: "/>
+                <_ Text="ShortTime: "/>
+                <_ Text="LongTime: "/>
+                <_ Text="Number: "/>
+                <_ Text="Currency: "/>
+                <_ Text="Sentence: "/>
               </att.Items>
             </TextList>
           </Cell>
