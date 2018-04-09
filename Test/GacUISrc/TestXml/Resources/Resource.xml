@@ -1,248 +1,37 @@
 <Resource>
-  <Folder name="Images">
-    <Image name="_1" content="File">Images/1.png</Image>
-    <Image name="_2" content="File">Images/2.png</Image>
-    <Image name="_3" content="File">Images/3.png</Image>
-    <Image name="_4" content="File">Images/4.png</Image>
-    <Image name="_5" content="File">Images/5.png</Image>
-    <Image name="_6" content="File">Images/6.png</Image>
-    <Image name="_7" content="File">Images/7.png</Image>
-    <Image name="_8" content="File">Images/8.png</Image>
-    <Image name="Video" content="File">Images/Video.png</Image>
-  </Folder>
-
-  <Script name="ViewModelScript">
-    <Workflow>
-      <![CDATA[
-        module viewmodel;
-        
-        using presentation::*;
-        using presentation::controls::*;
-        
-        namespace demo
-        {
-          class AccountButtonViewModel
-          {
-            prop Controller: GuiSelectableButton::GroupController* = null {}
-            prop Name: string = "" {}
-            prop Image: INativeImage^ = null {}
-          }
-          
-          class VideoViewModel
-          {
-            prop Author: string = "" {}
-            prop Title: string = "" {}
-            prop Font: FontProperties = {} {}
-          }
-        }
-      ]]>
-    </Workflow>
-  </Script>
-
-  <Instance name="AccountButtonTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::AccountButtonTemplate">
-      <ref.Members>
-        <![CDATA[
-          prop ViewModel: AccountButtonViewModel^ = null {}
-        ]]>
-      </ref.Members>
-      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <att.ViewModel-bind>cast (AccountButtonViewModel^) self.Context</att.ViewModel-bind>
-        <SolidBackground Color-bind="cast Color (self.Selected ? '#FFFFFF' : self.State != ButtonState::Normal ? '#0000FF' : '#00000000')"/>
-        <ResponsiveView Direction="Horizontal" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <att.Views>
-            <ResponsiveFixed>
-              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
-                <att.Rows>
-                  <CellOption>composeType:MinSize</CellOption>
-                </att.Rows>
-                <att.Columns>
-                  <CellOption>composeType:MinSize</CellOption>
-                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
-                </att.Columns>
-
-                <Cell Site="row:0 column:0">
-                  <ImageFrame FrameIndex="0" Image-bind="self.ViewModel.Image ?? null"/>
-                </Cell>
-                <Cell Site="row:0 column:1">
-                  <SolidLabel Font-bind="self.Font" Text-bind="self.ViewModel.Name ?? ''" Color-bind="cast Color (self.Selected ? '#000000' : '#FFFFFF')">
-                    <att.VerticalAlignment>Center</att.VerticalAlignment>
-                  </SolidLabel>
-                </Cell>
-              </Table>
-            </ResponsiveFixed>
-            <ResponsiveFixed>
-              <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
-                <ImageFrame FrameIndex="0" Image-bind="self.ViewModel.Image ?? null"/>
-              </Bounds>
-            </ResponsiveFixed>
-          </att.Views>
-        </ResponsiveView>
-      </SelectableButtonTemplate>
-    </Instance>
-  </Instance>
-
-  <Instance name="AccountItemTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::AccountItemTemplate">
-      <ref.Parameter Name="ViewModel" Class="demo::AccountButtonViewModel"/>
-      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren" AssociatedCursor-eval="INativeController::GetCurrentController().ResourceService().GetSystemCursor(Hand)">
-        <CheckBox ControlTemplate="demo::AccountButtonTemplate" Context-eval="ViewModel" GroupController-eval="ViewModel.Controller">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-        </CheckBox>
-      </ControlTemplate>
-    </Instance>
-  </Instance>
-
-  <Instance name="AccountMenuItemTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::AccountMenuItemTemplate">
-      <ref.Parameter Name="ViewModel" Class="demo::AccountButtonViewModel"/>
-      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren" AssociatedCursor-eval="INativeController::GetCurrentController().ResourceService().GetSystemCursor(Hand)">
-        <MenuItemButton Text-bind="ViewModel.Name">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-        </MenuItemButton>
-      </ControlTemplate>
-    </Instance>
-  </Instance>
-
-  <Instance name="VideoItemTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::VideoItemTemplate">
-      <ref.Parameter Name="ViewModel" Class="demo::VideoViewModel"/>
-      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+  
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
+      <Window ref.Name="self" Text-format="Localization" ClientSize="x:640 y:480">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
           </att.Rows>
           <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
           </att.Columns>
 
-          <Cell Site="row:0 column:0 columnSpan:3" PreferredMinSize="x:192 y:192">
-            <ImageFrame Stretch="true" FrameIndex="0" Image-uri="res://Images/Video"/>
+          <Cell Site="row:0 column:0">
+            <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text="Selected Locale:" VerticalAlignment="Center"/>
           </Cell>
-          <Cell Site="row:1 column:0 columnSpan:3">
-            <SolidLabel Font-bind="ViewModel.Font" Text-bind="ViewModel.Title" WrapLine="true" WrapLineHeightCalculation="true" Color="#FFFFFF"/>
-          </Cell>
-          <Cell Site="row:2 column:1">
-            <SolidLabel Font-bind="ViewModel.Font" Text="by:" Color="#808080"/>
-          </Cell>
-          <Cell Site="row:2 column:2">
-            <SolidLabel Font-bind="ViewModel.Font" Text-bind="ViewModel.Author" Color="#FFFFFF"/>
+
+          <Cell Site="row:0 column:1">
+            <ComboBox>
+              <att.BoundsComposition-set PreferredMinSize="x:120"/>
+              <att.ListControl>
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <TextItem Text="zh-cn"/>
+                    <TextItem Text="en-us"/>
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+            </ComboBox>
           </Cell>
         </Table>
-      </ControlTemplate>
-    </Instance>
-  </Instance>
-
-  <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:x="presentation::controls::GuiSelectableButton::*">
-      <ref.Members>
-        <![CDATA[
-          var accounts: observe AccountButtonViewModel^[] = {};
-          var videos: observe VideoViewModel^[] = {};
-        ]]>
-      </ref.Members>
-      <ref.Ctor>
-        <![CDATA[
-          {
-            for (i in range [1, 8])
-            {
-              var item = new AccountButtonViewModel^();
-              item.Controller = self.accountController;
-              item.Name = Sys::LoremIpsumTitle(20);
-              item.Image = (cast (GuiImageData^) self.ResolveResource("res", $"Images/_$(i)", true)).Image;
-              self.accounts.Add(item);
-            }
-          
-            for (i in range (0, 20))
-            {
-              var item = new VideoViewModel^();
-              item.Author = Sys::LoremIpsumTitle(16);
-              item.Title = Sys::LoremIpsumTitle(80);
-              item.Font = self.Font;
-              self.videos.Add(item);
-            }
-          }
-        ]]>
-      </ref.Ctor>
-      <Window ref.Name="self" Text-format="Welcome to GacUI Video, $(Sys::LoremIpsumTitle(16))" ClientSize="x:800 y:600">
-        <x:MutexGroupController ref.Name="accountController"/>
-        <ResponsiveContainer AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <att.ResponsiveTarget>
-            <ResponsiveView Direction="Horizontal">
-              <att.SharedControls>
-                <ScrollContainer ref.Name="videoContainer" ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
-                  <RepeatFlow RowPadding="5" ColumnPadding="5">
-                    <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
-                    <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
-                    <att.ItemSource-eval>self.videos</att.ItemSource-eval>
-                    <att.ItemTemplate>demo::VideoItemTemplate</att.ItemTemplate>
-                  </RepeatFlow>
-                </ScrollContainer>
-              </att.SharedControls>
-              <att.Views>
-                <ResponsiveGroup Direction="Horizontal">
-                  <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
-                    <att.Rows>
-                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
-                    </att.Rows>
-                    <att.Columns>
-                      <CellOption>composeType:MinSize</CellOption>
-                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
-                    </att.Columns>
-
-                    <Cell Site="row:0 column:0">
-                      <RepeatStack Direction="Vertical" Padding="5">
-                        <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
-                        <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
-                        <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
-                        <att.ItemTemplate>demo::AccountItemTemplate</att.ItemTemplate>
-                      </RepeatStack>
-                    </Cell>
-
-                    <Cell Site="row:0 column:1" PreferredMinSize="x:420">
-                      <ResponsiveShared Shared-ref="videoContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                    </Cell>
-                  </Table>
-                </ResponsiveGroup>
-                <ResponsiveFixed>
-                  <Table CellPadding="5" BorderVisible="false" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                    <att.Rows>
-                      <CellOption>composeType:MinSize</CellOption>
-                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
-                    </att.Rows>
-                    <att.Columns>
-                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
-                    </att.Columns>
-
-                    <Cell Site="row:0 column:0">
-                      <ToolstripMenuBar>
-                        <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                        <MenuBarButton Text="Subscribed Accounts">
-                          <att.SubMenu-set>
-                            <RepeatStack Direction="Vertical">
-                              <att.MinSizeLimitation>LimitToElementAndChildren</att.MinSizeLimitation>
-                              <att.AlignmentToParent>left:0 top:0 right:0 bottom:0</att.AlignmentToParent>
-                              <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
-                              <att.ItemTemplate>demo::AccountMenuItemTemplate</att.ItemTemplate>
-                            </RepeatStack>
-                          </att.SubMenu-set>
-                        </MenuBarButton>
-                      </ToolstripMenuBar>
-                    </Cell>
-
-                    <Cell Site="row:1 column:0">
-                      <ResponsiveShared Shared-ref="videoContainer" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                    </Cell>
-                  </Table>
-                </ResponsiveFixed>
-              </att.Views>
-            </ResponsiveView>
-          </att.ResponsiveTarget>
-        </ResponsiveContainer>
       </Window>
     </Instance>
   </Instance>
