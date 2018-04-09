@@ -34,26 +34,26 @@
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <ComboBox>
+            <ComboBox ref.Name="comboLocales">
               <att.BoundsComposition-set PreferredMinSize="x:120"/>
+              <att.SelectedIndex-bind>self.GetLocaleIndex(Application::GetApplication().Locale)</att.SelectedIndex-bind>
+              <ev.SelectedIndexChanged-eval>
+                <![CDATA[
+                  {
+                    var index = comboLocales.SelectedIndex;
+                    if (index == -1)
+                    {
+                      index = 0;
+                    }
+                    Application::GetApplication().Locale = cast Locale listLocales.Items[index].Text;
+                  }
+                ]]>
+              </ev.SelectedIndexChanged-eval>
               <att.ListControl>
                 <TextList ref.Name="listLocales" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                  <att.SelectedIndex-bind>self.GetLocaleIndex(Application::GetApplication().Locale)</att.SelectedIndex-bind>
-                  <ev.SelectedIndexChanged-eval>
-                    <![CDATA[
-                      {
-                        var index = listLocales.SelectedIndex;
-                        if (index == -1)
-                        {
-                          index = 0;
-                        }
-                        Application::GetApplication().Locale = cast Locale listLocales.Items[index].Text;
-                      }
-                    ]]>
-                  </ev.SelectedIndexChanged-eval>
                   <att.Items>
-                    <TextItem Text="en-us"/>
-                    <TextItem Text="zh-cn"/>
+                    <TextItem Text="en-US"/>
+                    <TextItem Text="zh-CN"/>
                   </att.Items>
                 </TextList>
               </att.ListControl>
