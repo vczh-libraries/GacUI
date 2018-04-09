@@ -66,6 +66,7 @@ Global String Key
 			static GlobalStringKey					_Ref;
 			static GlobalStringKey					_Bind;
 			static GlobalStringKey					_Format;
+			static GlobalStringKey					_Str;
 			static GlobalStringKey					_Eval;
 			static GlobalStringKey					_Uri;
 			static GlobalStringKey					_ControlTemplate;

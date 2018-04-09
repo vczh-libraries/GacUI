@@ -113,6 +113,7 @@ GlobalStringKey
 		GlobalStringKey GlobalStringKey::_Ref;
 		GlobalStringKey GlobalStringKey::_Bind;
 		GlobalStringKey GlobalStringKey::_Format;
+		GlobalStringKey GlobalStringKey::_Str;
 		GlobalStringKey GlobalStringKey::_Eval;
 		GlobalStringKey GlobalStringKey::_Uri;
 		GlobalStringKey GlobalStringKey::_ControlTemplate;
@@ -130,6 +131,7 @@ GlobalStringKey
 				GlobalStringKey::_Ref = GlobalStringKey::Get(L"ref");
 				GlobalStringKey::_Bind = GlobalStringKey::Get(L"bind");
 				GlobalStringKey::_Format = GlobalStringKey::Get(L"format");
+				GlobalStringKey::_Str = GlobalStringKey::Get(L"str");
 				GlobalStringKey::_Eval = GlobalStringKey::Get(L"eval");
 				GlobalStringKey::_Uri = GlobalStringKey::Get(L"uri");
 				GlobalStringKey::_ControlTemplate = GlobalStringKey::Get(L"ControlTemplate");
