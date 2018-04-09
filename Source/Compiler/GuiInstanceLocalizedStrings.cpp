@@ -375,7 +375,7 @@ GuiInstanceLocalizedStrings
 				return nullptr;
 			}
 
-			ParameterGroup defaultGroups;
+			ParameterGroup defaultGroup;
 			FOREACH(Ptr<StringItem>, lssi, defaultStrings->items.Values())
 			{
 				ParameterList parameters;
@@ -386,7 +386,7 @@ GuiInstanceLocalizedStrings
 				{
 					FOREACH(vint, index, positions)
 					{
-						defaultGroups.Add(lssi->name, parameters[index]);
+						defaultGroup.Add(lssi->name, parameters[index]);
 					}
 				}
 			}
@@ -401,6 +401,35 @@ GuiInstanceLocalizedStrings
 				if (lss != defaultStrings)
 				{
 					auto localesName = lss->GetLocalesName();
+
+					ParameterList parameters;
+					List<vint> positions;
+					List<WString> texts;
+
+					FOREACH(Ptr<StringItem>, lssi, lss->items.Values())
+					{
+						if (ParseLocalizedText(lssi->text, parameters, positions, texts, lssi->textPosition, errors))
+						{
+							auto& defaultParameters = defaultGroup[lssi->name];
+							if (defaultParameters.Count() != parameters.Count())
+							{
+								errors.Add({ lss->tagPosition,L"String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" have different numbers of parameters." });
+							}
+							else
+							{
+								for (vint i = 0; i < parameters.Count(); i++)
+								{
+									auto defaultParameter = defaultParameters[i];
+									auto parameter = parameters[positions[i]];
+
+									if (defaultParameter.key->GetTypeDescriptor()->GetTypeName() != parameter.key->GetTypeDescriptor()->GetTypeName())
+									{
+										errors.Add({ lss->tagPosition,L"Parameter \"" + itow(i) + L"\" in String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" are in different types \"" + defaultParameter.key->GetTypeFriendlyName() + L"\" and \"" + parameter.key->GetTypeFriendlyName() + L"\"." });
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 			if (errors.Count() != errorCount)
