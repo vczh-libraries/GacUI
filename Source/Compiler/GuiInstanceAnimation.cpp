@@ -236,14 +236,15 @@ GuiInstanceGradientAnimation::ValidatePropertyType
 				}
 				break;
 			case TypeDescriptorFlags::Struct:
-			{
-				vint members = ValidateStructMembers(namePosition, td, prefix, errors);
-				if (rootValue && members == 0)
 				{
-					errors.Add({ namePosition,L"Precompile: Property \"" + prefix + L"\" of type \"" + typeInfo->GetTypeFriendlyName() + L"\" in class \"" + typeName + L"\" is not supported. A struct should at least has one numeric primitive member to perform gradual changing." });
+					vint members = ValidateStructMembers(namePosition, td, prefix, errors);
+					if (rootValue && members == 0)
+					{
+						errors.Add({ namePosition,L"Precompile: Property \"" + prefix + L"\" of type \"" + typeInfo->GetTypeFriendlyName() + L"\" in class \"" + typeName + L"\" is not supported. A struct should at least has one numeric primitive member to perform gradual changing." });
+					}
+					return members;
 				}
-				return members;
-			}
+			default:;
 			}
 			errors.Add({ namePosition,L"Precompile: Property \"" + prefix + L"\" of type \"" + typeInfo->GetTypeFriendlyName() + L"\" in class \"" + typeName + L"\" is not supported. Only numeric types and structs are able to perform gradual changing." });
 			return 0;
@@ -272,6 +273,7 @@ GuiInstanceGradientAnimation::EnumerateMembers
 			case TypeDescriptorFlags::Struct:
 				EnumerateMembers(callback, newAccessor, td, originPropInfo);
 				break;
+			default:;
 			}
 		}
 

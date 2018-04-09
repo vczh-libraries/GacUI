@@ -22,7 +22,7 @@ GuiResponsiveCompositionBase
 					auto parent = GetParent();
 					while (parent)
 					{
-						if (responsive = dynamic_cast<GuiResponsiveCompositionBase*>(parent))
+						if ((responsive = dynamic_cast<GuiResponsiveCompositionBase*>(parent)))
 						{
 							break;
 						}
@@ -194,7 +194,7 @@ GuiResponsiveSharedComposition
 					auto parent = GetParent();
 					while (parent)
 					{
-						if (currentView = dynamic_cast<GuiResponsiveViewComposition*>(parent))
+						if ((currentView = dynamic_cast<GuiResponsiveViewComposition*>(parent)))
 						{
 							break;
 						}
@@ -531,7 +531,7 @@ GuiResponsiveStackComposition
 				SortedList<GuiResponsiveCompositionBase*> ignored;
 				while (true)
 				{
-					GuiResponsiveCompositionBase* selected = false;
+					GuiResponsiveCompositionBase* selected = nullptr;
 					vint size = 0;
 
 					FOREACH(GuiResponsiveCompositionBase*, child, availables)

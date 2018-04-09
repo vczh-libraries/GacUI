@@ -131,7 +131,7 @@ GuiResponsiveViewComposition
 
 				bool								CalculateLevelCount();
 				bool								CalculateCurrentLevel();
-				void								OnResponsiveChildLevelUpdated();
+				void								OnResponsiveChildLevelUpdated()override;
 
 			public:
 				GuiResponsiveViewComposition();
@@ -177,9 +177,9 @@ Others
 
 				bool					CalculateLevelCount();
 				bool					CalculateCurrentLevel();
-				void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
-				void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
-				void					OnResponsiveChildLevelUpdated();
+				void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child)override;
+				void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child)override;
+				void					OnResponsiveChildLevelUpdated()override;
 				bool					ChangeLevel(bool levelDown);
 
 			public:
@@ -203,9 +203,9 @@ Others
 
 				bool					CalculateLevelCount();
 				bool					CalculateCurrentLevel();
-				void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child);
-				void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child);
-				void					OnResponsiveChildLevelUpdated();
+				void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child)override;
+				void					OnResponsiveChildRemoved(GuiResponsiveCompositionBase* child)override;
+				void					OnResponsiveChildLevelUpdated()override;
 
 			public:
 				GuiResponsiveGroupComposition();
