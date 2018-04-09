@@ -1,4 +1,29 @@
 <Resource>
+  <LocalizedStrings name="StringResource">
+    <LocalizedStrings ref.Class="demo::StringResource" DefaultLocale="en-US">
+      <Strings Locales="en-US">
+        <String Name="ShortDate" Text="N/A"/>
+        <String Name="LongDate" Text="N/A"/>
+        <String Name="YearMonthDate" Text="N/A"/>
+        <String Name="ShortTime" Text="N/A"/>
+        <String Name="LongTime" Text="N/A"/>
+        <String Name="Number" Text="N/A"/>
+        <String Name="Currency" Text="N/A"/>
+        <String Name="Sentence" Text="N/A"/>
+      </Strings>
+      
+      <Strings Locales="zh-CN">
+        <String Name="ShortDate" Text="N/A"/>
+        <String Name="LongDate" Text="N/A"/>
+        <String Name="YearMonthDate" Text="N/A"/>
+        <String Name="ShortTime" Text="N/A"/>
+        <String Name="LongTime" Text="N/A"/>
+        <String Name="Number" Text="N/A"/>
+        <String Name="Currency" Text="N/A"/>
+        <String Name="Sentence" Text="N/A"/>
+      </Strings>
+    </LocalizedStrings>
+  </LocalizedStrings>
   
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
@@ -21,6 +46,7 @@
           var currency: double = 1342177.28;
         ]]>
       </ref.Members>
+      <ref.LocalizedStrings Name="Strings" Path="res://StringResource" Default="true"/>
       <Window ref.Name="self" Text-format="Localization" ClientSize="x:640 y:480">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
@@ -68,14 +94,16 @@
             <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.Items>
-                <_ Text="ShortDate: "/>
-                <_ Text="LongDate: "/>
-                <_ Text="YearMonthDate: "/>
-                <_ Text="ShortTime: "/>
-                <_ Text="LongTime: "/>
-                <_ Text="Number: "/>
-                <_ Text="Currency: "/>
-                <_ Text="Sentence: "/>
+                <_ Text-str="ShortDate(self.dateTime)"/>
+                <_ Text-str="LongDate(self.dateTime)"/>
+                <_ Text-str="YearMonthDate(self.dateTime)"/>
+                <_ Text-str="ShortTime(self.dateTime)"/>
+                <_ Text-str="LongTime(self.dateTime)"/>
+                <_ Text-str="Number(self.number)"/>
+                <_ Text-str="Currency(self.currency)"/>
+                <_ Text-str="Sentence('John Smith')"/>
+                <_ Text-str="String.Sentence('John Smith')"/>
+                <_ Text-bind="self.Strings.Sentence('John Smith')"/>
               </att.Items>
             </TextList>
           </Cell>
