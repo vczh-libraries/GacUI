@@ -21,6 +21,7 @@ GuiInstanceLocalizedStrings
 				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"The root element of localized strings should be \"LocalizedStrings\"."));
 				return nullptr;
 			}
+			ls->tagPosition = { {resource},xml->rootElement->name.codeRange.start };
 
 			auto attDefaultLocale = XmlGetAttribute(xml->rootElement, L"DefaultLocale");
 			if (!attDefaultLocale)
@@ -48,6 +49,7 @@ GuiInstanceLocalizedStrings
 				{
 					auto strings = MakePtr<GuiInstanceLocalizedStrings::Strings>();
 					ls->strings.Add(strings);
+					ls->tagPosition = { { resource },xmlStrings->name.codeRange.start };
 					SplitBySemicolon(attLocales->value.value, strings->locales);
 
 					FOREACH(WString, locale, strings->locales)

@@ -32,10 +32,12 @@ namespace vl
 			public:
 				collections::List<WString>				locales;
 				StringItemMap							items;
+				GuiResourceTextPos						tagPosition;
 			};
 
 			WString										defaultLocale;
 			collections::List<Ptr<Strings>>				strings;
+			GuiResourceTextPos							tagPosition;
 
 			static Ptr<GuiInstanceLocalizedStrings>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<parsing::xml::XmlElement>				SaveToXml();

@@ -1,0 +1,2 @@
+s1 # .\Resource.FailedScript.Strings2.xml
+(3, 5): Missing attribute "DefaultLocale" in "LocalizedStrings".

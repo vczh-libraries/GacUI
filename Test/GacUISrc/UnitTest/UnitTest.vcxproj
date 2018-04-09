@@ -199,6 +199,7 @@
     <Xml Include="..\..\Resources\Resource.FailedScript.Animations2.xml" />
     <Xml Include="..\..\Resources\Resource.FailedScript.Properties.xml" />
     <Xml Include="..\..\Resources\Resource.FailedScript.Strings.xml" />
+    <Xml Include="..\..\Resources\Resource.FailedScript.Strings2.xml" />
     <Xml Include="..\..\Resources\Resource.FailedScript.Workflow.xml" />
     <Xml Include="..\..\Resources\Resource.WrongDoc.xml" />
     <Xml Include="..\..\Resources\Resource.WrongInstance.xml" />
