@@ -446,6 +446,26 @@ Instance Type Resolver (Instance)
 								}
 							}
 
+							FOREACH(Ptr<GuiInstanceLocalized>, localized, obj->localizeds)
+							{
+								WString protocol, path;
+								if (IsResourceUrl(localized->uri.ToString(), protocol, path))
+								{
+									if (!context.resolver->ResolveResource(protocol, path).Cast<GuiInstanceLocalizedStrings>())
+									{
+										errors.Add(GuiResourceError({ resource }, localized->tagPosition,
+											L"Failed to find the localized string referred in attribute \"Uri\": \"" + localized->uri.ToString() + L"\".")
+										);
+									}
+								}
+								else
+								{
+									errors.Add(GuiResourceError({ resource }, localized->tagPosition,
+										L"Invalid path in attribute \"Uri\": \"" + localized->uri.ToString() + L"\".")
+									);
+								}
+							}
+
 							obj->ApplyStyles(resource, context.resolver, errors);
 
 							types::ResolvingResult resolvingResult;

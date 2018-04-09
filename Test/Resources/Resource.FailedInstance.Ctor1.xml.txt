@@ -10,3 +10,7 @@ i2 # .\Resource.FailedInstance.Ctor1.xml
 (23, 18): Error happened during parsing.
 i3 # .\Resource.FailedInstance.Ctor1.xml
 (32, 7): Precompile: Failed to find type "_".
+i4 # .\Resource.FailedInstance.Ctor1.xml
+(38, 7): Failed to find the localized string referred in attribute "Uri": "res://NotExists".
+(39, 7): Precompile: Only one <ref.LocalizedStrings> can be the default one.
+(39, 7): Failed to find the localized string referred in attribute "Uri": "res://NotExists".

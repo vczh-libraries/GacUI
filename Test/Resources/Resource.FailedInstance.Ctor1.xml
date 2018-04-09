@@ -32,4 +32,12 @@
       <_/>
     </Instance>
   </Instance>
+
+  <Instance name="i4">
+    <Instance ref.Class="LocalizedWindow">
+      <ref.LocalizedStrings Name="S1" Uri="res://NotExists" Default="true"/>
+      <ref.LocalizedStrings Name="S2" Uri="res://NotExists" Default="true"/>
+      <Window/>
+    </Instance>
+  </Instance>
 </Resource>

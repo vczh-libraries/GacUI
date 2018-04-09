@@ -697,18 +697,6 @@ WorkflowReferenceNamesVisitor
 							resolvingResult.typeInfos.Add(localized->name, { GlobalStringKey::Get(type->GetTypeName()),referenceType });
 						}
 					}
-					else
-					{
-						errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
-							L"Failed to find the localized string referred in attribute \"Uri\": \"" + localized->uri.ToString() + L"\".")
-							);
-					}
-				}
-				else
-				{
-					errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
-						L"Invalid path in attribute \"Uri\": \"" + localized->uri.ToString() + L"\".")
-						);
 				}
 			}
 			
