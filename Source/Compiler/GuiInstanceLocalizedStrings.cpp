@@ -244,7 +244,7 @@ GuiInstanceLocalizedStrings
 					}
 				}
 
-				if (end - begin == 4 && wcsncmp(begin, L"$($)", 4) == 0)
+				if (end - begin == 3 && wcsncmp(begin, L"$($)", 4) == 0)
 				{
 					if (texts.Count() > 0)
 					{
@@ -402,12 +402,12 @@ GuiInstanceLocalizedStrings
 				{
 					auto localesName = lss->GetLocalesName();
 
-					ParameterList parameters;
-					List<vint> positions;
-					List<WString> texts;
-
 					FOREACH(Ptr<StringItem>, lssi, lss->items.Values())
 					{
+						ParameterList parameters;
+						List<vint> positions;
+						List<WString> texts;
+
 						if (ParseLocalizedText(lssi->text, parameters, positions, texts, lssi->textPosition, errors))
 						{
 							auto& defaultParameters = defaultGroup[lssi->name];
