@@ -107,6 +107,8 @@
                 <_ Text-str="YearMonthDate(self.dateTime)"/>
                 <_ Text-str="ShortTime(self.dateTime)"/>
                 <_ Text-str="LongTime(self.dateTime)"/>
+                <_ Text-str="DateFormat(self.dateTime)"/>
+                <_ Text-str="TimeFormat(self.dateTime)"/>
                 <_ Text-str="Number(self.number)"/>
                 <_ Text-str="Currency(self.currency)"/>
                 <_ Text-str="Sentence('John Smith')"/>

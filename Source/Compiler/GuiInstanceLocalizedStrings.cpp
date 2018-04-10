@@ -320,7 +320,7 @@ GuiInstanceLocalizedStrings
 					textDesc->parameters.Add({ type,function });
 					textDesc->positions.Add(wtoi(WString(number, (vint)(numberEnd - number))));
 				}
-				reading = end;
+				reading = end + 1;
 			}
 
 			if (*reading || textDesc->texts.Count() == 0)
