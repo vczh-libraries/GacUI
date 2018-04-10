@@ -403,6 +403,7 @@ GuiInstanceLocalizedStrings
 					{
 						if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
 						{
+							textDescs.Add({ lss,lssi->name }, textDesc);
 							auto defaultDesc = textDescs[{defaultStrings, lssi->name}];
 							if (defaultDesc->parameters.Count() != textDesc->parameters.Count())
 							{
@@ -453,6 +454,44 @@ GuiInstanceLocalizedStrings
 			}
 
 			return func;
+		}
+
+		Ptr<workflow::WfExpression> GuiInstanceLocalizedStrings::GenerateStrings(TextDescMap& textDescs, Ptr<Strings> ls)
+		{
+			auto lsExpr = MakePtr<WfNewInterfaceExpression>();
+			{
+				auto refType = MakePtr<WfReferenceType>();
+				refType->name.value = L"IStrings";
+
+				auto refPointer = MakePtr<WfSharedPointerType>();
+				refPointer->element = refType;
+
+				lsExpr->type = refPointer;
+			}
+
+			FOREACH(Ptr<StringItem>, lss, ls->items.Values())
+			{
+				auto textDesc = textDescs[{ls, lss->name}];
+				auto func = GenerateFunction(textDesc, lss->name, WfClassMemberKind::Override);
+				lsExpr->declarations.Add(func);
+
+				auto block = MakePtr<WfBlockStatement>();
+				func->statement = block;
+
+				Ptr<WfExpression> resultExpr;
+
+				if (!resultExpr)
+				{
+					resultExpr = MakePtr<WfStringExpression>();
+				}
+
+				auto returnStat = MakePtr<WfReturnStatement>();
+				returnStat->expression = resultExpr;
+
+				block->statements.Add(returnStat);
+			}
+
+			return lsExpr;
 		}
 
 		Ptr<workflow::WfModule> GuiInstanceLocalizedStrings::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
@@ -519,7 +558,7 @@ GuiInstanceLocalizedStrings
 				func->statement = block;
 
 				auto defaultStrings = GetDefaultStrings();
-				FOREACH(Ptr<GuiInstanceLocalizedStrings::Strings>, ls, strings)
+				FOREACH(Ptr<Strings>, ls, strings)
 				{
 					if (ls != defaultStrings)
 					{
@@ -553,25 +592,14 @@ GuiInstanceLocalizedStrings
 						auto trueBlock = MakePtr<WfBlockStatement>();
 						ifStat->trueBranch = trueBlock;
 
-						{
-							auto stringExpr = MakePtr<WfStringExpression>();
-							stringExpr->value.value = L"Not Implemented.";
-
-							auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
-							raiseStat->expression = stringExpr;
-							trueBlock->statements.Add(raiseStat);
-						}
+						auto returnStat = MakePtr<WfReturnStatement>();
+						returnStat->expression = GenerateStrings(textDescs, ls);
+						trueBlock->statements.Add(returnStat);
 					}
 				}
-
-				{
-					auto stringExpr = MakePtr<WfStringExpression>();
-					stringExpr->value.value = L"Not Implemented.";
-
-					auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
-					raiseStat->expression = stringExpr;
-					block->statements.Add(raiseStat);
-				}
+				auto returnStat = MakePtr<WfReturnStatement>();
+				returnStat->expression = GenerateStrings(textDescs, defaultStrings);
+				block->statements.Add(returnStat);
 			}
 
 			ParsingTextPos pos(tagPosition.row, tagPosition.column);
