@@ -287,6 +287,10 @@ GuiInstanceLocalizedStrings
 							{
 								type = TypeInfoRetriver<DateTime>::CreateTypeInfo();
 							}
+							else if (function.Left(5) == L"Date:" || function.Left(5) == L"Time:")
+							{
+								type = TypeInfoRetriver<DateTime>::CreateTypeInfo();
+							}
 							else if (function == L"Number" || function == L"Currency")
 							{
 								type = TypeInfoRetriver<WString>::CreateTypeInfo();

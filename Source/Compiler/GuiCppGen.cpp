@@ -35,42 +35,44 @@ namespace vl
 		{
 			if (precompiledFolder)
 			{
-				auto compiled = precompiledFolder->GetValueByPath(L"Workflow/InstanceClass").Cast<GuiInstanceCompiledWorkflow>();
-				WString text;
-				if (compiled->assembly)
+				if (auto compiled = precompiledFolder->GetValueByPath(L"Workflow/InstanceClass").Cast<GuiInstanceCompiledWorkflow>())
 				{
-					auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
-					FOREACH_INDEXER(WString, code, codeIndex, codes)
+					WString text;
+					if (compiled->assembly)
 					{
-						text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
-						text += code + L"\r\n";
-					}
-				}
-				else
-				{
-					FOREACH_INDEXER(GuiInstanceCompiledWorkflow::ModuleRecord, moduleRecord, codeIndex, compiled->modules)
-					{
-						WString code;
+						auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
+						FOREACH_INDEXER(WString, code, codeIndex, codes)
 						{
-							MemoryStream stream;
-							{
-								StreamWriter writer(stream);
-								WfPrint(moduleRecord.module, L"", writer);
-							}
-							stream.SeekFromBegin(0);
-							{
-								StreamReader reader(stream);
-								code = reader.ReadToEnd();
-							}
+							text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
+							text += code + L"\r\n";
 						}
-						text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(compiled->modules.Count()) + L")================================\r\n";
-						text += code + L"\r\n";
 					}
-				}
+					else
+					{
+						FOREACH_INDEXER(GuiInstanceCompiledWorkflow::ModuleRecord, moduleRecord, codeIndex, compiled->modules)
+						{
+							WString code;
+							{
+								MemoryStream stream;
+								{
+									StreamWriter writer(stream);
+									WfPrint(moduleRecord.module, L"", writer);
+								}
+								stream.SeekFromBegin(0);
+								{
+									StreamReader reader(stream);
+									code = reader.ReadToEnd();
+								}
+							}
+							text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(compiled->modules.Count()) + L")================================\r\n";
+							text += code + L"\r\n";
+						}
+					}
 
-				if (File(workflowPath).WriteAllText(text))
-				{
-					return compiled;
+					if (File(workflowPath).WriteAllText(text))
+					{
+						return compiled;
+					}
 				}
 			}
 			return nullptr;

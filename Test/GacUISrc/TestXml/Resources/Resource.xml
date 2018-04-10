@@ -7,6 +7,8 @@
         <String Name="YearMonthDate" Text="YearMonthDate: $(0:YearMonthDate)"/>
         <String Name="ShortTime" Text="ShortTime: $(0:ShortTime)"/>
         <String Name="LongTime" Text="LongTime: $(0:LongTime)"/>
+        <String Name="DateFormat" Text="DateFormat: $(0:Date:yyyy)"/>
+        <String Name="TimeFormat" Text="TimeFormat: $(0:Time:HH)"/>
         <String Name="Number" Text="Number: $(0:Number)"/>
         <String Name="Currency" Text="Currency: $(0:Currency)"/>
         <String Name="Sentence" Text="$($)Good morning, $(0)!$($)"/>
@@ -20,6 +22,8 @@
         <String Name="YearMonthDate" Text="年月：$(0:YearMonthDate)"/>
         <String Name="ShortTime" Text="短时间：$(0:ShortTime)"/>
         <String Name="LongTime" Text="长时间：$(0:LongTime)"/>
+        <String Name="DateFormat" Text="日期格式：$(0:Date:yyyy)"/>
+        <String Name="TimeFormat" Text="时间格式： $(0:Time:HH)"/>
         <String Name="Number" Text="数字：$(0:Number)"/>
         <String Name="Currency" Text="货币：$(0:Currency)"/>
         <String Name="Sentence" Text="$($)$(0)，早上好！$($)"/>
