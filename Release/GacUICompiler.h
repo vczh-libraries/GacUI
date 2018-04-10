@@ -411,6 +411,17 @@ Instance Namespace
 			GuiResourceTextPos						classPosition;
 		};
 
+		class GuiInstanceLocalized : public Object, public Description<GuiInstanceLocalized>
+		{
+		public:
+			GlobalStringKey							name;
+			GlobalStringKey							uri;
+			GuiResourceTextPos						tagPosition;
+			GuiResourceTextPos						uriPosition;
+			bool									defaultStrings = false;
+			WString									className;
+		};
+
 /***********************************************************************
 Instance Context
 ***********************************************************************/
@@ -430,6 +441,7 @@ Instance Context
 			};
 			typedef collections::Dictionary<GlobalStringKey, Ptr<NamespaceInfo>>		NamespaceMap;
 			typedef collections::List<Ptr<GuiInstanceParameter>>						ParameterList;
+			typedef collections::List<Ptr<GuiInstanceLocalized>>						LocalizedList;
 			typedef collections::List<Ptr<GuiInstanceStyleContext>>						StyleContextList;
 
 			class ElementName : public Object
@@ -456,6 +468,7 @@ Instance Context
 			collections::List<WString>				stylePaths;
 
 			ParameterList							parameters;
+			LocalizedList							localizeds;
 			WString									memberScript;
 			WString									ctorScript;
 			WString									dtorScript;
@@ -684,6 +697,81 @@ namespace vl
 			void										EnumerateProperties(EnumerateMemberCallback callback, description::ITypeDescriptor* td);
 			Ptr<workflow::WfExpression>					InitStruct(description::IPropertyInfo* propInfo, const WString& prefix, collections::SortedList<WString>& varNames);
 			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors);
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\GUIINSTANCELOCALIZEDSTRINGS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Shared Script
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOCALIZEDSTRINGS
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOCALIZEDSTRINGS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class GuiInstanceLocalizedStrings : public Object, public Description<GuiInstanceLocalizedStrings>
+		{
+		public:
+			struct StringItem
+			{
+			public:
+				WString									name;
+				WString									text;
+				GuiResourceTextPos						textPosition;
+			};
+
+			struct Strings
+			{
+				using StringItemMap = collections::Dictionary<WString, Ptr<StringItem>>;
+
+				collections::List<WString>				locales;
+				StringItemMap							items;
+				GuiResourceTextPos						tagPosition;
+
+				WString									GetLocalesName();
+			};
+
+			WString										className;
+			WString										defaultLocale;
+			collections::List<Ptr<Strings>>				strings;
+			GuiResourceTextPos							tagPosition;
+
+			using ParameterPair = collections::Pair<Ptr<reflection::description::ITypeInfo>, WString>;
+			using ParameterList = collections::List<ParameterPair>;
+			using PositionList = collections::List<vint>;
+			using TextList = collections::List<WString>;
+
+			struct TextDesc
+			{
+				ParameterList							parameters;
+				PositionList							positions;
+				TextList								texts;
+			};
+
+			using TextDescMap = collections::Dictionary<collections::Pair<Ptr<Strings>, WString>, Ptr<TextDesc>>;
+
+			static Ptr<GuiInstanceLocalizedStrings>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
+			Ptr<parsing::xml::XmlElement>				SaveToXml();
+
+			Ptr<Strings>								GetDefaultStrings();
+			Ptr<TextDesc>								ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors);
+			void										Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors);
+			Ptr<workflow::WfFunctionDeclaration>		GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfClassMemberKind classMemberKind);
+			Ptr<workflow::WfExpression>					GenerateStrings(TextDescMap& textDescs, Ptr<Strings> ls);
+			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
 		};
 	}
 }

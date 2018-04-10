@@ -1351,6 +1351,8 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiApplication)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetApplication, NO_PARAMETER, GuiApplication*(*)(), vl::presentation::controls::GetApplication)
 
+				CLASS_MEMBER_EVENT(LocaleChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(Locale, LocaleChanged)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MainWindow)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TooltipOwner)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ExecutablePath)

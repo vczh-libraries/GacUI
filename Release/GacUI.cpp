@@ -8643,7 +8643,7 @@ GuiResponsiveCompositionBase
 					auto parent = GetParent();
 					while (parent)
 					{
-						if (responsive = dynamic_cast<GuiResponsiveCompositionBase*>(parent))
+						if ((responsive = dynamic_cast<GuiResponsiveCompositionBase*>(parent)))
 						{
 							break;
 						}
@@ -8815,7 +8815,7 @@ GuiResponsiveSharedComposition
 					auto parent = GetParent();
 					while (parent)
 					{
-						if (currentView = dynamic_cast<GuiResponsiveViewComposition*>(parent))
+						if ((currentView = dynamic_cast<GuiResponsiveViewComposition*>(parent)))
 						{
 							break;
 						}
@@ -9152,7 +9152,7 @@ GuiResponsiveStackComposition
 				SortedList<GuiResponsiveCompositionBase*> ignored;
 				while (true)
 				{
-					GuiResponsiveCompositionBase* selected = false;
+					GuiResponsiveCompositionBase* selected = nullptr;
 					vint size = 0;
 
 					FOREACH(GuiResponsiveCompositionBase*, child, availables)
@@ -9507,12 +9507,7 @@ GuiApplication
 			}
 
 			GuiApplication::GuiApplication()
-				:mainWindow(0)
-				,sharedTooltipOwnerWindow(0)
-				,sharedTooltipOwner(0)
-				,sharedTooltipControl(0)
-				,sharedTooltipHovering(false)
-				,sharedTooltipClosing(false)
+				:locale(Locale::UserDefault())
 			{
 				GetCurrentController()->CallbackService()->InstallListener(this);
 			}
@@ -9589,6 +9584,20 @@ GuiApplication
 				if(sharedTooltipClosing)
 				{
 					CloseTooltip();
+				}
+			}
+
+			Locale GuiApplication::GetLocale()
+			{
+				return locale;
+			}
+
+			void GuiApplication::SetLocale(Locale value)
+			{
+				if (locale != value)
+				{
+					locale = value;
+					LocaleChanged();
 				}
 			}
 
@@ -29975,6 +29984,7 @@ GlobalStringKey
 		GlobalStringKey GlobalStringKey::_Ref;
 		GlobalStringKey GlobalStringKey::_Bind;
 		GlobalStringKey GlobalStringKey::_Format;
+		GlobalStringKey GlobalStringKey::_Str;
 		GlobalStringKey GlobalStringKey::_Eval;
 		GlobalStringKey GlobalStringKey::_Uri;
 		GlobalStringKey GlobalStringKey::_ControlTemplate;
@@ -29992,6 +30002,7 @@ GlobalStringKey
 				GlobalStringKey::_Ref = GlobalStringKey::Get(L"ref");
 				GlobalStringKey::_Bind = GlobalStringKey::Get(L"bind");
 				GlobalStringKey::_Format = GlobalStringKey::Get(L"format");
+				GlobalStringKey::_Str = GlobalStringKey::Get(L"str");
 				GlobalStringKey::_Eval = GlobalStringKey::Get(L"eval");
 				GlobalStringKey::_Uri = GlobalStringKey::Get(L"uri");
 				GlobalStringKey::_ControlTemplate = GlobalStringKey::Get(L"ControlTemplate");
