@@ -512,7 +512,7 @@ GuiInstanceLocalizedStrings
 				lsClass->declarations.Add(lsInterface);
 
 				lsInterface->kind = WfClassKind::Interface;
-				lsInterface->constructorType = WfConstructorType::Undefined;
+				lsInterface->constructorType = WfConstructorType::SharedPtr;
 				lsInterface->name.value = L"IStrings";
 				{
 					auto classMember = MakePtr<WfClassMember>();
