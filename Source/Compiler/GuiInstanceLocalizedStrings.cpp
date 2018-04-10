@@ -518,6 +518,52 @@ GuiInstanceLocalizedStrings
 				auto block = MakePtr<WfBlockStatement>();
 				func->statement = block;
 
+				auto defaultStrings = GetDefaultStrings();
+				FOREACH(Ptr<GuiInstanceLocalizedStrings::Strings>, ls, strings)
+				{
+					if (ls != defaultStrings)
+					{
+						auto listExpr = MakePtr<WfConstructorExpression>();
+						FOREACH(WString, locale, ls->locales)
+						{
+							auto strExpr = MakePtr<WfStringExpression>();
+							strExpr->value.value = locale;
+
+							auto item = MakePtr<WfConstructorArgument>();
+							item->key = strExpr;
+							listExpr->arguments.Add(item);
+						}
+
+						auto refLocale = MakePtr<WfReferenceExpression>();
+						refLocale->name.value = L"<ls>locale";
+
+						auto inferExpr = MakePtr<WfInferExpression>();
+						inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+						inferExpr->expression = refLocale;
+
+						auto inExpr = MakePtr<WfSetTestingExpression>();
+						inExpr->test = WfSetTesting::In;
+						inExpr->element = inferExpr;
+						inExpr->collection = listExpr;
+
+						auto ifStat = MakePtr<WfIfStatement>();
+						block->statements.Add(ifStat);
+						ifStat->expression = inExpr;
+
+						auto trueBlock = MakePtr<WfBlockStatement>();
+						ifStat->trueBranch = trueBlock;
+
+						{
+							auto stringExpr = MakePtr<WfStringExpression>();
+							stringExpr->value.value = L"Not Implemented.";
+
+							auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+							raiseStat->expression = stringExpr;
+							trueBlock->statements.Add(raiseStat);
+						}
+					}
+				}
+
 				{
 					auto stringExpr = MakePtr<WfStringExpression>();
 					stringExpr->value.value = L"Not Implemented.";
@@ -528,6 +574,8 @@ GuiInstanceLocalizedStrings
 				}
 			}
 
+			ParsingTextPos pos(tagPosition.row, tagPosition.column);
+			SetCodeRange(module, { pos,pos });
 			return module;
 		}
 	}
