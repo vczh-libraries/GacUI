@@ -217,12 +217,21 @@ GuiInstanceLocalizedStrings
 				errors.Add({ errorPos,message });
 			};
 
+			bool addedParameter = true;
 			while (*reading)
 			{
 				const wchar_t* begin = wcsstr(reading, L"$(");
 				if (begin)
 				{
-					textDesc->texts.Add(WString(reading, vint(begin - reading)));
+					auto text = WString(reading, vint(begin - reading));
+					if (addedParameter)
+					{
+						textDesc->texts.Add(text);
+					}
+					else
+					{
+						textDesc->texts[textDesc->texts.Count() - 1] += text;
+					}
 				}
 				else
 				{
@@ -252,17 +261,12 @@ GuiInstanceLocalizedStrings
 
 				if (end - begin == 3 && wcsncmp(begin, L"$($)", 4) == 0)
 				{
-					if (textDesc->texts.Count() > 0)
-					{
-						textDesc->texts[textDesc->texts.Count() - 1] += L"$";
-					}
-					else
-					{
-						textDesc->texts.Add(L"$");
-					}
+					addedParameter = false;
+					textDesc->texts[textDesc->texts.Count() - 1] += L"$";
 				}
 				else
 				{
+					addedParameter = true;
 					const wchar_t* number = begin + 2;
 					const wchar_t* numberEnd = number;
 					while (L'0' <= *numberEnd && *numberEnd < L'9')
