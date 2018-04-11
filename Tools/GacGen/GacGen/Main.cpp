@@ -214,7 +214,7 @@ void GuiMain()
 	{
 		if (errors.Count() == 0)
 		{
-			if (auto compiled = WriteWorkflowScript(precompiledFolder, scriptFilePath))
+			if (auto compiled = WriteWorkflowScript(precompiledFolder, L"Workflow/InstanceClass", scriptFilePath))
 			{
 				if (config->cppOutput)
 				{
