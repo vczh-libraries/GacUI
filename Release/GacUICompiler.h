@@ -420,6 +420,7 @@ Instance Namespace
 			GuiResourceTextPos						uriPosition;
 			bool									defaultStrings = false;
 			WString									className;
+			WString									interfaceName;
 		};
 
 /***********************************************************************
@@ -612,6 +613,7 @@ namespace vl
 
 		extern Ptr<GuiInstanceCompiledWorkflow>			WriteWorkflowScript(
 															Ptr<GuiResourceFolder> precompiledFolder,
+															const WString& assemblyResourcePath,
 															const filesystem::FilePath& workflowPath);
 
 		extern Ptr<workflow::cppcodegen::WfCppOutput>	WriteCppCodesToFile(
@@ -767,6 +769,8 @@ namespace vl
 			Ptr<parsing::xml::XmlElement>				SaveToXml();
 
 			Ptr<Strings>								GetDefaultStrings();
+			WString										GetInterfaceTypeName(bool hasNamespace);
+
 			Ptr<TextDesc>								ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors);
 			void										Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfClassMemberKind classMemberKind);

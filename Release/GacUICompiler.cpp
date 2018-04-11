@@ -39,11 +39,12 @@ namespace vl
 
 		Ptr<GuiInstanceCompiledWorkflow> WriteWorkflowScript(
 			Ptr<GuiResourceFolder> precompiledFolder,
+			const WString& assemblyResourcePath,
 			const filesystem::FilePath& workflowPath)
 		{
 			if (precompiledFolder)
 			{
-				if (auto compiled = precompiledFolder->GetValueByPath(L"Workflow/InstanceClass").Cast<GuiInstanceCompiledWorkflow>())
+				if (auto compiled = precompiledFolder->GetValueByPath(assemblyResourcePath).Cast<GuiInstanceCompiledWorkflow>())
 				{
 					WString text;
 					if (compiled->assembly)
@@ -3547,7 +3548,7 @@ WorkflowGenerateBindingVisitor
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, resolvingResult.context->localizeds)
 			{
-				auto code = L"bind(" + localized->className + L"::Get(presentation::controls::GuiApplication::GetApplication().Locale) of (" + localized->className + L"::IStrings^))";
+				auto code = L"bind(" + localized->className + L"::Get(presentation::controls::GuiApplication::GetApplication().Locale) of (" + localized->interfaceName + L"^))";
 				if (auto bindExpr = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, localized->tagPosition, errors))
 				{
 					auto instancePropertyInfo = resolvingResult.rootTypeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(localized->name.ToString(), true);
@@ -7925,6 +7926,7 @@ Instance Type Resolver (Instance)
 									if (auto ls = context.resolver->ResolveResource(protocol, path).Cast<GuiInstanceLocalizedStrings>())
 									{
 										localized->className = ls->className;
+										localized->interfaceName = ls->GetInterfaceTypeName(true);
 									}
 									else
 									{
@@ -8611,6 +8613,21 @@ GuiInstanceLocalizedStrings
 				.First();
 		}
 
+		WString GuiInstanceLocalizedStrings::GetInterfaceTypeName(bool hasNamespace)
+		{
+			auto pair = INVLOC.FindLast(className, L"::", Locale::None);
+			if (pair.key == -1)
+			{
+				return L"I" + className + L"Strings";
+			}
+			else
+			{
+				auto ns = className.Left(pair.key + 2);
+				auto name = className.Right(className.Length() - ns.Length());
+				return(hasNamespace ? ns : L"") + L"I" + name + L"Strings";
+			}
+		}
+
 		Ptr<GuiInstanceLocalizedStrings::TextDesc> GuiInstanceLocalizedStrings::ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors)
 		{
 			const wchar_t* reading = text.Buffer();
@@ -8874,60 +8891,12 @@ GuiInstanceLocalizedStrings
 			auto lsExpr = MakePtr<WfNewInterfaceExpression>();
 			{
 				auto refType = MakePtr<WfReferenceType>();
-				refType->name.value = L"IStrings";
+				refType->name.value = GetInterfaceTypeName(false);
 
 				auto refPointer = MakePtr<WfSharedPointerType>();
 				refPointer->element = refType;
 
 				lsExpr->type = refPointer;
-			}
-
-			{
-				auto func = MakePtr<WfFunctionDeclaration>();
-				lsExpr->declarations.Add(func);
-				func->anonymity = WfFunctionAnonymity::Named;
-				func->name.value = L"<ls>First";
-				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
-				{
-					auto argument = MakePtr<WfFunctionArgument>();
-					argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<LazyList<WString>>::CreateTypeInfo().Obj());
-					argument->name.value = L"<ls>formats";
-					func->arguments.Add(argument);
-				}
-				{
-					auto member = MakePtr<WfClassMember>();
-					member->kind = WfClassMemberKind::Normal;
-					func->classMember = member;
-				}
-				auto block = MakePtr<WfBlockStatement>();
-				func->statement = block;
-
-				{
-					auto forStat = MakePtr<WfForEachStatement>();
-					block->statements.Add(forStat);
-					forStat->name.value = L"<ls>format";
-					forStat->direction = WfForEachDirection::Normal;
-
-					auto refArgument = MakePtr<WfReferenceExpression>();
-					refArgument->name.value = L"<ls>formats";
-					forStat->collection = refArgument;
-
-					auto forBlock = MakePtr<WfBlockStatement>();
-					forStat->statement = forBlock;
-					{
-						auto refFormat = MakePtr<WfReferenceExpression>();
-						refFormat->name.value = L"<ls>format";
-
-						auto returnStat = MakePtr<WfReturnStatement>();
-						returnStat->expression = refFormat;
-						forBlock->statements.Add(returnStat);
-					}
-				}
-				{
-					auto returnStat = MakePtr<WfReturnStatement>();
-					returnStat->expression = MakePtr<WfStringExpression>();
-					block->statements.Add(returnStat);
-				}
 			}
 
 			FOREACH(Ptr<StringItem>, lss, ls->items.Values())
@@ -9113,25 +9082,64 @@ GuiInstanceLocalizedStrings
 
 			auto module = MakePtr<WfModule>();
 			module->name.value = moduleName;
-			auto lsClass = Workflow_InstallClass(className, module);
 			{
-				auto lsInterface = MakePtr<WfClassDeclaration>();
-				lsClass->declarations.Add(lsInterface);
-
+				auto lsInterface = Workflow_InstallClass(GetInterfaceTypeName(true), module);
 				lsInterface->kind = WfClassKind::Interface;
 				lsInterface->constructorType = WfConstructorType::SharedPtr;
-				lsInterface->name.value = L"IStrings";
-				{
-					auto classMember = MakePtr<WfClassMember>();
-					classMember->kind = WfClassMemberKind::Normal;
-					lsInterface->classMember = classMember;
-				}
 
 				auto defaultStrings = GetDefaultStrings();
 				FOREACH(WString, functionName, defaultStrings->items.Keys())
 				{
 					auto func = GenerateFunction(textDescs[{defaultStrings, functionName}], functionName, WfClassMemberKind::Normal);
 					lsInterface->declarations.Add(func);
+				}
+			}
+			auto lsClass = Workflow_InstallClass(className, module);
+			{
+				auto func = MakePtr<WfFunctionDeclaration>();
+				lsClass->declarations.Add(func);
+				func->anonymity = WfFunctionAnonymity::Named;
+				func->name.value = L"<ls>First";
+				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+				{
+					auto argument = MakePtr<WfFunctionArgument>();
+					argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<LazyList<WString>>::CreateTypeInfo().Obj());
+					argument->name.value = L"<ls>formats";
+					func->arguments.Add(argument);
+				}
+				{
+					auto member = MakePtr<WfClassMember>();
+					member->kind = WfClassMemberKind::Static;
+					func->classMember = member;
+				}
+				auto block = MakePtr<WfBlockStatement>();
+				func->statement = block;
+
+				{
+					auto forStat = MakePtr<WfForEachStatement>();
+					block->statements.Add(forStat);
+					forStat->name.value = L"<ls>format";
+					forStat->direction = WfForEachDirection::Normal;
+
+					auto refArgument = MakePtr<WfReferenceExpression>();
+					refArgument->name.value = L"<ls>formats";
+					forStat->collection = refArgument;
+
+					auto forBlock = MakePtr<WfBlockStatement>();
+					forStat->statement = forBlock;
+					{
+						auto refFormat = MakePtr<WfReferenceExpression>();
+						refFormat->name.value = L"<ls>format";
+
+						auto returnStat = MakePtr<WfReturnStatement>();
+						returnStat->expression = refFormat;
+						forBlock->statements.Add(returnStat);
+					}
+				}
+				{
+					auto returnStat = MakePtr<WfReturnStatement>();
+					returnStat->expression = MakePtr<WfStringExpression>();
+					block->statements.Add(returnStat);
 				}
 			}
 			{
@@ -9142,7 +9150,7 @@ GuiInstanceLocalizedStrings
 				func->name.value = L"Get";
 				{
 					auto refType = MakePtr<WfReferenceType>();
-					refType->name.value = L"IStrings";
+					refType->name.value = GetInterfaceTypeName(false);
 
 					auto refPointer = MakePtr<WfSharedPointerType>();
 					refPointer->element = refType;
@@ -9738,7 +9746,7 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, context->localizeds)
 			{
-				if (auto type = GetTypeDescriptor(localized->className + L"::IStrings"))
+				if (auto type = GetTypeDescriptor(localized->interfaceName))
 				{
 					auto prop = MakePtr<WfAutoPropertyDeclaration>();
 					addDecl(prop);
@@ -10847,12 +10855,12 @@ WorkflowReferenceNamesVisitor
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, resolvingResult.context->localizeds)
 			{
-				auto type = GetTypeDescriptor(localized->className + L"::IStrings");
+				auto type = GetTypeDescriptor(localized->interfaceName);
 				if (!type)
 				{
 					errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
 						L"Precompile: Cannot find type \"" +
-						localized->className + L"::IStrings" +
+						localized->interfaceName +
 						L"\"."));
 				}
 				else if (resolvingResult.typeInfos.Keys().Contains(localized->name))
