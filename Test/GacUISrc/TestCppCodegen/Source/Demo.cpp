@@ -1719,7 +1719,7 @@ Closures
 	void __vwsnf168_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::StringResource::IStrings>>(__vwsn_value_);
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::IStringResourceStrings>>(__vwsn_value_);
 		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
 		{
 			return;
@@ -9104,187 +9104,155 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::__vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings(::vl::Locale __vwsnctor___vwsn_ls_locale)
+	__vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::__vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale)
 		:__vwsn_ls_locale(__vwsnctor___vwsn_ls_locale)
 	{
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::__vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats)
-	{
-		{
-			auto __vwsn_for_enumerable_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(__vwsn_ls_formats);
-			auto __vwsn_for_enumerator_ = ::vl::__vwsn::This(__vwsn_for_enumerable_.Obj())->CreateEnumerator();
-			while (::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->Next())
-			{
-				auto __vwsn_ls_format = ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->GetCurrent());
-				{
-					return __vwsn_ls_format;
-				}
-			}
-		}
-		return ::vl::WString(L"", false);
-	}
-
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::Currency(const ::vl::WString& __vwsn_ls_0)
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Currency(const ::vl::WString& __vwsn_ls_0)
 	{
 		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatCurrency(__vwsn_ls_locale, __vwsn_ls_0);
 		return (::vl::WString(L"货币：", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::DateFormat(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::DateFormat(::vl::DateTime __vwsn_ls_0)
 	{
 		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::vl::WString(L"yyyy", false), __vwsn_ls_0);
 		return (::vl::WString(L"日期格式：", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::Label()
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Label()
 	{
 		return ::vl::WString(L"语言设置：", false);
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::LongDate(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongDate(::vl::DateTime __vwsn_ls_0)
 	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, this->__vwsn_ls_First(::vl::reflection::description::Localization::GetLongDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
 		return (::vl::WString(L"长日期：", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::LongTime(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongTime(::vl::DateTime __vwsn_ls_0)
 	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, this->__vwsn_ls_First(::vl::reflection::description::Localization::GetLongTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
 		return (::vl::WString(L"长时间：", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::Number(const ::vl::WString& __vwsn_ls_0)
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Number(const ::vl::WString& __vwsn_ls_0)
 	{
 		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatNumber(__vwsn_ls_locale, __vwsn_ls_0);
 		return (::vl::WString(L"数字：", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::Sentence(const ::vl::WString& __vwsn_ls_0)
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Sentence(const ::vl::WString& __vwsn_ls_0)
 	{
 		auto __vwsn_ls__0 = __vwsn_ls_0;
 		return ((::vl::WString(L"$", false) + __vwsn_ls__0) + ::vl::WString(L"，早上好！$", false));
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::ShortDate(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortDate(::vl::DateTime __vwsn_ls_0)
 	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, this->__vwsn_ls_First(::vl::reflection::description::Localization::GetShortDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
 		return (::vl::WString(L"短日期：", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::ShortTime(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortTime(::vl::DateTime __vwsn_ls_0)
 	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, this->__vwsn_ls_First(::vl::reflection::description::Localization::GetShortTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
 		return (::vl::WString(L"短时间：", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::TimeFormat(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::TimeFormat(::vl::DateTime __vwsn_ls_0)
 	{
 		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::vl::WString(L"HH", false), __vwsn_ls_0);
 		return (::vl::WString(L"时间格式： ", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::Title()
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Title()
 	{
 		return ::vl::WString(L"本地化", false);
 	}
 
-	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings::YearMonthDate(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings::YearMonthDate(::vl::DateTime __vwsn_ls_0)
 	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, this->__vwsn_ls_First(::vl::reflection::description::Localization::GetYearMonthDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetYearMonthDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
 		return (::vl::WString(L"年月：", false) + __vwsn_ls__0);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::__vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings(::vl::Locale __vwsnctor___vwsn_ls_locale)
+	__vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::__vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale)
 		:__vwsn_ls_locale(__vwsnctor___vwsn_ls_locale)
 	{
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::__vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats)
-	{
-		{
-			auto __vwsn_for_enumerable_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(__vwsn_ls_formats);
-			auto __vwsn_for_enumerator_ = ::vl::__vwsn::This(__vwsn_for_enumerable_.Obj())->CreateEnumerator();
-			while (::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->Next())
-			{
-				auto __vwsn_ls_format = ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->GetCurrent());
-				{
-					return __vwsn_ls_format;
-				}
-			}
-		}
-		return ::vl::WString(L"", false);
-	}
-
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::Currency(const ::vl::WString& __vwsn_ls_0)
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Currency(const ::vl::WString& __vwsn_ls_0)
 	{
 		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatCurrency(__vwsn_ls_locale, __vwsn_ls_0);
 		return (::vl::WString(L"Currency: ", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::DateFormat(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::DateFormat(::vl::DateTime __vwsn_ls_0)
 	{
 		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::vl::WString(L"yyyy", false), __vwsn_ls_0);
 		return (::vl::WString(L"DateFormat: ", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::Label()
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Label()
 	{
 		return ::vl::WString(L"Selected Locale:", false);
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::LongDate(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongDate(::vl::DateTime __vwsn_ls_0)
 	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, this->__vwsn_ls_First(::vl::reflection::description::Localization::GetLongDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
 		return (::vl::WString(L"LongDate: ", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::LongTime(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongTime(::vl::DateTime __vwsn_ls_0)
 	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, this->__vwsn_ls_First(::vl::reflection::description::Localization::GetLongTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
 		return (::vl::WString(L"LongTime: ", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::Number(const ::vl::WString& __vwsn_ls_0)
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Number(const ::vl::WString& __vwsn_ls_0)
 	{
 		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatNumber(__vwsn_ls_locale, __vwsn_ls_0);
 		return (::vl::WString(L"Number: ", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::Sentence(const ::vl::WString& __vwsn_ls_0)
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Sentence(const ::vl::WString& __vwsn_ls_0)
 	{
 		auto __vwsn_ls__0 = __vwsn_ls_0;
 		return ((::vl::WString(L"$Good morning, ", false) + __vwsn_ls__0) + ::vl::WString(L"!$", false));
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::ShortDate(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortDate(::vl::DateTime __vwsn_ls_0)
 	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, this->__vwsn_ls_First(::vl::reflection::description::Localization::GetShortDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
 		return (::vl::WString(L"ShortDate: ", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::ShortTime(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortTime(::vl::DateTime __vwsn_ls_0)
 	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, this->__vwsn_ls_First(::vl::reflection::description::Localization::GetShortTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
 		return (::vl::WString(L"ShortTime: ", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::TimeFormat(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::TimeFormat(::vl::DateTime __vwsn_ls_0)
 	{
 		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::vl::WString(L"HH", false), __vwsn_ls_0);
 		return (::vl::WString(L"TimeFormat: ", false) + __vwsn_ls__0);
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::Title()
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Title()
 	{
 		return ::vl::WString(L"Localization", false);
 	}
 
-	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings::YearMonthDate(::vl::DateTime __vwsn_ls_0)
+	::vl::WString __vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings::YearMonthDate(::vl::DateTime __vwsn_ls_0)
 	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, this->__vwsn_ls_First(::vl::reflection::description::Localization::GetYearMonthDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetYearMonthDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
 		return (::vl::WString(L"YearMonthDate: ", false) + __vwsn_ls__0);
 	}
 
@@ -15310,7 +15278,7 @@ Class (::demo::LocalizedStringsTabPageConstructor)
 		, __vwsn_precompile_19(::vl::Ptr<::vl::presentation::controls::list::TextItem>())
 		, __vwsn_precompile_20(::vl::Ptr<::vl::presentation::controls::list::TextItem>())
 		, __vwsn_precompile_21(::vl::Ptr<::vl::presentation::controls::list::TextItem>())
-		, Strings(::vl::Ptr<::demo::StringResource::IStrings>())
+		, Strings(::vl::Ptr<::demo::IStringResourceStrings>())
 		, comboLocales(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
 		, listLocales(static_cast<::vl::presentation::controls::GuiTextList*>(nullptr))
 	{
@@ -15340,11 +15308,11 @@ Class (::demo::LocalizedStringsTabPage)
 		return static_cast<::vl::vint32_t>(0);
 	}
 
-	::vl::Ptr<::demo::StringResource::IStrings> LocalizedStringsTabPage::GetStrings()
+	::vl::Ptr<::demo::IStringResourceStrings> LocalizedStringsTabPage::GetStrings()
 	{
 		return this->__vwsn_prop_Strings;
 	}
-	void LocalizedStringsTabPage::SetStrings(::vl::Ptr<::demo::StringResource::IStrings> __vwsn_value_)
+	void LocalizedStringsTabPage::SetStrings(::vl::Ptr<::demo::IStringResourceStrings> __vwsn_value_)
 	{
 		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
 		{
@@ -15358,7 +15326,7 @@ Class (::demo::LocalizedStringsTabPage)
 		, dateTime(::vl::reflection::description::Sys::GetLocalTime())
 		, number(static_cast<::vl::vint32_t>(2147483647))
 		, currency(static_cast<double>(1342177.28))
-		, __vwsn_prop_Strings(::vl::Ptr<::demo::StringResource::IStrings>())
+		, __vwsn_prop_Strings(::vl::Ptr<::demo::IStringResourceStrings>())
 	{
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::LocalizedStringsTabPage", false));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
@@ -17364,25 +17332,41 @@ Class (::demo::ColorDef)
 	}
 
 /***********************************************************************
+Class (::demo::IStringResourceStrings)
+***********************************************************************/
+
+/***********************************************************************
 Class (::demo::StringResource)
 ***********************************************************************/
 
-	::vl::Ptr<::demo::StringResource::IStrings> StringResource::Get(::vl::Locale __vwsn_ls_locale)
+	::vl::WString StringResource::__vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats)
+	{
+		{
+			auto __vwsn_for_enumerable_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(__vwsn_ls_formats);
+			auto __vwsn_for_enumerator_ = ::vl::__vwsn::This(__vwsn_for_enumerable_.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->Next())
+			{
+				auto __vwsn_ls_format = ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->GetCurrent());
+				{
+					return __vwsn_ls_format;
+				}
+			}
+		}
+		return ::vl::WString(L"", false);
+	}
+
+	::vl::Ptr<::demo::IStringResourceStrings> StringResource::Get(::vl::Locale __vwsn_ls_locale)
 	{
 		if (::vl::__vwsn::InSet(::vl::__vwsn::ToString(__vwsn_ls_locale), (::vl::__vwsn::CreateList().Add(::vl::WString(L"zh-CN", false))).list))
 		{
-			return ::vl::Ptr<::demo::StringResource::IStrings>(new ::vl_workflow_global::__vwsnc91_Demo_demo_StringResource_Get__demo_StringResource_IStrings(__vwsn_ls_locale));
+			return ::vl::Ptr<::demo::IStringResourceStrings>(new ::vl_workflow_global::__vwsnc91_Demo_demo_StringResource_Get__demo_IStringResourceStrings(__vwsn_ls_locale));
 		}
-		return ::vl::Ptr<::demo::StringResource::IStrings>(new ::vl_workflow_global::__vwsnc92_Demo_demo_StringResource_Get__demo_StringResource_IStrings(__vwsn_ls_locale));
+		return ::vl::Ptr<::demo::IStringResourceStrings>(new ::vl_workflow_global::__vwsnc92_Demo_demo_StringResource_Get__demo_IStringResourceStrings(__vwsn_ls_locale));
 	}
 
 	StringResource::StringResource()
 	{
 	}
-
-/***********************************************************************
-Class (::demo::StringResource::IStrings)
-***********************************************************************/
 
 }
 #undef GLOBAL_SYMBOL

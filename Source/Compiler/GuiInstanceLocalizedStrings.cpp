@@ -706,7 +706,7 @@ GuiInstanceLocalizedStrings
 
 				{
 					auto forStat = MakePtr<WfForEachStatement>();
-					//block->statements.Add(forStat);
+					block->statements.Add(forStat);
 					forStat->name.value = L"<ls>format";
 					forStat->direction = WfForEachDirection::Normal;
 

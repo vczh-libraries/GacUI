@@ -69,6 +69,7 @@ namespace vl
 			DECL_TYPE_INFO(::demo::GenderVisualizerConstructor)
 			DECL_TYPE_INFO(::demo::HyperlinkWindow)
 			DECL_TYPE_INFO(::demo::HyperlinkWindowConstructor)
+			DECL_TYPE_INFO(::demo::IStringResourceStrings)
 			DECL_TYPE_INFO(::demo::ListViewTabPage)
 			DECL_TYPE_INFO(::demo::ListViewTabPageConstructor)
 			DECL_TYPE_INFO(::demo::LocalizedStringsTabPage)
@@ -92,7 +93,6 @@ namespace vl
 			DECL_TYPE_INFO(::demo::ResponsiveViewControl)
 			DECL_TYPE_INFO(::demo::ResponsiveViewControlConstructor)
 			DECL_TYPE_INFO(::demo::StringResource)
-			DECL_TYPE_INFO(::demo::StringResource::IStrings)
 			DECL_TYPE_INFO(::demo::TextBoxTabPage)
 			DECL_TYPE_INFO(::demo::TextBoxTabPageConstructor)
 			DECL_TYPE_INFO(::demo::TextEditor)
@@ -102,7 +102,7 @@ namespace vl
 			DECL_TYPE_INFO(::demo::TreeViewTabPage)
 			DECL_TYPE_INFO(::demo::TreeViewTabPageConstructor)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::demo::StringResource::IStrings)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::demo::IStringResourceStrings)
 				::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) override
 				{
 					INVOKEGET_INTERFACE_PROXY(Currency, __vwsn_ls_0);
@@ -151,7 +151,7 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY(YearMonthDate, __vwsn_ls_0);
 				}
-			END_INTERFACE_PROXY(::demo::StringResource::IStrings)
+			END_INTERFACE_PROXY(::demo::IStringResourceStrings)
 #endif
 
 			extern bool LoadDemoTypes();
