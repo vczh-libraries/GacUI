@@ -237,6 +237,7 @@
     <Xml Include="Resources\FullControlTest\Images\MiscImages.xml" />
     <Xml Include="Resources\FullControlTest\Images\SmallImages.xml" />
     <Xml Include="Resources\FullControlTest\ListViewTabPage.xml" />
+    <Xml Include="Resources\FullControlTest\LocalizedStringsTabPage.xml" />
     <Xml Include="Resources\FullControlTest\RepeatComponents.xml" />
     <Xml Include="Resources\FullControlTest\RepeatTabPage.xml" />
     <Xml Include="Resources\FullControlTest\Resource.xml" />

@@ -71,6 +71,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::HyperlinkWindowConstructor)
 			DECL_TYPE_INFO(::demo::ListViewTabPage)
 			DECL_TYPE_INFO(::demo::ListViewTabPageConstructor)
+			DECL_TYPE_INFO(::demo::LocalizedStringsTabPage)
+			DECL_TYPE_INFO(::demo::LocalizedStringsTabPageConstructor)
 			DECL_TYPE_INFO(::demo::MainWindow)
 			DECL_TYPE_INFO(::demo::MainWindowConstructor)
 			DECL_TYPE_INFO(::demo::MyCategory)
@@ -89,6 +91,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::ResponsiveTabPageConstructor)
 			DECL_TYPE_INFO(::demo::ResponsiveViewControl)
 			DECL_TYPE_INFO(::demo::ResponsiveViewControlConstructor)
+			DECL_TYPE_INFO(::demo::StringResource)
+			DECL_TYPE_INFO(::demo::StringResource::IStrings)
 			DECL_TYPE_INFO(::demo::TextBoxTabPage)
 			DECL_TYPE_INFO(::demo::TextBoxTabPageConstructor)
 			DECL_TYPE_INFO(::demo::TextEditor)
@@ -97,6 +101,57 @@ namespace vl
 			DECL_TYPE_INFO(::demo::TextListTabPageConstructor)
 			DECL_TYPE_INFO(::demo::TreeViewTabPage)
 			DECL_TYPE_INFO(::demo::TreeViewTabPageConstructor)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::demo::StringResource::IStrings)
+				::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) override
+				{
+					INVOKEGET_INTERFACE_PROXY(Currency, __vwsn_ls_0);
+				}
+				::vl::WString DateFormat(::vl::DateTime __vwsn_ls_0) override
+				{
+					INVOKEGET_INTERFACE_PROXY(DateFormat, __vwsn_ls_0);
+				}
+				::vl::WString Label() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Label);
+				}
+				::vl::WString LongDate(::vl::DateTime __vwsn_ls_0) override
+				{
+					INVOKEGET_INTERFACE_PROXY(LongDate, __vwsn_ls_0);
+				}
+				::vl::WString LongTime(::vl::DateTime __vwsn_ls_0) override
+				{
+					INVOKEGET_INTERFACE_PROXY(LongTime, __vwsn_ls_0);
+				}
+				::vl::WString Number(const ::vl::WString& __vwsn_ls_0) override
+				{
+					INVOKEGET_INTERFACE_PROXY(Number, __vwsn_ls_0);
+				}
+				::vl::WString Sentence(const ::vl::WString& __vwsn_ls_0) override
+				{
+					INVOKEGET_INTERFACE_PROXY(Sentence, __vwsn_ls_0);
+				}
+				::vl::WString ShortDate(::vl::DateTime __vwsn_ls_0) override
+				{
+					INVOKEGET_INTERFACE_PROXY(ShortDate, __vwsn_ls_0);
+				}
+				::vl::WString ShortTime(::vl::DateTime __vwsn_ls_0) override
+				{
+					INVOKEGET_INTERFACE_PROXY(ShortTime, __vwsn_ls_0);
+				}
+				::vl::WString TimeFormat(::vl::DateTime __vwsn_ls_0) override
+				{
+					INVOKEGET_INTERFACE_PROXY(TimeFormat, __vwsn_ls_0);
+				}
+				::vl::WString Title() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Title);
+				}
+				::vl::WString YearMonthDate(::vl::DateTime __vwsn_ls_0) override
+				{
+					INVOKEGET_INTERFACE_PROXY(YearMonthDate, __vwsn_ls_0);
+				}
+			END_INTERFACE_PROXY(::demo::StringResource::IStrings)
 #endif
 
 			extern bool LoadDemoTypes();

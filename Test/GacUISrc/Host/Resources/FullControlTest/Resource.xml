@@ -25,12 +25,34 @@
                 </att.Pages>
               </Tab>
             </TabPage>
-            <demo:RepeatTabPage Alt="R"/>
-            <demo:DocumentTabPage Alt="D"/>
-            <demo:TextBoxTabPage Alt="D"/>
-            <demo:ElementTabPage Alt="E"/>
-            <demo:AnimationTabPage Alt="A"/>
-            <demo:ResponsiveTabPage Alt="R"/>
+            <TabPage Alt="L" Text="Layout">
+              <Tab>
+                <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                <att.Pages>
+                  <demo:RepeatTabPage Alt="R"/>
+                  <demo:ResponsiveTabPage Alt="R"/>
+                </att.Pages>
+              </Tab>
+            </TabPage>
+            <TabPage Alt="L" Text="Control">
+              <Tab>
+                <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                <att.Pages>
+                  <demo:DocumentTabPage Alt="D"/>
+                  <demo:TextBoxTabPage Alt="D"/>
+                </att.Pages>
+              </Tab>
+            </TabPage>
+            <TabPage Alt="M" Text="Misc">
+              <Tab>
+                <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                <att.Pages>
+                  <demo:ElementTabPage Alt="E"/>
+                  <demo:AnimationTabPage Alt="A"/>
+                  <demo:LocalizedStringsTabPage Alt="L"/>
+                </att.Pages>
+              </Tab>
+            </TabPage>
           </att.Pages>
         </Tab>
       </Window>
@@ -40,16 +62,21 @@
   <Instance name="TextListTabPageResource" content="File">TextListTabPage.xml</Instance>
   <Instance name="ListViewTabPageResource" content="File">ListViewTabPage.xml</Instance>
   <Instance name="TreeViewTabPageResource" content="File">TreeViewTabPage.xml</Instance>
-  <Instance name="RepeatTabPageResource" content="File">RepeatTabPage.xml</Instance>
   <Instance name="DataGridTabPageResource" content="File">DataGridTabPage.xml</Instance>
+  <Folder name="DataGridComponents" content="Link">DataGridComponents.xml</Folder>
+  
+  <Instance name="RepeatTabPageResource" content="File">RepeatTabPage.xml</Instance>
+  <Folder name="ResponsiveTabPage" content="Link">ResponsiveTabPage.xml</Folder>
+  <Folder name="RepeatComponents" content="Link">RepeatComponents.xml</Folder>
+  
   <Instance name="DocumentTabPageResource" content="File">DocumentTabPage.xml</Instance>
+  <Folder name="TextBoxComponents" content="Link">TextBoxTabPage.xml</Folder>
+  <Folder name="DocumentComponents" content="Link">DocumentComponents.xml</Folder>
+  
   <Instance name="ElementTabPageResource" content="File">ElementTabPage.xml</Instance>
   <Folder name="AnimationTabPage" content="Link">AnimationTabPage.xml</Folder>
-  <Folder name="ResponsiveTabPage" content="Link">ResponsiveTabPage.xml</Folder>
-  <Folder name="TextBoxComponents" content="Link">TextBoxTabPage.xml</Folder>
-  <Folder name="DataGridComponents" content="Link">DataGridComponents.xml</Folder>
-  <Folder name="RepeatComponents" content="Link">RepeatComponents.xml</Folder>
-  <Folder name="DocumentComponents" content="Link">DocumentComponents.xml</Folder>
+  <Folder name="LocalizedStringsTabPage" content="Link">LocalizedStringsTabPage.xml</Folder>
+  
   <Folder name="LargeImages" content="Link">Images/LargeImages.xml</Folder>
   <Folder name="SmallImages" content="Link">Images/SmallImages.xml</Folder>
   <Folder name="MiscImages" content="Link">Images/MiscImages.xml</Folder>
