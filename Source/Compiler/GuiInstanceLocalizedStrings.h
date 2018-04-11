@@ -61,7 +61,7 @@ namespace vl
 			Ptr<parsing::xml::XmlElement>				SaveToXml();
 
 			Ptr<Strings>								GetDefaultStrings();
-			WString										GetInterfaceTypeName();
+			WString										GetInterfaceTypeName(bool hasNamespace);
 
 			Ptr<TextDesc>								ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors);
 			void										Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors);

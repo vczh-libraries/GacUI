@@ -454,7 +454,7 @@ Instance Type Resolver (Instance)
 									if (auto ls = context.resolver->ResolveResource(protocol, path).Cast<GuiInstanceLocalizedStrings>())
 									{
 										localized->className = ls->className;
-										localized->interfaceName = ls->GetInterfaceTypeName();
+										localized->interfaceName = ls->GetInterfaceTypeName(true);
 									}
 									else
 									{

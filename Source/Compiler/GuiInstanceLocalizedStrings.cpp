@@ -202,7 +202,7 @@ GuiInstanceLocalizedStrings
 				.First();
 		}
 
-		WString GuiInstanceLocalizedStrings::GetInterfaceTypeName()
+		WString GuiInstanceLocalizedStrings::GetInterfaceTypeName(bool hasNamespace)
 		{
 			auto pair = INVLOC.FindLast(className, L"::", Locale::None);
 			if (pair.key == -1)
@@ -213,7 +213,7 @@ GuiInstanceLocalizedStrings
 			{
 				auto ns = className.Left(pair.key + 2);
 				auto name = className.Right(className.Length() - ns.Length());
-				return ns + L"I" + name + L"Strings";
+				return(hasNamespace ? ns : L"") + L"I" + name + L"Strings";
 			}
 		}
 
@@ -480,60 +480,12 @@ GuiInstanceLocalizedStrings
 			auto lsExpr = MakePtr<WfNewInterfaceExpression>();
 			{
 				auto refType = MakePtr<WfReferenceType>();
-				refType->name.value = GetInterfaceTypeName();
+				refType->name.value = GetInterfaceTypeName(false);
 
 				auto refPointer = MakePtr<WfSharedPointerType>();
 				refPointer->element = refType;
 
 				lsExpr->type = refPointer;
-			}
-
-			{
-				auto func = MakePtr<WfFunctionDeclaration>();
-				lsExpr->declarations.Add(func);
-				func->anonymity = WfFunctionAnonymity::Named;
-				func->name.value = L"<ls>First";
-				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
-				{
-					auto argument = MakePtr<WfFunctionArgument>();
-					argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<LazyList<WString>>::CreateTypeInfo().Obj());
-					argument->name.value = L"<ls>formats";
-					func->arguments.Add(argument);
-				}
-				{
-					auto member = MakePtr<WfClassMember>();
-					member->kind = WfClassMemberKind::Normal;
-					func->classMember = member;
-				}
-				auto block = MakePtr<WfBlockStatement>();
-				func->statement = block;
-
-				{
-					auto forStat = MakePtr<WfForEachStatement>();
-					//block->statements.Add(forStat);
-					forStat->name.value = L"<ls>format";
-					forStat->direction = WfForEachDirection::Normal;
-
-					auto refArgument = MakePtr<WfReferenceExpression>();
-					refArgument->name.value = L"<ls>formats";
-					forStat->collection = refArgument;
-
-					auto forBlock = MakePtr<WfBlockStatement>();
-					forStat->statement = forBlock;
-					{
-						auto refFormat = MakePtr<WfReferenceExpression>();
-						refFormat->name.value = L"<ls>format";
-
-						auto returnStat = MakePtr<WfReturnStatement>();
-						returnStat->expression = refFormat;
-						forBlock->statements.Add(returnStat);
-					}
-				}
-				{
-					auto returnStat = MakePtr<WfReturnStatement>();
-					returnStat->expression = MakePtr<WfStringExpression>();
-					block->statements.Add(returnStat);
-				}
 			}
 
 			FOREACH(Ptr<StringItem>, lss, ls->items.Values())
@@ -720,7 +672,7 @@ GuiInstanceLocalizedStrings
 			auto module = MakePtr<WfModule>();
 			module->name.value = moduleName;
 			{
-				auto lsInterface = Workflow_InstallClass(GetInterfaceTypeName(), module);
+				auto lsInterface = Workflow_InstallClass(GetInterfaceTypeName(true), module);
 				lsInterface->kind = WfClassKind::Interface;
 				lsInterface->constructorType = WfConstructorType::SharedPtr;
 
@@ -735,12 +687,59 @@ GuiInstanceLocalizedStrings
 			{
 				auto func = MakePtr<WfFunctionDeclaration>();
 				lsClass->declarations.Add(func);
+				func->anonymity = WfFunctionAnonymity::Named;
+				func->name.value = L"<ls>First";
+				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+				{
+					auto argument = MakePtr<WfFunctionArgument>();
+					argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<LazyList<WString>>::CreateTypeInfo().Obj());
+					argument->name.value = L"<ls>formats";
+					func->arguments.Add(argument);
+				}
+				{
+					auto member = MakePtr<WfClassMember>();
+					member->kind = WfClassMemberKind::Static;
+					func->classMember = member;
+				}
+				auto block = MakePtr<WfBlockStatement>();
+				func->statement = block;
+
+				{
+					auto forStat = MakePtr<WfForEachStatement>();
+					//block->statements.Add(forStat);
+					forStat->name.value = L"<ls>format";
+					forStat->direction = WfForEachDirection::Normal;
+
+					auto refArgument = MakePtr<WfReferenceExpression>();
+					refArgument->name.value = L"<ls>formats";
+					forStat->collection = refArgument;
+
+					auto forBlock = MakePtr<WfBlockStatement>();
+					forStat->statement = forBlock;
+					{
+						auto refFormat = MakePtr<WfReferenceExpression>();
+						refFormat->name.value = L"<ls>format";
+
+						auto returnStat = MakePtr<WfReturnStatement>();
+						returnStat->expression = refFormat;
+						forBlock->statements.Add(returnStat);
+					}
+				}
+				{
+					auto returnStat = MakePtr<WfReturnStatement>();
+					returnStat->expression = MakePtr<WfStringExpression>();
+					block->statements.Add(returnStat);
+				}
+			}
+			{
+				auto func = MakePtr<WfFunctionDeclaration>();
+				lsClass->declarations.Add(func);
 
 				func->anonymity = WfFunctionAnonymity::Named;
 				func->name.value = L"Get";
 				{
 					auto refType = MakePtr<WfReferenceType>();
-					refType->name.value = GetInterfaceTypeName();
+					refType->name.value = GetInterfaceTypeName(false);
 
 					auto refPointer = MakePtr<WfSharedPointerType>();
 					refPointer->element = refType;
