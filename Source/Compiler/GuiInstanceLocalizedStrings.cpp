@@ -202,6 +202,21 @@ GuiInstanceLocalizedStrings
 				.First();
 		}
 
+		WString GuiInstanceLocalizedStrings::GetInterfaceTypeName()
+		{
+			auto pair = INVLOC.FindLast(className, L"::", Locale::None);
+			if (pair.key == -1)
+			{
+				return L"I" + className + L"Strings";
+			}
+			else
+			{
+				auto ns = className.Left(pair.key + 2);
+				auto name = className.Right(className.Length() - ns.Length());
+				return ns + L"I" + name + L"Strings";
+			}
+		}
+
 		Ptr<GuiInstanceLocalizedStrings::TextDesc> GuiInstanceLocalizedStrings::ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors)
 		{
 			const wchar_t* reading = text.Buffer();
@@ -465,7 +480,7 @@ GuiInstanceLocalizedStrings
 			auto lsExpr = MakePtr<WfNewInterfaceExpression>();
 			{
 				auto refType = MakePtr<WfReferenceType>();
-				refType->name.value = L"IStrings";
+				refType->name.value = GetInterfaceTypeName();
 
 				auto refPointer = MakePtr<WfSharedPointerType>();
 				refPointer->element = refType;
@@ -495,7 +510,7 @@ GuiInstanceLocalizedStrings
 
 				{
 					auto forStat = MakePtr<WfForEachStatement>();
-					block->statements.Add(forStat);
+					//block->statements.Add(forStat);
 					forStat->name.value = L"<ls>format";
 					forStat->direction = WfForEachDirection::Normal;
 
@@ -704,19 +719,10 @@ GuiInstanceLocalizedStrings
 
 			auto module = MakePtr<WfModule>();
 			module->name.value = moduleName;
-			auto lsClass = Workflow_InstallClass(className, module);
 			{
-				auto lsInterface = MakePtr<WfClassDeclaration>();
-				lsClass->declarations.Add(lsInterface);
-
+				auto lsInterface = Workflow_InstallClass(GetInterfaceTypeName(), module);
 				lsInterface->kind = WfClassKind::Interface;
 				lsInterface->constructorType = WfConstructorType::SharedPtr;
-				lsInterface->name.value = L"IStrings";
-				{
-					auto classMember = MakePtr<WfClassMember>();
-					classMember->kind = WfClassMemberKind::Normal;
-					lsInterface->classMember = classMember;
-				}
 
 				auto defaultStrings = GetDefaultStrings();
 				FOREACH(WString, functionName, defaultStrings->items.Keys())
@@ -725,6 +731,7 @@ GuiInstanceLocalizedStrings
 					lsInterface->declarations.Add(func);
 				}
 			}
+			auto lsClass = Workflow_InstallClass(className, module);
 			{
 				auto func = MakePtr<WfFunctionDeclaration>();
 				lsClass->declarations.Add(func);
@@ -733,7 +740,7 @@ GuiInstanceLocalizedStrings
 				func->name.value = L"Get";
 				{
 					auto refType = MakePtr<WfReferenceType>();
-					refType->name.value = L"IStrings";
+					refType->name.value = GetInterfaceTypeName();
 
 					auto refPointer = MakePtr<WfSharedPointerType>();
 					refPointer->element = refType;

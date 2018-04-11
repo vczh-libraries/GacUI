@@ -671,12 +671,12 @@ WorkflowReferenceNamesVisitor
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, resolvingResult.context->localizeds)
 			{
-				auto type = GetTypeDescriptor(localized->className + L"::IStrings");
+				auto type = GetTypeDescriptor(localized->interfaceName);
 				if (!type)
 				{
 					errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
 						L"Precompile: Cannot find type \"" +
-						localized->className + L"::IStrings" +
+						localized->interfaceName +
 						L"\"."));
 				}
 				else if (resolvingResult.typeInfos.Keys().Contains(localized->name))

@@ -31,11 +31,12 @@ namespace vl
 
 		Ptr<GuiInstanceCompiledWorkflow> WriteWorkflowScript(
 			Ptr<GuiResourceFolder> precompiledFolder,
+			const WString& assemblyResourcePath,
 			const filesystem::FilePath& workflowPath)
 		{
 			if (precompiledFolder)
 			{
-				if (auto compiled = precompiledFolder->GetValueByPath(L"Workflow/InstanceClass").Cast<GuiInstanceCompiledWorkflow>())
+				if (auto compiled = precompiledFolder->GetValueByPath(assemblyResourcePath).Cast<GuiInstanceCompiledWorkflow>())
 				{
 					WString text;
 					if (compiled->assembly)

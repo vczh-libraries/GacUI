@@ -149,6 +149,7 @@ Instance Namespace
 			GuiResourceTextPos						uriPosition;
 			bool									defaultStrings = false;
 			WString									className;
+			WString									interfaceName;
 		};
 
 /***********************************************************************

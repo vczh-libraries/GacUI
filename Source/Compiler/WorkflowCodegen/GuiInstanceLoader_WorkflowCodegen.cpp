@@ -520,7 +520,7 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, context->localizeds)
 			{
-				if (auto type = GetTypeDescriptor(localized->className + L"::IStrings"))
+				if (auto type = GetTypeDescriptor(localized->interfaceName))
 				{
 					auto prop = MakePtr<WfAutoPropertyDeclaration>();
 					addDecl(prop);

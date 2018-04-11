@@ -102,16 +102,24 @@ CompileResources
 void CompileResources(const WString& name, const WString& resourcePath, const WString& outputBinaryFolder, const WString& outputCppFolder, bool compressResource)
 {
 	FilePath errorPath = outputBinaryFolder + name + L".UI.error.txt";
-	FilePath workflowPath = outputBinaryFolder + name + L".UI.txt";
+	FilePath workflowPath1 = outputBinaryFolder + name + L".Shared.UI.txt";
+	FilePath workflowPath2 = outputBinaryFolder + name + L".TemporaryClass.UI.txt";
+	FilePath workflowPath3 = outputBinaryFolder + name + L".InstanceClass.UI.txt";
 	FilePath binaryPath = outputBinaryFolder + name + L".UI.bin";
 
 	List<GuiResourceError> errors;
 	auto resource = GuiResource::LoadFromXml(resourcePath, errors);
 	DebugCallback debugCallback;
 	File(errorPath).Delete();
+	File(workflowPath1).Delete();
+	File(workflowPath2).Delete();
+	File(workflowPath3).Delete();
+	File(errorPath).Delete();
 
 	auto precompiledFolder = PrecompileAndWriteErrors(resource, &debugCallback, errors, errorPath);
-	auto compiled = WriteWorkflowScript(precompiledFolder, workflowPath);
+	WriteWorkflowScript(precompiledFolder, L"Workflow/Shared", workflowPath1);
+	WriteWorkflowScript(precompiledFolder, L"Workflow/TemporaryClass", workflowPath2);
+	auto compiled = WriteWorkflowScript(precompiledFolder, L"Workflow/InstanceClass", workflowPath3);
 	CHECK_ERROR(errors.Count() == 0, L"Error");
 
 	if (outputCppFolder != L"")

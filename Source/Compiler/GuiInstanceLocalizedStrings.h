@@ -61,6 +61,8 @@ namespace vl
 			Ptr<parsing::xml::XmlElement>				SaveToXml();
 
 			Ptr<Strings>								GetDefaultStrings();
+			WString										GetInterfaceTypeName();
+
 			Ptr<TextDesc>								ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors);
 			void										Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfClassMemberKind classMemberKind);

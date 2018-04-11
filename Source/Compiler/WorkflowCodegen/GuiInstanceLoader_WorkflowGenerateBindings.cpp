@@ -199,7 +199,7 @@ WorkflowGenerateBindingVisitor
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, resolvingResult.context->localizeds)
 			{
-				auto code = L"bind(" + localized->className + L"::Get(presentation::controls::GuiApplication::GetApplication().Locale) of (" + localized->className + L"::IStrings^))";
+				auto code = L"bind(" + localized->className + L"::Get(presentation::controls::GuiApplication::GetApplication().Locale) of (" + localized->interfaceName + L"^))";
 				if (auto bindExpr = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, localized->tagPosition, errors))
 				{
 					auto instancePropertyInfo = resolvingResult.rootTypeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(localized->name.ToString(), true);

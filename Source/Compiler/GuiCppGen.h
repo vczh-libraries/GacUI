@@ -25,6 +25,7 @@ namespace vl
 
 		extern Ptr<GuiInstanceCompiledWorkflow>			WriteWorkflowScript(
 															Ptr<GuiResourceFolder> precompiledFolder,
+															const WString& assemblyResourcePath,
 															const filesystem::FilePath& workflowPath);
 
 		extern Ptr<workflow::cppcodegen::WfCppOutput>	WriteCppCodesToFile(
