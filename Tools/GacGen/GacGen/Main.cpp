@@ -284,11 +284,11 @@ void GuiMain()
 					{
 						if (config->cppOutput->resource != L"")
 						{
-							lines.Add(L"copy " + (logFolderPath / L"Resource.bin").GetFullPath() + L" " + (workingDir / config->cppOutput->resource).GetFullPath());
+							lines.Add(L"copy \"" + (logFolderPath / L"Resource.bin").GetFullPath() + L"\" \"" + (workingDir / config->cppOutput->resource).GetFullPath() + L"\"");
 						}
 						if (config->cppOutput->compressed != L"")
 						{
-							lines.Add(L"copy " + (logFolderPath / L"Compressed.bin").GetFullPath() + L" " + (workingDir / config->cppOutput->compressed).GetFullPath());
+							lines.Add(L"copy \"" + (logFolderPath / L"Compressed.bin").GetFullPath() + L"\" \"" + (workingDir / config->cppOutput->compressed).GetFullPath() + L"\"");
 						}
 					}
 
@@ -296,11 +296,11 @@ void GuiMain()
 					{
 						if (config->resOutput->resource != L"")
 						{
-							lines.Add(L"copy " + (logFolderPath / L"ScriptedResource.bin").GetFullPath() + L" " + (workingDir / config->resOutput->resource).GetFullPath());
+							lines.Add(L"copy \"" + (logFolderPath / L"ScriptedResource.bin").GetFullPath() + L"\" \"" + (workingDir / config->resOutput->resource).GetFullPath() + L"\"");
 						}
 						if (config->resOutput->compressed != L"")
 						{
-							lines.Add(L"copy " + (logFolderPath / L"ScriptedCompressed.bin").GetFullPath() + L" " + (workingDir / config->resOutput->compressed).GetFullPath());
+							lines.Add(L"copy \"" + (logFolderPath / L"ScriptedCompressed.bin").GetFullPath() + L"\" \"" + (workingDir / config->resOutput->compressed).GetFullPath() + L"\"");
 						}
 					}
 
