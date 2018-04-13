@@ -675,7 +675,6 @@ GuiBindableTreeView::ItemSourceNode
 
 			GuiBindableTreeView::ItemSourceNode::~ItemSourceNode()
 			{
-				SetItemSource(Value());
 			}
 
 			description::Value GuiBindableTreeView::ItemSourceNode::GetItemSource()

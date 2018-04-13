@@ -1,61 +1,7 @@
-<Resource>
-  <LocalizedStrings name="StringResource">
-    <LocalizedStrings ref.Class="demo::StringResource" DefaultLocale="en-US">
-      <Strings Locales="en-US">
-        <String Name="ShortDate" Text="ShortDate: $(0:ShortDate)"/>
-        <String Name="LongDate" Text="LongDate: $(0:LongDate)"/>
-        <String Name="YearMonthDate" Text="YearMonthDate: $(0:YearMonthDate)"/>
-        <String Name="ShortTime" Text="ShortTime: $(0:ShortTime)"/>
-        <String Name="LongTime" Text="LongTime: $(0:LongTime)"/>
-        <String Name="DateFormat" Text="DateFormat: $(0:Date:yyyy)"/>
-        <String Name="TimeFormat" Text="TimeFormat: $(0:Time:HH)"/>
-        <String Name="Number" Text="Number: $(0:Number)"/>
-        <String Name="Currency" Text="Currency: $(0:Currency)"/>
-        <String Name="Sentence" Text="$($)Good morning, $(0)!$($)"/>
-        <String Name="Title" Text="Localization"/>
-        <String Name="Label" Text="Selected Locale:"/>
-      </Strings>
-      
-      <Strings Locales="zh-CN">
-        <String Name="ShortDate" Text="短日期：$(0:ShortDate)"/>
-        <String Name="LongDate" Text="长日期：$(0:LongDate)"/>
-        <String Name="YearMonthDate" Text="年月：$(0:YearMonthDate)"/>
-        <String Name="ShortTime" Text="短时间：$(0:ShortTime)"/>
-        <String Name="LongTime" Text="长时间：$(0:LongTime)"/>
-        <String Name="DateFormat" Text="日期格式：$(0:Date:yyyy)"/>
-        <String Name="TimeFormat" Text="时间格式： $(0:Time:HH)"/>
-        <String Name="Number" Text="数字：$(0:Number)"/>
-        <String Name="Currency" Text="货币：$(0:Currency)"/>
-        <String Name="Sentence" Text="$($)$(0)，早上好！$($)"/>
-        <String Name="Title" Text="本地化"/>
-        <String Name="Label" Text="语言设置："/>
-      </Strings>
-    </LocalizedStrings>
-  </LocalizedStrings>
-  
+<Resource>  
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
-      <ref.Members>
-        <![CDATA[
-          func GetLocaleIndex(locale: Locale): int
-          {
-            for (i in range (0, listLocales.Items.Count))
-            {
-              if (listLocales.Items[i].Text == locale)
-              {
-                return i;
-              }
-            }
-            return 0;
-          }
-          
-          var dateTime: DateTime = Sys::GetLocalTime();
-          var number: int = 2147483647;
-          var currency: double = 1342177.28;
-        ]]>
-      </ref.Members>
-      <ref.LocalizedStrings Name="Strings" Uri="res://StringResource" Default="true"/>
-      <Window ref.Name="self" Text-str="Title()" ClientSize="x:640 y:480">
+      <Window ref.Name="self" Text="TestXml" ClientSize="x:640 y:480">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
             <_>composeType:MinSize</_>
@@ -63,59 +9,212 @@
           </att.Rows>
           <att.Columns>
             <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text-str="Label()" VerticalAlignment="Center"/>
-          </Cell>
-
-          <Cell Site="row:0 column:1">
-            <ComboBox ref.Name="comboLocales">
-              <att.BoundsComposition-set PreferredMinSize="x:120"/>
-              <att.SelectedIndex-bind>self.GetLocaleIndex(Application::GetApplication().Locale)</att.SelectedIndex-bind>
-              <ev.SelectedIndexChanged-eval>
+            <Button Text="Clear">
+              <ev.Clicked-eval>
                 <![CDATA[
                   {
-                    var index = comboLocales.SelectedIndex;
-                    if (index == -1)
-                    {
-                      index = 0;
-                    }
-                    Application::GetApplication().Locale = cast Locale listLocales.Items[index].Text;
+                    treeView.Nodes.Children.Clear();
                   }
                 ]]>
-              </ev.SelectedIndexChanged-eval>
-              <att.ListControl>
-                <TextList ref.Name="listLocales" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                  <att.Items>
-                    <_ Text="en-US"/>
-                    <_ Text="zh-CN"/>
-                  </att.Items>
-                </TextList>
-              </att.ListControl>
-            </ComboBox>
+              </ev.Clicked-eval>
+            </Button>
           </Cell>
 
-          <Cell Site="row:1 column:0 columnSpan:3">
-            <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <Cell Site="row:1 column:0 columnSpan:2">
+            <TreeView ref.Name="treeView" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <att.Items>
-                <_ Text-str="ShortDate(self.dateTime)"/>
-                <_ Text-str="LongDate(self.dateTime)"/>
-                <_ Text-str="YearMonthDate(self.dateTime)"/>
-                <_ Text-str="ShortTime(self.dateTime)"/>
-                <_ Text-str="LongTime(self.dateTime)"/>
-                <_ Text-str="DateFormat(self.dateTime)"/>
-                <_ Text-str="TimeFormat(self.dateTime)"/>
-                <_ Text-str="Number(self.number)"/>
-                <_ Text-str="Currency(self.currency)"/>
-                <_ Text-str="Sentence('John Smith')"/>
-                <_ Text-str="Strings.Sentence('John Smith')"/>
-                <_ Text-bind="self.Strings.Sentence('John Smith') ?? ''"/>
-              </att.Items>
-            </TextList>
+              <att.Nodes>
+                <TreeNode Text="Chrome">
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                </TreeNode>
+                <TreeNode Text="Chrome">
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                </TreeNode>
+                <TreeNode Text="Chrome">
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                </TreeNode>
+                <TreeNode Text="Chrome">
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                </TreeNode>
+                <TreeNode Text="Chrome">
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                  <TreeNode Text="Google">
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                    <TreeNode Text="Plugin"/>
+                  </TreeNode>
+                </TreeNode>
+              </att.Nodes>
+            </TreeView>
           </Cell>
         </Table>
       </Window>

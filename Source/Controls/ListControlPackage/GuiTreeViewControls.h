@@ -215,6 +215,7 @@ MemoryNodeProvider
 					{
 						friend class MemoryNodeProvider;
 					protected:
+						vint						offsetBeforeChildModified = 0;
 						MemoryNodeProvider*			ownerProvider;
 
 						void						OnBeforeChildModified(vint start, vint count, vint newCount);
@@ -235,7 +236,6 @@ MemoryNodeProvider
 					bool							expanding = false;
 					vint							childCount = 0;
 					vint							totalVisibleNodeCount = 1;
-					vint							offsetBeforeChildModified = 0;
 					Ptr<DescriptableObject>			data;
 					NodeCollection					children;
 
