@@ -1,0 +1,358 @@
+<Styles>
+  <Style ref.Path="(//Bounds + //Table + //RepeatStack + //RepeatFlow)" MinSizeLimitation="LimitToElementAndChildren"/>
+  <Style ref.Path="//*.buttonBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#252526" :
+          state == ButtonState::Active ? "#54545C" :
+          state == ButtonState::Pressed ? "#007ACC" :
+          "#3F3F46"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.buttonBorder">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#434346" :
+          state == ButtonState::Active ? "#6A6A75" :
+          state == ButtonState::Pressed ? "#1C97EA" :
+          "#54545C"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.buttonText">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#6D6D6D" :
+          state == ButtonState::Active ? "#F1F1F1" :
+          state == ButtonState::Pressed ? "#FFFFFF" :
+          "#F1F1F1"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.tabHeaderBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          self.Selected ? "#007ACC" :
+          state == ButtonState::Active ? "#1C97EA" :
+          state == ButtonState::Pressed ? "#1C97EA" :
+          "#434346"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.tabDropdownBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          state == ButtonState::Active ? "#1C97EA" :
+          state == ButtonState::Pressed ? "#1C97EA" :
+          "#434346"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.labelText">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color (
+          not self.VisuallyEnabled ? "#6D6D6D" :
+          "#F1F1F1"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.scrollArrow">
+    <att.BorderColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#555558" :
+          state == ButtonState::Active ? "#1997EA" :
+          state == ButtonState::Pressed ? "#007ACC" :
+          "#999999"
+        )
+      ]]>
+    </att.BorderColor-bind>
+    <att.BackgroundColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#555558" :
+          state == ButtonState::Active ? "#1997EA" :
+          state == ButtonState::Pressed ? "#007ACC" :
+          "#999999"
+        )
+      ]]>
+    </att.BackgroundColor-bind>
+  </Style>
+  <Style ref.Path="//*.scrollHandle">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#3D3D42" :
+          state == ButtonState::Active ? "#9E9E9E" :
+          state == ButtonState::Pressed ? "#EFEBEF" :
+          "#686868"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.itemBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#00000000" :
+          self.Selected or state == ButtonState::Pressed ? "#3399FF" :
+          state == ButtonState::Active ? "#3F3F46" :
+          "#00000000"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.toolstripBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#00000000" :
+          state == ButtonState::Pressed or self.SubMenuOpening ? "#007ACC" :
+          state == ButtonState::Active ? "#54545C" :
+          "#00000000"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.toolstripBorder">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.Selected ? "#00000000" :
+          "#007ACC"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.toolstripArrow">
+    <att.BorderColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#555558" :
+          state == ButtonState::Pressed or self.SubMenuOpening ? "#FFFFFF" :
+          state == ButtonState::Active ? "#1997EA" :
+          "#999999"
+        )
+      ]]>
+    </att.BorderColor-bind>
+    <att.BackgroundColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#555558" :
+          state == ButtonState::Pressed or self.SubMenuOpening ? "#FFFFFF" :
+          state == ButtonState::Active ? "#1997EA" :
+          "#999999"
+        )
+      ]]>
+    </att.BackgroundColor-bind>
+  </Style>
+  <Style ref.Path="//*.toolstripSplitBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#00000000" :
+          state == ButtonState::Pressed ? "#54545C" :
+          state == ButtonState::Active ? "#54545C" :
+          "#00000000"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.toolstripSplitArrowBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#00000000" :
+          state == ButtonState::Pressed or self.Selected ? "#007ACC" :
+          state == ButtonState::Active ? "#54545C" :
+          "#00000000"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.toolstripSplitArrow">
+    <att.BorderColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#555558" :
+          state == ButtonState::Pressed or self.Selected ? "#FFFFFF" :
+          state == ButtonState::Active ? "#1997EA" :
+          "#999999"
+        )
+      ]]>
+    </att.BorderColor-bind>
+    <att.BackgroundColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#555558" :
+          state == ButtonState::Pressed or self.Selected ? "#FFFFFF" :
+          state == ButtonState::Active ? "#1997EA" :
+          "#999999"
+        )
+      ]]>
+    </att.BackgroundColor-bind>
+  </Style>
+  <Style ref.Path="//*.menuBarItemBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#00000000" :
+          state == ButtonState::Pressed or self.SubMenuOpening ? "#1B1B1C" :
+          state == ButtonState::Active ? "#3D3D40" :
+          "#00000000"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.menuItemBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#00000000" :
+          state == ButtonState::Pressed ? "#3D3D40" :
+          state == ButtonState::Active or self.SubMenuOpening ? "#3D3D40" :
+          "#00000000"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.menuItemText">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#6D6D6D" :
+          "#FFFFFF"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.menuItemArrow">
+    <att.BorderColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#555558" :
+          state == ButtonState::Active or self.SubMenuOpening ? "#1997EA" :
+          state == ButtonState::Pressed ? "#007ACC" :
+          "#999999"
+        )
+      ]]>
+    </att.BorderColor-bind>
+    <att.BackgroundColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#555558" :
+          state == ButtonState::Active or self.SubMenuOpening ? "#1997EA" :
+          state == ButtonState::Pressed ? "#007ACC" :
+          "#999999"
+        )
+      ]]>
+    </att.BackgroundColor-bind>
+  </Style>
+  <Style ref.Path="//*.comboBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#2D2D30" :
+          state == ButtonState::Pressed or self.SubMenuOpening ? "#3F3F46" :
+          state == ButtonState::Active ? "#3F3F46" :
+          "#333337"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.comboBorder">
+    <att.Color>#434346</att.Color>
+  </Style>
+  <Style ref.Path="//*.comboText">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#65655C" :
+          "#F1F1F1"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.comboArrowBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#00000000" :
+          state == ButtonState::Pressed or self.SubMenuOpening ? "#007ACC" :
+          state == ButtonState::Active ? "#1F1F20" :
+          "#00000000"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.comboArrow">
+    <att.BorderColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#999999" :
+          state == ButtonState::Pressed or self.SubMenuOpening ? "#FFFFFF" :
+          state == ButtonState::Active ? "#007ACC" :
+          "#999999"
+        )
+      ]]>
+    </att.BorderColor-bind>
+    <att.BackgroundColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#2D2D30" :
+          state == ButtonState::Pressed or self.SubMenuOpening ? "#3F3F46" :
+          state == ButtonState::Active ? "#3F3F46" :
+          "#434346"
+        )
+      ]]>
+    </att.BackgroundColor-bind>
+  </Style>
+  <Style ref.Path="//*.columnHeaderBackground">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#3E3E40" :
+          state == ButtonState::Pressed or self.SubMenuOpening ? "#007ACC" :
+          state == ButtonState::Active ? "#3E3E40" :
+          "#252527"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.expandableArrow">
+    <att.BorderColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#6D6D6D" :
+          state == ButtonState::Pressed ? "#0A75B9" :
+          state == ButtonState::Active ? "#0A75B9" :
+          "#F1F1F1"
+        )
+      ]]>
+    </att.BorderColor-bind>
+    <att.BackgroundColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.Selected ? "#00000000" :
+          not self.VisuallyEnabled ? "#6D6D6D" :
+          state == ButtonState::Pressed ? "#0A75B9" :
+          state == ButtonState::Active ? "#0A75B9" :
+          "#F1F1F1"
+        )
+      ]]>
+    </att.BackgroundColor-bind>
+  </Style>
+</Styles>

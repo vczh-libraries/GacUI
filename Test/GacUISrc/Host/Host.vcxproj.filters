@@ -96,6 +96,39 @@
     <Xml Include="Resources\FullControlTest\LocalizedStringsTabPage.xml">
       <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
+    <Xml Include="Resources\DarkSkin\Index.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\Style.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\Template_Button.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\Template_Document.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\Template_List.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\Template_Misc.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\Template_Scroll.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\Template_Tab.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\Template_TextBox.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\Template_Toolstrip.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\Template_Window.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png">

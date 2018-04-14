@@ -1,0 +1,345 @@
+<Folder>
+  <Instance name="LeftScrollButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::LeftScrollButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:9</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="scrollArrow" Size="x:5 y:9">
+              <att.Points>
+                <Point>x:4 y:0</Point>
+                <Point>x:0 y:4</Point>
+                <Point>x:4 y:8</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="RightScrollButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::RightScrollButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:9</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="scrollArrow" Size="x:5 y:9">
+              <att.Points>
+                <Point>x:0 y:0</Point>
+                <Point>x:4 y:4</Point>
+                <Point>x:0 y:8</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="TopScrollButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TopScrollButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:9</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="scrollArrow" Size="x:9 y:5">
+              <att.Points>
+                <Point>x:0 y:4</Point>
+                <Point>x:4 y:0</Point>
+                <Point>x:8 y:4</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="BottomScrollButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::BottomScrollButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:9</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="scrollArrow" Size="x:9 y:5">
+              <att.Points>
+                <Point>x:0 y:0</Point>
+                <Point>x:4 y:4</Point>
+                <Point>x:8 y:0</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="HScrollHandleTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::HScrollHandleTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Bounds AlignmentToParent="left:0 top:4 right:0 bottom:4">
+          <SolidBackground ref.Style="scrollHandle"/>
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="VScrollHandleTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::VScrollHandleTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Bounds AlignmentToParent="left:4 top:0 right:4 bottom:0">
+          <SolidBackground ref.Style="scrollHandle"/>
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="HScrollTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::HScrollTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Ctor>
+        <![CDATA[
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachDecreaseButton(buttonDecrease);
+            behavior.AttachIncreaseButton(buttonIncrease);
+            behavior.AttachHorizontalScrollHandle(handle);
+          }
+        ]]>
+      </ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+        
+        <SolidBackground Color="#3D3D42"/>
+        <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Left">
+          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::LeftScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </Button>
+        </SideAligned>
+        <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Right">
+          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::RightScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </Button>
+        </SideAligned>
+        <Bounds ref.Name="handleContainer" AlignmentToParent="left:20 top:0 right:20 bottom:0" MinSizeLimitation="NoLimit">
+          <PartialView ref.Name="handle">
+            <att.WidthPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.WidthPageSize-bind>
+            <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
+            <Button ControlTemplate="darkskin::HScrollHandleTemplate">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Button>
+          </PartialView>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="VScrollTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::VScrollTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Ctor>
+        <![CDATA[
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachDecreaseButton(buttonDecrease);
+            behavior.AttachIncreaseButton(buttonIncrease);
+            behavior.AttachVerticalScrollHandle(handle);
+          }
+        ]]>
+      </ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+
+        <SolidBackground Color="#3D3D42"/>
+        <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Top">
+          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::TopScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </Button>
+        </SideAligned>
+        <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Bottom">
+          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::BottomScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </Button>
+        </SideAligned>
+        <Bounds ref.Name="handleContainer" AlignmentToParent="left:0 top:20 right:0 bottom:20" MinSizeLimitation="NoLimit">
+          <PartialView ref.Name="handle">
+            <att.HeightPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.HeightPageSize-bind>
+            <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
+            <Button ControlTemplate="darkskin::VScrollHandleTemplate">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Button>
+          </PartialView>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="HTrackerTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::HTrackerTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Ctor>
+        <![CDATA[
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachHorizontalTrackerHandle(handle);
+          }
+        ]]>
+      </ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+
+        <SolidBackground Color="#3F3F47"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder Color="#55545A"/>
+          
+          <Table AlignmentToParent="left:6 top:0 right:6 bottom:0">
+            <att.Rows>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:4</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            </att.Columns>
+
+            <Cell Site="row:1 column:0">
+              <SolidBorder Color="#55545A"/>
+            </Cell>
+          </Table>
+
+          <PartialView ref.Name="handle" PreferredMinSize="x:12 y:0" WidthPageSize="0">
+            <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
+            <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
+              <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Button>
+          </PartialView>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="VTrackerTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::VTrackerTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Ctor>
+        <![CDATA[
+          {
+            behavior.AttachScrollTemplate(self);
+            behavior.AttachVerticalTrackerHandle(handle);
+          }
+        ]]>
+      </ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CommonScrollBehavior ref.Name="behavior"/>
+
+        <SolidBackground Color="#3F3F47"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder Color="#55545A"/>
+
+          <Table AlignmentToParent="left:0 top:6 right:0 bottom:6">
+            <att.Rows>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:4</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Columns>
+
+            <Cell Site="row:0 column:1">
+              <SolidBorder Color="#55545A"/>
+            </Cell>
+          </Table>
+
+          <PartialView ref.Name="handle" PreferredMinSize="x:0 y:12" HeightPageSize="0">
+            <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
+            <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
+              <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Button>
+          </PartialView>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ProgressBarTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ProgressBarTemplate" ref.Styles="res://DarkSkin/Style">
+      <ScrollTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#3F3F47"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder Color="#55545A"/>
+          <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <PartialView>
+              <att.WidthPageSize-bind>
+                <![CDATA[
+                  let
+                    a = self.Position,
+                    b = self.TotalSize - self.PageSize
+                    in ((cast double a) / (a > b ? a : b))
+                ]]>
+              </att.WidthPageSize-bind>
+              <SolidBackground Color="#07B023"/>
+            </PartialView>
+          </Bounds>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ScrollViewTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ScrollViewTemplate" ref.Styles="res://DarkSkin/Style">
+      <ScrollViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+        
+        <SolidBackground Color="#252526"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
+        </Bounds>
+      </ScrollViewTemplate>
+    </Instance>
+  </Instance>
+</Folder>

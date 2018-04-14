@@ -2,6 +2,7 @@
 
 #include "../Host/ResourceCompiler.h"
 #include "../TestCppCodegen/Source/DarkSkinIncludes.h"
+#include "../TestCppCodegen/Source/DarkSkinReflection.h"
 #include <Windows.h>
 
 using namespace vl;
@@ -30,6 +31,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 void OpenMainWindow()
 {
+	LoadDarkSkinTypes();
 	{
 		auto theme = MakePtr<darkskin::Theme>();
 		RegisterTheme(L"DarkSkin", theme);

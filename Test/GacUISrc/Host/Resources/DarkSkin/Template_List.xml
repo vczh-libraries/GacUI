@@ -1,0 +1,233 @@
+<Folder>
+  <Instance name="ItemBackgroundTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ItemBackgroundTemplate" ref.Styles="res://DarkSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="itemBackground"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:3 right:0 bottom:3"/>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="CheckItemBackgroundTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::CheckItemBackgroundTemplate" ref.Styles="res://DarkSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="itemBackground"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:2 right:0 bottom:1"/>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="TextListTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TextListTemplate" ref.Styles="res://DarkSkin/Style">
+      <TextListTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+
+        <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
+        <att.CheckBulletTemplate>darkskin::CheckBoxTemplate</att.CheckBulletTemplate>
+        <att.RadioBulletTemplate>darkskin::RadioButtonTemplate</att.RadioBulletTemplate>
+        <att.TextColor>#F1F1F1</att.TextColor>
+
+        <SolidBackground Color="#252526"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
+        </Bounds>
+      </TextListTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ComboBoxTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ComboBoxTemplate" ref.Styles="res://DarkSkin/Style">
+      <DateComboBoxTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <att.DatePickerTemplate>darkskin::DatePickerTemplate</att.DatePickerTemplate>
+        <SolidBackground ref.Style="comboBackground"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="comboBorder"/>
+          <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:11 bottom:1">
+            <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2" Visible-bind="self.TextVisible">
+              <SolidLabel ref.Style="comboText" Text-bind="self.Text" Font-bind="self.Font" Ellipse="true" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Bounds>
+          </Bounds>
+
+          <Table AlignmentToParent="left:-1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:0">
+            <SolidBackground ref.Style="comboArrowBackground"/>
+            <att.Rows>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:3</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:5</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Columns>
+
+            <Cell Site="row:1 column:1">
+              <Polygon ref.Style="comboArrow" Size="x:5 y:3">
+                <att.Points>
+                  <Point>x:0 y:0</Point>
+                  <Point>x:2 y:2</Point>
+                  <Point>x:4 y:0</Point>
+                </att.Points>
+              </Polygon>
+            </Cell>
+          </Table>
+        </Bounds>
+      </DateComboBoxTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ListViewColumnHeaderTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ListViewColumnHeaderTemplate" ref.Styles="res://DarkSkin/Style">
+      <ListViewColumnHeaderTemplate ref.Name="self" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <SolidBackground ref.Style="columnHeaderBackground"/>
+        <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0" PreferredMinSize="x:1 y:0">
+          <SolidBorder Color="#404042"/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:0 top:-1 right:0 bottom:0" PreferredMinSize="x:0 y:1">
+          <SolidBorder Color="#404042"/>
+        </Bounds>
+        <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:11 bottom:1">
+          <Table AlignmentToParent="left:0 top:1 right:0 bottom:-1">
+            <att.Rows>
+              <_>composeType:MinSize</_>
+              <_>composeType:Percentage percentage:1.0</_>
+            </att.Rows>
+            <att.Columns>
+              <_>composeType:Percentage percentage:0.5</_>
+              <_>composeType:MinSize</_>
+              <_>composeType:Percentage percentage:0.5</_>
+            </att.Columns>
+
+            <Cell Site="row:0 column:1">
+              <Bounds Visible-bind="self.SortingState == ColumnSortingState::Ascending">
+                <Polygon ref.Style="toolstripSplitArrow" Size="x:7 y:4">
+                  <att.Points>
+                    <Point>x:0 y:3</Point>
+                    <Point>x:3 y:0</Point>
+                    <Point>x:6 y:3</Point>
+                  </att.Points>
+                </Polygon>
+              </Bounds>
+              <Bounds Visible-bind="self.SortingState == ColumnSortingState::Descending">
+                <Polygon ref.Style="toolstripSplitArrow" Size="x:7 y:4">
+                  <att.Points>
+                    <Point>x:0 y:0</Point>
+                    <Point>x:3 y:3</Point>
+                    <Point>x:6 y:0</Point>
+                  </att.Points>
+                </Polygon>
+              </Bounds>
+            </Cell>
+          </Table>
+          <Bounds AlignmentToParent="left:8 top:6 right:5 bottom:5">
+            <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" Ellipse="true" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+          </Bounds>
+        </Bounds>
+        <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
+          <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening" Visible-bind="self.SubMenuExisting">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </CheckBox>
+        </Bounds>
+      </ListViewColumnHeaderTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ListViewTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ListViewTemplate" ref.Styles="res://DarkSkin/Style">
+      <ListViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+
+        <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
+        <att.ColumnHeaderTemplate>darkskin::ListViewColumnHeaderTemplate</att.ColumnHeaderTemplate>
+        <att.PrimaryTextColor>#F1F1F1</att.PrimaryTextColor>
+        <att.SecondaryTextColor>#F1F1F1</att.SecondaryTextColor>
+        <att.ItemSeparatorColor>#F1F1F1</att.ItemSeparatorColor>
+
+        <SolidBackground Color="#252526"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
+        </Bounds>
+      </ListViewTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ExpandingDecoratorTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ExpandingDecoratorTemplate" ref.Styles="res://DarkSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:9</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:7</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Bounds Visible-bind="not self.Selected">
+              <Polygon ref.Style="expandableArrow" Size="x:7 y:9">
+                <att.Points>
+                  <Point>x:1 y:0</Point>
+                  <Point>x:5 y:4</Point>
+                  <Point>x:1 y:8</Point>
+                </att.Points>
+              </Polygon>
+            </Bounds>
+            <Bounds Visible-bind="self.Selected">
+              <Polygon ref.Style="expandableArrow" Size="x:7 y:9">
+                <att.Points>
+                  <Point>x:5 y:2</Point>
+                  <Point>x:5 y:7</Point>
+                  <Point>x:0 y:7</Point>
+                </att.Points>
+              </Polygon>
+            </Bounds>
+          </Cell>
+        </Table>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="TreeViewTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TreeViewTemplate" ref.Styles="res://DarkSkin/Style">
+      <TreeViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+
+        <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
+        <att.ExpandingDecoratorTemplate>darkskin::ExpandingDecoratorTemplate</att.ExpandingDecoratorTemplate>
+        <att.TextColor>#F1F1F1</att.TextColor>
+
+        <SolidBackground Color="#252526"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>20</att.DefaultScrollSize>
+          </CommonScrollViewLook>
+        </Bounds>
+      </TreeViewTemplate>
+    </Instance>
+  </Instance>
+</Folder>
