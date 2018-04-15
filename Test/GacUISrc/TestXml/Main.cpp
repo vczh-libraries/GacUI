@@ -31,7 +31,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 void OpenMainWindow()
 {
-	LoadDarkSkinTypes();
 	{
 		auto theme = MakePtr<darkskin::Theme>();
 		RegisterTheme(L"DarkSkin", theme);
@@ -54,6 +53,7 @@ void OpenMainWindow()
 void GuiMain()
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
+	LoadDarkSkinTypes();
 	CompileResources(L"Demo", LR"(Resources/Resource.xml)",	L"./", L"", false);
 	OpenMainWindow();
 #endif
