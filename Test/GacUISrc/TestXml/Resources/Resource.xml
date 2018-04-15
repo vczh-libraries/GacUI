@@ -373,16 +373,18 @@
             <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
               <att.Rows>
                 <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
               </att.Rows>
               <att.Columns>
-                <CellOption>composeType:MinSize</CellOption>
                 <CellOption>composeType:MinSize</CellOption>
               </att.Columns>
 
               <Cell Site="row:0 column:0">
-                <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+                <ImageFrame Image-bind="self.LargeImage.Image ?? null" FrameIndex-bind="self.LargeImage.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled">
+                  <att.HorizontalAlignment>Center</att.HorizontalAlignment>
+                </ImageFrame>
               </Cell>
-              <Cell Site="row:0 column:1">
+              <Cell Site="row:1 column:0">
                 <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
               </Cell>
             </Table>
