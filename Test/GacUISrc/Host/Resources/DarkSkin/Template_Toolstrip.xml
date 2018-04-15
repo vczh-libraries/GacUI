@@ -100,7 +100,7 @@
   <Instance name="ToolstripArrowButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripSplitArrowTemplate" ref.Styles="res://DarkSkin/Style">
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Table AlignmentToParent="left:1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:0">
+        <Table AlignmentToParent="left:1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:7">
           <SolidBackground ref.Style="toolstripSplitArrowBackground"/>
           <att.Rows>
             <CellOption>composeType:Percentage percentage:0.5</CellOption>

@@ -196,11 +196,11 @@
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonTheme" xmlns:x="darkskin::*">
         <ThemeTemplates>
           <att.RibbonGroup>x:RibbonGroupTemplate</att.RibbonGroup>
-          
+
           <att.RibbonSmallButton>x:RibbonSmallButtonTemplate</att.RibbonSmallButton>
           <att.RibbonSmallDropdownButton>x:RibbonSmallDropdownButtonTemplate</att.RibbonSmallDropdownButton>
           <att.RibbonSmallSplitButton>x:RibbonSmallSplitButtonTemplate</att.RibbonSmallSplitButton>
-          
+
           <att.RibbonLargeButton>x:RibbonLargeButtonTemplate</att.RibbonLargeButton>
           <att.RibbonLargeDropdownButton>x:RibbonLargeDropdownButtonTemplate</att.RibbonLargeDropdownButton>
           <att.RibbonLargeSplitButton>x:RibbonLargeSplitButtonTemplate</att.RibbonLargeSplitButton>
@@ -376,7 +376,7 @@
                 <CellOption>composeType:MinSize</CellOption>
               </att.Rows>
               <att.Columns>
-                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:Percentage percentage:1.0</CellOption>
               </att.Columns>
 
               <Cell Site="row:0 column:0">
@@ -408,7 +408,7 @@
                 <CellOption>composeType:MinSize</CellOption>
               </att.Rows>
               <att.Columns>
-                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:Percentage percentage:1.0</CellOption>
               </att.Columns>
 
               <Cell Site="row:0 column:0">
@@ -455,35 +455,50 @@
           <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <SolidBorder ref.Style="toolstripBorder"/>
           </Bounds>
-          <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
-            <SolidBackground ref.Style="toolstripBackground"/>
-            <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-              <att.Rows>
-                <CellOption>composeType:MinSize</CellOption>
-                <CellOption>composeType:MinSize</CellOption>
-              </att.Rows>
-              <att.Columns>
-                <CellOption>composeType:MinSize</CellOption>
-              </att.Columns>
+          <Table AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <att.Rows>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Absolute absolute:1</CellOption>
+              <CellOption>composeType:MinSize</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            </att.Columns>
 
-              <Cell Site="row:0 column:0">
+            <Cell Site="row:0 column:0">
+              <SolidBackground ref.Style="toolstripBackground"/>
+              <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
                 <ImageFrame Image-bind="self.LargeImage.Image ?? null" FrameIndex-bind="self.LargeImage.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled">
                   <att.HorizontalAlignment>Center</att.HorizontalAlignment>
                 </ImageFrame>
-              </Cell>
-              <Cell Site="row:1 column:0">
-                <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-              </Cell>
-            </Table>
-          </Bounds>
-          <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
-            <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
-              <SolidBackground ref.Style="toolstripSplitBackground"/>
-            </Bounds>
-            <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </CheckBox>
-          </Bounds>
+              </Bounds>
+            </Cell>
+            <Cell Site="row:2 column:0">
+              <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                <SolidBackground ref.Style="toolstripSplitBackground"/>
+              </Bounds>
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                <att.Rows>
+                  <CellOption>composeType:MinSize</CellOption>
+                  <CellOption>composeType:MinSize</CellOption>
+                </att.Rows>
+                <att.Columns>
+                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                </att.Columns>
+
+                <Cell Site="row:0 column:0">
+                  <Bounds AlignmentToParent="left:3 top:3 right:3 bottom:3">
+                    <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                  </Bounds>
+                </Cell>
+                <Cell Site="row:1 column:0">
+                  <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  </CheckBox>
+                </Cell>
+              </Table>
+            </Cell>
+          </Table>
         </ToolstripButtonTemplate>
       </Instance>
     </Instance>
