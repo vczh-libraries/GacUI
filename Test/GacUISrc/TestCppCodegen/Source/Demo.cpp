@@ -11985,9 +11985,9 @@ Class (::demo::MainWindowConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
 		}
-		(this->__vwsn_precompile_25 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
+		(this->__vwsn_precompile_26 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_25)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_26)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString(L"GacUI 完整控件测试", false));
@@ -12111,11 +12111,19 @@ Class (::demo::MainWindowConstructor)
 		}
 		(this->__vwsn_precompile_18 = new ::demo::TextBoxTabPage());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAlt(::vl::WString(L"D", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAlt(::vl::WString(L"T", false));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_15)->GetPages());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_18));
+		}
+		(this->__vwsn_precompile_19 = new ::demo::RibbonTabPage());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetAlt(::vl::WString(L"R", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_15)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_19));
 		}
 		(this->__vwsn_precompile_16 = ::vl::__vwsn::This(this->__vwsn_precompile_15)->GetBoundsComposition());
 		{
@@ -12129,51 +12137,51 @@ Class (::demo::MainWindowConstructor)
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_14));
 		}
 		{
-			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl));
+			(this->__vwsn_precompile_20 = new ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetAlt(::vl::WString(L"M", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetAlt(::vl::WString(L"M", false));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetText(::vl::WString(L"Misc", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetText(::vl::WString(L"Misc", false));
 		}
 		{
-			(this->__vwsn_precompile_20 = new ::vl::presentation::controls::GuiTab(::vl::presentation::theme::ThemeName::Tab));
+			(this->__vwsn_precompile_21 = new ::vl::presentation::controls::GuiTab(::vl::presentation::theme::ThemeName::Tab));
 		}
-		(this->__vwsn_precompile_22 = new ::demo::ElementTabPage());
+		(this->__vwsn_precompile_23 = new ::demo::ElementTabPage());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_22)->SetAlt(::vl::WString(L"E", false));
-		}
-		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_20)->GetPages());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_22));
-		}
-		(this->__vwsn_precompile_23 = new ::demo::AnimationTabPage());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_23)->SetAlt(::vl::WString(L"A", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_23)->SetAlt(::vl::WString(L"E", false));
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_20)->GetPages());
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_21)->GetPages());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_23));
 		}
-		(this->__vwsn_precompile_24 = new ::demo::LocalizedStringsTabPage());
+		(this->__vwsn_precompile_24 = new ::demo::AnimationTabPage());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_24)->SetAlt(::vl::WString(L"L", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_24)->SetAlt(::vl::WString(L"A", false));
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_20)->GetPages());
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_21)->GetPages());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_24));
 		}
-		(this->__vwsn_precompile_21 = ::vl::__vwsn::This(this->__vwsn_precompile_20)->GetBoundsComposition());
+		(this->__vwsn_precompile_25 = new ::demo::LocalizedStringsTabPage());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_21)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_25)->SetAlt(::vl::WString(L"L", false));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_20));
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_21)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_25));
+		}
+		(this->__vwsn_precompile_22 = ::vl::__vwsn::This(this->__vwsn_precompile_21)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_22)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_20)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_21));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetPages());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_19));
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_20));
 		}
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
 		{
@@ -12205,13 +12213,14 @@ Class (::demo::MainWindowConstructor)
 		, __vwsn_precompile_16(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_17(static_cast<::demo::DocumentTabPage*>(nullptr))
 		, __vwsn_precompile_18(static_cast<::demo::TextBoxTabPage*>(nullptr))
-		, __vwsn_precompile_19(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
-		, __vwsn_precompile_20(static_cast<::vl::presentation::controls::GuiTab*>(nullptr))
-		, __vwsn_precompile_21(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_22(static_cast<::demo::ElementTabPage*>(nullptr))
-		, __vwsn_precompile_23(static_cast<::demo::AnimationTabPage*>(nullptr))
-		, __vwsn_precompile_24(static_cast<::demo::LocalizedStringsTabPage*>(nullptr))
-		, __vwsn_precompile_25(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_19(static_cast<::demo::RibbonTabPage*>(nullptr))
+		, __vwsn_precompile_20(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
+		, __vwsn_precompile_21(static_cast<::vl::presentation::controls::GuiTab*>(nullptr))
+		, __vwsn_precompile_22(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_23(static_cast<::demo::ElementTabPage*>(nullptr))
+		, __vwsn_precompile_24(static_cast<::demo::AnimationTabPage*>(nullptr))
+		, __vwsn_precompile_25(static_cast<::demo::LocalizedStringsTabPage*>(nullptr))
+		, __vwsn_precompile_26(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -16750,10 +16759,10 @@ Class (::demo::ResponsiveViewControl)
 	}
 
 /***********************************************************************
-Class (::demo::RibbonTabPageResourceConstructor)
+Class (::demo::RibbonTabPageConstructor)
 ***********************************************************************/
 
-	void RibbonTabPageResourceConstructor::__vwsn_initialize_instance_(::demo::RibbonTabPageResource* __vwsn_this_)
+	void RibbonTabPageConstructor::__vwsn_initialize_instance_(::demo::RibbonTabPage* __vwsn_this_)
 	{
 		(this->self = __vwsn_this_);
 		{
@@ -16831,8 +16840,8 @@ Class (::demo::RibbonTabPageResourceConstructor)
 		}
 	}
 
-	RibbonTabPageResourceConstructor::RibbonTabPageResourceConstructor()
-		: self(static_cast<::demo::RibbonTabPageResource*>(nullptr))
+	RibbonTabPageConstructor::RibbonTabPageConstructor()
+		: self(static_cast<::demo::RibbonTabPage*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiRibbonTab*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiRibbonTabPage*>(nullptr))
@@ -16847,19 +16856,19 @@ Class (::demo::RibbonTabPageResourceConstructor)
 	}
 
 /***********************************************************************
-Class (::demo::RibbonTabPageResource)
+Class (::demo::RibbonTabPage)
 ***********************************************************************/
 
-	RibbonTabPageResource::RibbonTabPageResource()
+	RibbonTabPage::RibbonTabPage()
 		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::RibbonTabPageResource", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::RibbonTabPage", false));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this);
 	}
 
-	RibbonTabPageResource::~RibbonTabPageResource()
+	RibbonTabPage::~RibbonTabPage()
 	{
 		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
 	}

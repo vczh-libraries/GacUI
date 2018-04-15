@@ -27,6 +27,7 @@
     <att.ToolstripDropdownButton>x:ToolstripDropdownButtonTemplate</att.ToolstripDropdownButton>
     <att.ToolstripSplitButton>x:ToolstripSplitButtonTemplate</att.ToolstripSplitButton>
     <att.ToolstripSplitter>x:ToolstripSplitterTemplate</att.ToolstripSplitter>
+    <att.RibbonTab>x:TabTemplate</att.RibbonTab>
     <att.Button>x:ButtonTemplate</att.Button>
     <att.CheckBox>x:CheckBoxTemplate</att.CheckBox>
     <att.RadioButton>x:RadioButtonTemplate</att.RadioButton>

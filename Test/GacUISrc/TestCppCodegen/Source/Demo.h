@@ -386,8 +386,8 @@ namespace demo
 	class ResponsiveTabPage;
 	class ResponsiveViewControlConstructor;
 	class ResponsiveViewControl;
-	class RibbonTabPageResourceConstructor;
-	class RibbonTabPageResource;
+	class RibbonTabPageConstructor;
+	class RibbonTabPage;
 	class TextBoxTabPageConstructor;
 	class TextBoxTabPage;
 	class MyTextItem;
@@ -977,13 +977,14 @@ namespace demo
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_16;
 		::demo::DocumentTabPage* __vwsn_precompile_17;
 		::demo::TextBoxTabPage* __vwsn_precompile_18;
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_19;
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_20;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_21;
-		::demo::ElementTabPage* __vwsn_precompile_22;
-		::demo::AnimationTabPage* __vwsn_precompile_23;
-		::demo::LocalizedStringsTabPage* __vwsn_precompile_24;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_25;
+		::demo::RibbonTabPage* __vwsn_precompile_19;
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_20;
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_21;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22;
+		::demo::ElementTabPage* __vwsn_precompile_23;
+		::demo::AnimationTabPage* __vwsn_precompile_24;
+		::demo::LocalizedStringsTabPage* __vwsn_precompile_25;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_26;
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_);
 	public:
 		MainWindowConstructor();
@@ -2224,13 +2225,13 @@ namespace demo
 		~ResponsiveViewControl();
 	};
 
-	class RibbonTabPageResourceConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonTabPageResourceConstructor>
+	class RibbonTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonTabPageConstructor>
 	{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonTabPageResourceConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonTabPageConstructor>;
 #endif
 	protected:
-		::demo::RibbonTabPageResource* self;
+		::demo::RibbonTabPage* self;
 		::vl::presentation::controls::GuiRibbonTab* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiRibbonTabPage* __vwsn_precompile_2;
@@ -2241,20 +2242,20 @@ namespace demo
 		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_7;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_8;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
-		void __vwsn_initialize_instance_(::demo::RibbonTabPageResource* __vwsn_this_);
+		void __vwsn_initialize_instance_(::demo::RibbonTabPage* __vwsn_this_);
 	public:
-		RibbonTabPageResourceConstructor();
+		RibbonTabPageConstructor();
 	};
 
-	class RibbonTabPageResource : public ::vl::presentation::controls::GuiTabPage, public ::demo::RibbonTabPageResourceConstructor, public ::vl::reflection::Description<RibbonTabPageResource>
+	class RibbonTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::RibbonTabPageConstructor, public ::vl::reflection::Description<RibbonTabPage>
 	{
-		friend class ::demo::RibbonTabPageResourceConstructor;
+		friend class ::demo::RibbonTabPageConstructor;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonTabPageResource>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonTabPage>;
 #endif
 	public:
-		RibbonTabPageResource();
-		~RibbonTabPageResource();
+		RibbonTabPage();
+		~RibbonTabPage();
 	};
 
 	class TextBoxTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextBoxTabPageConstructor>

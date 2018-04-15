@@ -39,7 +39,8 @@
                 <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 <att.Pages>
                   <demo:DocumentTabPage Alt="D"/>
-                  <demo:TextBoxTabPage Alt="D"/>
+                  <demo:TextBoxTabPage Alt="T"/>
+                  <demo:RibbonTabPage Alt="R"/>
                 </att.Pages>
               </Tab>
             </TabPage>

@@ -1,6 +1,6 @@
 <Folder>
   <Instance name="RibbonTabPageResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::RibbonTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RibbonTabPage">
       <TabPage ref.Name="self" Text="Ribbon">
         <RibbonTab>
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:-1" PreferredMinSize="y:200"/>

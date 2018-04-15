@@ -66,7 +66,7 @@ Closures
 	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf100_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ItemBackgroundTemplate());
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ExpandingDecoratorTemplate());
 		}
 	}
 
@@ -77,10 +77,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf101_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf101_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ItemBackgroundTemplate());
 		}
 	}
 
@@ -94,21 +94,21 @@ Closures
 	::vl::presentation::templates::GuiScrollTemplate* __vwsnf102_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
 		}
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf103_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::__vwsnf103_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(::darkskin::DatePickerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf103_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__::__vwsnf103_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__(::darkskin::TreeViewTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiTextListTemplate* __vwsnf103_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf103_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiTextListTemplate*>(new ::darkskin::TextListTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
 		}
 	}
 
@@ -119,10 +119,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf104_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTextListTemplate* __vwsnf104_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ItemBackgroundTemplate());
+			return static_cast<::vl::presentation::templates::GuiTextListTemplate*>(new ::darkskin::TextListTemplate());
 		}
 	}
 
@@ -133,10 +133,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiComboBoxTemplate* __vwsnf105_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf105_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiComboBoxTemplate*>(new ::darkskin::ComboBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ItemBackgroundTemplate());
 		}
 	}
 
@@ -147,7 +147,21 @@ Closures
 	{
 	}
 
-	void __vwsnf106_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiComboBoxTemplate* __vwsnf106_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiComboBoxTemplate*>(new ::darkskin::ComboBoxTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf107_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::__vwsnf107_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(::darkskin::DatePickerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf107_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -160,12 +174,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf107_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::__vwsnf107_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(::darkskin::DatePickerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf108_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::__vwsnf108_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(::darkskin::DatePickerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf107_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf108_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetDate();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::DateTime>(__vwsn_value_);
@@ -178,12 +192,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf108_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::__vwsnf108_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(::darkskin::DatePickerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf109_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::__vwsnf109_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(::darkskin::DatePickerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf108_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf109_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetDateLocale();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Locale>(__vwsn_value_);
@@ -196,33 +210,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf109_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::__vwsnf109_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(::darkskin::DatePickerTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf109_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetCommands();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::controls::IDatePickerCommandExecutor*>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->look)->SetCommands(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiRibbonTabTemplate* __vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripSplitterTemplate());
+			return static_cast<::vl::presentation::templates::GuiRibbonTabTemplate*>(new ::darkskin::TabTemplate());
 		}
 	}
 
@@ -235,6 +231,24 @@ Closures
 
 	void __vwsnf110_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetCommands();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::controls::IDatePickerCommandExecutor*>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->look)->SetCommands(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf111_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::__vwsnf111_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(::darkskin::DatePickerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf111_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetDate();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::DateTime>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -246,12 +260,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf111_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf111_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::GroupBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf112_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf112_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::GroupBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf111_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf112_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->container)->GetAlignmentToParent();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Margin>(__vwsn_value_);
@@ -264,12 +278,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf112_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf112_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::GroupBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf113_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf113_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::GroupBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf112_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf113_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetAlignmentToParent();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Margin>(__vwsn_value_);
@@ -282,12 +296,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf113_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf113_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::GroupBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf114_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf114_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::GroupBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf113_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf114_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -300,12 +314,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf114_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf114_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::GroupBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf115_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf115_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::GroupBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf114_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf115_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -318,12 +332,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf115_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::__vwsnf115_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf116_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::__vwsnf116_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf115_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf116_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -336,12 +350,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf116_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::__vwsnf116_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf117_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::__vwsnf117_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf116_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf117_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -354,12 +368,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf117_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::__vwsnf117_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf118_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::__vwsnf118_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf117_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf118_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -372,12 +386,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf118_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__::__vwsnf118_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__(::darkskin::ShortcutKeyTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf119_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__::__vwsnf119_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__(::darkskin::ShortcutKeyTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf118_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf119_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -390,33 +404,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf119_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__::__vwsnf119_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__(::darkskin::ShortcutKeyTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf119_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::ToolstripSplitButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripSplitterTemplate());
 		}
 	}
 
@@ -429,6 +425,24 @@ Closures
 
 	void __vwsnf120_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf121_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__::__vwsnf121_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__(::darkskin::ShortcutKeyTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf121_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -440,12 +454,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf121_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf121_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::BottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf122_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf122_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::BottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf121_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf122_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetBackgroundColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -458,12 +472,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf122_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf122_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::BottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf123_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf123_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::BottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf122_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf123_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -476,12 +490,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf123_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__::__vwsnf123_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollHandleTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf124_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__::__vwsnf124_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollHandleTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf123_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf124_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -494,20 +508,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf124_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::__vwsnf124_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf124_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::LeftScrollButtonTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf125_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::__vwsnf125_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -516,7 +516,7 @@ Closures
 	::vl::presentation::templates::GuiControlTemplate* __vwsnf125_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::RightScrollButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::LeftScrollButtonTemplate());
 		}
 	}
 
@@ -530,7 +530,7 @@ Closures
 	::vl::presentation::templates::GuiControlTemplate* __vwsnf126_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::HScrollHandleTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::RightScrollButtonTemplate());
 		}
 	}
 
@@ -541,7 +541,21 @@ Closures
 	{
 	}
 
-	void __vwsnf127_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf127_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::HScrollHandleTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf128_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::__vwsnf128_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf128_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetWidthPageSize();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -554,12 +568,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf128_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::__vwsnf128_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf129_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::__vwsnf129_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::HScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf128_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf129_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetWidthRatio();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -568,20 +582,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->handle)->SetWidthRatio(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf129_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__::__vwsnf129_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(::darkskin::HTrackerTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf129_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ButtonTemplate());
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -594,7 +594,7 @@ Closures
 	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::ToolstripDropdownButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::ToolstripSplitButtonTemplate());
 		}
 	}
 
@@ -605,7 +605,21 @@ Closures
 	{
 	}
 
-	void __vwsnf130_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf130_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ButtonTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf131_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__::__vwsnf131_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(::darkskin::HTrackerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf131_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetWidthRatio();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -618,12 +632,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf131_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf131_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::LeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::LeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf131_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetBackgroundColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -636,12 +650,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::LeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf133_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf133_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::LeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf133_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -654,12 +668,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf133_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__::__vwsnf133_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__(::darkskin::ProgressBarTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf134_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__::__vwsnf134_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__(::darkskin::ProgressBarTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf133_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf134_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3)->GetWidthPageSize();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -672,12 +686,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf134_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf134_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RightScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf135_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf135_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RightScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf134_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf135_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetBackgroundColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -690,12 +704,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf135_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf135_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RightScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf136_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf136_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RightScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf135_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf136_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -704,20 +718,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetBorderColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf136_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_initialize_instance__::__vwsnf136_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_initialize_instance__(::darkskin::ScrollViewTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf136_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -730,18 +730,32 @@ Closures
 	::vl::presentation::templates::GuiScrollTemplate* __vwsnf137_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf138_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_initialize_instance__::__vwsnf138_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_initialize_instance__(::darkskin::ScrollViewTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf138_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
 			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
 		}
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf138_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf138_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TopScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf139_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf139_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TopScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf138_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf139_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetBackgroundColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -754,12 +768,26 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf139_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf139_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TopScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf139_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::ToolstripDropdownButtonTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf140_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf140_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TopScrollButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf140_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -772,26 +800,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
+	__vwsnf141_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__::__vwsnf141_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__(::darkskin::VScrollHandleTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::ToolstripButtonTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf140_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__::__vwsnf140_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__(::darkskin::VScrollHandleTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf140_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf141_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -804,20 +818,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf141_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::__vwsnf141_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::VScrollTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf141_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::TopScrollButtonTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf142_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::__vwsnf142_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::VScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -826,7 +826,7 @@ Closures
 	::vl::presentation::templates::GuiControlTemplate* __vwsnf142_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::BottomScrollButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::TopScrollButtonTemplate());
 		}
 	}
 
@@ -840,7 +840,7 @@ Closures
 	::vl::presentation::templates::GuiControlTemplate* __vwsnf143_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::VScrollHandleTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::BottomScrollButtonTemplate());
 		}
 	}
 
@@ -851,7 +851,21 @@ Closures
 	{
 	}
 
-	void __vwsnf144_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf144_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::VScrollHandleTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf145_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::__vwsnf145_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::VScrollTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf145_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetHeightPageSize();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -864,12 +878,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf145_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::__vwsnf145_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::VScrollTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf146_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::__vwsnf146_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(::darkskin::VScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf145_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf146_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetHeightRatio();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -878,20 +892,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->handle)->SetHeightRatio(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf146_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__::__vwsnf146_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__(::darkskin::VTrackerTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf146_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ButtonTemplate());
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -901,7 +901,21 @@ Closures
 	{
 	}
 
-	void __vwsnf147_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf147_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ButtonTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf148_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__::__vwsnf148_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__(::darkskin::VTrackerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf148_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetHeightRatio();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -914,12 +928,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf148_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf148_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf149_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf149_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf148_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf149_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -932,33 +946,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf149_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf149_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf149_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripTemplate());
+			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::ToolstripButtonTemplate());
 		}
 	}
 
@@ -971,6 +967,24 @@ Closures
 
 	void __vwsnf150_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf151_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf151_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf151_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -982,12 +996,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf151_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf151_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf152_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf152_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf151_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf152_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -1000,12 +1014,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf152_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf152_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf153_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf153_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf152_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf153_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetHighlighted();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1018,12 +1032,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf153_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf153_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf153_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::TabHeaderButtonTemplate());
@@ -1032,12 +1046,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf155_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf155_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf155_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1050,12 +1064,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf155_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf155_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf156_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf156_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf155_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf156_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetAlt();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1068,12 +1082,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf156_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf156_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf157_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf157_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf156_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf157_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1086,24 +1100,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf157_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf157_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf158_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf158_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf157_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf158_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetCommands())->ShowTab(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->CurrentTabPage)->GetOwnerTab())->GetPages()).Obj())->IndexOf(::vl::__vwsn::Box(__vwsnthis_0->CurrentTabPage)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf158_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::__vwsnf158_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf159_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::__vwsnf159_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiTemplate* __vwsnf158_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTemplate* __vwsnf159_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiTabPage>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
@@ -1116,12 +1130,26 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf159_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::__vwsnf159_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf159_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf160_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::__vwsnf160_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf160_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->header)->GetItemSource();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueObservableList>>(__vwsn_value_);
@@ -1134,35 +1162,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::MenuItemButtonTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf160_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::__vwsnf160_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf160_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const
-	{
-		auto flowItem = ::vl::__vwsn::This(__vwsnthis_0->header)->GetFlowItems()[::vl::__vwsn::This(arguments)->itemIndex];
-		auto item = ::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::darkskin::TabHeaderTemplate>(::vl::__vwsn::This(flowItem)->Children()[static_cast<::vl::vint32_t>(0)]));
-		::vl::__vwsn::This(item)->SetCommands(::vl::__vwsn::This(__vwsnthis_0->self)->GetCommands());
-		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateTabHeader();
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf161_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::__vwsnf161_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -1170,6 +1169,9 @@ Closures
 
 	void __vwsnf161_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const
 	{
+		auto flowItem = ::vl::__vwsn::This(__vwsnthis_0->header)->GetFlowItems()[::vl::__vwsn::This(arguments)->itemIndex];
+		auto item = ::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::darkskin::TabHeaderTemplate>(::vl::__vwsn::This(flowItem)->Children()[static_cast<::vl::vint32_t>(0)]));
+		::vl::__vwsn::This(item)->SetCommands(::vl::__vwsn::This(__vwsnthis_0->self)->GetCommands());
 		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateTabHeader();
 	}
 
@@ -1180,7 +1182,19 @@ Closures
 	{
 	}
 
-	void __vwsnf162_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf162_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateTabHeader();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf163_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::__vwsnf163_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf163_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1193,12 +1207,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf163_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::__vwsnf163_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf164_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::__vwsnf164_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf163_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf164_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetHighlighted();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1211,28 +1225,14 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf164_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::__vwsnf164_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf165_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::__vwsnf165_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(::darkskin::TabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf164_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf165_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateTabHeader();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf165_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf165_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::MultilineTextBoxTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf165_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -1245,21 +1245,21 @@ Closures
 	::vl::presentation::templates::GuiScrollTemplate* __vwsnf166_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
 		}
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf167_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf167_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuBarButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf167_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf167_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::MultilineTextBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf167_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf167_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
 		}
 	}
 
@@ -1270,15 +1270,11 @@ Closures
 	{
 	}
 
-	void __vwsnf168_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiMenuTemplate* __vwsnf168_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return;
+			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1290,13 +1286,13 @@ Closures
 
 	void __vwsnf169_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetText(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1309,7 +1305,7 @@ Closures
 	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf16_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::MenuBarButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::MenuItemButtonTemplate());
 		}
 	}
 
@@ -1322,6 +1318,24 @@ Closures
 
 	void __vwsnf170_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf171_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf171_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuBarButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf171_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -1333,12 +1347,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf171_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf171_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuBarButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf172_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf172_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuBarButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf171_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf172_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -1351,12 +1365,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf172_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf172_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf173_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf173_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf172_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiMenuTemplate* __vwsnf173_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
@@ -1365,12 +1379,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf173_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf173_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf174_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf174_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf173_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf174_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1383,12 +1397,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf174_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf174_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf175_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf175_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf174_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf175_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetImage();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::INativeImage>>(__vwsn_value_);
@@ -1401,12 +1415,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf175_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf175_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf176_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf176_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf175_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf176_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetFrameIndex();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
@@ -1419,12 +1433,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf176_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf176_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf177_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf177_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf176_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf177_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1437,12 +1451,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf177_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf177_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf178_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf178_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf177_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf178_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1455,12 +1469,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf178_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf178_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf179_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf179_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf178_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf179_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1473,33 +1487,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf179_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf179_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf179_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf17_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf17_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf17_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf17_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::MenuSplitterTemplate());
+			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::MenuBarButtonTemplate());
 		}
 	}
 
@@ -1512,6 +1508,24 @@ Closures
 
 	void __vwsnf180_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf181_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf181_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf181_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -1523,12 +1537,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf181_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf181_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf182_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf182_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf181_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf182_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1541,12 +1555,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf182_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf182_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf183_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf183_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf182_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf183_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -1559,12 +1573,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf183_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf183_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf184_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf184_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf183_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf184_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->GetBackgroundColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1577,12 +1591,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf184_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf184_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf185_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf185_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf184_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf185_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1595,12 +1609,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf185_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf185_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf186_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf186_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::MenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf185_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf186_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1613,12 +1627,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf186_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::__vwsnf186_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitArrowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf187_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::__vwsnf187_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitArrowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf186_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf187_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1631,12 +1645,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf187_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::__vwsnf187_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitArrowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf188_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::__vwsnf188_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitArrowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf187_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf188_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetBackgroundColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1649,12 +1663,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf188_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::__vwsnf188_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitArrowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf189_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::__vwsnf189_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitArrowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf188_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf189_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1667,20 +1681,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf189_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf189_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf189_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf18_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf18_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -1689,7 +1689,7 @@ Closures
 	::vl::presentation::templates::GuiControlTemplate* __vwsnf18_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::MenuSplitterTemplate());
 		}
 	}
 
@@ -1700,7 +1700,21 @@ Closures
 	{
 	}
 
-	void __vwsnf190_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiMenuTemplate* __vwsnf190_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf191_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf191_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf191_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1713,12 +1727,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf191_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf191_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf192_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf192_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf191_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf192_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1731,12 +1745,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf192_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf192_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf193_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf193_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf192_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf193_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetImage();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::INativeImage>>(__vwsn_value_);
@@ -1749,12 +1763,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf193_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf193_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf194_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf194_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf193_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf194_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetFrameIndex();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
@@ -1767,12 +1781,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf194_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf194_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf195_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf195_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf194_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf195_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1785,12 +1799,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf195_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf195_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf196_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf196_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf195_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiMenuTemplate* __vwsnf196_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
@@ -1799,12 +1813,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf196_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf196_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf197_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf197_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf196_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf197_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1817,12 +1831,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf197_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf197_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf198_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf198_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf197_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf198_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1835,12 +1849,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf198_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf198_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf199_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf199_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf198_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf199_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetImage();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::INativeImage>>(__vwsn_value_);
@@ -1853,33 +1867,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf199_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf199_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf199_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetFrameIndex();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetFrameIndex(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf19_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf19_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf19_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf19_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripTemplate());
 		}
 	}
 
@@ -1906,6 +1902,24 @@ Closures
 
 	void __vwsnf200_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetFrameIndex();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetFrameIndex(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf201_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf201_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf201_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -1917,12 +1931,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf201_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf201_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf202_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf202_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf201_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf202_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1935,12 +1949,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf202_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf202_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf203_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf203_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf202_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf203_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->GetBackgroundColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1953,12 +1967,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf203_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf203_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf204_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf204_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripDropdownButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf203_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf204_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1971,29 +1985,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf204_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf204_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf204_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf205_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf205_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf205_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiMenuTemplate* __vwsnf205_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripSplitArrowTemplate());
+			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
 		}
 	}
 
@@ -2004,7 +2004,21 @@ Closures
 	{
 	}
 
-	void __vwsnf206_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf206_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripSplitArrowTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf207_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf207_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf207_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2017,12 +2031,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf207_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf207_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf208_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf208_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf207_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf208_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2035,12 +2049,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf208_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf208_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf209_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf209_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf208_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf209_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetImage();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::INativeImage>>(__vwsn_value_);
@@ -2053,33 +2067,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf209_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf209_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf209_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetFrameIndex();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetFrameIndex(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf20_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf20_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiTextListTemplate* __vwsnf20_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiMenuTemplate* __vwsnf20_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiTextListTemplate*>(new ::darkskin::TextListTemplate());
+			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
 		}
 	}
 
@@ -2092,6 +2088,24 @@ Closures
 
 	void __vwsnf210_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetFrameIndex();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetFrameIndex(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf211_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf211_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf211_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -2103,12 +2117,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf211_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf211_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf212_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf212_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf211_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf212_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2121,12 +2135,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf212_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf212_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf213_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf213_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ToolstripSplitButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf212_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf213_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->buttonArrow)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -2139,29 +2153,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf213_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::__vwsnf213_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiWindowTemplate* __vwsnf213_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiWindowTemplate*>(new ::darkskin::TooltipTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf214_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::__vwsnf214_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf214_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiWindowTemplate* __vwsnf214_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiWindowTemplate*>(new ::darkskin::TooltipTemplate());
 		}
 	}
 
@@ -2200,7 +2200,21 @@ Closures
 	{
 	}
 
-	void __vwsnf217_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf217_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ButtonTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf218_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::__vwsnf218_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf218_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2213,12 +2227,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf218_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::__vwsnf218_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf219_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::__vwsnf219_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf218_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf219_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_23.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2236,10 +2250,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiTreeViewTemplate* __vwsnf21_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTextListTemplate* __vwsnf21_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiTreeViewTemplate*>(new ::darkskin::TreeViewTemplate());
+			return static_cast<::vl::presentation::templates::GuiTextListTemplate*>(new ::darkskin::TextListTemplate());
 		}
 	}
 
@@ -2250,10 +2264,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiListViewTemplate* __vwsnf22_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTreeViewTemplate* __vwsnf22_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiListViewTemplate*>(new ::darkskin::ListViewTemplate());
+			return static_cast<::vl::presentation::templates::GuiTreeViewTemplate*>(new ::darkskin::TreeViewTemplate());
 		}
 	}
 
@@ -2264,10 +2278,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiDocumentLabelTemplate* __vwsnf23_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiListViewTemplate* __vwsnf23_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiDocumentLabelTemplate*>(new ::darkskin::DocumentTextBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiListViewTemplate*>(new ::darkskin::ListViewTemplate());
 		}
 	}
 
@@ -2281,7 +2295,7 @@ Closures
 	::vl::presentation::templates::GuiDocumentLabelTemplate* __vwsnf24_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiDocumentLabelTemplate*>(new ::darkskin::DocumentLabelTemplate());
+			return static_cast<::vl::presentation::templates::GuiDocumentLabelTemplate*>(new ::darkskin::DocumentTextBoxTemplate());
 		}
 	}
 
@@ -2292,10 +2306,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiDocumentViewerTemplate* __vwsnf25_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiDocumentLabelTemplate* __vwsnf25_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiDocumentViewerTemplate*>(new ::darkskin::DocumentViewerTemplate());
+			return static_cast<::vl::presentation::templates::GuiDocumentLabelTemplate*>(new ::darkskin::DocumentLabelTemplate());
 		}
 	}
 
@@ -2306,10 +2320,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiSinglelineTextBoxTemplate* __vwsnf26_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiDocumentViewerTemplate* __vwsnf26_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSinglelineTextBoxTemplate*>(new ::darkskin::SinglelineTextBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiDocumentViewerTemplate*>(new ::darkskin::DocumentViewerTemplate());
 		}
 	}
 
@@ -2320,10 +2334,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiMultilineTextBoxTemplate* __vwsnf27_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiSinglelineTextBoxTemplate* __vwsnf27_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiMultilineTextBoxTemplate*>(new ::darkskin::MultilineTextBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiSinglelineTextBoxTemplate*>(new ::darkskin::SinglelineTextBoxTemplate());
 		}
 	}
 
@@ -2334,10 +2348,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiComboBoxTemplate* __vwsnf28_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiMultilineTextBoxTemplate* __vwsnf28_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiComboBoxTemplate*>(new ::darkskin::ComboBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiMultilineTextBoxTemplate*>(new ::darkskin::MultilineTextBoxTemplate());
 		}
 	}
 
@@ -2348,10 +2362,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiTabTemplate* __vwsnf29_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiComboBoxTemplate* __vwsnf29_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiTabTemplate*>(new ::darkskin::TabTemplate());
+			return static_cast<::vl::presentation::templates::GuiComboBoxTemplate*>(new ::darkskin::ComboBoxTemplate());
 		}
 	}
 
@@ -2376,10 +2390,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf30_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTabTemplate* __vwsnf30_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::GroupBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiTabTemplate*>(new ::darkskin::TabTemplate());
 		}
 	}
 
@@ -2390,10 +2404,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollViewTemplate* __vwsnf31_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf31_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollViewTemplate*>(new ::darkskin::ScrollViewTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::GroupBoxTemplate());
 		}
 	}
 
@@ -2404,10 +2418,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiLabelTemplate* __vwsnf32_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiScrollViewTemplate* __vwsnf32_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiLabelTemplate*>(new ::darkskin::ShortcutKeyTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollViewTemplate*>(new ::darkskin::ScrollViewTemplate());
 		}
 	}
 
@@ -2421,7 +2435,7 @@ Closures
 	::vl::presentation::templates::GuiLabelTemplate* __vwsnf33_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiLabelTemplate*>(new ::darkskin::LabelTemplate());
+			return static_cast<::vl::presentation::templates::GuiLabelTemplate*>(new ::darkskin::ShortcutKeyTemplate());
 		}
 	}
 
@@ -2432,10 +2446,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiWindowTemplate* __vwsnf34_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiLabelTemplate* __vwsnf34_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiWindowTemplate*>(new ::darkskin::TooltipTemplate());
+			return static_cast<::vl::presentation::templates::GuiLabelTemplate*>(new ::darkskin::LabelTemplate());
 		}
 	}
 
@@ -2446,10 +2460,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf35_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiWindowTemplate* __vwsnf35_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::CustomControlTemplate());
+			return static_cast<::vl::presentation::templates::GuiWindowTemplate*>(new ::darkskin::TooltipTemplate());
 		}
 	}
 
@@ -2460,7 +2474,21 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiWindowTemplate* __vwsnf36_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf36_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::CustomControlTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf37_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::__vwsnf37_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiWindowTemplate* __vwsnf37_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiWindowTemplate*>(new ::darkskin::WindowTemplate());
@@ -2469,12 +2497,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf37_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf37_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf38_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf38_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf37_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf38_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2487,12 +2515,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf38_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf38_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf39_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf39_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf38_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf39_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2501,24 +2529,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf39_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf39_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf39_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2544,6 +2554,24 @@ Closures
 
 	void __vwsnf40_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf41_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf41_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf41_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -2555,12 +2583,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf41_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf41_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf42_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf42_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf41_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf42_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -2573,12 +2601,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf42_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf42_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf43_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf43_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf42_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf43_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2591,12 +2619,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf43_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf43_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf44_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf44_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf43_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf44_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2609,12 +2637,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf44_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf44_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf45_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf45_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf44_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf45_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2627,12 +2655,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf45_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf45_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf46_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf46_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf45_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf46_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -2645,12 +2673,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf46_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf46_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf47_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf47_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf46_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf47_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2663,12 +2691,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf47_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf47_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf48_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf48_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf47_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf48_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2681,12 +2709,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf48_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf48_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf49_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf49_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf48_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf49_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -2695,24 +2723,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf49_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf49_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf49_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2738,6 +2748,24 @@ Closures
 
 	void __vwsnf50_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->SetColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf51_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf51_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf51_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -2749,12 +2777,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf51_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf51_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf52_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf52_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf51_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf52_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2767,12 +2795,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf52_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf52_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf53_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf53_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf52_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf53_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -2785,12 +2813,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf53_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf53_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf54_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf54_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf53_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf54_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2803,12 +2831,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf54_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf54_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf55_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf55_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf54_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf55_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2821,12 +2849,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf55_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf55_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf56_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf56_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::RadioButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf55_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf56_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -2839,20 +2867,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf56_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__::__vwsnf56_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__(::darkskin::DocumentViewerTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf56_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf57_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__::__vwsnf57_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__(::darkskin::DocumentViewerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -2861,18 +2875,32 @@ Closures
 	::vl::presentation::templates::GuiScrollTemplate* __vwsnf57_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf58_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__::__vwsnf58_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__(::darkskin::DocumentViewerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf58_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
 			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
 		}
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf58_DarkSkin_darkskin_CheckItemBackgroundTemplateConstructor___vwsn_initialize_instance__::__vwsnf58_DarkSkin_darkskin_CheckItemBackgroundTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckItemBackgroundTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf59_DarkSkin_darkskin_CheckItemBackgroundTemplateConstructor___vwsn_initialize_instance__::__vwsnf59_DarkSkin_darkskin_CheckItemBackgroundTemplateConstructor___vwsn_initialize_instance__(::darkskin::CheckItemBackgroundTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf58_DarkSkin_darkskin_CheckItemBackgroundTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf59_DarkSkin_darkskin_CheckItemBackgroundTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2881,20 +2909,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf59_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf59_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiDatePickerTemplate* __vwsnf59_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiDatePickerTemplate*>(new ::darkskin::DatePickerTemplate());
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -2918,10 +2932,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf60_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiDatePickerTemplate* __vwsnf60_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
+			return static_cast<::vl::presentation::templates::GuiDatePickerTemplate*>(new ::darkskin::DatePickerTemplate());
 		}
 	}
 
@@ -2932,7 +2946,21 @@ Closures
 	{
 	}
 
-	void __vwsnf61_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiMenuTemplate* __vwsnf61_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf62_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf62_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf62_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2945,12 +2973,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf62_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf62_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf63_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf63_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf62_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf63_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2963,12 +2991,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf63_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf63_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf64_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf64_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf63_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf64_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2981,12 +3009,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf64_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf64_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf65_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf65_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf64_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf65_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -2999,12 +3027,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf65_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf65_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf66_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf66_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf65_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf66_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -3017,12 +3045,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf66_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf66_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf67_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf67_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf66_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf67_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -3035,12 +3063,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf67_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf67_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf68_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf68_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf67_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf68_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->GetBackgroundColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -3053,12 +3081,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf68_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf68_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf69_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::__vwsnf69_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(::darkskin::ComboBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf68_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf69_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -3067,24 +3095,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->SetBorderColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf69_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::__vwsnf69_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(::darkskin::ExpandingDecoratorTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf69_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetBackgroundColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->SetBackgroundColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3110,6 +3120,24 @@ Closures
 
 	void __vwsnf70_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetBackgroundColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->SetBackgroundColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf71_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::__vwsnf71_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(::darkskin::ExpandingDecoratorTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf71_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -3121,12 +3149,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf71_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::__vwsnf71_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(::darkskin::ExpandingDecoratorTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf72_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::__vwsnf72_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(::darkskin::ExpandingDecoratorTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf71_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf72_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -3139,12 +3167,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf72_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::__vwsnf72_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(::darkskin::ExpandingDecoratorTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf73_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::__vwsnf73_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(::darkskin::ExpandingDecoratorTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf72_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf73_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5.Obj())->GetBackgroundColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -3157,12 +3185,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf73_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::__vwsnf73_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(::darkskin::ExpandingDecoratorTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf74_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::__vwsnf74_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(::darkskin::ExpandingDecoratorTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf73_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf74_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -3175,12 +3203,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf74_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::__vwsnf74_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(::darkskin::ExpandingDecoratorTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf75_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::__vwsnf75_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(::darkskin::ExpandingDecoratorTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf74_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf75_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -3193,12 +3221,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf75_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance__::__vwsnf75_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance__(::darkskin::ItemBackgroundTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf76_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance__::__vwsnf76_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance__(::darkskin::ItemBackgroundTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf75_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf76_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -3211,29 +3239,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf76_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf76_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf76_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf77_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf77_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf77_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiMenuTemplate* __vwsnf77_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripSplitArrowTemplate());
+			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::ToolstripMenuTemplate());
 		}
 	}
 
@@ -3244,15 +3258,11 @@ Closures
 	{
 	}
 
-	void __vwsnf78_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf78_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return;
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::darkskin::ToolstripSplitArrowTemplate());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3264,13 +3274,13 @@ Closures
 
 	void __vwsnf79_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->GetBackgroundColor();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->SetBackgroundColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3296,6 +3306,24 @@ Closures
 
 	void __vwsnf80_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->GetBackgroundColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->SetBackgroundColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf81_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf81_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf81_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -3307,12 +3335,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf81_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf81_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf82_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf82_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf81_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf82_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -3325,12 +3353,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf82_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf82_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf83_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf83_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf82_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf83_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->GetBackgroundColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -3343,12 +3371,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf83_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf83_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf84_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf84_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf83_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf84_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->GetBorderColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -3361,12 +3389,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf84_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf84_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf85_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf85_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf84_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf85_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -3379,12 +3407,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf85_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf85_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf86_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf86_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf85_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf86_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -3397,12 +3425,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf86_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf86_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf87_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf87_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf86_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf87_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -3415,12 +3443,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf87_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf87_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf88_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf88_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf87_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf88_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -3433,12 +3461,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf88_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf88_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf89_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf89_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf88_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf89_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->buttonArrow)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -3447,24 +3475,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->buttonArrow)->SetSelected(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf89_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf89_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf89_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->buttonArrow)->GetVisible();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->buttonArrow)->SetVisible(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3483,16 +3493,20 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf90_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__::__vwsnf90_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf90_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::__vwsnf90_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiListViewColumnHeaderTemplate* __vwsnf90_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	void __vwsnf90_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->buttonArrow)->GetVisible();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return static_cast<::vl::presentation::templates::GuiListViewColumnHeaderTemplate*>(new ::darkskin::ListViewColumnHeaderTemplate());
+			return;
 		}
+		::vl::__vwsn::This(__vwsnthis_0->buttonArrow)->SetVisible(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3502,10 +3516,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf91_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiListViewColumnHeaderTemplate* __vwsnf91_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ItemBackgroundTemplate());
+			return static_cast<::vl::presentation::templates::GuiListViewColumnHeaderTemplate*>(new ::darkskin::ListViewColumnHeaderTemplate());
 		}
 	}
 
@@ -3516,10 +3530,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf92_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf92_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ItemBackgroundTemplate());
 		}
 	}
 
@@ -3533,21 +3547,21 @@ Closures
 	::vl::presentation::templates::GuiScrollTemplate* __vwsnf93_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
 		}
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf94_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__::__vwsnf94_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(::darkskin::TextListTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf94_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__::__vwsnf94_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__(::darkskin::ListViewTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf94_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf94_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::RadioButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
 		}
 	}
 
@@ -3561,7 +3575,7 @@ Closures
 	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf95_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::CheckBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::RadioButtonTemplate());
 		}
 	}
 
@@ -3575,7 +3589,7 @@ Closures
 	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf96_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ItemBackgroundTemplate());
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::CheckBoxTemplate());
 		}
 	}
 
@@ -3586,10 +3600,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf97_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf97_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ItemBackgroundTemplate());
 		}
 	}
 
@@ -3603,21 +3617,21 @@ Closures
 	::vl::presentation::templates::GuiScrollTemplate* __vwsnf98_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
 		}
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf99_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__::__vwsnf99_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__(::darkskin::TreeViewTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf99_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__::__vwsnf99_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(::darkskin::TextListTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf99_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf99_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::ExpandingDecoratorTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
 		}
 	}
 
@@ -13292,85 +13306,88 @@ namespace darkskin
 			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Button = LAMBDA(::vl_workflow_global::__vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ToolstripSplitter = LAMBDA(::vl_workflow_global::__vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonTab = LAMBDA(::vl_workflow_global::__vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ToolstripSplitButton = LAMBDA(::vl_workflow_global::__vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ToolstripSplitter = LAMBDA(::vl_workflow_global::__vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ToolstripDropdownButton = LAMBDA(::vl_workflow_global::__vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ToolstripSplitButton = LAMBDA(::vl_workflow_global::__vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ToolstripButton = LAMBDA(::vl_workflow_global::__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ToolstripDropdownButton = LAMBDA(::vl_workflow_global::__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ToolstripToolBar = LAMBDA(::vl_workflow_global::__vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ToolstripButton = LAMBDA(::vl_workflow_global::__vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->MenuItemButton = LAMBDA(::vl_workflow_global::__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ToolstripToolBar = LAMBDA(::vl_workflow_global::__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->MenuBarButton = LAMBDA(::vl_workflow_global::__vwsnf16_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->MenuItemButton = LAMBDA(::vl_workflow_global::__vwsnf16_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->MenuSplitter = LAMBDA(::vl_workflow_global::__vwsnf17_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->MenuBarButton = LAMBDA(::vl_workflow_global::__vwsnf17_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->MenuBar = LAMBDA(::vl_workflow_global::__vwsnf18_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->MenuSplitter = LAMBDA(::vl_workflow_global::__vwsnf18_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Menu = LAMBDA(::vl_workflow_global::__vwsnf19_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->MenuBar = LAMBDA(::vl_workflow_global::__vwsnf19_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->TextList = LAMBDA(::vl_workflow_global::__vwsnf20_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Menu = LAMBDA(::vl_workflow_global::__vwsnf20_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->TreeView = LAMBDA(::vl_workflow_global::__vwsnf21_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->TextList = LAMBDA(::vl_workflow_global::__vwsnf21_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ListView = LAMBDA(::vl_workflow_global::__vwsnf22_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->TreeView = LAMBDA(::vl_workflow_global::__vwsnf22_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->DocumentTextBox = LAMBDA(::vl_workflow_global::__vwsnf23_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ListView = LAMBDA(::vl_workflow_global::__vwsnf23_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->DocumentLabel = LAMBDA(::vl_workflow_global::__vwsnf24_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->DocumentTextBox = LAMBDA(::vl_workflow_global::__vwsnf24_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->DocumentViewer = LAMBDA(::vl_workflow_global::__vwsnf25_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->DocumentLabel = LAMBDA(::vl_workflow_global::__vwsnf25_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->SinglelineTextBox = LAMBDA(::vl_workflow_global::__vwsnf26_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->DocumentViewer = LAMBDA(::vl_workflow_global::__vwsnf26_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->MultilineTextBox = LAMBDA(::vl_workflow_global::__vwsnf27_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->SinglelineTextBox = LAMBDA(::vl_workflow_global::__vwsnf27_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ComboBox = LAMBDA(::vl_workflow_global::__vwsnf28_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->MultilineTextBox = LAMBDA(::vl_workflow_global::__vwsnf28_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Tab = LAMBDA(::vl_workflow_global::__vwsnf29_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ComboBox = LAMBDA(::vl_workflow_global::__vwsnf29_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->GroupBox = LAMBDA(::vl_workflow_global::__vwsnf30_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Tab = LAMBDA(::vl_workflow_global::__vwsnf30_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ScrollView = LAMBDA(::vl_workflow_global::__vwsnf31_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->GroupBox = LAMBDA(::vl_workflow_global::__vwsnf31_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ShortcutKey = LAMBDA(::vl_workflow_global::__vwsnf32_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ScrollView = LAMBDA(::vl_workflow_global::__vwsnf32_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Label = LAMBDA(::vl_workflow_global::__vwsnf33_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ShortcutKey = LAMBDA(::vl_workflow_global::__vwsnf33_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Tooltip = LAMBDA(::vl_workflow_global::__vwsnf34_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Label = LAMBDA(::vl_workflow_global::__vwsnf34_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->CustomControl = LAMBDA(::vl_workflow_global::__vwsnf35_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Tooltip = LAMBDA(::vl_workflow_global::__vwsnf35_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Window = LAMBDA(::vl_workflow_global::__vwsnf36_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->CustomControl = LAMBDA(::vl_workflow_global::__vwsnf36_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+		}
+		{
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Window = LAMBDA(::vl_workflow_global::__vwsnf37_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 	}
 
@@ -13446,27 +13463,27 @@ Class (::darkskin::ButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf37_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf38_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc3_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf39_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc4_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc3_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf40_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc5_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc4_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf41_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc5_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf42_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -13616,37 +13633,37 @@ Class (::darkskin::CheckBoxTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc6_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf42_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc7_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf43_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc8_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc7_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf44_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc9_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc8_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf45_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc10_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc9_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf46_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc10_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf47_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc12_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf48_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc12_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf49_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -13799,37 +13816,37 @@ Class (::darkskin::RadioButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc13_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf49_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc14_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf50_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc15_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc14_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf51_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc16_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc15_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf52_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc17_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc16_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf53_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc17_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf54_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc19_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf55_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc19_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf56_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -14019,10 +14036,10 @@ Class (::darkskin::DocumentViewerTemplateConstructor)
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
 		{
-			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf56_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf57_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf57_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf58_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -14099,7 +14116,7 @@ Class (::darkskin::CheckItemBackgroundTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc20_DarkSkin_darkskin_CheckItemBackgroundTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf58_DarkSkin_darkskin_CheckItemBackgroundTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf59_DarkSkin_darkskin_CheckItemBackgroundTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -14139,10 +14156,10 @@ Class (::darkskin::ComboBoxTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetDatePickerTemplate(LAMBDA(::vl_workflow_global::__vwsnf59_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetDatePickerTemplate(LAMBDA(::vl_workflow_global::__vwsnf60_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf60_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf61_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -14246,42 +14263,42 @@ Class (::darkskin::ComboBoxTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc21_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf61_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc22_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf62_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc23_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc22_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf63_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc24_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc23_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf64_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc25_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc24_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf65_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc26_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc25_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf66_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc27_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc26_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf67_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc28_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc27_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf68_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc28_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf69_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -14393,32 +14410,32 @@ Class (::darkskin::ExpandingDecoratorTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc29_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf69_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc30_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf70_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc31_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc30_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf71_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc32_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc31_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf72_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc33_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc32_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf73_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc34_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc33_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf74_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc34_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf75_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -14477,7 +14494,7 @@ Class (::darkskin::ItemBackgroundTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc35_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf75_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf76_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -14517,7 +14534,7 @@ Class (::darkskin::ListViewColumnHeaderTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf76_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf77_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -14673,7 +14690,7 @@ Class (::darkskin::ListViewColumnHeaderTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->buttonArrow)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf77_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->buttonArrow)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf78_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonArrow)->GetBoundsComposition()));
@@ -14683,62 +14700,62 @@ Class (::darkskin::ListViewColumnHeaderTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc36_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf78_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc37_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf79_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc38_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc37_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf80_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc39_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc38_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf81_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc40_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc39_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf82_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc41_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc40_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf83_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc42_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc41_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf84_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc43_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc42_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf85_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc44_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc43_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf86_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc45_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc44_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf87_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc46_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc45_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf88_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc47_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc46_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf89_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc47_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf90_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -14799,10 +14816,10 @@ Class (::darkskin::ListViewTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetItemSeparatorColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#F1F1F1", false)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetColumnHeaderTemplate(LAMBDA(::vl_workflow_global::__vwsnf90_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetColumnHeaderTemplate(LAMBDA(::vl_workflow_global::__vwsnf91_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(LAMBDA(::vl_workflow_global::__vwsnf91_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(LAMBDA(::vl_workflow_global::__vwsnf92_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -14839,10 +14856,10 @@ Class (::darkskin::ListViewTemplateConstructor)
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
 		{
-			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf92_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf93_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf93_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf94_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -14898,13 +14915,13 @@ Class (::darkskin::TextListTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetRadioBulletTemplate(LAMBDA(::vl_workflow_global::__vwsnf94_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetRadioBulletTemplate(LAMBDA(::vl_workflow_global::__vwsnf95_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetCheckBulletTemplate(LAMBDA(::vl_workflow_global::__vwsnf95_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetCheckBulletTemplate(LAMBDA(::vl_workflow_global::__vwsnf96_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(LAMBDA(::vl_workflow_global::__vwsnf96_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(LAMBDA(::vl_workflow_global::__vwsnf97_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#F1F1F1", false)));
@@ -14938,10 +14955,10 @@ Class (::darkskin::TextListTemplateConstructor)
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
 		{
-			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf97_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf98_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf98_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf99_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -14997,10 +15014,10 @@ Class (::darkskin::TreeViewTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetExpandingDecoratorTemplate(LAMBDA(::vl_workflow_global::__vwsnf99_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetExpandingDecoratorTemplate(LAMBDA(::vl_workflow_global::__vwsnf100_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(LAMBDA(::vl_workflow_global::__vwsnf100_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(LAMBDA(::vl_workflow_global::__vwsnf101_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#F1F1F1", false)));
@@ -15034,10 +15051,10 @@ Class (::darkskin::TreeViewTemplateConstructor)
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
 		{
-			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf101_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf102_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf102_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf103_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -15097,13 +15114,13 @@ Class (::darkskin::DatePickerTemplateConstructor)
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonDatePickerLook(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)), ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)), ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#999999", false))));
 		{
-			::vl::__vwsn::This(this->look)->SetDateTextListTemplate(LAMBDA(::vl_workflow_global::__vwsnf103_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetDateTextListTemplate(LAMBDA(::vl_workflow_global::__vwsnf104_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetDateButtonTemplate(LAMBDA(::vl_workflow_global::__vwsnf104_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetDateButtonTemplate(LAMBDA(::vl_workflow_global::__vwsnf105_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetDateComboBoxTemplate(LAMBDA(::vl_workflow_global::__vwsnf105_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetDateComboBoxTemplate(LAMBDA(::vl_workflow_global::__vwsnf106_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -15113,27 +15130,27 @@ Class (::darkskin::DatePickerTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc48_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf106_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc49_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf107_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc50_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc49_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf108_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc51_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc50_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf109_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc52_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc51_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf110_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc52_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf111_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -15238,22 +15255,22 @@ Class (::darkskin::GroupBoxTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc53_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf111_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc54_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf112_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc55_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc54_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf113_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc56_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc55_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf114_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc56_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf115_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -15310,17 +15327,17 @@ Class (::darkskin::LabelTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc57_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf115_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc58_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf116_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc59_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc58_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf117_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc59_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf118_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -15401,17 +15418,17 @@ Class (::darkskin::ShortcutKeyTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc60_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf118_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc61_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf119_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc62_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc61_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf120_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc62_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf121_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -15491,12 +15508,12 @@ Class (::darkskin::BottomScrollButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc63_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf121_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf122_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc64_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf122_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf123_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -15552,7 +15569,7 @@ Class (::darkskin::HScrollHandleTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc65_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf123_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf124_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -15620,7 +15637,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf124_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf125_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonDecrease)->GetBoundsComposition()));
@@ -15646,7 +15663,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf125_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf126_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonIncrease)->GetBoundsComposition()));
@@ -15670,7 +15687,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf126_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf127_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_5)->GetBoundsComposition()));
@@ -15683,12 +15700,12 @@ Class (::darkskin::HScrollTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc66_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf127_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf128_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc67_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf128_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf129_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -15820,7 +15837,7 @@ Class (::darkskin::HTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf129_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf130_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
@@ -15833,7 +15850,7 @@ Class (::darkskin::HTrackerTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc68_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf130_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf131_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -15925,12 +15942,12 @@ Class (::darkskin::LeftScrollButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc69_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf131_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc70_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf133_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -16017,7 +16034,7 @@ Class (::darkskin::ProgressBarTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc71_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf133_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf134_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -16101,12 +16118,12 @@ Class (::darkskin::RightScrollButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc72_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf134_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf135_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc73_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf135_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf136_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -16172,10 +16189,10 @@ Class (::darkskin::ScrollViewTemplateConstructor)
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
 		{
-			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf136_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf137_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf137_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf138_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -16271,12 +16288,12 @@ Class (::darkskin::TopScrollButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc74_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf138_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf139_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc75_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf139_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf140_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -16332,7 +16349,7 @@ Class (::darkskin::VScrollHandleTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc76_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf140_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf141_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -16400,7 +16417,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf141_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf142_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonDecrease)->GetBoundsComposition()));
@@ -16426,7 +16443,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf142_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf143_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonIncrease)->GetBoundsComposition()));
@@ -16450,7 +16467,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf143_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf144_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_5)->GetBoundsComposition()));
@@ -16463,12 +16480,12 @@ Class (::darkskin::VScrollTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc77_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf144_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf145_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc78_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf145_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf146_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -16600,7 +16617,7 @@ Class (::darkskin::VTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf146_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf147_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
@@ -16613,7 +16630,7 @@ Class (::darkskin::VTrackerTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc79_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf147_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf148_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -16693,27 +16710,27 @@ Class (::darkskin::TabHeaderButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc80_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf148_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc81_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf149_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc82_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc81_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf150_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc83_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc82_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf151_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc84_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc83_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf152_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc84_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf153_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -16779,28 +16796,28 @@ Class (::darkskin::TabHeaderTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf153_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition()));
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc85_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf154_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc86_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf155_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc87_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc86_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf156_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf157_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc87_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf157_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf158_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_0)->Clicked, __vwsn_event_handler_);
 		}
 	}
@@ -16904,7 +16921,7 @@ Class (::darkskin::TabTemplateConstructor)
 		}
 		(this->header = new ::vl::presentation::compositions::GuiRepeatFlowComposition());
 		{
-			::vl::__vwsn::This(this->header)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf158_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->header)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf159_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->header)->SetExtraMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(2); __vwsn_temp__.top = static_cast<::vl::vint32_t>(2); __vwsn_temp__.right = static_cast<::vl::vint32_t>(2); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -16961,20 +16978,20 @@ Class (::darkskin::TabTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc88_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf159_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf160_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf160_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf161_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->header)->ItemInserted, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf161_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf162_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->header)->ItemRemoved, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc89_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf162_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf163_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -16982,7 +16999,7 @@ Class (::darkskin::TabTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc90_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf163_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf164_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -16992,7 +17009,7 @@ Class (::darkskin::TabTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetAfterHeadersContainer(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->afterHeadersContainer));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf164_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf165_DarkSkin_darkskin_TabTemplateConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->SelectedTabPageChanged, __vwsn_event_handler_);
 		}
 	}
@@ -17110,10 +17127,10 @@ Class (::darkskin::MultilineTextBoxTemplateConstructor)
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
 		{
-			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf165_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf166_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf166_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->look)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf167_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -17242,7 +17259,7 @@ Class (::darkskin::MenuBarButtonTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf167_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf168_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -17273,22 +17290,22 @@ Class (::darkskin::MenuBarButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc91_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf168_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc92_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf169_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc93_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc92_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf170_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc94_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc93_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf171_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc94_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf172_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -17326,7 +17343,7 @@ Class (::darkskin::MenuItemButtonTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf172_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf173_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -17453,67 +17470,67 @@ Class (::darkskin::MenuItemButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc95_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf173_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc96_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf174_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc97_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc96_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf175_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc98_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc97_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf176_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc99_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc98_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf177_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc100_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc99_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf178_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc101_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc100_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf179_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc102_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc101_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf180_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc103_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc102_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf181_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc104_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc103_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf182_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc105_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc104_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf183_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc106_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc105_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf184_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc107_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc106_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf185_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc107_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf186_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -17671,17 +17688,17 @@ Class (::darkskin::ToolstripSplitArrowTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc108_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf186_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc109_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf187_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc110_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc109_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf188_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc110_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf189_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -17720,7 +17737,7 @@ Class (::darkskin::ToolstripButtonTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf189_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf190_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -17769,27 +17786,27 @@ Class (::darkskin::ToolstripButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc111_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf190_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc112_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf191_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc113_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc112_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf192_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc114_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc113_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf193_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc115_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc114_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf194_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc115_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf195_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -17833,7 +17850,7 @@ Class (::darkskin::ToolstripDropdownButtonTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf195_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf196_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -17925,42 +17942,42 @@ Class (::darkskin::ToolstripDropdownButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc116_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf196_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc117_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf197_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc118_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc117_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf198_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc119_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc118_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf199_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc120_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc119_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf200_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc121_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc120_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf201_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc122_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc121_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf202_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc123_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc122_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf203_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc123_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf204_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -18075,7 +18092,7 @@ Class (::darkskin::ToolstripSplitButtonTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf204_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(LAMBDA(::vl_workflow_global::__vwsnf205_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -18151,7 +18168,7 @@ Class (::darkskin::ToolstripSplitButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->buttonArrow)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf205_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->buttonArrow)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf206_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonArrow)->GetBoundsComposition()));
@@ -18161,37 +18178,37 @@ Class (::darkskin::ToolstripSplitButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc124_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf206_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc125_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf207_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc126_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc125_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf208_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc127_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc126_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf209_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc128_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc127_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf210_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc129_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc128_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf211_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc130_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc129_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf212_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc130_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf213_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -18464,7 +18481,7 @@ Class (::darkskin::WindowTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetTooltipTemplate(LAMBDA(::vl_workflow_global::__vwsnf213_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->self)->SetTooltipTemplate(LAMBDA(::vl_workflow_global::__vwsnf214_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetCustomizedBorder(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
@@ -18632,7 +18649,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetText(::vl::WString(L" 0 ", false));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf214_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf215_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_13)->GetBoundsComposition()));
@@ -18658,7 +18675,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf215_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf216_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_16)->GetBoundsComposition()));
@@ -18687,7 +18704,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetText(::vl::WString(L" r ", false));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf216_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf217_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition()));
@@ -18753,12 +18770,12 @@ Class (::darkskin::WindowTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc131_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf217_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf218_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc132_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf218_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf219_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
