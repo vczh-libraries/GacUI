@@ -27,6 +27,7 @@
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <CheckBox ControlTemplate="darkskin::TabHeaderButtonTemplate" AutoSelection="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.Context-ref>CurrentTabPage</att.Context-ref>
           <att.Text-bind>CurrentTabPage.Text</att.Text-bind>
           <att.Alt-bind>CurrentTabPage.Alt</att.Alt-bind>
           <att.Selected-bind>CurrentTabPage.OwnerTab.SelectedPage == CurrentTabPage</att.Selected-bind>
