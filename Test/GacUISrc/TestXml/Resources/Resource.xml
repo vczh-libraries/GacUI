@@ -372,7 +372,7 @@
             <SolidBorder ref.Style="toolstripBorder"/>
           </Bounds>
           <Table AlignmentToParent="left:1 top:1 right:1 bottom:1">
-            <SolidBackground ref.Style="toolstripSplitBackground"/>
+            <SolidBackground ref.Style="toolstripBackground"/>
             <att.Rows>
               <CellOption>composeType:MinSize</CellOption>
               <CellOption>composeType:Absolute absolute:1</CellOption>
@@ -407,7 +407,7 @@
             <SolidBorder ref.Style="toolstripBorder"/>
           </Bounds>
           <Table AlignmentToParent="left:1 top:1 right:1 bottom:1">
-            <SolidBackground ref.Style="toolstripSplitBackground"/>
+            <SolidBackground ref.Style="toolstripBackground"/>
             <att.Rows>
               <CellOption>composeType:MinSize</CellOption>
               <CellOption>composeType:Absolute absolute:1</CellOption>
