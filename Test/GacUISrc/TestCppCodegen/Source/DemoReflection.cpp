@@ -100,6 +100,8 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::demo::AnimationTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::AnimationTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::AnimationTabPage*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(BallAnimation, { L"container" _ L"ball" })
@@ -112,6 +114,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::AnimationTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::AnimationTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::AnimationTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -139,6 +142,8 @@ namespace vl
 			END_CLASS_MEMBER(::demo::AnimationTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::CategoryDisplayer)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiCustomControl)
+				CLASS_MEMBER_BASE(::demo::CategoryDisplayerConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::CategoryDisplayer*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetCategory, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetCategory, { L"__vwsn_value_" })
@@ -148,6 +153,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::CategoryDisplayer)
 
 			BEGIN_CLASS_MEMBER(::demo::CategoryDisplayerConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::CategoryDisplayerConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -161,11 +167,14 @@ namespace vl
 			END_CLASS_MEMBER(::demo::CategoryDisplayerConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::CategoryEditor)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiGridEditorTemplate)
+				CLASS_MEMBER_BASE(::demo::CategoryEditorConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::CategoryEditor*(), NO_PARAMETER)
 				CLASS_MEMBER_FIELD(items)
 			END_CLASS_MEMBER(::demo::CategoryEditor)
 
 			BEGIN_CLASS_MEMBER(::demo::CategoryEditorConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::CategoryEditorConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -175,6 +184,8 @@ namespace vl
 			END_CLASS_MEMBER(::demo::CategoryEditorConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::CategoryItemTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiTextListItemTemplate)
+				CLASS_MEMBER_BASE(::demo::CategoryItemTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::CategoryItemTemplate*(::demo::MyCategory), { L"__vwsn_ctor_parameter_SelectedCategory" })
 				CLASS_MEMBER_METHOD(GetSelectedCategory, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(__vwsn_parameter_SelectedCategory)
@@ -182,6 +193,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::CategoryItemTemplate)
 
 			BEGIN_CLASS_MEMBER(::demo::CategoryItemTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::CategoryItemTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -191,10 +203,13 @@ namespace vl
 			END_CLASS_MEMBER(::demo::CategoryItemTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::CategoryVisualizer)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiGridVisualizerTemplate)
+				CLASS_MEMBER_BASE(::demo::CategoryVisualizerConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::CategoryVisualizer*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::CategoryVisualizer)
 
 			BEGIN_CLASS_MEMBER(::demo::CategoryVisualizerConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::CategoryVisualizerConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -203,6 +218,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::CategoryVisualizerConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::ColorAnimation)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::ColorAnimation>(::vl::Ptr<::demo::ColorDef>), { L"__vwsn_ani_current" })
 				CLASS_MEMBER_METHOD(CreateAnimation, { L"__vwsn_ani_target" _ L"__vwsn_ani_time" })
 				CLASS_MEMBER_METHOD(GetBegin, NO_PARAMETER)
@@ -228,6 +244,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::ColorAnimation)
 
 			BEGIN_CLASS_MEMBER(::demo::ColorDef)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::ColorDef>(), NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(Dark, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetBottom, NO_PARAMETER)
@@ -255,11 +272,14 @@ namespace vl
 			END_CLASS_MEMBER(::demo::ColorDef)
 
 			BEGIN_CLASS_MEMBER(::demo::DataGridTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::DataGridTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::DataGridTabPage*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::DataGridTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::DataGridTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::DataGridTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -289,10 +309,13 @@ namespace vl
 			END_CLASS_MEMBER(::demo::DataGridTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::DateEditor)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiGridEditorTemplate)
+				CLASS_MEMBER_BASE(::demo::DateEditorConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::DateEditor*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::DateEditor)
 
 			BEGIN_CLASS_MEMBER(::demo::DateEditorConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::DateEditorConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -301,6 +324,8 @@ namespace vl
 			END_CLASS_MEMBER(::demo::DateEditorConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::DateFilter)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiCustomControl)
+				CLASS_MEMBER_BASE(::demo::DateFilterConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::DateFilter*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetFilter, NO_PARAMETER)
@@ -312,6 +337,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::DateFilter)
 
 			BEGIN_CLASS_MEMBER(::demo::DateFilterConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::DateFilterConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -329,6 +355,8 @@ namespace vl
 			END_CLASS_MEMBER(::demo::DateFilterConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::DocumentTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::DocumentTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::DocumentTabPage*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetHasEditableSelection, NO_PARAMETER)
@@ -349,6 +377,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::DocumentTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::DocumentTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::DocumentTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -456,10 +485,13 @@ namespace vl
 			END_CLASS_MEMBER(::demo::DocumentTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::ElementTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::ElementTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::ElementTabPage*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::ElementTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::ElementTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::ElementTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -509,6 +541,8 @@ namespace vl
 			END_CLASS_MEMBER(::demo::ElementTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::GenderDisplayer)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiCustomControl)
+				CLASS_MEMBER_BASE(::demo::GenderDisplayerConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::GenderDisplayer*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetGender, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetGender, { L"__vwsn_value_" })
@@ -518,6 +552,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::GenderDisplayer)
 
 			BEGIN_CLASS_MEMBER(::demo::GenderDisplayerConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::GenderDisplayerConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -526,11 +561,14 @@ namespace vl
 			END_CLASS_MEMBER(::demo::GenderDisplayerConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::GenderEditor)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiGridEditorTemplate)
+				CLASS_MEMBER_BASE(::demo::GenderEditorConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::GenderEditor*(), NO_PARAMETER)
 				CLASS_MEMBER_FIELD(items)
 			END_CLASS_MEMBER(::demo::GenderEditor)
 
 			BEGIN_CLASS_MEMBER(::demo::GenderEditorConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::GenderEditorConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -540,6 +578,8 @@ namespace vl
 			END_CLASS_MEMBER(::demo::GenderEditorConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::GenderItemTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiTextListItemTemplate)
+				CLASS_MEMBER_BASE(::demo::GenderItemTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::GenderItemTemplate*(::demo::MyGender), { L"__vwsn_ctor_parameter_SelectedGender" })
 				CLASS_MEMBER_METHOD(GetSelectedGender, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(__vwsn_parameter_SelectedGender)
@@ -547,6 +587,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::GenderItemTemplate)
 
 			BEGIN_CLASS_MEMBER(::demo::GenderItemTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::GenderItemTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -556,10 +597,13 @@ namespace vl
 			END_CLASS_MEMBER(::demo::GenderItemTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::GenderVisualizer)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiGridVisualizerTemplate)
+				CLASS_MEMBER_BASE(::demo::GenderVisualizerConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::GenderVisualizer*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::GenderVisualizer)
 
 			BEGIN_CLASS_MEMBER(::demo::GenderVisualizerConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::GenderVisualizerConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -568,6 +612,8 @@ namespace vl
 			END_CLASS_MEMBER(::demo::GenderVisualizerConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::HyperlinkWindow)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
+				CLASS_MEMBER_BASE(::demo::HyperlinkWindowConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::HyperlinkWindow*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetUrl, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetUrl, { L"__vwsn_value_" })
@@ -577,6 +623,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::HyperlinkWindow)
 
 			BEGIN_CLASS_MEMBER(::demo::HyperlinkWindowConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::HyperlinkWindowConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -596,6 +643,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::HyperlinkWindowConstructor)
 
 			BEGIN_INTERFACE_MEMBER(::demo::IStringResourceStrings)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(Currency, { L"__vwsn_ls_0" })
 				CLASS_MEMBER_METHOD(DateFormat, { L"__vwsn_ls_0" })
 				CLASS_MEMBER_METHOD(Label, NO_PARAMETER)
@@ -611,11 +659,14 @@ namespace vl
 			END_INTERFACE_MEMBER(::demo::IStringResourceStrings)
 
 			BEGIN_CLASS_MEMBER(::demo::ListViewTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::ListViewTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::ListViewTabPage*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::ListViewTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::ListViewTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::ListViewTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -647,6 +698,8 @@ namespace vl
 			END_CLASS_MEMBER(::demo::ListViewTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::LocalizedStringsTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::LocalizedStringsTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::LocalizedStringsTabPage*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetLocaleIndex, { L"locale" })
 				CLASS_MEMBER_METHOD(GetStrings, NO_PARAMETER)
@@ -660,6 +713,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::LocalizedStringsTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::LocalizedStringsTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::LocalizedStringsTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -691,10 +745,13 @@ namespace vl
 			END_CLASS_MEMBER(::demo::LocalizedStringsTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::MainWindow)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
+				CLASS_MEMBER_BASE(::demo::MainWindowConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::MainWindow*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::MainWindow)
 
 			BEGIN_CLASS_MEMBER(::demo::MainWindowConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::MainWindowConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -736,6 +793,7 @@ namespace vl
 			END_ENUM_ITEM(::demo::MyCategory)
 
 			BEGIN_CLASS_MEMBER(::demo::MyDataItem)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::MyDataItem>(), NO_PARAMETER)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::MyDataItem>(const ::vl::WString&, ::demo::MyGender, ::demo::MyCategory, ::vl::DateTime, const ::vl::WString&), { L"name" _ L"gender" _ L"category" _ L"birthday" _ L"website" })
 				CLASS_MEMBER_METHOD(GetBirthday, NO_PARAMETER)
@@ -774,6 +832,7 @@ namespace vl
 			END_ENUM_ITEM(::demo::MyGender)
 
 			BEGIN_CLASS_MEMBER(::demo::MyTextItem)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::MyTextItem>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetChecked, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER)
@@ -786,6 +845,8 @@ namespace vl
 			END_CLASS_MEMBER(::demo::MyTextItem)
 
 			BEGIN_CLASS_MEMBER(::demo::RepeatItemTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiControlTemplate)
+				CLASS_MEMBER_BASE(::demo::RepeatItemTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::RepeatItemTemplate*(::vl::Ptr<::demo::MyTextItem>), { L"__vwsn_ctor_parameter_ViewModel" })
 				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(__vwsn_parameter_ViewModel)
@@ -793,6 +854,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::RepeatItemTemplate)
 
 			BEGIN_CLASS_MEMBER(::demo::RepeatItemTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::RepeatItemTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -802,6 +864,8 @@ namespace vl
 			END_CLASS_MEMBER(::demo::RepeatItemTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::RepeatTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::RepeatTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::RepeatTabPage*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(NumberToText, { L"i" })
 				CLASS_MEMBER_METHOD(NumberToText_0to999, { L"i" })
@@ -813,6 +877,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::RepeatTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::RepeatTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::RepeatTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -857,10 +922,13 @@ namespace vl
 			END_CLASS_MEMBER(::demo::RepeatTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::ResponsiveGroupControl)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiCustomControl)
+				CLASS_MEMBER_BASE(::demo::ResponsiveGroupControlConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::ResponsiveGroupControl*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::ResponsiveGroupControl)
 
 			BEGIN_CLASS_MEMBER(::demo::ResponsiveGroupControlConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::ResponsiveGroupControlConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -909,10 +977,13 @@ namespace vl
 			END_CLASS_MEMBER(::demo::ResponsiveGroupControlConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::ResponsiveStackControl)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiCustomControl)
+				CLASS_MEMBER_BASE(::demo::ResponsiveStackControlConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::ResponsiveStackControl*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::ResponsiveStackControl)
 
 			BEGIN_CLASS_MEMBER(::demo::ResponsiveStackControlConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::ResponsiveStackControlConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -961,10 +1032,13 @@ namespace vl
 			END_CLASS_MEMBER(::demo::ResponsiveStackControlConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::ResponsiveTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::ResponsiveTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::ResponsiveTabPage*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::ResponsiveTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::ResponsiveTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::ResponsiveTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -987,10 +1061,13 @@ namespace vl
 			END_CLASS_MEMBER(::demo::ResponsiveTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::ResponsiveViewControl)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiCustomControl)
+				CLASS_MEMBER_BASE(::demo::ResponsiveViewControlConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::ResponsiveViewControl*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::ResponsiveViewControl)
 
 			BEGIN_CLASS_MEMBER(::demo::ResponsiveViewControlConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::ResponsiveViewControlConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -1035,10 +1112,13 @@ namespace vl
 			END_CLASS_MEMBER(::demo::ResponsiveViewControlConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::RibbonTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::RibbonTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::RibbonTabPage*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::RibbonTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::RibbonTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::RibbonTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -1055,12 +1135,15 @@ namespace vl
 			END_CLASS_MEMBER(::demo::RibbonTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::StringResource)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::StringResource>(), NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(__vwsn_ls_First, { L"__vwsn_ls_formats" })
 				CLASS_MEMBER_STATIC_METHOD(Get, { L"__vwsn_ls_locale" })
 			END_CLASS_MEMBER(::demo::StringResource)
 
 			BEGIN_CLASS_MEMBER(::demo::TextBoxTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::TextBoxTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::TextBoxTabPage*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(UpdateFont, { L"newFont" })
 				CLASS_MEMBER_EVENT(OnMakeFontLarger)
@@ -1069,6 +1152,7 @@ namespace vl
 			END_CLASS_MEMBER(::demo::TextBoxTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::TextBoxTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::TextBoxTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -1102,10 +1186,13 @@ namespace vl
 			END_CLASS_MEMBER(::demo::TextBoxTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::TextEditor)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiGridEditorTemplate)
+				CLASS_MEMBER_BASE(::demo::TextEditorConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::TextEditor*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::demo::TextEditor)
 
 			BEGIN_CLASS_MEMBER(::demo::TextEditorConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::TextEditorConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -1114,12 +1201,15 @@ namespace vl
 			END_CLASS_MEMBER(::demo::TextEditorConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::TextListTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::TextListTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::TextListTabPage*(), NO_PARAMETER)
 				CLASS_MEMBER_FIELD(counter)
 				CLASS_MEMBER_FIELD(itemsToBind)
 			END_CLASS_MEMBER(::demo::TextListTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::TextListTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::TextListTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -1157,12 +1247,15 @@ namespace vl
 			END_CLASS_MEMBER(::demo::TextListTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::TreeViewTabPage)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::TreeViewTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::TreeViewTabPage*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(nodesToBind)
 			END_CLASS_MEMBER(::demo::TreeViewTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::TreeViewTabPageConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::TreeViewTabPageConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)

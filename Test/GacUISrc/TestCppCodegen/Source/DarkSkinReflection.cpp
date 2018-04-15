@@ -132,10 +132,13 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::darkskin::BottomScrollButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::BottomScrollButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::BottomScrollButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::BottomScrollButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::BottomScrollButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::BottomScrollButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -145,10 +148,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::BottomScrollButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -160,10 +166,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::CheckBoxTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiSelectableButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::CheckBoxTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::CheckBoxTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::CheckBoxTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::CheckBoxTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::CheckBoxTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -181,10 +190,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::CheckBoxTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::CheckItemBackgroundTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiSelectableButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::CheckItemBackgroundTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::CheckItemBackgroundTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::CheckItemBackgroundTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::CheckItemBackgroundTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::CheckItemBackgroundTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -193,10 +205,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::CheckItemBackgroundTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ComboBoxTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiDateComboBoxTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ComboBoxTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ComboBoxTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ComboBoxTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ComboBoxTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ComboBoxTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -213,20 +228,26 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ComboBoxTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::CustomControlTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiControlTemplate)
+				CLASS_MEMBER_BASE(::darkskin::CustomControlTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::CustomControlTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::CustomControlTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::CustomControlTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::CustomControlTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 			END_CLASS_MEMBER(::darkskin::CustomControlTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::DatePickerTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiDatePickerTemplate)
+				CLASS_MEMBER_BASE(::darkskin::DatePickerTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::DatePickerTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::DatePickerTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::DatePickerTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::DatePickerTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(look)
@@ -234,20 +255,26 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::DatePickerTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::DocumentLabelTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiDocumentLabelTemplate)
+				CLASS_MEMBER_BASE(::darkskin::DocumentLabelTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::DocumentLabelTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::DocumentLabelTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::DocumentLabelTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::DocumentLabelTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::DocumentLabelTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::DocumentTextBoxTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiDocumentLabelTemplate)
+				CLASS_MEMBER_BASE(::darkskin::DocumentTextBoxTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::DocumentTextBoxTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::DocumentTextBoxTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::DocumentTextBoxTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::DocumentTextBoxTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -257,10 +284,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::DocumentTextBoxTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::DocumentViewerTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiDocumentViewerTemplate)
+				CLASS_MEMBER_BASE(::darkskin::DocumentViewerTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::DocumentViewerTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::DocumentViewerTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::DocumentViewerTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::DocumentViewerTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -271,10 +301,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::DocumentViewerTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ExpandingDecoratorTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiSelectableButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ExpandingDecoratorTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ExpandingDecoratorTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ExpandingDecoratorTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ExpandingDecoratorTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ExpandingDecoratorTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -287,10 +320,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ExpandingDecoratorTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::GroupBoxTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiControlTemplate)
+				CLASS_MEMBER_BASE(::darkskin::GroupBoxTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::GroupBoxTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::GroupBoxTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::GroupBoxTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::GroupBoxTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -305,10 +341,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::GroupBoxTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::HScrollHandleTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::HScrollHandleTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::HScrollHandleTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::HScrollHandleTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::HScrollHandleTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::HScrollHandleTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -317,11 +356,14 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::HScrollHandleTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::HScrollTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiScrollTemplate)
+				CLASS_MEMBER_BASE(::darkskin::HScrollTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::HScrollTemplate*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::HScrollTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::HScrollTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::HScrollTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -340,11 +382,14 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::HScrollTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::HTrackerTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiScrollTemplate)
+				CLASS_MEMBER_BASE(::darkskin::HTrackerTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::HTrackerTemplate*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::HTrackerTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::HTrackerTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::HTrackerTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -361,10 +406,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::HTrackerTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ItemBackgroundTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiSelectableButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ItemBackgroundTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ItemBackgroundTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ItemBackgroundTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ItemBackgroundTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ItemBackgroundTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -373,10 +421,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ItemBackgroundTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::LabelTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiLabelTemplate)
+				CLASS_MEMBER_BASE(::darkskin::LabelTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::LabelTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::LabelTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::LabelTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::LabelTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -384,10 +435,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::LabelTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::LeftScrollButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::LeftScrollButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::LeftScrollButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::LeftScrollButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::LeftScrollButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::LeftScrollButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -397,10 +451,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::LeftScrollButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ListViewColumnHeaderTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiListViewColumnHeaderTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ListViewColumnHeaderTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ListViewColumnHeaderTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ListViewColumnHeaderTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ListViewColumnHeaderTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ListViewColumnHeaderTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -424,10 +481,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ListViewColumnHeaderTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ListViewTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiListViewTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ListViewTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ListViewTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ListViewTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ListViewTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ListViewTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -438,10 +498,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ListViewTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::MenuBarButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiToolstripButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::MenuBarButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::MenuBarButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::MenuBarButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::MenuBarButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::MenuBarButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -451,10 +514,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::MenuBarButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::MenuItemButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiToolstripButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::MenuItemButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::MenuItemButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::MenuItemButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::MenuItemButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::MenuItemButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -473,10 +539,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::MenuItemButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::MenuSplitterTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiControlTemplate)
+				CLASS_MEMBER_BASE(::darkskin::MenuSplitterTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::MenuSplitterTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::MenuSplitterTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::MenuSplitterTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::MenuSplitterTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -486,10 +555,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::MenuSplitterTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::MultilineTextBoxTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiMultilineTextBoxTemplate)
+				CLASS_MEMBER_BASE(::darkskin::MultilineTextBoxTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::MultilineTextBoxTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::MultilineTextBoxTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::MultilineTextBoxTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::MultilineTextBoxTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -500,10 +572,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::MultilineTextBoxTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ProgressBarTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiScrollTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ProgressBarTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ProgressBarTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ProgressBarTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ProgressBarTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ProgressBarTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -516,10 +591,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ProgressBarTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::RadioButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiSelectableButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::RadioButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::RadioButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::RadioButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::RadioButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::RadioButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -537,10 +615,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::RadioButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::RightScrollButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::RightScrollButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::RightScrollButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::RightScrollButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::RightScrollButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::RightScrollButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -550,10 +631,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::RightScrollButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ScrollViewTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiScrollViewTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ScrollViewTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ScrollViewTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ScrollViewTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ScrollViewTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ScrollViewTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -564,10 +648,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ScrollViewTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ShortcutKeyTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiLabelTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ShortcutKeyTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ShortcutKeyTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ShortcutKeyTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ShortcutKeyTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ShortcutKeyTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -579,10 +666,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ShortcutKeyTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::SinglelineTextBoxTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiSinglelineTextBoxTemplate)
+				CLASS_MEMBER_BASE(::darkskin::SinglelineTextBoxTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::SinglelineTextBoxTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::SinglelineTextBoxTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::SinglelineTextBoxTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::SinglelineTextBoxTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -592,6 +682,8 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::SinglelineTextBoxTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabHeaderButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiSelectableButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::TabHeaderButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TabHeaderButtonTemplate*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetHighlighted, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetHighlighted, { L"__vwsn_value_" })
@@ -601,6 +693,7 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::TabHeaderButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabHeaderButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::TabHeaderButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -610,6 +703,8 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::TabHeaderButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabHeaderTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiControlTemplate)
+				CLASS_MEMBER_BASE(::darkskin::TabHeaderTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TabHeaderTemplate*(::vl::presentation::controls::GuiTabPage*), { L"__vwsn_ctor_parameter_CurrentTabPage" })
 				CLASS_MEMBER_METHOD(GetCommands, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetCurrentTabPage, NO_PARAMETER)
@@ -622,6 +717,7 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::TabHeaderTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabHeaderTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::TabHeaderTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -631,6 +727,8 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::TabHeaderTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiRibbonTabTemplate)
+				CLASS_MEMBER_BASE(::darkskin::TabTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TabTemplate*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetHighlighted, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetHighlighted, { L"__vwsn_value_" })
@@ -641,6 +739,7 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::TabTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::TabTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -658,10 +757,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::TabTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TextListTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiTextListTemplate)
+				CLASS_MEMBER_BASE(::darkskin::TextListTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TextListTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::TextListTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TextListTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::TextListTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -672,20 +774,26 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::TextListTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::Theme)
+				CLASS_MEMBER_BASE(::vl::presentation::theme::ThemeTemplates)
+				CLASS_MEMBER_BASE(::darkskin::ThemeConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::Theme*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::Theme)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ThemeConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ThemeConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 			END_CLASS_MEMBER(::darkskin::ThemeConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiToolstripButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ToolstripButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ToolstripButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ToolstripButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ToolstripButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -698,10 +806,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ToolstripButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripDropdownButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiToolstripButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ToolstripDropdownButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ToolstripDropdownButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ToolstripDropdownButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripDropdownButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ToolstripDropdownButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -718,10 +829,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ToolstripDropdownButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripMenuTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiMenuTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ToolstripMenuTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ToolstripMenuTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ToolstripMenuTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripMenuTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ToolstripMenuTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -731,10 +845,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ToolstripMenuTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripSplitArrowTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiSelectableButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ToolstripSplitArrowTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ToolstripSplitArrowTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ToolstripSplitArrowTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripSplitArrowTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ToolstripSplitArrowTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -745,10 +862,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ToolstripSplitArrowTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripSplitButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiToolstripButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ToolstripSplitButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ToolstripSplitButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ToolstripSplitButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripSplitButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ToolstripSplitButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -766,10 +886,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ToolstripSplitButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripSplitterTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiControlTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ToolstripSplitterTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ToolstripSplitterTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ToolstripSplitterTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripSplitterTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ToolstripSplitterTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -779,10 +902,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ToolstripSplitterTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiControlTemplate)
+				CLASS_MEMBER_BASE(::darkskin::ToolstripTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ToolstripTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::ToolstripTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::ToolstripTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ToolstripTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -790,10 +916,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::ToolstripTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TooltipTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiWindowTemplate)
+				CLASS_MEMBER_BASE(::darkskin::TooltipTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TooltipTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::TooltipTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TooltipTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::TooltipTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -804,10 +933,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::TooltipTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TopScrollButtonTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::TopScrollButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TopScrollButtonTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::TopScrollButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TopScrollButtonTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::TopScrollButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -817,10 +949,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::TopScrollButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TreeViewTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiTreeViewTemplate)
+				CLASS_MEMBER_BASE(::darkskin::TreeViewTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TreeViewTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::TreeViewTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TreeViewTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::TreeViewTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -831,10 +966,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::TreeViewTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::VScrollHandleTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiButtonTemplate)
+				CLASS_MEMBER_BASE(::darkskin::VScrollHandleTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::VScrollHandleTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::VScrollHandleTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::VScrollHandleTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::VScrollHandleTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -843,11 +981,14 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::VScrollHandleTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::VScrollTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiScrollTemplate)
+				CLASS_MEMBER_BASE(::darkskin::VScrollTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::VScrollTemplate*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::VScrollTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::VScrollTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::VScrollTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -866,11 +1007,14 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::VScrollTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::VTrackerTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiScrollTemplate)
+				CLASS_MEMBER_BASE(::darkskin::VTrackerTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::VTrackerTemplate*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::VTrackerTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::VTrackerTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::VTrackerTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
@@ -887,10 +1031,13 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::VTrackerTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::WindowTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiWindowTemplate)
+				CLASS_MEMBER_BASE(::darkskin::WindowTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::WindowTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::WindowTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::WindowTemplateConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::WindowTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)

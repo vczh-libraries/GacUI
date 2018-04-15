@@ -162,7 +162,7 @@
 
   <InstanceStyle name="CopySubMenu">
     <Styles>
-      <Style ref.Path="//ToolstripDropdownButton + //ToolstripSplitButton">
+      <Style ref.Path="//ToolstripDropdownButton + //ToolstripSplitButton + //RibbonSmallDropdownButton + //RibbonSmallSplitButton + //RibbonLargeDropdownButton + //RibbonLargeSplitButton">
         <att.SubMenu-set>
           <MenuItemButton Text="Something"/>
           <MenuItemButton Text="Which"/>
