@@ -201,9 +201,9 @@
           <att.RibbonSmallDropdownButton>x:RibbonSmallDropdownButtonTemplate</att.RibbonSmallDropdownButton>
           <att.RibbonSmallSplitButton>x:RibbonSmallSplitButtonTemplate</att.RibbonSmallSplitButton>
           
-          <att.RibbonLargeButton>x:RibbonSmallButtonTemplate</att.RibbonLargeButton>
-          <att.RibbonLargeDropdownButton>x:RibbonSmallDropdownButtonTemplate</att.RibbonLargeDropdownButton>
-          <att.RibbonLargeSplitButton>x:RibbonSmallSplitButtonTemplate</att.RibbonLargeSplitButton>
+          <att.RibbonLargeButton>x:RibbonLargeButtonTemplate</att.RibbonLargeButton>
+          <att.RibbonLargeDropdownButton>x:RibbonLargeDropdownButtonTemplate</att.RibbonLargeDropdownButton>
+          <att.RibbonLargeSplitButton>x:RibbonLargeSplitButtonTemplate</att.RibbonLargeSplitButton>
         </ThemeTemplates>
       </Instance>
     </Instance>
@@ -239,7 +239,6 @@
         </RibbonGroupTemplate>
       </Instance>
     </Instance>
-
 
     <Instance name="RibbonSmallButtonTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonSmallButtonTemplate" ref.Styles="res://DarkSkin/Style">
@@ -326,6 +325,127 @@
 
     <Instance name="RibbonSmallSplitButtonTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonSmallSplitButtonTemplate" ref.Styles="res://DarkSkin/Style">
+        <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
+          <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <SolidBorder ref.Style="toolstripBorder"/>
+          </Bounds>
+          <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
+            <SolidBackground ref.Style="toolstripBackground"/>
+            <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0">
+                <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+              </Cell>
+              <Cell Site="row:0 column:1">
+                <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Cell>
+            </Table>
+          </Bounds>
+          <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
+            <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+              <SolidBackground ref.Style="toolstripSplitBackground"/>
+            </Bounds>
+            <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </CheckBox>
+          </Bounds>
+        </ToolstripButtonTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="RibbonLargeButtonTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonLargeButtonTemplate" ref.Styles="res://DarkSkin/Style">
+        <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+          <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <SolidBorder ref.Style="toolstripBorder"/>
+          </Bounds>
+          <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <SolidBackground ref.Style="toolstripBackground"/>
+            <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0">
+                <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+              </Cell>
+              <Cell Site="row:0 column:1">
+                <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Cell>
+            </Table>
+          </Bounds>
+        </ToolstripButtonTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="RibbonLargeDropdownButtonResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonLargeDropdownButtonTemplate" ref.Styles="res://DarkSkin/Style">
+        <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+          <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <SolidBorder ref.Style="toolstripBorder"/>
+          </Bounds>
+          <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
+            <SolidBackground ref.Style="toolstripBackground"/>
+            <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0">
+                <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+              </Cell>
+              <Cell Site="row:0 column:1">
+                <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Cell>
+            </Table>
+          </Bounds>
+          <Table AlignmentToParent="left:-1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:0">
+            <SolidBackground ref.Style="toolstripBackground"/>
+            <att.Rows>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:3</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:5</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Columns>
+
+            <Cell Site="row:1 column:1">
+              <Polygon ref.Style="toolstripArrow" Size="x:5 y:3">
+                <att.Points>
+                  <Point>x:0 y:0</Point>
+                  <Point>x:2 y:2</Point>
+                  <Point>x:4 y:0</Point>
+                </att.Points>
+              </Polygon>
+            </Cell>
+          </Table>
+        </ToolstripButtonTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="RibbonLargeSplitButtonTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonLargeSplitButtonTemplate" ref.Styles="res://DarkSkin/Style">
         <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
           <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
           <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
