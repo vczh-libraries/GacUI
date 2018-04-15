@@ -250,9 +250,22 @@
           </Bounds>
           <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
             <SolidBackground ref.Style="toolstripBackground"/>
-            <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
-              <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
-            </Bounds>
+            <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0">
+                <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+              </Cell>
+              <Cell Site="row:0 column:1">
+                <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Cell>
+            </Table>
           </Bounds>
         </ToolstripButtonTemplate>
       </Instance>
@@ -267,9 +280,22 @@
           </Bounds>
           <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
             <SolidBackground ref.Style="toolstripBackground"/>
-            <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
-              <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
-            </Bounds>
+            <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0">
+                <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+              </Cell>
+              <Cell Site="row:0 column:1">
+                <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Cell>
+            </Table>
           </Bounds>
           <Table AlignmentToParent="left:-1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:0">
             <SolidBackground ref.Style="toolstripBackground"/>
@@ -307,9 +333,22 @@
           </Bounds>
           <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
             <SolidBackground ref.Style="toolstripBackground"/>
-            <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
-              <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
-            </Bounds>
+            <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0">
+                <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+              </Cell>
+              <Cell Site="row:0 column:1">
+                <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Cell>
+            </Table>
           </Bounds>
           <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
             <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
