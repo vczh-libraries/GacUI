@@ -40,7 +40,7 @@
                     <Cell Site="row:0 column:0">
                       <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                         <att.Rows>
-                          <CellOption>composeType:MinSize</CellOption>
+                          <CellOption>composeType:Percentage percentage:1.0</CellOption>
                         </att.Rows>
                         <att.Columns>
                           <CellOption>composeType:MinSize</CellOption>
@@ -63,25 +63,23 @@
                     <Cell Site="row:0 column:1">
                       <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                         <att.Rows>
-                          <CellOption>composeType:Percentage percentage:1.0</CellOption>
                           <CellOption>composeType:MinSize</CellOption>
                           <CellOption>composeType:Percentage percentage:1.0</CellOption>
                           <CellOption>composeType:MinSize</CellOption>
                           <CellOption>composeType:Percentage percentage:1.0</CellOption>
                           <CellOption>composeType:MinSize</CellOption>
-                          <CellOption>composeType:Percentage percentage:1.0</CellOption>
                         </att.Rows>
                         <att.Columns>
                           <CellOption>composeType:MinSize</CellOption>
                         </att.Columns>
 
-                        <Cell Site="row:1 column:0">
+                        <Cell Site="row:0 column:0">
                           <RibbonSmallButton Text="Flags" Image-uri="res://SmallImages/Flags"/>
                         </Cell>
-                        <Cell Site="row:3 column:0">
+                        <Cell Site="row:2 column:0">
                           <RibbonSmallDropdownButton Text="Paste" Image-uri="res://SmallImages/Paste"/>
                         </Cell>
-                        <Cell Site="row:5 column:0">
+                        <Cell Site="row:4 column:0">
                           <RibbonSmallSplitButton Text="Save" Image-uri="res://SmallImages/Save"/>
                         </Cell>
                       </Table>
@@ -90,25 +88,23 @@
                     <Cell Site="row:0 column:2">
                       <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                         <att.Rows>
-                          <CellOption>composeType:Percentage percentage:1.0</CellOption>
                           <CellOption>composeType:MinSize</CellOption>
                           <CellOption>composeType:Percentage percentage:1.0</CellOption>
                           <CellOption>composeType:MinSize</CellOption>
                           <CellOption>composeType:Percentage percentage:1.0</CellOption>
                           <CellOption>composeType:MinSize</CellOption>
-                          <CellOption>composeType:Percentage percentage:1.0</CellOption>
                         </att.Rows>
                         <att.Columns>
                           <CellOption>composeType:MinSize</CellOption>
                         </att.Columns>
 
-                        <Cell Site="row:1 column:0">
+                        <Cell Site="row:0 column:0">
                           <ToolstripButton Text="Accounts" Image-uri="res://SmallImages/Accounts"/>
                         </Cell>
-                        <Cell Site="row:3 column:0">
+                        <Cell Site="row:2 column:0">
                           <ToolstripDropdownButton Text="Chart" Image-uri="res://SmallImages/Chart"/>
                         </Cell>
-                        <Cell Site="row:5 column:0">
+                        <Cell Site="row:4 column:0">
                           <ToolstripSplitButton Text="Copy" Image-uri="res://SmallImages/Copy"/>
                         </Cell>
                       </Table>
@@ -117,25 +113,23 @@
                     <Cell Site="row:0 column:3">
                       <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                         <att.Rows>
-                          <CellOption>composeType:Percentage percentage:1.0</CellOption>
                           <CellOption>composeType:MinSize</CellOption>
                           <CellOption>composeType:Percentage percentage:1.0</CellOption>
                           <CellOption>composeType:MinSize</CellOption>
                           <CellOption>composeType:Percentage percentage:1.0</CellOption>
                           <CellOption>composeType:MinSize</CellOption>
-                          <CellOption>composeType:Percentage percentage:1.0</CellOption>
                         </att.Rows>
                         <att.Columns>
                           <CellOption>composeType:MinSize</CellOption>
                         </att.Columns>
 
-                        <Cell Site="row:1 column:0">
+                        <Cell Site="row:0 column:0">
                           <ToolstripButton Text="Flags" Image-uri="res://SmallImages/Flags"/>
                         </Cell>
-                        <Cell Site="row:3 column:0">
+                        <Cell Site="row:2 column:0">
                           <ToolstripDropdownButton Text="Paste" Image-uri="res://SmallImages/Paste"/>
                         </Cell>
-                        <Cell Site="row:5 column:0">
+                        <Cell Site="row:4 column:0">
                           <ToolstripSplitButton Text="Save" Image-uri="res://SmallImages/Save"/>
                         </Cell>
                       </Table>
@@ -162,6 +156,15 @@
 
   <InstanceStyle name="CopySubMenu">
     <Styles>
+      <Style ref.Path="//ToolstripButton + //ToolstripDropdownButton + //ToolstripSplitButton">
+        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      </Style>
+      <Style ref.Path="//RibbonSmallButton + //RibbonSmallDropdownButton + //RibbonSmallSplitButton">
+        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      </Style>
+      <Style ref.Path="//RibbonLargeButton + //RibbonLargeDropdownButton + //RibbonLargeSplitButton">
+        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      </Style>
       <Style ref.Path="//ToolstripDropdownButton + //ToolstripSplitButton + //RibbonSmallDropdownButton + //RibbonSmallSplitButton + //RibbonLargeDropdownButton + //RibbonLargeSplitButton">
         <att.SubMenu-set>
           <MenuItemButton Text="Something"/>
@@ -408,7 +411,7 @@
             <att.Rows>
               <CellOption>composeType:MinSize</CellOption>
               <CellOption>composeType:Absolute absolute:1</CellOption>
-              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
             </att.Rows>
             <att.Columns>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -426,6 +429,7 @@
                 <att.Rows>
                   <CellOption>composeType:MinSize</CellOption>
                   <CellOption>composeType:MinSize</CellOption>
+                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
                 </att.Rows>
                 <att.Columns>
                   <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -463,7 +467,7 @@
             <att.Rows>
               <CellOption>composeType:MinSize</CellOption>
               <CellOption>composeType:Absolute absolute:1</CellOption>
-              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
             </att.Rows>
             <att.Columns>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -485,6 +489,7 @@
                 <att.Rows>
                   <CellOption>composeType:MinSize</CellOption>
                   <CellOption>composeType:MinSize</CellOption>
+                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
                 </att.Rows>
                 <att.Columns>
                   <CellOption>composeType:Percentage percentage:1.0</CellOption>
