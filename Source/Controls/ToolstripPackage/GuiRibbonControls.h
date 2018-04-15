@@ -23,6 +23,8 @@ namespace vl
 Ribbon Containers
 ***********************************************************************/
 
+			class GuiRibbonGroup;
+
 			class GuiRibbonTab : public GuiTab, public Description<GuiRibbonTab>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonTabTemplate, GuiTab)
