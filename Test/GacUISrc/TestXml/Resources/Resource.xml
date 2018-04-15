@@ -17,6 +17,16 @@
 
           <att.Pages>
             <RibbonTabPage Text="Controls">
+              <att.Groups>
+                <RibbonGroup Text="Buttons">
+                </RibbonGroup>
+
+                <RibbonGroup Text="Gallery">
+                </RibbonGroup>
+
+                <RibbonGroup Text="Toolstrip">
+                </RibbonGroup>
+              </att.Groups>
             </RibbonTabPage>
             <RibbonTabPage Text="Highlighted" Highlighted="true">
             </RibbonTabPage>
@@ -39,8 +49,7 @@
     <Instance name="RibbonGroupTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGroupTemplate" ref.Styles="res://DarkSkin/Style">
         <RibbonGroupTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-          <SolidBorder Color="#3F3F46"/>
-          <Table AlignmentToParent="left:1 top:-1 right:1 bottom:1">
+          <Table AlignmentToParent="left:2 top:2 right:2 bottom:2">
             <att.Rows>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
               <CellOption>composeType:MinSize</CellOption>
@@ -49,6 +58,8 @@
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
             </att.Columns>
 
+            <SolidBorder Color="#3F3F46"/>
+            
             <Cell ref.Name="container" Site="row:0 column:0"/>
             <Cell Site="row:1 column:0">
               <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF" VerticalAlignment="Center"/>
