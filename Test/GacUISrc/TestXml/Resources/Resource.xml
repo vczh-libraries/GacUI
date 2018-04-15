@@ -45,6 +45,24 @@
     </Instance>
   </Instance>
 
+  <Folder name="LargeImages">
+    <Image name="Accounts" content="File">Images/LargeAccounts.png</Image>
+    <Image name="Chart" content="File">Images/LargeAccounts.png</Image>
+    <Image name="Copy" content="File">Images/LargeCopy.png</Image>
+    <Image name="Flags" content="File">Images/LargeFlags.png</Image>
+    <Image name="Paste" content="File">Images/LargePaste.png</Image>
+    <Image name="Save" content="File">Images/LargeSave.png</Image>
+  </Folder>
+
+  <Folder name="SmallImages">
+    <Image name="Accounts" content="File">Images/SmallAccounts.png</Image>
+    <Image name="Chart" content="File">Images/SmallAccounts.png</Image>
+    <Image name="Copy" content="File">Images/SmallCopy.png</Image>
+    <Image name="Flags" content="File">Images/SmallFlags.png</Image>
+    <Image name="Paste" content="File">Images/SmallPaste.png</Image>
+    <Image name="Save" content="File">Images/SmallSave.png</Image>
+  </Folder>
+
   <Folder name="DarkSkin">
     <Instance name="DarkSkinThemeResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonTheme" xmlns:x="darkskin::*">
