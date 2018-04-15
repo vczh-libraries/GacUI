@@ -97,6 +97,9 @@ namespace vl
 			F(GuiTabTemplate,					GuiControlTemplate)			\
 			F(GuiDatePickerTemplate,			GuiControlTemplate)			\
 			F(GuiDateComboBoxTemplate,			GuiComboBoxTemplate)		\
+			F(GuiRibbonTabTemplate,				GuiTabTemplate)				\
+			F(GuiRibbonTabPageTemplate,			GuiControlTemplate)			\
+			F(GuiRibbonGroupTemplate,			GuiControlTemplate)			\
 
 #define GUI_ITEM_TEMPLATE_DECL(F)\
 			F(GuiTextListItemTemplate,			GuiListItemTemplate)		\
@@ -272,14 +275,24 @@ Control Template
 
 #define GuiDateComboBoxTemplate_PROPERTIES(F)\
 				F(GuiDateComboBoxTemplate, TemplateProperty<GuiDatePickerTemplate>, DatePickerTemplate, {})\
-				
-#define GuiListItemTemplate_PROPERTIES(F)\
-				F(GuiListItemTemplate, bool, Selected, false)\
-				F(GuiListItemTemplate, vint, Index, 0)\
+
+#define GuiRibbonTabTemplate_PROPERTIES(F)\
+				F(GuiRibbonTabTemplate, compositions::GuiGraphicsComposition*, BeforeHeadersContainer, nullptr)\
+				F(GuiRibbonTabTemplate, compositions::GuiGraphicsComposition*, AfterHeadersContainer, nullptr)\
+
+#define GuiRibbonTabPageTemplate_PROPERTIES(F)\
+				F(GuiRibbonTabPageTemplate, bool, Highlighted, false)\
+
+#define GuiRibbonGroupTemplate_PROPERTIES(F)\
+				F(GuiRibbonGroupTemplate, bool, Expandable, false)\
 
 /***********************************************************************
 Item Template
 ***********************************************************************/
+				
+#define GuiListItemTemplate_PROPERTIES(F)\
+				F(GuiListItemTemplate, bool, Selected, false)\
+				F(GuiListItemTemplate, vint, Index, 0)\
 
 #define GuiTextListItemTemplate_PROPERTIES(F)\
 				F(GuiTextListItemTemplate, Color, TextColor, {})\

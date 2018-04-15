@@ -16,11 +16,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		namespace theme
-		{
-			class ITheme;
-		}
-
 		namespace controls
 		{
 

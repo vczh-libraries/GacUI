@@ -33,6 +33,7 @@ GacUI Reflection Helper
 #include "Controls/ListControlPackage/GuiBindableDataGrid.h"
 #include "Controls/ToolstripPackage/GuiMenuControls.h"
 #include "Controls/ToolstripPackage/GuiToolstripMenu.h"
+#include "Controls/ToolstripPackage/GuiRibbonControls.h"
 
 namespace vl
 {

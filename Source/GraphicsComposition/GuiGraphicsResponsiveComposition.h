@@ -45,15 +45,29 @@ GuiResponsiveCompositionBase
 				GuiResponsiveCompositionBase();
 				~GuiResponsiveCompositionBase();
 
+				/// <summary>LevelCount changed event.</summary>
 				GuiNotifyEvent						LevelCountChanged;
+				/// <summary>CurrentLevel chagned event.</summary>
 				GuiNotifyEvent						CurrentLevelChanged;
 
+				/// <summary>Get the level count. A level count represents how many views this composition carries.</summary>
+				/// <returns>The level count.</returns>
 				virtual vint						GetLevelCount() = 0;
+				/// <summary>Get the current level. Zero is the view with the smallest size.</summary>
+				/// <returns>The current level.</returns>
 				virtual vint						GetCurrentLevel() = 0;
+				/// <summary>Switch to a smaller view.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
 				virtual bool						LevelDown() = 0;
+				/// <summary>Switch to a larger view.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
 				virtual bool						LevelUp() = 0;
 
+				/// <summary>Get all supported directions. If all directions of a child [T:vl.presentation.compositions.GuiResponsiveCompositionBase] are not supported, its view will not be changed when the parent composition changes its view .</summary>
+				/// <returns>All supported directions.</returns>
 				ResponsiveDirection					GetDirection();
+				/// <summary>Set all supported directions.</summary>
+				/// <param name="value">All supported directions.</param>
 				void								SetDirection(ResponsiveDirection value);
 			};
 
@@ -94,6 +108,7 @@ GuiResponsiveViewComposition
 				~GuiResponsiveViewCollection();
 			};
 
+			/// <summary>Represents a composition, which will pick up a shared control and install inside it, when it is displayed by a [T:vl.presentation.compositions.GuiResponsiveViewComposition]</summary>
 			class GuiResponsiveSharedComposition : public GuiBoundsComposition, public Description<GuiResponsiveSharedComposition>
 			{
 			protected:
@@ -107,7 +122,11 @@ GuiResponsiveViewComposition
 				GuiResponsiveSharedComposition();
 				~GuiResponsiveSharedComposition();
 
+				/// <summary>Get the selected shared control.</summary>
+				/// <returns>The selected shared control.</returns>
 				controls::GuiControl*				GetShared();
+				/// <summary>Set the selected shared control, which should be stored in [M:vl.presentation.compositions.GuiResponsiveViewComposition.GetSharedControls].</summary>
+				/// <param name="value">The selected shared control.</param>
 				void								SetShared(controls::GuiControl* value);
 			};
 
@@ -142,7 +161,12 @@ GuiResponsiveViewComposition
 				bool																LevelDown()override;
 				bool																LevelUp()override;
 
+				/// <summary>Get all shared controls. A shared control can jump between different views if it is contained in a [T:vl.presentation.compositions.GuiResponsiveSharedComposition]. This helps to keep control states during switching views.</summary>
+				/// <returns>All shared controls.</returns>
 				collections::ObservableListBase<controls::GuiControl*>&				GetSharedControls();
+
+				/// <summary>Get all individual views to switch.</summary>
+				/// <returns>All individual views to switch.</returns>
 				collections::ObservableListBase<GuiResponsiveCompositionBase*>&		GetViews();
 			};
 
@@ -221,6 +245,7 @@ Others
 GuiResponsiveContainerComposition
 ***********************************************************************/
 
+			/// <summary>A composition which will automatically tell its target responsive composition to switch between views according to its size.</summary>
 			class GuiResponsiveContainerComposition : public GuiBoundsComposition, public Description<GuiResponsiveContainerComposition>
 			{
 			protected:
@@ -235,7 +260,11 @@ GuiResponsiveContainerComposition
 				GuiResponsiveContainerComposition();
 				~GuiResponsiveContainerComposition();
 
+				/// <summary>Get the responsive composition to control.</summary>
+				/// <returns>The responsive composition to control.</returns>
 				GuiResponsiveCompositionBase*			GetResponsiveTarget();
+				/// <summary>Get the responsive composition to control.</summary>
+				/// <param name="value">The responsive composition to control.</param>
 				void									SetResponsiveTarget(GuiResponsiveCompositionBase* value);
 			};
 		}

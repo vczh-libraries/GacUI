@@ -492,6 +492,9 @@
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLocalizedStrings.cpp">
       <Filter>GacUI\Compiler</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\ToolstripPackage\GuiRibbonControls.cpp">
+      <Filter>GacUI\Controls\ToolstripPackage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
@@ -799,6 +802,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceLocalizedStrings.h">
       <Filter>GacUI\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiRibbonControls.h">
+      <Filter>GacUI\Controls\ToolstripPackage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
