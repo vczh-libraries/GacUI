@@ -1,9 +1,9 @@
 <Resource>
   <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" ref.Styles="res://CopySubMenu">
       <Window ref.Name="self" Text="Ribbon" ClientSize="x:640 y:480">
         <RibbonTab>
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1" PreferredMinSize="y:200"/>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1" PreferredMinSize="y:140"/>
           <att.BeforeHeaders-set>
             <Button Text="HOME">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80"/>
@@ -26,6 +26,63 @@
             <RibbonTabPage Text="Controls">
               <att.Groups>
                 <RibbonGroup Text="Buttons">
+                  <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                    <att.Rows>
+                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                      <CellOption>composeType:MinSize</CellOption>
+                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                      <CellOption>composeType:MinSize</CellOption>
+                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                      <CellOption>composeType:MinSize</CellOption>
+                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                    </att.Rows>
+                    <att.Columns>
+                      <CellOption>composeType:MinSize</CellOption>
+                      <CellOption>composeType:MinSize</CellOption>
+                      <CellOption>composeType:MinSize</CellOption>
+                      <CellOption>composeType:MinSize</CellOption>
+                    </att.Columns>
+
+                    <Cell Site="row:1 column:0">
+                      <ToolstripButton Text="Accounts" Image-uri="res://SmallImages/Accounts"/>
+                    </Cell>
+                    <Cell Site="row:3 column:0">
+                      <ToolstripDropdownButton Text="Chart" Image-uri="res://SmallImages/Chart"/>
+                    </Cell>
+                    <Cell Site="row:5 column:0">
+                      <ToolstripSplitButton Text="Copy" Image-uri="res://SmallImages/Copy"/>
+                    </Cell>
+
+                    <Cell Site="row:1 column:1">
+                      <ToolstripButton Text="Flags" Image-uri="res://SmallImages/Flags"/>
+                    </Cell>
+                    <Cell Site="row:3 column:1">
+                      <ToolstripDropdownButton Text="Paste" Image-uri="res://SmallImages/Paste"/>
+                    </Cell>
+                    <Cell Site="row:5 column:1">
+                      <ToolstripSplitButton Text="Save" Image-uri="res://SmallImages/Save"/>
+                    </Cell>
+
+                    <Cell Site="row:1 column:2">
+                      <ToolstripButton Text="Accounts" Image-uri="res://SmallImages/Accounts"/>
+                    </Cell>
+                    <Cell Site="row:3 column:2">
+                      <ToolstripDropdownButton Text="Chart" Image-uri="res://SmallImages/Chart"/>
+                    </Cell>
+                    <Cell Site="row:5 column:2">
+                      <ToolstripSplitButton Text="Copy" Image-uri="res://SmallImages/Copy"/>
+                    </Cell>
+
+                    <Cell Site="row:1 column:3">
+                      <ToolstripButton Text="Flags" Image-uri="res://SmallImages/Flags"/>
+                    </Cell>
+                    <Cell Site="row:3 column:3">
+                      <ToolstripDropdownButton Text="Paste" Image-uri="res://SmallImages/Paste"/>
+                    </Cell>
+                    <Cell Site="row:5 column:3">
+                      <ToolstripSplitButton Text="Save" Image-uri="res://SmallImages/Save"/>
+                    </Cell>
+                  </Table>
                 </RibbonGroup>
 
                 <RibbonGroup Text="Gallery">
@@ -45,9 +102,22 @@
     </Instance>
   </Instance>
 
+  <InstanceStyle name="CopySubMenu">
+    <Styles>
+      <Style ref.Path="//ToolstripDropdownButton + //ToolstripSplitButton">
+        <att.SubMenu-set>
+          <MenuItemButton Text="Something"/>
+          <MenuItemButton Text="Which"/>
+          <MenuItemButton Text="Is"/>
+          <MenuItemButton Text="Funny!"/>
+        </att.SubMenu-set>
+      </Style>
+    </Styles>
+  </InstanceStyle>
+
   <Folder name="LargeImages">
     <Image name="Accounts" content="File">Images/LargeAccounts.png</Image>
-    <Image name="Chart" content="File">Images/LargeAccounts.png</Image>
+    <Image name="Chart" content="File">Images/LargeChart.png</Image>
     <Image name="Copy" content="File">Images/LargeCopy.png</Image>
     <Image name="Flags" content="File">Images/LargeFlags.png</Image>
     <Image name="Paste" content="File">Images/LargePaste.png</Image>
@@ -56,7 +126,7 @@
 
   <Folder name="SmallImages">
     <Image name="Accounts" content="File">Images/SmallAccounts.png</Image>
-    <Image name="Chart" content="File">Images/SmallAccounts.png</Image>
+    <Image name="Chart" content="File">Images/SmallChart.png</Image>
     <Image name="Copy" content="File">Images/SmallCopy.png</Image>
     <Image name="Flags" content="File">Images/SmallFlags.png</Image>
     <Image name="Paste" content="File">Images/SmallPaste.png</Image>
@@ -87,7 +157,10 @@
 
             <SolidBorder Color="#3F3F46"/>
 
-            <Cell ref.Name="container" Site="row:0 column:0"/>
+            <Cell Site="row:0 column:0">
+              <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+            </Cell>
+
             <Cell Site="row:1 column:0" InternalMargin="left:1 top:0 right:1 bottom:1">
               <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
                 <SolidBackground Color="#007ACC"/>
