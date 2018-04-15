@@ -25,6 +25,7 @@ Ribbon Containers
 
 			class GuiRibbonTab : public GuiTab, public Description<GuiRibbonTab>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonTabTemplate, GuiRibbonTab)
 			protected:
 				compositions::GuiBoundsComposition*		beforeHeaders = nullptr;
 				compositions::GuiBoundsComposition*		afterHeaders = nullptr;
@@ -53,6 +54,7 @@ Ribbon Containers
 
 			class GuiRibbonGroup : public GuiControl, public Description<GuiRibbonGroup>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGroupTemplate, GuiRibbonGroup)
 			protected:
 				bool									expandable = false;
 

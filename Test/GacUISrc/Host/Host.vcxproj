@@ -253,6 +253,7 @@
     <Xml Include="Resources\FullControlTest\RepeatTabPage.xml" />
     <Xml Include="Resources\FullControlTest\Resource.xml" />
     <Xml Include="Resources\FullControlTest\ResponsiveTabPage.xml" />
+    <Xml Include="Resources\FullControlTest\RibbonTabPage.xml" />
     <Xml Include="Resources\FullControlTest\TextBoxTabPage.xml" />
     <Xml Include="Resources\FullControlTest\TextListTabPage.xml" />
     <Xml Include="Resources\FullControlTest\ToolbarImages\Images.xml" />

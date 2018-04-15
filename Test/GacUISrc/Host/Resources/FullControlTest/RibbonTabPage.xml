@@ -1,0 +1,29 @@
+<Folder>
+  <Instance name="RibbonTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RibbonTabPageResource">
+      <TabPage ref.Name="self" Text="Ribbon">
+        <RibbonTab>
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:-1" PreferredMinSize="y:200"/>
+          <att.BeforeHeaders>
+            <Button Text="BeforeHeaders">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:5 bottom:0" PrefferedMinSize="x:120"/>
+            </Button>
+          </att.BeforeHeaders>
+          <att.AfterHeaders>
+            <Button Text="AfterHeaders">
+              <att.BoundsComposition-set AlignmentToParent="left:5 top:0 right:0 bottom:0" PrefferedMinSize="x:120"/>
+            </Button>
+          </att.AfterHeaders>
+          
+          <att.Pages>
+            <RibbonTabPage Text="Controls">
+            </RibbonTabPage>
+            <RibbonTabPage Text="Highlighted" Highlighted="true">
+            </RibbonTabPage>
+          </att.Pages>
+        </RibbonTab>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+</Folder>
