@@ -40,11 +40,25 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          self.Selected ? "#007ACC" :
-          state == ButtonState::Active ? "#1C97EA" :
-          state == ButtonState::Pressed ? "#1C97EA" :
-          "#434346"
+          self.Highlighted ? (
+            self.Selected ? "#CC7ACC" :
+            state == ButtonState::Active ? "#EA97EA" :
+            state == ButtonState::Pressed ? "#EA97EA" :
+            "#434346"
+          ) : (
+            self.Selected ? "#007ACC" :
+            state == ButtonState::Active ? "#1C97EA" :
+            state == ButtonState::Pressed ? "#1C97EA" :
+            "#434346"
+          )
         )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.tabHeaderBottomLine">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color (self.Highlighted ? "#CC7ACC" : "#007ACC")
       ]]>
     </att.Color-bind>
   </Style>

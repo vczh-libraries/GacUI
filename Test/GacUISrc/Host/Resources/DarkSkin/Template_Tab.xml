@@ -46,6 +46,8 @@
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TabTemplate" ref.Styles="res://DarkSkin/Style">
       <ref.Members>
         <![CDATA[
+          prop Highlighted: bool {}
+          
           func UpdateTabHeader() : void
           {
             for (flowItem in header.FlowItems)
@@ -74,6 +76,7 @@
         </ev.SelectedTabPageChanged-eval>
         <att.BeforeHeadersContainer-ref>beforeHeadersContainer</att.BeforeHeadersContainer-ref>
         <att.AfterHeadersContainer-ref>afterHeadersContainer</att.AfterHeadersContainer-ref>
+        <att.Highlighted-bind>(cast (RibbonTabPage*) self.SelectedTabPage).Highlighted ?? false</att.Highlighted-bind>
         
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBackground Color="#2D2D30"/>
@@ -115,7 +118,7 @@
             </RepeatFlow>
           </Cell>
           <Cell Site="row:1 column:0 columnSpan:3">
-            <SolidBackground Color="#007ACC"/>
+            <SolidBackground ref.Style="tabHeaderBottomLine"/>
           </Cell>
           <Cell Site="row:2 column:0 columnSpan:3">
             <SolidBorder Color="#434346"/>
