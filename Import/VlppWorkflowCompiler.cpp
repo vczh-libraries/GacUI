@@ -35464,6 +35464,14 @@ namespace vl
 							writer.WriteString(ConvertType(td));
 							writer.WriteLine(L")");
 
+							vint baseCount = td->GetBaseTypeDescriptorCount();
+							for (vint i = 0; i < baseCount; i++)
+							{
+								writer.WriteString(L"\t\t\t\tCLASS_MEMBER_BASE(");
+								writer.WriteString(ConvertType(td->GetBaseTypeDescriptor(i)));
+								writer.WriteLine(L")");
+							}
+
 							if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class)
 							{
 								auto methodGroup = td->GetConstructorGroup();
