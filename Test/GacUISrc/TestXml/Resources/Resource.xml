@@ -35,8 +35,10 @@
                 </RibbonGroup>
               </att.Groups>
             </RibbonTabPage>
-            <RibbonTabPage Text="Highlighted" Highlighted="true">
-            </RibbonTabPage>
+            <RibbonTabPage Text="Tab1"/>
+            <RibbonTabPage Text="Highlighted1" Highlighted="true"/>
+            <RibbonTabPage Text="Highlighted2" Highlighted="true"/>
+            <RibbonTabPage Text="Tab2"/>
           </att.Pages>
         </RibbonTab>
       </Window>
