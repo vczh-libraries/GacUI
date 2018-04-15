@@ -170,6 +170,20 @@ GuiToolstripCommand
 				Attach(nullptr);
 			}
 
+			Ptr<GuiImageData> GuiToolstripCommand::GetLargeImage()
+			{
+				return largeImage;
+			}
+
+			void GuiToolstripCommand::SetLargeImage(Ptr<GuiImageData> value)
+			{
+				if (largeImage != value)
+				{
+					largeImage = value;
+					InvokeDescriptionChanged();
+				}
+			}
+
 			Ptr<GuiImageData> GuiToolstripCommand::GetImage()
 			{
 				return image;

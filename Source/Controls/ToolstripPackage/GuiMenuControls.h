@@ -137,6 +137,7 @@ MenuButton
 				Ptr<IEventHandler>						hostClickedHandler;
 				Ptr<IEventHandler>						hostMouseEnterHandler;
 				Ptr<GuiImageData>						image;
+				Ptr<GuiImageData>						largeImage;
 				WString									shortcutText;
 				GuiMenu*								subMenu;
 				bool									ownedSubMenu;
@@ -164,11 +165,19 @@ MenuButton
 
 				/// <summary>Sub menu opening changed event.</summary>
 				compositions::GuiNotifyEvent			SubMenuOpeningChanged;
+				/// <summary>Large image changed event.</summary>
+				compositions::GuiNotifyEvent			LargeImageChanged;
 				/// <summary>Image changed event.</summary>
 				compositions::GuiNotifyEvent			ImageChanged;
 				/// <summary>Shortcut text changed event.</summary>
 				compositions::GuiNotifyEvent			ShortcutTextChanged;
 
+				/// <summary>Get the large image for the menu button.</summary>
+				/// <returns>The large image for the menu button.</returns>
+				Ptr<GuiImageData>						GetLargeImage();
+				/// <summary>Set the large image for the menu button.</summary>
+				/// <param name="value">The large image for the menu button.</param>
+				void									SetLargeImage(Ptr<GuiImageData> value);
 				/// <summary>Get the image for the menu button.</summary>
 				/// <returns>The image for the menu button.</returns>
 				Ptr<GuiImageData>						GetImage();

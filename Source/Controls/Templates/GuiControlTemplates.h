@@ -215,6 +215,7 @@ Control Template
 				F(GuiToolstripButtonTemplate, bool, SubMenuExisting, false)\
 				F(GuiToolstripButtonTemplate, bool, SubMenuOpening, false)\
 				F(GuiToolstripButtonTemplate, controls::GuiButton*, SubMenuHost, nullptr)\
+				F(GuiToolstripButtonTemplate, Ptr<GuiImageData>, LargeImage, {})\
 				F(GuiToolstripButtonTemplate, Ptr<GuiImageData>, Image, {})\
 				F(GuiToolstripButtonTemplate, WString, ShortcutText, {})\
 

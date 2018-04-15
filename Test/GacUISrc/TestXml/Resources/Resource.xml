@@ -49,13 +49,13 @@
                         </att.Columns>
 
                         <Cell Site="row:0 column:0">
-                          <RibbonLargeButton Text="Accounts" Image-uri="res://SmallImages/Accounts"/>
+                          <RibbonLargeButton Text="Accounts" LargeImage-uri="res://LargeImages/Accounts"/>
                         </Cell>
                         <Cell Site="row:0 column:1">
-                          <RibbonLargeDropdownButton Text="Chart" Image-uri="res://SmallImages/Chart"/>
+                          <RibbonLargeDropdownButton Text="Chart" LargeImage-uri="res://LargeImages/Chart"/>
                         </Cell>
                         <Cell Site="row:0 column:2">
-                          <RibbonLargeSplitButton Text="Copy" Image-uri="res://SmallImages/Copy"/>
+                          <RibbonLargeSplitButton Text="Copy" LargeImage-uri="res://LargeImages/Copy"/>
                         </Cell>
                       </Table>
                     </Cell>

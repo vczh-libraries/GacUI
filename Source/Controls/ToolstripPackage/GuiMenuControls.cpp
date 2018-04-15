@@ -337,6 +337,7 @@ GuiMenuButton
 			{
 				SetAutoSelection(false);
 				SubMenuOpeningChanged.SetAssociatedComposition(boundsComposition);
+				LargeImageChanged.SetAssociatedComposition(boundsComposition);
 				ImageChanged.SetAssociatedComposition(boundsComposition);
 				ShortcutTextChanged.SetAssociatedComposition(boundsComposition);
 			}
@@ -346,6 +347,21 @@ GuiMenuButton
 				if(subMenu && ownedSubMenu)
 				{
 					delete subMenu;
+				}
+			}
+
+			Ptr<GuiImageData> GuiMenuButton::GetLargeImage()
+			{
+				return largeImage;
+			}
+
+			void GuiMenuButton::SetLargeImage(Ptr<GuiImageData> value)
+			{
+				if (largeImage != value)
+				{
+					largeImage = value;
+					GetControlTemplateObject()->SetLargeImage(largeImage);
+					LargeImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
 

@@ -224,6 +224,7 @@ GuiToolstripButton
 			{
 				if(command)
 				{
+					SetLargeImage(command->GetLargeImage());
 					SetImage(command->GetImage());
 					SetText(command->GetText());
 					SetEnabled(command->GetEnabled());
@@ -239,7 +240,8 @@ GuiToolstripButton
 				}
 				else
 				{
-					SetImage(0);
+					SetLargeImage(nullptr);
+					SetImage(nullptr);
 					SetText(L"");
 					SetEnabled(true);
 					SetSelected(false);
