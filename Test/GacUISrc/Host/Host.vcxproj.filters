@@ -132,6 +132,9 @@
     <Xml Include="Resources\FullControlTest\RibbonTabPage.xml">
       <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
+    <Xml Include="Resources\DarkSkin\Template_Ribbon.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png">

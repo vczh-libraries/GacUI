@@ -232,6 +232,7 @@
     <Xml Include="Resources\DarkSkin\Template_Document.xml" />
     <Xml Include="Resources\DarkSkin\Template_List.xml" />
     <Xml Include="Resources\DarkSkin\Template_Misc.xml" />
+    <Xml Include="Resources\DarkSkin\Template_Ribbon.xml" />
     <Xml Include="Resources\DarkSkin\Template_Scroll.xml" />
     <Xml Include="Resources\DarkSkin\Template_Tab.xml" />
     <Xml Include="Resources\DarkSkin\Template_TextBox.xml" />

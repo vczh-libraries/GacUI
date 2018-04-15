@@ -5,6 +5,7 @@
   <Folder name="Window" content="Link">Template_Window.xml</Folder>
   <Folder name="Tab" content="Link">Template_Tab.xml</Folder>
   <Folder name="Toolstrip" content="Link">Template_Toolstrip.xml</Folder>
+  <Folder name="Ribbon" content="Link">Template_Ribbon.xml</Folder>
   <Folder name="Button" content="Link">Template_Button.xml</Folder>
   <Folder name="Document" content="Link">Template_Document.xml</Folder>
   <Folder name="TextBox" content="Link">Template_TextBox.xml</Folder>

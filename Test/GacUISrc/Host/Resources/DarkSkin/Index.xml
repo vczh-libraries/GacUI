@@ -37,5 +37,11 @@
     <att.HTracker>x:HTrackerTemplate</att.HTracker>
     <att.VTracker>x:VTrackerTemplate</att.VTracker>
     <att.ProgressBar>x:ProgressBarTemplate</att.ProgressBar>
+    <att.RibbonSmallButton>x:RibbonSmallButtonTemplate</att.RibbonSmallButton>
+    <att.RibbonSmallDropdownButton>x:RibbonSmallDropdownButtonTemplate</att.RibbonSmallDropdownButton>
+    <att.RibbonSmallSplitButton>x:RibbonSmallSplitButtonTemplate</att.RibbonSmallSplitButton>
+    <att.RibbonLargeButton>x:RibbonLargeButtonTemplate</att.RibbonLargeButton>
+    <att.RibbonLargeDropdownButton>x:RibbonLargeDropdownButtonTemplate</att.RibbonLargeDropdownButton>
+    <att.RibbonLargeSplitButton>x:RibbonLargeSplitButtonTemplate</att.RibbonLargeSplitButton>
   </ThemeTemplates>
 </Instance>
