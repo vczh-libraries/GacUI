@@ -400,7 +400,7 @@
           <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <SolidBorder ref.Style="toolstripBorder"/>
           </Bounds>
-          <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
+          <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:9">
             <SolidBackground ref.Style="toolstripBackground"/>
             <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
               <att.Rows>
@@ -421,7 +421,7 @@
               </Cell>
             </Table>
           </Bounds>
-          <Table AlignmentToParent="left:-1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:0">
+          <Table AlignmentToParent="left:1 top:-1 right:1 bottom:1" PreferredMinSize="x:0 y:7">
             <SolidBackground ref.Style="toolstripBackground"/>
             <att.Rows>
               <CellOption>composeType:Percentage percentage:0.5</CellOption>
