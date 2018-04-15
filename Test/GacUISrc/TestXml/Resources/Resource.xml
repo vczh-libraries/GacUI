@@ -5,14 +5,21 @@
         <RibbonTab>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1" PreferredMinSize="y:200"/>
           <att.BeforeHeaders-set>
-            <Button Text="BeforeHeaders">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:120"/>
+            <Button Text="HOME">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80"/>
             </Button>
           </att.BeforeHeaders-set>
           <att.AfterHeaders-set>
-            <Button Text="AfterHeaders">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:120"/>
-            </Button>
+            <Stack Direction="Horizontal" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <StackItem InternalMargin="left:0 top:0 right:10 bottom:0">
+                <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text="Search:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </StackItem>
+              <StackItem>
+                <SinglelineTextBox>
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:1" PreferredMinSize="x:180"/>
+                </SinglelineTextBox>
+              </StackItem>
+            </Stack>
           </att.AfterHeaders-set>
 
           <att.Pages>
