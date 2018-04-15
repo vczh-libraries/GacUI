@@ -44,7 +44,7 @@
             self.Selected ? "#CC7ACC" :
             state == ButtonState::Active ? "#EA97EA" :
             state == ButtonState::Pressed ? "#EA97EA" :
-            "#434346"
+            "#604360"
           ) : (
             self.Selected ? "#007ACC" :
             state == ButtonState::Active ? "#1C97EA" :
