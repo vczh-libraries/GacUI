@@ -98,7 +98,6 @@ namespace vl
 			F(GuiDatePickerTemplate,			GuiControlTemplate)			\
 			F(GuiDateComboBoxTemplate,			GuiComboBoxTemplate)		\
 			F(GuiRibbonTabTemplate,				GuiTabTemplate)				\
-			F(GuiRibbonTabPageTemplate,			GuiControlTemplate)			\
 			F(GuiRibbonGroupTemplate,			GuiControlTemplate)			\
 
 #define GUI_ITEM_TEMPLATE_DECL(F)\
@@ -279,9 +278,6 @@ Control Template
 #define GuiRibbonTabTemplate_PROPERTIES(F)\
 				F(GuiRibbonTabTemplate, compositions::GuiGraphicsComposition*, BeforeHeadersContainer, nullptr)\
 				F(GuiRibbonTabTemplate, compositions::GuiGraphicsComposition*, AfterHeadersContainer, nullptr)\
-
-#define GuiRibbonTabPageTemplate_PROPERTIES(F)\
-				F(GuiRibbonTabPageTemplate, bool, Highlighted, false)\
 
 #define GuiRibbonGroupTemplate_PROPERTIES(F)\
 				F(GuiRibbonGroupTemplate, bool, Expandable, false)\
