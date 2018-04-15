@@ -112,7 +112,7 @@ GuiRibbonGroup
 
 			void GuiRibbonGroup::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject()->SetExpandable(Expandable);
+				GetControlTemplateObject()->SetExpandable(expandable);
 			}
 
 			GuiRibbonGroup::GuiRibbonGroup(theme::ThemeName themeName)
@@ -136,6 +136,7 @@ GuiRibbonGroup
 				if (expandable != value)
 				{
 					expandable = value;
+					GetControlTemplateObject()->SetExpandable(expandable);
 					ExpandableChanged.Execute(GetNotifyEventArguments());
 				}
 			}

@@ -593,6 +593,11 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabHeaderButtonTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TabHeaderButtonTemplate*(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetHighlighted, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetHighlighted, { L"__vwsn_value_" })
+				CLASS_MEMBER_EVENT(HighlightedChanged)
+				CLASS_MEMBER_FIELD(__vwsn_prop_Highlighted)
+				CLASS_MEMBER_PROPERTY_EVENT(Highlighted, GetHighlighted, SetHighlighted, HighlightedChanged)
 			END_CLASS_MEMBER(::darkskin::TabHeaderButtonTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabHeaderButtonTemplateConstructor)
@@ -627,7 +632,12 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TabTemplate*(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetHighlighted, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetHighlighted, { L"__vwsn_value_" })
 				CLASS_MEMBER_METHOD(UpdateTabHeader, NO_PARAMETER)
+				CLASS_MEMBER_EVENT(HighlightedChanged)
+				CLASS_MEMBER_FIELD(__vwsn_prop_Highlighted)
+				CLASS_MEMBER_PROPERTY_EVENT(Highlighted, GetHighlighted, SetHighlighted, HighlightedChanged)
 			END_CLASS_MEMBER(::darkskin::TabTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabTemplateConstructor)
@@ -640,6 +650,8 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
+				CLASS_MEMBER_FIELD(afterHeadersContainer)
+				CLASS_MEMBER_FIELD(beforeHeadersContainer)
 				CLASS_MEMBER_FIELD(container)
 				CLASS_MEMBER_FIELD(header)
 				CLASS_MEMBER_FIELD(self)

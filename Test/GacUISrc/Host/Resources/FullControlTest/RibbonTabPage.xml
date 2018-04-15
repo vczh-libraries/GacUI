@@ -4,16 +4,16 @@
       <TabPage ref.Name="self" Text="Ribbon">
         <RibbonTab>
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:-1" PreferredMinSize="y:200"/>
-          <att.BeforeHeaders>
+          <att.BeforeHeaders-set>
             <Button Text="BeforeHeaders">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:5 bottom:0" PrefferedMinSize="x:120"/>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:5 bottom:0" PreferredMinSize="x:120"/>
             </Button>
-          </att.BeforeHeaders>
-          <att.AfterHeaders>
+          </att.BeforeHeaders-set>
+          <att.AfterHeaders-set>
             <Button Text="AfterHeaders">
-              <att.BoundsComposition-set AlignmentToParent="left:5 top:0 right:0 bottom:0" PrefferedMinSize="x:120"/>
+              <att.BoundsComposition-set AlignmentToParent="left:5 top:0 right:0 bottom:0" PreferredMinSize="x:120"/>
             </Button>
-          </att.AfterHeaders>
+          </att.AfterHeaders-set>
           
           <att.Pages>
             <RibbonTabPage Text="Controls">

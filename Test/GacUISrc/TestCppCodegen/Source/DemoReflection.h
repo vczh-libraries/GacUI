@@ -92,6 +92,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::ResponsiveTabPageConstructor)
 			DECL_TYPE_INFO(::demo::ResponsiveViewControl)
 			DECL_TYPE_INFO(::demo::ResponsiveViewControlConstructor)
+			DECL_TYPE_INFO(::demo::RibbonTabPageResource)
+			DECL_TYPE_INFO(::demo::RibbonTabPageResourceConstructor)
 			DECL_TYPE_INFO(::demo::StringResource)
 			DECL_TYPE_INFO(::demo::TextBoxTabPage)
 			DECL_TYPE_INFO(::demo::TextBoxTabPageConstructor)

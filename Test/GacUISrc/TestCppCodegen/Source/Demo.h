@@ -386,6 +386,8 @@ namespace demo
 	class ResponsiveTabPage;
 	class ResponsiveViewControlConstructor;
 	class ResponsiveViewControl;
+	class RibbonTabPageResourceConstructor;
+	class RibbonTabPageResource;
 	class TextBoxTabPageConstructor;
 	class TextBoxTabPage;
 	class MyTextItem;
@@ -2220,6 +2222,39 @@ namespace demo
 	public:
 		ResponsiveViewControl();
 		~ResponsiveViewControl();
+	};
+
+	class RibbonTabPageResourceConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonTabPageResourceConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonTabPageResourceConstructor>;
+#endif
+	protected:
+		::demo::RibbonTabPageResource* self;
+		::vl::presentation::controls::GuiRibbonTab* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiRibbonTabPage* __vwsn_precompile_2;
+		::vl::presentation::controls::GuiRibbonTabPage* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
+		void __vwsn_initialize_instance_(::demo::RibbonTabPageResource* __vwsn_this_);
+	public:
+		RibbonTabPageResourceConstructor();
+	};
+
+	class RibbonTabPageResource : public ::vl::presentation::controls::GuiTabPage, public ::demo::RibbonTabPageResourceConstructor, public ::vl::reflection::Description<RibbonTabPageResource>
+	{
+		friend class ::demo::RibbonTabPageResourceConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonTabPageResource>;
+#endif
+	public:
+		RibbonTabPageResource();
+		~RibbonTabPageResource();
 	};
 
 	class TextBoxTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextBoxTabPageConstructor>

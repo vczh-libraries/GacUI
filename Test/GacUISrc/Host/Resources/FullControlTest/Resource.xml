@@ -70,7 +70,7 @@
   <Folder name="RepeatComponents" content="Link">RepeatComponents.xml</Folder>
   
   <Instance name="DocumentTabPageResource" content="File">DocumentTabPage.xml</Instance>
-  <Folder name="TextBoxTabPage" content="Link">TextBoxTabPage.xml</Folder>
+  <Folder name="TextBoxComponents" content="Link">TextBoxTabPage.xml</Folder>
   <Folder name="RibbonTabPage" content="Link">RibbonTabPage.xml</Folder>
   <Folder name="DocumentComponents" content="Link">DocumentComponents.xml</Folder>
   

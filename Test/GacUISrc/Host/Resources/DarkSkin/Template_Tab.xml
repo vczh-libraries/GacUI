@@ -3,7 +3,7 @@
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TabHeaderButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ref.Members>
         <![CDATA[
-          prop Highlighted: bool {}
+          prop Highlighted: bool = false {}
         ]]>
       </ref.Members>
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
@@ -46,7 +46,7 @@
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TabTemplate" ref.Styles="res://DarkSkin/Style">
       <ref.Members>
         <![CDATA[
-          prop Highlighted: bool {}
+          prop Highlighted: bool = false {}
           
           func UpdateTabHeader() : void
           {
