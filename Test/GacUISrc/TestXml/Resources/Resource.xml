@@ -226,7 +226,7 @@
               <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
                 <SolidBackground Color="#007ACC"/>
                 <Bounds AlignmentToParent="left:10 top:2 right:10 bottom:2">
-                  <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF" VerticalAlignment="Center"/>
+                  <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Bounds>
               </Bounds>
             </Cell>
