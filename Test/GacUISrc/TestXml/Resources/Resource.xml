@@ -368,27 +368,30 @@
           <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <SolidBorder ref.Style="toolstripBorder"/>
           </Bounds>
-          <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
-            <SolidBackground ref.Style="toolstripBackground"/>
-            <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-              <att.Rows>
-                <CellOption>composeType:MinSize</CellOption>
-                <CellOption>composeType:MinSize</CellOption>
-              </att.Rows>
-              <att.Columns>
-                <CellOption>composeType:Percentage percentage:1.0</CellOption>
-              </att.Columns>
+          <Table AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <SolidBackground ref.Style="toolstripSplitBackground"/>
+            <att.Rows>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Absolute absolute:1</CellOption>
+              <CellOption>composeType:MinSize</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            </att.Columns>
 
-              <Cell Site="row:0 column:0">
+            <Cell Site="row:0 column:0">
+              <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
                 <ImageFrame Image-bind="self.LargeImage.Image ?? null" FrameIndex-bind="self.LargeImage.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled">
                   <att.HorizontalAlignment>Center</att.HorizontalAlignment>
                 </ImageFrame>
-              </Cell>
-              <Cell Site="row:1 column:0">
+              </Bounds>
+            </Cell>
+            <Cell Site="row:2 column:0">
+              <Bounds AlignmentToParent="left:3 top:3 right:3 bottom:12">
                 <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-              </Cell>
-            </Table>
-          </Bounds>
+              </Bounds>
+            </Cell>
+          </Table>
         </ToolstripButtonTemplate>
       </Instance>
     </Instance>
@@ -400,48 +403,49 @@
           <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <SolidBorder ref.Style="toolstripBorder"/>
           </Bounds>
-          <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:9">
-            <SolidBackground ref.Style="toolstripBackground"/>
-            <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-              <att.Rows>
-                <CellOption>composeType:MinSize</CellOption>
-                <CellOption>composeType:MinSize</CellOption>
-              </att.Rows>
-              <att.Columns>
-                <CellOption>composeType:Percentage percentage:1.0</CellOption>
-              </att.Columns>
+          <Table AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <SolidBackground ref.Style="toolstripSplitBackground"/>
+            <att.Rows>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Absolute absolute:1</CellOption>
+              <CellOption>composeType:MinSize</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            </att.Columns>
 
-              <Cell Site="row:0 column:0">
+            <Cell Site="row:0 column:0">
+              <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
                 <ImageFrame Image-bind="self.LargeImage.Image ?? null" FrameIndex-bind="self.LargeImage.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled">
                   <att.HorizontalAlignment>Center</att.HorizontalAlignment>
                 </ImageFrame>
-              </Cell>
-              <Cell Site="row:1 column:0">
-                <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-              </Cell>
-            </Table>
-          </Bounds>
-          <Table AlignmentToParent="left:1 top:-1 right:1 bottom:1" PreferredMinSize="x:0 y:7">
-            <SolidBackground ref.Style="toolstripBackground"/>
-            <att.Rows>
-              <CellOption>composeType:Percentage percentage:0.5</CellOption>
-              <CellOption>composeType:Absolute absolute:3</CellOption>
-              <CellOption>composeType:Percentage percentage:0.5</CellOption>
-            </att.Rows>
-            <att.Columns>
-              <CellOption>composeType:Percentage percentage:0.5</CellOption>
-              <CellOption>composeType:Absolute absolute:5</CellOption>
-              <CellOption>composeType:Percentage percentage:0.5</CellOption>
-            </att.Columns>
+              </Bounds>
+            </Cell>
+            <Cell Site="row:2 column:0">
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                <att.Rows>
+                  <CellOption>composeType:MinSize</CellOption>
+                  <CellOption>composeType:MinSize</CellOption>
+                </att.Rows>
+                <att.Columns>
+                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                </att.Columns>
 
-            <Cell Site="row:1 column:1">
-              <Polygon ref.Style="toolstripArrow" Size="x:5 y:3">
-                <att.Points>
-                  <Point>x:0 y:0</Point>
-                  <Point>x:2 y:2</Point>
-                  <Point>x:4 y:0</Point>
-                </att.Points>
-              </Polygon>
+                <Cell Site="row:0 column:0">
+                  <Bounds AlignmentToParent="left:3 top:3 right:3 bottom:3">
+                    <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                  </Bounds>
+                </Cell>
+                <Cell Site="row:1 column:0" PreferredMinSize="x:11 y:9">
+                  <Polygon ref.Style="toolstripArrow" Size="x:5 y:3">
+                    <att.Points>
+                      <Point>x:0 y:0</Point>
+                      <Point>x:2 y:2</Point>
+                      <Point>x:4 y:0</Point>
+                    </att.Points>
+                  </Polygon>
+                </Cell>
+              </Table>
             </Cell>
           </Table>
         </ToolstripButtonTemplate>
