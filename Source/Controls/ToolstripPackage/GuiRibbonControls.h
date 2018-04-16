@@ -61,6 +61,7 @@ Ribbon Containers
 				bool												highlighted = false;
 				GuiRibbonGroupCollection							groups;
 				compositions::GuiResponsiveStackComposition*		responsiveStack = nullptr;
+				compositions::GuiResponsiveContainerComposition*	responsiveContainer = nullptr;
 				compositions::GuiStackComposition*					stack = nullptr;
 
 			public:
@@ -115,6 +116,43 @@ Ribbon Containers
 /***********************************************************************
 Ribbon Controls
 ***********************************************************************/
+
+			enum class RibbonButtonSize
+			{
+				Large,
+				Small,
+				Icon,
+			};
+
+#define GUIRIBBON_COMMAND(INDEX) \
+			GuiToolstripButton* button##INDEX = nullptr; \
+
+#define GUIRIBBON_ACCESSOR(INDEX) \
+			GuiToolstripCommand* GetCommand##INDEX(); \
+			void SetCommand##INDEX(GuiToolstripCommand* value); \
+			GuiToolstripMenu* GetSubMenu##INDEX() \
+
+			class GuiRibbonButtons : public GuiControl, public Description<GuiRibbonButtons>
+			{
+			protected:
+				RibbonButtonSize									minSize;
+				RibbonButtonSize									maxSize;
+				compositions::GuiResponsiveViewComposition*			responsiveView = nullptr;
+				GUIRIBBON_COMMAND(1);
+				GUIRIBBON_COMMAND(2);
+				GUIRIBBON_COMMAND(3);
+
+			public:
+				GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize);
+				~GuiRibbonButtons();
+
+				GUIRIBBON_ACCESSOR(1);
+				GUIRIBBON_ACCESSOR(2);
+				GUIRIBBON_ACCESSOR(3);
+			};
+
+#undef GUIRIBBON_ACCESSOR
+#undef GUIRIBBON_COMMAND
 		}
 	}
 }

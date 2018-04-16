@@ -4,7 +4,7 @@ GuiInstanceLoader_Plugin.cpp
 		default: GuiControl*, GuiGraphicsComposition*
 	GuiInstanceRootObject
 		default: GuiComponent*
-GuiInstanceLoader_TemplateControl
+GuiInstanceLoader_TemplateControl.h
 	GuiControl
 GuiInstanceLoader_Compositions.cpp
 	GuiAxis
@@ -29,13 +29,17 @@ GuiInstanceLoader_List.cpp
 		ctor: Text, Image
 		Tag
 GuiInstanceLoader_Templates.cpp
-	GuiTemplate
-		ctor: \w+(ItemTemplate<T>)
+	GuiCommonDatePickerLook
+		ctor: BackgroundColor, PrimaryTextColor, SecondaryTextColor
+	GuiCommonScrollViewLook
+		ctor: DefaultScrollSize
 GuiInstanceLoader_Toolstrip.cpp
 	GuiToolstripMenu, GuiToolstripMenuBar, GuiToolstripToolBar
 		default: collection(GuiControl*)
 	GuiToolstripButton
 		SubMenu-set: GuiToolstripMenu*
+	GuiRibbonButtons
+		ctor: MaxSize, MinSize
 */
 
 #include "GuiInstanceLoader_TemplateControl.h"
@@ -284,6 +288,7 @@ GuiPredefinedInstanceLoadersPlugin
 
 					manager->SetLoader(new GuiControlInstanceLoader);
 
+					/*													REAL-CONTROL-TYPE			THEME-NAME											*/
 					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,			CustomControl										);
 					ADD_TEMPLATE_CONTROL	(							GuiLabel,					Label												);
 					ADD_TEMPLATE_CONTROL	(							GuiButton,					Button												);
@@ -303,6 +308,7 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonTabPage,			CustomControl										);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonGroup,				RibbonGroup											);
 
+					/*						VIRTUAL-CONTROL-TYPE		REAL-CONTROL-TYPE			THEME-NAME											*/
 					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,					GroupBox											);
 					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,					MenuSplitter										);
 					ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,			MenuBarButton										);

@@ -914,6 +914,25 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
 			END_CLASS_MEMBER(GuiRibbonGroup)
 
+			BEGIN_ENUM_ITEM(RibbonButtonSize)
+				ENUM_CLASS_ITEM(Large)
+				ENUM_CLASS_ITEM(Small)
+				ENUM_CLASS_ITEM(Icon)
+			END_ENUM_ITEM(RibbonButtonSize)
+
+			BEGIN_CLASS_MEMBER(GuiRibbonButtons)
+				CLASS_MEMBER_BASE(GuiControl)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_3(GuiRibbonButtons, RibbonButtonSize, maxSize, RibbonButtonSize, minSize)
+
+				CLASS_MEMBER_PROPERTY_FAST(Command1)
+				CLASS_MEMBER_PROPERTY_FAST(Command1)
+				CLASS_MEMBER_PROPERTY_FAST(Command1)
+				
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(SubMenu1)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(SubMenu2)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(SubMenu3)
+			END_CLASS_MEMBER(GuiRibbonButtons)
+
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDocumentItem>(const WString&), { L"name" })
 

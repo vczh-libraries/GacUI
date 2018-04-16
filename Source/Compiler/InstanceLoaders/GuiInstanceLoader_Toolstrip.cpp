@@ -245,6 +245,62 @@ GuiToolstripButtonInstanceLoader
 #undef BASE_TYPE
 
 /***********************************************************************
+GuiRibbonButtonsInstanceLoader
+***********************************************************************/
+
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiRibbonButtons>
+			class GuiRibbonButtonsInstanceLoader : public BASE_TYPE
+			{
+			protected:
+				GlobalStringKey					_MaxSize;
+				GlobalStringKey					_MinSize;
+
+				void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
+				{
+					vint indexMaxSize = arguments.Keys().IndexOf(_MaxSize);
+					vint indexMinSize = arguments.Keys().IndexOf(_MinSize);
+					if (indexMaxSize != -1 && indexMinSize != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexMaxSize)[0].expression);
+						createControl->arguments.Add(arguments.GetByIndex(indexMinSize)[0].expression);
+					}
+				}
+			public:
+				GuiRibbonButtonsInstanceLoader()
+					:BASE_TYPE(description::TypeInfo<GuiRibbonButtons>::content.typeName, theme::ThemeName::CustomControl)
+				{
+					_MaxSize = GlobalStringKey::Get(L"MaxSize");
+					_MinSize = GlobalStringKey::Get(L"MinSize");
+				}
+
+				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					if (CanCreate(typeInfo))
+					{
+						propertyNames.Add(_MaxSize);
+						propertyNames.Add(_MinSize);
+					}
+				}
+
+				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					GetRequiredPropertyNames(typeInfo, propertyNames);
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == _MaxSize || propertyInfo.propertyName == _MinSize)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<RibbonButtonSize>::CreateTypeInfo());
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						return info;
+					}
+					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+				}
+			};
+#undef BASE_TYPE
+
+/***********************************************************************
 Initialization
 ***********************************************************************/
 
@@ -256,6 +312,7 @@ Initialization
 				manager->SetLoader(new GuiToolstripGroupContainerInstanceLoader);
 				manager->SetLoader(new GuiToolstripGroupInstanceLoader);
 				manager->SetLoader(new GuiToolstripButtonInstanceLoader);
+				manager->SetLoader(new GuiRibbonButtonsInstanceLoader);
 			}
 		}
 	}

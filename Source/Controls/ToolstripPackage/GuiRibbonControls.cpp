@@ -130,7 +130,11 @@ GuiRibbonTabPage
 				responsiveStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				responsiveStack->AddChild(stack);
 
-				containerComposition->AddChild(responsiveStack);
+				responsiveContainer = new GuiResponsiveContainerComposition();
+				responsiveContainer->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				responsiveContainer->SetResponsiveTarget(responsiveStack);
+
+				containerComposition->AddChild(responsiveContainer);
 
 				HighlightedChanged.SetAssociatedComposition(boundsComposition);
 			}
@@ -252,6 +256,41 @@ GuiRibbonGroup
 			{
 				return items;
 			}
+
+/***********************************************************************
+GuiRibbonButtons
+***********************************************************************/
+
+			GuiRibbonButtons::GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize)
+				:GuiControl(themeName)
+				, maxSize(_maxSize)
+				, minSize(_minSize)
+			{
+			}
+
+			GuiRibbonButtons::~GuiRibbonButtons()
+			{
+			}
+
+#define GUIRIBBON_ACCESSOR(INDEX) \
+			GuiToolstripCommand* GuiRibbonButtons::GetCommand##INDEX() \
+			{ \
+				return button##INDEX->GetCommand(); \
+			} \
+			void GuiRibbonButtons::SetCommand##INDEX(GuiToolstripCommand* value) \
+			{ \
+				button##INDEX->SetCommand(value); \
+			} \
+			GuiToolstripMenu* GuiRibbonButtons::GetSubMenu##INDEX() \
+			{ \
+				return button##INDEX->EnsureToolstripSubMenu(); \
+			} \
+
+			GUIRIBBON_ACCESSOR(1)
+			GUIRIBBON_ACCESSOR(2)
+			GUIRIBBON_ACCESSOR(3)
+
+#undef GUIRIBBON_ACCESSOR
 		}
 	}
 }
