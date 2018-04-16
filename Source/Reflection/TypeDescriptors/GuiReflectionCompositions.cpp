@@ -378,7 +378,8 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiResponsiveViewComposition)
 				CLASS_MEMBER_BASE(GuiResponsiveCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveViewComposition*(), NO_PARAMETER)
-
+					
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(CurrentView)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SharedControls)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Views)
 			END_CLASS_MEMBER(GuiResponsiveViewComposition)

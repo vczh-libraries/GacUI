@@ -125,12 +125,12 @@ Ribbon Controls
 			};
 
 #define GUIRIBBON_COMMAND(INDEX) \
+			GuiControl* buttonContainer##INDEX = nullptr; \
 			GuiToolstripButton* button##INDEX = nullptr; \
 
 #define GUIRIBBON_ACCESSOR(INDEX) \
-			GuiToolstripCommand* GetCommand##INDEX(); \
-			void SetCommand##INDEX(GuiToolstripCommand* value); \
-			GuiToolstripMenu* GetSubMenu##INDEX() \
+			GuiToolstripButton* GetButton##INDEX(); \
+			GuiToolstripButton* SetButton##INDEX(GuiToolstripButton* value); \
 
 			class GuiRibbonButtons : public GuiControl, public Description<GuiRibbonButtons>
 			{
@@ -138,10 +138,14 @@ Ribbon Controls
 				RibbonButtonSize									minSize;
 				RibbonButtonSize									maxSize;
 				compositions::GuiResponsiveViewComposition*			responsiveView = nullptr;
+				compositions::GuiResponsiveCompositionBase*			fixedLarge = nullptr;
+				compositions::GuiResponsiveCompositionBase*			fixedSmall = nullptr;
+				compositions::GuiResponsiveCompositionBase*			fixedIcon = nullptr;
 				GUIRIBBON_COMMAND(1);
 				GUIRIBBON_COMMAND(2);
 				GUIRIBBON_COMMAND(3);
 
+				void												SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiToolstripButton* button);
 			public:
 				GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize);
 				~GuiRibbonButtons();

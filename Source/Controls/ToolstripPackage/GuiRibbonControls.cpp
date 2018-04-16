@@ -262,6 +262,61 @@ GuiRibbonGroup
 GuiRibbonButtons
 ***********************************************************************/
 
+			void GuiRibbonButtons::SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiToolstripButton* button)
+			{
+				if (fixed && button)
+				{
+					auto themeName = button->GetControlThemeName();
+					vint type = -1;
+					switch (themeName)
+					{
+					case ThemeName::RibbonLargeButton:
+					case ThemeName::RibbonSmallButton:
+					case ThemeName::ToolstripButton:
+						type = 0;
+						break;
+					case ThemeName::RibbonLargeDropdownButton:
+					case ThemeName::RibbonSmallDropdownButton:
+					case ThemeName::ToolstripDropdownButton:
+						type = 1;
+						break;
+					case ThemeName::RibbonLargeSplitButton:
+					case ThemeName::RibbonSmallSplitButton:
+					case ThemeName::ToolstripSplitButton:
+						type = 0;
+						break;
+					}
+
+					if (fixed == fixedLarge)
+					{
+						switch (type)
+						{
+						case 0: button->SetControlThemeName(ThemeName::RibbonLargeButton); break;
+						case 1: button->SetControlThemeName(ThemeName::RibbonLargeDropdownButton); break;
+						case 2: button->SetControlThemeName(ThemeName::RibbonLargeSplitButton); break;
+						}
+					}
+					else if (fixed == fixedSmall)
+					{
+						switch (type)
+						{
+						case 0: button->SetControlThemeName(ThemeName::RibbonSmallButton); break;
+						case 1: button->SetControlThemeName(ThemeName::RibbonSmallDropdownButton); break;
+						case 2: button->SetControlThemeName(ThemeName::RibbonSmallSplitButton); break;
+						}
+					}
+					else if (fixed == fixedIcon)
+					{
+						switch (type)
+						{
+						case 0: button->SetControlThemeName(ThemeName::ToolstripButton); break;
+						case 1: button->SetControlThemeName(ThemeName::ToolstripDropdownButton); break;
+						case 2: button->SetControlThemeName(ThemeName::ToolstripSplitButton); break;
+						}
+					}
+				}
+			}
+
 			GuiRibbonButtons::GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize)
 				:GuiControl(themeName)
 				, maxSize(_maxSize)
@@ -271,13 +326,13 @@ GuiRibbonButtons
 				responsiveView->SetDirection(ResponsiveDirection::Horizontal);
 				responsiveView->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
-				button1 = new GuiToolstripButton(ThemeName::CustomControl);
-				button2 = new GuiToolstripButton(ThemeName::CustomControl);
-				button3 = new GuiToolstripButton(ThemeName::CustomControl);
+				buttonContainer1 = new GuiControl(ThemeName::CustomControl);
+				buttonContainer2 = new GuiControl(ThemeName::CustomControl);
+				buttonContainer3 = new GuiControl(ThemeName::CustomControl);
 
-				responsiveView->GetSharedControls().Add(button1);
-				responsiveView->GetSharedControls().Add(button2);
-				responsiveView->GetSharedControls().Add(button3);
+				responsiveView->GetSharedControls().Add(buttonContainer1);
+				responsiveView->GetSharedControls().Add(buttonContainer2);
+				responsiveView->GetSharedControls().Add(buttonContainer3);
 
 				if (maxSize <= RibbonButtonSize::Large && RibbonButtonSize::Large <= minSize)
 				{
@@ -299,17 +354,24 @@ GuiRibbonButtons
 			}
 
 #define GUIRIBBON_ACCESSOR(INDEX) \
-			GuiToolstripCommand* GuiRibbonButtons::GetCommand##INDEX() \
+			GuiToolstripButton* GuiRibbonButtons::GetButton##INDEX() \
 			{ \
-				return button##INDEX->GetCommand(); \
+				return button##INDEX; \
 			} \
-			void GuiRibbonButtons::SetCommand##INDEX(GuiToolstripCommand* value) \
+			GuiToolstripButton* GuiRibbonButtons::SetButton##INDEX(GuiToolstripButton* value) \
 			{ \
-				button##INDEX->SetCommand(value); \
-			} \
-			GuiToolstripMenu* GuiRibbonButtons::GetSubMenu##INDEX() \
-			{ \
-				return button##INDEX->EnsureToolstripSubMenu(); \
+				auto oldButton = button##INDEX; \
+				if (button##INDEX) \
+				{ \
+					buttonContainer##INDEX->GetContainerComposition()->RemoveChild(button##INDEX->GetBoundsComposition()); \
+				} \
+				button##INDEX = value; \
+				if (button##INDEX) \
+				{ \
+					buttonContainer##INDEX->GetContainerComposition()->AddChild(button##INDEX->GetBoundsComposition()); \
+					SetButtonThemeName(responsiveView->GetCurrentView(), button##INDEX); \
+				} \
+				return button##INDEX; \
 			} \
 
 			GUIRIBBON_ACCESSOR(1)

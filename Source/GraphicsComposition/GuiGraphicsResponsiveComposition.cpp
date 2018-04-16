@@ -392,6 +392,11 @@ GuiResponsiveViewComposition
 				return x || y;
 			}
 
+			GuiResponsiveCompositionBase* GuiResponsiveViewComposition::GetCurrentView()
+			{
+				return currentView;
+			}
+
 			collections::ObservableListBase<controls::GuiControl*>& GuiResponsiveViewComposition::GetSharedControls()
 			{
 				return sharedControls;

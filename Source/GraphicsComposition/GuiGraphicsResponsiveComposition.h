@@ -161,6 +161,10 @@ GuiResponsiveViewComposition
 				bool																LevelDown()override;
 				bool																LevelUp()override;
 
+				/// <summary>Get the current displaying view.</summary>
+				/// <returns>The current displaying view.</returns>
+				GuiResponsiveCompositionBase*										GetCurrentView();
+
 				/// <summary>Get all shared controls. A shared control can jump between different views if it is contained in a [T:vl.presentation.compositions.GuiResponsiveSharedComposition]. This helps to keep control states during switching views.</summary>
 				/// <returns>All shared controls.</returns>
 				collections::ObservableListBase<controls::GuiControl*>&				GetSharedControls();

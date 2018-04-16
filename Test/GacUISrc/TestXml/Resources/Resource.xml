@@ -36,9 +36,29 @@
               <att.Groups>
                 <RibbonGroup Text="Buttons">
                   <att.Items>
+                    <RibbonButtons MaxSize="Large" MinSize="Icon">
+                      <att.Button1><ToolstripButton Command-ref="command1"/></att.Button1>
+                      <att.Button1><ToolstripDropdownButton Command-ref="command2"/></att.Button1>
+                      <att.Button1><ToolstripSplitButton Command-ref="command3"/></att.Button1>
+                    </RibbonButtons>
                     <RibbonSplitter/>
+                    <RibbonButtons MaxSize="Large" MinSize="Icon">
+                      <att.Button1><ToolstripButton Command-ref="command4"/></att.Button1>
+                      <att.Button1><ToolstripDropdownButton Command-ref="command5"/></att.Button1>
+                      <att.Button1><ToolstripSplitButton Command-ref="command6"/></att.Button1>
+                    </RibbonButtons>
                     <RibbonSplitter/>
+                    <RibbonButtons MaxSize="Large" MinSize="Small">
+                      <att.Button1><ToolstripButton Command-ref="command1"/></att.Button1>
+                      <att.Button1><ToolstripDropdownButton Command-ref="command2"/></att.Button1>
+                      <att.Button1><ToolstripSplitButton Command-ref="command3"/></att.Button1>
+                    </RibbonButtons>
                     <RibbonSplitter/>
+                    <RibbonButtons MaxSize="Small" MinSize="Icon">
+                      <att.Button1><ToolstripButton Command-ref="command4"/></att.Button1>
+                      <att.Button1><ToolstripDropdownButton Command-ref="command5"/></att.Button1>
+                      <att.Button1><ToolstripSplitButton Command-ref="command6"/></att.Button1>
+                    </RibbonButtons>
                   </att.Items>
                 </RibbonGroup>
 
@@ -70,16 +90,7 @@
 
   <InstanceStyle name="CopySubMenu">
     <Styles>
-      <Style ref.Path="//ToolstripButton + //ToolstripDropdownButton + //ToolstripSplitButton">
-        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-      </Style>
-      <Style ref.Path="//RibbonSmallButton + //RibbonSmallDropdownButton + //RibbonSmallSplitButton">
-        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-      </Style>
-      <Style ref.Path="//RibbonLargeButton + //RibbonLargeDropdownButton + //RibbonLargeSplitButton">
-        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-      </Style>
-      <Style ref.Path="//ToolstripDropdownButton + //ToolstripSplitButton + //RibbonSmallDropdownButton + //RibbonSmallSplitButton + //RibbonLargeDropdownButton + //RibbonLargeSplitButton">
+      <Style ref.Path="//ToolstripDropdownButton + //ToolstripSplitButton">
         <att.SubMenu-set>
           <MenuItemButton Text="Something"/>
           <MenuItemButton Text="Which"/>
