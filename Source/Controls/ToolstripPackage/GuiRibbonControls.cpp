@@ -337,14 +337,45 @@ GuiRibbonButtons
 				buttonContainer2 = new GuiControl(ThemeName::CustomControl);
 				buttonContainer3 = new GuiControl(ThemeName::CustomControl);
 
+				buttonContainer1->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				buttonContainer2->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				buttonContainer3->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+
 				responsiveView->GetSharedControls().Add(buttonContainer1);
 				responsiveView->GetSharedControls().Add(buttonContainer2);
 				responsiveView->GetSharedControls().Add(buttonContainer3);
 				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonButtons::OnBeforeSwitchingView);
 
+				auto installButton = [&](GuiTableComposition* table, vint row, vint column, GuiControl* buttonContainer)
+				{
+					auto shared = new GuiResponsiveSharedComposition();
+					shared->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					shared->SetShared(buttonContainer);
+
+					auto cell = new GuiCellComposition();
+					cell->SetSite(row, column, 1, 1);
+					cell->AddChild(shared);
+
+					table->AddChild(cell);
+				};
+
 				if (maxSize <= RibbonButtonSize::Large && RibbonButtonSize::Large <= minSize)
 				{
 					auto table = new GuiTableComposition();
+					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					table->SetRowsAndColumns(1, 3);
+					table->SetCellPadding(2);
+					table->SetBorderVisible(false);
+
+					table->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
+					table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+					table->SetColumnOption(1, GuiCellOption::MinSizeOption());
+					table->SetColumnOption(2, GuiCellOption::MinSizeOption());
+
+					installButton(table, 0, 0, buttonContainer1);
+					installButton(table, 0, 1, buttonContainer2);
+					installButton(table, 0, 2, buttonContainer3);
 
 					fixedLarge = new GuiResponsiveFixedComposition();
 					fixedLarge->AddChild(table);
@@ -354,6 +385,22 @@ GuiRibbonButtons
 				if (maxSize <= RibbonButtonSize::Small && RibbonButtonSize::Small <= minSize)
 				{
 					auto table = new GuiTableComposition();
+					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					table->SetRowsAndColumns(5, 1);
+					table->SetCellPadding(2);
+					table->SetBorderVisible(false);
+
+					table->SetRowOption(0, GuiCellOption::MinSizeOption());
+					table->SetRowOption(1, GuiCellOption::PercentageOption(1.0));
+					table->SetRowOption(2, GuiCellOption::MinSizeOption());
+					table->SetRowOption(3, GuiCellOption::PercentageOption(1.0));
+					table->SetRowOption(4, GuiCellOption::MinSizeOption());
+					table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+
+					installButton(table, 0, 0, buttonContainer1);
+					installButton(table, 2, 0, buttonContainer2);
+					installButton(table, 4, 0, buttonContainer3);
 
 					fixedSmall = new GuiResponsiveFixedComposition();
 					fixedSmall->AddChild(table);
@@ -363,6 +410,22 @@ GuiRibbonButtons
 				if (maxSize <= RibbonButtonSize::Icon && RibbonButtonSize::Icon <= minSize)
 				{
 					auto table = new GuiTableComposition();
+					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					table->SetRowsAndColumns(5, 1);
+					table->SetCellPadding(2);
+					table->SetBorderVisible(false);
+
+					table->SetRowOption(0, GuiCellOption::MinSizeOption());
+					table->SetRowOption(1, GuiCellOption::PercentageOption(1.0));
+					table->SetRowOption(2, GuiCellOption::MinSizeOption());
+					table->SetRowOption(3, GuiCellOption::PercentageOption(1.0));
+					table->SetRowOption(4, GuiCellOption::MinSizeOption());
+					table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+
+					installButton(table, 0, 0, buttonContainer1);
+					installButton(table, 2, 0, buttonContainer2);
+					installButton(table, 4, 0, buttonContainer3);
 
 					fixedIcon = new GuiResponsiveFixedComposition();
 					fixedIcon->AddChild(table);
@@ -391,6 +454,7 @@ GuiRibbonButtons
 				button##INDEX = value; \
 				if (button##INDEX) \
 				{ \
+					button##INDEX->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0)); \
 					buttonContainer##INDEX->GetContainerComposition()->AddChild(button##INDEX->GetBoundsComposition()); \
 					SetButtonThemeName(responsiveView->GetCurrentView(), button##INDEX); \
 				} \
