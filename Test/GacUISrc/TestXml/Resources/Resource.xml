@@ -32,7 +32,7 @@
 
           <att.Pages>
             <RibbonTabPage Text="Controls">
-              <att.ContainerComposition-set PreferredMinSize="y:120"/>
+              <att.ContainerComposition-set PreferredMinSize="y:110"/>
               <att.Groups>
                 <RibbonGroup Text="Buttons">
                   <att.Items>
