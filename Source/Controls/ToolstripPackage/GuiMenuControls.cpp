@@ -227,6 +227,7 @@ GuiMenuButton
 				auto host = GetSubMenuHost();
 
 				ct->SetSubMenuOpening(GetSubMenuOpening());
+				ct->SetLargeImage(largeImage);
 				ct->SetImage(image);
 				ct->SetShortcutText(shortcutText);
 				ct->SetSubMenuExisting(subMenu != nullptr);

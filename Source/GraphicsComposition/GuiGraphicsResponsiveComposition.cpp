@@ -756,6 +756,12 @@ GuiResponsiveContainerComposition
 				bool testX = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Horizontal;
 				bool testY = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Vertical;
 
+				if (!tryLevelDown && !tryLevelUp)
+				{
+					tryLevelDown = responsiveTarget->GetCurrentLevel() > 0;
+					tryLevelUp = responsiveTarget->GetCurrentLevel() < responsiveTarget->GetLevelCount() - 1;
+				}
+
 				bool tried = true;
 				while (tried)
 				{
