@@ -121,7 +121,8 @@ GuiRibbonTabPage
 			{
 				stack = new GuiStackComposition();
 				stack->SetDirection(GuiStackComposition::Horizontal);
-				stack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stack->SetAlignmentToParent(Margin(2, 2, 2, 2));
+				stack->SetPadding(2);
 				stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 				responsiveStack = new GuiResponsiveStackComposition();
@@ -214,6 +215,7 @@ GuiRibbonGroup
 				stack = new GuiStackComposition();
 				stack->SetDirection(GuiStackComposition::Horizontal);
 				stack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stack->SetPadding(2);
 				stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 				responsiveStack = new GuiResponsiveStackComposition();
