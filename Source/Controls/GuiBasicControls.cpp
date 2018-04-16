@@ -211,6 +211,7 @@ GuiControl
 					boundsComposition->AddChild(containerComposition);
 				}
 				{
+					ControlThemeNameChanged.SetAssociatedComposition(boundsComposition);
 					ControlTemplateChanged.SetAssociatedComposition(boundsComposition);
 					RenderTargetChanged.SetAssociatedComposition(boundsComposition);
 					VisibleChanged.SetAssociatedComposition(boundsComposition);
@@ -259,6 +260,24 @@ GuiControl
 			compositions::GuiEventArgs GuiControl::GetNotifyEventArguments()
 			{
 				return GuiEventArgs(boundsComposition);
+			}
+
+			theme::ThemeName GuiControl::GetControlThemeName()
+			{
+				return controlThemeName;
+			}
+
+			void GuiControl::SetControlThemeName(theme::ThemeName value)
+			{
+				if (controlThemeName != value)
+				{
+					controlThemeName = value;
+					if (!controlTemplate)
+					{
+						RebuildControlTemplate();
+					}
+					ControlThemeNameChanged.Execute(GetNotifyEventArguments());
+				}
 			}
 
 			GuiControl::ControlTemplatePropertyType GuiControl::GetControlTemplate()

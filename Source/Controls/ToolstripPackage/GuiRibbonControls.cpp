@@ -9,6 +9,7 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace compositions;
+			using namespace theme;
 
 /***********************************************************************
 GuiRibbonTab
@@ -266,6 +267,31 @@ GuiRibbonButtons
 				, maxSize(_maxSize)
 				, minSize(_minSize)
 			{
+				responsiveView = new GuiResponsiveViewComposition();
+				responsiveView->SetDirection(ResponsiveDirection::Horizontal);
+				responsiveView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+
+				button1 = new GuiToolstripButton(ThemeName::CustomControl);
+				button2 = new GuiToolstripButton(ThemeName::CustomControl);
+				button3 = new GuiToolstripButton(ThemeName::CustomControl);
+
+				responsiveView->GetSharedControls().Add(button1);
+				responsiveView->GetSharedControls().Add(button2);
+				responsiveView->GetSharedControls().Add(button3);
+
+				if (maxSize <= RibbonButtonSize::Large && RibbonButtonSize::Large <= minSize)
+				{
+				}
+
+				if (maxSize <= RibbonButtonSize::Small && RibbonButtonSize::Small <= minSize)
+				{
+				}
+
+				if (maxSize <= RibbonButtonSize::Icon && RibbonButtonSize::Icon <= minSize)
+				{
+				}
+
+				containerComposition->AddChild(responsiveView);
 			}
 
 			GuiRibbonButtons::~GuiRibbonButtons()

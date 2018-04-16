@@ -98,6 +98,8 @@ Basic Construction
 				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
 
+				/// <summary>Theme name changed event. This event will be raised when the theme name is changed.</summary>
+				compositions::GuiNotifyEvent			ControlThemeNameChanged;
 				/// <summary>Control template changed event. This event will be raised when the control template is changed.</summary>
 				compositions::GuiNotifyEvent			ControlTemplateChanged;
 				/// <summary>Render target changed event. This event will be raised when the render target of the control is changed.</summary>
@@ -123,6 +125,12 @@ Basic Construction
 				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
 				/// <returns>The created argument.</returns>
 				compositions::GuiEventArgs				GetNotifyEventArguments();
+				/// <summary>Get the associated theme name.</summary>
+				/// <returns>The theme name.</returns>
+				theme::ThemeName						GetControlThemeName();
+				/// <summary>Set the associated control theme name.</summary>
+				/// <param name="value">The theme name.</param>
+				void									SetControlThemeName(theme::ThemeName value);
 				/// <summary>Get the associated control template.</summary>
 				/// <returns>The control template.</returns>
 				ControlTemplatePropertyType				GetControlTemplate();
