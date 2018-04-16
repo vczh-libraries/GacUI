@@ -911,6 +911,7 @@ Type Declaration
 
 				CLASS_MEMBER_GUIEVENT(ExpandButtonClicked)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Expandable)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
 			END_CLASS_MEMBER(GuiRibbonGroup)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)

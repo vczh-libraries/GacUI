@@ -58,6 +58,7 @@ namespace vl
 			F(ToolstripButtonTemplate,		RibbonLargeButton) \
 			F(ToolstripButtonTemplate,		RibbonLargeDropdownButton) \
 			F(ToolstripButtonTemplate,		RibbonLargeSplitButton) \
+			F(ControlTemplate,				RibbonSplitter) \
 			F(ButtonTemplate,				Button) \
 			F(SelectableButtonTemplate,		CheckBox) \
 			F(SelectableButtonTemplate,		RadioButton) \

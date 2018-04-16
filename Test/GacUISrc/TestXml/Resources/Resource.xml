@@ -199,6 +199,7 @@
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonTheme" xmlns:x="darkskin::*">
         <ThemeTemplates>
           <att.RibbonGroup>x:RibbonGroupTemplate</att.RibbonGroup>
+          <att.RibbonSplitter>x:ToolstripSplitterTemplate</att.RibbonSplitter>
         </ThemeTemplates>
       </Instance>
     </Instance>

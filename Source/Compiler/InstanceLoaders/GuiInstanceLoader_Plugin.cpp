@@ -316,6 +316,7 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_VIRTUAL_CONTROL		(RibbonLargeButton,			GuiToolstripButton,			RibbonLargeButton									);
 					ADD_VIRTUAL_CONTROL		(RibbonLargeDropdownButton,	GuiToolstripButton,			RibbonLargeDropdownButton							);
 					ADD_VIRTUAL_CONTROL		(RibbonLargeSplitButton,	GuiToolstripButton,			RibbonLargeSplitButton								);
+					ADD_VIRTUAL_CONTROL		(RibbonSplitter,			GuiControl,					RibbonSplitter										);
 					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,		CheckBox											);
 					ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,		RadioButton											);
 					ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,					HScroll												);

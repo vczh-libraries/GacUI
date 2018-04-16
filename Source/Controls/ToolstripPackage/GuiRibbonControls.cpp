@@ -158,6 +158,43 @@ GuiRibbonTabPage
 			}
 
 /***********************************************************************
+GuiRibbonGroupItemCollection
+***********************************************************************/
+
+			bool GuiRibbonGroupItemCollection::QueryInsert(vint index, GuiControl* const& value)
+			{
+				return !value->GetBoundsComposition()->GetParent();
+			}
+
+			void GuiRibbonGroupItemCollection::AfterInsert(vint index, GuiControl* const& value)
+			{
+				value->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+
+				auto item = new GuiStackItemComposition();
+				item->AddChild(value->GetBoundsComposition());
+
+				group->stack->InsertStackItem(index, item);
+			}
+
+			void GuiRibbonGroupItemCollection::AfterRemove(vint index, vint count)
+			{
+				auto item = group->stack->GetStackItems()[index];
+				group->stack->RemoveChild(item);
+
+				item->RemoveChild(item->Children()[0]);
+				delete item;
+			}
+
+			GuiRibbonGroupItemCollection::GuiRibbonGroupItemCollection(GuiRibbonGroup* _group)
+				:group(_group)
+			{
+			}
+
+			GuiRibbonGroupItemCollection::~GuiRibbonGroupItemCollection()
+			{
+			}
+
+/***********************************************************************
 GuiRibbonGroup
 ***********************************************************************/
 
@@ -172,7 +209,20 @@ GuiRibbonGroup
 
 			GuiRibbonGroup::GuiRibbonGroup(theme::ThemeName themeName)
 				:GuiControl(themeName)
+				, items(this)
 			{
+				stack = new GuiStackComposition();
+				stack->SetDirection(GuiStackComposition::Horizontal);
+				stack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+				responsiveStack = new GuiResponsiveStackComposition();
+				responsiveStack->SetDirection(ResponsiveDirection::Horizontal);
+				responsiveStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				responsiveStack->AddChild(stack);
+
+				containerComposition->AddChild(responsiveStack);
+
 				ExpandableChanged.SetAssociatedComposition(boundsComposition);
 				ExpandButtonClicked.SetAssociatedComposition(boundsComposition);
 			}
@@ -194,6 +244,11 @@ GuiRibbonGroup
 					GetControlTemplateObject()->SetExpandable(expandable);
 					ExpandableChanged.Execute(GetNotifyEventArguments());
 				}
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiRibbonGroup::GetItems()
+			{
+				return items;
 			}
 		}
 	}

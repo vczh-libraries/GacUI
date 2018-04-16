@@ -75,11 +75,29 @@ Ribbon Containers
 				collections::ObservableListBase<GuiRibbonGroup*>&	GetGroups();
 			};
 
+			class GuiRibbonGroupItemCollection : public collections::ObservableListBase<GuiControl*>
+			{
+			protected:
+				GuiRibbonGroup*										group = nullptr;
+
+				bool												QueryInsert(vint index, GuiControl* const& value)override;
+				void												AfterInsert(vint index, GuiControl* const& value)override;
+				void												AfterRemove(vint index, vint count)override;
+
+			public:
+				GuiRibbonGroupItemCollection(GuiRibbonGroup* _group);
+				~GuiRibbonGroupItemCollection();
+			};
+
 			class GuiRibbonGroup : public GuiControl, public Description<GuiRibbonGroup>
 			{
+				friend class GuiRibbonGroupItemCollection;
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGroupTemplate, GuiControl)
 			protected:
 				bool												expandable = false;
+				GuiRibbonGroupItemCollection						items;
+				compositions::GuiResponsiveStackComposition*		responsiveStack = nullptr;
+				compositions::GuiStackComposition*					stack = nullptr;
 
 			public:
 				GuiRibbonGroup(theme::ThemeName themeName);
@@ -90,6 +108,8 @@ Ribbon Containers
 
 				bool												GetExpandable();
 				void												SetExpandable(bool value);
+
+				collections::ObservableListBase<GuiControl*>&		GetItems();
 			};
 
 /***********************************************************************
