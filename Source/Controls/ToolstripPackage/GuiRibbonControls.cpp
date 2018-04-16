@@ -262,6 +262,13 @@ GuiRibbonGroup
 GuiRibbonButtons
 ***********************************************************************/
 
+			void GuiRibbonButtons::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
+			{
+				SetButtonThemeName(responsiveView->GetViews()[arguments.itemIndex], button1);
+				SetButtonThemeName(responsiveView->GetViews()[arguments.itemIndex], button2);
+				SetButtonThemeName(responsiveView->GetViews()[arguments.itemIndex], button3);
+			}
+
 			void GuiRibbonButtons::SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiToolstripButton* button)
 			{
 				if (fixed && button)

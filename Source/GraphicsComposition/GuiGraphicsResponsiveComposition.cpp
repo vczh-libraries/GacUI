@@ -66,6 +66,9 @@ GuiResponsiveCompositionBase
 			{
 				SetMinSizeLimitation(LimitToElementAndChildren);
 				SetPreferredMinSize(Size(1, 1));
+
+				LevelCountChanged.SetAssociatedComposition(this);
+				CurrentLevelChanged.SetAssociatedComposition(this);
 			}
 
 			GuiResponsiveCompositionBase::~GuiResponsiveCompositionBase()
@@ -320,6 +323,7 @@ GuiResponsiveViewComposition
 				:sharedControls(this)
 				, views(this)
 			{
+				BeforeSwitchingView.SetAssociatedComposition(this);
 			}
 
 			GuiResponsiveViewComposition::~GuiResponsiveViewComposition()
@@ -361,6 +365,11 @@ GuiResponsiveViewComposition
 						RemoveChild(currentView);
 						currentView = views[index + 1];
 						currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						{
+							GuiItemEventArgs arguments(this);
+							arguments.itemIndex = views.IndexOf(currentView);
+							BeforeSwitchingView.Execute(arguments);
+						}
 						AddChild(currentView);
 					}
 				}
@@ -382,6 +391,11 @@ GuiResponsiveViewComposition
 						RemoveChild(currentView);
 						currentView = views[index - 1];
 						currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						{
+							GuiItemEventArgs arguments(this);
+							arguments.itemIndex = views.IndexOf(currentView);
+							BeforeSwitchingView.Execute(arguments);
+						}
 						AddChild(currentView);
 					}
 				}

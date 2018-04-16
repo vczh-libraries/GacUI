@@ -145,6 +145,7 @@ Ribbon Controls
 				GUIRIBBON_COMMAND(2);
 				GUIRIBBON_COMMAND(3);
 
+				void												OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void												SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiToolstripButton* button);
 			public:
 				GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize);

@@ -156,6 +156,9 @@ GuiResponsiveViewComposition
 				GuiResponsiveViewComposition();
 				~GuiResponsiveViewComposition();
 
+				/// <summary>Before switch view event. This event happens between hiding the previous view and showing the next view. The itemIndex field can be used to access [M:vl.presentation.compositions.GuiResponsiveViewComposition.GetViews], it is not the level number.</summary>
+				GuiItemNotifyEvent													BeforeSwitchingView;
+
 				vint																GetLevelCount()override;
 				vint																GetCurrentLevel()override;
 				bool																LevelDown()override;
