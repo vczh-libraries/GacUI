@@ -269,7 +269,7 @@ GuiRibbonButtons
 				SetButtonThemeName(responsiveView->GetViews()[arguments.itemIndex], button3);
 			}
 
-			void GuiRibbonButtons::SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiToolstripButton* button)
+			void GuiRibbonButtons::SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiControl* button)
 			{
 				if (fixed && button)
 				{
@@ -340,17 +340,33 @@ GuiRibbonButtons
 				responsiveView->GetSharedControls().Add(buttonContainer1);
 				responsiveView->GetSharedControls().Add(buttonContainer2);
 				responsiveView->GetSharedControls().Add(buttonContainer3);
+				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonButtons::OnBeforeSwitchingView);
 
 				if (maxSize <= RibbonButtonSize::Large && RibbonButtonSize::Large <= minSize)
 				{
+					auto table = new GuiTableComposition();
+
+					fixedLarge = new GuiResponsiveFixedComposition();
+					fixedLarge->AddChild(table);
+					responsiveView->GetViews().Add(fixedLarge);
 				}
 
 				if (maxSize <= RibbonButtonSize::Small && RibbonButtonSize::Small <= minSize)
 				{
+					auto table = new GuiTableComposition();
+
+					fixedSmall = new GuiResponsiveFixedComposition();
+					fixedSmall->AddChild(table);
+					responsiveView->GetViews().Add(fixedSmall);
 				}
 
 				if (maxSize <= RibbonButtonSize::Icon && RibbonButtonSize::Icon <= minSize)
 				{
+					auto table = new GuiTableComposition();
+
+					fixedIcon = new GuiResponsiveFixedComposition();
+					fixedIcon->AddChild(table);
+					responsiveView->GetViews().Add(fixedIcon);
 				}
 
 				containerComposition->AddChild(responsiveView);
@@ -361,11 +377,11 @@ GuiRibbonButtons
 			}
 
 #define GUIRIBBON_ACCESSOR(INDEX) \
-			GuiToolstripButton* GuiRibbonButtons::GetButton##INDEX() \
+			GuiControl* GuiRibbonButtons::GetButton##INDEX() \
 			{ \
 				return button##INDEX; \
 			} \
-			GuiToolstripButton* GuiRibbonButtons::SetButton##INDEX(GuiToolstripButton* value) \
+			GuiControl* GuiRibbonButtons::SetButton##INDEX(GuiControl* value) \
 			{ \
 				auto oldButton = button##INDEX; \
 				if (button##INDEX) \

@@ -126,11 +126,11 @@ Ribbon Controls
 
 #define GUIRIBBON_COMMAND(INDEX) \
 			GuiControl* buttonContainer##INDEX = nullptr; \
-			GuiToolstripButton* button##INDEX = nullptr; \
+			GuiControl* button##INDEX = nullptr; \
 
 #define GUIRIBBON_ACCESSOR(INDEX) \
-			GuiToolstripButton* GetButton##INDEX(); \
-			GuiToolstripButton* SetButton##INDEX(GuiToolstripButton* value); \
+			GuiControl* GetButton##INDEX(); \
+			GuiControl* SetButton##INDEX(GuiControl* value); \
 
 			class GuiRibbonButtons : public GuiControl, public Description<GuiRibbonButtons>
 			{
@@ -138,15 +138,15 @@ Ribbon Controls
 				RibbonButtonSize									minSize;
 				RibbonButtonSize									maxSize;
 				compositions::GuiResponsiveViewComposition*			responsiveView = nullptr;
-				compositions::GuiResponsiveCompositionBase*			fixedLarge = nullptr;
-				compositions::GuiResponsiveCompositionBase*			fixedSmall = nullptr;
-				compositions::GuiResponsiveCompositionBase*			fixedIcon = nullptr;
+				compositions::GuiResponsiveFixedComposition*		fixedLarge = nullptr;
+				compositions::GuiResponsiveFixedComposition*		fixedSmall = nullptr;
+				compositions::GuiResponsiveFixedComposition*		fixedIcon = nullptr;
 				GUIRIBBON_COMMAND(1);
 				GUIRIBBON_COMMAND(2);
 				GUIRIBBON_COMMAND(3);
 
 				void												OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
-				void												SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiToolstripButton* button);
+				void												SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiControl* button);
 			public:
 				GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize);
 				~GuiRibbonButtons();
