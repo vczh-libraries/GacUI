@@ -34,7 +34,7 @@
             <RibbonTabPage Text="Controls">
               <att.ContainerComposition-set PreferredMinSize="y:110"/>
               <att.Groups>
-                <RibbonGroup Text="Buttons">
+                <RibbonGroup Text="Buttons1">
                   <att.Items>
                     <RibbonButtons MaxSize="Large" MinSize="Icon">
                       <att.Buttons>
@@ -43,6 +43,7 @@
                         <ToolstripSplitButton Command-ref="command3"/>
                       </att.Buttons>
                     </RibbonButtons>
+                    <RibbonSplitter/>
                     <RibbonButtons MaxSize="Large" MinSize="Icon">
                       <att.Buttons>
                         <ToolstripButton Command-ref="command4"/>
@@ -50,19 +51,21 @@
                         <ToolstripSplitButton Command-ref="command6"/>
                       </att.Buttons>
                     </RibbonButtons>
-                    <RibbonSplitter/>
+                  </att.Items>
+                </RibbonGroup>
+                
+                <RibbonGroup Text="Buttons2">
+                  <att.Items>
                     <RibbonButtons MaxSize="Large" MinSize="Small">
                       <att.Buttons>
                         <ToolstripButton Command-ref="command1"/>
                         <ToolstripDropdownButton Command-ref="command2"/>
-                        <ToolstripSplitButton Command-ref="command3"/>
                       </att.Buttons>
                     </RibbonButtons>
                     <RibbonButtons MaxSize="Small" MinSize="Icon">
                       <att.Buttons>
                         <ToolstripButton Command-ref="command4"/>
                         <ToolstripDropdownButton Command-ref="command5"/>
-                        <ToolstripSplitButton Command-ref="command6"/>
                       </att.Buttons>
                     </RibbonButtons>
                   </att.Items>
