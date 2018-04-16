@@ -124,26 +124,31 @@ Ribbon Controls
 				Icon = 2,
 			};
 
-#define GUIRIBBON_COMMAND(INDEX) \
-			GuiControl* buttonContainer##INDEX = nullptr; \
-			GuiControl* button##INDEX = nullptr; \
+			class GuiRibbonButtons;
 
-#define GUIRIBBON_ACCESSOR(INDEX) \
-			GuiControl* GetButton##INDEX(); \
-			GuiControl* SetButton##INDEX(GuiControl* value); \
+			class GuiRibbonButtonsItemCollection : public collections::ObservableListBase<GuiControl*>
+			{
+			protected:
+				GuiRibbonButtons*									buttons = nullptr;
+
+				bool												QueryInsert(vint index, GuiControl* const& value)override;
+				void												AfterInsert(vint index, GuiControl* const& value)override;
+				void												BeforeRemove(vint index, GuiControl* const& value)override;
+
+			public:
+				GuiRibbonButtonsItemCollection(GuiRibbonButtons* _buttons);
+				~GuiRibbonButtonsItemCollection();
+			};
 
 			class GuiRibbonButtons : public GuiControl, public Description<GuiRibbonButtons>
 			{
+				friend class GuiRibbonButtonsItemCollection;
 			protected:
 				RibbonButtonSize									minSize;
 				RibbonButtonSize									maxSize;
 				compositions::GuiResponsiveViewComposition*			responsiveView = nullptr;
-				compositions::GuiResponsiveFixedComposition*		fixedLarge = nullptr;
-				compositions::GuiResponsiveFixedComposition*		fixedSmall = nullptr;
-				compositions::GuiResponsiveFixedComposition*		fixedIcon = nullptr;
-				GUIRIBBON_COMMAND(1);
-				GUIRIBBON_COMMAND(2);
-				GUIRIBBON_COMMAND(3);
+				compositions::GuiResponsiveFixedComposition*		views[3] = { nullptr,nullptr,nullptr };
+				GuiRibbonButtonsItemCollection						buttons;
 
 				void												OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void												SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiControl* button);
@@ -151,13 +156,8 @@ Ribbon Controls
 				GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize);
 				~GuiRibbonButtons();
 
-				GUIRIBBON_ACCESSOR(1);
-				GUIRIBBON_ACCESSOR(2);
-				GUIRIBBON_ACCESSOR(3);
+				collections::ObservableListBase<GuiControl*>&		GetButtons();
 			};
-
-#undef GUIRIBBON_ACCESSOR
-#undef GUIRIBBON_COMMAND
 		}
 	}
 }

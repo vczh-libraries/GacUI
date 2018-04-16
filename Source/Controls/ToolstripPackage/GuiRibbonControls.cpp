@@ -259,14 +259,70 @@ GuiRibbonGroup
 			}
 
 /***********************************************************************
+GuiRibbonButtonsItemCollection
+***********************************************************************/
+
+			bool GuiRibbonButtonsItemCollection::QueryInsert(vint index, GuiControl* const& value)
+			{
+				return !value->GetBoundsComposition()->GetParent();
+			}
+
+			void GuiRibbonButtonsItemCollection::AfterInsert(vint index, GuiControl* const& value)
+			{
+				buttons->responsiveView->GetSharedControls().Add(value);
+				buttons->SetButtonThemeName(buttons->responsiveView->GetCurrentView(), value);
+
+				for (vint i = 0; i < sizeof(buttons->views) / sizeof(*buttons->views); i++)
+				{
+					if (auto view = buttons->views[i])
+					{
+						auto stack = dynamic_cast<GuiStackComposition*>(view->Children()[0]);
+
+						auto shared = new GuiResponsiveSharedComposition();
+						shared->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						shared->SetShared(value);
+
+						auto item = new GuiStackItemComposition();
+						item->AddChild(shared);
+						switch (stack->GetDirection())
+						{
+						case GuiStackComposition::Horizontal:
+							item->SetInternalMargin(Margin(1, 0, 1, 0));
+							break;
+						case GuiStackComposition::Vertical:
+							item->SetInternalMargin(Margin(0, 1, 0, 1));
+							break;
+						}
+
+						stack->InsertChild(index, item);
+					}
+				}
+			}
+
+			void GuiRibbonButtonsItemCollection::BeforeRemove(vint index, GuiControl* const& value)
+			{
+				CHECK_FAIL(L"GuiRibbonButtonsItemCollection::BeforeRemove(vint, vint)#Controls are not allowed to be removed from GuiRibbonButtons.");
+			}
+
+			GuiRibbonButtonsItemCollection::GuiRibbonButtonsItemCollection(GuiRibbonButtons* _buttons)
+				:buttons(_buttons)
+			{
+			}
+
+			GuiRibbonButtonsItemCollection::~GuiRibbonButtonsItemCollection()
+			{
+			}
+
+/***********************************************************************
 GuiRibbonButtons
 ***********************************************************************/
 
 			void GuiRibbonButtons::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
 			{
-				SetButtonThemeName(responsiveView->GetViews()[arguments.itemIndex], button1);
-				SetButtonThemeName(responsiveView->GetViews()[arguments.itemIndex], button2);
-				SetButtonThemeName(responsiveView->GetViews()[arguments.itemIndex], button3);
+				FOREACH(GuiControl*, button, buttons)
+				{
+					SetButtonThemeName(responsiveView->GetViews()[arguments.itemIndex], button);
+				}
 			}
 
 			void GuiRibbonButtons::SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiControl* button)
@@ -294,7 +350,7 @@ GuiRibbonButtons
 						break;
 					}
 
-					if (fixed == fixedLarge)
+					if (fixed == views[(vint)RibbonButtonSize::Large])
 					{
 						switch (type)
 						{
@@ -303,7 +359,7 @@ GuiRibbonButtons
 						case 2: button->SetControlThemeName(ThemeName::RibbonLargeSplitButton); break;
 						}
 					}
-					else if (fixed == fixedSmall)
+					else if (fixed == views[(vint)RibbonButtonSize::Small])
 					{
 						switch (type)
 						{
@@ -312,7 +368,7 @@ GuiRibbonButtons
 						case 2: button->SetControlThemeName(ThemeName::RibbonSmallSplitButton); break;
 						}
 					}
-					else if (fixed == fixedIcon)
+					else if (fixed == views[(vint)RibbonButtonSize::Icon])
 					{
 						switch (type)
 						{
@@ -328,22 +384,11 @@ GuiRibbonButtons
 				:GuiControl(themeName)
 				, maxSize(_maxSize)
 				, minSize(_minSize)
+				, buttons(this)
 			{
 				responsiveView = new GuiResponsiveViewComposition();
 				responsiveView->SetDirection(ResponsiveDirection::Horizontal);
 				responsiveView->SetAlignmentToParent(Margin(0, 0, 0, 0));
-
-				buttonContainer1 = new GuiControl(ThemeName::CustomControl);
-				buttonContainer2 = new GuiControl(ThemeName::CustomControl);
-				buttonContainer3 = new GuiControl(ThemeName::CustomControl);
-
-				buttonContainer1->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				buttonContainer2->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				buttonContainer3->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-
-				responsiveView->GetSharedControls().Add(buttonContainer1);
-				responsiveView->GetSharedControls().Add(buttonContainer2);
-				responsiveView->GetSharedControls().Add(buttonContainer3);
 				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonButtons::OnBeforeSwitchingView);
 
 				auto installButton = [&](GuiTableComposition* table, vint row, vint column, GuiControl* buttonContainer)
@@ -359,77 +404,20 @@ GuiRibbonButtons
 					table->AddChild(cell);
 				};
 
-				if (maxSize <= RibbonButtonSize::Large && RibbonButtonSize::Large <= minSize)
+				for (vint i = 0; i < sizeof(views) / sizeof(*views); i++)
 				{
-					auto table = new GuiTableComposition();
-					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					table->SetRowsAndColumns(1, 3);
-					table->SetCellPadding(2);
-					table->SetBorderVisible(false);
+					if ((vint)maxSize <= i && i <= (vint)minSize)
+					{
+						auto stack = new GuiStackComposition();
+						stack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+						stack->SetPadding(2);
+						stack->SetDirection(i == 0 ? GuiStackComposition::Horizontal : GuiStackComposition::Vertical);
 
-					table->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
-					table->SetColumnOption(0, GuiCellOption::MinSizeOption());
-					table->SetColumnOption(1, GuiCellOption::MinSizeOption());
-					table->SetColumnOption(2, GuiCellOption::MinSizeOption());
-
-					installButton(table, 0, 0, buttonContainer1);
-					installButton(table, 0, 1, buttonContainer2);
-					installButton(table, 0, 2, buttonContainer3);
-
-					fixedLarge = new GuiResponsiveFixedComposition();
-					fixedLarge->AddChild(table);
-					responsiveView->GetViews().Add(fixedLarge);
-				}
-
-				if (maxSize <= RibbonButtonSize::Small && RibbonButtonSize::Small <= minSize)
-				{
-					auto table = new GuiTableComposition();
-					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					table->SetRowsAndColumns(5, 1);
-					table->SetCellPadding(2);
-					table->SetBorderVisible(false);
-
-					table->SetRowOption(0, GuiCellOption::MinSizeOption());
-					table->SetRowOption(1, GuiCellOption::PercentageOption(1.0));
-					table->SetRowOption(2, GuiCellOption::MinSizeOption());
-					table->SetRowOption(3, GuiCellOption::PercentageOption(1.0));
-					table->SetRowOption(4, GuiCellOption::MinSizeOption());
-					table->SetColumnOption(0, GuiCellOption::MinSizeOption());
-
-					installButton(table, 0, 0, buttonContainer1);
-					installButton(table, 2, 0, buttonContainer2);
-					installButton(table, 4, 0, buttonContainer3);
-
-					fixedSmall = new GuiResponsiveFixedComposition();
-					fixedSmall->AddChild(table);
-					responsiveView->GetViews().Add(fixedSmall);
-				}
-
-				if (maxSize <= RibbonButtonSize::Icon && RibbonButtonSize::Icon <= minSize)
-				{
-					auto table = new GuiTableComposition();
-					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					table->SetRowsAndColumns(5, 1);
-					table->SetCellPadding(2);
-					table->SetBorderVisible(false);
-
-					table->SetRowOption(0, GuiCellOption::MinSizeOption());
-					table->SetRowOption(1, GuiCellOption::PercentageOption(1.0));
-					table->SetRowOption(2, GuiCellOption::MinSizeOption());
-					table->SetRowOption(3, GuiCellOption::PercentageOption(1.0));
-					table->SetRowOption(4, GuiCellOption::MinSizeOption());
-					table->SetColumnOption(0, GuiCellOption::MinSizeOption());
-
-					installButton(table, 0, 0, buttonContainer1);
-					installButton(table, 2, 0, buttonContainer2);
-					installButton(table, 4, 0, buttonContainer3);
-
-					fixedIcon = new GuiResponsiveFixedComposition();
-					fixedIcon->AddChild(table);
-					responsiveView->GetViews().Add(fixedIcon);
+						views[i] = new GuiResponsiveFixedComposition();
+						views[i]->AddChild(stack);
+						responsiveView->GetViews().Add(views[i]);
+					}
 				}
 
 				containerComposition->AddChild(responsiveView);
@@ -439,33 +427,10 @@ GuiRibbonButtons
 			{
 			}
 
-#define GUIRIBBON_ACCESSOR(INDEX) \
-			GuiControl* GuiRibbonButtons::GetButton##INDEX() \
-			{ \
-				return button##INDEX; \
-			} \
-			GuiControl* GuiRibbonButtons::SetButton##INDEX(GuiControl* value) \
-			{ \
-				auto oldButton = button##INDEX; \
-				if (button##INDEX) \
-				{ \
-					buttonContainer##INDEX->GetContainerComposition()->RemoveChild(button##INDEX->GetBoundsComposition()); \
-				} \
-				button##INDEX = value; \
-				if (button##INDEX) \
-				{ \
-					button##INDEX->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0)); \
-					buttonContainer##INDEX->GetContainerComposition()->AddChild(button##INDEX->GetBoundsComposition()); \
-					SetButtonThemeName(responsiveView->GetCurrentView(), button##INDEX); \
-				} \
-				return button##INDEX; \
-			} \
-
-			GUIRIBBON_ACCESSOR(1)
-			GUIRIBBON_ACCESSOR(2)
-			GUIRIBBON_ACCESSOR(3)
-
-#undef GUIRIBBON_ACCESSOR
+			collections::ObservableListBase<GuiControl*>& GuiRibbonButtons::GetButtons()
+			{
+				return buttons;
+			}
 		}
 	}
 }

@@ -925,9 +925,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiControl)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_3(GuiRibbonButtons, RibbonButtonSize, maxSize, RibbonButtonSize, minSize)
 
-				CLASS_MEMBER_PROPERTY_FAST(Button1)
-				CLASS_MEMBER_PROPERTY_FAST(Button2)
-				CLASS_MEMBER_PROPERTY_FAST(Button3)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Buttons)
 			END_CLASS_MEMBER(GuiRibbonButtons)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)

@@ -2,14 +2,14 @@
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" ref.Styles="res://CopySubMenu">
       <Window ref.Name="self" Text="Ribbon" ClientSize="x:800 y:600">
-        
+
         <ToolstripCommand ref.Name="command1" Text="Accounts" LargeImage-uri="res://LargeImages/Accounts" Image-uri="res://SmallImages/Accounts"/>
         <ToolstripCommand ref.Name="command2" Text="Chart" LargeImage-uri="res://LargeImages/Chart" Image-uri="res://SmallImages/Chart"/>
         <ToolstripCommand ref.Name="command3" Text="Copy" LargeImage-uri="res://LargeImages/Copy" Image-uri="res://SmallImages/Copy"/>
         <ToolstripCommand ref.Name="command4" Text="Flags" LargeImage-uri="res://LargeImages/Flags" Image-uri="res://SmallImages/Flags"/>
         <ToolstripCommand ref.Name="command5" Text="Paste" LargeImage-uri="res://LargeImages/Paste" Image-uri="res://SmallImages/Paste"/>
         <ToolstripCommand ref.Name="command6" Text="Save" LargeImage-uri="res://LargeImages/Save" Image-uri="res://SmallImages/Save"/>
-        
+
         <RibbonTab>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
           <att.BeforeHeaders-set>
@@ -37,25 +37,33 @@
                 <RibbonGroup Text="Buttons">
                   <att.Items>
                     <RibbonButtons MaxSize="Large" MinSize="Icon">
-                      <att.Button1><ToolstripButton Command-ref="command1"/></att.Button1>
-                      <att.Button2><ToolstripDropdownButton Command-ref="command2"/></att.Button2>
-                      <att.Button3><ToolstripSplitButton Command-ref="command3"/></att.Button3>
+                      <att.Buttons>
+                        <ToolstripButton Command-ref="command1"/>
+                        <ToolstripDropdownButton Command-ref="command2"/>
+                        <ToolstripSplitButton Command-ref="command3"/>
+                      </att.Buttons>
                     </RibbonButtons>
                     <RibbonButtons MaxSize="Large" MinSize="Icon">
-                      <att.Button1><ToolstripButton Command-ref="command4"/></att.Button1>
-                      <att.Button2><ToolstripDropdownButton Command-ref="command5"/></att.Button2>
-                      <att.Button3><ToolstripSplitButton Command-ref="command6"/></att.Button3>
+                      <att.Buttons>
+                        <ToolstripButton Command-ref="command4"/>
+                        <ToolstripDropdownButton Command-ref="command5"/>
+                        <ToolstripSplitButton Command-ref="command6"/>
+                      </att.Buttons>
                     </RibbonButtons>
                     <RibbonSplitter/>
                     <RibbonButtons MaxSize="Large" MinSize="Small">
-                      <att.Button1><ToolstripButton Command-ref="command1"/></att.Button1>
-                      <att.Button2><ToolstripDropdownButton Command-ref="command2"/></att.Button2>
-                      <att.Button3><ToolstripSplitButton Command-ref="command3"/></att.Button3>
+                      <att.Buttons>
+                        <ToolstripButton Command-ref="command1"/>
+                        <ToolstripDropdownButton Command-ref="command2"/>
+                        <ToolstripSplitButton Command-ref="command3"/>
+                      </att.Buttons>
                     </RibbonButtons>
                     <RibbonButtons MaxSize="Small" MinSize="Icon">
-                      <att.Button1><ToolstripButton Command-ref="command4"/></att.Button1>
-                      <att.Button2><ToolstripDropdownButton Command-ref="command5"/></att.Button2>
-                      <att.Button3><ToolstripSplitButton Command-ref="command6"/></att.Button3>
+                      <att.Buttons>
+                        <ToolstripButton Command-ref="command4"/>
+                        <ToolstripDropdownButton Command-ref="command5"/>
+                        <ToolstripSplitButton Command-ref="command6"/>
+                      </att.Buttons>
                     </RibbonButtons>
                   </att.Items>
                 </RibbonGroup>
