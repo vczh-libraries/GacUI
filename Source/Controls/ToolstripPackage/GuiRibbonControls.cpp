@@ -290,7 +290,7 @@ GuiRibbonButtons
 					case ThemeName::RibbonLargeSplitButton:
 					case ThemeName::RibbonSmallSplitButton:
 					case ThemeName::ToolstripSplitButton:
-						type = 0;
+						type = 2;
 						break;
 					}
 
