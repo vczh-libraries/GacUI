@@ -68,13 +68,7 @@
                 <RibbonGroup Text="Toolstrip">
                 </RibbonGroup>
 
-                <RibbonGroup Text="Something">
-                </RibbonGroup>
-
-                <RibbonGroup Text="Which Is">
-                </RibbonGroup>
-
-                <RibbonGroup Text="Funny!">
+                <RibbonGroup Text="Something Wrong!">
                 </RibbonGroup>
               </att.Groups>
             </RibbonTabPage>
