@@ -41,7 +41,6 @@
                       <att.Button2><ToolstripDropdownButton Command-ref="command2"/></att.Button2>
                       <att.Button3><ToolstripSplitButton Command-ref="command3"/></att.Button3>
                     </RibbonButtons>
-                    <RibbonSplitter/>
                     <RibbonButtons MaxSize="Large" MinSize="Icon">
                       <att.Button1><ToolstripButton Command-ref="command4"/></att.Button1>
                       <att.Button2><ToolstripDropdownButton Command-ref="command5"/></att.Button2>
@@ -53,7 +52,6 @@
                       <att.Button2><ToolstripDropdownButton Command-ref="command2"/></att.Button2>
                       <att.Button3><ToolstripSplitButton Command-ref="command3"/></att.Button3>
                     </RibbonButtons>
-                    <RibbonSplitter/>
                     <RibbonButtons MaxSize="Small" MinSize="Icon">
                       <att.Button1><ToolstripButton Command-ref="command4"/></att.Button1>
                       <att.Button2><ToolstripDropdownButton Command-ref="command5"/></att.Button2>
