@@ -119,9 +119,9 @@ Ribbon Controls
 
 			enum class RibbonButtonSize
 			{
-				Large,
-				Small,
-				Icon,
+				Large = 0,
+				Small = 1,
+				Icon = 2,
 			};
 
 #define GUIRIBBON_COMMAND(INDEX) \
