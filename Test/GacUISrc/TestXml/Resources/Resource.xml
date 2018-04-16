@@ -1,7 +1,7 @@
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" ref.Styles="res://CopySubMenu">
-      <Window ref.Name="self" Text="Ribbon" ClientSize="x:640 y:480">
+      <Window ref.Name="self" Text="Ribbon" ClientSize="x:800 y:600">
         
         <ToolstripCommand ref.Name="command1" Text="Accounts" LargeImage-uri="res://LargeImages/Accounts" Image-uri="res://SmallImages/Accounts"/>
         <ToolstripCommand ref.Name="command2" Text="Chart" LargeImage-uri="res://LargeImages/Chart" Image-uri="res://SmallImages/Chart"/>
@@ -11,14 +11,14 @@
         <ToolstripCommand ref.Name="command6" Text="Save" LargeImage-uri="res://LargeImages/Save" Image-uri="res://SmallImages/Save"/>
         
         <RibbonTab>
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1" PreferredMinSize="y:140"/>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
           <att.BeforeHeaders-set>
             <Button Text="HOME">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80"/>
             </Button>
           </att.BeforeHeaders-set>
           <att.AfterHeaders-set>
-            <Stack Direction="Horizontal" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+            <Stack Direction="Horizontal" AlignmentToParent="left:0 top:-1 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
               <StackItem InternalMargin="left:0 top:0 right:10 bottom:0">
                 <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text="Search:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
               </StackItem>
@@ -32,6 +32,7 @@
 
           <att.Pages>
             <RibbonTabPage Text="Controls">
+              <att.ContainerComposition-set PreferredMinSize="y:120"/>
               <att.Groups>
                 <RibbonGroup Text="Buttons">
                   <att.Items>
@@ -45,6 +46,15 @@
                 </RibbonGroup>
 
                 <RibbonGroup Text="Toolstrip">
+                </RibbonGroup>
+
+                <RibbonGroup Text="Something">
+                </RibbonGroup>
+
+                <RibbonGroup Text="Which Is">
+                </RibbonGroup>
+
+                <RibbonGroup Text="Funny!">
                 </RibbonGroup>
               </att.Groups>
             </RibbonTabPage>
