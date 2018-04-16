@@ -284,15 +284,6 @@ GuiRibbonButtonsItemCollection
 
 						auto item = new GuiStackItemComposition();
 						item->AddChild(shared);
-						switch (stack->GetDirection())
-						{
-						case GuiStackComposition::Horizontal:
-							item->SetInternalMargin(Margin(1, 0, 1, 0));
-							break;
-						case GuiStackComposition::Vertical:
-							item->SetInternalMargin(Margin(0, 1, 0, 1));
-							break;
-						}
 
 						stack->InsertChild(index, item);
 					}
@@ -411,7 +402,6 @@ GuiRibbonButtons
 						auto stack = new GuiStackComposition();
 						stack->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						stack->SetPadding(2);
 						stack->SetDirection(i == 0 ? GuiStackComposition::Horizontal : GuiStackComposition::Vertical);
 
 						views[i] = new GuiResponsiveFixedComposition();

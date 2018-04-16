@@ -53,7 +53,7 @@
                     </RibbonButtons>
                   </att.Items>
                 </RibbonGroup>
-                
+
                 <RibbonGroup Text="Buttons2">
                   <att.Items>
                     <RibbonButtons MaxSize="Large" MinSize="Small">
