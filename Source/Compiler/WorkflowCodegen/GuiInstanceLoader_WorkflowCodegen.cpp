@@ -339,20 +339,20 @@ Workflow_GenerateInstanceClass
 
 		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex)
 		{
-			bool beforePrecompile = false;
+			bool needFunctionBody = false;
 			bool needEventHandler = false;
 			switch (passIndex)
 			{
 			case IGuiResourceTypeResolver_Precompile::Instance_CollectInstanceTypes:
-				beforePrecompile = true;
+				needFunctionBody = false;
 				needEventHandler = false;
 				break;
 			case IGuiResourceTypeResolver_Precompile::Instance_CollectEventHandlers:
-				beforePrecompile = true;
+				needFunctionBody = false;
 				needEventHandler = true;
 				break;
 			case IGuiResourceTypeResolver_Precompile::Instance_GenerateInstanceClass:
-				beforePrecompile = false;
+				needFunctionBody = true;
 				needEventHandler = true;
 				break;
 			}
@@ -401,7 +401,7 @@ Workflow_GenerateInstanceClass
 			// Inherit from Constructor Class
 			///////////////////////////////////////////////////////////////
 
-			if (!beforePrecompile)
+			if (needFunctionBody)
 			{
 				auto baseType = MakePtr<WfReferenceType>();
 				baseType->name.value = instanceClass->name.value + L"Constructor";
@@ -463,7 +463,7 @@ Workflow_GenerateInstanceClass
 				List<Ptr<WfDeclaration>> memberDecls;
 				parseClassMembers(context->memberScript, L"members of instance \"" + context->className + L"\"", memberDecls, context->memberPosition);
 
-				if (beforePrecompile)
+				if (!needFunctionBody)
 				{
 					List<Ptr<WfDeclaration>> unprocessed;
 					CopyFrom(unprocessed, memberDecls);
@@ -484,7 +484,7 @@ Workflow_GenerateInstanceClass
 
 			auto ctor = MakePtr<WfConstructorDeclaration>();
 			ctor->constructorType = WfConstructorType::RawPtr;
-			auto ctorBlock = (beforePrecompile ? notImplemented() : MakePtr<WfBlockStatement>());
+			auto ctorBlock = (!needFunctionBody ? notImplemented() : MakePtr<WfBlockStatement>());
 			ctor->statement = ctorBlock;
 
 			if (auto group = baseType->GetTypeDescriptor()->GetConstructorGroup())
@@ -493,7 +493,7 @@ Workflow_GenerateInstanceClass
 				vint count = ctorInfo->GetParameterCount();
 				if (count > 0)
 				{
-					if (!beforePrecompile)
+					if (needFunctionBody)
 					{
 						if (auto call = resolvingResult.rootLoader->CreateRootInstance(precompileContext, resolvingResult, resolvingResult.rootTypeInfo, resolvingResult.rootCtorArguments, errors))
 						{
@@ -569,7 +569,7 @@ Workflow_GenerateInstanceClass
 
 				vint errorCount = errors.Count();
 				auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + classNameTail, parameter->classPosition, errors);
-				if (beforePrecompile && !parameterTypeInfo && errorCount == errors.Count())
+				if (!needFunctionBody && !parameterTypeInfo && errorCount == errors.Count())
 				{
 					if (!type || type.Cast<WfReferenceType>() || type.Cast<WfChildType>() || type.Cast<WfTopQualifiedType>())
 					{
@@ -578,7 +578,7 @@ Workflow_GenerateInstanceClass
 				}
 				if (type)
 				{
-					if (!beforePrecompile)
+					if (needFunctionBody)
 					{
 						auto decl = MakePtr<WfVariableDeclaration>();
 						addDecl(decl);
@@ -596,7 +596,7 @@ Workflow_GenerateInstanceClass
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"Get" + parameter->name.ToString();
 						decl->returnType = CopyType(type);
-						if (!beforePrecompile)
+						if (needFunctionBody)
 						{
 							auto block = MakePtr<WfBlockStatement>();
 							decl->statement = block;
@@ -631,7 +631,7 @@ Workflow_GenerateInstanceClass
 						argument->type = CopyType(type);
 						ctor->arguments.Add(argument);
 					}
-					if (!beforePrecompile)
+					if (needFunctionBody)
 					{
 						auto refLeft = MakePtr<WfReferenceExpression>();
 						refLeft->name.value = L"<parameter>" + parameter->name.ToString();
@@ -671,7 +671,7 @@ Workflow_GenerateInstanceClass
 			// Calling Constructor Class
 			///////////////////////////////////////////////////////////////
 
-			if (!beforePrecompile)
+			if (needFunctionBody)
 			{
 				{
 					auto getRmExpr = MakePtr<WfChildExpression>();
@@ -769,7 +769,7 @@ Workflow_GenerateInstanceClass
 			{
 				if (auto stat = Workflow_ParseStatement(precompileContext, { resolvingResult.resource }, context->ctorScript, context->ctorPosition, errors))
 				{
-					if (!beforePrecompile)
+					if (needFunctionBody)
 					{
 						if (!stat.Cast<WfBlockStatement>())
 						{
@@ -816,7 +816,7 @@ Workflow_GenerateInstanceClass
 			{
 				if (auto stat = Workflow_ParseStatement(precompileContext, { resolvingResult.resource }, context->dtorScript, context->dtorPosition, errors))
 				{
-					if (!beforePrecompile)
+					if (needFunctionBody)
 					{
 						if (!stat.Cast<WfBlockStatement>())
 						{
