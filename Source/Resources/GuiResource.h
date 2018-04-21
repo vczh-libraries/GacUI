@@ -563,18 +563,15 @@ Resource Type Resolver
 		///		Represents a precompiler for resources of a specified type.
 		///		Current resources that needs precompiling:
 		///		Workflow:
-		///			Pass  0: Collect workflow scripts
-		///			Pass  1: Compile ViewModel scripts
-		///			Pass  2: Compile Shared scripts
+		///			Pass  0: Collect workflow scripts / Compile localized strings
+		///			Pass  1: Compile workflow scripts
 		///		Instance:
-		///			Pass  3: Collect instance types
-		///			Pass  4: Validate instance dependency
-		///			Pass  5: Generate TemporaryClass scripts, ClassNameRecord
-		///			Pass  6: Compile TemporaryClass scripts
-		///			Pass  7: Generate InstanceCtor scripts
-		///			Pass  8: Compile InstanceCtor scripts
-		///			Pass  9: Unload InstanceCtor, Delete TemporaryClass, Generate InstanceClass scripts
-		///			Pass 10: Compile InstanceClass scripts
+		///			Pass  2: Collect instance types													/ Compile animation types / Generate ClassNameRecord
+		///			Pass  3: Compile
+		///			Pass  4: Generate instance types with event handler functions to TemporaryClass	/ Compile animation types
+		///			Pass  5: Compile
+		///			Pass  6: Generate instance types with everything to InstanceCtor				/ Compile animation types
+		///			Pass  7: Compile
 		/// </summary>
 		class IGuiResourceTypeResolver_Precompile : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
 		{
