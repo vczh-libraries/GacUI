@@ -175,6 +175,7 @@
     <Xml Include="Resources\Resource.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Resources\ToolbarImages\Images.xml" />
     <Xml Include="Resources\Toolstrip.xml" />
   </ItemGroup>
   <ItemGroup>
