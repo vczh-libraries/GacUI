@@ -24,7 +24,8 @@ IGuiResourceManager
 		class GuiResourceClassNameRecord : public Object, public Description<GuiResourceClassNameRecord>
 		{
 		public:
-			collections::List<WString>					classNames;
+			collections::List<WString>								classNames;
+			collections::Dictionary<WString, Ptr<GuiResourceItem>>	classResources;
 		};
 
 		class IGuiResourceManager : public IDescriptable, public Description<IGuiResourceManager>

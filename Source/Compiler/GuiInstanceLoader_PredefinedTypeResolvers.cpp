@@ -376,6 +376,7 @@ Instance Type Resolver (Instance)
 			{
 				switch (passIndex)
 				{
+				case Workflow_Collect:
 				case Instance_CollectInstanceTypes:
 				case Instance_CollectEventHandlers:
 				case Instance_GenerateInstanceClass:
@@ -419,6 +420,25 @@ Instance Type Resolver (Instance)
 			{
 				switch (context.passIndex)
 				{
+				case Workflow_Collect:
+					{
+						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
+						{
+							auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
+							if (!record)
+							{
+								record = MakePtr<GuiResourceClassNameRecord>();
+								context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
+							}
+
+							if (!record->classResources.Keys().Contains(obj->className))
+							{
+								record->classNames.Add(obj->className);
+								record->classResources.Add(obj->className, resource);
+							}
+						}
+					}
+					break;
 				case Instance_CollectEventHandlers:
 					ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
 				case Instance_CollectInstanceTypes:
@@ -479,17 +499,6 @@ Instance Type Resolver (Instance)
 							if (auto module = Workflow_GenerateInstanceClass(context, L"<instance>" + obj->className, resolvingResult, errors, context.passIndex))
 							{
 								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass, obj->tagPosition);
-							}
-
-							if (context.passIndex == Instance_CollectInstanceTypes)
-							{
-								auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
-								if (!record)
-								{
-									record = MakePtr<GuiResourceClassNameRecord>();
-									context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
-								}
-								record->classNames.Add(obj->className);
 							}
 						}
 					}

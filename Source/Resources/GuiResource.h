@@ -563,10 +563,10 @@ Resource Type Resolver
 		///		Represents a precompiler for resources of a specified type.
 		///		Current resources that needs precompiling:
 		///		Workflow:
-		///			Pass  0: Collect workflow scripts / Compile localized strings
+		///			Pass  0: Collect workflow scripts / Compile localized strings / Generate ClassNameRecord
 		///			Pass  1: Compile workflow scripts
 		///		Instance:
-		///			Pass  2: Collect instance types													/ Compile animation types / Generate ClassNameRecord
+		///			Pass  2: Collect instance types													/ Compile animation types
 		///			Pass  3: Compile
 		///			Pass  4: Generate instance types with event handler functions to TemporaryClass	/ Compile animation types
 		///			Pass  5: Compile
