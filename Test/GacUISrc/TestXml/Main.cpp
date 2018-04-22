@@ -40,8 +40,6 @@ void OpenMainWindow()
 		RegisterTheme(L"RibbonTheme", theme);
 	}
 	{
-		// TODO:
-		// Black cursor
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::DocumentEditorToolstripWindow"));
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();

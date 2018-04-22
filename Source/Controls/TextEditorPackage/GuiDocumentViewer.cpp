@@ -1149,10 +1149,11 @@ GuiDocumentViewer
 			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName)
 				:GuiScrollContainer(themeName)
 			{
-				SetExtendToFullWidth(true);
-				SetHorizontalAlwaysVisible(false);
 				SetFocusableComposition(boundsComposition);
 				InstallDocumentViewer(this, containerComposition, boundsComposition, focusableComposition);
+
+				SetExtendToFullWidth(true);
+				SetHorizontalAlwaysVisible(false);
 			}
 
 			GuiDocumentViewer::~GuiDocumentViewer()
