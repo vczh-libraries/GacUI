@@ -172,7 +172,7 @@ Ribbon Toolstrips
 
 				bool													QueryInsert(vint index, GuiToolstripGroup* const& value)override;
 				void													AfterInsert(vint index, GuiToolstripGroup* const& value)override;
-				void													BeforeRemove(vint index, GuiToolstripGroup* const& value)override;
+				void													AfterRemove(vint index, vint count)override;
 
 			public:
 				GuiRibbonToolstripsGroupCollection(GuiRibbonToolstrips* _toolstrips);
@@ -181,10 +181,15 @@ Ribbon Toolstrips
 
 			class GuiRibbonToolstrips : public GuiControl, public Description<GuiRibbonToolstrips>
 			{
-				friend class GuiRibbonButtonsItemCollection;
+				friend class GuiRibbonToolstripsGroupCollection;
 			protected:
 				GuiRibbonToolstripsGroupCollection						groups;
+				GuiToolstripGroupContainer*								longContainers[2] = { nullptr,nullptr };
+				GuiToolstripGroupContainer*								shortContainers[2] = { nullptr,nullptr };
+				compositions::GuiResponsiveFixedComposition*			views[3] = { nullptr,nullptr,nullptr };
 
+				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
+				void													RearrangeToolstripGroups();
 			public:
 				GuiRibbonToolstrips(theme::ThemeName themeName);
 				~GuiRibbonToolstrips();

@@ -433,11 +433,12 @@ GuiRibbonToolstripsGroupCollection
 
 			void GuiRibbonToolstripsGroupCollection::AfterInsert(vint index, GuiToolstripGroup* const& value)
 			{
+				toolstrips->RearrangeToolstripGroups();
 			}
 
-			void GuiRibbonToolstripsGroupCollection::BeforeRemove(vint index, GuiToolstripGroup* const& value)
+			void GuiRibbonToolstripsGroupCollection::AfterRemove(vint index, vint count)
 			{
-				CHECK_FAIL(L"GuiRibbonToolstripsGroupCollection::BeforeRemove(vint, GuiToolstripGroup* const&)#Toolstrip groups are not allowed to be removed from GuiRibbonToolstrips.");
+				toolstrips->RearrangeToolstripGroups();
 			}
 
 			GuiRibbonToolstripsGroupCollection::GuiRibbonToolstripsGroupCollection(GuiRibbonToolstrips* _toolstrips)
@@ -452,6 +453,14 @@ GuiRibbonToolstripsGroupCollection
 /***********************************************************************
 GuiRibbonToolstrips
 ***********************************************************************/
+
+			void GuiRibbonToolstrips::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
+			{
+			}
+
+			void GuiRibbonToolstrips::RearrangeToolstripGroups()
+			{
+			}
 
 			GuiRibbonToolstrips::GuiRibbonToolstrips(theme::ThemeName themeName)
 				:GuiControl(themeName)
