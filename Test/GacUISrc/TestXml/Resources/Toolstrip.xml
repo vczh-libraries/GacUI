@@ -1,5 +1,5 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorToolstripWindow" xmlns:demo="demo::*">
-  <demo:DocumentEditorWindowBase ref.Name="self">
+  <demo:DocumentEditorWindowBase ref.Name="self" Text="Document Editor (Toolstrip)">
     <att.MenuContainer-set>
       <ToolstripMenuBar>
         <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>

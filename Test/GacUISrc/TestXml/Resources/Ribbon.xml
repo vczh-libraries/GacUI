@@ -1,0 +1,30 @@
+<Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorRibbonWindow" xmlns:demo="demo::*">
+  <demo:DocumentEditorWindowBase ref.Name="self" Text="Document Editor (Ribbon)">
+    <att.MenuContainer-set>
+      <RibbonTab>
+        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        <att.BeforeHeaders-set>
+          <Button Text="HOME">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80"/>
+          </Button>
+        </att.BeforeHeaders-set>
+
+        <att.Pages>
+          <RibbonTabPage Text="Edit">
+            <att.ContainerComposition-set PreferredMinSize="y:110"/>
+            <att.Groups>
+              <RibbonGroup Text="Alignment">
+              </RibbonGroup>
+              <RibbonGroup Text="Edit">
+              </RibbonGroup>
+              <RibbonGroup Text="Object">
+              </RibbonGroup>
+              <RibbonGroup Text="Text Attributes">
+              </RibbonGroup>
+            </att.Groups>
+          </RibbonTabPage>
+        </att.Pages>
+      </RibbonTab>
+    </att.MenuContainer-set>
+  </demo:DocumentEditorWindowBase>
+</Instance>

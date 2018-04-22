@@ -107,6 +107,7 @@
   <Folder name="ToolbarImages" content="Link">ToolbarImages/Images.xml</Folder>
   <Instance name="DocumentEditorWindowBaseResource" content="File">Base.xml</Instance>
   <Instance name="DocumentEditorToolstripWindowResource" content="File">Toolstrip.xml</Instance>
+  <Instance name="DocumentEditorRibbonWindowResource" content="File">Ribbon.xml</Instance>
   <Instance name="HyperlinkWindowResource" content="File">Hyperlink.xml</Instance>
 
   <Folder name="LargeImages">

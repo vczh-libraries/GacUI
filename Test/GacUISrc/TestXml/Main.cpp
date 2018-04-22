@@ -40,7 +40,7 @@ void OpenMainWindow()
 		RegisterTheme(L"RibbonTheme", theme);
 	}
 	{
-		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::DocumentEditorToolstripWindow"));
+		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::DocumentEditorRibbonWindow"));
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
 		GetApplication()->Run(window);
