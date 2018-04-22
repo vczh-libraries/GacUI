@@ -520,7 +520,7 @@ GuiRibbonToolstrips
 
 					for (vint j = 0; j < groups.Count(); j++)
 					{
-						shortContainers[j < count1 ? 0 : 1]->GetToolstripItems().Add(groups[j]);
+						containers[j < count1 ? 0 : 1]->GetToolstripItems().Add(groups[j]);
 					}
 				}
 			}
@@ -558,7 +558,7 @@ GuiRibbonToolstrips
 						toolstrip->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
 						auto cell = new GuiCellComposition();
-						cell->SetSite(j * 2 + 1, 1, 1, 1);
+						cell->SetSite(j * 2 + 1, 0, 1, 1);
 						cell->AddChild(toolstrip->GetBoundsComposition());
 						table->AddChild(cell);
 
