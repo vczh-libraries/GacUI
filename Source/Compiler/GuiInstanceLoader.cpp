@@ -1005,7 +1005,7 @@ Helper Functions
 				if (attSemicolon)
 				{
 					pattern = WString(attValue, vint(attSemicolon - attValue));
-					attValue = attSemicolon + 1;
+					attValue = attSemicolon + delimiter.Length();
 				}
 				else
 				{
