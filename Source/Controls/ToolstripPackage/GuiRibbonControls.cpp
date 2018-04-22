@@ -498,29 +498,36 @@ GuiRibbonToolstrips
 				}
 				else
 				{
-					vint count1 = 0;
-					vint count2 = From(groups)
-						.Select([](GuiToolstripGroup* group) {return group->GetToolstripItems().Count(); })
-						.Aggregate([](vint a, vint b) {return a + b; });
-					vint delta = abs(count2 - count1);
-
-					for (vint i = 0; i < groups.Count(); i++)
+					vint firstGroupCount = groups.Count();
 					{
-						auto groupCount = groups[i]->GetToolstripItems().Count();
-						vint count1_2 = count1 + groupCount;
-						vint count2_2 = count2 - groupCount;
-						vint delta_2 = abs(count2_2 - count1_2);
-						
-						bool needExit = delta < delta_2;
-						count1 = count1_2;
-						count2 = count2_2;
-						delta = delta_2;
-						if (needExit) break;
+						vint count1 = 0;
+						vint count2 = From(groups)
+							.Select([](GuiToolstripGroup* group) {return group->GetToolstripItems().Count(); })
+							.Aggregate([](vint a, vint b) {return a + b; });
+						vint delta = abs(count2 - count1);
+
+						for (vint i = 0; i < groups.Count(); i++)
+						{
+							auto groupCount = groups[i]->GetToolstripItems().Count();
+							vint count1_2 = count1 + groupCount;
+							vint count2_2 = count2 - groupCount;
+							vint delta_2 = abs(count2_2 - count1_2);
+
+							if (delta < delta_2)
+							{
+								firstGroupCount = i;
+								break;
+							}
+
+							count1 = count1_2;
+							count2 = count2_2;
+							delta = delta_2;
+						}
 					}
 
 					for (vint j = 0; j < groups.Count(); j++)
 					{
-						containers[j < count1 ? 0 : 1]->GetToolstripItems().Add(groups[j]);
+						containers[j < firstGroupCount ? 0 : 1]->GetToolstripItems().Add(groups[j]);
 					}
 				}
 			}
