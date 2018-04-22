@@ -75,15 +75,19 @@
           </RibbonTabPage>
 
           <RibbonTabPage Text="Insert" Highlighted="true">
-            <RibbonGroup Text="Object">
-              <RibbonButtons MaxSize="Large" MinSize="Small">
-                <att.Buttons>
-                  <ToolstripButton Command-eval="self.commandInsertImage"/>
-                  <ToolstripButton Command-eval="self.commandEditHyperlink"/>
-                  <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
-                </att.Buttons>
-              </RibbonButtons>
-            </RibbonGroup>
+            <att.Groups>
+              <RibbonGroup Text="Object">
+                <att.Items>
+                  <RibbonButtons MaxSize="Large" MinSize="Small">
+                    <att.Buttons>
+                      <ToolstripButton Command-eval="self.commandInsertImage"/>
+                      <ToolstripButton Command-eval="self.commandEditHyperlink"/>
+                      <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
+                    </att.Buttons>
+                  </RibbonButtons>
+                </att.Items>
+              </RibbonGroup>
+            </att.Groups>
           </RibbonTabPage>
         </att.Pages>
       </RibbonTab>
