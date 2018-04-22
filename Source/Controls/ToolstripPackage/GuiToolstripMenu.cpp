@@ -106,7 +106,7 @@ GuiToolstripCollection
 				{
 					GuiStackItemComposition* stackItem = new GuiStackItemComposition;
 					stackItem->AddChild(child->GetBoundsComposition());
-					stackComposition->InsertChild(index, stackItem);
+					stackComposition->InsertStackItem(index, stackItem);
 				}
 				{
 					auto eventHandler = child->VisibleChanged.AttachMethod(this, &GuiToolstripCollection::OnItemVisibleChanged);
@@ -401,7 +401,7 @@ GuiToolstripGroupContainer::GroupCollection
 					container->stackComposition->GetStackItems()[index * 2 - 1]
 					;
 
-				controlStackItem->RemoveChild(child->GetBoundsComposition());
+				CHECK_ERROR(controlStackItem->RemoveChild(child->GetBoundsComposition()), L"GuiToolstripGroupContainer::GroupCollection::BeforeRemove(vint, GuiControl* const&)#Internal error");
 				container->stackComposition->RemoveChild(controlStackItem);
 				if (splitterStackItem) container->stackComposition->RemoveChild(splitterStackItem);
 
@@ -427,10 +427,10 @@ GuiToolstripGroupContainer::GroupCollection
 					}
 					splitter->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					splitterStackItem->AddChild(splitter->GetBoundsComposition());
-					container->stackComposition->InsertChild(index == 0 ? 1 : index * 2 - 1, splitterStackItem);
+					container->stackComposition->InsertStackItem(index == 0 ? 0 : index * 2 - 1, splitterStackItem);
 				}
 
-				container->stackComposition->InsertChild(index * 2, controlStackItem);
+				container->stackComposition->InsertStackItem(index * 2, controlStackItem);
 
 				GuiToolstripCollectionBase::AfterInsert(index, child);
 			}

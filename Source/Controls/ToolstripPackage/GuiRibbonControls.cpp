@@ -285,7 +285,7 @@ GuiRibbonButtonsItemCollection
 						auto item = new GuiStackItemComposition();
 						item->AddChild(shared);
 
-						stack->InsertChild(index, item);
+						stack->InsertStackItem(index, item);
 					}
 				}
 			}
