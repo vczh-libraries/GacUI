@@ -70,6 +70,29 @@
               </RibbonGroup>
 
               <RibbonGroup Text="Text">
+                <att.Items>
+                  <RibbonToolstrips>
+                    <att.Groups>
+                      <ToolstripGroup>
+                        <ToolstripButton Command-eval="self.commandBold"/>
+                        <ToolstripButton Command-eval="self.commandItalic"/>
+                      </ToolstripGroup>
+                      <ToolstripGroup>
+                        <ToolstripButton Command-eval="self.commandUnderline"/>
+                        <ToolstripButton Command-eval="self.commandStrike"/>
+                      </ToolstripGroup>
+                      <ToolstripGroup>
+                        <ToolstripButton Command-eval="self.commandFont"/>
+                        <ToolstripButton Command-eval="self.commandColor"/>
+                        <ToolstripButton Command-eval="self.commandBackColor"/>
+                      </ToolstripGroup>
+                      <ToolstripGroup>
+                        <ToolstripButton Command-eval="self.commandEditHyperlink"/>
+                        <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
+                      </ToolstripGroup>
+                    </att.Groups>
+                  </RibbonToolstrips>
+                </att.Items>
               </RibbonGroup>
             </att.Groups>
           </RibbonTabPage>
