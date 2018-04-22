@@ -1,5 +1,19 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorRibbonWindow" xmlns:demo="demo::*">
+  <ref.Members>
+    <![CDATA[
+      @cpp:Private
+      prop AlignLeftSelected : bool = true {}
+      @cpp:Private
+      prop AlignCenterSelected : bool = true {}
+      @cpp:Private
+      prop AlignRightSelected : bool = true {}
+    ]]>
+  </ref.Members>
   <demo:DocumentEditorWindowBase ref.Name="self" Text="Document Editor (Ribbon)">
+    <att.AlignLeftSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignLeft on _.SelectionChanged)</att.AlignLeftSelected-bind>
+    <att.AlignCenterSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignCenter on _.SelectionChanged)</att.AlignCenterSelected-bind>
+    <att.AlignRightSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignRight on _.SelectionChanged)</att.AlignRightSelected-bind>
+    
     <att.MenuContainer-set>
       <RibbonTab>
         <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -14,6 +28,15 @@
             <att.ContainerComposition-set PreferredMinSize="y:110"/>
             <att.Groups>
               <RibbonGroup Text="Alignment">
+                <att.Items>
+                  <RibbonButtons MaxSize="Large" MinSize="Icon">
+                    <att.Buttons>
+                      <ToolstripButton Command-eval="self.commandAlignLeft" Selected-bind="self.AlignLeftSelected"/>
+                      <ToolstripButton Command-eval="self.commandAlignCenter" Selected-bind="self.AlignCenterSelected"/>
+                      <ToolstripButton Command-eval="self.commandAlignRight" Selected-bind="self.AlignRightSelected"/>
+                    </att.Buttons>
+                  </RibbonButtons>
+                </att.Items>
               </RibbonGroup>
               <RibbonGroup Text="Edit">
               </RibbonGroup>
