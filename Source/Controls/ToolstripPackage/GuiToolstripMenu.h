@@ -70,6 +70,7 @@ Toolstrip Item Collection
 				void										OnItemVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										BeforeRemove(vint index, GuiControl* const& child)override;
 				void										AfterInsert(vint index, GuiControl* const& child)override;
+				void										AfterRemove(vint index, vint count)override;
 			public:
 				GuiToolstripCollection(IToolstripUpdateLayout* _contentCallback, compositions::GuiStackComposition* _stackComposition);
 				~GuiToolstripCollection();
@@ -210,6 +211,7 @@ Toolstrip Group
 
 					void										BeforeRemove(vint index, GuiControl* const& child)override;
 					void										AfterInsert(vint index, GuiControl* const& child)override;
+					void										AfterRemove(vint index, vint count)override;
 				public:
 					GroupCollection(GuiToolstripGroupContainer* _container);
 					~GroupCollection();

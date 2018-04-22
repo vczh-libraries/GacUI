@@ -96,11 +96,14 @@ GuiRibbonGroupCollection
 
 			void GuiRibbonGroupCollection::AfterRemove(vint index, vint count)
 			{
-				auto item = tabPage->stack->GetStackItems()[index];
-				tabPage->stack->RemoveChild(item);
+				for (vint i = 0; i < count; i++)
+				{
+					auto item = tabPage->stack->GetStackItems()[index];
+					tabPage->stack->RemoveChild(item);
 
-				item->RemoveChild(item->Children()[0]);
-				delete item;
+					item->RemoveChild(item->Children()[0]);
+					delete item;
+				}
 			}
 
 			GuiRibbonGroupCollection::GuiRibbonGroupCollection(GuiRibbonTabPage* _tabPage)
@@ -184,11 +187,14 @@ GuiRibbonGroupItemCollection
 
 			void GuiRibbonGroupItemCollection::AfterRemove(vint index, vint count)
 			{
-				auto item = group->stack->GetStackItems()[index];
-				group->stack->RemoveChild(item);
+				for (vint i = 0; i < count; i++)
+				{
+					auto item = group->stack->GetStackItems()[index];
+					group->stack->RemoveChild(item);
 
-				item->RemoveChild(item->Children()[0]);
-				delete item;
+					item->RemoveChild(item->Children()[0]);
+					delete item;
+				}
 			}
 
 			GuiRibbonGroupItemCollection::GuiRibbonGroupItemCollection(GuiRibbonGroup* _group)

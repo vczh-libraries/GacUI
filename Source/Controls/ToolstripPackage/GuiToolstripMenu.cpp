@@ -91,14 +91,12 @@ GuiToolstripCollection
 			void GuiToolstripCollection::BeforeRemove(vint index, GuiControl* const& child)
 			{
 				GuiStackItemComposition* stackItem = stackComposition->GetStackItems().Get(index);
-				stackComposition->RemoveChild(stackItem);
-				{
-					auto eventHandler = eventHandlers[index];
-					child->VisibleChanged.Detach(eventHandler);
-					eventHandlers.RemoveAt(index);
-				}
+
+				auto eventHandler = eventHandlers[index];
+				child->VisibleChanged.Detach(eventHandler);
+				eventHandlers.RemoveAt(index);
+
 				GuiToolstripCollectionBase::BeforeRemove(index, child);
-				SafeDeleteComposition(stackItem);
 			}
 
 			void GuiToolstripCollection::AfterInsert(vint index, GuiControl* const& child)
@@ -114,6 +112,17 @@ GuiToolstripCollection
 				}
 				UpdateItemVisibility(index, child);
 				GuiToolstripCollectionBase::AfterInsert(index, child);
+			}
+
+			void GuiToolstripCollection::AfterRemove(vint index, vint count)
+			{
+				for (vint i = 0; i < count; i++)
+				{
+					auto stackItem = stackComposition->GetStackItems().Get(index);
+					stackComposition->RemoveChild(stackItem);
+					SafeDeleteComposition(stackItem);
+				}
+				GuiToolstripCollectionBase::AfterRemove(index, count);
 			}
 
 			GuiToolstripCollection::GuiToolstripCollection(IToolstripUpdateLayout* _contentCallback, compositions::GuiStackComposition* _stackComposition)
@@ -395,20 +404,7 @@ GuiToolstripGroupContainer::GroupCollection
 			void GuiToolstripGroupContainer::GroupCollection::BeforeRemove(vint index, GuiControl* const& child)
 			{
 				auto controlStackItem = container->stackComposition->GetStackItems()[index * 2];
-				auto splitterStackItem =
-					container->stackComposition->GetStackItems().Count() == 1 ? nullptr :
-					index == 0 ? container->stackComposition->GetStackItems()[1] :
-					container->stackComposition->GetStackItems()[index * 2 - 1]
-					;
-
 				CHECK_ERROR(controlStackItem->RemoveChild(child->GetBoundsComposition()), L"GuiToolstripGroupContainer::GroupCollection::BeforeRemove(vint, GuiControl* const&)#Internal error");
-				container->stackComposition->RemoveChild(controlStackItem);
-				if (splitterStackItem) container->stackComposition->RemoveChild(splitterStackItem);
-
-				GuiToolstripCollectionBase::BeforeRemove(index, child);
-
-				SafeDeleteComposition(controlStackItem);
-				SafeDeleteComposition(splitterStackItem);
 			}
 
 			void GuiToolstripGroupContainer::GroupCollection::AfterInsert(vint index, GuiControl* const& child)
@@ -433,6 +429,19 @@ GuiToolstripGroupContainer::GroupCollection
 				container->stackComposition->InsertStackItem(index * 2, controlStackItem);
 
 				GuiToolstripCollectionBase::AfterInsert(index, child);
+			}
+
+			void GuiToolstripGroupContainer::GroupCollection::AfterRemove(vint index, vint count)
+			{
+				vint min = index * 2;
+				vint max = (index + count - 1) * 2;
+				for (vint i = min; i <= max; i++)
+				{
+					auto stackItem = container->stackComposition->GetStackItems()[min];
+					container->stackComposition->RemoveChild(stackItem);
+					SafeDeleteComposition(stackItem);
+				}
+				GuiToolstripCollectionBase::AfterRemove(index, count);
 			}
 
 			GuiToolstripGroupContainer::GroupCollection::GroupCollection(GuiToolstripGroupContainer* _container)
