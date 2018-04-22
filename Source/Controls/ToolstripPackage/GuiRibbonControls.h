@@ -114,7 +114,7 @@ Ribbon Containers
 			};
 
 /***********************************************************************
-Ribbon Controls
+Ribbon Buttons
 ***********************************************************************/
 
 			enum class RibbonButtonSize
@@ -129,11 +129,11 @@ Ribbon Controls
 			class GuiRibbonButtonsItemCollection : public collections::ObservableListBase<GuiControl*>
 			{
 			protected:
-				GuiRibbonButtons*									buttons = nullptr;
+				GuiRibbonButtons*										buttons = nullptr;
 
-				bool												QueryInsert(vint index, GuiControl* const& value)override;
-				void												AfterInsert(vint index, GuiControl* const& value)override;
-				void												BeforeRemove(vint index, GuiControl* const& value)override;
+				bool													QueryInsert(vint index, GuiControl* const& value)override;
+				void													AfterInsert(vint index, GuiControl* const& value)override;
+				void													BeforeRemove(vint index, GuiControl* const& value)override;
 
 			public:
 				GuiRibbonButtonsItemCollection(GuiRibbonButtons* _buttons);
@@ -144,19 +144,52 @@ Ribbon Controls
 			{
 				friend class GuiRibbonButtonsItemCollection;
 			protected:
-				RibbonButtonSize									minSize;
-				RibbonButtonSize									maxSize;
-				compositions::GuiResponsiveViewComposition*			responsiveView = nullptr;
-				compositions::GuiResponsiveFixedComposition*		views[3] = { nullptr,nullptr,nullptr };
-				GuiRibbonButtonsItemCollection						buttons;
-
-				void												OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
-				void												SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiControl* button);
+				RibbonButtonSize										minSize;
+				RibbonButtonSize										maxSize;
+				compositions::GuiResponsiveViewComposition*				responsiveView = nullptr;
+				compositions::GuiResponsiveFixedComposition*			views[3] = { nullptr,nullptr,nullptr };
+				GuiRibbonButtonsItemCollection							buttons;
+																		
+				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
+				void													SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiControl* button);
 			public:
 				GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize);
 				~GuiRibbonButtons();
 
-				collections::ObservableListBase<GuiControl*>&		GetButtons();
+				collections::ObservableListBase<GuiControl*>&			GetButtons();
+			};
+
+/***********************************************************************
+Ribbon Toolstrips
+***********************************************************************/
+
+			class GuiRibbonToolstrips;
+
+			class GuiRibbonToolstripsGroupCollection : public collections::ObservableListBase<GuiToolstripGroup*>
+			{
+			protected:
+				GuiRibbonToolstrips*									toolstrips = nullptr;
+
+				bool													QueryInsert(vint index, GuiToolstripGroup* const& value)override;
+				void													AfterInsert(vint index, GuiToolstripGroup* const& value)override;
+				void													BeforeRemove(vint index, GuiToolstripGroup* const& value)override;
+
+			public:
+				GuiRibbonToolstripsGroupCollection(GuiRibbonToolstrips* _toolstrips);
+				~GuiRibbonToolstripsGroupCollection();
+			};
+
+			class GuiRibbonToolstrips : public GuiControl, public Description<GuiRibbonToolstrips>
+			{
+				friend class GuiRibbonButtonsItemCollection;
+			protected:
+				GuiRibbonToolstripsGroupCollection						groups;
+
+			public:
+				GuiRibbonToolstrips(theme::ThemeName themeName);
+				~GuiRibbonToolstrips();
+
+				collections::ObservableListBase<GuiToolstripGroup*>&	GetGroups();
 			};
 		}
 	}

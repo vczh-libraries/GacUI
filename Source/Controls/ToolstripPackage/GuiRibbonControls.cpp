@@ -292,7 +292,7 @@ GuiRibbonButtonsItemCollection
 
 			void GuiRibbonButtonsItemCollection::BeforeRemove(vint index, GuiControl* const& value)
 			{
-				CHECK_FAIL(L"GuiRibbonButtonsItemCollection::BeforeRemove(vint, vint)#Controls are not allowed to be removed from GuiRibbonButtons.");
+				CHECK_FAIL(L"GuiRibbonButtonsItemCollection::BeforeRemove(vint, GuiControl* const&)#Controls are not allowed to be removed from GuiRibbonButtons.");
 			}
 
 			GuiRibbonButtonsItemCollection::GuiRibbonButtonsItemCollection(GuiRibbonButtons* _buttons)
@@ -420,6 +420,52 @@ GuiRibbonButtons
 			collections::ObservableListBase<GuiControl*>& GuiRibbonButtons::GetButtons()
 			{
 				return buttons;
+			}
+
+/***********************************************************************
+GuiRibbonToolstripsGroupCollection
+***********************************************************************/
+
+			bool GuiRibbonToolstripsGroupCollection::QueryInsert(vint index, GuiToolstripGroup* const& value)
+			{
+				return !value->GetBoundsComposition()->GetParent();
+			}
+
+			void GuiRibbonToolstripsGroupCollection::AfterInsert(vint index, GuiToolstripGroup* const& value)
+			{
+			}
+
+			void GuiRibbonToolstripsGroupCollection::BeforeRemove(vint index, GuiToolstripGroup* const& value)
+			{
+				CHECK_FAIL(L"GuiRibbonToolstripsGroupCollection::BeforeRemove(vint, GuiToolstripGroup* const&)#Toolstrip groups are not allowed to be removed from GuiRibbonToolstrips.");
+			}
+
+			GuiRibbonToolstripsGroupCollection::GuiRibbonToolstripsGroupCollection(GuiRibbonToolstrips* _toolstrips)
+				:toolstrips(_toolstrips)
+			{
+			}
+
+			GuiRibbonToolstripsGroupCollection::~GuiRibbonToolstripsGroupCollection()
+			{
+			}
+
+/***********************************************************************
+GuiRibbonToolstrips
+***********************************************************************/
+
+			GuiRibbonToolstrips::GuiRibbonToolstrips(theme::ThemeName themeName)
+				:GuiControl(themeName)
+				, groups(this)
+			{
+			}
+
+			GuiRibbonToolstrips::~GuiRibbonToolstrips()
+			{
+			}
+
+			collections::ObservableListBase<GuiToolstripGroup*>& GuiRibbonToolstrips::GetGroups()
+			{
+				return groups;
 			}
 		}
 	}

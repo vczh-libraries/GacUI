@@ -928,6 +928,13 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Buttons)
 			END_CLASS_MEMBER(GuiRibbonButtons)
 
+			BEGIN_CLASS_MEMBER(GuiRibbonToolstrips)
+				CLASS_MEMBER_BASE(GuiControl)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiRibbonToolstrips)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Groups)
+			END_CLASS_MEMBER(GuiRibbonToolstrips)
+
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDocumentItem>(const WString&), { L"name" })
 

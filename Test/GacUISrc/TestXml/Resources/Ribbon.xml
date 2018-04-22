@@ -69,7 +69,7 @@
                 </att.Items>
               </RibbonGroup>
 
-              <RibbonGroup Text="Text Attributes">
+              <RibbonGroup Text="Text">
               </RibbonGroup>
             </att.Groups>
           </RibbonTabPage>

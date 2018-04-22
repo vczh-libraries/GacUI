@@ -334,6 +334,7 @@ Type List (Controls)
 			F(presentation::controls::GuiRibbonGroup)\
 			F(presentation::controls::RibbonButtonSize)\
 			F(presentation::controls::GuiRibbonButtons)\
+			F(presentation::controls::GuiRibbonToolstrips)\
 			F(presentation::controls::GuiDocumentItem)\
 			F(presentation::controls::GuiDocumentCommonInterface)\
 			F(presentation::controls::GuiDocumentCommonInterface::EditMode)\
