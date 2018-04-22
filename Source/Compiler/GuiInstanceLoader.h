@@ -210,6 +210,7 @@ Instance Loader Manager
 Helper Functions
 ***********************************************************************/
 
+		extern void									SplitTypeName(const WString& input, collections::List<WString>& fragments);
 		extern void									SplitBySemicolon(const WString& input, collections::List<WString>& fragments);
 	}
 }

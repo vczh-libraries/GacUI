@@ -994,15 +994,15 @@ GuiInstanceLoaderManager
 Helper Functions
 ***********************************************************************/
 
-		void SplitBySemicolon(const WString& input, collections::List<WString>& fragments)
+		void Split(const WString& input, const WString& delimiter, collections::List<WString>& fragments)
 		{
 			const wchar_t* attValue = input.Buffer();
-			while(*attValue)
+			while (*attValue)
 			{
 				// split the value by ';'
-				const wchar_t* attSemicolon = wcschr(attValue, L';');
+				const wchar_t* attSemicolon = wcsstr(attValue, delimiter.Buffer());
 				WString pattern;
-				if(attSemicolon)
+				if (attSemicolon)
 				{
 					pattern = WString(attValue, vint(attSemicolon - attValue));
 					attValue = attSemicolon + 1;
@@ -1016,6 +1016,16 @@ Helper Functions
 
 				fragments.Add(pattern);
 			}
+		}
+
+		void SplitTypeName(const WString& input, collections::List<WString>& fragments)
+		{
+			Split(input, L"::", fragments);
+		}
+
+		void SplitBySemicolon(const WString& input, collections::List<WString>& fragments)
+		{
+			Split(input, L";", fragments);
 		}
 	}
 }

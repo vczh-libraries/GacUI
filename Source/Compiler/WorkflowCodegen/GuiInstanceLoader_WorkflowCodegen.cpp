@@ -388,14 +388,8 @@ Workflow_GenerateInstanceClass
 			auto context = resolvingResult.context;
 			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
 			auto baseType = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
-			if (!baseType)
-			{
-				if (auto item = FindInstanceResourceItem(context, context->instance.Obj(), classNameRecord))
-				{
-					int a = 0;
-				}
-			}
-			if (!baseType)
+			auto baseTypeResourceItem = baseType ? nullptr : FindInstanceResourceItem(context, context->instance.Obj(), classNameRecord);
+			if (!baseType && !baseTypeResourceItem)
 			{
 				errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
 					L"Precompile: Failed to find type \"" +
@@ -406,6 +400,43 @@ Workflow_GenerateInstanceClass
 					L"\"."));
 				return nullptr;
 			}
+			if (baseTypeResourceItem && needEventHandler)
+			{
+				errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
+					L"[INTERNAL ERROR] Precompile: Failed to find compiled type in previous passes \"" +
+					(context->instance->typeNamespace == GlobalStringKey::Empty
+						? context->instance->typeName.ToString()
+						: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
+						) +
+					L"\"."));
+				return nullptr;
+			}
+
+			Ptr<GuiInstanceContext> baseTypeContext;
+			Ptr<WfType> baseWfType;
+			if (baseTypeResourceItem)
+			{
+				baseTypeContext = baseTypeResourceItem->GetContent().Cast<GuiInstanceContext>();
+
+				List<WString> fragments;
+				SplitTypeName(baseTypeContext->className, fragments);
+				for (vint i = 0; i < fragments.Count(); i++)
+				{
+					if (baseWfType)
+					{
+						auto type = MakePtr<WfChildType>();
+						type->parent = baseWfType;
+						type->name.value = fragments[i];
+						baseWfType = type;
+					}
+					else
+					{
+						auto type = MakePtr<WfTopQualifiedType>();
+						type->name.value = fragments[i];
+						baseWfType = type;
+					}
+				}
+			}
 
 			///////////////////////////////////////////////////////////////
 			// Instance Class
@@ -414,9 +445,16 @@ Workflow_GenerateInstanceClass
 			auto module = Workflow_CreateModuleWithUsings(context, moduleName);
 			auto instanceClass = Workflow_InstallClass(context->className, module);
 			{
-				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseType->GetTypeDescriptor(), TypeInfoHint::Normal);
-				auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
-				instanceClass->baseTypes.Add(baseType);
+				if (baseWfType)
+				{
+					instanceClass->baseTypes.Add(baseWfType);
+				}
+				else
+				{
+					auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseType->GetTypeDescriptor(), TypeInfoHint::Normal);
+					auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
+					instanceClass->baseTypes.Add(baseType);
+				}
 
 				if (context->codeBehind)
 				{
@@ -438,13 +476,13 @@ Workflow_GenerateInstanceClass
 
 			if (needFunctionBody)
 			{
-				auto baseType = MakePtr<WfReferenceType>();
-				baseType->name.value = instanceClass->name.value + L"Constructor";
-				instanceClass->baseTypes.Add(baseType);
+				auto baseConstructorType = MakePtr<WfReferenceType>();
+				baseConstructorType->name.value = instanceClass->name.value + L"Constructor";
+				instanceClass->baseTypes.Add(baseConstructorType);
 
 				{
 					auto value = MakePtr<WfTypeOfTypeExpression>();
-					value->type = CopyType(baseType);
+					value->type = CopyType(baseConstructorType);
 
 					auto att = MakePtr<WfAttribute>();
 					att->category.value = L"cpp";
@@ -522,7 +560,11 @@ Workflow_GenerateInstanceClass
 			auto ctorBlock = (!needFunctionBody ? notImplemented() : MakePtr<WfBlockStatement>());
 			ctor->statement = ctorBlock;
 
-			if (auto group = baseType->GetTypeDescriptor()->GetConstructorGroup())
+			if (baseWfType)
+			{
+				// Fill later
+			}
+			else if (auto group = baseType->GetTypeDescriptor()->GetConstructorGroup())
 			{
 				auto ctorInfo = group->GetMethod(0);
 				vint count = ctorInfo->GetParameterCount();
