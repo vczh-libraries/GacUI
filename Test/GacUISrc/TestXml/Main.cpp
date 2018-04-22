@@ -42,7 +42,6 @@ void OpenMainWindow()
 	{
 		// TODO:
 		// Black cursor
-		// Black label in HyperlinkWindow
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::DocumentEditorToolstripWindow"));
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();

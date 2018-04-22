@@ -22,7 +22,20 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <SolidLabel Text="Url: " HorizontalAlignment="Center"/>
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <att.Rows>
+                <_>composeType:Percentage percentage:0.5</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:0.5</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Columns>
+
+              <Cell Site="row:1 column:0">
+                <Label Text="Url: "/>
+              </Cell>
+            </Table>
           </Cell>
 
           <Cell Site="row:0 column:1 columnSpan:3">
