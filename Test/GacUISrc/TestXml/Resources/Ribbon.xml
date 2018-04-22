@@ -47,20 +47,43 @@
                   </RibbonButtons>
                 </att.Items>
               </RibbonGroup>
+
               <RibbonGroup Text="Edit">
+                <att.Items>
+                  <RibbonButtons MaxSize="Large" MinSize="Icon">
+                    <att.Buttons>
+                      <ToolstripButton Command-eval="self.commandUndo"/>
+                      <ToolstripButton Command-eval="self.commandRedo"/>
+                    </att.Buttons>
+                  </RibbonButtons>
+                  <RibbonSplitter/>
+                  <RibbonButtons MaxSize="Large" MinSize="Icon">
+                    <att.Buttons>
+                      <ToolstripButton Command-eval="self.commandCopy"/>
+                      <ToolstripButton Command-eval="self.commandCut"/>
+                      <ToolstripButton Command-eval="self.commandPaste"/>
+                    </att.Buttons>
+                  </RibbonButtons>
+                  <RibbonSplitter/>
+                  <RibbonLargeButton Command-eval="self.commandDelete"/>
+                </att.Items>
               </RibbonGroup>
-              <RibbonGroup Text="Object">
-                <RibbonButtons MaxSize="Large" MinSize="Small">
-                  <att.Buttons>
-                    <ToolstripButton Command-eval="self.commandInsertImage"/>
-                    <ToolstripButton Command-eval="self.commandEditHyperlink"/>
-                    <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
-                  </att.Buttons>
-                </RibbonButtons>
-              </RibbonGroup>
+
               <RibbonGroup Text="Text Attributes">
               </RibbonGroup>
             </att.Groups>
+          </RibbonTabPage>
+
+          <RibbonTabPage Text="Insert" Highlighted="true">
+            <RibbonGroup Text="Object">
+              <RibbonButtons MaxSize="Large" MinSize="Small">
+                <att.Buttons>
+                  <ToolstripButton Command-eval="self.commandInsertImage"/>
+                  <ToolstripButton Command-eval="self.commandEditHyperlink"/>
+                  <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
+                </att.Buttons>
+              </RibbonButtons>
+            </RibbonGroup>
           </RibbonTabPage>
         </att.Pages>
       </RibbonTab>

@@ -5,6 +5,13 @@
   <Image name="Cut" content="File">_Cut.png</Image>
   <Image name="Paste" content="File">_Paste.png</Image>
   <Image name="Delete" content="File">_Delete.png</Image>
+
+  <Image name="UndoLarge" content="File">L_Undo.png</Image>
+  <Image name="RedoLarge" content="File">L_Redo.png</Image>
+  <Image name="CopyLarge" content="File">L_Copy.png</Image>
+  <Image name="CutLarge" content="File">L_Cut.png</Image>
+  <Image name="PasteLarge" content="File">L_Paste.png</Image>
+  
   <Image name="Bold" content="File">s_Bold.png</Image>
   <Image name="Italic" content="File">s_Italic.png</Image>
   <Image name="Underline" content="File">s_Underline.png</Image>
