@@ -185,8 +185,8 @@ Ribbon Toolstrips
 			protected:
 				compositions::GuiResponsiveViewComposition*				responsiveView = nullptr;
 				GuiToolstripGroupContainer*								longContainers[2] = { nullptr,nullptr };
-				GuiToolstripGroupContainer*								shortContainers[2] = { nullptr,nullptr };
-				compositions::GuiResponsiveFixedComposition*			views[3] = { nullptr,nullptr,nullptr };
+				GuiToolstripGroupContainer*								shortContainers[3] = { nullptr,nullptr,nullptr };
+				compositions::GuiResponsiveFixedComposition*			views[2] = { nullptr,nullptr };
 				GuiRibbonToolstripsGroupCollection						groups;
 
 				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);

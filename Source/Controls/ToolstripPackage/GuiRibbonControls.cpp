@@ -463,6 +463,9 @@ GuiRibbonToolstrips
 
 			void GuiRibbonToolstrips::RearrangeToolstripGroups(vint viewIndex)
 			{
+				static_assert(ARRLEN(longContainers) == 2, "");
+				static_assert(ARRLEN(shortContainers) == 3, "");
+
 				if (viewIndex == -1)
 				{
 					viewIndex = responsiveView->GetViews().IndexOf(responsiveView->GetCurrentView());
@@ -478,7 +481,42 @@ GuiRibbonToolstrips
 				}
 
 				auto containers = viewIndex == 0 ? longContainers : shortContainers;
-				vint count = viewIndex == 0 ? ARRLEN(longContainers) : ARRLEN(shortContainers);
+				vint count = viewIndex == 0 ? 2 : 3;
+
+				if (groups.Count() <= count)
+				{
+					for (vint i = 0; i < groups.Count(); i++)
+					{
+						containers[i]->GetToolstripItems().Add(groups[i]);
+					}
+				}
+				else if (count == 3)
+				{
+				}
+				else if (count == 2)
+				{
+					vint count1 = 0;
+					vint count2 = From(groups)
+						.Select([](GuiToolstripGroup* group) {return group->GetToolstripItems().Count(); })
+						.Aggregate([](vint a, vint b) {return a + b; });
+					vint delta = abs(count2 - count1);
+
+					for (vint i = 0; i < groups.Count(); i++)
+					{
+						auto groupCount = groups[i]->GetToolstripItems().Count();
+						vint count1_2 = count1 + groupCount;
+						vint count2_2 = count2 - groupCount;
+						vint delta_2 = abs(count2_2 - count1_2);
+						if (delta < delta_2)
+						{
+							for (vint j = 0; j < groups.Count(); j++)
+							{
+								shortContainers[j <= i ? 0 : 1]->GetToolstripItems().Add(groups[j]);
+							}
+							break;
+						}
+					}
+				}
 			}
 
 			GuiRibbonToolstrips::GuiRibbonToolstrips(theme::ThemeName themeName)
@@ -493,7 +531,7 @@ GuiRibbonToolstrips
 				for (vint i = 0; i < sizeof(views) / sizeof(*views); i++)
 				{
 					auto containers = i == 0 ? longContainers : shortContainers;
-					vint count = i == 0 ? ARRLEN(longContainers) : ARRLEN(shortContainers);
+					vint count = i == 0 ? 2 : 3;
 
 					auto table = new GuiTableComposition();
 					table->SetAlignmentToParent(Margin(0, 0, 0, 0));

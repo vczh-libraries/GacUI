@@ -401,6 +401,7 @@ GuiToolstripGroupContainer::GroupCollection
 					container->stackComposition->GetStackItems()[index * 2 - 1]
 					;
 
+				controlStackItem->RemoveChild(child->GetBoundsComposition());
 				container->stackComposition->RemoveChild(controlStackItem);
 				if (splitterStackItem) container->stackComposition->RemoveChild(splitterStackItem);
 
