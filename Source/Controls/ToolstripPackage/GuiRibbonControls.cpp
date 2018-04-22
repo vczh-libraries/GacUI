@@ -502,7 +502,7 @@ GuiRibbonToolstrips
 #define DEFINE_COUNT(POSTFIX, OFFSET_FIRST, OFFSET_LAST) \
 					vint count1##POSTFIX = count1_o + (OFFSET_FIRST); \
 					vint count2##POSTFIX = count2_o - (OFFSET_FIRST) - (OFFSET_LAST); \
-					vint count3##POSTFIX = count3_o - (OFFSET_LAST)
+					vint count3##POSTFIX = count3_o + (OFFSET_LAST)
 #define MIN(a, b) (a)<(b)?(a):(b)
 
 					vint firstGroupCount = 0;
@@ -523,10 +523,10 @@ GuiRibbonToolstrips
 						DEFINE_COUNT(_f, newFirstGroup->GetToolstripItems().Count(), 0);
 						vint delta_f = DELTA(_f);
 
-						DEFINE_COUNT(_l, 0, newFirstGroup->GetToolstripItems().Count());
+						DEFINE_COUNT(_l, 0, newLastGroup->GetToolstripItems().Count());
 						vint delta_l = DELTA(_l);
 
-						vint delta = MIN(delta_o, MIN(delta_f, delta_o));
+						vint delta = MIN(delta_o, MIN(delta_f, delta_l));
 						if (delta == delta_f)
 						{
 							firstGroupCount++;
