@@ -385,7 +385,7 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandAlignLeft" Text="Align to Left" Image-uri="res://ToolbarImages/TextAlignLeft" LargeImage-uri="res://ToolbarImages/TextAlignLeftLarge">
+    <ToolstripCommand ref.Name="commandAlignLeft" Text="Left" Image-uri="res://ToolbarImages/TextAlignLeft" LargeImage-uri="res://ToolbarImages/TextAlignLeftLarge">
       <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignLeft on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>
@@ -393,7 +393,7 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandAlignCenter" Text="Align to Center" Image-uri="res://ToolbarImages/TextAlignCenter" LargeImage-uri="res://ToolbarImages/TextAlignCenterLarge">
+    <ToolstripCommand ref.Name="commandAlignCenter" Text="Center" Image-uri="res://ToolbarImages/TextAlignCenter" LargeImage-uri="res://ToolbarImages/TextAlignCenterLarge">
       <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignCenter on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>
@@ -401,7 +401,7 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandAlignRight" Text="Align to Right" Image-uri="res://ToolbarImages/TextAlignRight" LargeImage-uri="res://ToolbarImages/TextAlignRightLarge">
+    <ToolstripCommand ref.Name="commandAlignRight" Text="Right" Image-uri="res://ToolbarImages/TextAlignRight" LargeImage-uri="res://ToolbarImages/TextAlignRightLarge">
       <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignRight on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>

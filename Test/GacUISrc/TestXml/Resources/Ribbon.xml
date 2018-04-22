@@ -29,6 +29,15 @@
             <att.Groups>
               <RibbonGroup Text="Alignment">
                 <att.Items>
+                  <RibbonLargeDropdownButton Text="Edit Mode">
+                    <att.LargeImage-bind>self.EditModeCommand.LargeImage ?? null</att.LargeImage-bind>
+                    <att.SubMenu-set>
+                      <MenuItemButton Command-eval="self.commandViewOnly" Alt="V"/>
+                      <MenuItemButton Command-eval="self.commandSelectable" Alt="S"/>
+                      <MenuItemButton Command-eval="self.commandEditable" Alt="E"/>
+                    </att.SubMenu-set>
+                  </RibbonLargeDropdownButton>
+                  <RibbonSplitter/>
                   <RibbonButtons MaxSize="Large" MinSize="Icon">
                     <att.Buttons>
                       <ToolstripButton Command-eval="self.commandAlignLeft" Selected-bind="self.AlignLeftSelected"/>
