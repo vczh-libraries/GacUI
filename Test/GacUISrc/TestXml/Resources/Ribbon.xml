@@ -13,7 +13,7 @@
     <att.AlignLeftSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignLeft on _.SelectionChanged)</att.AlignLeftSelected-bind>
     <att.AlignCenterSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignCenter on _.SelectionChanged)</att.AlignCenterSelected-bind>
     <att.AlignRightSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignRight on _.SelectionChanged)</att.AlignRightSelected-bind>
-    
+
     <att.MenuContainer-set>
       <RibbonTab>
         <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -50,6 +50,13 @@
               <RibbonGroup Text="Edit">
               </RibbonGroup>
               <RibbonGroup Text="Object">
+                <RibbonButtons MaxSize="Large" MinSize="Small">
+                  <att.Buttons>
+                    <ToolstripButton Command-eval="self.commandInsertImage"/>
+                    <ToolstripButton Command-eval="self.commandEditHyperlink"/>
+                    <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
+                  </att.Buttons>
+                </RibbonButtons>
               </RibbonGroup>
               <RibbonGroup Text="Text Attributes">
               </RibbonGroup>

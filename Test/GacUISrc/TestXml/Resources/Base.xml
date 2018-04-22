@@ -162,7 +162,7 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandInsertImage" Text="Insert Image ..." Image-uri="res://ToolbarImages/Image">
+    <ToolstripCommand ref.Name="commandInsertImage" Text="Insert Image ..." Image-uri="res://ToolbarImages/Image" LargeImage-uri="res://ToolbarImages/ImageLarge">
       <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
@@ -179,7 +179,7 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandEditHyperlink" Text="Edit Hyperlink ..." Image-uri="res://ToolbarImages/Link">
+    <ToolstripCommand ref.Name="commandEditHyperlink" Text="Edit Hyperlink ..." Image-uri="res://ToolbarImages/Link" LargeImage-uri="res://ToolbarImages/LinkLarge">
       <att.Enabled-bind>document.observe as _(self.HasEditableHyperlink(true) on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
@@ -203,7 +203,7 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandRemoveHyperlink" Text="Remove Hyperlink" Image-uri="res://ToolbarImages/RemoveLink">
+    <ToolstripCommand ref.Name="commandRemoveHyperlink" Text="Remove Hyperlink" Image-uri="res://ToolbarImages/RemoveLink" LargeImage-uri="res://ToolbarImages/RemoveLinkLarge">
       <att.Enabled-bind>document.observe as _(self.HasEditableHyperlink(false) on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
