@@ -21,7 +21,9 @@ namespace vl
 FindInstanceLoadingSource
 ***********************************************************************/
 
-		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GlobalStringKey namespaceName, const WString& typeName)
+		template<typename TCallback>
+		auto FindByTag(Ptr<GuiInstanceContext> context, GlobalStringKey namespaceName, const WString& typeName, TCallback callback)
+			-> typename RemoveCVR<decltype(callback({}).Value())>::Type
 		{
 			vint index = context->namespaces.Keys().IndexOf(namespaceName);
 			if (index != -1)
@@ -30,13 +32,38 @@ FindInstanceLoadingSource
 				FOREACH(Ptr<GuiInstanceNamespace>, ns, namespaceInfo->namespaces)
 				{
 					auto fullName = GlobalStringKey::Get(ns->prefix + typeName + ns->postfix);
-					if (auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
+					if (auto nullable = callback(fullName))
 					{
-						return InstanceLoadingSource(loader, fullName);
+						return nullable.Value();
 					}
 				}
 			}
-			return InstanceLoadingSource();
+			return {};
+		}
+
+		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GlobalStringKey namespaceName, const WString& typeName)
+		{
+			return FindByTag(context, namespaceName, typeName, [](GlobalStringKey fullName)->Nullable<InstanceLoadingSource>
+			{
+				if (auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
+				{
+					return { { loader, fullName } };
+				}
+				return {};
+			});
+		}
+
+		Ptr<GuiResourceItem> FindInstanceResourceItem(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor, Ptr<GuiResourceClassNameRecord> record)
+		{
+			return FindByTag(context, ctor->typeNamespace, ctor->typeName.ToString(), [=](GlobalStringKey fullName)->Nullable<Ptr<GuiResourceItem>>
+			{
+				vint index = record->classResources.Keys().IndexOf(fullName.ToString());
+				if (index != -1)
+				{
+					return record->classResources.Values()[index];
+				}
+				return {};
+			});
 		}
 
 		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor)
@@ -356,10 +383,18 @@ Workflow_GenerateInstanceClass
 				needEventHandler = true;
 				break;
 			}
+			auto classNameRecord = precompileContext.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
 
 			auto context = resolvingResult.context;
 			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
 			auto baseType = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
+			if (!baseType)
+			{
+				if (auto item = FindInstanceResourceItem(context, context->instance.Obj(), classNameRecord))
+				{
+					int a = 0;
+				}
+			}
 			if (!baseType)
 			{
 				errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
