@@ -54,6 +54,28 @@
         var b = document.CaretEnd;
         return a.row == b.row and a.column != b.column;
       }
+      
+      @cpp:Protected
+      func GetMenuContainer() : GraphicsComposition*
+      {
+        return menuContainer;
+      }
+      
+      @cpp:Protected
+      func GetToolstripContainer() : GraphicsComposition*
+      {
+        return toolstripContainer;
+      }
+      
+      @cpp:Protected
+      func GetDocument() : DocumentViewer*
+      {
+        return document;
+      }
+      
+      prop MenuContainer : GraphicsComposition* {GetMenuContainer}
+      prop ToolstripContainer : GraphicsComposition* {GetToolstripContainer}
+      prop Document : DocumentViewer* {GetDocument}
     ]]>
   </ref.Members>
   <ref.Ctor>

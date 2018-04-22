@@ -1,6 +1,6 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorToolstripWindow" xmlns:demo="demo::*">
   <demo:DocumentEditorWindowBase ref.Name="self">
-    <att.menuContainer-set>
+    <att.MenuContainer-set>
       <ToolstripMenuBar>
         <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         <MenuBarButton Text="Edit" Alt="E">
@@ -45,9 +45,9 @@
           </att.SubMenu-set>
         </MenuBarButton>
       </ToolstripMenuBar>
-    </att.menuContainer-set>
+    </att.MenuContainer-set>
 
-    <att.toolstripContainer-set>
+    <att.ToolstripContainer-set>
       <ToolstripToolBar>
         <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         <ToolstripGroupContainer>
@@ -60,7 +60,7 @@
               </att.SubMenu-set>
             </ToolstripDropdownButton>
             <ToolstripDropdownButton ref.Name="buttonAlignment" Alt="P">
-              <att.Image-bind>document.observe as _(self.SelectAlignmentCommand().Image on _.SelectionChanged)</att.Image-bind>
+              <att.Image-bind>self.Document.observe as _(self.SelectAlignmentCommand().Image on _.SelectionChanged)</att.Image-bind>
               <att.SubMenu-set>
                 <MenuItemButton Command-eval="self.commandAlignDefault" Alt="D"/>
                 <MenuItemButton Command-eval="self.commandAlignLeft" Alt="L"/>
@@ -97,6 +97,6 @@
           </ToolstripGroup>
         </ToolstripGroupContainer>
       </ToolstripToolBar>
-    </att.toolstripContainer-set>
+    </att.ToolstripContainer-set>
   </demo:DocumentEditorWindowBase>
 </Instance>

@@ -172,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Resources\Base.xml" />
+    <Xml Include="Resources\Hyperlink.xml" />
     <Xml Include="Resources\Resource.xml">
       <SubType>Designer</SubType>
     </Xml>
