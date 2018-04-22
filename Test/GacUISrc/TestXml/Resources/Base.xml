@@ -1,6 +1,9 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorWindowBase">
   <ref.Members>
     <![CDATA[
+      @cpp:Protected
+      prop EditModeCommand : ToolstripCommand* = null {const}
+    
       @cpp:Private
       func SetEditMode(editMode: DocumentCommonInterface::EditMode) : void
       {
@@ -13,11 +16,11 @@
         commandViewOnly.Selected = (command == commandViewOnly);
         commandSelectable.Selected = (command == commandSelectable);
         commandEditable.Selected = (command == commandEditable);
-        buttonView.Image = command.Image;
+        SetEditModeCommand(command);
         self.UpdateSubscriptions();
       }
       
-      @cpp:Private
+      @cpp:Protected
       func SelectAlignmentCommand() : ToolstripCommand*
       {
         var alignment = document.SummarizeParagraphAlignment(document.CaretBegin, document.CaretEnd);
@@ -67,15 +70,8 @@
         return toolstripContainer;
       }
       
-      @cpp:Protected
-      func GetDocument() : DocumentViewer*
-      {
-        return document;
-      }
-      
       prop MenuContainer : GraphicsComposition* {GetMenuContainer}
       prop ToolstripContainer : GraphicsComposition* {GetToolstripContainer}
-      prop Document : DocumentViewer* {GetDocument}
     ]]>
   </ref.Members>
   <ref.Ctor>
