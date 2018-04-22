@@ -454,18 +454,80 @@ GuiRibbonToolstripsGroupCollection
 GuiRibbonToolstrips
 ***********************************************************************/
 
+#define ARRLEN(X) sizeof(X) / sizeof(*X)
+
 			void GuiRibbonToolstrips::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
 			{
+				RearrangeToolstripGroups(arguments.itemIndex);
 			}
 
-			void GuiRibbonToolstrips::RearrangeToolstripGroups()
+			void GuiRibbonToolstrips::RearrangeToolstripGroups(vint viewIndex)
 			{
+				if (viewIndex == -1)
+				{
+					viewIndex = responsiveView->GetViews().IndexOf(responsiveView->GetCurrentView());
+				}
+
+				for (vint i = 0; i < ARRLEN(longContainers); i++)
+				{
+					longContainers[i]->GetToolstripItems().Clear();
+				}
+				for (vint i = 0; i < ARRLEN(shortContainers); i++)
+				{
+					shortContainers[i]->GetToolstripItems().Clear();
+				}
+
+				auto containers = viewIndex == 0 ? longContainers : shortContainers;
+				vint count = viewIndex == 0 ? ARRLEN(longContainers) : ARRLEN(shortContainers);
 			}
 
 			GuiRibbonToolstrips::GuiRibbonToolstrips(theme::ThemeName themeName)
 				:GuiControl(themeName)
 				, groups(this)
 			{
+				responsiveView = new GuiResponsiveViewComposition();
+				responsiveView->SetDirection(ResponsiveDirection::Horizontal);
+				responsiveView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonToolstrips::OnBeforeSwitchingView);
+
+				for (vint i = 0; i < sizeof(views) / sizeof(*views); i++)
+				{
+					auto containers = i == 0 ? longContainers : shortContainers;
+					vint count = i == 0 ? ARRLEN(longContainers) : ARRLEN(shortContainers);
+
+					auto table = new GuiTableComposition();
+					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					
+					table->SetRowsAndColumns(count * 2 + 1, 1);
+					table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+					table->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
+					for (vint j = 0; j < count; j++)
+					{
+						table->SetRowOption(j * 2 + 1, GuiCellOption::MinSizeOption());
+						table->SetRowOption(j * 2 + 2, GuiCellOption::PercentageOption(1.0));
+					}
+
+					for (vint j = 0; j < count; j++)
+					{
+						auto toolstrip = new GuiToolstripToolBar(theme::ThemeName::ToolstripToolBar);
+						toolstrip->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+
+						auto cell = new GuiCellComposition();
+						cell->SetSite(j * 2 + 1, 1, 1, 1);
+						cell->AddChild(toolstrip->GetBoundsComposition());
+
+						auto container = new GuiToolstripGroupContainer(theme::ThemeName::CustomControl);
+						toolstrip->GetToolstripItems().Add(container);
+						containers[j] = container;
+					}
+
+					views[i] = new GuiResponsiveFixedComposition();
+					views[i]->AddChild(table);
+					responsiveView->GetViews().Add(views[i]);
+				}
+
+				containerComposition->AddChild(responsiveView);
 			}
 
 			GuiRibbonToolstrips::~GuiRibbonToolstrips()
@@ -476,6 +538,8 @@ GuiRibbonToolstrips
 			{
 				return groups;
 			}
+
+#undef ARRLEN
 		}
 	}
 }

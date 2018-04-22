@@ -183,13 +183,14 @@ Ribbon Toolstrips
 			{
 				friend class GuiRibbonToolstripsGroupCollection;
 			protected:
-				GuiRibbonToolstripsGroupCollection						groups;
+				compositions::GuiResponsiveViewComposition*				responsiveView = nullptr;
 				GuiToolstripGroupContainer*								longContainers[2] = { nullptr,nullptr };
 				GuiToolstripGroupContainer*								shortContainers[2] = { nullptr,nullptr };
 				compositions::GuiResponsiveFixedComposition*			views[3] = { nullptr,nullptr,nullptr };
+				GuiRibbonToolstripsGroupCollection						groups;
 
 				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
-				void													RearrangeToolstripGroups();
+				void													RearrangeToolstripGroups(vint viewIndex = -1);
 			public:
 				GuiRibbonToolstrips(theme::ThemeName themeName);
 				~GuiRibbonToolstrips();
