@@ -486,17 +486,85 @@ GuiRibbonToolstrips
 					shortContainers[i]->GetToolstripItems().Clear();
 				}
 
-				auto containers = viewIndex == 0 ? longContainers : shortContainers;
 				vint count = viewIndex == 0 ? 2 : 3;
 
 				if (groups.Count() <= count)
 				{
+					auto containers = viewIndex == 0 ? longContainers : shortContainers;
 					for (vint i = 0; i < groups.Count(); i++)
 					{
 						containers[i]->GetToolstripItems().Add(groups[i]);
 					}
 				}
-				else
+				else if (count == 3)
+				{
+#define DELTA(POSTFIX) (abs(count1##POSTFIX - count2##POSTFIX) + abs(count2##POSTFIX - count3##POSTFIX) + abs(count3##POSTFIX - count1##POSTFIX))
+#define DEFINE_COUNT(POSTFIX, OFFSET_FIRST, OFFSET_LAST) \
+					vint count1##POSTFIX = count1_o + (OFFSET_FIRST); \
+					vint count2##POSTFIX = count2_o - (OFFSET_FIRST) - (OFFSET_LAST); \
+					vint count3##POSTFIX = count3_o - (OFFSET_LAST)
+#define MIN(a, b) (a)<(b)?(a):(b)
+
+					vint firstGroupCount = 0;
+					vint lastGroupCount = 0;
+
+					vint count1_o = 0;
+					vint count2_o = From(groups)
+						.Select([](GuiToolstripGroup* group) {return group->GetToolstripItems().Count(); })
+						.Aggregate([](vint a, vint b) {return a + b; });
+					vint count3_o = 0;
+					vint delta_o = DELTA(_o);
+
+					while (firstGroupCount + lastGroupCount < groups.Count())
+					{
+						auto newFirstGroup = groups[firstGroupCount];
+						auto newLastGroup = groups[groups.Count() - lastGroupCount - 1];
+
+						DEFINE_COUNT(_f, newFirstGroup->GetToolstripItems().Count(), 0);
+						vint delta_f = DELTA(_f);
+
+						DEFINE_COUNT(_l, 0, newFirstGroup->GetToolstripItems().Count());
+						vint delta_l = DELTA(_l);
+
+						vint delta = MIN(delta_o, MIN(delta_f, delta_o));
+						if (delta == delta_f)
+						{
+							firstGroupCount++;
+							count1_o = count1_f;
+							count2_o = count2_f;
+							count3_o = count3_f;
+							delta_o = delta_f;
+						}
+						else if (delta == delta_l)
+						{
+							lastGroupCount++;
+							count1_o = count1_l;
+							count2_o = count2_l;
+							count3_o = count3_l;
+							delta_o = delta_l;
+						}
+						else
+						{
+							break;
+						}
+					}
+
+					vint minMiddle = firstGroupCount;
+					vint maxMiddle = groups.Count() - lastGroupCount - 1;
+					for (vint j = 0; j < groups.Count(); j++)
+					{
+						shortContainers[
+							j < minMiddle ? 0 :
+							j>maxMiddle ? 2 :
+							1
+						]->GetToolstripItems().Add(groups[j]);
+					}
+
+#undef MIN
+#undef DEFINE_COUNT
+#undef DELTA
+				}
+				else if (count == 2)
 				{
 					vint firstGroupCount = groups.Count();
 					{
@@ -527,7 +595,7 @@ GuiRibbonToolstrips
 
 					for (vint j = 0; j < groups.Count(); j++)
 					{
-						containers[j < firstGroupCount ? 0 : 1]->GetToolstripItems().Add(groups[j]);
+						longContainers[j < firstGroupCount ? 0 : 1]->GetToolstripItems().Add(groups[j]);
 					}
 				}
 			}
