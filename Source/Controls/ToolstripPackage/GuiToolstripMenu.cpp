@@ -26,7 +26,7 @@ GuiToolstripCollectionBase
 
 			bool GuiToolstripCollectionBase::QueryInsert(vint index, GuiControl* const& child)
 			{
-				return !items.Contains(child);
+				return !items.Contains(child) && !child->GetBoundsComposition()->GetParent();
 			}
 
 			void GuiToolstripCollectionBase::BeforeRemove(vint index, GuiControl* const& child)
@@ -415,7 +415,7 @@ GuiToolstripGroupContainer::GroupCollection
 			{
 				auto controlStackItem = new GuiStackItemComposition;
 				child->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				controlStackItem->AddChild(child->GetBoundsComposition());
+				CHECK_ERROR(controlStackItem->AddChild(child->GetBoundsComposition()), L"GuiToolstripGroupContainer::GroupCollection::AfterInsert(vint, GuiControl* const&)#Internal error");
 
 				if (container->stackComposition->GetStackItems().Count() > 0)
 				{

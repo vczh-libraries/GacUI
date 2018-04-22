@@ -490,10 +490,7 @@ GuiRibbonToolstrips
 						containers[i]->GetToolstripItems().Add(groups[i]);
 					}
 				}
-				//else if (count == 3)
-				//{
-				//}
-				//else if (count == 2)
+				else
 				{
 					vint count1 = 0;
 					vint count2 = From(groups)
