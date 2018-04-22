@@ -385,35 +385,42 @@ Workflow_GenerateInstanceClass
 			}
 			auto classNameRecord = precompileContext.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
 
-			auto context = resolvingResult.context;
-			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
-			auto baseType = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
-			auto baseTypeResourceItem = baseType ? nullptr : FindInstanceResourceItem(context, context->instance.Obj(), classNameRecord);
-			if (!baseType && !baseTypeResourceItem)
-			{
-				errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
-					L"Precompile: Failed to find type \"" +
-					(context->instance->typeNamespace == GlobalStringKey::Empty
-						? context->instance->typeName.ToString()
-						: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
-						) +
-					L"\"."));
-				return nullptr;
-			}
-			if (baseTypeResourceItem && needEventHandler)
-			{
-				errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
-					L"[INTERNAL ERROR] Precompile: Failed to find compiled type in previous passes \"" +
-					(context->instance->typeNamespace == GlobalStringKey::Empty
-						? context->instance->typeName.ToString()
-						: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
-						) +
-					L"\"."));
-				return nullptr;
-			}
-
+			Ptr<ITypeInfo> baseType;
+			Ptr<GuiResourceItem> baseTypeResourceItem;
 			Ptr<GuiInstanceContext> baseTypeContext;
 			Ptr<WfType> baseWfType;
+			auto context = resolvingResult.context;
+			{
+				auto source = FindInstanceLoadingSource(context, context->instance.Obj());
+				baseType = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
+				if (!baseType)
+				{
+					baseTypeResourceItem = FindInstanceResourceItem(context, context->instance.Obj(), classNameRecord);
+				}
+				if (!baseType && !baseTypeResourceItem)
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
+						L"Precompile: Failed to find type \"" +
+						(context->instance->typeNamespace == GlobalStringKey::Empty
+							? context->instance->typeName.ToString()
+							: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
+							) +
+						L"\"."));
+					return nullptr;
+				}
+				if (baseTypeResourceItem && needEventHandler)
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
+						L"[INTERNAL ERROR] Precompile: Failed to find compiled type in previous passes \"" +
+						(context->instance->typeNamespace == GlobalStringKey::Empty
+							? context->instance->typeName.ToString()
+							: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
+							) +
+						L"\"."));
+					return nullptr;
+				}
+			}
+
 			if (baseTypeResourceItem)
 			{
 				baseTypeContext = baseTypeResourceItem->GetContent().Cast<GuiInstanceContext>();
@@ -940,20 +947,37 @@ Workflow_GenerateInstanceClass
 					description::GetTypeDescriptor<GuiControlHost>(),
 				};
 
-				for (auto td : types)
+				if (!baseType)
 				{
-					if (baseType->GetTypeDescriptor()->CanConvertTo(td))
+					auto currentContext = context;
+					while (!baseType)
 					{
-						ref->name.value = L"FinalizeInstanceRecursively";
+						auto item = FindInstanceResourceItem(currentContext, currentContext->instance.Obj(), classNameRecord);
+						if (!item) break;
 
-						Ptr<ITypeInfo> typeInfo = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-						typeInfo = MakePtr<RawPtrTypeInfo>(typeInfo);
+						currentContext = item->GetContent().Cast<GuiInstanceContext>();
+						auto source = FindInstanceLoadingSource(currentContext, currentContext->instance.Obj());
+						baseType = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
+					}
+				}
 
-						auto inferExpr = MakePtr<WfInferExpression>();
-						inferExpr->type = GetTypeFromTypeInfo(typeInfo.Obj());
-						inferExpr->expression = thisExpr;
-						thisExpr = inferExpr;
-						break;
+				if (baseType)
+				{
+					for (auto td : types)
+					{
+						if (baseType->GetTypeDescriptor()->CanConvertTo(td))
+						{
+							ref->name.value = L"FinalizeInstanceRecursively";
+
+							Ptr<ITypeInfo> typeInfo = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+							typeInfo = MakePtr<RawPtrTypeInfo>(typeInfo);
+
+							auto inferExpr = MakePtr<WfInferExpression>();
+							inferExpr->type = GetTypeFromTypeInfo(typeInfo.Obj());
+							inferExpr->expression = thisExpr;
+							thisExpr = inferExpr;
+							break;
+						}
 					}
 				}
 
