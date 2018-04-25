@@ -735,27 +735,19 @@ GuiBindableTreeView::ItemSourceNode
 				return children.Count();
 			}
 
-			tree::INodeProvider* GuiBindableTreeView::ItemSourceNode::GetParent()
+			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetParent()
 			{
 				return parent;
 			}
 
-			tree::INodeProvider* GuiBindableTreeView::ItemSourceNode::GetChild(vint index)
+			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetChild(vint index)
 			{
 				PrepareChildren();
 				if (0 <= index && index < children.Count())
 				{
-					return children[index].Obj();
+					return children[index];
 				}
-				return 0;
-			}
-
-			void GuiBindableTreeView::ItemSourceNode::Increase()
-			{
-			}
-
-			void GuiBindableTreeView::ItemSourceNode::Release()
-			{
+				return nullptr;
 			}
 
 /***********************************************************************
@@ -795,9 +787,9 @@ GuiBindableTreeView::ItemSource
 
 			// ===================== tree::INodeRootProvider =====================
 
-			tree::INodeProvider* GuiBindableTreeView::ItemSource::GetRootNode()
+			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSource::GetRootNode()
 			{
-				return rootNode.Obj();
+				return rootNode;
 			}
 
 			WString GuiBindableTreeView::ItemSource::GetTextValue(tree::INodeProvider* node)
@@ -918,11 +910,10 @@ GuiBindableTreeView
 				Value result;
 				if (auto node = nodeItemView->RequestNode(index))
 				{
-					if (auto itemSourceNode = dynamic_cast<ItemSourceNode*>(node))
+					if (auto itemSourceNode = node.Cast<ItemSourceNode>())
 					{
 						result = itemSourceNode->GetItemSource();
 					}
-					nodeItemView->ReleaseNode(node);
 				}
 				return result;
 			}

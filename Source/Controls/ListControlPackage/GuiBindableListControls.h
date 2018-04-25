@@ -331,10 +331,8 @@ GuiBindableTreeView
 					vint											CalculateTotalVisibleNodes()override;
 
 					vint											GetChildCount()override;
-					tree::INodeProvider*							GetParent()override;
-					tree::INodeProvider*							GetChild(vint index)override;
-					void											Increase()override;
-					void											Release()override;
+					Ptr<tree::INodeProvider>						GetParent()override;
+					Ptr<tree::INodeProvider>						GetChild(vint index)override;
 				};
 
 				class ItemSource
@@ -359,7 +357,7 @@ GuiBindableTreeView
 
 					// ===================== tree::INodeRootProvider =====================
 
-					tree::INodeProvider*							GetRootNode()override;
+					Ptr<tree::INodeProvider>						GetRootNode()override;
 					WString											GetTextValue(tree::INodeProvider* node)override;
 					description::Value								GetBindingValue(tree::INodeProvider* node)override;
 					IDescriptable*									RequestView(const WString& identifier)override;

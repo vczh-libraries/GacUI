@@ -692,8 +692,6 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(CalculateTotalVisibleNodes, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetChild, {L"index"})
-				CLASS_MEMBER_METHOD(Increase, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(Release, NO_PARAMETER)
 			END_INTERFACE_MEMBER(INodeProvider)
 
 			BEGIN_INTERFACE_MEMBER(INodeRootProvider)
@@ -714,7 +712,6 @@ Type Declaration
 				INTERFACE_IDENTIFIER(vl::presentation::controls::tree::INodeItemView)
 
 				CLASS_MEMBER_METHOD(RequestNode, {L"index"})
-				CLASS_MEMBER_METHOD(ReleaseNode, {L"node"})
 				CLASS_MEMBER_METHOD(CalculateNodeVisibilityIndex, {L"node"})
 			END_INTERFACE_MEMBER(INodeItemView)
 

@@ -882,30 +882,20 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetChildCount);
 				}
 
-				presentation::controls::tree::INodeProvider* GetParent()override
+				Ptr<presentation::controls::tree::INodeProvider> GetParent()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetParent);
 				}
 
-				presentation::controls::tree::INodeProvider* GetChild(vint index)override
+				Ptr<presentation::controls::tree::INodeProvider> GetChild(vint index)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetChild, index);
-				}
-
-				void Increase()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(Increase);
-				}
-
-				void Release()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(Release);
 				}
 			END_INTERFACE_PROXY(presentation::controls::tree::INodeProvider)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeRootProvider)
 
-				presentation::controls::tree::INodeProvider* GetRootNode()override
+				Ptr<presentation::controls::tree::INodeProvider> GetRootNode()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetRootNode);
 				}
@@ -915,7 +905,7 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CanGetNodeByVisibleIndex);
 				}
 
-				presentation::controls::tree::INodeProvider* GetNodeByVisibleIndex(vint index)override
+				Ptr<presentation::controls::tree::INodeProvider> GetNodeByVisibleIndex(vint index)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetNodeByVisibleIndex, index);
 				}
@@ -948,14 +938,9 @@ Interface Proxy (Controls)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeItemView)
 
-				presentation::controls::tree::INodeProvider* RequestNode(vint index)override
+				Ptr<presentation::controls::tree::INodeProvider> RequestNode(vint index)override
 				{
 					INVOKEGET_INTERFACE_PROXY(RequestNode, index);
-				}
-
-				void ReleaseNode(presentation::controls::tree::INodeProvider* node)override
-				{
-					INVOKE_INTERFACE_PROXY(ReleaseNode, node);
 				}
 
 				vint CalculateNodeVisibilityIndex(presentation::controls::tree::INodeProvider* node)override

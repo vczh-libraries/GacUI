@@ -162,7 +162,7 @@ NodeItemProvider
 					NodeIntMap						offsetBeforeChildModifieds;
 					
 
-					INodeProvider*					GetNodeByOffset(INodeProvider* provider, vint offset);
+					Ptr<INodeProvider>				GetNodeByOffset(Ptr<INodeProvider> provider, vint offset);
 					void							OnAttached(INodeRootProvider* provider)override;
 					void							OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)override;
 					void							OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)override;
