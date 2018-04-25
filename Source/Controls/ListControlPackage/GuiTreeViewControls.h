@@ -79,17 +79,14 @@ NodeItemProvider
 					/// <summary>Get the number of all sub nodes.</summary>
 					/// <returns>The number of all sub nodes.</returns>
 					virtual vint					GetChildCount()=0;
-					/// <summary>Get the parent node. This function increases the reference counter to the result node. If the sub node is not longer needed, a call to [M:vl.presentation.controls.tree.INodeProvider.Release] is required.</summary>
+					/// <summary>Get the parent node.</summary>
 					/// <returns>The parent node.</returns>
-					virtual INodeProvider*			GetParent()=0;
-					/// <summary>Get the instance of a specified sub node. This function increases the reference counter to the result node. If the sub node is not longer needed, a call to [M:vl.presentation.controls.tree.INodeProvider.Release] is required.</summary>
+					virtual Ptr<INodeProvider>		GetParent()=0;
+					/// <summary>Get the instance of a specified sub node.</summary>
 					/// <returns>The instance of a specified sub node.</returns>
 					/// <param name="index">The index of the sub node.</param>
-					virtual INodeProvider*			GetChild(vint index)=0;
-					/// <summary>Increase the reference counter. Use [M:vl.presentation.controls.tree.INodeProvider.Release] to decrease the reference counter.</summary>
-					virtual void					Increase()=0;
-					/// <summary>Decrease the reference counter. If the counter is zero, the node will be deleted. Use [M:vl.presentation.controls.tree.INodeProvider.Increase] to increase the reference counter.</summary>
-					virtual void					Release()=0;
+					virtual Ptr<INodeProvider>		GetChild(vint index)=0;
+					/// <summary>Increase the reference counter.</summary>
 				};
 				
 				/// <summary>Represents a root node provider.</summary>
@@ -98,14 +95,14 @@ NodeItemProvider
 				public:
 					/// <summary>Get the instance of the root node.</summary>
 					/// <returns>Returns the instance of the root node.</returns>
-					virtual INodeProvider*			GetRootNode()=0;
+					virtual Ptr<INodeProvider>		GetRootNode()=0;
 					/// <summary>Test does the provider provided an optimized algorithm to get an instance of a node by the index of all visible nodes. If this function returns true, [M:vl.presentation.controls.tree.INodeRootProvider.GetNodeByVisibleIndex] can be used.</summary>
 					/// <returns>Returns true if such an algorithm is provided.</returns>
 					virtual bool					CanGetNodeByVisibleIndex()=0;
-					/// <summary>Get a node by the index in all visible nodes. This requires [M:vl.presentation.controls.tree.INodeRootProvider.CanGetNodeByVisibleIndex] returning true. If the node is no longer needed, a call to the [M:vl.presentation.controls.tree.INodeProvider.Release] is needed, unless this is a root node so that its parent is null.</summary>
+					/// <summary>Get a node by the index in all visible nodes. This requires [M:vl.presentation.controls.tree.INodeRootProvider.CanGetNodeByVisibleIndex] returning true.</summary>
 					/// <returns>The node for the index in all visible nodes.</returns>
 					/// <param name="index">The index in all visible nodes.</param>
-					virtual INodeProvider*			GetNodeByVisibleIndex(vint index)=0;
+					virtual Ptr<INodeProvider>		GetNodeByVisibleIndex(vint index)=0;
 					/// <summary>Attach an node provider callback to this node provider.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The node provider callback.</param>
@@ -142,13 +139,10 @@ NodeItemProvider
 					/// <summary>The identifier of this view.</summary>
 					static const wchar_t* const		Identifier;
 
-					/// <summary>Get an instance of a node by the index in all visible nodes. If the node is no longer needed, a call to [M:vl.presentation.controls.tree.INodeItemView.ReleaseNode] is required.</summary>
+					/// <summary>Get an instance of a node by the index in all visible nodes.</summary>
 					/// <returns>The instance of a node by the index in all visible nodes.</returns>
 					/// <param name="index">The index in all visible nodes.</param>
-					virtual INodeProvider*			RequestNode(vint index)=0;
-					/// <summary>Release an instance of a node.</summary>
-					/// <param name="node">The instance of a node.</param>
-					virtual void					ReleaseNode(INodeProvider* node)=0;
+					virtual Ptr<INodeProvider>		RequestNode(vint index)=0;
 					/// <summary>Get the index in all visible nodes of a node.</summary>
 					/// <returns>The index in all visible nodes of a node.</returns>
 					/// <param name="node">The node to calculate the index.</param>
@@ -177,8 +171,7 @@ NodeItemProvider
 					vint							CalculateNodeVisibilityIndexInternal(INodeProvider* node);
 					vint							CalculateNodeVisibilityIndex(INodeProvider* node)override;
 					
-					INodeProvider*					RequestNode(vint index)override;
-					void							ReleaseNode(INodeProvider* node)override;
+					Ptr<INodeProvider>				RequestNode(vint index)override;
 				public:
 					/// <summary>Create an item provider using a node root provider.</summary>
 					/// <param name="_root">The node root provider.</param>
@@ -264,10 +257,8 @@ MemoryNodeProvider
 					vint							CalculateTotalVisibleNodes()override;
 
 					vint							GetChildCount()override;
-					INodeProvider*					GetParent()override;
-					INodeProvider*					GetChild(vint index)override;
-					void							Increase()override;
-					void							Release()override;
+					Ptr<INodeProvider>				GetParent()override;
+					Ptr<INodeProvider>				GetChild(vint index)override;
 				};
 
 				/// <summary>A general implementation for <see cref="INodeRootProvider"/>.</summary>
@@ -286,7 +277,7 @@ MemoryNodeProvider
 					~NodeRootProviderBase();
 					
 					bool							CanGetNodeByVisibleIndex()override;
-					INodeProvider*					GetNodeByVisibleIndex(vint index)override;
+					Ptr<INodeProvider>				GetNodeByVisibleIndex(vint index)override;
 					bool							AttachCallback(INodeProviderCallback* value)override;
 					bool							DetachCallback(INodeProviderCallback* value)override;
 					IDescriptable*					RequestView(const WString& identifier)override;
@@ -305,7 +296,7 @@ MemoryNodeProvider
 					MemoryNodeRootProvider();
 					~MemoryNodeRootProvider();
 
-					INodeProvider*					GetRootNode()override;
+					Ptr<INodeProvider>				GetRootNode()override;
 					/// <summary>Get the <see cref="MemoryNodeProvider"/> object from an <see cref="INodeProvider"/> object.</summary>
 					/// <returns>The corresponding <see cref="MemoryNodeProvider"/> object.</returns>
 					/// <param name="node">The node to get the memory node.</param>
