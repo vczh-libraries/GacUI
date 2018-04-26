@@ -139,7 +139,7 @@ WindowsAsyncService
 				}
 			}
 
-			bool WindowsAsyncService::IsInMainThread()
+			bool WindowsAsyncService::IsInMainThread(INativeWindow* window)
 			{
 				return Thread::GetCurrentThreadId()==mainThreadId;
 			}

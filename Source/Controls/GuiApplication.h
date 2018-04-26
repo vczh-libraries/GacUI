@@ -102,7 +102,7 @@ Application
 
 				/// <summary>Test is the current thread the main thread for GUI.</summary>
 				/// <returns>Returns true if the current thread is the main thread for GUI.</returns>
-				bool											IsInMainThread();
+				bool											IsInMainThread(GuiControlHost* controlHost);
 				/// <summary>Invoke a specified function asynchronously.</summary>
 				/// <param name="proc">The specified function.</param>
 				void											InvokeAsync(const Func<void()>& proc);

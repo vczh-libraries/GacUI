@@ -264,9 +264,9 @@ GuiApplication
 				return L"";
 			}
 
-			bool GuiApplication::IsInMainThread()
+			bool GuiApplication::IsInMainThread(GuiControlHost* controlHost)
 			{
-				return GetCurrentController()->AsyncService()->IsInMainThread();
+				return GetCurrentController()->AsyncService()->IsInMainThread(GetThreadContextNativeWindow(controlHost));
 			}
 
 			void GuiApplication::InvokeAsync(const Func<void()>& proc)
@@ -281,7 +281,7 @@ GuiApplication
 
 			bool GuiApplication::InvokeInMainThreadAndWait(GuiControlHost* controlHost, const Func<void()>& proc, vint milliseconds)
 			{
-				CHECK_ERROR(!IsInMainThread(), L"GuiApplication::InvokeInMainThreadAndWait(GuiControlHost*, const Func<void()>&, vint)#This function cannot be called in UI thread.");
+				CHECK_ERROR(!IsInMainThread(controlHost), L"GuiApplication::InvokeInMainThreadAndWait(GuiControlHost*, const Func<void()>&, vint)#This function cannot be called in UI thread.");
 				return GetCurrentController()->AsyncService()->InvokeInMainThreadAndWait(GetThreadContextNativeWindow(controlHost), proc, milliseconds);
 			}
 
@@ -297,7 +297,7 @@ GuiApplication
 
 			void GuiApplication::RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc)
 			{
-				if(IsInMainThread())
+				if(IsInMainThread(controlHost))
 				{
 					return proc();
 				}

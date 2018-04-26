@@ -955,7 +955,7 @@ Native Window Services
 			/// Test is the current thread the main thread.
 			/// </summary>
 			/// <returns>Returns true if the current thread is the main thread.</returns>
-			virtual bool					IsInMainThread()=0;
+			virtual bool					IsInMainThread(INativeWindow* window)=0;
 			/// <summary>
 			/// Invoke a specified function with an specified argument asynchronisly.
 			/// </summary>
