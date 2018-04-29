@@ -302,8 +302,10 @@ Control Template
 				F(GuiRibbonToolstripsTemplate, TemplateProperty<GuiControlTemplate>, ToolbarTemplate, {})\
 
 #define GuiRibbonGalleryTemplate_Properties(F)\
+				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate, {})\
 
 #define GuiRibbonGalleryMenuTemplate_Properties(F)\
+				F(GuiRibbonGalleryMenuTemplate, TemplateProperty<GuiControlTemplate>, GroupHeaderTemplate, {})\
 
 /***********************************************************************
 Item Template
