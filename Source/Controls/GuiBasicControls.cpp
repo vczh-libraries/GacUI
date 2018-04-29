@@ -269,15 +269,7 @@ GuiControl
 
 			void GuiControl::SetControlThemeName(theme::ThemeName value)
 			{
-				if (controlThemeName != value)
-				{
-					controlThemeName = value;
-					if (!controlTemplate)
-					{
-						RebuildControlTemplate();
-					}
-					ControlThemeNameChanged.Execute(GetNotifyEventArguments());
-				}
+				SetControlThemeNameAndTemplate(value, controlTemplate);
 			}
 
 			GuiControl::ControlTemplatePropertyType GuiControl::GetControlTemplate()
@@ -287,23 +279,28 @@ GuiControl
 
 			void GuiControl::SetControlTemplate(const ControlTemplatePropertyType& value)
 			{
-				controlTemplate = value;
-				RebuildControlTemplate();
-				ControlTemplateChanged.Execute(GetNotifyEventArguments());
+				SetControlThemeNameAndTemplate(controlThemeName, value);
 			}
 
 			void GuiControl::SetControlThemeNameAndTemplate(theme::ThemeName themeNameValue, const ControlTemplatePropertyType& controlTemplateValue)
 			{
-				if (controlThemeName == themeNameValue && !controlTemplate && !controlTemplateValue)
+				bool themeChanged = (controlThemeName != themeNameValue);
+				bool templateChanged = (controlTemplate || controlTemplateValue);
+				if (themeChanged || templateChanged)
 				{
-					return;
+					controlThemeName = themeNameValue;
+					controlTemplate = controlTemplateValue;
+					RebuildControlTemplate();
+					
+					if (themeChanged)
+					{
+						ControlThemeNameChanged.Execute(GetNotifyEventArguments());
+					}
+					if (templateChanged)
+					{
+						ControlTemplateChanged.Execute(GetNotifyEventArguments());
+					}
 				}
-
-				controlThemeName = themeNameValue;
-				controlTemplate = controlTemplateValue;
-				RebuildControlTemplate();
-				ControlThemeNameChanged.Execute(GetNotifyEventArguments());
-				ControlTemplateChanged.Execute(GetNotifyEventArguments());
 			}
 
 			templates::GuiControlTemplate* GuiControl::GetControlTemplateObject()

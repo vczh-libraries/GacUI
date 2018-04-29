@@ -286,9 +286,9 @@ Control Template
 				F(GuiRibbonGroupTemplate, bool, Expandable, false)\
 
 #define GuiRibbonButtonsTemplate_PROPERTIES(F)\
-				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, BigButtonTemplate, {})\
-				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, BigDropdownButtonTemplate, {})\
-				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, BigSplitButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeDropdownButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeSplitButtonTemplate, {})\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallButtonTemplate, {})\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallDropdownButtonTemplate, {})\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallSplitButtonTemplate, {})\

@@ -10,6 +10,7 @@ namespace vl
 			using namespace collections;
 			using namespace compositions;
 			using namespace theme;
+			using namespace templates;
 
 /***********************************************************************
 GuiRibbonTab
@@ -316,12 +317,14 @@ GuiRibbonButtons
 
 			void GuiRibbonButtons::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
 			}
 
 			void GuiRibbonButtons::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				FOREACH(GuiControl*, button, buttons)
+				{
+					SetButtonThemeName(responsiveView->GetCurrentView(), button);
+				}
 			}
 
 			void GuiRibbonButtons::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
@@ -357,32 +360,71 @@ GuiRibbonButtons
 						break;
 					}
 
-					if (fixed == views[(vint)RibbonButtonSize::Large])
+					if (type != -1)
 					{
-						switch (type)
+						ThemeName themeName = ThemeName::Unknown;
+						TemplateProperty<GuiToolstripButtonTemplate> controlTemplate;
+
+						if (fixed == views[(vint)RibbonButtonSize::Large])
 						{
-						case 0: button->SetControlThemeName(ThemeName::RibbonLargeButton); break;
-						case 1: button->SetControlThemeName(ThemeName::RibbonLargeDropdownButton); break;
-						case 2: button->SetControlThemeName(ThemeName::RibbonLargeSplitButton); break;
+							switch (type)
+							{
+							case 0: themeName = ThemeName::RibbonLargeButton; break;
+							case 1: themeName = ThemeName::RibbonLargeDropdownButton; break;
+							case 2: themeName = ThemeName::RibbonLargeSplitButton; break;
+							}
 						}
-					}
-					else if (fixed == views[(vint)RibbonButtonSize::Small])
-					{
-						switch (type)
+						else if (fixed == views[(vint)RibbonButtonSize::Small])
 						{
-						case 0: button->SetControlThemeName(ThemeName::RibbonSmallButton); break;
-						case 1: button->SetControlThemeName(ThemeName::RibbonSmallDropdownButton); break;
-						case 2: button->SetControlThemeName(ThemeName::RibbonSmallSplitButton); break;
+							switch (type)
+							{
+							case 0: themeName = ThemeName::RibbonSmallButton; break;
+							case 1: themeName = ThemeName::RibbonSmallDropdownButton; break;
+							case 2: themeName = ThemeName::RibbonSmallSplitButton; break;
+							}
 						}
-					}
-					else if (fixed == views[(vint)RibbonButtonSize::Icon])
-					{
-						switch (type)
+						else if (fixed == views[(vint)RibbonButtonSize::Icon])
 						{
-						case 0: button->SetControlThemeName(ThemeName::ToolstripButton); break;
-						case 1: button->SetControlThemeName(ThemeName::ToolstripDropdownButton); break;
-						case 2: button->SetControlThemeName(ThemeName::ToolstripSplitButton); break;
+							switch (type)
+							{
+							case 0: themeName = ThemeName::ToolstripButton; break;
+							case 1: themeName = ThemeName::ToolstripDropdownButton; break;
+							case 2: themeName = ThemeName::ToolstripSplitButton; break;
+							}
 						}
+
+						if (auto ct = GetControlTemplateObject())
+						{
+							if (fixed == views[(vint)RibbonButtonSize::Large])
+							{
+								switch (type)
+								{
+								case 0: controlTemplate = ct->GetLargeButtonTemplate(); break;
+								case 1: controlTemplate = ct->GetLargeDropdownButtonTemplate(); break;
+								case 2: controlTemplate = ct->GetLargeSplitButtonTemplate(); break;
+								}
+							}
+							else if (fixed == views[(vint)RibbonButtonSize::Small])
+							{
+								switch (type)
+								{
+								case 0: controlTemplate = ct->GetSmallButtonTemplate(); break;
+								case 1: controlTemplate = ct->GetSmallDropdownButtonTemplate(); break;
+								case 2: controlTemplate = ct->GetSmallSplitButtonTemplate(); break;
+								}
+							}
+							else if (fixed == views[(vint)RibbonButtonSize::Icon])
+							{
+								switch (type)
+								{
+								case 0: controlTemplate = ct->GetIconButtonTemplate(); break;
+								case 1: controlTemplate = ct->GetIconDropdownButtonTemplate(); break;
+								case 2: controlTemplate = ct->GetIconSplitButtonTemplate(); break;
+								}
+							}
+						}
+
+						button->SetControlThemeNameAndTemplate(themeName, controlTemplate);
 					}
 				}
 			}
@@ -474,12 +516,15 @@ GuiRibbonToolstrips
 
 			void GuiRibbonToolstrips::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
 			}
 
 			void GuiRibbonToolstrips::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject();
+				for (vint i = 0; i < ARRLEN(toolbars); i++)
+				{
+					toolbars[i]->SetControlTemplate(ct->GetToolbarTemplate());
+				}
 			}
 
 			void GuiRibbonToolstrips::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
@@ -629,6 +674,7 @@ GuiRibbonToolstrips
 				responsiveView->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonToolstrips::OnBeforeSwitchingView);
 
+				vint toolbarIndex = 0;
 				for (vint i = 0; i < sizeof(views) / sizeof(*views); i++)
 				{
 					auto containers = i == 0 ? longContainers : shortContainers;
@@ -649,16 +695,17 @@ GuiRibbonToolstrips
 
 					for (vint j = 0; j < count; j++)
 					{
-						auto toolstrip = new GuiToolstripToolBar(theme::ThemeName::ToolstripToolBar);
-						toolstrip->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						auto toolbar = new GuiToolstripToolBar(theme::ThemeName::ToolstripToolBar);
+						toolbar->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						toolbars[toolbarIndex++] = toolbar;
 
 						auto cell = new GuiCellComposition();
 						cell->SetSite(j * 2 + 1, 0, 1, 1);
-						cell->AddChild(toolstrip->GetBoundsComposition());
+						cell->AddChild(toolbar->GetBoundsComposition());
 						table->AddChild(cell);
 
 						auto container = new GuiToolstripGroupContainer(theme::ThemeName::CustomControl);
-						toolstrip->GetToolstripItems().Add(container);
+						toolbar->GetToolstripItems().Add(container);
 						containers[j] = container;
 					}
 

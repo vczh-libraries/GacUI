@@ -52,7 +52,7 @@ namespace vl
 			F(ControlTemplate,				ToolstripSplitter)			\
 			F(RibbonTabTemplate,			RibbonTab)					\
 			F(RibbonGroupTemplate,			RibbonGroup)				\
-			F(RibbonButtonsTemplate			RibbonButtons)				\
+			F(RibbonButtonsTemplate,		RibbonButtons)				\
 			F(RibbonToolstripsTemplate,		RibbonToolstrips)			\
 			F(ToolstripButtonTemplate,		RibbonSmallButton)			\
 			F(ToolstripButtonTemplate,		RibbonSmallDropdownButton)	\

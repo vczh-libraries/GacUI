@@ -186,6 +186,7 @@ Ribbon Toolstrips
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonToolstripsTemplate, GuiControl)
 			protected:
 				compositions::GuiResponsiveViewComposition*				responsiveView = nullptr;
+				GuiToolstripToolBar*									toolbars[5] = { nullptr,nullptr,nullptr,nullptr,nullptr };
 				GuiToolstripGroupContainer*								longContainers[2] = { nullptr,nullptr };
 				GuiToolstripGroupContainer*								shortContainers[3] = { nullptr,nullptr,nullptr };
 				compositions::GuiResponsiveFixedComposition*			views[2] = { nullptr,nullptr };
