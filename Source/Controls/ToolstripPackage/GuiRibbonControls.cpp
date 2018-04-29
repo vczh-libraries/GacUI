@@ -757,8 +757,8 @@ GuiBindableRibbonGallery
 GuiBindableRibbonGalleryMenu
 ***********************************************************************/
 
-			GuiBindableRibbonGalleryMenu::GuiBindableRibbonGalleryMenu(theme::ThemeName themeName)
-				:GuiToolstripMenu(themeName)
+			GuiBindableRibbonGalleryMenu::GuiBindableRibbonGalleryMenu(theme::ThemeName themeName, GuiControl* owner)
+				:GuiToolstripMenu(themeName, owner)
 			{
 			}
 

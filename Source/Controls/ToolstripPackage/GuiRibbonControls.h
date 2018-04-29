@@ -255,7 +255,7 @@ Ribbon Gallery
 				using ItemStyle = templates::GuiListItemTemplate;
 				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
 			public:
-				GuiBindableRibbonGalleryMenu(theme::ThemeName themeName);
+				GuiBindableRibbonGalleryMenu(theme::ThemeName themeName, GuiControl* owner);
 				~GuiBindableRibbonGalleryMenu();
 
 				compositions::GuiNotifyEvent							ItemTemplateChanged;

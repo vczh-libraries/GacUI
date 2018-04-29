@@ -954,7 +954,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableRibbonGalleryMenu)
 				CLASS_MEMBER_BASE(GuiToolstripMenu)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiBindableRibbonGalleryMenu)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiBindableRibbonGalleryMenu, GuiControl*, owner)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemTemplate)
 			END_CLASS_MEMBER(GuiBindableRibbonGalleryMenu)
