@@ -134,6 +134,8 @@
         <ThemeTemplates>
           <att.RibbonGroup>x:RibbonGroupTemplate</att.RibbonGroup>
           <att.RibbonSplitter>x:ToolstripSplitterTemplate</att.RibbonSplitter>
+          <att.RibbonButtons>x:RibbonButtonsTemplate</att.RibbonButtons>
+          <att.RibbonToolstrips>x:RibbonToolstripsTemplate</att.RibbonToolstrips>
         </ThemeTemplates>
       </Instance>
     </Instance>
@@ -167,6 +169,18 @@
             </Cell>
           </Table>
         </RibbonGroupTemplate>
+      </Instance>
+    </Instance>
+    
+    <Instance name="RibbonButtonsTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonButtonsTemplate" ref.Styles="res://DarkSkin/Style">
+        <RibbonButtonsTemplate MinSizeLimitation="LimitToElementAndChildren"/>
+      </Instance>
+    </Instance>
+
+    <Instance name="RibbonToolstripsTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonToolstripsTemplate" ref.Styles="res://DarkSkin/Style">
+        <RibbonToolstripsTemplate MinSizeLimitation="LimitToElementAndChildren"/>
       </Instance>
     </Instance>
   </Folder>
