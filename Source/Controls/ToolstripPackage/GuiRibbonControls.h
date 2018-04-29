@@ -143,6 +143,7 @@ Ribbon Buttons
 			class GuiRibbonButtons : public GuiControl, public Description<GuiRibbonButtons>
 			{
 				friend class GuiRibbonButtonsItemCollection;
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonButtonsTemplate, GuiControl)
 			protected:
 				RibbonButtonSize										minSize;
 				RibbonButtonSize										maxSize;
@@ -182,6 +183,7 @@ Ribbon Toolstrips
 			class GuiRibbonToolstrips : public GuiControl, public Description<GuiRibbonToolstrips>
 			{
 				friend class GuiRibbonToolstripsGroupCollection;
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonToolstripsTemplate, GuiControl)
 			protected:
 				compositions::GuiResponsiveViewComposition*				responsiveView = nullptr;
 				GuiToolstripGroupContainer*								longContainers[2] = { nullptr,nullptr };

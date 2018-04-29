@@ -186,6 +186,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(TooltipControl)
 				CLASS_MEMBER_PROPERTY_FAST(TooltipWidth)
 
+				CLASS_MEMBER_METHOD(SetControlThemeNameAndTemplate, { L"themeNameValue" _ L"controlTemplateValue" })
 				CLASS_MEMBER_METHOD(SetActivatingAltHost, { L"host" })
 				CLASS_MEMBER_METHOD(GetChild, {L"index"})
 				CLASS_MEMBER_METHOD(AddChild, {L"control"})

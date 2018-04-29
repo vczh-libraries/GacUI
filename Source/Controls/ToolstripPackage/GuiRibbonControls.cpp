@@ -314,6 +314,16 @@ GuiRibbonButtonsItemCollection
 GuiRibbonButtons
 ***********************************************************************/
 
+			void GuiRibbonButtons::BeforeControlTemplateUninstalled_()
+			{
+				auto ct = GetControlTemplateObject();
+			}
+
+			void GuiRibbonButtons::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+			}
+
 			void GuiRibbonButtons::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
 			{
 				FOREACH(GuiControl*, button, buttons)
@@ -461,6 +471,16 @@ GuiRibbonToolstrips
 ***********************************************************************/
 
 #define ARRLEN(X) sizeof(X) / sizeof(*X)
+
+			void GuiRibbonToolstrips::BeforeControlTemplateUninstalled_()
+			{
+				auto ct = GetControlTemplateObject();
+			}
+
+			void GuiRibbonToolstrips::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+			}
 
 			void GuiRibbonToolstrips::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
 			{

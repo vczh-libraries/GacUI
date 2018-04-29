@@ -292,6 +292,20 @@ GuiControl
 				ControlTemplateChanged.Execute(GetNotifyEventArguments());
 			}
 
+			void GuiControl::SetControlThemeNameAndTemplate(theme::ThemeName themeNameValue, const ControlTemplatePropertyType& controlTemplateValue)
+			{
+				if (controlThemeName == themeNameValue && !controlTemplate && !controlTemplateValue)
+				{
+					return;
+				}
+
+				controlThemeName = themeNameValue;
+				controlTemplate = controlTemplateValue;
+				RebuildControlTemplate();
+				ControlThemeNameChanged.Execute(GetNotifyEventArguments());
+				ControlTemplateChanged.Execute(GetNotifyEventArguments());
+			}
+
 			templates::GuiControlTemplate* GuiControl::GetControlTemplateObject()
 			{
 				EnsureControlTemplateExists();

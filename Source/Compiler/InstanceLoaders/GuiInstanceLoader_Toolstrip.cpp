@@ -267,7 +267,7 @@ GuiRibbonButtonsInstanceLoader
 				}
 			public:
 				GuiRibbonButtonsInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiRibbonButtons>::content.typeName, theme::ThemeName::CustomControl)
+					:BASE_TYPE(description::TypeInfo<GuiRibbonButtons>::content.typeName, theme::ThemeName::RibbonButtons)
 				{
 					_MaxSize = GlobalStringKey::Get(L"MaxSize");
 					_MinSize = GlobalStringKey::Get(L"MinSize");

@@ -99,6 +99,8 @@ namespace vl
 			F(GuiDateComboBoxTemplate,			GuiComboBoxTemplate)		\
 			F(GuiRibbonTabTemplate,				GuiTabTemplate)				\
 			F(GuiRibbonGroupTemplate,			GuiControlTemplate)			\
+			F(GuiRibbonButtonsTemplate,			GuiControlTemplate)			\
+			F(GuiRibbonToolstripsTemplate,		GuiControlTemplate)			\
 
 #define GUI_ITEM_TEMPLATE_DECL(F)\
 			F(GuiTextListItemTemplate,			GuiListItemTemplate)		\
@@ -282,6 +284,20 @@ Control Template
 
 #define GuiRibbonGroupTemplate_PROPERTIES(F)\
 				F(GuiRibbonGroupTemplate, bool, Expandable, false)\
+
+#define GuiRibbonButtonsTemplate_PROPERTIES(F)\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, BigButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, BigDropdownButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, BigSplitButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallDropdownButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallSplitButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, IconButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, IconDropdownButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, IconSplitButtonTemplate, {})\
+
+#define GuiRibbonToolstripsTemplate_PROPERTIES(F)\
+				F(GuiRibbonToolstripsTemplate, TemplateProperty<GuiControlTemplate>, ToolbarTemplate, {})\
 
 /***********************************************************************
 Item Template

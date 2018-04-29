@@ -232,6 +232,8 @@ Type List (Templates)
 			F(presentation::templates::GuiDateComboBoxTemplate)\
 			F(presentation::templates::GuiRibbonTabTemplate)\
 			F(presentation::templates::GuiRibbonGroupTemplate)\
+			F(presentation::templates::GuiRibbonButtonsTemplate)\
+			F(presentation::templates::GuiRibbonToolstripsTemplate)\
 			F(presentation::templates::GuiListItemTemplate)\
 			F(presentation::templates::GuiTextListItemTemplate)\
 			F(presentation::templates::GuiTreeItemTemplate)\

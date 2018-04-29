@@ -297,6 +297,10 @@ IGuiAnimationCoroutine
 				impl->OnWaitForGroup(groupId);
 			}
 
+			void IGuiAnimationCoroutine::ReturnAndExit(IImpl* impl)
+			{
+			}
+
 			Ptr<IGuiAnimation> IGuiAnimationCoroutine::Create(const Creator& creator)
 			{
 				return new GuiCoroutineAnimation(creator);

@@ -35,6 +35,7 @@ namespace vl
 				static void					PlayAndWaitAndPause(IImpl* impl, Ptr<IGuiAnimation> animation);
 				static void					PlayInGroupAndPause(IImpl* impl, Ptr<IGuiAnimation> animation, vint groupId);
 				static void					WaitForGroupAndPause(IImpl* impl, vint groupId);
+				static void					ReturnAndExit(IImpl* impl);
 				static Ptr<IGuiAnimation>	Create(const Creator& creator);
 			};
 		}

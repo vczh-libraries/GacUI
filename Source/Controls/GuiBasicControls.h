@@ -137,6 +137,10 @@ Basic Construction
 				/// <summary>Set the associated control template.</summary>
 				/// <param name="value">The control template.</param>
 				void									SetControlTemplate(const ControlTemplatePropertyType& value);
+				/// <summary>Set the associated control theme name and template and the same time.</summary>
+				/// <param name="themeNameValue">The theme name.</param>
+				/// <param name="controlTemplateValue">The control template.</param>
+				void									SetControlThemeNameAndTemplate(theme::ThemeName themeNameValue, const ControlTemplatePropertyType& controlTemplateValue);
 				/// <summary>Get the associated style controller.</summary>
 				/// <returns>The associated style controller.</returns>
 				templates::GuiControlTemplate*			GetControlTemplateObject();
