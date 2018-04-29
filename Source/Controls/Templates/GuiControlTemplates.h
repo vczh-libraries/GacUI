@@ -301,10 +301,10 @@ Control Template
 #define GuiRibbonToolstripsTemplate_PROPERTIES(F)\
 				F(GuiRibbonToolstripsTemplate, TemplateProperty<GuiControlTemplate>, ToolbarTemplate, {})\
 
-#define GuiRibbonGalleryTemplate_Properties(F)\
+#define GuiRibbonGalleryTemplate_PROPERTIES(F)\
 				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate, {})\
 
-#define GuiRibbonGalleryMenuTemplate_Properties(F)\
+#define GuiRibbonGalleryMenuTemplate_PROPERTIES(F)\
 				F(GuiRibbonGalleryMenuTemplate, TemplateProperty<GuiControlTemplate>, GroupHeaderTemplate, {})\
 
 /***********************************************************************
