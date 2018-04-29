@@ -200,6 +200,55 @@ Ribbon Toolstrips
 
 				collections::ObservableListBase<GuiToolstripGroup*>&	GetGroups();
 			};
+
+/***********************************************************************
+Ribbon Gallery
+***********************************************************************/
+
+			class GuiBindableRibbonGalleryBase : public Description<GuiBindableRibbonGalleryBase>
+			{
+				using IValueEnumerable = reflection::description::IValueEnumerable;
+			public:
+				GuiBindableRibbonGalleryBase();
+				~GuiBindableRibbonGalleryBase();
+
+				compositions::GuiNotifyEvent							GroupEnabledChanged;
+				compositions::GuiNotifyEvent							GroupTitlePropertyChanged;
+				compositions::GuiNotifyEvent							GroupChildrenPropertyChanged;
+
+				Ptr<IValueEnumerable>									GetItemSource();
+				void													SetItemSource(Ptr<IValueEnumerable> value);
+
+				bool													GetGroupEnabled();
+				ItemProperty<WString>									GetGroupTitleProperty();
+				void													SetGroupTitleProperty(const ItemProperty<WString>& value);
+				ItemProperty<Ptr<IValueEnumerable>>						GetGroupChildrenProperty();
+				void													SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
+			};
+
+			class GuiBindableRibbonGallery : public GuiControl, public GuiBindableRibbonGalleryBase, public Description<GuiBindableRibbonGallery>
+			{
+				using ItemStyle = templates::GuiListItemTemplate;
+				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
+			public:
+				GuiBindableRibbonGallery(theme::ThemeName themeName);
+				~GuiBindableRibbonGallery();
+
+				ItemStyleProperty										GetItemTemplate();
+				void													SetItemTemplate(const ItemStyleProperty& value);
+			};
+
+			class GuiBindableRibbonGalleryMenu : public GuiToolstripMenu, public GuiBindableRibbonGalleryBase, public Description<GuiBindableRibbonGallery>
+			{
+				using ItemStyle = templates::GuiListItemTemplate;
+				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
+			public:
+				GuiBindableRibbonGalleryMenu(theme::ThemeName themeName);
+				~GuiBindableRibbonGalleryMenu();
+
+				ItemStyleProperty										GetItemTemplate();
+				void													SetItemTemplate(const ItemStyleProperty& value);
+			};
 		}
 	}
 }
