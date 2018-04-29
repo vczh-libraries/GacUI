@@ -205,6 +205,36 @@ Ribbon Toolstrips
 Ribbon Gallery
 ***********************************************************************/
 
+			struct GalleryPos
+			{
+				vint			group;
+				vint			item;
+
+				GalleryPos()
+					:group(-1), item(-1)
+				{
+				}
+
+				GalleryPos(vint _group, vint _item)
+					:group(_group), item(_item)
+				{
+				}
+
+				vint Compare(GalleryPos value)const
+				{
+					vint result = group - value.group;
+					if (result != 0) return result;
+					return item - value.item;
+				}
+
+				bool operator==(const GalleryPos& value)const { return Compare(value) == 0; }
+				bool operator!=(const GalleryPos& value)const { return Compare(value) != 0; }
+				bool operator<(const GalleryPos& value)const { return Compare(value)<0; }
+				bool operator<=(const GalleryPos& value)const { return Compare(value) <= 0; }
+				bool operator>(const GalleryPos& value)const { return Compare(value)>0; }
+				bool operator>=(const GalleryPos& value)const { return Compare(value) >= 0; }
+			};
+
 			class GuiBindableRibbonGalleryBase : public Description<GuiBindableRibbonGalleryBase>
 			{
 				using IValueEnumerable = reflection::description::IValueEnumerable;
@@ -215,8 +245,7 @@ Ribbon Gallery
 				compositions::GuiNotifyEvent							GroupEnabledChanged;
 				compositions::GuiNotifyEvent							GroupTitlePropertyChanged;
 				compositions::GuiNotifyEvent							GroupChildrenPropertyChanged;
-				compositions::GuiNotifyEvent							SelectedItemIndexChanged;
-				compositions::GuiNotifyEvent							SelectedGroupIndexChanged;
+				compositions::GuiNotifyEvent							SelectionChanged;
 
 				Ptr<IValueEnumerable>									GetItemSource();
 				void													SetItemSource(Ptr<IValueEnumerable> value);
@@ -227,13 +256,11 @@ Ribbon Gallery
 				ItemProperty<Ptr<IValueEnumerable>>						GetGroupChildrenProperty();
 				void													SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
 
-				vint													GetSelectedGroupIndex();
-				void													SetSelectedGroupIndex(vint value);
-				description::Value										GetSelectedGroupValue();
+				GalleryPos												GetSelection();
+				void													SetSelection(GalleryPos value);
 
-				vint													GetSelectedItemIndex();
-				void													SetSelectedItemIndex(vint value);
-				description::Value										GetSelectedItemValue();
+				description::Value										GetGroupValue(vint groupIndex);
+				description::Value										GetItemValue(GalleryPos pos);
 			};
 
 			class GuiBindableRibbonGallery : public GuiControl, public GuiBindableRibbonGalleryBase, public Description<GuiBindableRibbonGallery>
@@ -245,9 +272,12 @@ Ribbon Gallery
 				~GuiBindableRibbonGallery();
 
 				compositions::GuiNotifyEvent							ItemTemplateChanged;
+				compositions::GuiNotifyEvent							PreviewSelectionChanged;
 
 				ItemStyleProperty										GetItemTemplate();
 				void													SetItemTemplate(const ItemStyleProperty& value);
+
+				GalleryPos												GetPreviewSelection();
 			};
 
 			class GuiBindableRibbonGalleryMenu : public GuiToolstripMenu, public GuiBindableRibbonGalleryBase, public Description<GuiBindableRibbonGallery>
@@ -259,9 +289,12 @@ Ribbon Gallery
 				~GuiBindableRibbonGalleryMenu();
 
 				compositions::GuiNotifyEvent							ItemTemplateChanged;
+				compositions::GuiNotifyEvent							PreviewSelectionChanged;
 
 				ItemStyleProperty										GetItemTemplate();
 				void													SetItemTemplate(const ItemStyleProperty& value);
+
+				GalleryPos												GetPreviewSelection();
 			};
 		}
 	}

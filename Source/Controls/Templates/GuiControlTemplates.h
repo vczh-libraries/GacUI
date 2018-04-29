@@ -101,8 +101,8 @@ namespace vl
 			F(GuiRibbonGroupTemplate,			GuiControlTemplate)			\
 			F(GuiRibbonButtonsTemplate,			GuiControlTemplate)			\
 			F(GuiRibbonToolstripsTemplate,		GuiControlTemplate)			\
-			F(GuiRibbonGalleryTemplate,			GuiControlTemplate)			\
 			F(GuiRibbonGalleryMenuTemplate,		GuiMenuTemplate)			\
+			F(GuiRibbonGalleryTemplate,			GuiControlTemplate)			\
 
 #define GUI_ITEM_TEMPLATE_DECL(F)\
 			F(GuiTextListItemTemplate,			GuiListItemTemplate)		\
@@ -302,10 +302,12 @@ Control Template
 				F(GuiRibbonToolstripsTemplate, TemplateProperty<GuiControlTemplate>, ToolbarTemplate, {})\
 
 #define GuiRibbonGalleryTemplate_PROPERTIES(F)\
-				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate, {})\
+				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
+				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiRibbonGalleryMenuTemplate>, SubMenuTemplate, {})\
 
 #define GuiRibbonGalleryMenuTemplate_PROPERTIES(F)\
-				F(GuiRibbonGalleryMenuTemplate, TemplateProperty<GuiControlTemplate>, GroupHeaderTemplate, {})\
+				F(GuiRibbonGalleryMenuTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
+				F(GuiRibbonGalleryMenuTemplate, TemplateProperty<GuiControlTemplate>, HeaderTemplate, {})\
 
 /***********************************************************************
 Item Template
