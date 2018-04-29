@@ -234,6 +234,8 @@ Type List (Templates)
 			F(presentation::templates::GuiRibbonGroupTemplate)\
 			F(presentation::templates::GuiRibbonButtonsTemplate)\
 			F(presentation::templates::GuiRibbonToolstripsTemplate)\
+			F(presentation::templates::GuiRibbonGalleryTemplate)\
+			F(presentation::templates::GuiRibbonGalleryMenuTemplate)\
 			F(presentation::templates::GuiListItemTemplate)\
 			F(presentation::templates::GuiTextListItemTemplate)\
 			F(presentation::templates::GuiTreeItemTemplate)\
@@ -337,6 +339,9 @@ Type List (Controls)
 			F(presentation::controls::RibbonButtonSize)\
 			F(presentation::controls::GuiRibbonButtons)\
 			F(presentation::controls::GuiRibbonToolstrips)\
+			F(presentation::controls::GuiBindableRibbonGalleryBase)\
+			F(presentation::controls::GuiBindableRibbonGallery)\
+			F(presentation::controls::GuiBindableRibbonGalleryMenu)\
 			F(presentation::controls::GuiDocumentItem)\
 			F(presentation::controls::GuiDocumentCommonInterface)\
 			F(presentation::controls::GuiDocumentCommonInterface::EditMode)\

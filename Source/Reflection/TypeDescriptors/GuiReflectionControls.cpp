@@ -933,6 +933,32 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Groups)
 			END_CLASS_MEMBER(GuiRibbonToolstrips)
 
+			BEGIN_CLASS_MEMBER(GuiBindableRibbonGalleryBase)
+					
+				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(GroupEnabled)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupTitleProperty)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupChildrenProperty)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedGroupIndex)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedItemIndex)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItemValue, SelectedItemIndexChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedGroupValue, SelectedGroupIndexChanged)
+			END_CLASS_MEMBER(GuiBindableRibbonGalleryBase)
+
+			BEGIN_CLASS_MEMBER(GuiBindableRibbonGallery)
+				CLASS_MEMBER_BASE(GuiControl)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiBindableRibbonGallery)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemTemplate)
+			END_CLASS_MEMBER(GuiBindableRibbonGallery)
+
+			BEGIN_CLASS_MEMBER(GuiBindableRibbonGalleryMenu)
+				CLASS_MEMBER_BASE(GuiToolstripMenu)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiBindableRibbonGalleryMenu)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemTemplate)
+			END_CLASS_MEMBER(GuiBindableRibbonGalleryMenu)
+
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDocumentItem>(const WString&), { L"name" })
 

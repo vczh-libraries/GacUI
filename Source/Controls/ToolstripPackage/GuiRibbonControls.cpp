@@ -727,6 +727,44 @@ GuiRibbonToolstrips
 			}
 
 #undef ARRLEN
+
+/***********************************************************************
+GuiBindableRibbonGalleryBase
+***********************************************************************/
+
+			GuiBindableRibbonGalleryBase::GuiBindableRibbonGalleryBase()
+			{
+			}
+
+			GuiBindableRibbonGalleryBase::~GuiBindableRibbonGalleryBase()
+			{
+			}
+
+/***********************************************************************
+GuiBindableRibbonGallery
+***********************************************************************/
+
+			GuiBindableRibbonGallery::GuiBindableRibbonGallery(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
+			}
+
+			GuiBindableRibbonGallery::~GuiBindableRibbonGallery()
+			{
+			}
+
+/***********************************************************************
+GuiBindableRibbonGalleryMenu
+***********************************************************************/
+
+			GuiBindableRibbonGalleryMenu::GuiBindableRibbonGalleryMenu(theme::ThemeName themeName)
+				:GuiToolstripMenu(themeName)
+			{
+			}
+
+			GuiBindableRibbonGalleryMenu::~GuiBindableRibbonGalleryMenu()
+			{
+			}
 		}
 	}
 }

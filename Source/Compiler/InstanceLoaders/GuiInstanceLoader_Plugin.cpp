@@ -34,7 +34,7 @@ GuiInstanceLoader_Templates.cpp
 	GuiCommonScrollViewLook
 		ctor: DefaultScrollSize
 GuiInstanceLoader_Toolstrip.cpp
-	GuiToolstripMenu, GuiToolstripMenuBar, GuiToolstripToolBar
+	GuiToolstripMenu, GuiToolstripMenuBar, GuiToolstripToolBar, GuiBindableRibbonGalleryMenu
 		default: collection(GuiControl*)
 	GuiToolstripButton
 		SubMenu-set: GuiToolstripMenu*
@@ -308,6 +308,7 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonTabPage,			CustomControl										);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonGroup,				RibbonGroup											);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonToolstrips,		RibbonToolstrips									);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableRibbonGallery,	RibbonGallery										);
 
 					/*						VIRTUAL-CONTROL-TYPE		REAL-CONTROL-TYPE			THEME-NAME											*/
 					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,					GroupBox											);

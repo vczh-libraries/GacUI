@@ -215,6 +215,8 @@ Ribbon Gallery
 				compositions::GuiNotifyEvent							GroupEnabledChanged;
 				compositions::GuiNotifyEvent							GroupTitlePropertyChanged;
 				compositions::GuiNotifyEvent							GroupChildrenPropertyChanged;
+				compositions::GuiNotifyEvent							SelectedItemIndexChanged;
+				compositions::GuiNotifyEvent							SelectedGroupIndexChanged;
 
 				Ptr<IValueEnumerable>									GetItemSource();
 				void													SetItemSource(Ptr<IValueEnumerable> value);
@@ -224,6 +226,14 @@ Ribbon Gallery
 				void													SetGroupTitleProperty(const ItemProperty<WString>& value);
 				ItemProperty<Ptr<IValueEnumerable>>						GetGroupChildrenProperty();
 				void													SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
+
+				vint													GetSelectedGroupIndex();
+				void													SetSelectedGroupIndex(vint value);
+				description::Value										GetSelectedGroupValue();
+
+				vint													GetSelectedItemIndex();
+				void													SetSelectedItemIndex(vint value);
+				description::Value										GetSelectedItemValue();
 			};
 
 			class GuiBindableRibbonGallery : public GuiControl, public GuiBindableRibbonGalleryBase, public Description<GuiBindableRibbonGallery>
@@ -233,6 +243,8 @@ Ribbon Gallery
 			public:
 				GuiBindableRibbonGallery(theme::ThemeName themeName);
 				~GuiBindableRibbonGallery();
+
+				compositions::GuiNotifyEvent							ItemTemplateChanged;
 
 				ItemStyleProperty										GetItemTemplate();
 				void													SetItemTemplate(const ItemStyleProperty& value);
@@ -245,6 +257,8 @@ Ribbon Gallery
 			public:
 				GuiBindableRibbonGalleryMenu(theme::ThemeName themeName);
 				~GuiBindableRibbonGalleryMenu();
+
+				compositions::GuiNotifyEvent							ItemTemplateChanged;
 
 				ItemStyleProperty										GetItemTemplate();
 				void													SetItemTemplate(const ItemStyleProperty& value);
