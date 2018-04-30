@@ -67,5 +67,8 @@
     <Xml Include="Resources\Hyperlink.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="Resources\Ribbon.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

@@ -1,249 +1,173 @@
-<Instance ref.CodeBehind="false" ref.Class="demo::DocumentTabPage" xmlns:demo="demo::*">
-  <ref.Members>
-    <![CDATA[
-      @cpp:Private
-      func SetEditMode(editMode: DocumentCommonInterface::EditMode) : void
-      {
-        var command =
-          editMode == DocumentCommonInterface::EditMode::ViewOnly ? commandViewOnly :
-          editMode == DocumentCommonInterface::EditMode::Selectable ? commandSelectable :
-          commandEditable;
-
-        document.EditMode = editMode;
-        commandViewOnly.Selected = (command == commandViewOnly);
-        commandSelectable.Selected = (command == commandSelectable);
-        commandEditable.Selected = (command == commandEditable);
-        buttonView.Image = command.Image;
-        self.UpdateSubscriptions();
-      }
-      
-      @cpp:Private
-      func SelectAlignmentCommand() : ToolstripCommand*
-      {
-        var alignment = document.SummarizeParagraphAlignment(document.CaretBegin, document.CaretEnd);
-        return
-          alignment == Alignment::Left ? commandAlignLeft :
-          alignment == Alignment::Center ? commandAlignCenter :
-          alignment == Alignment::Right ? commandAlignRight :
-          commandAlignDefault;
-      }
-      
-      @cpp:Private
-      func SetAlignment(alignment : Alignment?) : void
-      {
-        document.SetParagraphAlignment(document.CaretBegin, document.CaretEnd, alignment);
-        self.UpdateSubscriptions();
-      }
-      
-      @cpp:Private
-      prop HasEditableSelection : bool = false {}
-      
-      @cpp:Private
-      prop HasEditableSelectionInSingleParagraph : bool = false {}
-      
-      @cpp:Private
-      func HasEditableCursor() : bool
-      {
-        return document.EditMode == DocumentCommonInterface::EditMode::Editable;
-      }
-      
-      @cpp:Private
-      func HasEditableHyperlink(forEdit : bool) : bool
-      {
-        var a = document.CaretBegin;
-        var b = document.CaretEnd;
-        return a.row == b.row and a.column != b.column;
-      }
-    ]]>
-  </ref.Members>
-  <ref.Ctor>
-    <![CDATA[
-      {
-        SetEditMode(Editable);
-      }
-    ]]>
-  </ref.Ctor>
-  <TabPage ref.Name="self" Text="Document Editor">
-    <att.HasEditableSelection-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.HasEditableSelection-bind>
-    <MessageDialog ref.Name="dialogMessage" Title="You Clicked a Hyperlink!"/>
-    <OpenFileDialog ref.Name="dialogOpen" Title="Select an Image" Filter="Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp" EnabledPreview="true" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
+<Folder>
+  <Instance name="DocumentTabPageBaseResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentTabPageBase">
+      <ref.Members>
+        <![CDATA[
+          @cpp:Protected
+          prop EditModeCommand : ToolstripCommand* = null {const}
     
-    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
-      <att.Rows>
-        <_>composeType:MinSize</_>
-        <_>composeType:MinSize</_>
-        <_>composeType:Percentage percentage:1.0</_>
-      </att.Rows>
-      <att.Columns>
-        <_>composeType:Percentage percentage:1.0</_>
-      </att.Columns>
+          @cpp:Private
+          func SetEditMode(editMode: DocumentCommonInterface::EditMode) : void
+          {
+            var command =
+              editMode == DocumentCommonInterface::EditMode::ViewOnly ? commandViewOnly :
+              editMode == DocumentCommonInterface::EditMode::Selectable ? commandSelectable :
+              commandEditable;
 
-      <Cell Site="row:0 column:0">
-        <ToolstripMenuBar>
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <MenuBarButton Text="Edit" Alt="E">
-            <att.SubMenu-set>
-              <ToolstripGroupContainer>
-                <ToolstripGroup>
-                  <MenuItemButton Command-ref="commandUndo" Alt="U"/>
-                  <MenuItemButton Command-ref="commandRedo" Alt="R"/>
-                </ToolstripGroup>
-                <ToolstripGroup>
-                  <MenuItemButton Command-ref="commandCopy" Alt="C"/>
-                  <MenuItemButton Command-ref="commandCut" Alt="X"/>
-                  <MenuItemButton Command-ref="commandPaste" Alt="P"/>
-                </ToolstripGroup>
-                <MenuItemButton Command-ref="commandDelete" Alt="D"/>
-                <ToolstripGroup>
-                  <MenuItemButton Command-ref="commandSelect" Alt="A"/>
-                  <MenuItemButton Text="Object" Alt="O">
-                    <att.SubMenu-set>
-                      <MenuItemButton Command-ref="commandInsertImage" Alt="I"/>
-                      <MenuItemButton Command-ref="commandEditHyperlink" Alt="L"/>
-                      <MenuItemButton Command-ref="commandRemoveHyperlink" Alt="R"/>
-                    </att.SubMenu-set>
-                  </MenuItemButton>
-                  <MenuItemButton Text="Paragram Alignment" Alt="P">
-                    <att.SubMenu-set>
-                      <MenuItemButton Command-ref="commandAlignDefault" Alt="D"/>
-                      <MenuItemButton Command-ref="commandAlignLeft" Alt="L"/>
-                      <MenuItemButton Command-ref="commandAlignCenter" Alt="C"/>
-                      <MenuItemButton Command-ref="commandAlignRight" Alt="R"/>
-                    </att.SubMenu-set>
-                  </MenuItemButton>
-                </ToolstripGroup>
-              </ToolstripGroupContainer>
-            </att.SubMenu-set>
-          </MenuBarButton>
-          <MenuBarButton Text="View" Alt="V">
-            <att.SubMenu-set>
-              <MenuItemButton Command-ref="commandViewOnly" Alt="V"/>
-              <MenuItemButton Command-ref="commandSelectable" Alt="S"/>
-              <MenuItemButton Command-ref="commandEditable" Alt="E"/>
-            </att.SubMenu-set>
-          </MenuBarButton>
-        </ToolstripMenuBar>
-      </Cell>
+            document.EditMode = editMode;
+            commandViewOnly.Selected = (command == commandViewOnly);
+            commandSelectable.Selected = (command == commandSelectable);
+            commandEditable.Selected = (command == commandEditable);
+            SetEditModeCommand(command);
+            self.UpdateSubscriptions();
+          }
+      
+          @cpp:Protected
+          func SelectAlignmentCommand() : ToolstripCommand*
+          {
+            var alignment = document.SummarizeParagraphAlignment(document.CaretBegin, document.CaretEnd);
+            return
+              alignment == Alignment::Left ? commandAlignLeft :
+              alignment == Alignment::Center ? commandAlignCenter :
+              alignment == Alignment::Right ? commandAlignRight :
+              commandAlignDefault;
+          }
+      
+          @cpp:Private
+          func SetAlignment(alignment : Alignment?) : void
+          {
+            document.SetParagraphAlignment(document.CaretBegin, document.CaretEnd, alignment);
+            self.UpdateSubscriptions();
+          }
+      
+          @cpp:Private
+          prop HasEditableSelection : bool = false {}
+      
+          @cpp:Private
+          prop HasEditableSelectionInSingleParagraph : bool = false {}
+      
+          @cpp:Private
+          func HasEditableCursor() : bool
+          {
+            return document.EditMode == DocumentCommonInterface::EditMode::Editable;
+          }
+      
+          @cpp:Private
+          func HasEditableHyperlink(forEdit : bool) : bool
+          {
+            var a = document.CaretBegin;
+            var b = document.CaretEnd;
+            return a.row == b.row and a.column != b.column;
+          }
+      
+          @cpp:Protected
+          func GetMenuContainer() : GraphicsComposition*
+          {
+            return menuContainer;
+          }
+      
+          @cpp:Protected
+          func GetToolstripContainer() : GraphicsComposition*
+          {
+            return toolstripContainer;
+          }
+      
+          prop MenuContainer : GraphicsComposition* {GetMenuContainer}
+          prop ToolstripContainer : GraphicsComposition* {GetToolstripContainer}
+        ]]>
+      </ref.Members>
+      <ref.Ctor>
+        <![CDATA[
+          {
+            SetEditMode(Editable);
+          }
+        ]]>
+      </ref.Ctor>
+      <TabPage ref.Name="self" Text="Document Editor">
+        <att.HasEditableSelection-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.HasEditableSelection-bind>
+        <MessageDialog ref.Name="dialogMessage" Title="You Clicked a Hyperlink!"/>
+        <OpenFileDialog ref.Name="dialogOpen" Title="Select an Image" Filter="Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp" EnabledPreview="true" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
 
-      <Cell Site="row:1 column:0">
-        <ToolstripToolBar>
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <ToolstripGroupContainer>
-            <ToolstripGroup>
-              <ToolstripDropdownButton ref.Name="buttonView" Alt="V">
-                <att.SubMenu-set>
-                  <MenuItemButton Command-ref="commandViewOnly" Alt="V"/>
-                  <MenuItemButton Command-ref="commandSelectable" Alt="S"/>
-                  <MenuItemButton Command-ref="commandEditable" Alt="E"/>
-                </att.SubMenu-set>
-              </ToolstripDropdownButton>
-              <ToolstripDropdownButton ref.Name="buttonAlignment" Alt="P">
-                <att.Image-bind>document.observe as _(self.SelectAlignmentCommand().Image on _.SelectionChanged)</att.Image-bind>
-                <att.SubMenu-set>
-                  <MenuItemButton Command-ref="commandAlignDefault" Alt="D"/>
-                  <MenuItemButton Command-ref="commandAlignLeft" Alt="L"/>
-                  <MenuItemButton Command-ref="commandAlignCenter" Alt="C"/>
-                  <MenuItemButton Command-ref="commandAlignRight" Alt="R"/>
-                </att.SubMenu-set>
-              </ToolstripDropdownButton>
-            </ToolstripGroup>
-            <ToolstripGroup>
-              <ToolstripButton Command-ref="commandUndo" Alt="U"/>
-              <ToolstripButton Command-ref="commandRedo" Alt="R"/>
-            </ToolstripGroup>
-            <ToolstripGroup>
-              <ToolstripButton Command-ref="commandCopy" Alt="C"/>
-              <ToolstripButton Command-ref="commandCut" Alt="X"/>
-              <ToolstripButton Command-ref="commandPaste" Alt="P"/>
-            </ToolstripGroup>
-            <ToolstripButton Command-ref="commandDelete" Alt="D"/>
-            <ToolstripGroup>
-              <ToolstripSplitButton Command-ref="commandInsertImage" Alt="I">
-                <att.SubMenu-set>
-                  <MenuItemButton Command-ref="commandInsertImage" Alt="I"/>
-                  <MenuItemButton Command-ref="commandEditHyperlink" Alt="L"/>
-                  <MenuItemButton Command-ref="commandRemoveHyperlink" Alt="R"/>
-                </att.SubMenu-set>
-              </ToolstripSplitButton>
-              <ToolstripButton Command-ref="commandBold" Alt="B"/>
-              <ToolstripButton Command-ref="commandItalic" Alt="I"/>
-              <ToolstripButton Command-ref="commandUnderline" Alt="U"/>
-              <ToolstripButton Command-ref="commandStrike" Alt="S"/>
-              <ToolstripButton Command-ref="commandFont" Alt="F"/>
-              <ToolstripButton Command-ref="commandColor" Alt="C"/>
-              <ToolstripButton Command-ref="commandBackColor" Alt="K"/>
-            </ToolstripGroup>
-          </ToolstripGroupContainer>
-        </ToolstripToolBar>
-      </Cell>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
 
-      <Cell Site="row:2 column:0">
-        <DocumentViewer ref.Name="document" EditMode="Editable" Alt="D">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <ev.ActiveHyperlinkExecuted-eval>
-            <![CDATA[
+          <Cell ref.Name="menuContainer" Site="row:0 column:0"/>
+          <Cell ref.Name="toolstripContainer" Site="row:1 column:0"/>
+
+          <Cell Site="row:2 column:0">
+            <DocumentViewer ref.Name="document" EditMode="Editable" Alt="D">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.ActiveHyperlinkExecuted-eval>
+                <![CDATA[
               {
                 dialogMessage.Text = document.ActiveHyperlinkReference;
                 dialogMessage.ShowDialog();
               }
             ]]>
-          </ev.ActiveHyperlinkExecuted-eval>
-        </DocumentViewer>
-      </Cell>
-    </Table>
+              </ev.ActiveHyperlinkExecuted-eval>
+            </DocumentViewer>
+          </Cell>
+        </Table>
 
-    <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolbarImages/Undo" ShortcutBuilder="Ctrl+Z">
-      <att.Enabled-bind>document.observe as _(_.CanUndo() on _.UndoRedoChanged)</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[document.Undo();]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolbarImages/Undo" LargeImage-uri="res://ToolbarImages/UndoLarge" ShortcutBuilder="Ctrl+Z">
+          <att.Enabled-bind>document.observe as _(_.CanUndo() on _.UndoRedoChanged)</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[document.Undo();]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://ToolbarImages/Redo" ShortcutBuilder="Ctrl+Y">
-      <att.Enabled-bind>document.observe as _(_.CanRedo() on _.UndoRedoChanged)</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[document.Redo();]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://ToolbarImages/Redo" LargeImage-uri="res://ToolbarImages/RedoLarge" ShortcutBuilder="Ctrl+Y">
+          <att.Enabled-bind>document.observe as _(_.CanRedo() on _.UndoRedoChanged)</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[document.Redo();]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://ToolbarImages/Copy" ShortcutBuilder="Ctrl+C">
-      <att.Enabled-bind>document.observe as _(_.CanCopy() on _.SelectionChanged)</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[document.Copy();]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://ToolbarImages/Copy" LargeImage-uri="res://ToolbarImages/CopyLarge" ShortcutBuilder="Ctrl+C">
+          <att.Enabled-bind>document.observe as _(_.CanCopy() on _.SelectionChanged)</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[document.Copy();]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" ShortcutBuilder="Ctrl+X">
-      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[document.Cut();]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" LargeImage-uri="res://ToolbarImages/CutLarge" ShortcutBuilder="Ctrl+X">
+          <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[document.Cut();]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolbarImages/Paste" ShortcutBuilder="Ctrl+V">
-      <att.Enabled-bind>self.observe as _(document.CanPaste() on _.BoundsComposition.clipboardNotify)</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[document.Paste();]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolbarImages/Paste" LargeImage-uri="res://ToolbarImages/PasteLarge" ShortcutBuilder="Ctrl+V">
+          <att.Enabled-bind>self.observe as _(document.CanPaste() on _.BoundsComposition.clipboardNotify)</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[document.Paste();]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandDelete" Text="Delete" Image-uri="res://ToolbarImages/Delete">
-      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[document.SetSelectionText("");]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandDelete" Text="Delete" Image-uri="res://ToolbarImages/Delete" LargeImage-uri="res://ToolbarImages/RemoveLinkLarge">
+          <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[document.SetSelectionText("");]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandSelect" Text="Select All" ShortcutBuilder="Ctrl+A">
-      <ev.Executed-eval>
-        <![CDATA[document.SelectAll();]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandSelect" Text="Select All" ShortcutBuilder="Ctrl+A">
+          <ev.Executed-eval>
+            <![CDATA[document.SelectAll();]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandInsertImage" Text="Insert Image ..." Image-uri="res://ToolbarImages/Image">
-      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[
+        <ToolstripCommand ref.Name="commandInsertImage" Text="Insert Image ..." Image-uri="res://ToolbarImages/Image" LargeImage-uri="res://ToolbarImages/ImageLarge">
+          <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[
           {
             if (dialogOpen.ShowDialog())
             {
@@ -254,13 +178,13 @@
             }
           }
         ]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandEditHyperlink" Text="Edit Hyperlink ..." Image-uri="res://ToolbarImages/Link">
-      <att.Enabled-bind>document.observe as _(self.HasEditableHyperlink(true) on _.SelectionChanged)</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[
+        <ToolstripCommand ref.Name="commandEditHyperlink" Text="Edit Hyperlink ..." Image-uri="res://ToolbarImages/Link" LargeImage-uri="res://ToolbarImages/LinkLarge">
+          <att.Enabled-bind>document.observe as _(self.HasEditableHyperlink(true) on _.SelectionChanged)</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[
           $Async{
             var mainWindow = self.RelatedControlHost as controls::GuiWindow*;
             
@@ -278,13 +202,13 @@
             delete window;
           }
         ]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandRemoveHyperlink" Text="Remove Hyperlink" Image-uri="res://ToolbarImages/RemoveLink">
-      <att.Enabled-bind>document.observe as _(self.HasEditableHyperlink(false) on _.SelectionChanged)</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[
+        <ToolstripCommand ref.Name="commandRemoveHyperlink" Text="Remove Hyperlink" Image-uri="res://ToolbarImages/RemoveLink" LargeImage-uri="res://ToolbarImages/RemoveLinkLarge">
+          <att.Enabled-bind>document.observe as _(self.HasEditableHyperlink(false) on _.SelectionChanged)</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[
           {
             var row = document.CaretBegin.row;
             var begin = document.CaretBegin.column;
@@ -292,72 +216,72 @@
             document.RemoveHyperlink(row, begin, end);
           }
         ]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandBold" Text="Bold" Image-uri="res://ToolbarImages/Bold">
-      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
-      <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).bold == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
-      <ev.Executed-eval>
-        <![CDATA[
+        <ToolstripCommand ref.Name="commandBold" Text="Bold" Image-uri="res://ToolbarImages/Bold">
+          <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
+          <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).bold == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
+          <ev.Executed-eval>
+            <![CDATA[
           {
             var style = new DocumentStyleProperties^();
             style.bold = not commandBold.Selected;
             document.EditStyle(document.CaretBegin, document.CaretEnd, style);
           }
         ]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandItalic" Text="Italic" Image-uri="res://ToolbarImages/Italic">
-      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
-      <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).italic == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
-      <ev.Executed-eval>
-        <![CDATA[
+        <ToolstripCommand ref.Name="commandItalic" Text="Italic" Image-uri="res://ToolbarImages/Italic">
+          <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
+          <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).italic == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
+          <ev.Executed-eval>
+            <![CDATA[
           {
             var style = new DocumentStyleProperties^();
             style.italic = not commandItalic.Selected;
             document.EditStyle(document.CaretBegin, document.CaretEnd, style);
           }
         ]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandUnderline" Text="Underline" Image-uri="res://ToolbarImages/Underline">
-      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
-      <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).underline == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
-      <ev.Executed-eval>
-        <![CDATA[
+        <ToolstripCommand ref.Name="commandUnderline" Text="Underline" Image-uri="res://ToolbarImages/Underline">
+          <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
+          <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).underline == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
+          <ev.Executed-eval>
+            <![CDATA[
           {
             var style = new DocumentStyleProperties^();
             style.underline = not commandUnderline.Selected;
             document.EditStyle(document.CaretBegin, document.CaretEnd, style);
           }
         ]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandStrike" Text="Strike" Image-uri="res://ToolbarImages/Strike">
-      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
-      <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).strikeline == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
-      <ev.Executed-eval>
-        <![CDATA[
+        <ToolstripCommand ref.Name="commandStrike" Text="Strike" Image-uri="res://ToolbarImages/Strike">
+          <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
+          <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).strikeline == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
+          <ev.Executed-eval>
+            <![CDATA[
           {
             var style = new DocumentStyleProperties^();
             style.strikeline = not commandStrike.Selected;
             document.EditStyle(document.CaretBegin, document.CaretEnd, style);
           }
         ]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ColorDialog ref.Name="dialogColor" EnabledCustomColor="false"/>
-    <FontDialog ref.Name="dialogFont" ShowEffect="false" ShowSelection="true" ForceFontExist="true"/>
+        <ColorDialog ref.Name="dialogColor" EnabledCustomColor="false"/>
+        <FontDialog ref.Name="dialogFont" ShowEffect="false" ShowSelection="true" ForceFontExist="true"/>
 
-    <ToolstripCommand ref.Name="commandFont" Text="Set Font ..." Image-uri="res://ToolbarImages/Font">
-      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[
+        <ToolstripCommand ref.Name="commandFont" Text="Set Font ..." Image-uri="res://ToolbarImages/Font">
+          <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[
           {
             var begin = document.CaretBegin;
             var end = document.CaretEnd;
@@ -381,13 +305,13 @@
             }
           }
         ]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandColor" Text="Text Color ..." Image-uri="res://ToolbarImages/Color">
-      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[
+        <ToolstripCommand ref.Name="commandColor" Text="Text Color ..." Image-uri="res://ToolbarImages/Color">
+          <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[
           {
             var begin = document.CaretBegin;
             var end = document.CaretEnd;
@@ -408,13 +332,13 @@
             }
           }
         ]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandBackColor" Text="Background Color ..." Image-uri="res://ToolbarImages/BackColor">
-      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[
+        <ToolstripCommand ref.Name="commandBackColor" Text="Background Color ..." Image-uri="res://ToolbarImages/BackColor">
+          <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[
           {
             var begin = document.CaretBegin;
             var end = document.CaretEnd;
@@ -435,56 +359,286 @@
             }
           }
         ]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandViewOnly" Text="Preview" Image-uri="res://ToolbarImages/ViewOnly" ShortcutBuilder="Ctrl+Shift+P">
-      <ev.Executed-eval>
-        <![CDATA[self.SetEditMode(ViewOnly);]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandViewOnly" Text="Preview" Image-uri="res://ToolbarImages/ViewOnly" LargeImage-uri="res://ToolbarImages/ViewOnlyLarge" ShortcutBuilder="Ctrl+Shift+P">
+          <ev.Executed-eval>
+            <![CDATA[self.SetEditMode(ViewOnly);]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandSelectable" Text="Selectable" Image-uri="res://ToolbarImages/Selectable" ShortcutBuilder="Ctrl+Shift+S">
-      <ev.Executed-eval>
-        <![CDATA[self.SetEditMode(Selectable);]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandSelectable" Text="Selectable" Image-uri="res://ToolbarImages/Selectable" LargeImage-uri="res://ToolbarImages/SelectableLarge" ShortcutBuilder="Ctrl+Shift+S">
+          <ev.Executed-eval>
+            <![CDATA[self.SetEditMode(Selectable);]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable" ShortcutBuilder="Ctrl+Shift+E">
-      <ev.Executed-eval>
-        <![CDATA[self.SetEditMode(Editable);]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable" LargeImage-uri="res://ToolbarImages/EditableLarge" ShortcutBuilder="Ctrl+Shift+E">
+          <ev.Executed-eval>
+            <![CDATA[self.SetEditMode(Editable);]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandAlignDefault" Text="Set Alignment to Default (Left)" Image-uri="res://ToolbarImages/TextAlign">
-      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
-      <ev.Executed-eval>
-        <![CDATA[self.SetAlignment(null);]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandAlignDefault" Text="Set Alignment to Default (Left)" Image-uri="res://ToolbarImages/TextAlign">
+          <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
+          <ev.Executed-eval>
+            <![CDATA[self.SetAlignment(null);]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandAlignLeft" Text="Set Alignment to Left" Image-uri="res://ToolbarImages/TextAlignLeft">
-      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
-      <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignLeft on _.SelectionChanged)</att.Selected-bind>
-      <ev.Executed-eval>
-        <![CDATA[self.SetAlignment(Left);]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandAlignLeft" Text="Left" Image-uri="res://ToolbarImages/TextAlignLeft" LargeImage-uri="res://ToolbarImages/TextAlignLeftLarge">
+          <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
+          <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignLeft on _.SelectionChanged)</att.Selected-bind>
+          <ev.Executed-eval>
+            <![CDATA[self.SetAlignment(Left);]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandAlignCenter" Text="Set Alignment to Center" Image-uri="res://ToolbarImages/TextAlignCenter">
-      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
-      <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignCenter on _.SelectionChanged)</att.Selected-bind>
-      <ev.Executed-eval>
-        <![CDATA[self.SetAlignment(Center);]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandAlignCenter" Text="Center" Image-uri="res://ToolbarImages/TextAlignCenter" LargeImage-uri="res://ToolbarImages/TextAlignCenterLarge">
+          <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
+          <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignCenter on _.SelectionChanged)</att.Selected-bind>
+          <ev.Executed-eval>
+            <![CDATA[self.SetAlignment(Center);]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandAlignRight" Text="Set Alignment to Right" Image-uri="res://ToolbarImages/TextAlignRight">
-      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
-      <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignRight on _.SelectionChanged)</att.Selected-bind>
-      <ev.Executed-eval>
-        <![CDATA[self.SetAlignment(Right);]]>
-      </ev.Executed-eval>
-    </ToolstripCommand>
-  </TabPage>
-</Instance>
+        <ToolstripCommand ref.Name="commandAlignRight" Text="Right" Image-uri="res://ToolbarImages/TextAlignRight" LargeImage-uri="res://ToolbarImages/TextAlignRightLarge">
+          <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
+          <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignRight on _.SelectionChanged)</att.Selected-bind>
+          <ev.Executed-eval>
+            <![CDATA[self.SetAlignment(Right);]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="DocumentToolstripTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentToolstripTabPage" xmlns:demo="demo::*">
+      <demo:DocumentTabPageBase ref.Name="self" Text="Document Editor (Toolstrip)">
+        <att.MenuContainer-set>
+          <ToolstripMenuBar>
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <MenuBarButton Text="Edit" Alt="E">
+              <att.SubMenu-set>
+                <ToolstripGroupContainer>
+                  <ToolstripGroup>
+                    <MenuItemButton Command-eval="self.commandUndo" Alt="U"/>
+                    <MenuItemButton Command-eval="self.commandRedo" Alt="R"/>
+                  </ToolstripGroup>
+                  <ToolstripGroup>
+                    <MenuItemButton Command-eval="self.commandCopy" Alt="C"/>
+                    <MenuItemButton Command-eval="self.commandCut" Alt="X"/>
+                    <MenuItemButton Command-eval="self.commandPaste" Alt="P"/>
+                  </ToolstripGroup>
+                  <MenuItemButton Command-eval="self.commandDelete" Alt="D"/>
+                  <ToolstripGroup>
+                    <MenuItemButton Command-eval="self.commandSelect" Alt="A"/>
+                    <MenuItemButton Text="Object" Alt="O">
+                      <att.SubMenu-set>
+                        <MenuItemButton Command-eval="self.commandInsertImage" Alt="I"/>
+                        <MenuItemButton Command-eval="self.commandEditHyperlink" Alt="L"/>
+                        <MenuItemButton Command-eval="self.commandRemoveHyperlink" Alt="R"/>
+                      </att.SubMenu-set>
+                    </MenuItemButton>
+                    <MenuItemButton Text="Paragram Alignment" Alt="P">
+                      <att.SubMenu-set>
+                        <MenuItemButton Command-eval="self.commandAlignDefault" Alt="D"/>
+                        <MenuItemButton Command-eval="self.commandAlignLeft" Alt="L"/>
+                        <MenuItemButton Command-eval="self.commandAlignCenter" Alt="C"/>
+                        <MenuItemButton Command-eval="self.commandAlignRight" Alt="R"/>
+                      </att.SubMenu-set>
+                    </MenuItemButton>
+                  </ToolstripGroup>
+                </ToolstripGroupContainer>
+              </att.SubMenu-set>
+            </MenuBarButton>
+            <MenuBarButton Text="View" Alt="V">
+              <att.SubMenu-set>
+                <MenuItemButton Command-eval="self.commandViewOnly" Alt="V"/>
+                <MenuItemButton Command-eval="self.commandSelectable" Alt="S"/>
+                <MenuItemButton Command-eval="self.commandEditable" Alt="E"/>
+              </att.SubMenu-set>
+            </MenuBarButton>
+          </ToolstripMenuBar>
+        </att.MenuContainer-set>
+
+        <att.ToolstripContainer-set>
+          <ToolstripToolBar>
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <ToolstripGroupContainer>
+              <ToolstripGroup>
+                <ToolstripDropdownButton Alt="V">
+                  <att.Image-bind>self.EditModeCommand.Image ?? null</att.Image-bind>
+                  <att.SubMenu-set>
+                    <MenuItemButton Command-eval="self.commandViewOnly" Alt="V"/>
+                    <MenuItemButton Command-eval="self.commandSelectable" Alt="S"/>
+                    <MenuItemButton Command-eval="self.commandEditable" Alt="E"/>
+                  </att.SubMenu-set>
+                </ToolstripDropdownButton>
+                <ToolstripDropdownButton ref.Name="buttonAlignment" Alt="P">
+                  <att.Image-bind>self.document.observe as _(self.SelectAlignmentCommand().Image on _.SelectionChanged)</att.Image-bind>
+                  <att.SubMenu-set>
+                    <MenuItemButton Command-eval="self.commandAlignDefault" Alt="D"/>
+                    <MenuItemButton Command-eval="self.commandAlignLeft" Alt="L"/>
+                    <MenuItemButton Command-eval="self.commandAlignCenter" Alt="C"/>
+                    <MenuItemButton Command-eval="self.commandAlignRight" Alt="R"/>
+                  </att.SubMenu-set>
+                </ToolstripDropdownButton>
+              </ToolstripGroup>
+              <ToolstripGroup>
+                <ToolstripButton Command-eval="self.commandUndo" Alt="U"/>
+                <ToolstripButton Command-eval="self.commandRedo" Alt="R"/>
+              </ToolstripGroup>
+              <ToolstripGroup>
+                <ToolstripButton Command-eval="self.commandCopy" Alt="C"/>
+                <ToolstripButton Command-eval="self.commandCut" Alt="X"/>
+                <ToolstripButton Command-eval="self.commandPaste" Alt="P"/>
+              </ToolstripGroup>
+              <ToolstripButton Command-eval="self.commandDelete" Alt="D"/>
+              <ToolstripGroup>
+                <ToolstripSplitButton Command-eval="self.commandInsertImage" Alt="I">
+                  <att.SubMenu-set>
+                    <MenuItemButton Command-eval="self.commandInsertImage" Alt="I"/>
+                    <MenuItemButton Command-eval="self.commandEditHyperlink" Alt="L"/>
+                    <MenuItemButton Command-eval="self.commandRemoveHyperlink" Alt="R"/>
+                  </att.SubMenu-set>
+                </ToolstripSplitButton>
+                <ToolstripButton Command-eval="self.commandBold" Alt="B"/>
+                <ToolstripButton Command-eval="self.commandItalic" Alt="I"/>
+                <ToolstripButton Command-eval="self.commandUnderline" Alt="U"/>
+                <ToolstripButton Command-eval="self.commandStrike" Alt="S"/>
+                <ToolstripButton Command-eval="self.commandFont" Alt="F"/>
+                <ToolstripButton Command-eval="self.commandColor" Alt="C"/>
+                <ToolstripButton Command-eval="self.commandBackColor" Alt="K"/>
+              </ToolstripGroup>
+            </ToolstripGroupContainer>
+          </ToolstripToolBar>
+        </att.ToolstripContainer-set>
+      </demo:DocumentTabPageBase>
+    </Instance>
+  </Instance>
+
+  <Instance name="DocumentRibbonTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentRibbonTabPage" xmlns:demo="demo::*">
+      <ref.Members>
+        <![CDATA[
+          @cpp:Private
+          prop AlignLeftSelected : bool = true {}
+          @cpp:Private
+          prop AlignCenterSelected : bool = true {}
+          @cpp:Private
+          prop AlignRightSelected : bool = true {}
+        ]]>
+      </ref.Members>
+      <demo:DocumentTabPageBase ref.Name="self" Text="Document Editor (Ribbon)">
+        <att.AlignLeftSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignLeft on _.SelectionChanged)</att.AlignLeftSelected-bind>
+        <att.AlignCenterSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignCenter on _.SelectionChanged)</att.AlignCenterSelected-bind>
+        <att.AlignRightSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignRight on _.SelectionChanged)</att.AlignRightSelected-bind>
+
+        <att.MenuContainer-set>
+          <RibbonTab>
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <att.BeforeHeaders-set>
+              <Button Text="HOME">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80"/>
+              </Button>
+            </att.BeforeHeaders-set>
+
+            <att.Pages>
+              <RibbonTabPage Text="Edit">
+                <att.ContainerComposition-set PreferredMinSize="y:110"/>
+                <att.Groups>
+                  <RibbonGroup Text="Alignment">
+                    <att.Items>
+                      <RibbonLargeDropdownButton Text="Edit Mode">
+                        <att.LargeImage-bind>self.EditModeCommand.LargeImage ?? null</att.LargeImage-bind>
+                        <att.SubMenu-set>
+                          <MenuItemButton Command-eval="self.commandViewOnly" Alt="V"/>
+                          <MenuItemButton Command-eval="self.commandSelectable" Alt="S"/>
+                          <MenuItemButton Command-eval="self.commandEditable" Alt="E"/>
+                        </att.SubMenu-set>
+                      </RibbonLargeDropdownButton>
+                      <RibbonSplitter/>
+                      <RibbonButtons MaxSize="Large" MinSize="Icon">
+                        <att.Buttons>
+                          <ToolstripButton Command-eval="self.commandAlignLeft" Selected-bind="self.AlignLeftSelected"/>
+                          <ToolstripButton Command-eval="self.commandAlignCenter" Selected-bind="self.AlignCenterSelected"/>
+                          <ToolstripButton Command-eval="self.commandAlignRight" Selected-bind="self.AlignRightSelected"/>
+                        </att.Buttons>
+                      </RibbonButtons>
+                    </att.Items>
+                  </RibbonGroup>
+
+                  <RibbonGroup Text="Edit">
+                    <att.Items>
+                      <RibbonButtons MaxSize="Large" MinSize="Icon">
+                        <att.Buttons>
+                          <ToolstripButton Command-eval="self.commandUndo"/>
+                          <ToolstripButton Command-eval="self.commandRedo"/>
+                        </att.Buttons>
+                      </RibbonButtons>
+                      <RibbonSplitter/>
+                      <RibbonButtons MaxSize="Large" MinSize="Icon">
+                        <att.Buttons>
+                          <ToolstripButton Command-eval="self.commandCopy"/>
+                          <ToolstripButton Command-eval="self.commandCut"/>
+                          <ToolstripButton Command-eval="self.commandPaste"/>
+                        </att.Buttons>
+                      </RibbonButtons>
+                      <RibbonSplitter/>
+                      <RibbonLargeButton Command-eval="self.commandDelete"/>
+                    </att.Items>
+                  </RibbonGroup>
+
+                  <RibbonGroup Text="Text">
+                    <att.Items>
+                      <RibbonToolstrips>
+                        <att.Groups>
+                          <ToolstripGroup>
+                            <ToolstripButton Command-eval="self.commandBold"/>
+                            <ToolstripButton Command-eval="self.commandItalic"/>
+                          </ToolstripGroup>
+                          <ToolstripGroup>
+                            <ToolstripButton Command-eval="self.commandUnderline"/>
+                            <ToolstripButton Command-eval="self.commandStrike"/>
+                          </ToolstripGroup>
+                          <ToolstripGroup>
+                            <ToolstripButton Command-eval="self.commandFont"/>
+                            <ToolstripButton Command-eval="self.commandColor"/>
+                            <ToolstripButton Command-eval="self.commandBackColor"/>
+                          </ToolstripGroup>
+                          <ToolstripGroup>
+                            <ToolstripButton Command-eval="self.commandEditHyperlink"/>
+                            <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
+                          </ToolstripGroup>
+                        </att.Groups>
+                      </RibbonToolstrips>
+                    </att.Items>
+                  </RibbonGroup>
+                </att.Groups>
+              </RibbonTabPage>
+
+              <RibbonTabPage Text="Insert" Highlighted="true">
+                <att.Groups>
+                  <RibbonGroup Text="Object">
+                    <att.Items>
+                      <RibbonButtons MaxSize="Large" MinSize="Small">
+                        <att.Buttons>
+                          <ToolstripButton Command-eval="self.commandInsertImage"/>
+                          <ToolstripButton Command-eval="self.commandEditHyperlink"/>
+                          <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
+                        </att.Buttons>
+                      </RibbonButtons>
+                    </att.Items>
+                  </RibbonGroup>
+                </att.Groups>
+              </RibbonTabPage>
+            </att.Pages>
+          </RibbonTab>
+        </att.MenuContainer-set>
+      </demo:DocumentTabPageBase>
+    </Instance>
+  </Instance>
+</Folder>

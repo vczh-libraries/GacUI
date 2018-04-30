@@ -38,7 +38,8 @@
               <Tab>
                 <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 <att.Pages>
-                  <demo:DocumentTabPage Alt="D"/>
+                  <demo:DocumentToolstripTabPage Alt="D"/>
+                  <demo:DocumentRibbonTabPage Alt="D"/>
                   <demo:TextBoxTabPage Alt="T"/>
                   <demo:RibbonTabPage Alt="R"/>
                 </att.Pages>
@@ -70,9 +71,8 @@
   <Folder name="ResponsiveTabPage" content="Link">ResponsiveTabPage.xml</Folder>
   <Folder name="RepeatComponents" content="Link">RepeatComponents.xml</Folder>
   
-  <Instance name="DocumentTabPageResource" content="File">DocumentTabPage.xml</Instance>
+  <Folder name="DocumentTabPage" content="File">DocumentTabPage.xml</Folder>
   <Folder name="TextBoxComponents" content="Link">TextBoxTabPage.xml</Folder>
-  <Folder name="RibbonTabPage" content="Link">RibbonTabPage.xml</Folder>
   <Folder name="DocumentComponents" content="Link">DocumentComponents.xml</Folder>
   
   <Instance name="ElementTabPageResource" content="File">ElementTabPage.xml</Instance>
