@@ -3319,7 +3319,7 @@ EmptyEnumerable
 
 				const T& Current()const override
 				{
-					return *(T*)0;
+					CHECK_FAIL(L"EmptyEnumerable<T>::Enumerator::Current()#This collection is empty.");
 				}
 
 				vint Index()const override

@@ -3427,7 +3427,7 @@ WorkflowGenerateBindingVisitor
 				else
 				{
 					errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
-						L"[INTERNAL ERROR] Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
+						L"[INTERNAL-ERROR] Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
 						setter->binding.ToString() +
 						L"\" cannot be found."));
 				}
@@ -3449,7 +3449,7 @@ WorkflowGenerateBindingVisitor
 				if (!eventInfo)
 				{
 					errors.Add(GuiResourceError({ resolvingResult.resource }, handler->attPosition,
-						L"[INTERNAL ERROR] Precompile: Event \"" +
+						L"[INTERNAL-ERROR] Precompile: Event \"" +
 						propertyName.ToString() +
 						L"\" cannot be found in type \"" +
 						reprTypeInfo.typeName.ToString() +
@@ -3471,7 +3471,7 @@ WorkflowGenerateBindingVisitor
 						else
 						{
 							errors.Add(GuiResourceError({ resolvingResult.resource }, handler->attPosition,
-								L"[INTERNAL ERROR] The appropriate IGuiInstanceEventBinder of binding \"-" +
+								L"[INTERNAL-ERROR] The appropriate IGuiInstanceEventBinder of binding \"-" +
 								handler->binding.ToString() +
 								L"\" cannot be found."));
 						}
@@ -3705,7 +3705,7 @@ WorkflowGenerateCreatingVisitor
 				else if (errorCount == errors.Count())
 				{
 					errors.Add(GuiResourceError({ resolvingResult.resource }, setTarget->tagPosition,
-						L"[INTERNAL ERROR] Precompile: Something is wrong when retriving the property \"" +
+						L"[INTERNAL-ERROR] Precompile: Something is wrong when retriving the property \"" +
 						propInfo.propertyName.ToString() +
 						L"\" from an instance of type \"" +
 						propInfo.typeInfo.typeName.ToString() +
@@ -3740,7 +3740,7 @@ WorkflowGenerateCreatingVisitor
 				else if (errorCount == errors.Count())
 				{
 					errors.Add(GuiResourceError({ resolvingResult.resource }, value->tagPosition,
-						L"[INTERNAL ERROR] Precompile: Something is wrong when assigning to property " +
+						L"[INTERNAL-ERROR] Precompile: Something is wrong when assigning to property " +
 						propInfo.propertyName.ToString() +
 						L" to an instance of type \"" +
 						propInfo.typeInfo.typeName.ToString() +
@@ -3796,7 +3796,7 @@ WorkflowGenerateCreatingVisitor
 						propNames += L"\"" + pairedProp.ToString() + L"\"";
 					}
 					errors.Add(GuiResourceError({ resolvingResult.resource }, value->tagPosition,
-						L"[INTERNAL ERROR] Precompile: Something is wrong when assigning to properties " +
+						L"[INTERNAL-ERROR] Precompile: Something is wrong when assigning to properties " +
 						propNames +
 						L" to an instance of type \"" +
 						propInfo.typeInfo.typeName.ToString() +
@@ -3912,7 +3912,7 @@ WorkflowGenerateCreatingVisitor
 					else
 					{
 						errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
-							L"[INTERNAL ERROR] Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
+							L"[INTERNAL-ERROR] Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
 							setter->binding.ToString() +
 							L"\" cannot be found."));
 					}
@@ -4017,7 +4017,7 @@ WorkflowGenerateCreatingVisitor
 					else if (errorCount == errors.Count())
 					{
 						errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
-							L"[INTERNAL ERROR] Precompile: Something is wrong when creating an instance of type \"" +
+							L"[INTERNAL-ERROR] Precompile: Something is wrong when creating an instance of type \"" +
 							ctorTypeInfo.typeName.ToString() +
 							L"\"."));
 					}
@@ -4649,11 +4649,15 @@ Workflow_InstallCtorClass
 
 			auto func = MakePtr<WfFunctionDeclaration>();
 			func->anonymity = WfFunctionAnonymity::Named;
-			func->name.value = L"<initialize-instance>";
 			func->arguments.Add(thisParam);
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 			func->statement = block;
 
+			{
+				List<WString> fragments;
+				SplitTypeName(resolvingResult.context->className, fragments);
+				func->name.value = L"<" + From(fragments).Aggregate([](const WString& a, const WString& b) {return a + L"-" + b; }) + L">Initialize";
+			}
 			{
 				auto att = MakePtr<WfAttribute>();
 				att->category.value = L"cpp";
@@ -7403,18 +7407,18 @@ GuiInstanceLoaderManager
 Helper Functions
 ***********************************************************************/
 
-		void SplitBySemicolon(const WString& input, collections::List<WString>& fragments)
+		void Split(const WString& input, const WString& delimiter, collections::List<WString>& fragments)
 		{
 			const wchar_t* attValue = input.Buffer();
-			while(*attValue)
+			while (*attValue)
 			{
 				// split the value by ';'
-				const wchar_t* attSemicolon = wcschr(attValue, L';');
+				const wchar_t* attSemicolon = wcsstr(attValue, delimiter.Buffer());
 				WString pattern;
-				if(attSemicolon)
+				if (attSemicolon)
 				{
 					pattern = WString(attValue, vint(attSemicolon - attValue));
-					attValue = attSemicolon + 1;
+					attValue = attSemicolon + delimiter.Length();
 				}
 				else
 				{
@@ -7425,6 +7429,16 @@ Helper Functions
 
 				fragments.Add(pattern);
 			}
+		}
+
+		void SplitTypeName(const WString& input, collections::List<WString>& fragments)
+		{
+			Split(input, L"::", fragments);
+		}
+
+		void SplitBySemicolon(const WString& input, collections::List<WString>& fragments)
+		{
+			Split(input, L";", fragments);
 		}
 	}
 }
@@ -7848,6 +7862,7 @@ Instance Type Resolver (Instance)
 			{
 				switch (passIndex)
 				{
+				case Workflow_Collect:
 				case Instance_CollectInstanceTypes:
 				case Instance_CollectEventHandlers:
 				case Instance_GenerateInstanceClass:
@@ -7891,6 +7906,25 @@ Instance Type Resolver (Instance)
 			{
 				switch (context.passIndex)
 				{
+				case Workflow_Collect:
+					{
+						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
+						{
+							auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
+							if (!record)
+							{
+								record = MakePtr<GuiResourceClassNameRecord>();
+								context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
+							}
+
+							if (!record->classResources.Keys().Contains(obj->className))
+							{
+								record->classNames.Add(obj->className);
+								record->classResources.Add(obj->className, resource);
+							}
+						}
+					}
+					break;
 				case Instance_CollectEventHandlers:
 					ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
 				case Instance_CollectInstanceTypes:
@@ -7951,17 +7985,6 @@ Instance Type Resolver (Instance)
 							if (auto module = Workflow_GenerateInstanceClass(context, L"<instance>" + obj->className, resolvingResult, errors, context.passIndex))
 							{
 								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass, obj->tagPosition);
-							}
-
-							if (context.passIndex == Instance_CollectInstanceTypes)
-							{
-								auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
-								if (!record)
-								{
-									record = MakePtr<GuiResourceClassNameRecord>();
-									context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
-								}
-								record->classNames.Add(obj->className);
 							}
 						}
 					}
@@ -9247,7 +9270,9 @@ namespace vl
 FindInstanceLoadingSource
 ***********************************************************************/
 
-		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GlobalStringKey namespaceName, const WString& typeName)
+		template<typename TCallback>
+		auto FindByTag(Ptr<GuiInstanceContext> context, GlobalStringKey namespaceName, const WString& typeName, TCallback callback)
+			-> typename RemoveCVR<decltype(callback({}).Value())>::Type
 		{
 			vint index = context->namespaces.Keys().IndexOf(namespaceName);
 			if (index != -1)
@@ -9256,13 +9281,38 @@ FindInstanceLoadingSource
 				FOREACH(Ptr<GuiInstanceNamespace>, ns, namespaceInfo->namespaces)
 				{
 					auto fullName = GlobalStringKey::Get(ns->prefix + typeName + ns->postfix);
-					if (auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
+					if (auto nullable = callback(fullName))
 					{
-						return InstanceLoadingSource(loader, fullName);
+						return nullable.Value();
 					}
 				}
 			}
-			return InstanceLoadingSource();
+			return {};
+		}
+
+		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GlobalStringKey namespaceName, const WString& typeName)
+		{
+			return FindByTag(context, namespaceName, typeName, [](GlobalStringKey fullName)->Nullable<InstanceLoadingSource>
+			{
+				if (auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
+				{
+					return { { loader, fullName } };
+				}
+				return {};
+			});
+		}
+
+		Ptr<GuiResourceItem> FindInstanceResourceItem(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor, Ptr<GuiResourceClassNameRecord> record)
+		{
+			return FindByTag(context, ctor->typeNamespace, ctor->typeName.ToString(), [=](GlobalStringKey fullName)->Nullable<Ptr<GuiResourceItem>>
+			{
+				vint index = record->classResources.Keys().IndexOf(fullName.ToString());
+				if (index != -1)
+				{
+					return record->classResources.Values()[index];
+				}
+				return {};
+			});
 		}
 
 		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor)
@@ -9565,37 +9615,83 @@ Workflow_GenerateInstanceClass
 
 		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex)
 		{
-			bool beforePrecompile = false;
+			bool needFunctionBody = false;
 			bool needEventHandler = false;
 			switch (passIndex)
 			{
 			case IGuiResourceTypeResolver_Precompile::Instance_CollectInstanceTypes:
-				beforePrecompile = true;
+				needFunctionBody = false;
 				needEventHandler = false;
 				break;
 			case IGuiResourceTypeResolver_Precompile::Instance_CollectEventHandlers:
-				beforePrecompile = true;
+				needFunctionBody = false;
 				needEventHandler = true;
 				break;
 			case IGuiResourceTypeResolver_Precompile::Instance_GenerateInstanceClass:
-				beforePrecompile = false;
+				needFunctionBody = true;
 				needEventHandler = true;
 				break;
 			}
+			auto classNameRecord = precompileContext.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
 
+			Ptr<ITypeInfo> baseType;
+			Ptr<GuiResourceItem> baseTypeResourceItem;
+			Ptr<GuiInstanceContext> baseTypeContext;
+			Ptr<WfType> baseWfType;
 			auto context = resolvingResult.context;
-			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
-			auto baseType = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
-			if (!baseType)
 			{
-				errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
-					L"Precompile: Failed to find type \"" +
-					(context->instance->typeNamespace == GlobalStringKey::Empty
-						? context->instance->typeName.ToString()
-						: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
-						) +
-					L"\"."));
-				return nullptr;
+				auto source = FindInstanceLoadingSource(context, context->instance.Obj());
+				baseType = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
+				if (!baseType)
+				{
+					baseTypeResourceItem = FindInstanceResourceItem(context, context->instance.Obj(), classNameRecord);
+				}
+				if (!baseType && !baseTypeResourceItem)
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
+						L"Precompile: Failed to find type \"" +
+						(context->instance->typeNamespace == GlobalStringKey::Empty
+							? context->instance->typeName.ToString()
+							: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
+							) +
+						L"\"."));
+					return nullptr;
+				}
+				if (baseTypeResourceItem && needEventHandler)
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
+						L"[INTERNAL ERROR] Precompile: Failed to find compiled type in previous passes \"" +
+						(context->instance->typeNamespace == GlobalStringKey::Empty
+							? context->instance->typeName.ToString()
+							: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
+							) +
+						L"\"."));
+					return nullptr;
+				}
+			}
+
+			if (baseTypeResourceItem)
+			{
+				baseTypeContext = baseTypeResourceItem->GetContent().Cast<GuiInstanceContext>();
+
+				List<WString> fragments;
+				SplitTypeName(baseTypeContext->className, fragments);
+				for (vint i = 0; i < fragments.Count(); i++)
+				{
+					if (baseWfType)
+					{
+						auto type = MakePtr<WfChildType>();
+						type->parent = baseWfType;
+						type->name.value = fragments[i];
+						baseWfType = type;
+					}
+					else
+					{
+						auto type = MakePtr<WfTopQualifiedType>();
+						type->name.value = fragments[i];
+						baseWfType = type;
+					}
+				}
 			}
 
 			///////////////////////////////////////////////////////////////
@@ -9605,9 +9701,16 @@ Workflow_GenerateInstanceClass
 			auto module = Workflow_CreateModuleWithUsings(context, moduleName);
 			auto instanceClass = Workflow_InstallClass(context->className, module);
 			{
-				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseType->GetTypeDescriptor(), TypeInfoHint::Normal);
-				auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
-				instanceClass->baseTypes.Add(baseType);
+				if (baseWfType)
+				{
+					instanceClass->baseTypes.Add(baseWfType);
+				}
+				else
+				{
+					auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseType->GetTypeDescriptor(), TypeInfoHint::Normal);
+					auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
+					instanceClass->baseTypes.Add(baseType);
+				}
 
 				if (context->codeBehind)
 				{
@@ -9627,15 +9730,15 @@ Workflow_GenerateInstanceClass
 			// Inherit from Constructor Class
 			///////////////////////////////////////////////////////////////
 
-			if (!beforePrecompile)
+			if (needFunctionBody)
 			{
-				auto baseType = MakePtr<WfReferenceType>();
-				baseType->name.value = instanceClass->name.value + L"Constructor";
-				instanceClass->baseTypes.Add(baseType);
+				auto baseConstructorType = MakePtr<WfReferenceType>();
+				baseConstructorType->name.value = instanceClass->name.value + L"Constructor";
+				instanceClass->baseTypes.Add(baseConstructorType);
 
 				{
 					auto value = MakePtr<WfTypeOfTypeExpression>();
-					value->type = CopyType(baseType);
+					value->type = CopyType(baseConstructorType);
 
 					auto att = MakePtr<WfAttribute>();
 					att->category.value = L"cpp";
@@ -9689,7 +9792,7 @@ Workflow_GenerateInstanceClass
 				List<Ptr<WfDeclaration>> memberDecls;
 				parseClassMembers(context->memberScript, L"members of instance \"" + context->className + L"\"", memberDecls, context->memberPosition);
 
-				if (beforePrecompile)
+				if (!needFunctionBody)
 				{
 					List<Ptr<WfDeclaration>> unprocessed;
 					CopyFrom(unprocessed, memberDecls);
@@ -9710,16 +9813,20 @@ Workflow_GenerateInstanceClass
 
 			auto ctor = MakePtr<WfConstructorDeclaration>();
 			ctor->constructorType = WfConstructorType::RawPtr;
-			auto ctorBlock = (beforePrecompile ? notImplemented() : MakePtr<WfBlockStatement>());
+			auto ctorBlock = (!needFunctionBody ? notImplemented() : MakePtr<WfBlockStatement>());
 			ctor->statement = ctorBlock;
 
-			if (auto group = baseType->GetTypeDescriptor()->GetConstructorGroup())
+			if (baseWfType)
+			{
+				// Fill later
+			}
+			else if (auto group = baseType->GetTypeDescriptor()->GetConstructorGroup())
 			{
 				auto ctorInfo = group->GetMethod(0);
 				vint count = ctorInfo->GetParameterCount();
 				if (count > 0)
 				{
-					if (!beforePrecompile)
+					if (needFunctionBody)
 					{
 						if (auto call = resolvingResult.rootLoader->CreateRootInstance(precompileContext, resolvingResult, resolvingResult.rootTypeInfo, resolvingResult.rootCtorArguments, errors))
 						{
@@ -9795,7 +9902,7 @@ Workflow_GenerateInstanceClass
 
 				vint errorCount = errors.Count();
 				auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + classNameTail, parameter->classPosition, errors);
-				if (beforePrecompile && !parameterTypeInfo && errorCount == errors.Count())
+				if (!needFunctionBody && !parameterTypeInfo && errorCount == errors.Count())
 				{
 					if (!type || type.Cast<WfReferenceType>() || type.Cast<WfChildType>() || type.Cast<WfTopQualifiedType>())
 					{
@@ -9804,7 +9911,7 @@ Workflow_GenerateInstanceClass
 				}
 				if (type)
 				{
-					if (!beforePrecompile)
+					if (needFunctionBody)
 					{
 						auto decl = MakePtr<WfVariableDeclaration>();
 						addDecl(decl);
@@ -9822,7 +9929,7 @@ Workflow_GenerateInstanceClass
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"Get" + parameter->name.ToString();
 						decl->returnType = CopyType(type);
-						if (!beforePrecompile)
+						if (needFunctionBody)
 						{
 							auto block = MakePtr<WfBlockStatement>();
 							decl->statement = block;
@@ -9857,7 +9964,7 @@ Workflow_GenerateInstanceClass
 						argument->type = CopyType(type);
 						ctor->arguments.Add(argument);
 					}
-					if (!beforePrecompile)
+					if (needFunctionBody)
 					{
 						auto refLeft = MakePtr<WfReferenceExpression>();
 						refLeft->name.value = L"<parameter>" + parameter->name.ToString();
@@ -9897,7 +10004,7 @@ Workflow_GenerateInstanceClass
 			// Calling Constructor Class
 			///////////////////////////////////////////////////////////////
 
-			if (!beforePrecompile)
+			if (needFunctionBody)
 			{
 				{
 					auto getRmExpr = MakePtr<WfChildExpression>();
@@ -9972,13 +10079,15 @@ Workflow_GenerateInstanceClass
 				{
 					auto initRef = MakePtr<WfMemberExpression>();
 					initRef->parent = MakePtr<WfThisExpression>();
-					initRef->name.value = L"<initialize-instance>";
-
-					auto refThis = MakePtr<WfThisExpression>();
+					{
+						List<WString> fragments;
+						SplitTypeName(resolvingResult.context->className, fragments);
+						initRef->name.value = L"<" + From(fragments).Aggregate([](const WString& a, const WString& b) {return a + L"-" + b; }) + L">Initialize";
+					}
 
 					auto callExpr = MakePtr<WfCallExpression>();
 					callExpr->function = initRef;
-					callExpr->arguments.Add(refThis);
+					callExpr->arguments.Add(MakePtr<WfThisExpression>());
 
 					auto stat = MakePtr<WfExpressionStatement>();
 					stat->expression = callExpr;
@@ -9995,7 +10104,7 @@ Workflow_GenerateInstanceClass
 			{
 				if (auto stat = Workflow_ParseStatement(precompileContext, { resolvingResult.resource }, context->ctorScript, context->ctorPosition, errors))
 				{
-					if (!beforePrecompile)
+					if (needFunctionBody)
 					{
 						if (!stat.Cast<WfBlockStatement>())
 						{
@@ -10042,7 +10151,7 @@ Workflow_GenerateInstanceClass
 			{
 				if (auto stat = Workflow_ParseStatement(precompileContext, { resolvingResult.resource }, context->dtorScript, context->dtorPosition, errors))
 				{
-					if (!beforePrecompile)
+					if (needFunctionBody)
 					{
 						if (!stat.Cast<WfBlockStatement>())
 						{
@@ -10089,20 +10198,37 @@ Workflow_GenerateInstanceClass
 					description::GetTypeDescriptor<GuiControlHost>(),
 				};
 
-				for (auto td : types)
+				if (!baseType)
 				{
-					if (baseType->GetTypeDescriptor()->CanConvertTo(td))
+					auto currentContext = context;
+					while (!baseType)
 					{
-						ref->name.value = L"FinalizeInstanceRecursively";
+						auto item = FindInstanceResourceItem(currentContext, currentContext->instance.Obj(), classNameRecord);
+						if (!item) break;
 
-						Ptr<ITypeInfo> typeInfo = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-						typeInfo = MakePtr<RawPtrTypeInfo>(typeInfo);
+						currentContext = item->GetContent().Cast<GuiInstanceContext>();
+						auto source = FindInstanceLoadingSource(currentContext, currentContext->instance.Obj());
+						baseType = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
+					}
+				}
 
-						auto inferExpr = MakePtr<WfInferExpression>();
-						inferExpr->type = GetTypeFromTypeInfo(typeInfo.Obj());
-						inferExpr->expression = thisExpr;
-						thisExpr = inferExpr;
-						break;
+				if (baseType)
+				{
+					for (auto td : types)
+					{
+						if (baseType->GetTypeDescriptor()->CanConvertTo(td))
+						{
+							ref->name.value = L"FinalizeInstanceRecursively";
+
+							Ptr<ITypeInfo> typeInfo = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+							typeInfo = MakePtr<RawPtrTypeInfo>(typeInfo);
+
+							auto inferExpr = MakePtr<WfInferExpression>();
+							inferExpr->type = GetTypeFromTypeInfo(typeInfo.Obj());
+							inferExpr->expression = thisExpr;
+							thisExpr = inferExpr;
+							break;
+						}
 					}
 				}
 
@@ -12152,7 +12278,7 @@ GuiInstanceLoader_Plugin.cpp
 		default: GuiControl*, GuiGraphicsComposition*
 	GuiInstanceRootObject
 		default: GuiComponent*
-GuiInstanceLoader_TemplateControl
+GuiInstanceLoader_TemplateControl.h
 	GuiControl
 GuiInstanceLoader_Compositions.cpp
 	GuiAxis
@@ -12177,13 +12303,17 @@ GuiInstanceLoader_List.cpp
 		ctor: Text, Image
 		Tag
 GuiInstanceLoader_Templates.cpp
-	GuiTemplate
-		ctor: \w+(ItemTemplate<T>)
+	GuiCommonDatePickerLook
+		ctor: BackgroundColor, PrimaryTextColor, SecondaryTextColor
+	GuiCommonScrollViewLook
+		ctor: DefaultScrollSize
 GuiInstanceLoader_Toolstrip.cpp
-	GuiToolstripMenu, GuiToolstripMenuBar, GuiToolstripToolBar
+	GuiToolstripMenu, GuiToolstripMenuBar, GuiToolstripToolBar, GuiBindableRibbonGalleryMenu
 		default: collection(GuiControl*)
 	GuiToolstripButton
 		SubMenu-set: GuiToolstripMenu*
+	GuiRibbonButtons
+		ctor: MaxSize, MinSize
 */
 
 
@@ -12431,6 +12561,7 @@ GuiPredefinedInstanceLoadersPlugin
 
 					manager->SetLoader(new GuiControlInstanceLoader);
 
+					/*													REAL-CONTROL-TYPE			THEME-NAME											*/
 					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,			CustomControl										);
 					ADD_TEMPLATE_CONTROL	(							GuiLabel,					Label												);
 					ADD_TEMPLATE_CONTROL	(							GuiButton,					Button												);
@@ -12446,7 +12577,13 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,		SinglelineTextBox									);
 					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,				DatePicker											);
 					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,			ComboBox,				CreateStandardDataPicker	);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonTab,				RibbonTab											);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonTabPage,			CustomControl										);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonGroup,				RibbonGroup											);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonToolstrips,		RibbonToolstrips									);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableRibbonGallery,	RibbonGallery										);
 
+					/*						VIRTUAL-CONTROL-TYPE		REAL-CONTROL-TYPE			THEME-NAME											*/
 					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,					GroupBox											);
 					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,					MenuSplitter										);
 					ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,			MenuBarButton										);
@@ -12454,6 +12591,14 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,			ToolstripDropdownButton								);
 					ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,			ToolstripSplitButton								);
 					ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,					ToolstripSplitter									);
+					ADD_VIRTUAL_CONTROL		(RibbonSmallButton,			GuiToolstripButton,			RibbonSmallButton									);
+					ADD_VIRTUAL_CONTROL		(RibbonSmallDropdownButton,	GuiToolstripButton,			RibbonSmallDropdownButton							);
+					ADD_VIRTUAL_CONTROL		(RibbonSmallSplitButton,	GuiToolstripButton,			RibbonSmallSplitButton								);
+					ADD_VIRTUAL_CONTROL		(RibbonLargeButton,			GuiToolstripButton,			RibbonLargeButton									);
+					ADD_VIRTUAL_CONTROL		(RibbonLargeDropdownButton,	GuiToolstripButton,			RibbonLargeDropdownButton							);
+					ADD_VIRTUAL_CONTROL		(RibbonLargeSplitButton,	GuiToolstripButton,			RibbonLargeSplitButton								);
+					ADD_VIRTUAL_CONTROL		(RibbonSplitter,			GuiControl,					RibbonSplitter										);
+					ADD_VIRTUAL_CONTROL		(RibbonToolstripHeader,		GuiControl,					RibbonToolstripHeader								);
 					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,		CheckBox											);
 					ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,		RadioButton											);
 					ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,					HScroll												);
@@ -12933,6 +13078,77 @@ GuiToolstripButtonInstanceLoader
 #undef BASE_TYPE
 
 /***********************************************************************
+GuiBindableRibbonGalleryMenuInstanceLoader
+***********************************************************************/
+
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableRibbonGalleryMenu>
+			class GuiBindableRibbonGalleryMenuInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
+			{
+			public:
+				GuiBindableRibbonGalleryMenuInstanceLoader()
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiBindableRibbonGalleryMenu>::content.typeName, theme::ThemeName::RibbonGalleryMenu)
+				{
+				}
+			};
+#undef BASE_TYPE
+
+/***********************************************************************
+GuiRibbonButtonsInstanceLoader
+***********************************************************************/
+
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiRibbonButtons>
+			class GuiRibbonButtonsInstanceLoader : public BASE_TYPE
+			{
+			protected:
+				GlobalStringKey					_MaxSize;
+				GlobalStringKey					_MinSize;
+
+				void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
+				{
+					vint indexMaxSize = arguments.Keys().IndexOf(_MaxSize);
+					vint indexMinSize = arguments.Keys().IndexOf(_MinSize);
+					if (indexMaxSize != -1 && indexMinSize != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexMaxSize)[0].expression);
+						createControl->arguments.Add(arguments.GetByIndex(indexMinSize)[0].expression);
+					}
+				}
+			public:
+				GuiRibbonButtonsInstanceLoader()
+					:BASE_TYPE(description::TypeInfo<GuiRibbonButtons>::content.typeName, theme::ThemeName::RibbonButtons)
+				{
+					_MaxSize = GlobalStringKey::Get(L"MaxSize");
+					_MinSize = GlobalStringKey::Get(L"MinSize");
+				}
+
+				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					if (CanCreate(typeInfo))
+					{
+						propertyNames.Add(_MaxSize);
+						propertyNames.Add(_MinSize);
+					}
+				}
+
+				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					GetRequiredPropertyNames(typeInfo, propertyNames);
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == _MaxSize || propertyInfo.propertyName == _MinSize)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<RibbonButtonSize>::CreateTypeInfo());
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						return info;
+					}
+					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+				}
+			};
+#undef BASE_TYPE
+
+/***********************************************************************
 Initialization
 ***********************************************************************/
 
@@ -12944,6 +13160,8 @@ Initialization
 				manager->SetLoader(new GuiToolstripGroupContainerInstanceLoader);
 				manager->SetLoader(new GuiToolstripGroupInstanceLoader);
 				manager->SetLoader(new GuiToolstripButtonInstanceLoader);
+				manager->SetLoader(new GuiRibbonButtonsInstanceLoader);
+				manager->SetLoader(new GuiBindableRibbonGalleryMenuInstanceLoader);
 			}
 		}
 	}

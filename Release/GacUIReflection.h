@@ -276,7 +276,6 @@ Type List (Templates)
 			F(presentation::controls::IGuiAnimationCoroutine)\
 			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::templates::GuiTemplate)\
-			F(presentation::templates::GuiListItemTemplate)\
 			F(presentation::templates::GuiControlTemplate)\
 			F(presentation::templates::GuiLabelTemplate)\
 			F(presentation::templates::GuiSinglelineTextBoxTemplate)\
@@ -299,6 +298,13 @@ Type List (Templates)
 			F(presentation::templates::GuiTabTemplate)\
 			F(presentation::templates::GuiDatePickerTemplate)\
 			F(presentation::templates::GuiDateComboBoxTemplate)\
+			F(presentation::templates::GuiRibbonTabTemplate)\
+			F(presentation::templates::GuiRibbonGroupTemplate)\
+			F(presentation::templates::GuiRibbonButtonsTemplate)\
+			F(presentation::templates::GuiRibbonToolstripsTemplate)\
+			F(presentation::templates::GuiRibbonGalleryTemplate)\
+			F(presentation::templates::GuiRibbonGalleryMenuTemplate)\
+			F(presentation::templates::GuiListItemTemplate)\
 			F(presentation::templates::GuiTextListItemTemplate)\
 			F(presentation::templates::GuiTreeItemTemplate)\
 			F(presentation::templates::GuiGridCellTemplate)\
@@ -395,6 +401,16 @@ Type List (Controls)
 			F(presentation::controls::GuiToolstripNestedContainer)\
 			F(presentation::controls::GuiToolstripGroupContainer)\
 			F(presentation::controls::GuiToolstripGroup)\
+			F(presentation::controls::GuiRibbonTab)\
+			F(presentation::controls::GuiRibbonTabPage)\
+			F(presentation::controls::GuiRibbonGroup)\
+			F(presentation::controls::RibbonButtonSize)\
+			F(presentation::controls::GuiRibbonButtons)\
+			F(presentation::controls::GuiRibbonToolstrips)\
+			F(presentation::controls::GalleryPos)\
+			F(presentation::controls::GuiBindableRibbonGalleryBase)\
+			F(presentation::controls::GuiBindableRibbonGallery)\
+			F(presentation::controls::GuiBindableRibbonGalleryMenu)\
 			F(presentation::controls::GuiDocumentItem)\
 			F(presentation::controls::GuiDocumentCommonInterface)\
 			F(presentation::controls::GuiDocumentCommonInterface::EditMode)\
@@ -942,30 +958,20 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetChildCount);
 				}
 
-				presentation::controls::tree::INodeProvider* GetParent()override
+				Ptr<presentation::controls::tree::INodeProvider> GetParent()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetParent);
 				}
 
-				presentation::controls::tree::INodeProvider* GetChild(vint index)override
+				Ptr<presentation::controls::tree::INodeProvider> GetChild(vint index)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetChild, index);
-				}
-
-				void Increase()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(Increase);
-				}
-
-				void Release()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(Release);
 				}
 			END_INTERFACE_PROXY(presentation::controls::tree::INodeProvider)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeRootProvider)
 
-				presentation::controls::tree::INodeProvider* GetRootNode()override
+				Ptr<presentation::controls::tree::INodeProvider> GetRootNode()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetRootNode);
 				}
@@ -975,7 +981,7 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CanGetNodeByVisibleIndex);
 				}
 
-				presentation::controls::tree::INodeProvider* GetNodeByVisibleIndex(vint index)override
+				Ptr<presentation::controls::tree::INodeProvider> GetNodeByVisibleIndex(vint index)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetNodeByVisibleIndex, index);
 				}
@@ -1008,14 +1014,9 @@ Interface Proxy (Controls)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeItemView)
 
-				presentation::controls::tree::INodeProvider* RequestNode(vint index)override
+				Ptr<presentation::controls::tree::INodeProvider> RequestNode(vint index)override
 				{
 					INVOKEGET_INTERFACE_PROXY(RequestNode, index);
-				}
-
-				void ReleaseNode(presentation::controls::tree::INodeProvider* node)override
-				{
-					INVOKE_INTERFACE_PROXY(ReleaseNode, node);
 				}
 
 				vint CalculateNodeVisibilityIndex(presentation::controls::tree::INodeProvider* node)override

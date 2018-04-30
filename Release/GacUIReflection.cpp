@@ -1184,6 +1184,9 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiResponsiveCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveViewComposition*(), NO_PARAMETER)
 
+				CLASS_MEMBER_GUIEVENT(BeforeSwitchingView)
+					
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(CurrentView)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SharedControls)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Views)
 			END_CLASS_MEMBER(GuiResponsiveViewComposition)
@@ -1469,6 +1472,7 @@ Type Declaration
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiControl)
 
 				CLASS_MEMBER_GUIEVENT(RenderTargetChanged)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ControlThemeName)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ControlTemplate)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BoundsComposition)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainerComposition)
@@ -1487,6 +1491,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(TooltipControl)
 				CLASS_MEMBER_PROPERTY_FAST(TooltipWidth)
 
+				CLASS_MEMBER_METHOD(SetControlThemeNameAndTemplate, { L"themeNameValue" _ L"controlTemplateValue" })
 				CLASS_MEMBER_METHOD(SetActivatingAltHost, { L"host" })
 				CLASS_MEMBER_METHOD(GetChild, {L"index"})
 				CLASS_MEMBER_METHOD(AddChild, {L"control"})
@@ -1960,6 +1965,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiSelectableButton)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiMenuButton)
 
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(LargeImage)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Image)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ShortcutText)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SubMenu)
@@ -1992,8 +1998,6 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(CalculateTotalVisibleNodes, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetChild, {L"index"})
-				CLASS_MEMBER_METHOD(Increase, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(Release, NO_PARAMETER)
 			END_INTERFACE_MEMBER(INodeProvider)
 
 			BEGIN_INTERFACE_MEMBER(INodeRootProvider)
@@ -2014,7 +2018,6 @@ Type Declaration
 				INTERFACE_IDENTIFIER(vl::presentation::controls::tree::INodeItemView)
 
 				CLASS_MEMBER_METHOD(RequestNode, {L"index"})
-				CLASS_MEMBER_METHOD(ReleaseNode, {L"node"})
 				CLASS_MEMBER_METHOD(CalculateNodeVisibilityIndex, {L"node"})
 			END_INTERFACE_MEMBER(INodeItemView)
 
@@ -2130,6 +2133,7 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(Executed)
 				CLASS_MEMBER_GUIEVENT(DescriptionChanged)
 
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(LargeImage, DescriptionChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Image, DescriptionChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Text, DescriptionChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Shortcut, DescriptionChanged)
@@ -2188,6 +2192,85 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ToolstripItems)
 			END_CLASS_MEMBER(GuiToolstripGroup)
+
+			BEGIN_CLASS_MEMBER(GuiRibbonTab)
+				CLASS_MEMBER_BASE(GuiTab)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiRibbonTab)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(BeforeHeaders)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AfterHeaders)
+			END_CLASS_MEMBER(GuiRibbonTab)
+
+			BEGIN_CLASS_MEMBER(GuiRibbonTabPage)
+				CLASS_MEMBER_BASE(GuiTabPage)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiRibbonTabPage)
+
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Highlighted)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Groups)
+			END_CLASS_MEMBER(GuiRibbonTabPage)
+
+			BEGIN_CLASS_MEMBER(GuiRibbonGroup)
+				CLASS_MEMBER_BASE(GuiControl)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiRibbonGroup)
+
+				CLASS_MEMBER_GUIEVENT(ExpandButtonClicked)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Expandable)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
+			END_CLASS_MEMBER(GuiRibbonGroup)
+
+			BEGIN_ENUM_ITEM(RibbonButtonSize)
+				ENUM_CLASS_ITEM(Large)
+				ENUM_CLASS_ITEM(Small)
+				ENUM_CLASS_ITEM(Icon)
+			END_ENUM_ITEM(RibbonButtonSize)
+
+			BEGIN_CLASS_MEMBER(GuiRibbonButtons)
+				CLASS_MEMBER_BASE(GuiControl)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_3(GuiRibbonButtons, RibbonButtonSize, maxSize, RibbonButtonSize, minSize)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Buttons)
+			END_CLASS_MEMBER(GuiRibbonButtons)
+
+			BEGIN_CLASS_MEMBER(GuiRibbonToolstrips)
+				CLASS_MEMBER_BASE(GuiControl)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiRibbonToolstrips)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Groups)
+			END_CLASS_MEMBER(GuiRibbonToolstrips)
+
+			BEGIN_STRUCT_MEMBER(GalleryPos)
+				STRUCT_MEMBER(group)
+				STRUCT_MEMBER(item)
+			END_STRUCT_MEMBER(GalleryPos)
+
+			BEGIN_CLASS_MEMBER(GuiBindableRibbonGalleryBase)
+				//CLASS_MEMBER_PROPERTY_FAST(ItemSource)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(GroupEnabled)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupTitleProperty)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupChildrenProperty)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Selection)
+				//
+				//CLASS_MEMBER_METHOD(GetGroupValue, { L"groupIndex" })
+				//CLASS_MEMBER_METHOD(GetItemValue, { L"pos" })
+			END_CLASS_MEMBER(GuiBindableRibbonGalleryBase)
+
+			BEGIN_CLASS_MEMBER(GuiBindableRibbonGallery)
+				CLASS_MEMBER_BASE(GuiControl)
+				CLASS_MEMBER_BASE(GuiBindableRibbonGalleryBase)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiBindableRibbonGallery)
+
+				//CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemTemplate)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(PreviewSelection)
+			END_CLASS_MEMBER(GuiBindableRibbonGallery)
+
+			BEGIN_CLASS_MEMBER(GuiBindableRibbonGalleryMenu)
+				CLASS_MEMBER_BASE(GuiToolstripMenu)
+				CLASS_MEMBER_BASE(GuiBindableRibbonGalleryBase)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiBindableRibbonGalleryMenu, GuiControl*, owner)
+
+				//CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemTemplate)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(PreviewSelection)
+			END_CLASS_MEMBER(GuiBindableRibbonGalleryMenu)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDocumentItem>(const WString&), { L"name" })
@@ -3228,6 +3311,7 @@ Type Declaration
 				CLASS_MEMBER_STATIC_METHOD(PlayAndWaitAndPause, { L"impl" _ L"animation" })
 				CLASS_MEMBER_STATIC_METHOD(PlayInGroupAndPause, { L"impl" _ L"animation" _ L"groupId" })
 				CLASS_MEMBER_STATIC_METHOD(WaitForGroupAndPause, { L"impl" _ L"groupId" })
+				CLASS_MEMBER_STATIC_METHOD(ReturnAndExit, { L"impl" })
 				CLASS_MEMBER_STATIC_METHOD(Create, { L"creator" })
 			END_CLASS_MEMBER(IGuiAnimationCoroutine)
 

@@ -1,0 +1,132 @@
+<Folder>
+  <Instance name="TabHeaderButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabHeaderButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Members>
+        <![CDATA[
+          prop Highlighted: bool = false {}
+        ]]>
+      </ref.Members>
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.Highlighted-bind>(cast (RibbonTabPage*) self.Context).Highlighted ?? false</att.Highlighted-bind>
+        <SolidBackground ref.Style="tabHeaderBackground"/>
+        <Bounds AlignmentToParent="left:6 top:3 right:6 bottom:3">
+          <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Bounds>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="TabHeaderTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabHeaderTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Parameter Name="CurrentTabPage" Class="presentation::controls::GuiTabPage"/>
+      <ref.Members>
+        <![CDATA[
+          prop Commands : ITabCommandExecutor* = null {}
+        ]]>
+      </ref.Members>
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CheckBox ControlTemplate="darkskin::TabHeaderButtonTemplate" AutoSelection="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.Context-ref>CurrentTabPage</att.Context-ref>
+          <att.Text-bind>CurrentTabPage.Text</att.Text-bind>
+          <att.Alt-bind>CurrentTabPage.Alt</att.Alt-bind>
+          <att.Selected-bind>CurrentTabPage.OwnerTab.SelectedPage == CurrentTabPage</att.Selected-bind>
+          <ev.Clicked-eval>
+            <![CDATA[
+              {
+                self.Commands.ShowTab(CurrentTabPage.OwnerTab.Pages.IndexOf(CurrentTabPage));
+              }
+            ]]>
+          </ev.Clicked-eval>
+        </CheckBox>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="TabTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Members>
+        <![CDATA[
+          prop Highlighted: bool = false {}
+          
+          func UpdateTabHeader() : void
+          {
+            for (flowItem in header.FlowItems)
+            {
+              var item = cast (TabHeaderTemplate*) flowItem.Children[0];
+              if (item.CurrentTabPage == self.SelectedTabPage)
+              {
+                flowItem.ExtraMargin = {left:2 top:2 right:2 bottom:0};
+                header.MoveChild(flowItem, header.Children.Count - 1);
+              }
+              else
+              {
+                flowItem.ExtraMargin = {left:0 top:0 right:0 bottom:0};
+              }
+            }
+          }
+        ]]>
+      </ref.Members>
+      <RibbonTabTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <ev.SelectedTabPageChanged-eval>
+          <![CDATA[
+            {
+              self.UpdateTabHeader();
+            }
+          ]]>
+        </ev.SelectedTabPageChanged-eval>
+        <att.BeforeHeadersContainer-ref>beforeHeadersContainer</att.BeforeHeadersContainer-ref>
+        <att.AfterHeadersContainer-ref>afterHeadersContainer</att.AfterHeadersContainer-ref>
+        <att.Highlighted-bind>(cast (RibbonTabPage*) self.SelectedTabPage).Highlighted ?? false</att.Highlighted-bind>
+        
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBackground Color="#2D2D30"/>
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Absolute absolute:2</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Columns>
+
+          <Cell ref.Name="beforeHeadersContainer" Site="row:0 column:0"/>
+          <Cell ref.Name="afterHeadersContainer" Site="row:0 column:2"/>
+
+          <Cell Site="row:0 column:1">
+            <RepeatFlow ref.Name="header" AlignmentToParent="left:0 top:0 right:0 bottom:0" ExtraMargin="left:2 top:2 right:2 bottom:0">
+              <att.ItemTemplate>darkskin::TabHeaderTemplate</att.ItemTemplate>
+              <att.ItemSource-bind>self.TabPages</att.ItemSource-bind>
+              <ev.ItemInserted-eval>
+                <![CDATA[
+                  {
+                    var flowItem = header.FlowItems[arguments.itemIndex];
+                    var item = cast (TabHeaderTemplate*) flowItem.Children[0];
+                    item.Commands = self.Commands;
+                    self.UpdateTabHeader();
+                  }
+                ]]>
+              </ev.ItemInserted-eval>
+              <ev.ItemRemoved-eval>
+                <![CDATA[
+                  {
+                    self.UpdateTabHeader();
+                  }
+                ]]>
+              </ev.ItemRemoved-eval>
+            </RepeatFlow>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:3">
+            <SolidBackground ref.Style="tabHeaderBottomLine"/>
+          </Cell>
+          <Cell Site="row:2 column:0 columnSpan:3">
+            <SolidBorder Color="#434346"/>
+            <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+          </Cell>
+        </Table>
+      </RibbonTabTemplate>
+    </Instance>
+  </Instance>
+</Folder>

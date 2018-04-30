@@ -1,0 +1,219 @@
+<Folder>
+  <Instance name="ToolstripTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripTemplate" ref.Styles="res://DarkSkin/Style">
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren" InternalMargin="left:2 top:2 right:2 bottom:2">
+        <SolidBackground Color="#2D2D30"/>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripMenuTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripMenuTemplate" ref.Styles="res://DarkSkin/Style">
+      <MenuTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#1B1B1C"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:3 top:3 right:3 bottom:3">
+          <SolidBorder Color="#333337"/>
+        </Bounds>
+      </MenuTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripSplitterTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripSplitterTemplate" ref.Styles="res://DarkSkin/Style">
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#2D2D30"/>
+        <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
+          <Gui3DSplitterElement Direction="Vertical" Color1="#222224" Color2="#464648"/>
+        </Bounds>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="MenuSplitterTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::MenuSplitterTemplate" ref.Styles="res://DarkSkin/Style">
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#1B1B1C"/>
+        <Bounds AlignmentToParent="left:0 top:1 right:0 bottom:1" PreferredMinSize="x:0 y:1">
+          <SolidBackground Color="#333337"/>
+        </Bounds>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="toolstripBorder"/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+          <SolidBackground ref.Style="toolstripBackground"/>
+          <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
+            <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+          </Bounds>
+        </Bounds>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripDropdownButtonResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripDropdownButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="toolstripBorder"/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
+          <SolidBackground ref.Style="toolstripBackground"/>
+          <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
+            <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+          </Bounds>
+        </Bounds>
+        <Table AlignmentToParent="left:-1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:0">
+          <SolidBackground ref.Style="toolstripBackground"/>
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:3</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="toolstripArrow" Size="x:5 y:3">
+              <att.Points>
+                <Point>x:0 y:0</Point>
+                <Point>x:2 y:2</Point>
+                <Point>x:4 y:0</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripArrowButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripSplitArrowTemplate" ref.Styles="res://DarkSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:7">
+          <SolidBackground ref.Style="toolstripSplitArrowBackground"/>
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:3</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="toolstripSplitArrow" Size="x:5 y:3">
+              <att.Points>
+                <Point>x:0 y:0</Point>
+                <Point>x:2 y:2</Point>
+                <Point>x:4 y:0</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripSplitButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripSplitButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="toolstripBorder"/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
+          <SolidBackground ref.Style="toolstripBackground"/>
+          <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
+            <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+          </Bounds>
+        </Bounds>
+        <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
+          <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <SolidBackground ref.Style="toolstripSplitBackground"/>
+          </Bounds>
+          <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </CheckBox>
+        </Bounds>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="MenuBarButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::MenuBarButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <SolidBackground ref.Style="menuBarItemBackground"/>
+        <Bounds AlignmentToParent="left:10 top:3 right:10 bottom:3">
+          <SolidLabel ref.Style="menuItemText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Bounds>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="MenuItemButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::MenuItemButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <SolidBackground ref.Style="menuItemBackground"/>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Absolute absolute:4</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:4</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Absolute absolute:2</CellOption>
+            <CellOption>composeType:Absolute absolute:24</CellOption>
+            <CellOption>composeType:Absolute absolute:8</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Absolute absolute:24</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Absolute absolute:4</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Absolute absolute:8</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1 rowSpan:3">
+            <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+          </Cell>
+          <Cell Site="row:1 column:3 rowSpan:3">
+            <SharedSizeItem Group="MenuItem-Text" SharedWidth="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <SolidLabel ref.Style="menuItemText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </SharedSizeItem>
+          </Cell>
+          <Cell Site="row:1 column:6 rowSpan:3">
+            <SharedSizeItem Group="MenuItem-Shortcut" SharedWidth="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <SolidLabel ref.Style="menuItemText" Text-bind="self.ShortcutText" Font-bind="self.Font" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            </SharedSizeItem>
+          </Cell>
+          <Cell Site="row:2 column:8" Visible-bind="self.SubMenuExisting">
+            <Polygon ref.Style="menuItemArrow" Size="x:4 y:7">
+              <att.Points>
+                <Point>x:0 y:0</Point>
+                <Point>x:3 y:3</Point>
+                <Point>x:0 y:6</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+</Folder>

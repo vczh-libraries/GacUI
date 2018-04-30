@@ -2071,7 +2071,7 @@ Native Window Services
 			/// Test is the current thread the main thread.
 			/// </summary>
 			/// <returns>Returns true if the current thread is the main thread.</returns>
-			virtual bool					IsInMainThread()=0;
+			virtual bool					IsInMainThread(INativeWindow* window)=0;
 			/// <summary>
 			/// Invoke a specified function with an specified argument asynchronisly.
 			/// </summary>
@@ -4355,18 +4355,15 @@ Resource Type Resolver
 		///		Represents a precompiler for resources of a specified type.
 		///		Current resources that needs precompiling:
 		///		Workflow:
-		///			Pass  0: Collect workflow scripts
-		///			Pass  1: Compile ViewModel scripts
-		///			Pass  2: Compile Shared scripts
+		///			Pass  0: Collect workflow scripts / Compile localized strings / Generate ClassNameRecord
+		///			Pass  1: Compile workflow scripts
 		///		Instance:
-		///			Pass  3: Collect instance types
-		///			Pass  4: Validate instance dependency
-		///			Pass  5: Generate TemporaryClass scripts, ClassNameRecord
-		///			Pass  6: Compile TemporaryClass scripts
-		///			Pass  7: Generate InstanceCtor scripts
-		///			Pass  8: Compile InstanceCtor scripts
-		///			Pass  9: Unload InstanceCtor, Delete TemporaryClass, Generate InstanceClass scripts
-		///			Pass 10: Compile InstanceClass scripts
+		///			Pass  2: Collect instance types													/ Compile animation types
+		///			Pass  3: Compile
+		///			Pass  4: Generate instance types with event handler functions to TemporaryClass	/ Compile animation types
+		///			Pass  5: Compile
+		///			Pass  6: Generate instance types with everything to InstanceCtor				/ Compile animation types
+		///			Pass  7: Compile
 		/// </summary>
 		class IGuiResourceTypeResolver_Precompile : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
 		{
@@ -7232,15 +7229,29 @@ GuiResponsiveCompositionBase
 				GuiResponsiveCompositionBase();
 				~GuiResponsiveCompositionBase();
 
+				/// <summary>LevelCount changed event.</summary>
 				GuiNotifyEvent						LevelCountChanged;
+				/// <summary>CurrentLevel chagned event.</summary>
 				GuiNotifyEvent						CurrentLevelChanged;
 
+				/// <summary>Get the level count. A level count represents how many views this composition carries.</summary>
+				/// <returns>The level count.</returns>
 				virtual vint						GetLevelCount() = 0;
+				/// <summary>Get the current level. Zero is the view with the smallest size.</summary>
+				/// <returns>The current level.</returns>
 				virtual vint						GetCurrentLevel() = 0;
+				/// <summary>Switch to a smaller view.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
 				virtual bool						LevelDown() = 0;
+				/// <summary>Switch to a larger view.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
 				virtual bool						LevelUp() = 0;
 
+				/// <summary>Get all supported directions. If all directions of a child [T:vl.presentation.compositions.GuiResponsiveCompositionBase] are not supported, its view will not be changed when the parent composition changes its view .</summary>
+				/// <returns>All supported directions.</returns>
 				ResponsiveDirection					GetDirection();
+				/// <summary>Set all supported directions.</summary>
+				/// <param name="value">All supported directions.</param>
 				void								SetDirection(ResponsiveDirection value);
 			};
 
@@ -7281,6 +7292,7 @@ GuiResponsiveViewComposition
 				~GuiResponsiveViewCollection();
 			};
 
+			/// <summary>Represents a composition, which will pick up a shared control and install inside it, when it is displayed by a [T:vl.presentation.compositions.GuiResponsiveViewComposition]</summary>
 			class GuiResponsiveSharedComposition : public GuiBoundsComposition, public Description<GuiResponsiveSharedComposition>
 			{
 			protected:
@@ -7294,7 +7306,11 @@ GuiResponsiveViewComposition
 				GuiResponsiveSharedComposition();
 				~GuiResponsiveSharedComposition();
 
+				/// <summary>Get the selected shared control.</summary>
+				/// <returns>The selected shared control.</returns>
 				controls::GuiControl*				GetShared();
+				/// <summary>Set the selected shared control, which should be stored in [M:vl.presentation.compositions.GuiResponsiveViewComposition.GetSharedControls].</summary>
+				/// <param name="value">The selected shared control.</param>
 				void								SetShared(controls::GuiControl* value);
 			};
 
@@ -7324,12 +7340,24 @@ GuiResponsiveViewComposition
 				GuiResponsiveViewComposition();
 				~GuiResponsiveViewComposition();
 
+				/// <summary>Before switch view event. This event happens between hiding the previous view and showing the next view. The itemIndex field can be used to access [M:vl.presentation.compositions.GuiResponsiveViewComposition.GetViews], it is not the level number.</summary>
+				GuiItemNotifyEvent													BeforeSwitchingView;
+
 				vint																GetLevelCount()override;
 				vint																GetCurrentLevel()override;
 				bool																LevelDown()override;
 				bool																LevelUp()override;
 
+				/// <summary>Get the current displaying view.</summary>
+				/// <returns>The current displaying view.</returns>
+				GuiResponsiveCompositionBase*										GetCurrentView();
+
+				/// <summary>Get all shared controls. A shared control can jump between different views if it is contained in a [T:vl.presentation.compositions.GuiResponsiveSharedComposition]. This helps to keep control states during switching views.</summary>
+				/// <returns>All shared controls.</returns>
 				collections::ObservableListBase<controls::GuiControl*>&				GetSharedControls();
+
+				/// <summary>Get all individual views to switch.</summary>
+				/// <returns>All individual views to switch.</returns>
 				collections::ObservableListBase<GuiResponsiveCompositionBase*>&		GetViews();
 			};
 
@@ -7408,6 +7436,7 @@ Others
 GuiResponsiveContainerComposition
 ***********************************************************************/
 
+			/// <summary>A composition which will automatically tell its target responsive composition to switch between views according to its size.</summary>
 			class GuiResponsiveContainerComposition : public GuiBoundsComposition, public Description<GuiResponsiveContainerComposition>
 			{
 			protected:
@@ -7422,7 +7451,11 @@ GuiResponsiveContainerComposition
 				GuiResponsiveContainerComposition();
 				~GuiResponsiveContainerComposition();
 
+				/// <summary>Get the responsive composition to control.</summary>
+				/// <returns>The responsive composition to control.</returns>
 				GuiResponsiveCompositionBase*			GetResponsiveTarget();
+				/// <summary>Get the responsive composition to control.</summary>
+				/// <param name="value">The responsive composition to control.</param>
 				void									SetResponsiveTarget(GuiResponsiveCompositionBase* value);
 			};
 		}
@@ -8510,6 +8543,7 @@ namespace vl
 				static void					PlayAndWaitAndPause(IImpl* impl, Ptr<IGuiAnimation> animation);
 				static void					PlayInGroupAndPause(IImpl* impl, Ptr<IGuiAnimation> animation, vint groupId);
 				static void					WaitForGroupAndPause(IImpl* impl, vint groupId);
+				static void					ReturnAndExit(IImpl* impl);
 				static Ptr<IGuiAnimation>	Create(const Creator& creator);
 			};
 		}
@@ -8619,6 +8653,12 @@ namespace vl
 			F(GuiTabTemplate,					GuiControlTemplate)			\
 			F(GuiDatePickerTemplate,			GuiControlTemplate)			\
 			F(GuiDateComboBoxTemplate,			GuiComboBoxTemplate)		\
+			F(GuiRibbonTabTemplate,				GuiTabTemplate)				\
+			F(GuiRibbonGroupTemplate,			GuiControlTemplate)			\
+			F(GuiRibbonButtonsTemplate,			GuiControlTemplate)			\
+			F(GuiRibbonToolstripsTemplate,		GuiControlTemplate)			\
+			F(GuiRibbonGalleryMenuTemplate,		GuiMenuTemplate)			\
+			F(GuiRibbonGalleryTemplate,			GuiControlTemplate)			\
 
 #define GUI_ITEM_TEMPLATE_DECL(F)\
 			F(GuiTextListItemTemplate,			GuiListItemTemplate)		\
@@ -8735,6 +8775,7 @@ Control Template
 				F(GuiToolstripButtonTemplate, bool, SubMenuExisting, false)\
 				F(GuiToolstripButtonTemplate, bool, SubMenuOpening, false)\
 				F(GuiToolstripButtonTemplate, controls::GuiButton*, SubMenuHost, nullptr)\
+				F(GuiToolstripButtonTemplate, Ptr<GuiImageData>, LargeImage, {})\
 				F(GuiToolstripButtonTemplate, Ptr<GuiImageData>, Image, {})\
 				F(GuiToolstripButtonTemplate, WString, ShortcutText, {})\
 
@@ -8794,14 +8835,43 @@ Control Template
 
 #define GuiDateComboBoxTemplate_PROPERTIES(F)\
 				F(GuiDateComboBoxTemplate, TemplateProperty<GuiDatePickerTemplate>, DatePickerTemplate, {})\
-				
-#define GuiListItemTemplate_PROPERTIES(F)\
-				F(GuiListItemTemplate, bool, Selected, false)\
-				F(GuiListItemTemplate, vint, Index, 0)\
+
+#define GuiRibbonTabTemplate_PROPERTIES(F)\
+				F(GuiRibbonTabTemplate, compositions::GuiGraphicsComposition*, BeforeHeadersContainer, nullptr)\
+				F(GuiRibbonTabTemplate, compositions::GuiGraphicsComposition*, AfterHeadersContainer, nullptr)\
+
+#define GuiRibbonGroupTemplate_PROPERTIES(F)\
+				F(GuiRibbonGroupTemplate, bool, Expandable, false)\
+
+#define GuiRibbonButtonsTemplate_PROPERTIES(F)\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeDropdownButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeSplitButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallDropdownButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallSplitButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, IconButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, IconDropdownButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, IconSplitButtonTemplate, {})\
+
+#define GuiRibbonToolstripsTemplate_PROPERTIES(F)\
+				F(GuiRibbonToolstripsTemplate, TemplateProperty<GuiControlTemplate>, ToolbarTemplate, {})\
+
+#define GuiRibbonGalleryTemplate_PROPERTIES(F)\
+				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
+				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiRibbonGalleryMenuTemplate>, SubMenuTemplate, {})\
+
+#define GuiRibbonGalleryMenuTemplate_PROPERTIES(F)\
+				F(GuiRibbonGalleryMenuTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
+				F(GuiRibbonGalleryMenuTemplate, TemplateProperty<GuiControlTemplate>, HeaderTemplate, {})\
 
 /***********************************************************************
 Item Template
 ***********************************************************************/
+				
+#define GuiListItemTemplate_PROPERTIES(F)\
+				F(GuiListItemTemplate, bool, Selected, false)\
+				F(GuiListItemTemplate, vint, Index, 0)\
 
 #define GuiTextListItemTemplate_PROPERTIES(F)\
 				F(GuiTextListItemTemplate, Color, TextColor, {})\
@@ -9022,46 +9092,60 @@ namespace vl
 		namespace theme
 		{
 #define GUI_CONTROL_TEMPLATE_TYPES(F) \
-			F(WindowTemplate,				Window) \
-			F(ControlTemplate,				CustomControl) \
-			F(WindowTemplate,				Tooltip) \
-			F(LabelTemplate,				Label) \
-			F(LabelTemplate,				ShortcutKey) \
-			F(ScrollViewTemplate,			ScrollView) \
-			F(ControlTemplate,				GroupBox) \
-			F(TabTemplate,					Tab) \
-			F(ComboBoxTemplate,				ComboBox) \
-			F(MultilineTextBoxTemplate,		MultilineTextBox) \
-			F(SinglelineTextBoxTemplate,	SinglelineTextBox) \
-			F(DocumentViewerTemplate,		DocumentViewer) \
-			F(DocumentLabelTemplate,		DocumentLabel) \
-			F(DocumentLabelTemplate,		DocumentTextBox) \
-			F(ListViewTemplate,				ListView) \
-			F(TreeViewTemplate,				TreeView) \
-			F(TextListTemplate,				TextList) \
-			F(SelectableButtonTemplate,		ListItemBackground) \
-			F(SelectableButtonTemplate,		TreeItemExpander) \
-			F(SelectableButtonTemplate,		CheckTextListItem) \
-			F(SelectableButtonTemplate,		RadioTextListItem) \
-			F(MenuTemplate,					Menu) \
-			F(ControlTemplate,				MenuBar) \
-			F(ControlTemplate,				MenuSplitter) \
-			F(ToolstripButtonTemplate,		MenuBarButton) \
-			F(ToolstripButtonTemplate,		MenuItemButton) \
-			F(ControlTemplate,				ToolstripToolBar) \
-			F(ToolstripButtonTemplate,		ToolstripButton) \
-			F(ToolstripButtonTemplate,		ToolstripDropdownButton) \
-			F(ToolstripButtonTemplate,		ToolstripSplitButton) \
-			F(ControlTemplate,				ToolstripSplitter) \
-			F(ButtonTemplate,				Button) \
-			F(SelectableButtonTemplate,		CheckBox) \
-			F(SelectableButtonTemplate,		RadioButton) \
-			F(DatePickerTemplate,			DatePicker) \
-			F(ScrollTemplate,				HScroll) \
-			F(ScrollTemplate,				VScroll) \
-			F(ScrollTemplate,				HTracker) \
-			F(ScrollTemplate,				VTracker) \
-			F(ScrollTemplate,				ProgressBar) \
+			F(WindowTemplate,				Window)						\
+			F(ControlTemplate,				CustomControl)				\
+			F(WindowTemplate,				Tooltip)					\
+			F(LabelTemplate,				Label)						\
+			F(LabelTemplate,				ShortcutKey)				\
+			F(ScrollViewTemplate,			ScrollView)					\
+			F(ControlTemplate,				GroupBox)					\
+			F(TabTemplate,					Tab)						\
+			F(ComboBoxTemplate,				ComboBox)					\
+			F(MultilineTextBoxTemplate,		MultilineTextBox)			\
+			F(SinglelineTextBoxTemplate,	SinglelineTextBox)			\
+			F(DocumentViewerTemplate,		DocumentViewer)				\
+			F(DocumentLabelTemplate,		DocumentLabel)				\
+			F(DocumentLabelTemplate,		DocumentTextBox)			\
+			F(ListViewTemplate,				ListView)					\
+			F(TreeViewTemplate,				TreeView)					\
+			F(TextListTemplate,				TextList)					\
+			F(SelectableButtonTemplate,		ListItemBackground)			\
+			F(SelectableButtonTemplate,		TreeItemExpander)			\
+			F(SelectableButtonTemplate,		CheckTextListItem)			\
+			F(SelectableButtonTemplate,		RadioTextListItem)			\
+			F(MenuTemplate,					Menu)						\
+			F(ControlTemplate,				MenuBar)					\
+			F(ControlTemplate,				MenuSplitter)				\
+			F(ToolstripButtonTemplate,		MenuBarButton)				\
+			F(ToolstripButtonTemplate,		MenuItemButton)				\
+			F(ControlTemplate,				ToolstripToolBar)			\
+			F(ToolstripButtonTemplate,		ToolstripButton)			\
+			F(ToolstripButtonTemplate,		ToolstripDropdownButton)	\
+			F(ToolstripButtonTemplate,		ToolstripSplitButton)		\
+			F(ControlTemplate,				ToolstripSplitter)			\
+			F(RibbonTabTemplate,			RibbonTab)					\
+			F(RibbonGroupTemplate,			RibbonGroup)				\
+			F(RibbonButtonsTemplate,		RibbonButtons)				\
+			F(RibbonToolstripsTemplate,		RibbonToolstrips)			\
+			F(RibbonGalleryTemplate,		RibbonGallery)				\
+			F(RibbonGalleryMenuTemplate,	RibbonGalleryMenu)			\
+			F(ToolstripButtonTemplate,		RibbonSmallButton)			\
+			F(ToolstripButtonTemplate,		RibbonSmallDropdownButton)	\
+			F(ToolstripButtonTemplate,		RibbonSmallSplitButton)		\
+			F(ToolstripButtonTemplate,		RibbonLargeButton)			\
+			F(ToolstripButtonTemplate,		RibbonLargeDropdownButton)	\
+			F(ToolstripButtonTemplate,		RibbonLargeSplitButton)		\
+			F(ControlTemplate,				RibbonSplitter)				\
+			F(ControlTemplate,				RibbonToolstripHeader)		\
+			F(ButtonTemplate,				Button)						\
+			F(SelectableButtonTemplate,		CheckBox)					\
+			F(SelectableButtonTemplate,		RadioButton)				\
+			F(DatePickerTemplate,			DatePicker)					\
+			F(ScrollTemplate,				HScroll)					\
+			F(ScrollTemplate,				VScroll)					\
+			F(ScrollTemplate,				HTracker)					\
+			F(ScrollTemplate,				VTracker)					\
+			F(ScrollTemplate,				ProgressBar)				\
 
 			enum class ThemeName
 			{
@@ -9571,6 +9655,8 @@ Basic Construction
 				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
 
+				/// <summary>Theme name changed event. This event will be raised when the theme name is changed.</summary>
+				compositions::GuiNotifyEvent			ControlThemeNameChanged;
 				/// <summary>Control template changed event. This event will be raised when the control template is changed.</summary>
 				compositions::GuiNotifyEvent			ControlTemplateChanged;
 				/// <summary>Render target changed event. This event will be raised when the render target of the control is changed.</summary>
@@ -9596,12 +9682,22 @@ Basic Construction
 				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
 				/// <returns>The created argument.</returns>
 				compositions::GuiEventArgs				GetNotifyEventArguments();
+				/// <summary>Get the associated theme name.</summary>
+				/// <returns>The theme name.</returns>
+				theme::ThemeName						GetControlThemeName();
+				/// <summary>Set the associated control theme name.</summary>
+				/// <param name="value">The theme name.</param>
+				void									SetControlThemeName(theme::ThemeName value);
 				/// <summary>Get the associated control template.</summary>
 				/// <returns>The control template.</returns>
 				ControlTemplatePropertyType				GetControlTemplate();
 				/// <summary>Set the associated control template.</summary>
 				/// <param name="value">The control template.</param>
 				void									SetControlTemplate(const ControlTemplatePropertyType& value);
+				/// <summary>Set the associated control theme name and template and the same time.</summary>
+				/// <param name="themeNameValue">The theme name.</param>
+				/// <param name="controlTemplateValue">The control template.</param>
+				void									SetControlThemeNameAndTemplate(theme::ThemeName themeNameValue, const ControlTemplatePropertyType& controlTemplateValue);
 				/// <summary>Get the associated style controller.</summary>
 				/// <returns>The associated style controller.</returns>
 				templates::GuiControlTemplate*			GetControlTemplateObject();
@@ -11191,7 +11287,7 @@ Application
 
 				/// <summary>Test is the current thread the main thread for GUI.</summary>
 				/// <returns>Returns true if the current thread is the main thread for GUI.</returns>
-				bool											IsInMainThread();
+				bool											IsInMainThread(GuiControlHost* controlHost);
 				/// <summary>Invoke a specified function asynchronously.</summary>
 				/// <param name="proc">The specified function.</param>
 				void											InvokeAsync(const Func<void()>& proc);
@@ -12280,17 +12376,14 @@ NodeItemProvider
 					/// <summary>Get the number of all sub nodes.</summary>
 					/// <returns>The number of all sub nodes.</returns>
 					virtual vint					GetChildCount()=0;
-					/// <summary>Get the parent node. This function increases the reference counter to the result node. If the sub node is not longer needed, a call to [M:vl.presentation.controls.tree.INodeProvider.Release] is required.</summary>
+					/// <summary>Get the parent node.</summary>
 					/// <returns>The parent node.</returns>
-					virtual INodeProvider*			GetParent()=0;
-					/// <summary>Get the instance of a specified sub node. This function increases the reference counter to the result node. If the sub node is not longer needed, a call to [M:vl.presentation.controls.tree.INodeProvider.Release] is required.</summary>
+					virtual Ptr<INodeProvider>		GetParent()=0;
+					/// <summary>Get the instance of a specified sub node.</summary>
 					/// <returns>The instance of a specified sub node.</returns>
 					/// <param name="index">The index of the sub node.</param>
-					virtual INodeProvider*			GetChild(vint index)=0;
-					/// <summary>Increase the reference counter. Use [M:vl.presentation.controls.tree.INodeProvider.Release] to decrease the reference counter.</summary>
-					virtual void					Increase()=0;
-					/// <summary>Decrease the reference counter. If the counter is zero, the node will be deleted. Use [M:vl.presentation.controls.tree.INodeProvider.Increase] to increase the reference counter.</summary>
-					virtual void					Release()=0;
+					virtual Ptr<INodeProvider>		GetChild(vint index)=0;
+					/// <summary>Increase the reference counter.</summary>
 				};
 				
 				/// <summary>Represents a root node provider.</summary>
@@ -12299,14 +12392,14 @@ NodeItemProvider
 				public:
 					/// <summary>Get the instance of the root node.</summary>
 					/// <returns>Returns the instance of the root node.</returns>
-					virtual INodeProvider*			GetRootNode()=0;
+					virtual Ptr<INodeProvider>		GetRootNode()=0;
 					/// <summary>Test does the provider provided an optimized algorithm to get an instance of a node by the index of all visible nodes. If this function returns true, [M:vl.presentation.controls.tree.INodeRootProvider.GetNodeByVisibleIndex] can be used.</summary>
 					/// <returns>Returns true if such an algorithm is provided.</returns>
 					virtual bool					CanGetNodeByVisibleIndex()=0;
-					/// <summary>Get a node by the index in all visible nodes. This requires [M:vl.presentation.controls.tree.INodeRootProvider.CanGetNodeByVisibleIndex] returning true. If the node is no longer needed, a call to the [M:vl.presentation.controls.tree.INodeProvider.Release] is needed, unless this is a root node so that its parent is null.</summary>
+					/// <summary>Get a node by the index in all visible nodes. This requires [M:vl.presentation.controls.tree.INodeRootProvider.CanGetNodeByVisibleIndex] returning true.</summary>
 					/// <returns>The node for the index in all visible nodes.</returns>
 					/// <param name="index">The index in all visible nodes.</param>
-					virtual INodeProvider*			GetNodeByVisibleIndex(vint index)=0;
+					virtual Ptr<INodeProvider>		GetNodeByVisibleIndex(vint index)=0;
 					/// <summary>Attach an node provider callback to this node provider.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The node provider callback.</param>
@@ -12343,13 +12436,10 @@ NodeItemProvider
 					/// <summary>The identifier of this view.</summary>
 					static const wchar_t* const		Identifier;
 
-					/// <summary>Get an instance of a node by the index in all visible nodes. If the node is no longer needed, a call to [M:vl.presentation.controls.tree.INodeItemView.ReleaseNode] is required.</summary>
+					/// <summary>Get an instance of a node by the index in all visible nodes.</summary>
 					/// <returns>The instance of a node by the index in all visible nodes.</returns>
 					/// <param name="index">The index in all visible nodes.</param>
-					virtual INodeProvider*			RequestNode(vint index)=0;
-					/// <summary>Release an instance of a node.</summary>
-					/// <param name="node">The instance of a node.</param>
-					virtual void					ReleaseNode(INodeProvider* node)=0;
+					virtual Ptr<INodeProvider>		RequestNode(vint index)=0;
 					/// <summary>Get the index in all visible nodes of a node.</summary>
 					/// <returns>The index in all visible nodes of a node.</returns>
 					/// <param name="node">The node to calculate the index.</param>
@@ -12369,7 +12459,7 @@ NodeItemProvider
 					NodeIntMap						offsetBeforeChildModifieds;
 					
 
-					INodeProvider*					GetNodeByOffset(INodeProvider* provider, vint offset);
+					Ptr<INodeProvider>				GetNodeByOffset(Ptr<INodeProvider> provider, vint offset);
 					void							OnAttached(INodeRootProvider* provider)override;
 					void							OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)override;
 					void							OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)override;
@@ -12378,8 +12468,7 @@ NodeItemProvider
 					vint							CalculateNodeVisibilityIndexInternal(INodeProvider* node);
 					vint							CalculateNodeVisibilityIndex(INodeProvider* node)override;
 					
-					INodeProvider*					RequestNode(vint index)override;
-					void							ReleaseNode(INodeProvider* node)override;
+					Ptr<INodeProvider>				RequestNode(vint index)override;
 				public:
 					/// <summary>Create an item provider using a node root provider.</summary>
 					/// <param name="_root">The node root provider.</param>
@@ -12416,6 +12505,7 @@ MemoryNodeProvider
 					{
 						friend class MemoryNodeProvider;
 					protected:
+						vint						offsetBeforeChildModified = 0;
 						MemoryNodeProvider*			ownerProvider;
 
 						void						OnBeforeChildModified(vint start, vint count, vint newCount);
@@ -12436,7 +12526,6 @@ MemoryNodeProvider
 					bool							expanding = false;
 					vint							childCount = 0;
 					vint							totalVisibleNodeCount = 1;
-					vint							offsetBeforeChildModified = 0;
 					Ptr<DescriptableObject>			data;
 					NodeCollection					children;
 
@@ -12465,10 +12554,8 @@ MemoryNodeProvider
 					vint							CalculateTotalVisibleNodes()override;
 
 					vint							GetChildCount()override;
-					INodeProvider*					GetParent()override;
-					INodeProvider*					GetChild(vint index)override;
-					void							Increase()override;
-					void							Release()override;
+					Ptr<INodeProvider>				GetParent()override;
+					Ptr<INodeProvider>				GetChild(vint index)override;
 				};
 
 				/// <summary>A general implementation for <see cref="INodeRootProvider"/>.</summary>
@@ -12487,7 +12574,7 @@ MemoryNodeProvider
 					~NodeRootProviderBase();
 					
 					bool							CanGetNodeByVisibleIndex()override;
-					INodeProvider*					GetNodeByVisibleIndex(vint index)override;
+					Ptr<INodeProvider>				GetNodeByVisibleIndex(vint index)override;
 					bool							AttachCallback(INodeProviderCallback* value)override;
 					bool							DetachCallback(INodeProviderCallback* value)override;
 					IDescriptable*					RequestView(const WString& identifier)override;
@@ -12506,7 +12593,7 @@ MemoryNodeProvider
 					MemoryNodeRootProvider();
 					~MemoryNodeRootProvider();
 
-					INodeProvider*					GetRootNode()override;
+					Ptr<INodeProvider>				GetRootNode()override;
 					/// <summary>Get the <see cref="MemoryNodeProvider"/> object from an <see cref="INodeProvider"/> object.</summary>
 					/// <returns>The corresponding <see cref="MemoryNodeProvider"/> object.</returns>
 					/// <param name="node">The node to get the memory node.</param>
@@ -14838,6 +14925,7 @@ MenuButton
 				Ptr<IEventHandler>						hostClickedHandler;
 				Ptr<IEventHandler>						hostMouseEnterHandler;
 				Ptr<GuiImageData>						image;
+				Ptr<GuiImageData>						largeImage;
 				WString									shortcutText;
 				GuiMenu*								subMenu;
 				bool									ownedSubMenu;
@@ -14865,11 +14953,19 @@ MenuButton
 
 				/// <summary>Sub menu opening changed event.</summary>
 				compositions::GuiNotifyEvent			SubMenuOpeningChanged;
+				/// <summary>Large image changed event.</summary>
+				compositions::GuiNotifyEvent			LargeImageChanged;
 				/// <summary>Image changed event.</summary>
 				compositions::GuiNotifyEvent			ImageChanged;
 				/// <summary>Shortcut text changed event.</summary>
 				compositions::GuiNotifyEvent			ShortcutTextChanged;
 
+				/// <summary>Get the large image for the menu button.</summary>
+				/// <returns>The large image for the menu button.</returns>
+				Ptr<GuiImageData>						GetLargeImage();
+				/// <summary>Set the large image for the menu button.</summary>
+				/// <param name="value">The large image for the menu button.</param>
+				void									SetLargeImage(Ptr<GuiImageData> value);
 				/// <summary>Get the image for the menu button.</summary>
 				/// <returns>The image for the menu button.</returns>
 				Ptr<GuiImageData>						GetImage();
@@ -17120,10 +17216,8 @@ GuiBindableTreeView
 					vint											CalculateTotalVisibleNodes()override;
 
 					vint											GetChildCount()override;
-					tree::INodeProvider*							GetParent()override;
-					tree::INodeProvider*							GetChild(vint index)override;
-					void											Increase()override;
-					void											Release()override;
+					Ptr<tree::INodeProvider>						GetParent()override;
+					Ptr<tree::INodeProvider>						GetChild(vint index)override;
 				};
 
 				class ItemSource
@@ -17148,7 +17242,7 @@ GuiBindableTreeView
 
 					// ===================== tree::INodeRootProvider =====================
 
-					tree::INodeProvider*							GetRootNode()override;
+					Ptr<tree::INodeProvider>						GetRootNode()override;
 					WString											GetTextValue(tree::INodeProvider* node)override;
 					description::Value								GetBindingValue(tree::INodeProvider* node)override;
 					IDescriptable*									RequestView(const WString& identifier)override;
@@ -17250,6 +17344,7 @@ namespace vl
 				};
 			protected:
 				Ptr<GuiImageData>							image;
+				Ptr<GuiImageData>							largeImage;
 				WString										text;
 				compositions::IGuiShortcutKeyItem*			shortcutKeyItem = nullptr;
 				bool										enabled = true;
@@ -17281,6 +17376,12 @@ namespace vl
 				/// <summary>Description changed event, raised when any description property is modified.</summary>
 				compositions::GuiNotifyEvent				DescriptionChanged;
 
+				/// <summary>Get the large image for this command.</summary>
+				/// <returns>The large image for this command.</returns>
+				Ptr<GuiImageData>							GetLargeImage();
+				/// <summary>Set the large image for this command.</summary>
+				/// <param name="value">The large image for this command.</param>
+				void										SetLargeImage(Ptr<GuiImageData> value);
 				/// <summary>Get the image for this command.</summary>
 				/// <returns>The image for this command.</returns>
 				Ptr<GuiImageData>							GetImage();
@@ -17343,11 +17444,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		namespace theme
-		{
-			class ITheme;
-		}
-
 		namespace controls
 		{
 
@@ -17402,6 +17498,7 @@ Toolstrip Item Collection
 				void										OnItemVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										BeforeRemove(vint index, GuiControl* const& child)override;
 				void										AfterInsert(vint index, GuiControl* const& child)override;
+				void										AfterRemove(vint index, vint count)override;
 			public:
 				GuiToolstripCollection(IToolstripUpdateLayout* _contentCallback, compositions::GuiStackComposition* _stackComposition);
 				~GuiToolstripCollection();
@@ -17542,6 +17639,7 @@ Toolstrip Group
 
 					void										BeforeRemove(vint index, GuiControl* const& child)override;
 					void										AfterInsert(vint index, GuiControl* const& child)override;
+					void										AfterRemove(vint index, vint count)override;
 				public:
 					GroupCollection(GuiToolstripGroupContainer* _container);
 					~GroupCollection();
@@ -17597,6 +17695,312 @@ Toolstrip Group
 			{
 				static const bool							CanRead = true;
 				static const bool							CanResize = false;
+			};
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\CONTROLS\TOOLSTRIPPACKAGE\GUIRIBBONCONTROLS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUIRIBBONCONTROLS
+#define VCZH_PRESENTATION_CONTROLS_GUIRIBBONCONTROLS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+
+/***********************************************************************
+Ribbon Containers
+***********************************************************************/
+
+			class GuiRibbonTabPage;
+			class GuiRibbonGroup;
+
+			class GuiRibbonTab : public GuiTab, public Description<GuiRibbonTab>
+			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonTabTemplate, GuiTab)
+			protected:
+				compositions::GuiBoundsComposition*					beforeHeaders = nullptr;
+				compositions::GuiBoundsComposition*					afterHeaders = nullptr;
+			public:
+				GuiRibbonTab(theme::ThemeName themeName);
+				~GuiRibbonTab();
+
+				compositions::GuiGraphicsComposition*				GetBeforeHeaders();
+				compositions::GuiGraphicsComposition*				GetAfterHeaders();
+			};
+
+			class GuiRibbonGroupCollection : public collections::ObservableListBase<GuiRibbonGroup*>
+			{
+			protected:
+				GuiRibbonTabPage*									tabPage = nullptr;
+
+				bool												QueryInsert(vint index, GuiRibbonGroup* const& value)override;
+				void												AfterInsert(vint index, GuiRibbonGroup* const& value)override;
+				void												AfterRemove(vint index, vint count)override;
+
+			public:
+				GuiRibbonGroupCollection(GuiRibbonTabPage* _tabPage);
+				~GuiRibbonGroupCollection();
+			};
+
+			class GuiRibbonTabPage : public GuiTabPage, public Description<GuiRibbonTabPage>
+			{
+				friend class GuiRibbonGroupCollection;
+			protected:
+				bool												highlighted = false;
+				GuiRibbonGroupCollection							groups;
+				compositions::GuiResponsiveStackComposition*		responsiveStack = nullptr;
+				compositions::GuiResponsiveContainerComposition*	responsiveContainer = nullptr;
+				compositions::GuiStackComposition*					stack = nullptr;
+
+			public:
+				GuiRibbonTabPage(theme::ThemeName themeName);
+				~GuiRibbonTabPage();
+
+				compositions::GuiNotifyEvent						HighlightedChanged;
+
+				bool												GetHighlighted();
+				void												SetHighlighted(bool value);
+
+				collections::ObservableListBase<GuiRibbonGroup*>&	GetGroups();
+			};
+
+			class GuiRibbonGroupItemCollection : public collections::ObservableListBase<GuiControl*>
+			{
+			protected:
+				GuiRibbonGroup*										group = nullptr;
+
+				bool												QueryInsert(vint index, GuiControl* const& value)override;
+				void												AfterInsert(vint index, GuiControl* const& value)override;
+				void												AfterRemove(vint index, vint count)override;
+
+			public:
+				GuiRibbonGroupItemCollection(GuiRibbonGroup* _group);
+				~GuiRibbonGroupItemCollection();
+			};
+
+			class GuiRibbonGroup : public GuiControl, public Description<GuiRibbonGroup>
+			{
+				friend class GuiRibbonGroupItemCollection;
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGroupTemplate, GuiControl)
+			protected:
+				bool												expandable = false;
+				GuiRibbonGroupItemCollection						items;
+				compositions::GuiResponsiveStackComposition*		responsiveStack = nullptr;
+				compositions::GuiStackComposition*					stack = nullptr;
+
+			public:
+				GuiRibbonGroup(theme::ThemeName themeName);
+				~GuiRibbonGroup();
+
+				compositions::GuiNotifyEvent						ExpandableChanged;
+				compositions::GuiNotifyEvent						ExpandButtonClicked;
+
+				bool												GetExpandable();
+				void												SetExpandable(bool value);
+
+				collections::ObservableListBase<GuiControl*>&		GetItems();
+			};
+
+/***********************************************************************
+Ribbon Buttons
+***********************************************************************/
+
+			enum class RibbonButtonSize
+			{
+				Large = 0,
+				Small = 1,
+				Icon = 2,
+			};
+
+			class GuiRibbonButtons;
+
+			class GuiRibbonButtonsItemCollection : public collections::ObservableListBase<GuiControl*>
+			{
+			protected:
+				GuiRibbonButtons*										buttons = nullptr;
+
+				bool													QueryInsert(vint index, GuiControl* const& value)override;
+				void													AfterInsert(vint index, GuiControl* const& value)override;
+				void													BeforeRemove(vint index, GuiControl* const& value)override;
+
+			public:
+				GuiRibbonButtonsItemCollection(GuiRibbonButtons* _buttons);
+				~GuiRibbonButtonsItemCollection();
+			};
+
+			class GuiRibbonButtons : public GuiControl, public Description<GuiRibbonButtons>
+			{
+				friend class GuiRibbonButtonsItemCollection;
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonButtonsTemplate, GuiControl)
+			protected:
+				RibbonButtonSize										minSize;
+				RibbonButtonSize										maxSize;
+				compositions::GuiResponsiveViewComposition*				responsiveView = nullptr;
+				compositions::GuiResponsiveFixedComposition*			views[3] = { nullptr,nullptr,nullptr };
+				GuiRibbonButtonsItemCollection							buttons;
+																		
+				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
+				void													SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiControl* button);
+			public:
+				GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize);
+				~GuiRibbonButtons();
+
+				collections::ObservableListBase<GuiControl*>&			GetButtons();
+			};
+
+/***********************************************************************
+Ribbon Toolstrips
+***********************************************************************/
+
+			class GuiRibbonToolstrips;
+
+			class GuiRibbonToolstripsGroupCollection : public collections::ObservableListBase<GuiToolstripGroup*>
+			{
+			protected:
+				GuiRibbonToolstrips*									toolstrips = nullptr;
+
+				bool													QueryInsert(vint index, GuiToolstripGroup* const& value)override;
+				void													AfterInsert(vint index, GuiToolstripGroup* const& value)override;
+				void													AfterRemove(vint index, vint count)override;
+
+			public:
+				GuiRibbonToolstripsGroupCollection(GuiRibbonToolstrips* _toolstrips);
+				~GuiRibbonToolstripsGroupCollection();
+			};
+
+			class GuiRibbonToolstrips : public GuiControl, public Description<GuiRibbonToolstrips>
+			{
+				friend class GuiRibbonToolstripsGroupCollection;
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonToolstripsTemplate, GuiControl)
+			protected:
+				compositions::GuiResponsiveViewComposition*				responsiveView = nullptr;
+				GuiToolstripToolBar*									toolbars[5] = { nullptr,nullptr,nullptr,nullptr,nullptr };
+				GuiToolstripGroupContainer*								longContainers[2] = { nullptr,nullptr };
+				GuiToolstripGroupContainer*								shortContainers[3] = { nullptr,nullptr,nullptr };
+				compositions::GuiResponsiveFixedComposition*			views[2] = { nullptr,nullptr };
+				GuiRibbonToolstripsGroupCollection						groups;
+
+				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
+				void													RearrangeToolstripGroups(vint viewIndex = -1);
+			public:
+				GuiRibbonToolstrips(theme::ThemeName themeName);
+				~GuiRibbonToolstrips();
+
+				collections::ObservableListBase<GuiToolstripGroup*>&	GetGroups();
+			};
+
+/***********************************************************************
+Ribbon Gallery
+***********************************************************************/
+
+			struct GalleryPos
+			{
+				vint			group;
+				vint			item;
+
+				GalleryPos()
+					:group(-1), item(-1)
+				{
+				}
+
+				GalleryPos(vint _group, vint _item)
+					:group(_group), item(_item)
+				{
+				}
+
+				vint Compare(GalleryPos value)const
+				{
+					vint result = group - value.group;
+					if (result != 0) return result;
+					return item - value.item;
+				}
+
+				bool operator==(const GalleryPos& value)const { return Compare(value) == 0; }
+				bool operator!=(const GalleryPos& value)const { return Compare(value) != 0; }
+				bool operator<(const GalleryPos& value)const { return Compare(value)<0; }
+				bool operator<=(const GalleryPos& value)const { return Compare(value) <= 0; }
+				bool operator>(const GalleryPos& value)const { return Compare(value)>0; }
+				bool operator>=(const GalleryPos& value)const { return Compare(value) >= 0; }
+			};
+
+			class GuiBindableRibbonGalleryBase : public Description<GuiBindableRibbonGalleryBase>
+			{
+				using IValueEnumerable = reflection::description::IValueEnumerable;
+			public:
+				GuiBindableRibbonGalleryBase();
+				~GuiBindableRibbonGalleryBase();
+
+				compositions::GuiNotifyEvent							GroupEnabledChanged;
+				compositions::GuiNotifyEvent							GroupTitlePropertyChanged;
+				compositions::GuiNotifyEvent							GroupChildrenPropertyChanged;
+				compositions::GuiNotifyEvent							SelectionChanged;
+
+				Ptr<IValueEnumerable>									GetItemSource();
+				void													SetItemSource(Ptr<IValueEnumerable> value);
+
+				bool													GetGroupEnabled();
+				ItemProperty<WString>									GetGroupTitleProperty();
+				void													SetGroupTitleProperty(const ItemProperty<WString>& value);
+				ItemProperty<Ptr<IValueEnumerable>>						GetGroupChildrenProperty();
+				void													SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
+
+				GalleryPos												GetSelection();
+				void													SetSelection(GalleryPos value);
+
+				description::Value										GetGroupValue(vint groupIndex);
+				description::Value										GetItemValue(GalleryPos pos);
+			};
+
+			class GuiBindableRibbonGallery : public GuiControl, public GuiBindableRibbonGalleryBase, public Description<GuiBindableRibbonGallery>
+			{
+				using ItemStyle = templates::GuiListItemTemplate;
+				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
+			public:
+				GuiBindableRibbonGallery(theme::ThemeName themeName);
+				~GuiBindableRibbonGallery();
+
+				compositions::GuiNotifyEvent							ItemTemplateChanged;
+				compositions::GuiNotifyEvent							PreviewSelectionChanged;
+
+				ItemStyleProperty										GetItemTemplate();
+				void													SetItemTemplate(const ItemStyleProperty& value);
+
+				GalleryPos												GetPreviewSelection();
+			};
+
+			class GuiBindableRibbonGalleryMenu : public GuiToolstripMenu, public GuiBindableRibbonGalleryBase, public Description<GuiBindableRibbonGallery>
+			{
+				using ItemStyle = templates::GuiListItemTemplate;
+				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
+			public:
+				GuiBindableRibbonGalleryMenu(theme::ThemeName themeName, GuiControl* owner);
+				~GuiBindableRibbonGalleryMenu();
+
+				compositions::GuiNotifyEvent							ItemTemplateChanged;
+				compositions::GuiNotifyEvent							PreviewSelectionChanged;
+
+				ItemStyleProperty										GetItemTemplate();
+				void													SetItemTemplate(const ItemStyleProperty& value);
+
+				GalleryPos												GetPreviewSelection();
 			};
 		}
 	}
@@ -17850,7 +18254,8 @@ IGuiResourceManager
 		class GuiResourceClassNameRecord : public Object, public Description<GuiResourceClassNameRecord>
 		{
 		public:
-			collections::List<WString>					classNames;
+			collections::List<WString>								classNames;
+			collections::Dictionary<WString, Ptr<GuiResourceItem>>	classResources;
 		};
 
 		class IGuiResourceManager : public IDescriptable, public Description<IGuiResourceManager>

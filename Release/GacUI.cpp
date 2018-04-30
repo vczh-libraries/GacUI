@@ -8687,6 +8687,9 @@ GuiResponsiveCompositionBase
 			{
 				SetMinSizeLimitation(LimitToElementAndChildren);
 				SetPreferredMinSize(Size(1, 1));
+
+				LevelCountChanged.SetAssociatedComposition(this);
+				CurrentLevelChanged.SetAssociatedComposition(this);
 			}
 
 			GuiResponsiveCompositionBase::~GuiResponsiveCompositionBase()
@@ -8941,6 +8944,7 @@ GuiResponsiveViewComposition
 				:sharedControls(this)
 				, views(this)
 			{
+				BeforeSwitchingView.SetAssociatedComposition(this);
 			}
 
 			GuiResponsiveViewComposition::~GuiResponsiveViewComposition()
@@ -8982,6 +8986,11 @@ GuiResponsiveViewComposition
 						RemoveChild(currentView);
 						currentView = views[index + 1];
 						currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						{
+							GuiItemEventArgs arguments(this);
+							arguments.itemIndex = views.IndexOf(currentView);
+							BeforeSwitchingView.Execute(arguments);
+						}
 						AddChild(currentView);
 					}
 				}
@@ -9003,6 +9012,11 @@ GuiResponsiveViewComposition
 						RemoveChild(currentView);
 						currentView = views[index - 1];
 						currentView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						{
+							GuiItemEventArgs arguments(this);
+							arguments.itemIndex = views.IndexOf(currentView);
+							BeforeSwitchingView.Execute(arguments);
+						}
 						AddChild(currentView);
 					}
 				}
@@ -9011,6 +9025,11 @@ GuiResponsiveViewComposition
 				auto x = CalculateLevelCount();
 				auto y = CalculateCurrentLevel();
 				return x || y;
+			}
+
+			GuiResponsiveCompositionBase* GuiResponsiveViewComposition::GetCurrentView()
+			{
+				return currentView;
 			}
 
 			collections::ObservableListBase<controls::GuiControl*>& GuiResponsiveViewComposition::GetSharedControls()
@@ -9357,6 +9376,12 @@ GuiResponsiveContainerComposition
 				Size size = GetBounds().GetSize();
 				bool testX = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Horizontal;
 				bool testY = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Vertical;
+
+				if (!tryLevelDown && !tryLevelUp)
+				{
+					tryLevelDown = responsiveTarget->GetCurrentLevel() > 0;
+					tryLevelUp = responsiveTarget->GetCurrentLevel() < responsiveTarget->GetLevelCount() - 1;
+				}
 
 				bool tried = true;
 				while (tried)
@@ -9712,9 +9737,9 @@ GuiApplication
 				return L"";
 			}
 
-			bool GuiApplication::IsInMainThread()
+			bool GuiApplication::IsInMainThread(GuiControlHost* controlHost)
 			{
-				return GetCurrentController()->AsyncService()->IsInMainThread();
+				return GetCurrentController()->AsyncService()->IsInMainThread(GetThreadContextNativeWindow(controlHost));
 			}
 
 			void GuiApplication::InvokeAsync(const Func<void()>& proc)
@@ -9729,6 +9754,7 @@ GuiApplication
 
 			bool GuiApplication::InvokeInMainThreadAndWait(GuiControlHost* controlHost, const Func<void()>& proc, vint milliseconds)
 			{
+				CHECK_ERROR(!IsInMainThread(controlHost), L"GuiApplication::InvokeInMainThreadAndWait(GuiControlHost*, const Func<void()>&, vint)#This function cannot be called in UI thread.");
 				return GetCurrentController()->AsyncService()->InvokeInMainThreadAndWait(GetThreadContextNativeWindow(controlHost), proc, milliseconds);
 			}
 
@@ -9744,7 +9770,7 @@ GuiApplication
 
 			void GuiApplication::RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc)
 			{
-				if(IsInMainThread())
+				if(IsInMainThread(controlHost))
 				{
 					return proc();
 				}
@@ -10194,6 +10220,7 @@ GuiControl
 					boundsComposition->AddChild(containerComposition);
 				}
 				{
+					ControlThemeNameChanged.SetAssociatedComposition(boundsComposition);
 					ControlTemplateChanged.SetAssociatedComposition(boundsComposition);
 					RenderTargetChanged.SetAssociatedComposition(boundsComposition);
 					VisibleChanged.SetAssociatedComposition(boundsComposition);
@@ -10244,6 +10271,16 @@ GuiControl
 				return GuiEventArgs(boundsComposition);
 			}
 
+			theme::ThemeName GuiControl::GetControlThemeName()
+			{
+				return controlThemeName;
+			}
+
+			void GuiControl::SetControlThemeName(theme::ThemeName value)
+			{
+				SetControlThemeNameAndTemplate(value, controlTemplate);
+			}
+
 			GuiControl::ControlTemplatePropertyType GuiControl::GetControlTemplate()
 			{
 				return controlTemplate;
@@ -10251,9 +10288,28 @@ GuiControl
 
 			void GuiControl::SetControlTemplate(const ControlTemplatePropertyType& value)
 			{
-				controlTemplate = value;
-				RebuildControlTemplate();
-				ControlTemplateChanged.Execute(GetNotifyEventArguments());
+				SetControlThemeNameAndTemplate(controlThemeName, value);
+			}
+
+			void GuiControl::SetControlThemeNameAndTemplate(theme::ThemeName themeNameValue, const ControlTemplatePropertyType& controlTemplateValue)
+			{
+				bool themeChanged = (controlThemeName != themeNameValue);
+				bool templateChanged = (controlTemplate || controlTemplateValue);
+				if (themeChanged || templateChanged)
+				{
+					controlThemeName = themeNameValue;
+					controlTemplate = controlTemplateValue;
+					RebuildControlTemplate();
+					
+					if (themeChanged)
+					{
+						ControlThemeNameChanged.Execute(GetNotifyEventArguments());
+					}
+					if (templateChanged)
+					{
+						ControlTemplateChanged.Execute(GetNotifyEventArguments());
+					}
+				}
 			}
 
 			templates::GuiControlTemplate* GuiControl::GetControlTemplateObject()
@@ -15430,29 +15486,28 @@ namespace vl
 NodeItemProvider
 ***********************************************************************/
 
-				INodeProvider* NodeItemProvider::GetNodeByOffset(INodeProvider* provider, vint offset)
+				Ptr<INodeProvider> NodeItemProvider::GetNodeByOffset(Ptr<INodeProvider> provider, vint offset)
 				{
-					if(offset==0) return provider;
-					INodeProvider* result=0;
-					if(provider->GetExpanding() && offset>0)
+					if (offset == 0) return provider;
+					Ptr<INodeProvider> result;
+					if (provider->GetExpanding() && offset > 0)
 					{
-						offset-=1;
-						vint count=provider->GetChildCount();
-						for(vint i=0;(!result && i<count);i++)
+						offset -= 1;
+						vint count = provider->GetChildCount();
+						for (vint i = 0; (!result && i < count); i++)
 						{
-							INodeProvider* child=provider->GetChild(i);
-							vint visibleCount=child->CalculateTotalVisibleNodes();
-							if(offset<visibleCount)
+							auto child = provider->GetChild(i);
+							vint visibleCount = child->CalculateTotalVisibleNodes();
+							if (offset < visibleCount)
 							{
-								result=GetNodeByOffset(child, offset);
+								result = GetNodeByOffset(child, offset);
 							}
 							else
 							{
-								offset-=visibleCount;
+								offset -= visibleCount;
 							}
 						}
 					}
-					ReleaseNode(provider);
 					return result;
 				}
 
@@ -15463,14 +15518,13 @@ NodeItemProvider
 				void NodeItemProvider::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)
 				{
 					vint offset = 0;
-					vint base=CalculateNodeVisibilityIndexInternal(parentNode);
-					if(base!=-2 && parentNode->GetExpanding())
+					vint base = CalculateNodeVisibilityIndexInternal(parentNode);
+					if (base != -2 && parentNode->GetExpanding())
 					{
-						for(vint i=0;i<count;i++)
+						for (vint i = 0; i < count; i++)
 						{
-							INodeProvider* child=parentNode->GetChild(start+i);
-							offset+=child->CalculateTotalVisibleNodes();
-							child->Release();
+							auto child = parentNode->GetChild(start + i);
+							offset += child->CalculateTotalVisibleNodes();
 						}
 					}
 					offsetBeforeChildModifieds.Set(parentNode, offset);
@@ -15488,41 +15542,38 @@ NodeItemProvider
 						}
 					}
 
-					vint base=CalculateNodeVisibilityIndexInternal(parentNode);
-					if(base!=-2 && parentNode->GetExpanding())
+					vint base = CalculateNodeVisibilityIndexInternal(parentNode);
+					if (base != -2 && parentNode->GetExpanding())
 					{
-						vint offset=0;
-						vint firstChildStart=-1;
-						for(vint i=0;i<newCount;i++)
+						vint offset = 0;
+						vint firstChildStart = -1;
+						for (vint i = 0; i < newCount; i++)
 						{
-							INodeProvider* child=parentNode->GetChild(start+i);
-							if(i==0)
+							auto child = parentNode->GetChild(start + i);
+							if (i == 0)
 							{
-								firstChildStart=CalculateNodeVisibilityIndexInternal(child);
+								firstChildStart = CalculateNodeVisibilityIndexInternal(child.Obj());
 							}
-							offset+=child->CalculateTotalVisibleNodes();
-							child->Release();
+							offset += child->CalculateTotalVisibleNodes();
 						}
 
-						if(firstChildStart==-1)
+						if (firstChildStart == -1)
 						{
-							vint childCount=parentNode->GetChildCount();
-							if(childCount==0)
+							vint childCount = parentNode->GetChildCount();
+							if (childCount == 0)
 							{
-								firstChildStart=base+1;
+								firstChildStart = base + 1;
 							}
-							else if(start<childCount)
+							else if (start < childCount)
 							{
-								INodeProvider* child=parentNode->GetChild(start);
-								firstChildStart=CalculateNodeVisibilityIndexInternal(child);
-								child->Release();
+								auto child = parentNode->GetChild(start);
+								firstChildStart = CalculateNodeVisibilityIndexInternal(child.Obj());
 							}
 							else
 							{
-								INodeProvider* child=parentNode->GetChild(start-1);
-								firstChildStart=CalculateNodeVisibilityIndexInternal(child);
-								firstChildStart+=child->CalculateTotalVisibleNodes();
-								child->Release();
+								auto child = parentNode->GetChild(start - 1);
+								firstChildStart = CalculateNodeVisibilityIndexInternal(child.Obj());
+								firstChildStart += child->CalculateTotalVisibleNodes();
 							}
 						}
 						InvokeOnItemModified(firstChildStart, offsetBeforeChildModified, offset);
@@ -15531,64 +15582,62 @@ NodeItemProvider
 
 				void NodeItemProvider::OnItemExpanded(INodeProvider* node)
 				{
-					vint base=CalculateNodeVisibilityIndexInternal(node);
-					if(base!=-2)
+					vint base = CalculateNodeVisibilityIndexInternal(node);
+					if (base != -2)
 					{
-						vint visibility=node->CalculateTotalVisibleNodes();
-						InvokeOnItemModified(base+1, 0, visibility-1);
+						vint visibility = node->CalculateTotalVisibleNodes();
+						InvokeOnItemModified(base + 1, 0, visibility - 1);
 					}
 				}
 
 				void NodeItemProvider::OnItemCollapsed(INodeProvider* node)
 				{
-					vint base=CalculateNodeVisibilityIndexInternal(node);
-					if(base!=-2)
+					vint base = CalculateNodeVisibilityIndexInternal(node);
+					if (base != -2)
 					{
-						vint visibility=0;
-						vint count=node->GetChildCount();
-						for(vint i=0;i<count;i++)
+						vint visibility = 0;
+						vint count = node->GetChildCount();
+						for (vint i = 0; i < count; i++)
 						{
-							INodeProvider* child=node->GetChild(i);
-							visibility+=child->CalculateTotalVisibleNodes();
-							child->Release();
+							auto child = node->GetChild(i);
+							visibility += child->CalculateTotalVisibleNodes();
 						}
-						InvokeOnItemModified(base+1, visibility, 0);
+						InvokeOnItemModified(base + 1, visibility, 0);
 					}
 				}
 
 				vint NodeItemProvider::CalculateNodeVisibilityIndexInternal(INodeProvider* node)
 				{
-					INodeProvider* parent=node->GetParent();
-					if(parent==0)
+					auto parent = node->GetParent();
+					if (!parent)
 					{
 						return -1;
 					}
-					if(!parent->GetExpanding())
+					if (!parent->GetExpanding())
 					{
 						return -2;
 					}
 
-					vint index=CalculateNodeVisibilityIndexInternal(parent);
-					if(index==-2)
+					vint index = CalculateNodeVisibilityIndexInternal(parent.Obj());
+					if (index == -2)
 					{
 						return -2;
 					}
 
-					vint count=parent->GetChildCount();
-					for(vint i=0;i<count;i++)
+					vint count = parent->GetChildCount();
+					for (vint i = 0; i < count; i++)
 					{
-						INodeProvider* child=parent->GetChild(i);
-						bool findResult=child==node;
-						if(findResult)
+						auto child = parent->GetChild(i);
+						bool findResult = child == node;
+						if (findResult)
 						{
 							index++;
 						}
 						else
 						{
-							index+=child->CalculateTotalVisibleNodes();
+							index += child->CalculateTotalVisibleNodes();
 						}
-						child->Release();
-						if(findResult)
+						if (findResult)
 						{
 							return index;
 						}
@@ -15598,11 +15647,11 @@ NodeItemProvider
 
 				vint NodeItemProvider::CalculateNodeVisibilityIndex(INodeProvider* node)
 				{
-					vint result=CalculateNodeVisibilityIndexInternal(node);
-					return result<0?-1:result;
+					vint result = CalculateNodeVisibilityIndexInternal(node);
+					return result < 0 ? -1 : result;
 				}
 
-				INodeProvider* NodeItemProvider::RequestNode(vint index)
+				Ptr<INodeProvider> NodeItemProvider::RequestNode(vint index)
 				{
 					if(root->CanGetNodeByVisibleIndex())
 					{
@@ -15611,14 +15660,6 @@ NodeItemProvider
 					else
 					{
 						return GetNodeByOffset(root->GetRootNode(), index+1);
-					}
-				}
-
-				void NodeItemProvider::ReleaseNode(INodeProvider* node)
-				{
-					if(node)
-					{
-						node->Release();
 					}
 				}
 
@@ -15647,9 +15688,7 @@ NodeItemProvider
 				{
 					if (auto node = RequestNode(itemIndex))
 					{
-						WString result = root->GetTextValue(node);
-						ReleaseNode(node);
-						return result;
+						return root->GetTextValue(node.Obj());
 					}
 					return L"";
 				}
@@ -15658,9 +15697,7 @@ NodeItemProvider
 				{
 					if (auto node = RequestNode(itemIndex))
 					{
-						Value result = root->GetBindingValue(node);
-						ReleaseNode(node);
-						return result;
+						return root->GetBindingValue(node.Obj());
 					}
 					return Value();
 				}
@@ -15683,16 +15720,15 @@ MemoryNodeProvider::NodeCollection
 
 				void MemoryNodeProvider::NodeCollection::OnBeforeChildModified(vint start, vint count, vint newCount)
 				{
-					ownerProvider->offsetBeforeChildModified=0;
-					if(ownerProvider->expanding)
+					if (ownerProvider->expanding)
 					{
-						for(vint i=0;i<count;i++)
+						for (vint i = 0; i < count; i++)
 						{
-							ownerProvider->offsetBeforeChildModified+=items[start+i]->totalVisibleNodeCount;
+							offsetBeforeChildModified += items[start + i]->totalVisibleNodeCount;
 						}
 					}
-					INodeProviderCallback* proxy=ownerProvider->GetCallbackProxyInternal();
-					if(proxy)
+					INodeProviderCallback* proxy = ownerProvider->GetCallbackProxyInternal();
+					if (proxy)
 					{
 						proxy->OnBeforeItemModified(ownerProvider, start, count, newCount);
 					}
@@ -15700,18 +15736,19 @@ MemoryNodeProvider::NodeCollection
 
 				void MemoryNodeProvider::NodeCollection::OnAfterChildModified(vint start, vint count, vint newCount)
 				{
-					ownerProvider->childCount+=(newCount-count);
-					if(ownerProvider->expanding)
+					ownerProvider->childCount += (newCount - count);
+					if (ownerProvider->expanding)
 					{
-						vint offset=0;
-						for(vint i=0;i<newCount;i++)
+						vint offset = 0;
+						for (vint i = 0; i < newCount; i++)
 						{
-							offset+=items[start+i]->totalVisibleNodeCount;
+							offset += items[start + i]->totalVisibleNodeCount;
 						}
-						ownerProvider->OnChildTotalVisibleNodesChanged(offset-ownerProvider->offsetBeforeChildModified);
+						ownerProvider->OnChildTotalVisibleNodesChanged(offset - offsetBeforeChildModified);
 					}
-					INodeProviderCallback* proxy=ownerProvider->GetCallbackProxyInternal();
-					if(proxy)
+					offsetBeforeChildModified = 0;
+					INodeProviderCallback* proxy = ownerProvider->GetCallbackProxyInternal();
+					if (proxy)
 					{
 						proxy->OnAfterItemModified(ownerProvider, start, count, newCount);
 					}
@@ -15861,12 +15898,12 @@ MemoryNodeProvider
 					return childCount;
 				}
 
-				INodeProvider* MemoryNodeProvider::GetParent()
+				Ptr<INodeProvider> MemoryNodeProvider::GetParent()
 				{
 					return parent;
 				}
 
-				INodeProvider* MemoryNodeProvider::GetChild(vint index)
+				Ptr<INodeProvider> MemoryNodeProvider::GetChild(vint index)
 				{
 					if(0<=index && index<childCount)
 					{
@@ -15874,16 +15911,8 @@ MemoryNodeProvider
 					}
 					else
 					{
-						return 0;
+						return nullptr;
 					}
-				}
-
-				void MemoryNodeProvider::Increase()
-				{
-				}
-
-				void MemoryNodeProvider::Release()
-				{
 				}
 
 /***********************************************************************
@@ -15939,9 +15968,9 @@ NodeRootProviderBase
 					return false;
 				}
 
-				INodeProvider* NodeRootProviderBase::GetNodeByVisibleIndex(vint index)
+				Ptr<INodeProvider> NodeRootProviderBase::GetNodeByVisibleIndex(vint index)
 				{
-					return 0;
+					return nullptr;
 				}
 
 				bool NodeRootProviderBase::AttachCallback(INodeProviderCallback* value)
@@ -15996,7 +16025,7 @@ MemoryNodeRootProvider
 				{
 				}
 
-				INodeProvider* MemoryNodeRootProvider::GetRootNode()
+				Ptr<INodeProvider> MemoryNodeRootProvider::GetRootNode()
 				{
 					return this;
 				}
@@ -16049,28 +16078,26 @@ GuiVirtualTreeListControl
 
 			void GuiVirtualTreeListControl::OnItemMouseEvent(compositions::GuiNodeMouseEvent& nodeEvent, compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments)
 			{
-				tree::INodeProvider* node=GetNodeItemView()->RequestNode(arguments.itemIndex);
-				if(node)
+				auto node = GetNodeItemView()->RequestNode(arguments.itemIndex);
+				if (node)
 				{
 					GuiNodeMouseEventArgs redirectArguments;
-					(GuiMouseEventArgs&)redirectArguments=arguments;
-					redirectArguments.node=node;
+					(GuiMouseEventArgs&)redirectArguments = arguments;
+					redirectArguments.node = node.Obj();
 					nodeEvent.Execute(redirectArguments);
-					(GuiMouseEventArgs&)arguments=redirectArguments;
-					GetNodeItemView()->ReleaseNode(node);
+					(GuiMouseEventArgs&)arguments = redirectArguments;
 				}
 			}
 
 			void GuiVirtualTreeListControl::OnItemNotifyEvent(compositions::GuiNodeNotifyEvent& nodeEvent, compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
 			{
-				if(auto node = GetNodeItemView()->RequestNode(arguments.itemIndex))
+				if (auto node = GetNodeItemView()->RequestNode(arguments.itemIndex))
 				{
 					GuiNodeEventArgs redirectArguments;
-					(GuiEventArgs&)redirectArguments=arguments;
-					redirectArguments.node=node;
+					(GuiEventArgs&)redirectArguments = arguments;
+					redirectArguments.node = node.Obj();
 					nodeEvent.Execute(redirectArguments);
-					(GuiEventArgs&)arguments=redirectArguments;
-					GetNodeItemView()->ReleaseNode(node);
+					(GuiEventArgs&)arguments = redirectArguments;
 				}
 			}
 
@@ -16320,7 +16347,7 @@ GuiVirtualTreeView
 					{
 						if (auto node = nodeItemView->RequestNode(itemIndex))
 						{
-							treeItemStyle->SetImage(treeViewItemView->GetNodeImage(node));
+							treeItemStyle->SetImage(treeViewItemView->GetNodeImage(node.Obj()));
 							treeItemStyle->SetExpanding(node->GetExpanding());
 							treeItemStyle->SetExpandable(node->GetChildCount() > 0);
 							{
@@ -16333,7 +16360,6 @@ GuiVirtualTreeView
 								}
 								treeItemStyle->SetLevel(level);
 							}
-							nodeItemView->ReleaseNode(node);
 						}
 					}
 				}
@@ -16380,11 +16406,10 @@ GuiTreeView
 				{
 					if (auto node = nodeItemView->RequestNode(index))
 					{
-						if (auto memoryNode = dynamic_cast<tree::MemoryNodeProvider*>(node))
+						if (auto memoryNode = node.Cast<tree::MemoryNodeProvider>())
 						{
 							result = memoryNode->GetData().Cast<tree::TreeViewItem>();
 						}
-						nodeItemView->ReleaseNode(node);
 					}
 				}
 				return result;
@@ -16535,7 +16560,6 @@ DefaultTreeItemTemplate
 									{
 										bool expanding = node->GetExpanding();
 										node->SetExpanding(!expanding);
-										view->ReleaseNode(node);
 									}
 								}
 							}
@@ -18034,6 +18058,7 @@ GuiMenuButton
 				auto host = GetSubMenuHost();
 
 				ct->SetSubMenuOpening(GetSubMenuOpening());
+				ct->SetLargeImage(largeImage);
 				ct->SetImage(image);
 				ct->SetShortcutText(shortcutText);
 				ct->SetSubMenuExisting(subMenu != nullptr);
@@ -18144,6 +18169,7 @@ GuiMenuButton
 			{
 				SetAutoSelection(false);
 				SubMenuOpeningChanged.SetAssociatedComposition(boundsComposition);
+				LargeImageChanged.SetAssociatedComposition(boundsComposition);
 				ImageChanged.SetAssociatedComposition(boundsComposition);
 				ShortcutTextChanged.SetAssociatedComposition(boundsComposition);
 			}
@@ -18153,6 +18179,21 @@ GuiMenuButton
 				if(subMenu && ownedSubMenu)
 				{
 					delete subMenu;
+				}
+			}
+
+			Ptr<GuiImageData> GuiMenuButton::GetLargeImage()
+			{
+				return largeImage;
+			}
+
+			void GuiMenuButton::SetLargeImage(Ptr<GuiImageData> value)
+			{
+				if (largeImage != value)
+				{
+					largeImage = value;
+					GetControlTemplateObject()->SetLargeImage(largeImage);
+					LargeImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
 
@@ -20439,7 +20480,6 @@ GuiBindableTreeView::ItemSourceNode
 
 			GuiBindableTreeView::ItemSourceNode::~ItemSourceNode()
 			{
-				SetItemSource(Value());
 			}
 
 			description::Value GuiBindableTreeView::ItemSourceNode::GetItemSource()
@@ -20500,27 +20540,19 @@ GuiBindableTreeView::ItemSourceNode
 				return children.Count();
 			}
 
-			tree::INodeProvider* GuiBindableTreeView::ItemSourceNode::GetParent()
+			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetParent()
 			{
 				return parent;
 			}
 
-			tree::INodeProvider* GuiBindableTreeView::ItemSourceNode::GetChild(vint index)
+			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetChild(vint index)
 			{
 				PrepareChildren();
 				if (0 <= index && index < children.Count())
 				{
-					return children[index].Obj();
+					return children[index];
 				}
-				return 0;
-			}
-
-			void GuiBindableTreeView::ItemSourceNode::Increase()
-			{
-			}
-
-			void GuiBindableTreeView::ItemSourceNode::Release()
-			{
+				return nullptr;
 			}
 
 /***********************************************************************
@@ -20560,9 +20592,9 @@ GuiBindableTreeView::ItemSource
 
 			// ===================== tree::INodeRootProvider =====================
 
-			tree::INodeProvider* GuiBindableTreeView::ItemSource::GetRootNode()
+			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSource::GetRootNode()
 			{
-				return rootNode.Obj();
+				return rootNode;
 			}
 
 			WString GuiBindableTreeView::ItemSource::GetTextValue(tree::INodeProvider* node)
@@ -20683,11 +20715,10 @@ GuiBindableTreeView
 				Value result;
 				if (auto node = nodeItemView->RequestNode(index))
 				{
-					if (auto itemSourceNode = dynamic_cast<ItemSourceNode*>(node))
+					if (auto itemSourceNode = node.Cast<ItemSourceNode>())
 					{
 						result = itemSourceNode->GetItemSource();
 					}
-					nodeItemView->ReleaseNode(node);
 				}
 				return result;
 			}
@@ -25631,6 +25662,10 @@ IGuiAnimationCoroutine
 				impl->OnWaitForGroup(groupId);
 			}
 
+			void IGuiAnimationCoroutine::ReturnAndExit(IImpl* impl)
+			{
+			}
+
 			Ptr<IGuiAnimation> IGuiAnimationCoroutine::Create(const Creator& creator)
 			{
 				return new GuiCoroutineAnimation(creator);
@@ -27085,10 +27120,11 @@ GuiDocumentViewer
 			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName)
 				:GuiScrollContainer(themeName)
 			{
-				SetExtendToFullWidth(true);
-				SetHorizontalAlwaysVisible(false);
 				SetFocusableComposition(boundsComposition);
 				InstallDocumentViewer(this, containerComposition, boundsComposition, focusableComposition);
+
+				SetExtendToFullWidth(true);
+				SetHorizontalAlwaysVisible(false);
 			}
 
 			GuiDocumentViewer::~GuiDocumentViewer()
@@ -28954,6 +28990,1386 @@ GuiGrammarColorizer
 }
 
 /***********************************************************************
+.\CONTROLS\TOOLSTRIPPACKAGE\GUIRIBBONCONTROLS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			using namespace collections;
+			using namespace compositions;
+			using namespace theme;
+			using namespace templates;
+
+/***********************************************************************
+GuiRibbonTab
+***********************************************************************/
+
+			void GuiRibbonTab::BeforeControlTemplateUninstalled_()
+			{
+				auto ct = GetControlTemplateObject();
+				if (auto bhc = ct->GetBeforeHeadersContainer())
+				{
+					bhc->RemoveChild(beforeHeaders);
+				}
+				if (auto ahc = ct->GetAfterHeadersContainer())
+				{
+					ahc->RemoveChild(afterHeaders);
+				}
+			}
+
+			void GuiRibbonTab::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				if (auto bhc = ct->GetBeforeHeadersContainer())
+				{
+					bhc->AddChild(beforeHeaders);
+				}
+				if (auto ahc = ct->GetAfterHeadersContainer())
+				{
+					ahc->AddChild(afterHeaders);
+				}
+			}
+
+			GuiRibbonTab::GuiRibbonTab(theme::ThemeName themeName)
+				:GuiTab(themeName)
+			{
+				beforeHeaders = new GuiBoundsComposition();
+				beforeHeaders->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				beforeHeaders->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+				afterHeaders = new GuiBoundsComposition();
+				afterHeaders->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				afterHeaders->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			}
+
+			GuiRibbonTab::~GuiRibbonTab()
+			{
+				if (!beforeHeaders->GetParent())
+				{
+					SafeDeleteComposition(beforeHeaders);
+				}
+				if (!afterHeaders->GetParent())
+				{
+					SafeDeleteComposition(afterHeaders);
+				}
+			}
+
+			compositions::GuiGraphicsComposition* GuiRibbonTab::GetBeforeHeaders()
+			{
+				return beforeHeaders;
+			}
+
+			compositions::GuiGraphicsComposition* GuiRibbonTab::GetAfterHeaders()
+			{
+				return afterHeaders;
+			}
+
+/***********************************************************************
+GuiRibbonGroupCollection
+***********************************************************************/
+
+			bool GuiRibbonGroupCollection::QueryInsert(vint index, GuiRibbonGroup* const& value)
+			{
+				return !value->GetBoundsComposition()->GetParent();
+			}
+
+			void GuiRibbonGroupCollection::AfterInsert(vint index, GuiRibbonGroup* const& value)
+			{
+				value->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+
+				auto item = new GuiStackItemComposition();
+				item->AddChild(value->GetBoundsComposition());
+
+				tabPage->stack->InsertStackItem(index, item);
+			}
+
+			void GuiRibbonGroupCollection::AfterRemove(vint index, vint count)
+			{
+				for (vint i = 0; i < count; i++)
+				{
+					auto item = tabPage->stack->GetStackItems()[index];
+					tabPage->stack->RemoveChild(item);
+
+					item->RemoveChild(item->Children()[0]);
+					delete item;
+				}
+			}
+
+			GuiRibbonGroupCollection::GuiRibbonGroupCollection(GuiRibbonTabPage* _tabPage)
+				:tabPage(_tabPage)
+			{
+			}
+
+			GuiRibbonGroupCollection::~GuiRibbonGroupCollection()
+			{
+			}
+
+/***********************************************************************
+GuiRibbonTabPage
+***********************************************************************/
+
+			GuiRibbonTabPage::GuiRibbonTabPage(theme::ThemeName themeName)
+				:GuiTabPage(themeName)
+				, groups(this)
+			{
+				stack = new GuiStackComposition();
+				stack->SetDirection(GuiStackComposition::Horizontal);
+				stack->SetAlignmentToParent(Margin(2, 2, 2, 2));
+				stack->SetPadding(2);
+				stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+				responsiveStack = new GuiResponsiveStackComposition();
+				responsiveStack->SetDirection(ResponsiveDirection::Horizontal);
+				responsiveStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				responsiveStack->AddChild(stack);
+
+				responsiveContainer = new GuiResponsiveContainerComposition();
+				responsiveContainer->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				responsiveContainer->SetResponsiveTarget(responsiveStack);
+
+				containerComposition->AddChild(responsiveContainer);
+
+				HighlightedChanged.SetAssociatedComposition(boundsComposition);
+			}
+
+			GuiRibbonTabPage::~GuiRibbonTabPage()
+			{
+			}
+
+			bool GuiRibbonTabPage::GetHighlighted()
+			{
+				return highlighted;
+			}
+
+			void GuiRibbonTabPage::SetHighlighted(bool value)
+			{
+				if (highlighted != value)
+				{
+					highlighted = value;
+					HighlightedChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			collections::ObservableListBase<GuiRibbonGroup*>& GuiRibbonTabPage::GetGroups()
+			{
+				return groups;
+			}
+
+/***********************************************************************
+GuiRibbonGroupItemCollection
+***********************************************************************/
+
+			bool GuiRibbonGroupItemCollection::QueryInsert(vint index, GuiControl* const& value)
+			{
+				return !value->GetBoundsComposition()->GetParent();
+			}
+
+			void GuiRibbonGroupItemCollection::AfterInsert(vint index, GuiControl* const& value)
+			{
+				value->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+
+				auto item = new GuiStackItemComposition();
+				item->AddChild(value->GetBoundsComposition());
+
+				group->stack->InsertStackItem(index, item);
+			}
+
+			void GuiRibbonGroupItemCollection::AfterRemove(vint index, vint count)
+			{
+				for (vint i = 0; i < count; i++)
+				{
+					auto item = group->stack->GetStackItems()[index];
+					group->stack->RemoveChild(item);
+
+					item->RemoveChild(item->Children()[0]);
+					delete item;
+				}
+			}
+
+			GuiRibbonGroupItemCollection::GuiRibbonGroupItemCollection(GuiRibbonGroup* _group)
+				:group(_group)
+			{
+			}
+
+			GuiRibbonGroupItemCollection::~GuiRibbonGroupItemCollection()
+			{
+			}
+
+/***********************************************************************
+GuiRibbonGroup
+***********************************************************************/
+
+			void GuiRibbonGroup::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiRibbonGroup::AfterControlTemplateInstalled_(bool initialize)
+			{
+				GetControlTemplateObject()->SetExpandable(expandable);
+			}
+
+			GuiRibbonGroup::GuiRibbonGroup(theme::ThemeName themeName)
+				:GuiControl(themeName)
+				, items(this)
+			{
+				stack = new GuiStackComposition();
+				stack->SetDirection(GuiStackComposition::Horizontal);
+				stack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stack->SetPadding(2);
+				stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+				responsiveStack = new GuiResponsiveStackComposition();
+				responsiveStack->SetDirection(ResponsiveDirection::Horizontal);
+				responsiveStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				responsiveStack->AddChild(stack);
+
+				containerComposition->AddChild(responsiveStack);
+
+				ExpandableChanged.SetAssociatedComposition(boundsComposition);
+				ExpandButtonClicked.SetAssociatedComposition(boundsComposition);
+			}
+
+			GuiRibbonGroup::~GuiRibbonGroup()
+			{
+			}
+
+			bool GuiRibbonGroup::GetExpandable()
+			{
+				return expandable;
+			}
+
+			void GuiRibbonGroup::SetExpandable(bool value)
+			{
+				if (expandable != value)
+				{
+					expandable = value;
+					GetControlTemplateObject()->SetExpandable(expandable);
+					ExpandableChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiRibbonGroup::GetItems()
+			{
+				return items;
+			}
+
+/***********************************************************************
+GuiRibbonButtonsItemCollection
+***********************************************************************/
+
+			bool GuiRibbonButtonsItemCollection::QueryInsert(vint index, GuiControl* const& value)
+			{
+				return !value->GetBoundsComposition()->GetParent();
+			}
+
+			void GuiRibbonButtonsItemCollection::AfterInsert(vint index, GuiControl* const& value)
+			{
+				buttons->responsiveView->GetSharedControls().Add(value);
+				buttons->SetButtonThemeName(buttons->responsiveView->GetCurrentView(), value);
+
+				for (vint i = 0; i < sizeof(buttons->views) / sizeof(*buttons->views); i++)
+				{
+					if (auto view = buttons->views[i])
+					{
+						auto stack = dynamic_cast<GuiStackComposition*>(view->Children()[0]);
+
+						auto shared = new GuiResponsiveSharedComposition();
+						shared->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						shared->SetShared(value);
+
+						auto item = new GuiStackItemComposition();
+						item->AddChild(shared);
+
+						stack->InsertStackItem(index, item);
+					}
+				}
+			}
+
+			void GuiRibbonButtonsItemCollection::BeforeRemove(vint index, GuiControl* const& value)
+			{
+				CHECK_FAIL(L"GuiRibbonButtonsItemCollection::BeforeRemove(vint, GuiControl* const&)#Controls are not allowed to be removed from GuiRibbonButtons.");
+			}
+
+			GuiRibbonButtonsItemCollection::GuiRibbonButtonsItemCollection(GuiRibbonButtons* _buttons)
+				:buttons(_buttons)
+			{
+			}
+
+			GuiRibbonButtonsItemCollection::~GuiRibbonButtonsItemCollection()
+			{
+			}
+
+/***********************************************************************
+GuiRibbonButtons
+***********************************************************************/
+
+			void GuiRibbonButtons::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiRibbonButtons::AfterControlTemplateInstalled_(bool initialize)
+			{
+				FOREACH(GuiControl*, button, buttons)
+				{
+					SetButtonThemeName(responsiveView->GetCurrentView(), button);
+				}
+			}
+
+			void GuiRibbonButtons::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
+			{
+				FOREACH(GuiControl*, button, buttons)
+				{
+					SetButtonThemeName(responsiveView->GetViews()[arguments.itemIndex], button);
+				}
+			}
+
+			void GuiRibbonButtons::SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiControl* button)
+			{
+				if (fixed && button)
+				{
+					auto themeName = button->GetControlThemeName();
+					vint type = -1;
+					switch (themeName)
+					{
+					case ThemeName::RibbonLargeButton:
+					case ThemeName::RibbonSmallButton:
+					case ThemeName::ToolstripButton:
+						type = 0;
+						break;
+					case ThemeName::RibbonLargeDropdownButton:
+					case ThemeName::RibbonSmallDropdownButton:
+					case ThemeName::ToolstripDropdownButton:
+						type = 1;
+						break;
+					case ThemeName::RibbonLargeSplitButton:
+					case ThemeName::RibbonSmallSplitButton:
+					case ThemeName::ToolstripSplitButton:
+						type = 2;
+						break;
+					}
+
+					if (type != -1)
+					{
+						ThemeName themeName = ThemeName::Unknown;
+						TemplateProperty<GuiToolstripButtonTemplate> controlTemplate;
+
+						if (fixed == views[(vint)RibbonButtonSize::Large])
+						{
+							switch (type)
+							{
+							case 0: themeName = ThemeName::RibbonLargeButton; break;
+							case 1: themeName = ThemeName::RibbonLargeDropdownButton; break;
+							case 2: themeName = ThemeName::RibbonLargeSplitButton; break;
+							}
+						}
+						else if (fixed == views[(vint)RibbonButtonSize::Small])
+						{
+							switch (type)
+							{
+							case 0: themeName = ThemeName::RibbonSmallButton; break;
+							case 1: themeName = ThemeName::RibbonSmallDropdownButton; break;
+							case 2: themeName = ThemeName::RibbonSmallSplitButton; break;
+							}
+						}
+						else if (fixed == views[(vint)RibbonButtonSize::Icon])
+						{
+							switch (type)
+							{
+							case 0: themeName = ThemeName::ToolstripButton; break;
+							case 1: themeName = ThemeName::ToolstripDropdownButton; break;
+							case 2: themeName = ThemeName::ToolstripSplitButton; break;
+							}
+						}
+
+						if (auto ct = GetControlTemplateObject())
+						{
+							if (fixed == views[(vint)RibbonButtonSize::Large])
+							{
+								switch (type)
+								{
+								case 0: controlTemplate = ct->GetLargeButtonTemplate(); break;
+								case 1: controlTemplate = ct->GetLargeDropdownButtonTemplate(); break;
+								case 2: controlTemplate = ct->GetLargeSplitButtonTemplate(); break;
+								}
+							}
+							else if (fixed == views[(vint)RibbonButtonSize::Small])
+							{
+								switch (type)
+								{
+								case 0: controlTemplate = ct->GetSmallButtonTemplate(); break;
+								case 1: controlTemplate = ct->GetSmallDropdownButtonTemplate(); break;
+								case 2: controlTemplate = ct->GetSmallSplitButtonTemplate(); break;
+								}
+							}
+							else if (fixed == views[(vint)RibbonButtonSize::Icon])
+							{
+								switch (type)
+								{
+								case 0: controlTemplate = ct->GetIconButtonTemplate(); break;
+								case 1: controlTemplate = ct->GetIconDropdownButtonTemplate(); break;
+								case 2: controlTemplate = ct->GetIconSplitButtonTemplate(); break;
+								}
+							}
+						}
+
+						button->SetControlThemeNameAndTemplate(themeName, controlTemplate);
+					}
+				}
+			}
+
+			GuiRibbonButtons::GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize)
+				:GuiControl(themeName)
+				, maxSize(_maxSize)
+				, minSize(_minSize)
+				, buttons(this)
+			{
+				responsiveView = new GuiResponsiveViewComposition();
+				responsiveView->SetDirection(ResponsiveDirection::Horizontal);
+				responsiveView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonButtons::OnBeforeSwitchingView);
+
+				auto installButton = [&](GuiTableComposition* table, vint row, vint column, GuiControl* buttonContainer)
+				{
+					auto shared = new GuiResponsiveSharedComposition();
+					shared->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					shared->SetShared(buttonContainer);
+
+					auto cell = new GuiCellComposition();
+					cell->SetSite(row, column, 1, 1);
+					cell->AddChild(shared);
+
+					table->AddChild(cell);
+				};
+
+				for (vint i = 0; i < sizeof(views) / sizeof(*views); i++)
+				{
+					if ((vint)maxSize <= i && i <= (vint)minSize)
+					{
+						auto stack = new GuiStackComposition();
+						stack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+						stack->SetDirection(i == 0 ? GuiStackComposition::Horizontal : GuiStackComposition::Vertical);
+
+						views[i] = new GuiResponsiveFixedComposition();
+						views[i]->AddChild(stack);
+						responsiveView->GetViews().Add(views[i]);
+					}
+				}
+
+				containerComposition->AddChild(responsiveView);
+			}
+
+			GuiRibbonButtons::~GuiRibbonButtons()
+			{
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiRibbonButtons::GetButtons()
+			{
+				return buttons;
+			}
+
+/***********************************************************************
+GuiRibbonToolstripsGroupCollection
+***********************************************************************/
+
+			bool GuiRibbonToolstripsGroupCollection::QueryInsert(vint index, GuiToolstripGroup* const& value)
+			{
+				return !value->GetBoundsComposition()->GetParent();
+			}
+
+			void GuiRibbonToolstripsGroupCollection::AfterInsert(vint index, GuiToolstripGroup* const& value)
+			{
+				toolstrips->RearrangeToolstripGroups();
+			}
+
+			void GuiRibbonToolstripsGroupCollection::AfterRemove(vint index, vint count)
+			{
+				toolstrips->RearrangeToolstripGroups();
+			}
+
+			GuiRibbonToolstripsGroupCollection::GuiRibbonToolstripsGroupCollection(GuiRibbonToolstrips* _toolstrips)
+				:toolstrips(_toolstrips)
+			{
+			}
+
+			GuiRibbonToolstripsGroupCollection::~GuiRibbonToolstripsGroupCollection()
+			{
+			}
+
+/***********************************************************************
+GuiRibbonToolstrips
+***********************************************************************/
+
+#define ARRLEN(X) sizeof(X) / sizeof(*X)
+
+			void GuiRibbonToolstrips::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiRibbonToolstrips::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				for (vint i = 0; i < ARRLEN(toolbars); i++)
+				{
+					toolbars[i]->SetControlTemplate(ct->GetToolbarTemplate());
+				}
+			}
+
+			void GuiRibbonToolstrips::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
+			{
+				RearrangeToolstripGroups(arguments.itemIndex);
+			}
+
+			void GuiRibbonToolstrips::RearrangeToolstripGroups(vint viewIndex)
+			{
+				static_assert(ARRLEN(longContainers) == 2, "");
+				static_assert(ARRLEN(shortContainers) == 3, "");
+
+				if (viewIndex == -1)
+				{
+					viewIndex = responsiveView->GetViews().IndexOf(responsiveView->GetCurrentView());
+				}
+
+				for (vint i = 0; i < ARRLEN(longContainers); i++)
+				{
+					longContainers[i]->GetToolstripItems().Clear();
+				}
+				for (vint i = 0; i < ARRLEN(shortContainers); i++)
+				{
+					shortContainers[i]->GetToolstripItems().Clear();
+				}
+
+				vint count = viewIndex == 0 ? 2 : 3;
+
+				if (groups.Count() <= count)
+				{
+					auto containers = viewIndex == 0 ? longContainers : shortContainers;
+					for (vint i = 0; i < groups.Count(); i++)
+					{
+						containers[i]->GetToolstripItems().Add(groups[i]);
+					}
+				}
+				else if (count == 3)
+				{
+#define DELTA(POSTFIX) (abs(count1##POSTFIX - count2##POSTFIX) + abs(count2##POSTFIX - count3##POSTFIX) + abs(count3##POSTFIX - count1##POSTFIX))
+#define DEFINE_COUNT(POSTFIX, OFFSET_FIRST, OFFSET_LAST) \
+					vint count1##POSTFIX = count1_o + (OFFSET_FIRST); \
+					vint count2##POSTFIX = count2_o - (OFFSET_FIRST) - (OFFSET_LAST); \
+					vint count3##POSTFIX = count3_o + (OFFSET_LAST)
+#define MIN(a, b) (a)<(b)?(a):(b)
+
+					vint firstGroupCount = 0;
+					vint lastGroupCount = 0;
+
+					vint count1_o = 0;
+					vint count2_o = From(groups)
+						.Select([](GuiToolstripGroup* group) {return group->GetToolstripItems().Count(); })
+						.Aggregate([](vint a, vint b) {return a + b; });
+					vint count3_o = 0;
+					vint delta_o = DELTA(_o);
+
+					while (firstGroupCount + lastGroupCount < groups.Count())
+					{
+						auto newFirstGroup = groups[firstGroupCount];
+						auto newLastGroup = groups[groups.Count() - lastGroupCount - 1];
+
+						DEFINE_COUNT(_f, newFirstGroup->GetToolstripItems().Count(), 0);
+						vint delta_f = DELTA(_f);
+
+						DEFINE_COUNT(_l, 0, newLastGroup->GetToolstripItems().Count());
+						vint delta_l = DELTA(_l);
+
+						vint delta = MIN(delta_o, MIN(delta_f, delta_l));
+						if (delta == delta_f)
+						{
+							firstGroupCount++;
+							count1_o = count1_f;
+							count2_o = count2_f;
+							count3_o = count3_f;
+							delta_o = delta_f;
+						}
+						else if (delta == delta_l)
+						{
+							lastGroupCount++;
+							count1_o = count1_l;
+							count2_o = count2_l;
+							count3_o = count3_l;
+							delta_o = delta_l;
+						}
+						else
+						{
+							break;
+						}
+					}
+
+					vint minMiddle = firstGroupCount;
+					vint maxMiddle = groups.Count() - lastGroupCount - 1;
+					for (vint j = 0; j < groups.Count(); j++)
+					{
+						shortContainers[
+							j < minMiddle ? 0 :
+							j>maxMiddle ? 2 :
+							1
+						]->GetToolstripItems().Add(groups[j]);
+					}
+
+#undef MIN
+#undef DEFINE_COUNT
+#undef DELTA
+				}
+				else if (count == 2)
+				{
+					vint firstGroupCount = groups.Count();
+					{
+						vint count1 = 0;
+						vint count2 = From(groups)
+							.Select([](GuiToolstripGroup* group) {return group->GetToolstripItems().Count(); })
+							.Aggregate([](vint a, vint b) {return a + b; });
+						vint delta = abs(count2 - count1);
+
+						for (vint i = 0; i < groups.Count(); i++)
+						{
+							auto groupCount = groups[i]->GetToolstripItems().Count();
+							vint count1_2 = count1 + groupCount;
+							vint count2_2 = count2 - groupCount;
+							vint delta_2 = abs(count2_2 - count1_2);
+
+							if (delta < delta_2)
+							{
+								firstGroupCount = i;
+								break;
+							}
+
+							count1 = count1_2;
+							count2 = count2_2;
+							delta = delta_2;
+						}
+					}
+
+					for (vint j = 0; j < groups.Count(); j++)
+					{
+						longContainers[j < firstGroupCount ? 0 : 1]->GetToolstripItems().Add(groups[j]);
+					}
+				}
+			}
+
+			GuiRibbonToolstrips::GuiRibbonToolstrips(theme::ThemeName themeName)
+				:GuiControl(themeName)
+				, groups(this)
+			{
+				responsiveView = new GuiResponsiveViewComposition();
+				responsiveView->SetDirection(ResponsiveDirection::Horizontal);
+				responsiveView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonToolstrips::OnBeforeSwitchingView);
+
+				vint toolbarIndex = 0;
+				for (vint i = 0; i < sizeof(views) / sizeof(*views); i++)
+				{
+					auto containers = i == 0 ? longContainers : shortContainers;
+					vint count = i == 0 ? 2 : 3;
+
+					auto table = new GuiTableComposition();
+					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					
+					table->SetRowsAndColumns(count * 2 + 1, 1);
+					table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+					table->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
+					for (vint j = 0; j < count; j++)
+					{
+						table->SetRowOption(j * 2 + 1, GuiCellOption::MinSizeOption());
+						table->SetRowOption(j * 2 + 2, GuiCellOption::PercentageOption(1.0));
+					}
+
+					for (vint j = 0; j < count; j++)
+					{
+						auto toolbar = new GuiToolstripToolBar(theme::ThemeName::ToolstripToolBar);
+						toolbar->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						toolbars[toolbarIndex++] = toolbar;
+
+						auto cell = new GuiCellComposition();
+						cell->SetSite(j * 2 + 1, 0, 1, 1);
+						cell->AddChild(toolbar->GetBoundsComposition());
+						table->AddChild(cell);
+
+						auto container = new GuiToolstripGroupContainer(theme::ThemeName::CustomControl);
+						toolbar->GetToolstripItems().Add(container);
+						containers[j] = container;
+					}
+
+					views[i] = new GuiResponsiveFixedComposition();
+					views[i]->AddChild(table);
+					responsiveView->GetViews().Add(views[i]);
+				}
+
+				containerComposition->AddChild(responsiveView);
+			}
+
+			GuiRibbonToolstrips::~GuiRibbonToolstrips()
+			{
+			}
+
+			collections::ObservableListBase<GuiToolstripGroup*>& GuiRibbonToolstrips::GetGroups()
+			{
+				return groups;
+			}
+
+#undef ARRLEN
+
+/***********************************************************************
+GuiBindableRibbonGalleryBase
+***********************************************************************/
+
+			GuiBindableRibbonGalleryBase::GuiBindableRibbonGalleryBase()
+			{
+			}
+
+			GuiBindableRibbonGalleryBase::~GuiBindableRibbonGalleryBase()
+			{
+			}
+
+/***********************************************************************
+GuiBindableRibbonGallery
+***********************************************************************/
+
+			GuiBindableRibbonGallery::GuiBindableRibbonGallery(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
+			}
+
+			GuiBindableRibbonGallery::~GuiBindableRibbonGallery()
+			{
+			}
+
+/***********************************************************************
+GuiBindableRibbonGalleryMenu
+***********************************************************************/
+
+			GuiBindableRibbonGalleryMenu::GuiBindableRibbonGalleryMenu(theme::ThemeName themeName, GuiControl* owner)
+				:GuiToolstripMenu(themeName, owner)
+			{
+			}
+
+			GuiBindableRibbonGalleryMenu::~GuiBindableRibbonGalleryMenu()
+			{
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\TOOLSTRIPPACKAGE\GUITOOLSTRIPMENU.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			using namespace collections;
+			using namespace compositions;
+
+/***********************************************************************
+GuiToolstripCollectionBase
+***********************************************************************/
+
+			const wchar_t* const IToolstripUpdateLayoutInvoker::Identifier = L"vl::presentation::controls::IToolstripUpdateLayoutInvoker";
+
+			void GuiToolstripCollectionBase::InvokeUpdateLayout()
+			{
+				if(contentCallback)
+				{
+					contentCallback->UpdateLayout();
+				}
+			}
+
+			bool GuiToolstripCollectionBase::QueryInsert(vint index, GuiControl* const& child)
+			{
+				return !items.Contains(child) && !child->GetBoundsComposition()->GetParent();
+			}
+
+			void GuiToolstripCollectionBase::BeforeRemove(vint index, GuiControl* const& child)
+			{
+				if (auto invoker = child->QueryTypedService<IToolstripUpdateLayoutInvoker>())
+				{
+					invoker->SetCallback(nullptr);
+				}
+				InvokeUpdateLayout();
+			}
+
+			void GuiToolstripCollectionBase::AfterInsert(vint index, GuiControl* const& child)
+			{
+				if (auto invoker = child->QueryTypedService<IToolstripUpdateLayoutInvoker>())
+				{
+					invoker->SetCallback(contentCallback);
+				}
+				InvokeUpdateLayout();
+			}
+
+			void GuiToolstripCollectionBase::AfterRemove(vint index, vint count)
+			{
+				InvokeUpdateLayout();
+			}
+
+			GuiToolstripCollectionBase::GuiToolstripCollectionBase(IToolstripUpdateLayout* _contentCallback)
+				:contentCallback(_contentCallback)
+			{
+			}
+
+			GuiToolstripCollectionBase::~GuiToolstripCollectionBase()
+			{
+			}
+
+/***********************************************************************
+GuiToolstripCollection
+***********************************************************************/
+
+			void GuiToolstripCollection::UpdateItemVisibility(vint index, GuiControl* child)
+			{
+				auto stackItem = stackComposition->GetStackItems()[index];
+				if (child->GetVisible())
+				{
+					stackItem->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					child->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				}
+				else
+				{
+					stackItem->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
+					child->GetBoundsComposition()->SetAlignmentToParent(Margin(-1, -1, -1, -1));
+				}
+			}
+
+			void GuiToolstripCollection::OnItemVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				auto child = sender->GetRelatedControl();
+				vint index = IndexOf(child);
+				UpdateItemVisibility(index, child);
+				InvokeUpdateLayout();
+			}
+
+			void GuiToolstripCollection::BeforeRemove(vint index, GuiControl* const& child)
+			{
+				GuiStackItemComposition* stackItem = stackComposition->GetStackItems().Get(index);
+
+				auto eventHandler = eventHandlers[index];
+				child->VisibleChanged.Detach(eventHandler);
+				eventHandlers.RemoveAt(index);
+
+				GuiToolstripCollectionBase::BeforeRemove(index, child);
+			}
+
+			void GuiToolstripCollection::AfterInsert(vint index, GuiControl* const& child)
+			{
+				{
+					GuiStackItemComposition* stackItem = new GuiStackItemComposition;
+					stackItem->AddChild(child->GetBoundsComposition());
+					stackComposition->InsertStackItem(index, stackItem);
+				}
+				{
+					auto eventHandler = child->VisibleChanged.AttachMethod(this, &GuiToolstripCollection::OnItemVisibleChanged);
+					eventHandlers.Insert(index, eventHandler);
+				}
+				UpdateItemVisibility(index, child);
+				GuiToolstripCollectionBase::AfterInsert(index, child);
+			}
+
+			void GuiToolstripCollection::AfterRemove(vint index, vint count)
+			{
+				for (vint i = 0; i < count; i++)
+				{
+					auto stackItem = stackComposition->GetStackItems().Get(index);
+					stackComposition->RemoveChild(stackItem);
+					SafeDeleteComposition(stackItem);
+				}
+				GuiToolstripCollectionBase::AfterRemove(index, count);
+			}
+
+			GuiToolstripCollection::GuiToolstripCollection(IToolstripUpdateLayout* _contentCallback, compositions::GuiStackComposition* _stackComposition)
+				:GuiToolstripCollectionBase(_contentCallback)
+				,stackComposition(_stackComposition)
+			{
+			}
+
+			GuiToolstripCollection::~GuiToolstripCollection()
+			{
+			}
+
+/***********************************************************************
+GuiToolstripMenu
+***********************************************************************/
+
+			void GuiToolstripMenu::UpdateLayout()
+			{
+				sharedSizeRootComposition->ForceCalculateSizeImmediately();
+			}
+
+			GuiToolstripMenu::GuiToolstripMenu(theme::ThemeName themeName, GuiControl* _owner)
+				:GuiMenu(themeName, _owner)
+			{
+				sharedSizeRootComposition = new GuiSharedSizeRootComposition();
+				sharedSizeRootComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				sharedSizeRootComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->AddChild(sharedSizeRootComposition);
+
+				stackComposition=new GuiStackComposition;
+				stackComposition->SetDirection(GuiStackComposition::Vertical);
+				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				sharedSizeRootComposition->AddChild(stackComposition);
+				
+				toolstripItems = new GuiToolstripCollection(this, stackComposition);
+			}
+
+			GuiToolstripMenu::~GuiToolstripMenu()
+			{
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiToolstripMenu::GetToolstripItems()
+			{
+				return *toolstripItems.Obj();
+			}
+
+/***********************************************************************
+GuiToolstripMenuBar
+***********************************************************************/
+			
+			GuiToolstripMenuBar::GuiToolstripMenuBar(theme::ThemeName themeName)
+				:GuiMenuBar(themeName)
+			{
+				stackComposition=new GuiStackComposition;
+				stackComposition->SetDirection(GuiStackComposition::Horizontal);
+				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->AddChild(stackComposition);
+
+				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
+			}
+
+			GuiToolstripMenuBar::~GuiToolstripMenuBar()
+			{
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiToolstripMenuBar::GetToolstripItems()
+			{
+				return *toolstripItems.Obj();
+			}
+
+/***********************************************************************
+GuiToolstripToolBar
+***********************************************************************/
+				
+			GuiToolstripToolBar::GuiToolstripToolBar(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
+				stackComposition=new GuiStackComposition;
+				stackComposition->SetDirection(GuiStackComposition::Horizontal);
+				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->AddChild(stackComposition);
+
+				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
+			}
+
+			GuiToolstripToolBar::~GuiToolstripToolBar()
+			{
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiToolstripToolBar::GetToolstripItems()
+			{
+				return *toolstripItems.Obj();
+			}
+
+/***********************************************************************
+GuiToolstripButton
+***********************************************************************/
+
+			void GuiToolstripButton::SetCallback(IToolstripUpdateLayout* _callback)
+			{
+				callback = _callback;
+			}
+
+			void GuiToolstripButton::UpdateCommandContent()
+			{
+				if(command)
+				{
+					SetLargeImage(command->GetLargeImage());
+					SetImage(command->GetImage());
+					SetText(command->GetText());
+					SetEnabled(command->GetEnabled());
+					SetSelected(command->GetSelected());
+					if(command->GetShortcut())
+					{
+						SetShortcutText(command->GetShortcut()->GetName());
+					}
+					else
+					{
+						SetShortcutText(L"");
+					}
+				}
+				else
+				{
+					SetLargeImage(nullptr);
+					SetImage(nullptr);
+					SetText(L"");
+					SetEnabled(true);
+					SetSelected(false);
+					SetShortcutText(L"");
+				}
+			}
+
+			void GuiToolstripButton::OnLayoutAwaredPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (callback)
+				{
+					callback->UpdateLayout();
+				}
+			}
+
+			void GuiToolstripButton::OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if(command)
+				{
+					command->Executed.ExecuteWithNewSender(arguments, sender);
+				}
+			}
+
+			void GuiToolstripButton::OnCommandDescriptionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				UpdateCommandContent();
+			}
+
+			GuiToolstripButton::GuiToolstripButton(theme::ThemeName themeName)
+				:GuiMenuButton(themeName)
+				,command(0)
+			{
+				Clicked.AttachMethod(this, &GuiToolstripButton::OnClicked);
+				TextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
+				ShortcutTextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
+			}
+
+			GuiToolstripButton::~GuiToolstripButton()
+			{
+			}
+
+			GuiToolstripCommand* GuiToolstripButton::GetCommand()
+			{
+				return command;
+			}
+
+			void GuiToolstripButton::SetCommand(GuiToolstripCommand* value)
+			{
+				if(command!=value)
+				{
+					if(command)
+					{
+						command->DescriptionChanged.Detach(descriptionChangedHandler);
+					}
+					command=0;
+					descriptionChangedHandler=0;
+					if(value)
+					{
+						command=value;
+						descriptionChangedHandler=command->DescriptionChanged.AttachMethod(this, &GuiToolstripButton::OnCommandDescriptionChanged);
+					}
+					UpdateCommandContent();
+				}
+			}
+
+			GuiToolstripMenu* GuiToolstripButton::GetToolstripSubMenu()
+			{
+				return dynamic_cast<GuiToolstripMenu*>(GetSubMenu());
+			}
+
+			GuiToolstripMenu* GuiToolstripButton::EnsureToolstripSubMenu()
+			{
+				if (!GetSubMenu())
+				{
+					CreateToolstripSubMenu({});
+				}
+				return dynamic_cast<GuiToolstripMenu*>(GetSubMenu());
+			}
+
+			void GuiToolstripButton::CreateToolstripSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate)
+			{
+				if (!subMenu)
+				{
+					auto newSubMenu = new GuiToolstripMenu(theme::ThemeName::Menu, this);
+					if (subMenuTemplate)
+					{
+						newSubMenu->SetControlTemplate(subMenuTemplate);
+					}
+					else
+					{
+						newSubMenu->SetControlTemplate(GetControlTemplateObject()->GetSubMenuTemplate());
+					}
+					SetSubMenu(newSubMenu, true);
+				}
+			}
+
+			IDescriptable* GuiToolstripButton::QueryService(const WString& identifier)
+			{
+				if (identifier == IToolstripUpdateLayoutInvoker::Identifier)
+				{
+					return (IToolstripUpdateLayoutInvoker*)this;
+				}
+				else
+				{
+					return GuiMenuButton::QueryService(identifier);
+				}
+			}
+
+/***********************************************************************
+GuiToolstripNestedContainer
+***********************************************************************/
+
+			void GuiToolstripNestedContainer::UpdateLayout()
+			{
+				if (callback)
+				{
+					callback->UpdateLayout();
+				}
+			}
+
+			void GuiToolstripNestedContainer::SetCallback(IToolstripUpdateLayout* _callback)
+			{
+				callback = _callback;
+			}
+
+			GuiToolstripNestedContainer::GuiToolstripNestedContainer(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
+			}
+
+			GuiToolstripNestedContainer::~GuiToolstripNestedContainer()
+			{
+			}
+
+			IDescriptable* GuiToolstripNestedContainer::QueryService(const WString& identifier)
+			{
+				if (identifier == IToolstripUpdateLayoutInvoker::Identifier)
+				{
+					return (IToolstripUpdateLayoutInvoker*)this;
+				}
+				else
+				{
+					return GuiControl::QueryService(identifier);
+				}
+			}
+
+/***********************************************************************
+GuiToolstripGroupContainer::GroupCollection
+***********************************************************************/
+
+			void GuiToolstripGroupContainer::GroupCollection::BeforeRemove(vint index, GuiControl* const& child)
+			{
+				auto controlStackItem = container->stackComposition->GetStackItems()[index * 2];
+				CHECK_ERROR(controlStackItem->RemoveChild(child->GetBoundsComposition()), L"GuiToolstripGroupContainer::GroupCollection::BeforeRemove(vint, GuiControl* const&)#Internal error");
+			}
+
+			void GuiToolstripGroupContainer::GroupCollection::AfterInsert(vint index, GuiControl* const& child)
+			{
+				auto controlStackItem = new GuiStackItemComposition;
+				child->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				CHECK_ERROR(controlStackItem->AddChild(child->GetBoundsComposition()), L"GuiToolstripGroupContainer::GroupCollection::AfterInsert(vint, GuiControl* const&)#Internal error");
+
+				if (container->stackComposition->GetStackItems().Count() > 0)
+				{
+					auto splitterStackItem = new GuiStackItemComposition;
+					auto splitter = new GuiControl(container->splitterThemeName);
+					if (splitterTemplate)
+					{
+						splitter->SetControlTemplate(splitterTemplate);
+					}
+					splitter->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					splitterStackItem->AddChild(splitter->GetBoundsComposition());
+					container->stackComposition->InsertStackItem(index == 0 ? 0 : index * 2 - 1, splitterStackItem);
+				}
+
+				container->stackComposition->InsertStackItem(index * 2, controlStackItem);
+
+				GuiToolstripCollectionBase::AfterInsert(index, child);
+			}
+
+			void GuiToolstripGroupContainer::GroupCollection::AfterRemove(vint index, vint count)
+			{
+				vint min = index * 2;
+				vint max = (index + count - 1) * 2;
+				for (vint i = min; i <= max; i++)
+				{
+					auto stackItem = container->stackComposition->GetStackItems()[min];
+					container->stackComposition->RemoveChild(stackItem);
+					SafeDeleteComposition(stackItem);
+				}
+				GuiToolstripCollectionBase::AfterRemove(index, count);
+			}
+
+			GuiToolstripGroupContainer::GroupCollection::GroupCollection(GuiToolstripGroupContainer* _container)
+				:GuiToolstripCollectionBase(_container)
+				, container(_container)
+			{
+			}
+
+			GuiToolstripGroupContainer::GroupCollection::~GroupCollection()
+			{
+			}
+
+			GuiToolstripGroupContainer::ControlTemplatePropertyType GuiToolstripGroupContainer::GroupCollection::GetSplitterTemplate()
+			{
+				return splitterTemplate;
+			}
+
+			void GuiToolstripGroupContainer::GroupCollection::SetSplitterTemplate(const ControlTemplatePropertyType& value)
+			{
+				splitterTemplate = value;
+				RebuildSplitters();
+			}
+
+			void GuiToolstripGroupContainer::GroupCollection::RebuildSplitters()
+			{
+				auto stack = container->stackComposition;
+				vint count = stack->GetStackItems().Count();
+				for (vint i = 1; i < count; i += 2)
+				{
+					auto stackItem = stack->GetStackItems()[i];
+					{
+						auto control = stackItem->Children()[0]->GetAssociatedControl();
+						CHECK_ERROR(control != nullptr, L"GuiToolstripGroupContainer::GroupCollection::RebuildSplitters()#Internal error");
+						stackItem->RemoveChild(control->GetBoundsComposition());
+						delete control;
+					}
+					{
+						auto control = new GuiControl(container->splitterThemeName);
+						if (splitterTemplate)
+						{
+							control->SetControlTemplate(splitterTemplate);
+						}
+						control->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						stackItem->AddChild(control->GetBoundsComposition());
+					}
+				}
+			}
+
+/***********************************************************************
+GuiToolstripGroupContainer
+***********************************************************************/
+
+			void GuiToolstripGroupContainer::OnParentLineChanged()
+			{
+				auto direction = GuiStackComposition::Horizontal;
+				if (auto service = QueryTypedService<IGuiMenuService>())
+				{
+					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
+					{
+						direction = GuiStackComposition::Vertical;
+					}
+				}
+
+				if (direction != stackComposition->GetDirection())
+				{
+					if (direction == GuiStackComposition::Vertical)
+					{
+						splitterThemeName = theme::ThemeName::MenuSplitter;
+					}
+					else
+					{
+						splitterThemeName = theme::ThemeName::ToolstripSplitter;
+					}
+
+					stackComposition->SetDirection(direction);
+					splitterThemeName = splitterThemeName;
+					groupCollection->RebuildSplitters();
+					UpdateLayout();
+				}
+
+				GuiControl::OnParentLineChanged();
+			}
+
+			GuiToolstripGroupContainer::GuiToolstripGroupContainer(theme::ThemeName themeName)
+				:GuiToolstripNestedContainer(themeName)
+				, splitterThemeName(theme::ThemeName::ToolstripSplitter)
+			{
+				stackComposition = new GuiStackComposition;
+				stackComposition->SetDirection(GuiStackComposition::Horizontal);
+				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->AddChild(stackComposition);
+
+				groupCollection = new GroupCollection(this);
+			}
+
+			GuiToolstripGroupContainer::~GuiToolstripGroupContainer()
+			{
+			}
+
+			GuiToolstripGroupContainer::ControlTemplatePropertyType GuiToolstripGroupContainer::GetSplitterTemplate()
+			{
+				return groupCollection->GetSplitterTemplate();
+			}
+
+			void GuiToolstripGroupContainer::SetSplitterTemplate(const ControlTemplatePropertyType& value)
+			{
+				groupCollection->SetSplitterTemplate(value);
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiToolstripGroupContainer::GetToolstripItems()
+			{
+				return *groupCollection.Obj();
+			}
+
+/***********************************************************************
+GuiToolstripGroup
+***********************************************************************/
+
+			void GuiToolstripGroup::OnParentLineChanged()
+			{
+				auto direction = GuiStackComposition::Horizontal;
+				if (auto service = QueryTypedService<IGuiMenuService>())
+				{
+					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
+					{
+						direction = GuiStackComposition::Vertical;
+					}
+				}
+
+				if (direction != stackComposition->GetDirection())
+				{
+					stackComposition->SetDirection(direction);
+					UpdateLayout();
+				}
+
+				GuiControl::OnParentLineChanged();
+			}
+
+			GuiToolstripGroup::GuiToolstripGroup(theme::ThemeName themeName)
+				:GuiToolstripNestedContainer(themeName)
+			{
+				stackComposition = new GuiStackComposition;
+				stackComposition->SetDirection(GuiStackComposition::Horizontal);
+				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->AddChild(stackComposition);
+
+				toolstripItems = new GuiToolstripCollection(nullptr, stackComposition);
+			}
+
+			GuiToolstripGroup::~GuiToolstripGroup()
+			{
+			}
+
+			collections::ObservableListBase<GuiControl*>& GuiToolstripGroup::GetToolstripItems()
+			{
+				return *toolstripItems.Obj();
+			}
+		}
+	}
+}
+
+/***********************************************************************
 .\CONTROLS\TOOLSTRIPPACKAGE\GUITOOLSTRIPCOMMAND.CPP
 ***********************************************************************/
 
@@ -29123,6 +30539,20 @@ GuiToolstripCommand
 			void GuiToolstripCommand::Detach(GuiInstanceRootObject* rootObject)
 			{
 				Attach(nullptr);
+			}
+
+			Ptr<GuiImageData> GuiToolstripCommand::GetLargeImage()
+			{
+				return largeImage;
+			}
+
+			void GuiToolstripCommand::SetLargeImage(Ptr<GuiImageData> value)
+			{
+				if (largeImage != value)
+				{
+					largeImage = value;
+					InvokeDescriptionChanged();
+				}
 			}
 
 			Ptr<GuiImageData> GuiToolstripCommand::GetImage()
@@ -31982,602 +33412,6 @@ Type Resolver Plugin
 	}
 }
 
-
-/***********************************************************************
-.\CONTROLS\TOOLSTRIPPACKAGE\GUITOOLSTRIPMENU.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			using namespace collections;
-			using namespace compositions;
-
-/***********************************************************************
-GuiToolstripCollectionBase
-***********************************************************************/
-
-			const wchar_t* const IToolstripUpdateLayoutInvoker::Identifier = L"vl::presentation::controls::IToolstripUpdateLayoutInvoker";
-
-			void GuiToolstripCollectionBase::InvokeUpdateLayout()
-			{
-				if(contentCallback)
-				{
-					contentCallback->UpdateLayout();
-				}
-			}
-
-			bool GuiToolstripCollectionBase::QueryInsert(vint index, GuiControl* const& child)
-			{
-				return !items.Contains(child);
-			}
-
-			void GuiToolstripCollectionBase::BeforeRemove(vint index, GuiControl* const& child)
-			{
-				if (auto invoker = child->QueryTypedService<IToolstripUpdateLayoutInvoker>())
-				{
-					invoker->SetCallback(nullptr);
-				}
-				InvokeUpdateLayout();
-			}
-
-			void GuiToolstripCollectionBase::AfterInsert(vint index, GuiControl* const& child)
-			{
-				if (auto invoker = child->QueryTypedService<IToolstripUpdateLayoutInvoker>())
-				{
-					invoker->SetCallback(contentCallback);
-				}
-				InvokeUpdateLayout();
-			}
-
-			void GuiToolstripCollectionBase::AfterRemove(vint index, vint count)
-			{
-				InvokeUpdateLayout();
-			}
-
-			GuiToolstripCollectionBase::GuiToolstripCollectionBase(IToolstripUpdateLayout* _contentCallback)
-				:contentCallback(_contentCallback)
-			{
-			}
-
-			GuiToolstripCollectionBase::~GuiToolstripCollectionBase()
-			{
-			}
-
-/***********************************************************************
-GuiToolstripCollection
-***********************************************************************/
-
-			void GuiToolstripCollection::UpdateItemVisibility(vint index, GuiControl* child)
-			{
-				auto stackItem = stackComposition->GetStackItems()[index];
-				if (child->GetVisible())
-				{
-					stackItem->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					child->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				}
-				else
-				{
-					stackItem->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
-					child->GetBoundsComposition()->SetAlignmentToParent(Margin(-1, -1, -1, -1));
-				}
-			}
-
-			void GuiToolstripCollection::OnItemVisibleChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				auto child = sender->GetRelatedControl();
-				vint index = IndexOf(child);
-				UpdateItemVisibility(index, child);
-				InvokeUpdateLayout();
-			}
-
-			void GuiToolstripCollection::BeforeRemove(vint index, GuiControl* const& child)
-			{
-				GuiStackItemComposition* stackItem = stackComposition->GetStackItems().Get(index);
-				stackComposition->RemoveChild(stackItem);
-				{
-					auto eventHandler = eventHandlers[index];
-					child->VisibleChanged.Detach(eventHandler);
-					eventHandlers.RemoveAt(index);
-				}
-				GuiToolstripCollectionBase::BeforeRemove(index, child);
-				SafeDeleteComposition(stackItem);
-			}
-
-			void GuiToolstripCollection::AfterInsert(vint index, GuiControl* const& child)
-			{
-				{
-					GuiStackItemComposition* stackItem = new GuiStackItemComposition;
-					stackItem->AddChild(child->GetBoundsComposition());
-					stackComposition->InsertChild(index, stackItem);
-				}
-				{
-					auto eventHandler = child->VisibleChanged.AttachMethod(this, &GuiToolstripCollection::OnItemVisibleChanged);
-					eventHandlers.Insert(index, eventHandler);
-				}
-				UpdateItemVisibility(index, child);
-				GuiToolstripCollectionBase::AfterInsert(index, child);
-			}
-
-			GuiToolstripCollection::GuiToolstripCollection(IToolstripUpdateLayout* _contentCallback, compositions::GuiStackComposition* _stackComposition)
-				:GuiToolstripCollectionBase(_contentCallback)
-				,stackComposition(_stackComposition)
-			{
-			}
-
-			GuiToolstripCollection::~GuiToolstripCollection()
-			{
-			}
-
-/***********************************************************************
-GuiToolstripMenu
-***********************************************************************/
-
-			void GuiToolstripMenu::UpdateLayout()
-			{
-				sharedSizeRootComposition->ForceCalculateSizeImmediately();
-			}
-
-			GuiToolstripMenu::GuiToolstripMenu(theme::ThemeName themeName, GuiControl* _owner)
-				:GuiMenu(themeName, _owner)
-			{
-				sharedSizeRootComposition = new GuiSharedSizeRootComposition();
-				sharedSizeRootComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				sharedSizeRootComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				containerComposition->AddChild(sharedSizeRootComposition);
-
-				stackComposition=new GuiStackComposition;
-				stackComposition->SetDirection(GuiStackComposition::Vertical);
-				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				sharedSizeRootComposition->AddChild(stackComposition);
-				
-				toolstripItems = new GuiToolstripCollection(this, stackComposition);
-			}
-
-			GuiToolstripMenu::~GuiToolstripMenu()
-			{
-			}
-
-			collections::ObservableListBase<GuiControl*>& GuiToolstripMenu::GetToolstripItems()
-			{
-				return *toolstripItems.Obj();
-			}
-
-/***********************************************************************
-GuiToolstripMenuBar
-***********************************************************************/
-			
-			GuiToolstripMenuBar::GuiToolstripMenuBar(theme::ThemeName themeName)
-				:GuiMenuBar(themeName)
-			{
-				stackComposition=new GuiStackComposition;
-				stackComposition->SetDirection(GuiStackComposition::Horizontal);
-				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				containerComposition->AddChild(stackComposition);
-
-				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
-			}
-
-			GuiToolstripMenuBar::~GuiToolstripMenuBar()
-			{
-			}
-
-			collections::ObservableListBase<GuiControl*>& GuiToolstripMenuBar::GetToolstripItems()
-			{
-				return *toolstripItems.Obj();
-			}
-
-/***********************************************************************
-GuiToolstripToolBar
-***********************************************************************/
-				
-			GuiToolstripToolBar::GuiToolstripToolBar(theme::ThemeName themeName)
-				:GuiControl(themeName)
-			{
-				stackComposition=new GuiStackComposition;
-				stackComposition->SetDirection(GuiStackComposition::Horizontal);
-				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				containerComposition->AddChild(stackComposition);
-
-				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
-			}
-
-			GuiToolstripToolBar::~GuiToolstripToolBar()
-			{
-			}
-
-			collections::ObservableListBase<GuiControl*>& GuiToolstripToolBar::GetToolstripItems()
-			{
-				return *toolstripItems.Obj();
-			}
-
-/***********************************************************************
-GuiToolstripButton
-***********************************************************************/
-
-			void GuiToolstripButton::SetCallback(IToolstripUpdateLayout* _callback)
-			{
-				callback = _callback;
-			}
-
-			void GuiToolstripButton::UpdateCommandContent()
-			{
-				if(command)
-				{
-					SetImage(command->GetImage());
-					SetText(command->GetText());
-					SetEnabled(command->GetEnabled());
-					SetSelected(command->GetSelected());
-					if(command->GetShortcut())
-					{
-						SetShortcutText(command->GetShortcut()->GetName());
-					}
-					else
-					{
-						SetShortcutText(L"");
-					}
-				}
-				else
-				{
-					SetImage(0);
-					SetText(L"");
-					SetEnabled(true);
-					SetSelected(false);
-					SetShortcutText(L"");
-				}
-			}
-
-			void GuiToolstripButton::OnLayoutAwaredPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				if (callback)
-				{
-					callback->UpdateLayout();
-				}
-			}
-
-			void GuiToolstripButton::OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				if(command)
-				{
-					command->Executed.ExecuteWithNewSender(arguments, sender);
-				}
-			}
-
-			void GuiToolstripButton::OnCommandDescriptionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				UpdateCommandContent();
-			}
-
-			GuiToolstripButton::GuiToolstripButton(theme::ThemeName themeName)
-				:GuiMenuButton(themeName)
-				,command(0)
-			{
-				Clicked.AttachMethod(this, &GuiToolstripButton::OnClicked);
-				TextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
-				ShortcutTextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
-			}
-
-			GuiToolstripButton::~GuiToolstripButton()
-			{
-			}
-
-			GuiToolstripCommand* GuiToolstripButton::GetCommand()
-			{
-				return command;
-			}
-
-			void GuiToolstripButton::SetCommand(GuiToolstripCommand* value)
-			{
-				if(command!=value)
-				{
-					if(command)
-					{
-						command->DescriptionChanged.Detach(descriptionChangedHandler);
-					}
-					command=0;
-					descriptionChangedHandler=0;
-					if(value)
-					{
-						command=value;
-						descriptionChangedHandler=command->DescriptionChanged.AttachMethod(this, &GuiToolstripButton::OnCommandDescriptionChanged);
-					}
-					UpdateCommandContent();
-				}
-			}
-
-			GuiToolstripMenu* GuiToolstripButton::GetToolstripSubMenu()
-			{
-				return dynamic_cast<GuiToolstripMenu*>(GetSubMenu());
-			}
-
-			GuiToolstripMenu* GuiToolstripButton::EnsureToolstripSubMenu()
-			{
-				if (!GetSubMenu())
-				{
-					CreateToolstripSubMenu({});
-				}
-				return dynamic_cast<GuiToolstripMenu*>(GetSubMenu());
-			}
-
-			void GuiToolstripButton::CreateToolstripSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate)
-			{
-				if (!subMenu)
-				{
-					auto newSubMenu = new GuiToolstripMenu(theme::ThemeName::Menu, this);
-					if (subMenuTemplate)
-					{
-						newSubMenu->SetControlTemplate(subMenuTemplate);
-					}
-					else
-					{
-						newSubMenu->SetControlTemplate(GetControlTemplateObject()->GetSubMenuTemplate());
-					}
-					SetSubMenu(newSubMenu, true);
-				}
-			}
-
-			IDescriptable* GuiToolstripButton::QueryService(const WString& identifier)
-			{
-				if (identifier == IToolstripUpdateLayoutInvoker::Identifier)
-				{
-					return (IToolstripUpdateLayoutInvoker*)this;
-				}
-				else
-				{
-					return GuiMenuButton::QueryService(identifier);
-				}
-			}
-
-/***********************************************************************
-GuiToolstripNestedContainer
-***********************************************************************/
-
-			void GuiToolstripNestedContainer::UpdateLayout()
-			{
-				if (callback)
-				{
-					callback->UpdateLayout();
-				}
-			}
-
-			void GuiToolstripNestedContainer::SetCallback(IToolstripUpdateLayout* _callback)
-			{
-				callback = _callback;
-			}
-
-			GuiToolstripNestedContainer::GuiToolstripNestedContainer(theme::ThemeName themeName)
-				:GuiControl(themeName)
-			{
-			}
-
-			GuiToolstripNestedContainer::~GuiToolstripNestedContainer()
-			{
-			}
-
-			IDescriptable* GuiToolstripNestedContainer::QueryService(const WString& identifier)
-			{
-				if (identifier == IToolstripUpdateLayoutInvoker::Identifier)
-				{
-					return (IToolstripUpdateLayoutInvoker*)this;
-				}
-				else
-				{
-					return GuiControl::QueryService(identifier);
-				}
-			}
-
-/***********************************************************************
-GuiToolstripGroupContainer::GroupCollection
-***********************************************************************/
-
-			void GuiToolstripGroupContainer::GroupCollection::BeforeRemove(vint index, GuiControl* const& child)
-			{
-				auto controlStackItem = container->stackComposition->GetStackItems()[index * 2];
-				auto splitterStackItem =
-					container->stackComposition->GetStackItems().Count() == 1 ? nullptr :
-					index == 0 ? container->stackComposition->GetStackItems()[1] :
-					container->stackComposition->GetStackItems()[index * 2 - 1]
-					;
-
-				container->stackComposition->RemoveChild(controlStackItem);
-				if (splitterStackItem) container->stackComposition->RemoveChild(splitterStackItem);
-
-				GuiToolstripCollectionBase::BeforeRemove(index, child);
-
-				SafeDeleteComposition(controlStackItem);
-				SafeDeleteComposition(splitterStackItem);
-			}
-
-			void GuiToolstripGroupContainer::GroupCollection::AfterInsert(vint index, GuiControl* const& child)
-			{
-				auto controlStackItem = new GuiStackItemComposition;
-				child->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				controlStackItem->AddChild(child->GetBoundsComposition());
-
-				if (container->stackComposition->GetStackItems().Count() > 0)
-				{
-					auto splitterStackItem = new GuiStackItemComposition;
-					auto splitter = new GuiControl(container->splitterThemeName);
-					if (splitterTemplate)
-					{
-						splitter->SetControlTemplate(splitterTemplate);
-					}
-					splitter->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					splitterStackItem->AddChild(splitter->GetBoundsComposition());
-					container->stackComposition->InsertChild(index == 0 ? 1 : index * 2 - 1, splitterStackItem);
-				}
-
-				container->stackComposition->InsertChild(index * 2, controlStackItem);
-
-				GuiToolstripCollectionBase::AfterInsert(index, child);
-			}
-
-			GuiToolstripGroupContainer::GroupCollection::GroupCollection(GuiToolstripGroupContainer* _container)
-				:GuiToolstripCollectionBase(_container)
-				, container(_container)
-			{
-			}
-
-			GuiToolstripGroupContainer::GroupCollection::~GroupCollection()
-			{
-			}
-
-			GuiToolstripGroupContainer::ControlTemplatePropertyType GuiToolstripGroupContainer::GroupCollection::GetSplitterTemplate()
-			{
-				return splitterTemplate;
-			}
-
-			void GuiToolstripGroupContainer::GroupCollection::SetSplitterTemplate(const ControlTemplatePropertyType& value)
-			{
-				splitterTemplate = value;
-				RebuildSplitters();
-			}
-
-			void GuiToolstripGroupContainer::GroupCollection::RebuildSplitters()
-			{
-				auto stack = container->stackComposition;
-				vint count = stack->GetStackItems().Count();
-				for (vint i = 1; i < count; i += 2)
-				{
-					auto stackItem = stack->GetStackItems()[i];
-					{
-						auto control = stackItem->Children()[0]->GetAssociatedControl();
-						CHECK_ERROR(control != nullptr, L"GuiToolstripGroupContainer::GroupCollection::RebuildSplitters()#Internal error");
-						stackItem->RemoveChild(control->GetBoundsComposition());
-						delete control;
-					}
-					{
-						auto control = new GuiControl(container->splitterThemeName);
-						if (splitterTemplate)
-						{
-							control->SetControlTemplate(splitterTemplate);
-						}
-						control->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						stackItem->AddChild(control->GetBoundsComposition());
-					}
-				}
-			}
-
-/***********************************************************************
-GuiToolstripGroupContainer
-***********************************************************************/
-
-			void GuiToolstripGroupContainer::OnParentLineChanged()
-			{
-				auto direction = GuiStackComposition::Horizontal;
-				if (auto service = QueryTypedService<IGuiMenuService>())
-				{
-					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
-					{
-						direction = GuiStackComposition::Vertical;
-					}
-				}
-
-				if (direction != stackComposition->GetDirection())
-				{
-					if (direction == GuiStackComposition::Vertical)
-					{
-						splitterThemeName = theme::ThemeName::MenuSplitter;
-					}
-					else
-					{
-						splitterThemeName = theme::ThemeName::ToolstripSplitter;
-					}
-
-					stackComposition->SetDirection(direction);
-					splitterThemeName = splitterThemeName;
-					groupCollection->RebuildSplitters();
-					UpdateLayout();
-				}
-
-				GuiControl::OnParentLineChanged();
-			}
-
-			GuiToolstripGroupContainer::GuiToolstripGroupContainer(theme::ThemeName themeName)
-				:GuiToolstripNestedContainer(themeName)
-				, splitterThemeName(theme::ThemeName::ToolstripSplitter)
-			{
-				stackComposition = new GuiStackComposition;
-				stackComposition->SetDirection(GuiStackComposition::Horizontal);
-				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				containerComposition->AddChild(stackComposition);
-
-				groupCollection = new GroupCollection(this);
-			}
-
-			GuiToolstripGroupContainer::~GuiToolstripGroupContainer()
-			{
-			}
-
-			GuiToolstripGroupContainer::ControlTemplatePropertyType GuiToolstripGroupContainer::GetSplitterTemplate()
-			{
-				return groupCollection->GetSplitterTemplate();
-			}
-
-			void GuiToolstripGroupContainer::SetSplitterTemplate(const ControlTemplatePropertyType& value)
-			{
-				groupCollection->SetSplitterTemplate(value);
-			}
-
-			collections::ObservableListBase<GuiControl*>& GuiToolstripGroupContainer::GetToolstripItems()
-			{
-				return *groupCollection.Obj();
-			}
-
-/***********************************************************************
-GuiToolstripGroup
-***********************************************************************/
-
-			void GuiToolstripGroup::OnParentLineChanged()
-			{
-				auto direction = GuiStackComposition::Horizontal;
-				if (auto service = QueryTypedService<IGuiMenuService>())
-				{
-					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
-					{
-						direction = GuiStackComposition::Vertical;
-					}
-				}
-
-				if (direction != stackComposition->GetDirection())
-				{
-					stackComposition->SetDirection(direction);
-					UpdateLayout();
-				}
-
-				GuiControl::OnParentLineChanged();
-			}
-
-			GuiToolstripGroup::GuiToolstripGroup(theme::ThemeName themeName)
-				:GuiToolstripNestedContainer(themeName)
-			{
-				stackComposition = new GuiStackComposition;
-				stackComposition->SetDirection(GuiStackComposition::Horizontal);
-				stackComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				containerComposition->AddChild(stackComposition);
-
-				toolstripItems = new GuiToolstripCollection(nullptr, stackComposition);
-			}
-
-			GuiToolstripGroup::~GuiToolstripGroup()
-			{
-			}
-
-			collections::ObservableListBase<GuiControl*>& GuiToolstripGroup::GetToolstripItems()
-			{
-				return *toolstripItems.Obj();
-			}
-		}
-	}
-}
 
 /***********************************************************************
 .\GACUIREFLECTIONHELPER.CPP
