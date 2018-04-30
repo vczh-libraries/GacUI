@@ -25440,8 +25440,14 @@ ValidateSemantic(Expression)
 
 						if (firstType && secondType)
 						{
-							auto mergedType = GetMergedType(firstType, secondType);
-							results.Add(ResolveExpressionResult::ReadonlyType(mergedType ? mergedType : firstType));
+							if (auto mergedType = GetMergedType(firstType, secondType))
+							{
+								results.Add(ResolveExpressionResult::ReadonlyType(mergedType));
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::CannotMergeTwoType(node, firstType.Obj(), secondType.Obj()));
+							}
 						}
 					}
 					else
@@ -29333,48 +29339,75 @@ WfCppConfig
 				}
 			}
 
-			void WfCppConfig::Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls)
+			template<typename T, typename U>
+			void WfCppConfig::SortInternal(collections::List<Ptr<T>>& decls, U isFound)
 			{
 				List<ITypeDescriptor*> tds;
-				FOREACH_INDEXER(Ptr<WfStructDeclaration>, decl, index, structDecls)
+				FOREACH_INDEXER(Ptr<T>, decl, index, decls)
 				{
 					tds.Add(manager->declarationTypes[decl.Obj()].Obj());
 				}
 
 				for (vint i = 0; i < tds.Count(); i++)
 				{
-					for (vint j = i; i < tds.Count(); j++)
+					for (vint j = i; j < tds.Count(); j++)
 					{
 						auto td = tds[j];
-						vint count = td->GetPropertyCount();
-						bool found = false;
-						for (vint k = 0; k < count && !found; k++)
-						{
-							auto prop = td->GetProperty(k);
-							auto propTd = prop->GetReturn()->GetTypeDescriptor();
-							for (vint l = k + 1; l < tds.Count() && !found; l++)
-							{
-								found = tds[l] == propTd;
-							}
-						}
-
-						if (!found)
+						if (!isFound(td, tds))
 						{
 							if (j != i)
 							{
-								auto t = tds[j];
 								tds.RemoveAt(j);
-								tds.Insert(i, t);
+								tds.Insert(i, td);
 
-								auto decl = structDecls[j];
-								structDecls.RemoveAt(j);
-								structDecls.Insert(i, decl);
+								auto decl = decls[j];
+								decls.RemoveAt(j);
+								decls.Insert(i, decl);
 							}
 
 							break;
 						}
 					}
 				}
+			}
+
+			void WfCppConfig::Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls)
+			{
+				SortInternal(structDecls, [](ITypeDescriptor* td, List<ITypeDescriptor*>& tds)
+				{
+					vint count = td->GetPropertyCount();
+					bool found = false;
+
+					for (vint k = 0; k < count && !found; k++)
+					{
+						auto prop = td->GetProperty(k);
+						auto propTd = prop->GetReturn()->GetTypeDescriptor();
+						for (vint l = k + 1; l < tds.Count() && !found; l++)
+						{
+							found = tds[l] == propTd;
+						}
+					}
+					return found;
+				});
+			}
+
+			void WfCppConfig::Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls)
+			{
+				SortInternal(classDecls, [](ITypeDescriptor* td, List<ITypeDescriptor*>& tds)
+				{
+					vint count = td->GetBaseTypeDescriptorCount();
+					bool found = false;
+
+					for (vint k = 0; k < count && !found; k++)
+					{
+						auto baseTd = td->GetBaseTypeDescriptor(k);
+						for (vint l = k + 1; l < tds.Count() && !found; l++)
+						{
+							found = tds[l] == baseTd;
+						}
+					}
+					return found;
+				});
 			}
 
 			WfCppConfig::WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName, const WString& _assemblyNamespace)
@@ -29391,6 +29424,16 @@ WfCppConfig
 				{
 					const auto& values = structDecls.GetByIndex(i);
 					Sort(const_cast<List<Ptr<WfStructDeclaration>>&>(values));
+				}
+				for (vint i = 0; i < topLevelClassDeclsForFiles.Count(); i++)
+				{
+					const auto& values = topLevelClassDeclsForFiles.GetByIndex(i);
+					Sort(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
+				}
+				for (vint i = 0; i < classDecls.Count(); i++)
+				{
+					const auto& values = classDecls.GetByIndex(i);
+					Sort(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
 				}
 			}
 
@@ -33288,17 +33331,17 @@ MergeCppFile
 							state = WAIT_OPEN;
 							break;
 						case WAIT_OPEN:
-							if (content == L"{")
+							if (content.Length() >= 1 && content[0] == L'{')
 							{
 								state = WAIT_CLOSE;
 							}
 							break;
 						case WAIT_CLOSE:
-							if (content == L"{")
+							if (content.Length() >= 1 && content[0] == L'{')
 							{
 								counter++;
 							}
-							else if (content == L"}")
+							else if (content.Length() >= 1 && content[0] == L'}')
 							{
 								if (counter == 0)
 								{

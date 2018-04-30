@@ -350,69 +350,69 @@ namespace demo
 	class DataGridTabPageConstructor;
 	class DataGridTabPage;
 	class ElementTabPageConstructor;
-	class ElementTabPage;
 	class ListViewTabPageConstructor;
-	class ListViewTabPage;
 	class MainWindowConstructor;
-	class MainWindow;
 	class RepeatTabPageConstructor;
-	class RepeatTabPage;
 	class TextListTabPageConstructor;
-	class TextListTabPage;
 	class TreeViewTabPageConstructor;
-	class TreeViewTabPage;
 	class AnimationTabPageConstructor;
-	class AnimationTabPage;
 	class ColorAnimation;
 	class DateEditorConstructor;
-	class DateEditor;
 	class DateFilterConstructor;
-	class DateFilter;
 	class TextEditorConstructor;
-	class TextEditor;
 	class CategoryDisplayerConstructor;
-	class CategoryDisplayer;
 	class CategoryEditorConstructor;
-	class CategoryEditor;
 	class CategoryItemTemplateConstructor;
-	class CategoryItemTemplate;
 	class CategoryVisualizerConstructor;
-	class CategoryVisualizer;
 	class GenderDisplayerConstructor;
-	class GenderDisplayer;
 	class GenderEditorConstructor;
-	class GenderEditor;
 	class GenderItemTemplateConstructor;
-	class GenderItemTemplate;
 	class GenderVisualizerConstructor;
-	class GenderVisualizer;
 	class HyperlinkWindowConstructor;
-	class HyperlinkWindow;
 	class DocumentRibbonTabPageConstructor;
-	class DocumentRibbonTabPage;
 	class DocumentTabPageBaseConstructor;
-	class DocumentTabPageBase;
 	class DocumentToolstripTabPageConstructor;
-	class DocumentToolstripTabPage;
 	class LocalizedStringsTabPageConstructor;
-	class LocalizedStringsTabPage;
 	class RepeatItemTemplateConstructor;
-	class RepeatItemTemplate;
 	class ResponsiveGroupControlConstructor;
-	class ResponsiveGroupControl;
 	class ResponsiveStackControlConstructor;
-	class ResponsiveStackControl;
 	class ResponsiveTabPageConstructor;
-	class ResponsiveTabPage;
 	class ResponsiveViewControlConstructor;
-	class ResponsiveViewControl;
 	class TextBoxTabPageConstructor;
-	class TextBoxTabPage;
 	class MyTextItem;
 	class MyDataItem;
 	class ColorDef;
 	class IStringResourceStrings;
 	class StringResource;
+	class ElementTabPage;
+	class ListViewTabPage;
+	class MainWindow;
+	class RepeatTabPage;
+	class TextListTabPage;
+	class TreeViewTabPage;
+	class AnimationTabPage;
+	class DateEditor;
+	class DateFilter;
+	class TextEditor;
+	class CategoryDisplayer;
+	class CategoryEditor;
+	class CategoryItemTemplate;
+	class CategoryVisualizer;
+	class GenderDisplayer;
+	class GenderEditor;
+	class GenderItemTemplate;
+	class GenderVisualizer;
+	class HyperlinkWindow;
+	class DocumentRibbonTabPage;
+	class DocumentTabPageBase;
+	class DocumentToolstripTabPage;
+	class LocalizedStringsTabPage;
+	class RepeatItemTemplate;
+	class ResponsiveGroupControl;
+	class ResponsiveStackControl;
+	class ResponsiveTabPage;
+	class ResponsiveViewControl;
+	class TextBoxTabPage;
 
 	class DataGridTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<DataGridTabPageConstructor>
 	{
@@ -584,17 +584,6 @@ namespace demo
 		ElementTabPageConstructor();
 	};
 
-	class ElementTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ElementTabPageConstructor, public ::vl::reflection::Description<ElementTabPage>
-	{
-		friend class ::demo::ElementTabPageConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ElementTabPage>;
-#endif
-	public:
-		ElementTabPage();
-		~ElementTabPage();
-	};
-
 	class ListViewTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<ListViewTabPageConstructor>
 	{
 		friend struct ::vl_workflow_global::__vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
@@ -637,27 +626,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::ListViewTabPage* __vwsn_this_);
 	public:
 		ListViewTabPageConstructor();
-	};
-
-	class ListViewTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ListViewTabPageConstructor, public ::vl::reflection::Description<ListViewTabPage>
-	{
-		friend struct ::vl_workflow_global::__vwsnf37_Demo_demo_ListViewTabPage___vwsn_instance_ctor__;
-		friend struct ::vl_workflow_global::__vwsnf38_Demo_demo_ListViewTabPage___vwsn_instance_ctor__;
-		friend class ::demo::ListViewTabPageConstructor;
-		friend struct ::vl_workflow_global::__vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf31_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf32_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf34_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf35_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf36_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTabPage>;
-#endif
-	public:
-		ListViewTabPage();
-		void __vwsn_instance_ctor_();
-		~ListViewTabPage();
 	};
 
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
@@ -757,32 +725,6 @@ namespace demo
 		RepeatTabPageConstructor();
 	};
 
-	class RepeatTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::RepeatTabPageConstructor, public ::vl::reflection::Description<RepeatTabPage>
-	{
-		friend class ::demo::RepeatTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf39_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf40_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf41_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf42_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf43_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf45_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RepeatTabPage>;
-#endif
-	public:
-		::vl::vint32_t counter;
-		::vl::Ptr<::vl::reflection::description::IValueObservableList> itemsToBind;
-		::vl::WString ToText_1to9(::vl::vint32_t i);
-		::vl::WString ToText_11to19(::vl::vint32_t i);
-		::vl::WString NumberToText_1To99(::vl::vint32_t i);
-		::vl::WString NumberToText_0to999(::vl::vint32_t i);
-		::vl::WString NumberToText(::vl::vint32_t i);
-		RepeatTabPage();
-		~RepeatTabPage();
-	};
-
 	class TextListTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextListTabPageConstructor>
 	{
 		friend struct ::vl_workflow_global::__vwsnf46_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
@@ -831,26 +773,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::TextListTabPage* __vwsn_this_);
 	public:
 		TextListTabPageConstructor();
-	};
-
-	class TextListTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextListTabPageConstructor, public ::vl::reflection::Description<TextListTabPage>
-	{
-		friend class ::demo::TextListTabPageConstructor;
-		friend struct ::vl_workflow_global::__vwsnf46_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf47_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf48_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf49_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf50_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTabPage>;
-#endif
-	public:
-		::vl::vint32_t counter;
-		::vl::Ptr<::vl::reflection::description::IValueObservableList> itemsToBind;
-		TextListTabPage();
-		~TextListTabPage();
 	};
 
 	class TreeViewTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TreeViewTabPageConstructor>
@@ -920,22 +842,6 @@ namespace demo
 		TreeViewTabPageConstructor();
 	};
 
-	class TreeViewTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TreeViewTabPageConstructor, public ::vl::reflection::Description<TreeViewTabPage>
-	{
-		friend class ::demo::TreeViewTabPageConstructor;
-		friend struct ::vl_workflow_global::__vwsnf53_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf54_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf55_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTabPage>;
-#endif
-	public:
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> nodesToBind;
-		TreeViewTabPage();
-		void __vwsn_instance_ctor_();
-		~TreeViewTabPage();
-	};
-
 	class AnimationTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<AnimationTabPageConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc10_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -978,42 +884,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::AnimationTabPage* __vwsn_this_);
 	public:
 		AnimationTabPageConstructor();
-	};
-
-	class AnimationTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::AnimationTabPageConstructor, public ::vl::reflection::Description<AnimationTabPage>
-	{
-		friend class ::vl_workflow_global::__vwsnc11_Demo_demo_AnimationTabPage_BallAnimationWithDelay___vl_reflection_description_ICoroutine;
-		friend class ::vl_workflow_global::__vwsnc12_Demo_demo_AnimationTabPage_WaitingAnimation___vl_reflection_description_ICoroutine;
-		friend struct ::vl_workflow_global::__vwsnf63_Demo_demo_AnimationTabPage_BallAnimation_;
-		friend struct ::vl_workflow_global::__vwsnf64_Demo_demo_AnimationTabPage_BallAnimationWithDelay_;
-		friend struct ::vl_workflow_global::__vwsnf65_Demo_demo_AnimationTabPage_WaitingAnimation_;
-		friend class ::demo::AnimationTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc10_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc7_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc8_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc9_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf56_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf57_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf58_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf59_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf60_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf61_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf62_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<AnimationTabPage>;
-#endif
-	private:
-		static ::vl::Ptr<::vl::presentation::controls::IGuiAnimation> BallAnimation(::vl::presentation::compositions::GuiBoundsComposition* container, ::vl::presentation::compositions::GuiBoundsComposition* ball);
-		static ::vl::Ptr<::vl::presentation::controls::IGuiAnimation> BallAnimationWithDelay(::vl::presentation::compositions::GuiBoundsComposition* container, ::vl::presentation::compositions::GuiBoundsComposition* ball, ::vl::vint32_t delay);
-		static ::vl::Ptr<::vl::presentation::controls::IGuiAnimation> WaitingAnimation(::vl::presentation::compositions::GuiBoundsComposition* container);
-		::vl::Ptr<::demo::ColorAnimation> gradientColorDef;
-		::vl::Ptr<::vl::presentation::controls::IGuiAnimation> lastGradientAnimation;
-	public:
-		void PerformGradientAnimation(::vl::Ptr<::demo::ColorDef> target);
-		::vl::vint32_t counter;
-		AnimationTabPage();
-		void __vwsn_instance_ctor_();
-		~AnimationTabPage();
 	};
 
 	class ColorAnimation : public ::vl::Object, public ::vl::reflection::Description<ColorAnimation>
@@ -1065,21 +935,6 @@ namespace demo
 		DateEditorConstructor();
 	};
 
-	class DateEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::DateEditorConstructor, public ::vl::reflection::Description<DateEditor>
-	{
-		friend class ::demo::DateEditorConstructor;
-		friend class ::vl_workflow_global::__vwsnc13_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc14_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf68_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf69_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateEditor>;
-#endif
-	public:
-		DateEditor();
-		~DateEditor();
-	};
-
 	class DateFilterConstructor : public ::vl::Object, public ::vl::reflection::Description<DateFilterConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc15_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -1111,33 +966,6 @@ namespace demo
 		DateFilterConstructor();
 	};
 
-	class DateFilter : public ::vl::presentation::controls::GuiCustomControl, public ::demo::DateFilterConstructor, public ::vl::reflection::Description<DateFilter>
-	{
-		friend class ::vl_workflow_global::__vwsnc17_Demo_demo_DateFilter___vwsn_instance_ctor___vl_presentation_controls_list_IDataFilter;
-		friend class ::demo::DateFilterConstructor;
-		friend class ::vl_workflow_global::__vwsnc15_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc16_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf70_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf71_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf72_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf73_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf74_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf75_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateFilter>;
-#endif
-	private:
-		::vl::presentation::controls::list::IDataProcessorCallback* callback;
-		void UpdateFilter();
-	public:
-		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> __vwsn_prop_Filter;
-		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> GetFilter();
-		void SetFilter(::vl::Ptr<::vl::presentation::controls::list::IDataFilter> __vwsn_value_);
-		DateFilter();
-		void __vwsn_instance_ctor_();
-		~DateFilter();
-	};
-
 	class TextEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<TextEditorConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc18_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -1154,21 +982,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::TextEditor* __vwsn_this_);
 	public:
 		TextEditorConstructor();
-	};
-
-	class TextEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::TextEditorConstructor, public ::vl::reflection::Description<TextEditor>
-	{
-		friend class ::demo::TextEditorConstructor;
-		friend class ::vl_workflow_global::__vwsnc18_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc19_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf76_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf77_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextEditor>;
-#endif
-	public:
-		TextEditor();
-		~TextEditor();
 	};
 
 	class CategoryDisplayerConstructor : public ::vl::Object, public ::vl::reflection::Description<CategoryDisplayerConstructor>
@@ -1196,27 +1009,6 @@ namespace demo
 		CategoryDisplayerConstructor();
 	};
 
-	class CategoryDisplayer : public ::vl::presentation::controls::GuiCustomControl, public ::demo::CategoryDisplayerConstructor, public ::vl::reflection::Description<CategoryDisplayer>
-	{
-		friend class ::demo::CategoryDisplayerConstructor;
-		friend class ::vl_workflow_global::__vwsnc20_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc21_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc22_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf78_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf79_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf80_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryDisplayer>;
-#endif
-	public:
-		::demo::MyCategory __vwsn_prop_Category;
-		::demo::MyCategory GetCategory();
-		void SetCategory(::demo::MyCategory __vwsn_value_);
-		::vl::Event<void()> CategoryChanged;
-		CategoryDisplayer();
-		~CategoryDisplayer();
-	};
-
 	class CategoryEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<CategoryEditorConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc23_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -1238,24 +1030,6 @@ namespace demo
 		CategoryEditorConstructor();
 	};
 
-	class CategoryEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::CategoryEditorConstructor, public ::vl::reflection::Description<CategoryEditor>
-	{
-		friend class ::demo::CategoryEditorConstructor;
-		friend class ::vl_workflow_global::__vwsnc23_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc24_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf81_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf82_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf83_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf84_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryEditor>;
-#endif
-	public:
-		::vl::Ptr<::vl::reflection::description::IValueList> items;
-		CategoryEditor();
-		~CategoryEditor();
-	};
-
 	class CategoryItemTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<CategoryItemTemplateConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc25_Demo_demo_CategoryItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -1271,21 +1045,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::CategoryItemTemplate* __vwsn_this_);
 	public:
 		CategoryItemTemplateConstructor();
-	};
-
-	class CategoryItemTemplate : public ::vl::presentation::templates::GuiTextListItemTemplate, public ::demo::CategoryItemTemplateConstructor, public ::vl::reflection::Description<CategoryItemTemplate>
-	{
-		friend class ::demo::CategoryItemTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc25_Demo_demo_CategoryItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf85_Demo_demo_CategoryItemTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryItemTemplate>;
-#endif
-	public:
-		::demo::MyCategory __vwsn_parameter_SelectedCategory;
-		::demo::MyCategory GetSelectedCategory();
-		CategoryItemTemplate(::demo::MyCategory __vwsn_ctor_parameter_SelectedCategory);
-		~CategoryItemTemplate();
 	};
 
 	class CategoryVisualizerConstructor : public ::vl::Object, public ::vl::reflection::Description<CategoryVisualizerConstructor>
@@ -1306,21 +1065,6 @@ namespace demo
 		CategoryVisualizerConstructor();
 	};
 
-	class CategoryVisualizer : public ::vl::presentation::templates::GuiGridVisualizerTemplate, public ::demo::CategoryVisualizerConstructor, public ::vl::reflection::Description<CategoryVisualizer>
-	{
-		friend class ::demo::CategoryVisualizerConstructor;
-		friend class ::vl_workflow_global::__vwsnc26_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc27_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf86_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf87_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryVisualizer>;
-#endif
-	public:
-		CategoryVisualizer();
-		~CategoryVisualizer();
-	};
-
 	class GenderDisplayerConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderDisplayerConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc28_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -1335,23 +1079,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::GenderDisplayer* __vwsn_this_);
 	public:
 		GenderDisplayerConstructor();
-	};
-
-	class GenderDisplayer : public ::vl::presentation::controls::GuiCustomControl, public ::demo::GenderDisplayerConstructor, public ::vl::reflection::Description<GenderDisplayer>
-	{
-		friend class ::demo::GenderDisplayerConstructor;
-		friend class ::vl_workflow_global::__vwsnc28_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf88_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderDisplayer>;
-#endif
-	public:
-		::demo::MyGender __vwsn_prop_Gender;
-		::demo::MyGender GetGender();
-		void SetGender(::demo::MyGender __vwsn_value_);
-		::vl::Event<void()> GenderChanged;
-		GenderDisplayer();
-		~GenderDisplayer();
 	};
 
 	class GenderEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderEditorConstructor>
@@ -1375,24 +1102,6 @@ namespace demo
 		GenderEditorConstructor();
 	};
 
-	class GenderEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::GenderEditorConstructor, public ::vl::reflection::Description<GenderEditor>
-	{
-		friend class ::demo::GenderEditorConstructor;
-		friend class ::vl_workflow_global::__vwsnc29_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc30_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf89_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf90_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf91_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf92_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderEditor>;
-#endif
-	public:
-		::vl::Ptr<::vl::reflection::description::IValueList> items;
-		GenderEditor();
-		~GenderEditor();
-	};
-
 	class GenderItemTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderItemTemplateConstructor>
 	{
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -1406,19 +1115,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::GenderItemTemplate* __vwsn_this_);
 	public:
 		GenderItemTemplateConstructor();
-	};
-
-	class GenderItemTemplate : public ::vl::presentation::templates::GuiTextListItemTemplate, public ::demo::GenderItemTemplateConstructor, public ::vl::reflection::Description<GenderItemTemplate>
-	{
-		friend class ::demo::GenderItemTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplate>;
-#endif
-	public:
-		::demo::MyGender __vwsn_parameter_SelectedGender;
-		::demo::MyGender GetSelectedGender();
-		GenderItemTemplate(::demo::MyGender __vwsn_ctor_parameter_SelectedGender);
-		~GenderItemTemplate();
 	};
 
 	class GenderVisualizerConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderVisualizerConstructor>
@@ -1435,19 +1131,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::GenderVisualizer* __vwsn_this_);
 	public:
 		GenderVisualizerConstructor();
-	};
-
-	class GenderVisualizer : public ::vl::presentation::templates::GuiGridVisualizerTemplate, public ::demo::GenderVisualizerConstructor, public ::vl::reflection::Description<GenderVisualizer>
-	{
-		friend class ::demo::GenderVisualizerConstructor;
-		friend class ::vl_workflow_global::__vwsnc31_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf93_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderVisualizer>;
-#endif
-	public:
-		GenderVisualizer();
-		~GenderVisualizer();
 	};
 
 	class HyperlinkWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<HyperlinkWindowConstructor>
@@ -1477,23 +1160,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::HyperlinkWindow* __vwsn_this_);
 	public:
 		HyperlinkWindowConstructor();
-	};
-
-	class HyperlinkWindow : public ::vl::presentation::controls::GuiWindow, public ::demo::HyperlinkWindowConstructor, public ::vl::reflection::Description<HyperlinkWindow>
-	{
-		friend class ::demo::HyperlinkWindowConstructor;
-		friend struct ::vl_workflow_global::__vwsnf94_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf95_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HyperlinkWindow>;
-#endif
-	public:
-		::vl::Nullable<::vl::WString> __vwsn_prop_Url;
-		::vl::Nullable<::vl::WString> GetUrl();
-		void SetUrl(const ::vl::Nullable<::vl::WString>& __vwsn_value_);
-		::vl::Event<void()> UrlChanged;
-		HyperlinkWindow();
-		~HyperlinkWindow();
 	};
 
 	class DocumentRibbonTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentRibbonTabPageConstructor>
@@ -1571,44 +1237,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::DocumentRibbonTabPage* __vwsn_this_);
 	public:
 		DocumentRibbonTabPageConstructor();
-	};
-
-	class DocumentRibbonTabPage : public ::demo::DocumentTabPageBase, public ::demo::DocumentRibbonTabPageConstructor, public ::vl::reflection::Description<DocumentRibbonTabPage>
-	{
-		friend class ::demo::DocumentRibbonTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc32_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc33_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc34_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc35_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc36_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc37_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc38_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf100_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf101_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf102_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf96_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf97_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf98_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf99_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentRibbonTabPage>;
-#endif
-	private:
-		bool __vwsn_prop_AlignLeftSelected;
-		bool GetAlignLeftSelected();
-		void SetAlignLeftSelected(bool __vwsn_value_);
-		::vl::Event<void()> AlignLeftSelectedChanged;
-		bool __vwsn_prop_AlignCenterSelected;
-		bool GetAlignCenterSelected();
-		void SetAlignCenterSelected(bool __vwsn_value_);
-		::vl::Event<void()> AlignCenterSelectedChanged;
-		bool __vwsn_prop_AlignRightSelected;
-		bool GetAlignRightSelected();
-		void SetAlignRightSelected(bool __vwsn_value_);
-		::vl::Event<void()> AlignRightSelectedChanged;
-	public:
-		DocumentRibbonTabPage();
-		~DocumentRibbonTabPage();
 	};
 
 	class DocumentTabPageBaseConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentTabPageBaseConstructor>
@@ -1740,125 +1368,6 @@ namespace demo
 		DocumentTabPageBaseConstructor();
 	};
 
-	class DocumentTabPageBase : public ::vl::presentation::controls::GuiTabPage, public ::demo::DocumentTabPageBaseConstructor, public ::vl::reflection::Description<DocumentTabPageBase>
-	{
-		friend class ::demo::DocumentTabPageBaseConstructor;
-		friend class ::vl_workflow_global::__vwsnc39_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc40_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc41_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc42_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc43_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc44_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc45_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc46_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc47_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance_____vl_reflection_description_ICoroutine;
-		friend class ::vl_workflow_global::__vwsnc48_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc49_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc50_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc51_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc52_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc53_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc54_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc55_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc56_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc57_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc58_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc59_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc60_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc61_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc62_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc63_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc64_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc65_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc66_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc67_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf103_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf104_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf105_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf106_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf107_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf108_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf109_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf110_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf111_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf112_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf113_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf114_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf115_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf116_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf117_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf118_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf119_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf120_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf121_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___;
-		friend struct ::vl_workflow_global::__vwsnf122_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf123_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf124_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf125_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf126_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf127_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf128_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf129_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf130_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf131_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf132_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf133_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf134_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf135_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf136_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf137_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf138_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf139_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf140_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf141_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf142_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf143_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf144_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf145_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf146_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf147_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf148_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf149_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf150_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf151_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf152_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf153_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf154_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf155_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf156_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTabPageBase>;
-#endif
-	protected:
-		::vl::presentation::controls::GuiToolstripCommand* __vwsn_prop_EditModeCommand;
-		::vl::presentation::controls::GuiToolstripCommand* GetEditModeCommand();
-		void SetEditModeCommand(::vl::presentation::controls::GuiToolstripCommand* __vwsn_value_);
-		::vl::Event<void()> EditModeCommandChanged;
-	private:
-		void SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode editMode);
-	protected:
-		::vl::presentation::controls::GuiToolstripCommand* SelectAlignmentCommand();
-	private:
-		void SetAlignment(::vl::Nullable<::vl::presentation::Alignment> alignment);
-		bool __vwsn_prop_HasEditableSelection;
-		bool GetHasEditableSelection();
-		void SetHasEditableSelection(bool __vwsn_value_);
-		::vl::Event<void()> HasEditableSelectionChanged;
-		bool __vwsn_prop_HasEditableSelectionInSingleParagraph;
-		bool GetHasEditableSelectionInSingleParagraph();
-		void SetHasEditableSelectionInSingleParagraph(bool __vwsn_value_);
-		::vl::Event<void()> HasEditableSelectionInSingleParagraphChanged;
-		bool HasEditableCursor();
-		bool HasEditableHyperlink(bool forEdit);
-	protected:
-		::vl::presentation::compositions::GuiGraphicsComposition* GetMenuContainer();
-		::vl::presentation::compositions::GuiGraphicsComposition* GetToolstripContainer();
-	public:
-		DocumentTabPageBase();
-		void __vwsn_instance_ctor_();
-		~DocumentTabPageBase();
-	};
-
 	class DocumentToolstripTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentToolstripTabPageConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc68_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -1944,21 +1453,6 @@ namespace demo
 		DocumentToolstripTabPageConstructor();
 	};
 
-	class DocumentToolstripTabPage : public ::demo::DocumentTabPageBase, public ::demo::DocumentToolstripTabPageConstructor, public ::vl::reflection::Description<DocumentToolstripTabPage>
-	{
-		friend class ::demo::DocumentToolstripTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc68_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc69_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf157_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf158_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentToolstripTabPage>;
-#endif
-	public:
-		DocumentToolstripTabPage();
-		~DocumentToolstripTabPage();
-	};
-
 	class LocalizedStringsTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<LocalizedStringsTabPageConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc70_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -2031,60 +1525,6 @@ namespace demo
 		LocalizedStringsTabPageConstructor();
 	};
 
-	class LocalizedStringsTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::LocalizedStringsTabPageConstructor, public ::vl::reflection::Description<LocalizedStringsTabPage>
-	{
-		friend class ::demo::LocalizedStringsTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc70_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc71_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc72_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc73_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc74_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc75_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc76_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc77_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc78_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc79_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc80_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc81_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc82_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc83_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc84_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc85_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc86_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf159_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf160_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf161_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf162_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf163_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf164_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf165_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf166_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf167_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf168_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf169_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf170_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf171_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf172_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf173_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf174_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf175_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf176_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LocalizedStringsTabPage>;
-#endif
-	public:
-		::vl::vint32_t GetLocaleIndex(::vl::Locale locale);
-		::vl::DateTime dateTime;
-		::vl::vint32_t number;
-		double currency;
-		::vl::Ptr<::demo::IStringResourceStrings> __vwsn_prop_Strings;
-		::vl::Ptr<::demo::IStringResourceStrings> GetStrings();
-		void SetStrings(::vl::Ptr<::demo::IStringResourceStrings> __vwsn_value_);
-		::vl::Event<void()> StringsChanged;
-		LocalizedStringsTabPage();
-		~LocalizedStringsTabPage();
-	};
-
 	class RepeatItemTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RepeatItemTemplateConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc87_Demo_demo_RepeatItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -2100,21 +1540,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::RepeatItemTemplate* __vwsn_this_);
 	public:
 		RepeatItemTemplateConstructor();
-	};
-
-	class RepeatItemTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::demo::RepeatItemTemplateConstructor, public ::vl::reflection::Description<RepeatItemTemplate>
-	{
-		friend class ::demo::RepeatItemTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc87_Demo_demo_RepeatItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf177_Demo_demo_RepeatItemTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RepeatItemTemplate>;
-#endif
-	public:
-		::vl::Ptr<::demo::MyTextItem> __vwsn_parameter_ViewModel;
-		::vl::Ptr<::demo::MyTextItem> GetViewModel();
-		RepeatItemTemplate(::vl::Ptr<::demo::MyTextItem> __vwsn_ctor_parameter_ViewModel);
-		~RepeatItemTemplate();
 	};
 
 	class ResponsiveGroupControlConstructor : public ::vl::Object, public ::vl::reflection::Description<ResponsiveGroupControlConstructor>
@@ -2177,23 +1602,6 @@ namespace demo
 		ResponsiveGroupControlConstructor();
 	};
 
-	class ResponsiveGroupControl : public ::vl::presentation::controls::GuiCustomControl, public ::demo::ResponsiveGroupControlConstructor, public ::vl::reflection::Description<ResponsiveGroupControl>
-	{
-		friend class ::demo::ResponsiveGroupControlConstructor;
-		friend class ::vl_workflow_global::__vwsnc88_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc89_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf178_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf179_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf180_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf181_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveGroupControl>;
-#endif
-	public:
-		ResponsiveGroupControl();
-		~ResponsiveGroupControl();
-	};
-
 	class ResponsiveStackControlConstructor : public ::vl::Object, public ::vl::reflection::Description<ResponsiveStackControlConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc90_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -2254,23 +1662,6 @@ namespace demo
 		ResponsiveStackControlConstructor();
 	};
 
-	class ResponsiveStackControl : public ::vl::presentation::controls::GuiCustomControl, public ::demo::ResponsiveStackControlConstructor, public ::vl::reflection::Description<ResponsiveStackControl>
-	{
-		friend class ::demo::ResponsiveStackControlConstructor;
-		friend class ::vl_workflow_global::__vwsnc90_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc91_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf182_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf183_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf184_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf185_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveStackControl>;
-#endif
-	public:
-		ResponsiveStackControl();
-		~ResponsiveStackControl();
-	};
-
 	class ResponsiveTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<ResponsiveTabPageConstructor>
 	{
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -2297,17 +1688,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::ResponsiveTabPage* __vwsn_this_);
 	public:
 		ResponsiveTabPageConstructor();
-	};
-
-	class ResponsiveTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ResponsiveTabPageConstructor, public ::vl::reflection::Description<ResponsiveTabPage>
-	{
-		friend class ::demo::ResponsiveTabPageConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveTabPage>;
-#endif
-	public:
-		ResponsiveTabPage();
-		~ResponsiveTabPage();
 	};
 
 	class ResponsiveViewControlConstructor : public ::vl::Object, public ::vl::reflection::Description<ResponsiveViewControlConstructor>
@@ -2374,31 +1754,6 @@ namespace demo
 		ResponsiveViewControlConstructor();
 	};
 
-	class ResponsiveViewControl : public ::vl::presentation::controls::GuiCustomControl, public ::demo::ResponsiveViewControlConstructor, public ::vl::reflection::Description<ResponsiveViewControl>
-	{
-		friend class ::demo::ResponsiveViewControlConstructor;
-		friend class ::vl_workflow_global::__vwsnc92_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc93_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc94_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc95_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc96_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc97_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf186_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf187_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf188_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf189_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf190_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf191_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf192_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf193_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveViewControl>;
-#endif
-	public:
-		ResponsiveViewControl();
-		~ResponsiveViewControl();
-	};
-
 	class TextBoxTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextBoxTabPageConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc98_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -2442,30 +1797,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::TextBoxTabPage* __vwsn_this_);
 	public:
 		TextBoxTabPageConstructor();
-	};
-
-	class TextBoxTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextBoxTabPageConstructor, public ::vl::reflection::Description<TextBoxTabPage>
-	{
-		friend class ::demo::TextBoxTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc98_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf194_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf195_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf196_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf197_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf198_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxTabPage>;
-#endif
-	protected:
-		bool flag;
-	public:
-		::vl::Event<void()> OnMakeFontLarger;
-		::vl::Event<void()> OnMakeFontSmaller;
-	protected:
-		void UpdateFont(::vl::presentation::FontProperties newFont);
-	public:
-		TextBoxTabPage();
-		~TextBoxTabPage();
 	};
 
 	class MyTextItem : public ::vl::Object, public ::vl::reflection::Description<MyTextItem>
@@ -2596,6 +1927,675 @@ namespace demo
 		static ::vl::WString __vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats);
 		static ::vl::Ptr<::demo::IStringResourceStrings> Get(::vl::Locale __vwsn_ls_locale);
 		StringResource();
+	};
+
+	class ElementTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ElementTabPageConstructor, public ::vl::reflection::Description<ElementTabPage>
+	{
+		friend class ::demo::ElementTabPageConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ElementTabPage>;
+#endif
+	public:
+		ElementTabPage();
+		~ElementTabPage();
+	};
+
+	class ListViewTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ListViewTabPageConstructor, public ::vl::reflection::Description<ListViewTabPage>
+	{
+		friend struct ::vl_workflow_global::__vwsnf37_Demo_demo_ListViewTabPage___vwsn_instance_ctor__;
+		friend struct ::vl_workflow_global::__vwsnf38_Demo_demo_ListViewTabPage___vwsn_instance_ctor__;
+		friend class ::demo::ListViewTabPageConstructor;
+		friend struct ::vl_workflow_global::__vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf31_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf32_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf34_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf35_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf36_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTabPage>;
+#endif
+	public:
+		ListViewTabPage();
+		void __vwsn_instance_ctor_();
+		~ListViewTabPage();
+	};
+
+	class RepeatTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::RepeatTabPageConstructor, public ::vl::reflection::Description<RepeatTabPage>
+	{
+		friend class ::demo::RepeatTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf39_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf40_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf41_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf42_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf43_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf45_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RepeatTabPage>;
+#endif
+	public:
+		::vl::vint32_t counter;
+		::vl::Ptr<::vl::reflection::description::IValueObservableList> itemsToBind;
+		::vl::WString ToText_1to9(::vl::vint32_t i);
+		::vl::WString ToText_11to19(::vl::vint32_t i);
+		::vl::WString NumberToText_1To99(::vl::vint32_t i);
+		::vl::WString NumberToText_0to999(::vl::vint32_t i);
+		::vl::WString NumberToText(::vl::vint32_t i);
+		RepeatTabPage();
+		~RepeatTabPage();
+	};
+
+	class TextListTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextListTabPageConstructor, public ::vl::reflection::Description<TextListTabPage>
+	{
+		friend class ::demo::TextListTabPageConstructor;
+		friend struct ::vl_workflow_global::__vwsnf46_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf47_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf48_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf49_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf50_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTabPage>;
+#endif
+	public:
+		::vl::vint32_t counter;
+		::vl::Ptr<::vl::reflection::description::IValueObservableList> itemsToBind;
+		TextListTabPage();
+		~TextListTabPage();
+	};
+
+	class TreeViewTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TreeViewTabPageConstructor, public ::vl::reflection::Description<TreeViewTabPage>
+	{
+		friend class ::demo::TreeViewTabPageConstructor;
+		friend struct ::vl_workflow_global::__vwsnf53_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf54_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf55_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTabPage>;
+#endif
+	public:
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> nodesToBind;
+		TreeViewTabPage();
+		void __vwsn_instance_ctor_();
+		~TreeViewTabPage();
+	};
+
+	class AnimationTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::AnimationTabPageConstructor, public ::vl::reflection::Description<AnimationTabPage>
+	{
+		friend class ::vl_workflow_global::__vwsnc11_Demo_demo_AnimationTabPage_BallAnimationWithDelay___vl_reflection_description_ICoroutine;
+		friend class ::vl_workflow_global::__vwsnc12_Demo_demo_AnimationTabPage_WaitingAnimation___vl_reflection_description_ICoroutine;
+		friend struct ::vl_workflow_global::__vwsnf63_Demo_demo_AnimationTabPage_BallAnimation_;
+		friend struct ::vl_workflow_global::__vwsnf64_Demo_demo_AnimationTabPage_BallAnimationWithDelay_;
+		friend struct ::vl_workflow_global::__vwsnf65_Demo_demo_AnimationTabPage_WaitingAnimation_;
+		friend class ::demo::AnimationTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc10_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc7_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc8_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc9_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf56_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf57_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf58_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf59_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf60_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf61_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf62_Demo_demo_AnimationTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<AnimationTabPage>;
+#endif
+	private:
+		static ::vl::Ptr<::vl::presentation::controls::IGuiAnimation> BallAnimation(::vl::presentation::compositions::GuiBoundsComposition* container, ::vl::presentation::compositions::GuiBoundsComposition* ball);
+		static ::vl::Ptr<::vl::presentation::controls::IGuiAnimation> BallAnimationWithDelay(::vl::presentation::compositions::GuiBoundsComposition* container, ::vl::presentation::compositions::GuiBoundsComposition* ball, ::vl::vint32_t delay);
+		static ::vl::Ptr<::vl::presentation::controls::IGuiAnimation> WaitingAnimation(::vl::presentation::compositions::GuiBoundsComposition* container);
+		::vl::Ptr<::demo::ColorAnimation> gradientColorDef;
+		::vl::Ptr<::vl::presentation::controls::IGuiAnimation> lastGradientAnimation;
+	public:
+		void PerformGradientAnimation(::vl::Ptr<::demo::ColorDef> target);
+		::vl::vint32_t counter;
+		AnimationTabPage();
+		void __vwsn_instance_ctor_();
+		~AnimationTabPage();
+	};
+
+	class DateEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::DateEditorConstructor, public ::vl::reflection::Description<DateEditor>
+	{
+		friend class ::demo::DateEditorConstructor;
+		friend class ::vl_workflow_global::__vwsnc13_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc14_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf68_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf69_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateEditor>;
+#endif
+	public:
+		DateEditor();
+		~DateEditor();
+	};
+
+	class DateFilter : public ::vl::presentation::controls::GuiCustomControl, public ::demo::DateFilterConstructor, public ::vl::reflection::Description<DateFilter>
+	{
+		friend class ::vl_workflow_global::__vwsnc17_Demo_demo_DateFilter___vwsn_instance_ctor___vl_presentation_controls_list_IDataFilter;
+		friend class ::demo::DateFilterConstructor;
+		friend class ::vl_workflow_global::__vwsnc15_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc16_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf70_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf71_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf72_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf73_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf74_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf75_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateFilter>;
+#endif
+	private:
+		::vl::presentation::controls::list::IDataProcessorCallback* callback;
+		void UpdateFilter();
+	public:
+		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> __vwsn_prop_Filter;
+		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> GetFilter();
+		void SetFilter(::vl::Ptr<::vl::presentation::controls::list::IDataFilter> __vwsn_value_);
+		DateFilter();
+		void __vwsn_instance_ctor_();
+		~DateFilter();
+	};
+
+	class TextEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::TextEditorConstructor, public ::vl::reflection::Description<TextEditor>
+	{
+		friend class ::demo::TextEditorConstructor;
+		friend class ::vl_workflow_global::__vwsnc18_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc19_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf76_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf77_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextEditor>;
+#endif
+	public:
+		TextEditor();
+		~TextEditor();
+	};
+
+	class CategoryDisplayer : public ::vl::presentation::controls::GuiCustomControl, public ::demo::CategoryDisplayerConstructor, public ::vl::reflection::Description<CategoryDisplayer>
+	{
+		friend class ::demo::CategoryDisplayerConstructor;
+		friend class ::vl_workflow_global::__vwsnc20_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc21_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc22_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf78_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf79_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf80_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryDisplayer>;
+#endif
+	public:
+		::demo::MyCategory __vwsn_prop_Category;
+		::demo::MyCategory GetCategory();
+		void SetCategory(::demo::MyCategory __vwsn_value_);
+		::vl::Event<void()> CategoryChanged;
+		CategoryDisplayer();
+		~CategoryDisplayer();
+	};
+
+	class CategoryEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::CategoryEditorConstructor, public ::vl::reflection::Description<CategoryEditor>
+	{
+		friend class ::demo::CategoryEditorConstructor;
+		friend class ::vl_workflow_global::__vwsnc23_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc24_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf81_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf82_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf83_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf84_Demo_demo_CategoryEditorConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryEditor>;
+#endif
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueList> items;
+		CategoryEditor();
+		~CategoryEditor();
+	};
+
+	class CategoryItemTemplate : public ::vl::presentation::templates::GuiTextListItemTemplate, public ::demo::CategoryItemTemplateConstructor, public ::vl::reflection::Description<CategoryItemTemplate>
+	{
+		friend class ::demo::CategoryItemTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc25_Demo_demo_CategoryItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf85_Demo_demo_CategoryItemTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryItemTemplate>;
+#endif
+	public:
+		::demo::MyCategory __vwsn_parameter_SelectedCategory;
+		::demo::MyCategory GetSelectedCategory();
+		CategoryItemTemplate(::demo::MyCategory __vwsn_ctor_parameter_SelectedCategory);
+		~CategoryItemTemplate();
+	};
+
+	class CategoryVisualizer : public ::vl::presentation::templates::GuiGridVisualizerTemplate, public ::demo::CategoryVisualizerConstructor, public ::vl::reflection::Description<CategoryVisualizer>
+	{
+		friend class ::demo::CategoryVisualizerConstructor;
+		friend class ::vl_workflow_global::__vwsnc26_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc27_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf86_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf87_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryVisualizer>;
+#endif
+	public:
+		CategoryVisualizer();
+		~CategoryVisualizer();
+	};
+
+	class GenderDisplayer : public ::vl::presentation::controls::GuiCustomControl, public ::demo::GenderDisplayerConstructor, public ::vl::reflection::Description<GenderDisplayer>
+	{
+		friend class ::demo::GenderDisplayerConstructor;
+		friend class ::vl_workflow_global::__vwsnc28_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf88_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderDisplayer>;
+#endif
+	public:
+		::demo::MyGender __vwsn_prop_Gender;
+		::demo::MyGender GetGender();
+		void SetGender(::demo::MyGender __vwsn_value_);
+		::vl::Event<void()> GenderChanged;
+		GenderDisplayer();
+		~GenderDisplayer();
+	};
+
+	class GenderEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::GenderEditorConstructor, public ::vl::reflection::Description<GenderEditor>
+	{
+		friend class ::demo::GenderEditorConstructor;
+		friend class ::vl_workflow_global::__vwsnc29_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc30_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf89_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf90_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf91_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf92_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderEditor>;
+#endif
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueList> items;
+		GenderEditor();
+		~GenderEditor();
+	};
+
+	class GenderItemTemplate : public ::vl::presentation::templates::GuiTextListItemTemplate, public ::demo::GenderItemTemplateConstructor, public ::vl::reflection::Description<GenderItemTemplate>
+	{
+		friend class ::demo::GenderItemTemplateConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplate>;
+#endif
+	public:
+		::demo::MyGender __vwsn_parameter_SelectedGender;
+		::demo::MyGender GetSelectedGender();
+		GenderItemTemplate(::demo::MyGender __vwsn_ctor_parameter_SelectedGender);
+		~GenderItemTemplate();
+	};
+
+	class GenderVisualizer : public ::vl::presentation::templates::GuiGridVisualizerTemplate, public ::demo::GenderVisualizerConstructor, public ::vl::reflection::Description<GenderVisualizer>
+	{
+		friend class ::demo::GenderVisualizerConstructor;
+		friend class ::vl_workflow_global::__vwsnc31_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf93_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderVisualizer>;
+#endif
+	public:
+		GenderVisualizer();
+		~GenderVisualizer();
+	};
+
+	class HyperlinkWindow : public ::vl::presentation::controls::GuiWindow, public ::demo::HyperlinkWindowConstructor, public ::vl::reflection::Description<HyperlinkWindow>
+	{
+		friend class ::demo::HyperlinkWindowConstructor;
+		friend struct ::vl_workflow_global::__vwsnf94_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf95_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HyperlinkWindow>;
+#endif
+	public:
+		::vl::Nullable<::vl::WString> __vwsn_prop_Url;
+		::vl::Nullable<::vl::WString> GetUrl();
+		void SetUrl(const ::vl::Nullable<::vl::WString>& __vwsn_value_);
+		::vl::Event<void()> UrlChanged;
+		HyperlinkWindow();
+		~HyperlinkWindow();
+	};
+
+	class DocumentRibbonTabPage : public ::demo::DocumentTabPageBase, public ::demo::DocumentRibbonTabPageConstructor, public ::vl::reflection::Description<DocumentRibbonTabPage>
+	{
+		friend class ::demo::DocumentRibbonTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc32_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc33_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc34_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc35_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc36_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc37_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc38_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf100_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf101_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf102_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf96_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf97_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf98_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf99_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentRibbonTabPage>;
+#endif
+	private:
+		bool __vwsn_prop_AlignLeftSelected;
+		bool GetAlignLeftSelected();
+		void SetAlignLeftSelected(bool __vwsn_value_);
+		::vl::Event<void()> AlignLeftSelectedChanged;
+		bool __vwsn_prop_AlignCenterSelected;
+		bool GetAlignCenterSelected();
+		void SetAlignCenterSelected(bool __vwsn_value_);
+		::vl::Event<void()> AlignCenterSelectedChanged;
+		bool __vwsn_prop_AlignRightSelected;
+		bool GetAlignRightSelected();
+		void SetAlignRightSelected(bool __vwsn_value_);
+		::vl::Event<void()> AlignRightSelectedChanged;
+	public:
+		DocumentRibbonTabPage();
+		~DocumentRibbonTabPage();
+	};
+
+	class DocumentTabPageBase : public ::vl::presentation::controls::GuiTabPage, public ::demo::DocumentTabPageBaseConstructor, public ::vl::reflection::Description<DocumentTabPageBase>
+	{
+		friend class ::demo::DocumentTabPageBaseConstructor;
+		friend class ::vl_workflow_global::__vwsnc39_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc40_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc41_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc42_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc43_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc44_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc45_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc46_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc47_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance_____vl_reflection_description_ICoroutine;
+		friend class ::vl_workflow_global::__vwsnc48_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc49_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc50_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc51_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc52_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc53_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc54_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc55_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc56_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc57_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc58_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc59_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc60_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc61_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc62_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc63_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc64_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc65_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc66_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc67_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf103_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf104_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf105_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf106_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf107_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf108_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf109_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf110_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf111_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf112_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf113_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf114_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf115_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf116_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf117_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf118_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf119_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf120_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf121_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance___;
+		friend struct ::vl_workflow_global::__vwsnf122_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf123_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf124_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf125_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf126_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf127_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf128_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf129_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf130_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf131_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf132_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf133_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf134_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf135_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf136_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf137_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf138_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf139_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf140_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf141_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf142_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf143_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf144_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf145_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf146_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf147_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf148_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf149_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf150_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf151_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf152_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf153_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf154_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf155_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf156_Demo_demo_DocumentTabPageBaseConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTabPageBase>;
+#endif
+	protected:
+		::vl::presentation::controls::GuiToolstripCommand* __vwsn_prop_EditModeCommand;
+		::vl::presentation::controls::GuiToolstripCommand* GetEditModeCommand();
+		void SetEditModeCommand(::vl::presentation::controls::GuiToolstripCommand* __vwsn_value_);
+		::vl::Event<void()> EditModeCommandChanged;
+	private:
+		void SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode editMode);
+	protected:
+		::vl::presentation::controls::GuiToolstripCommand* SelectAlignmentCommand();
+	private:
+		void SetAlignment(::vl::Nullable<::vl::presentation::Alignment> alignment);
+		bool __vwsn_prop_HasEditableSelection;
+		bool GetHasEditableSelection();
+		void SetHasEditableSelection(bool __vwsn_value_);
+		::vl::Event<void()> HasEditableSelectionChanged;
+		bool __vwsn_prop_HasEditableSelectionInSingleParagraph;
+		bool GetHasEditableSelectionInSingleParagraph();
+		void SetHasEditableSelectionInSingleParagraph(bool __vwsn_value_);
+		::vl::Event<void()> HasEditableSelectionInSingleParagraphChanged;
+		bool HasEditableCursor();
+		bool HasEditableHyperlink(bool forEdit);
+	protected:
+		::vl::presentation::compositions::GuiGraphicsComposition* GetMenuContainer();
+		::vl::presentation::compositions::GuiGraphicsComposition* GetToolstripContainer();
+	public:
+		DocumentTabPageBase();
+		void __vwsn_instance_ctor_();
+		~DocumentTabPageBase();
+	};
+
+	class DocumentToolstripTabPage : public ::demo::DocumentTabPageBase, public ::demo::DocumentToolstripTabPageConstructor, public ::vl::reflection::Description<DocumentToolstripTabPage>
+	{
+		friend class ::demo::DocumentToolstripTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc68_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc69_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf157_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf158_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentToolstripTabPage>;
+#endif
+	public:
+		DocumentToolstripTabPage();
+		~DocumentToolstripTabPage();
+	};
+
+	class LocalizedStringsTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::LocalizedStringsTabPageConstructor, public ::vl::reflection::Description<LocalizedStringsTabPage>
+	{
+		friend class ::demo::LocalizedStringsTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc70_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc71_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc72_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc73_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc74_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc75_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc76_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc77_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc78_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc79_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc80_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc81_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc82_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc83_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc84_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc85_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc86_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf159_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf160_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf161_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf162_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf163_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf164_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf165_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf166_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf167_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf168_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf169_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf170_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf171_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf172_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf173_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf174_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf175_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf176_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LocalizedStringsTabPage>;
+#endif
+	public:
+		::vl::vint32_t GetLocaleIndex(::vl::Locale locale);
+		::vl::DateTime dateTime;
+		::vl::vint32_t number;
+		double currency;
+		::vl::Ptr<::demo::IStringResourceStrings> __vwsn_prop_Strings;
+		::vl::Ptr<::demo::IStringResourceStrings> GetStrings();
+		void SetStrings(::vl::Ptr<::demo::IStringResourceStrings> __vwsn_value_);
+		::vl::Event<void()> StringsChanged;
+		LocalizedStringsTabPage();
+		~LocalizedStringsTabPage();
+	};
+
+	class RepeatItemTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::demo::RepeatItemTemplateConstructor, public ::vl::reflection::Description<RepeatItemTemplate>
+	{
+		friend class ::demo::RepeatItemTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc87_Demo_demo_RepeatItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf177_Demo_demo_RepeatItemTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RepeatItemTemplate>;
+#endif
+	public:
+		::vl::Ptr<::demo::MyTextItem> __vwsn_parameter_ViewModel;
+		::vl::Ptr<::demo::MyTextItem> GetViewModel();
+		RepeatItemTemplate(::vl::Ptr<::demo::MyTextItem> __vwsn_ctor_parameter_ViewModel);
+		~RepeatItemTemplate();
+	};
+
+	class ResponsiveGroupControl : public ::vl::presentation::controls::GuiCustomControl, public ::demo::ResponsiveGroupControlConstructor, public ::vl::reflection::Description<ResponsiveGroupControl>
+	{
+		friend class ::demo::ResponsiveGroupControlConstructor;
+		friend class ::vl_workflow_global::__vwsnc88_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc89_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf178_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf179_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf180_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf181_Demo_demo_ResponsiveGroupControlConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveGroupControl>;
+#endif
+	public:
+		ResponsiveGroupControl();
+		~ResponsiveGroupControl();
+	};
+
+	class ResponsiveStackControl : public ::vl::presentation::controls::GuiCustomControl, public ::demo::ResponsiveStackControlConstructor, public ::vl::reflection::Description<ResponsiveStackControl>
+	{
+		friend class ::demo::ResponsiveStackControlConstructor;
+		friend class ::vl_workflow_global::__vwsnc90_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc91_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf182_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf183_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf184_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf185_Demo_demo_ResponsiveStackControlConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveStackControl>;
+#endif
+	public:
+		ResponsiveStackControl();
+		~ResponsiveStackControl();
+	};
+
+	class ResponsiveTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ResponsiveTabPageConstructor, public ::vl::reflection::Description<ResponsiveTabPage>
+	{
+		friend class ::demo::ResponsiveTabPageConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveTabPage>;
+#endif
+	public:
+		ResponsiveTabPage();
+		~ResponsiveTabPage();
+	};
+
+	class ResponsiveViewControl : public ::vl::presentation::controls::GuiCustomControl, public ::demo::ResponsiveViewControlConstructor, public ::vl::reflection::Description<ResponsiveViewControl>
+	{
+		friend class ::demo::ResponsiveViewControlConstructor;
+		friend class ::vl_workflow_global::__vwsnc92_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc93_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc94_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc95_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc96_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc97_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf186_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf187_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf188_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf189_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf190_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf191_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf192_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf193_Demo_demo_ResponsiveViewControlConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ResponsiveViewControl>;
+#endif
+	public:
+		ResponsiveViewControl();
+		~ResponsiveViewControl();
+	};
+
+	class TextBoxTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextBoxTabPageConstructor, public ::vl::reflection::Description<TextBoxTabPage>
+	{
+		friend class ::demo::TextBoxTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc98_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf194_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf195_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf196_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf197_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf198_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxTabPage>;
+#endif
+	protected:
+		bool flag;
+	public:
+		::vl::Event<void()> OnMakeFontLarger;
+		::vl::Event<void()> OnMakeFontSmaller;
+	protected:
+		void UpdateFont(::vl::presentation::FontProperties newFont);
+	public:
+		TextBoxTabPage();
+		~TextBoxTabPage();
 	};
 
 }
