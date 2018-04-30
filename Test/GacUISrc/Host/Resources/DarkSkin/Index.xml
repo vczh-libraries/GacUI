@@ -34,6 +34,10 @@
     <att.RibbonLargeButton>x:RibbonLargeButtonTemplate</att.RibbonLargeButton>
     <att.RibbonLargeDropdownButton>x:RibbonLargeDropdownButtonTemplate</att.RibbonLargeDropdownButton>
     <att.RibbonLargeSplitButton>x:RibbonLargeSplitButtonTemplate</att.RibbonLargeSplitButton>
+    <att.RibbonGroup>x:RibbonGroupTemplate</att.RibbonGroup>
+    <att.RibbonSplitter>x:ToolstripSplitterTemplate</att.RibbonSplitter>
+    <att.RibbonButtons>x:RibbonButtonsTemplate</att.RibbonButtons>
+    <att.RibbonToolstrips>x:RibbonToolstripsTemplate</att.RibbonToolstrips>
     <att.Button>x:ButtonTemplate</att.Button>
     <att.CheckBox>x:CheckBoxTemplate</att.CheckBox>
     <att.RadioButton>x:RadioButtonTemplate</att.RadioButton>
