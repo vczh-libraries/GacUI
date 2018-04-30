@@ -347,500 +347,72 @@ namespace demo
 	inline MyGender operator& (MyGender a, MyGender b) { return static_cast<MyGender>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
 	inline MyGender operator| (MyGender a, MyGender b) { return static_cast<MyGender>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
 
-	class DataGridTabPageConstructor;
-	class DataGridTabPage;
-	class ElementTabPageConstructor;
-	class ListViewTabPageConstructor;
-	class MainWindowConstructor;
-	class RepeatTabPageConstructor;
-	class TextListTabPageConstructor;
-	class TreeViewTabPageConstructor;
 	class AnimationTabPageConstructor;
-	class ColorAnimation;
-	class DateEditorConstructor;
-	class DateFilterConstructor;
-	class TextEditorConstructor;
 	class CategoryDisplayerConstructor;
 	class CategoryEditorConstructor;
 	class CategoryItemTemplateConstructor;
 	class CategoryVisualizerConstructor;
+	class ColorAnimation;
+	class ColorDef;
+	class DataGridTabPageConstructor;
+	class DateEditorConstructor;
+	class DateFilterConstructor;
+	class DocumentRibbonTabPageConstructor;
+	class DocumentTabPageBaseConstructor;
+	class DocumentToolstripTabPageConstructor;
+	class ElementTabPageConstructor;
 	class GenderDisplayerConstructor;
 	class GenderEditorConstructor;
 	class GenderItemTemplateConstructor;
 	class GenderVisualizerConstructor;
 	class HyperlinkWindowConstructor;
-	class DocumentRibbonTabPageConstructor;
-	class DocumentTabPageBaseConstructor;
-	class DocumentToolstripTabPageConstructor;
+	class IStringResourceStrings;
+	class ListViewTabPageConstructor;
 	class LocalizedStringsTabPageConstructor;
+	class MainWindowConstructor;
+	class MyDataItem;
+	class MyTextItem;
 	class RepeatItemTemplateConstructor;
+	class RepeatTabPageConstructor;
 	class ResponsiveGroupControlConstructor;
 	class ResponsiveStackControlConstructor;
 	class ResponsiveTabPageConstructor;
 	class ResponsiveViewControlConstructor;
-	class TextBoxTabPageConstructor;
-	class MyTextItem;
-	class MyDataItem;
-	class ColorDef;
-	class IStringResourceStrings;
 	class StringResource;
-	class ElementTabPage;
-	class ListViewTabPage;
-	class MainWindow;
-	class RepeatTabPage;
-	class TextListTabPage;
-	class TreeViewTabPage;
+	class TextBoxTabPageConstructor;
+	class TextEditorConstructor;
+	class TextListTabPageConstructor;
+	class TreeViewTabPageConstructor;
 	class AnimationTabPage;
-	class DateEditor;
-	class DateFilter;
-	class TextEditor;
 	class CategoryDisplayer;
 	class CategoryEditor;
 	class CategoryItemTemplate;
 	class CategoryVisualizer;
+	class DataGridTabPage;
+	class DateEditor;
+	class DateFilter;
+	class DocumentTabPageBase;
+	class ElementTabPage;
 	class GenderDisplayer;
 	class GenderEditor;
 	class GenderItemTemplate;
 	class GenderVisualizer;
 	class HyperlinkWindow;
-	class DocumentRibbonTabPage;
-	class DocumentTabPageBase;
-	class DocumentToolstripTabPage;
+	class ListViewTabPage;
 	class LocalizedStringsTabPage;
+	class MainWindow;
 	class RepeatItemTemplate;
+	class RepeatTabPage;
 	class ResponsiveGroupControl;
 	class ResponsiveStackControl;
 	class ResponsiveTabPage;
 	class ResponsiveViewControl;
 	class TextBoxTabPage;
-
-	class DataGridTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<DataGridTabPageConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
-		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
-		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
-		friend class ::vl_workflow_global::__vwsnc4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
-		friend class ::vl_workflow_global::__vwsnc5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
-		friend struct ::vl_workflow_global::__vwsnf10_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf17_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf21_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf26_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf27_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf28_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsno15_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
-		friend struct ::vl_workflow_global::__vwsno19_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
-		friend struct ::vl_workflow_global::__vwsno25_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
-		friend struct ::vl_workflow_global::__vwsno3_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
-		friend struct ::vl_workflow_global::__vwsno9_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTabPageConstructor>;
-#endif
-	protected:
-		::demo::DataGridTabPage* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_3;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_4;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_5;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_6;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_7;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_8;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_9;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
-		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_12;
-		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_13;
-		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_14;
-		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_15;
-		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_16;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
-		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_18;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_19;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiBindableDataGrid* dataGrid;
-		::demo::DateFilter* dateFilter;
-		void __vwsn_initialize_instance_(::demo::DataGridTabPage* __vwsn_this_);
-	public:
-		DataGridTabPageConstructor();
-	};
-
-	class DataGridTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::DataGridTabPageConstructor, public ::vl::reflection::Description<DataGridTabPage>
-	{
-		friend class ::demo::DataGridTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
-		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
-		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
-		friend class ::vl_workflow_global::__vwsnc4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
-		friend class ::vl_workflow_global::__vwsnc5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
-		friend struct ::vl_workflow_global::__vwsnf10_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf17_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf21_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf26_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf27_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf28_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsno15_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
-		friend struct ::vl_workflow_global::__vwsno19_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
-		friend struct ::vl_workflow_global::__vwsno25_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
-		friend struct ::vl_workflow_global::__vwsno3_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
-		friend struct ::vl_workflow_global::__vwsno9_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTabPage>;
-#endif
-	public:
-		DataGridTabPage();
-		void __vwsn_instance_ctor_();
-		~DataGridTabPage();
-	};
-
-	class ElementTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<ElementTabPageConstructor>
-	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ElementTabPageConstructor>;
-#endif
-	protected:
-		::demo::ElementTabPage* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_4;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_8;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_10;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_12;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_13;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_14;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_15;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_16;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_17;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_18;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_19;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_20;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_21;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_22;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_23;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_24;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_25;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_26;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_27;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_28;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_29;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_30;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_31;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_32;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_33;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_34;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_35;
-		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_36;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_37;
-		::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement> __vwsn_precompile_38;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_39;
-		::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement> __vwsn_precompile_40;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_41;
-		::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement> __vwsn_precompile_42;
-		void __vwsn_initialize_instance_(::demo::ElementTabPage* __vwsn_this_);
-	public:
-		ElementTabPageConstructor();
-	};
-
-	class ListViewTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<ListViewTabPageConstructor>
-	{
-		friend struct ::vl_workflow_global::__vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf31_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf32_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf34_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf35_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf36_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTabPageConstructor>;
-#endif
-	protected:
-		::demo::ListViewTabPage* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_3;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_4;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_5;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_6;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_7;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_8;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_11;
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_12;
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_13;
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_14;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_16;
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_17;
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_18;
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_19;
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_20;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_21;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiListView* listView;
-		::vl::presentation::controls::GuiBindableListView* bindableListView;
-		void __vwsn_initialize_instance_(::demo::ListViewTabPage* __vwsn_this_);
-	public:
-		ListViewTabPageConstructor();
-	};
-
-	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
-	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
-#endif
-	protected:
-		::demo::MainWindow* self;
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_2;
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
-		::demo::TextListTabPage* __vwsn_precompile_5;
-		::demo::ListViewTabPage* __vwsn_precompile_6;
-		::demo::TreeViewTabPage* __vwsn_precompile_7;
-		::demo::DataGridTabPage* __vwsn_precompile_8;
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_9;
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_10;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11;
-		::demo::RepeatTabPage* __vwsn_precompile_12;
-		::demo::ResponsiveTabPage* __vwsn_precompile_13;
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_14;
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_15;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_16;
-		::demo::DocumentToolstripTabPage* __vwsn_precompile_17;
-		::demo::DocumentRibbonTabPage* __vwsn_precompile_18;
-		::demo::TextBoxTabPage* __vwsn_precompile_19;
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_20;
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_21;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22;
-		::demo::ElementTabPage* __vwsn_precompile_23;
-		::demo::AnimationTabPage* __vwsn_precompile_24;
-		::demo::LocalizedStringsTabPage* __vwsn_precompile_25;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_26;
-		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_);
-	public:
-		MainWindowConstructor();
-	};
-
-	class RepeatTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<RepeatTabPageConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf39_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf40_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf41_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf42_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf43_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf45_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RepeatTabPageConstructor>;
-#endif
-	protected:
-		::demo::RepeatTabPage* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_4;
-		::vl::presentation::controls::GuiScrollContainer* __vwsn_precompile_5;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_7;
-		::vl::presentation::controls::GuiScrollContainer* __vwsn_precompile_8;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
-		::vl::presentation::controls::GuiControl* __vwsn_precompile_11;
-		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_12;
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_13;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_14;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15;
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_16;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_17;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_18;
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_19;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_20;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_21;
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_22;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_23;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
-		::vl::presentation::compositions::GuiRepeatStackComposition* repeatStack;
-		::vl::presentation::compositions::GuiRepeatFlowComposition* repeatFlow;
-		::vl::presentation::controls::GuiScroll* hTracker;
-		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_25;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_26;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_27;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_28;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_29;
-		::vl::presentation::controls::GuiScroll* __vwsn_precompile_30;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_31;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_32;
-		::vl::presentation::controls::GuiScroll* __vwsn_precompile_33;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_34;
-		void __vwsn_initialize_instance_(::demo::RepeatTabPage* __vwsn_this_);
-	public:
-		RepeatTabPageConstructor();
-	};
-
-	class TextListTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextListTabPageConstructor>
-	{
-		friend struct ::vl_workflow_global::__vwsnf46_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf47_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf48_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf49_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf50_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTabPageConstructor>;
-#endif
-	protected:
-		::demo::TextListTabPage* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_3;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_4;
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_5;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
-		::vl::presentation::controls::GuiControl* __vwsn_precompile_10;
-		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_11;
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_12;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_13;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14;
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_15;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_16;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_18;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_19;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_20;
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_21;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_22;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_23;
-		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_24;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiTextList* textList;
-		::vl::presentation::controls::GuiBindableTextList* bindableTextList;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_25;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_26;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_27;
-		void __vwsn_initialize_instance_(::demo::TextListTabPage* __vwsn_this_);
-	public:
-		TextListTabPageConstructor();
-	};
-
-	class TreeViewTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TreeViewTabPageConstructor>
-	{
-		friend struct ::vl_workflow_global::__vwsnf53_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf54_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf55_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTabPageConstructor>;
-#endif
-	protected:
-		::demo::TreeViewTabPage* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_2;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_3;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_4;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_5;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_6;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_7;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_8;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_9;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_10;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_11;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_12;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_13;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_14;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_15;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_16;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_17;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_18;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_19;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_20;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_21;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_22;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_23;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
-		::vl::presentation::controls::GuiTreeView* treeView;
-		::vl::presentation::controls::GuiBindableTreeView* bindableTreeView;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_25;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_26;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_27;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_28;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_29;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_30;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_31;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_32;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_33;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_34;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_35;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_36;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_37;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_38;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_39;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_40;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_41;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_42;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_43;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_44;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_45;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_46;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_47;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_48;
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_49;
-		void __vwsn_initialize_instance_(::demo::TreeViewTabPage* __vwsn_this_);
-	public:
-		TreeViewTabPageConstructor();
-	};
+	class TextEditor;
+	class TextListTabPage;
+	class TreeViewTabPage;
+	class DocumentRibbonTabPage;
+	class DocumentToolstripTabPage;
 
 	class AnimationTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<AnimationTabPageConstructor>
 	{
@@ -884,104 +456,6 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::AnimationTabPage* __vwsn_this_);
 	public:
 		AnimationTabPageConstructor();
-	};
-
-	class ColorAnimation : public ::vl::Object, public ::vl::reflection::Description<ColorAnimation>
-	{
-		friend struct ::vl_workflow_global::__vwsnf67_Demo_demo_ColorAnimation_CreateAnimation_;
-		friend struct ::vl_workflow_global::__vwsno66_Demo_demo_ColorAnimation_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ColorAnimation>;
-#endif
-	public:
-		::vl::Ptr<::demo::ColorDef> __vwsn_prop_Begin;
-		::vl::Ptr<::demo::ColorDef> GetBegin();
-		void SetBegin(::vl::Ptr<::demo::ColorDef> __vwsn_value_);
-		::vl::Event<void()> BeginChanged;
-		::vl::Ptr<::demo::ColorDef> __vwsn_prop_End;
-		::vl::Ptr<::demo::ColorDef> GetEnd();
-		void SetEnd(::vl::Ptr<::demo::ColorDef> __vwsn_value_);
-		::vl::Event<void()> EndChanged;
-		::vl::Ptr<::demo::ColorDef> __vwsn_prop_Current;
-		::vl::Ptr<::demo::ColorDef> GetCurrent();
-		void SetCurrent(::vl::Ptr<::demo::ColorDef> __vwsn_value_);
-		::vl::Event<void()> CurrentChanged;
-	private:
-		::vl::Func<double(double)> __vwsn_ani_int_;
-		::vl::Func<double(double)> __vwsn_ani_int_Thickness;
-	public:
-		double GetTimeScale(::vl::Ptr<::demo::ColorDef> __vwsn_ani_begin, ::vl::Ptr<::demo::ColorDef> __vwsn_ani_end, ::vl::Ptr<::demo::ColorDef> __vwsn_ani_current);
-		void Interpolate(::vl::Ptr<::demo::ColorDef> __vwsn_ani_begin, ::vl::Ptr<::demo::ColorDef> __vwsn_ani_end, ::vl::Ptr<::demo::ColorDef> __vwsn_ani_current, double __vwsn_ani_ratio);
-		void Interpolate(double __vwsn_ani_ratio);
-		::vl::Ptr<::vl::presentation::controls::IGuiAnimation> CreateAnimation(::vl::Ptr<::demo::ColorDef> __vwsn_ani_target, ::vl::vuint64_t __vwsn_ani_time);
-		ColorAnimation(::vl::Ptr<::demo::ColorDef> __vwsn_ani_current);
-	};
-
-	class DateEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<DateEditorConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc13_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc14_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf68_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf69_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateEditorConstructor>;
-#endif
-	protected:
-		::demo::DateEditor* self;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
-		::vl::presentation::controls::GuiDateComboBox* comboBox;
-		void __vwsn_initialize_instance_(::demo::DateEditor* __vwsn_this_);
-	public:
-		DateEditorConstructor();
-	};
-
-	class DateFilterConstructor : public ::vl::Object, public ::vl::reflection::Description<DateFilterConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc15_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc16_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf70_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf71_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf72_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf73_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf74_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf75_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateFilterConstructor>;
-#endif
-	protected:
-		::demo::DateFilter* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
-		::vl::presentation::controls::GuiSelectableButton* checkFrom;
-		::vl::presentation::controls::GuiDateComboBox* dateFrom;
-		::vl::presentation::controls::GuiSelectableButton* checkTo;
-		::vl::presentation::controls::GuiDateComboBox* dateTo;
-		void __vwsn_initialize_instance_(::demo::DateFilter* __vwsn_this_);
-	public:
-		DateFilterConstructor();
-	};
-
-	class TextEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<TextEditorConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc18_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc19_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf76_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf77_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextEditorConstructor>;
-#endif
-	protected:
-		::demo::TextEditor* self;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
-		::vl::presentation::controls::GuiSinglelineTextBox* textBox;
-		void __vwsn_initialize_instance_(::demo::TextEditor* __vwsn_this_);
-	public:
-		TextEditorConstructor();
 	};
 
 	class CategoryDisplayerConstructor : public ::vl::Object, public ::vl::reflection::Description<CategoryDisplayerConstructor>
@@ -1065,101 +539,188 @@ namespace demo
 		CategoryVisualizerConstructor();
 	};
 
-	class GenderDisplayerConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderDisplayerConstructor>
+	class ColorAnimation : public ::vl::Object, public ::vl::reflection::Description<ColorAnimation>
 	{
-		friend class ::vl_workflow_global::__vwsnc28_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf88_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf67_Demo_demo_ColorAnimation_CreateAnimation_;
+		friend struct ::vl_workflow_global::__vwsno66_Demo_demo_ColorAnimation_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderDisplayerConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ColorAnimation>;
 #endif
-	protected:
-		::demo::GenderDisplayer* self;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_1;
-		void __vwsn_initialize_instance_(::demo::GenderDisplayer* __vwsn_this_);
 	public:
-		GenderDisplayerConstructor();
+		::vl::Ptr<::demo::ColorDef> __vwsn_prop_Begin;
+		::vl::Ptr<::demo::ColorDef> GetBegin();
+		void SetBegin(::vl::Ptr<::demo::ColorDef> __vwsn_value_);
+		::vl::Event<void()> BeginChanged;
+		::vl::Ptr<::demo::ColorDef> __vwsn_prop_End;
+		::vl::Ptr<::demo::ColorDef> GetEnd();
+		void SetEnd(::vl::Ptr<::demo::ColorDef> __vwsn_value_);
+		::vl::Event<void()> EndChanged;
+		::vl::Ptr<::demo::ColorDef> __vwsn_prop_Current;
+		::vl::Ptr<::demo::ColorDef> GetCurrent();
+		void SetCurrent(::vl::Ptr<::demo::ColorDef> __vwsn_value_);
+		::vl::Event<void()> CurrentChanged;
+	private:
+		::vl::Func<double(double)> __vwsn_ani_int_;
+		::vl::Func<double(double)> __vwsn_ani_int_Thickness;
+	public:
+		double GetTimeScale(::vl::Ptr<::demo::ColorDef> __vwsn_ani_begin, ::vl::Ptr<::demo::ColorDef> __vwsn_ani_end, ::vl::Ptr<::demo::ColorDef> __vwsn_ani_current);
+		void Interpolate(::vl::Ptr<::demo::ColorDef> __vwsn_ani_begin, ::vl::Ptr<::demo::ColorDef> __vwsn_ani_end, ::vl::Ptr<::demo::ColorDef> __vwsn_ani_current, double __vwsn_ani_ratio);
+		void Interpolate(double __vwsn_ani_ratio);
+		::vl::Ptr<::vl::presentation::controls::IGuiAnimation> CreateAnimation(::vl::Ptr<::demo::ColorDef> __vwsn_ani_target, ::vl::vuint64_t __vwsn_ani_time);
+		ColorAnimation(::vl::Ptr<::demo::ColorDef> __vwsn_ani_current);
 	};
 
-	class GenderEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderEditorConstructor>
+	class ColorDef : public ::vl::Object, public ::vl::reflection::Description<ColorDef>
 	{
-		friend class ::vl_workflow_global::__vwsnc29_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc30_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf89_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf90_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf91_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf92_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderEditorConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ColorDef>;
 #endif
-	protected:
-		::demo::GenderEditor* self;
-		::vl::presentation::controls::GuiBindableTextList* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiComboBoxListControl* comboBox;
-		void __vwsn_initialize_instance_(::demo::GenderEditor* __vwsn_this_);
+	private:
+		::vl::presentation::Color __vwsn_prop_Top;
 	public:
-		GenderEditorConstructor();
+		::vl::presentation::Color GetTop();
+		void SetTop(::vl::presentation::Color __vwsn_value_);
+		::vl::Event<void()> TopChanged;
+	private:
+		::vl::presentation::Color __vwsn_prop_Bottom;
+	public:
+		::vl::presentation::Color GetBottom();
+		void SetBottom(::vl::presentation::Color __vwsn_value_);
+		::vl::Event<void()> BottomChanged;
+	private:
+		::vl::presentation::Color __vwsn_prop_Shadow;
+	public:
+		::vl::presentation::Color GetShadow();
+		void SetShadow(::vl::presentation::Color __vwsn_value_);
+		::vl::Event<void()> ShadowChanged;
+	private:
+		::vl::vint32_t __vwsn_prop_Thickness;
+	public:
+		::vl::vint32_t GetThickness();
+		void SetThickness(::vl::vint32_t __vwsn_value_);
+		::vl::Event<void()> ThicknessChanged;
+		static ::vl::Ptr<::demo::ColorDef> Dark();
+		static ::vl::Ptr<::demo::ColorDef> Light();
+		static ::vl::Ptr<::demo::ColorDef> Sink();
+		ColorDef();
 	};
 
-	class GenderItemTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderItemTemplateConstructor>
+	class DataGridTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<DataGridTabPageConstructor>
 	{
+		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
+		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
+		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
+		friend class ::vl_workflow_global::__vwsnc4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
+		friend class ::vl_workflow_global::__vwsnc5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
+		friend struct ::vl_workflow_global::__vwsnf10_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf17_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf21_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf26_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf27_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf28_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsno15_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
+		friend struct ::vl_workflow_global::__vwsno19_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
+		friend struct ::vl_workflow_global::__vwsno25_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
+		friend struct ::vl_workflow_global::__vwsno3_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
+		friend struct ::vl_workflow_global::__vwsno9_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplateConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTabPageConstructor>;
 #endif
 	protected:
-		::demo::GenderItemTemplate* __vwsn_precompile_0;
-		::demo::GenderDisplayer* __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
-		::demo::MyGender SelectedGender;
-		void __vwsn_initialize_instance_(::demo::GenderItemTemplate* __vwsn_this_);
-	public:
-		GenderItemTemplateConstructor();
-	};
-
-	class GenderVisualizerConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderVisualizerConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc31_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf93_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderVisualizerConstructor>;
-#endif
-	protected:
-		::demo::GenderVisualizer* self;
-		::demo::GenderDisplayer* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		void __vwsn_initialize_instance_(::demo::GenderVisualizer* __vwsn_this_);
-	public:
-		GenderVisualizerConstructor();
-	};
-
-	class HyperlinkWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<HyperlinkWindowConstructor>
-	{
-		friend struct ::vl_workflow_global::__vwsnf94_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf95_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HyperlinkWindowConstructor>;
-#endif
-	protected:
-		::demo::HyperlinkWindow* self;
+		::demo::DataGridTabPage* self;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
-		::vl::presentation::controls::GuiLabel* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_6;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_7;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_8;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
+		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_12;
+		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_13;
+		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_14;
+		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_15;
+		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
+		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_18;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_19;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
+		::vl::presentation::controls::GuiBindableDataGrid* dataGrid;
+		::demo::DateFilter* dateFilter;
+		void __vwsn_initialize_instance_(::demo::DataGridTabPage* __vwsn_this_);
+	public:
+		DataGridTabPageConstructor();
+	};
+
+	class DateEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<DateEditorConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc13_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc14_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf68_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf69_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateEditorConstructor>;
+#endif
+	protected:
+		::demo::DateEditor* self;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::presentation::controls::GuiDateComboBox* comboBox;
+		void __vwsn_initialize_instance_(::demo::DateEditor* __vwsn_this_);
+	public:
+		DateEditorConstructor();
+	};
+
+	class DateFilterConstructor : public ::vl::Object, public ::vl::reflection::Description<DateFilterConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc15_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc16_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf70_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf71_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf72_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf73_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf74_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf75_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateFilterConstructor>;
+#endif
+	protected:
+		::demo::DateFilter* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_8;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_11;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_12;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_13;
-		::vl::presentation::controls::GuiSinglelineTextBox* textUrl;
-		void __vwsn_initialize_instance_(::demo::HyperlinkWindow* __vwsn_this_);
+		::vl::presentation::controls::GuiSelectableButton* checkFrom;
+		::vl::presentation::controls::GuiDateComboBox* dateFrom;
+		::vl::presentation::controls::GuiSelectableButton* checkTo;
+		::vl::presentation::controls::GuiDateComboBox* dateTo;
+		void __vwsn_initialize_instance_(::demo::DateFilter* __vwsn_this_);
 	public:
-		HyperlinkWindowConstructor();
+		DateFilterConstructor();
 	};
 
 	class DocumentRibbonTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentRibbonTabPageConstructor>
@@ -1453,6 +1014,222 @@ namespace demo
 		DocumentToolstripTabPageConstructor();
 	};
 
+	class ElementTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<ElementTabPageConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ElementTabPageConstructor>;
+#endif
+	protected:
+		::demo::ElementTabPage* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_13;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_15;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_17;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_18;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_19;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_20;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_21;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_22;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_23;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_24;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_25;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_26;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_27;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_28;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_29;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_30;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_31;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_32;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_33;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_34;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_35;
+		::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement> __vwsn_precompile_36;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_37;
+		::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement> __vwsn_precompile_38;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_39;
+		::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement> __vwsn_precompile_40;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_41;
+		::vl::Ptr<::vl::presentation::elements::GuiInnerShadowElement> __vwsn_precompile_42;
+		void __vwsn_initialize_instance_(::demo::ElementTabPage* __vwsn_this_);
+	public:
+		ElementTabPageConstructor();
+	};
+
+	class GenderDisplayerConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderDisplayerConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc28_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf88_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderDisplayerConstructor>;
+#endif
+	protected:
+		::demo::GenderDisplayer* self;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_1;
+		void __vwsn_initialize_instance_(::demo::GenderDisplayer* __vwsn_this_);
+	public:
+		GenderDisplayerConstructor();
+	};
+
+	class GenderEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderEditorConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc29_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc30_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf89_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf90_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf91_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf92_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderEditorConstructor>;
+#endif
+	protected:
+		::demo::GenderEditor* self;
+		::vl::presentation::controls::GuiBindableTextList* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiComboBoxListControl* comboBox;
+		void __vwsn_initialize_instance_(::demo::GenderEditor* __vwsn_this_);
+	public:
+		GenderEditorConstructor();
+	};
+
+	class GenderItemTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderItemTemplateConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplateConstructor>;
+#endif
+	protected:
+		::demo::GenderItemTemplate* __vwsn_precompile_0;
+		::demo::GenderDisplayer* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::demo::MyGender SelectedGender;
+		void __vwsn_initialize_instance_(::demo::GenderItemTemplate* __vwsn_this_);
+	public:
+		GenderItemTemplateConstructor();
+	};
+
+	class GenderVisualizerConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderVisualizerConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc31_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf93_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderVisualizerConstructor>;
+#endif
+	protected:
+		::demo::GenderVisualizer* self;
+		::demo::GenderDisplayer* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		void __vwsn_initialize_instance_(::demo::GenderVisualizer* __vwsn_this_);
+	public:
+		GenderVisualizerConstructor();
+	};
+
+	class HyperlinkWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<HyperlinkWindowConstructor>
+	{
+		friend struct ::vl_workflow_global::__vwsnf94_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf95_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HyperlinkWindowConstructor>;
+#endif
+	protected:
+		::demo::HyperlinkWindow* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_13;
+		::vl::presentation::controls::GuiSinglelineTextBox* textUrl;
+		void __vwsn_initialize_instance_(::demo::HyperlinkWindow* __vwsn_this_);
+	public:
+		HyperlinkWindowConstructor();
+	};
+
+	class IStringResourceStrings : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IStringResourceStrings>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IStringResourceStrings>;
+#endif
+	public:
+		virtual ::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) = 0;
+		virtual ::vl::WString DateFormat(::vl::DateTime __vwsn_ls_0) = 0;
+		virtual ::vl::WString Label() = 0;
+		virtual ::vl::WString LongDate(::vl::DateTime __vwsn_ls_0) = 0;
+		virtual ::vl::WString LongTime(::vl::DateTime __vwsn_ls_0) = 0;
+		virtual ::vl::WString Number(const ::vl::WString& __vwsn_ls_0) = 0;
+		virtual ::vl::WString Sentence(const ::vl::WString& __vwsn_ls_0) = 0;
+		virtual ::vl::WString ShortDate(::vl::DateTime __vwsn_ls_0) = 0;
+		virtual ::vl::WString ShortTime(::vl::DateTime __vwsn_ls_0) = 0;
+		virtual ::vl::WString TimeFormat(::vl::DateTime __vwsn_ls_0) = 0;
+		virtual ::vl::WString Title() = 0;
+		virtual ::vl::WString YearMonthDate(::vl::DateTime __vwsn_ls_0) = 0;
+	};
+
+	class ListViewTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<ListViewTabPageConstructor>
+	{
+		friend struct ::vl_workflow_global::__vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf31_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf32_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf34_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf35_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf36_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTabPageConstructor>;
+#endif
+	protected:
+		::demo::ListViewTabPage* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_6;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_7;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_11;
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_12;
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_13;
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_16;
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_17;
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_18;
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_19;
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_20;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_21;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
+		::vl::presentation::controls::GuiListView* listView;
+		::vl::presentation::controls::GuiBindableListView* bindableListView;
+		void __vwsn_initialize_instance_(::demo::ListViewTabPage* __vwsn_this_);
+	public:
+		ListViewTabPageConstructor();
+	};
+
 	class LocalizedStringsTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<LocalizedStringsTabPageConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc70_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -1525,6 +1302,107 @@ namespace demo
 		LocalizedStringsTabPageConstructor();
 	};
 
+	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
+#endif
+	protected:
+		::demo::MainWindow* self;
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_2;
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::demo::TextListTabPage* __vwsn_precompile_5;
+		::demo::ListViewTabPage* __vwsn_precompile_6;
+		::demo::TreeViewTabPage* __vwsn_precompile_7;
+		::demo::DataGridTabPage* __vwsn_precompile_8;
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_9;
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11;
+		::demo::RepeatTabPage* __vwsn_precompile_12;
+		::demo::ResponsiveTabPage* __vwsn_precompile_13;
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_14;
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_15;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_16;
+		::demo::DocumentToolstripTabPage* __vwsn_precompile_17;
+		::demo::DocumentRibbonTabPage* __vwsn_precompile_18;
+		::demo::TextBoxTabPage* __vwsn_precompile_19;
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_20;
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_21;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22;
+		::demo::ElementTabPage* __vwsn_precompile_23;
+		::demo::AnimationTabPage* __vwsn_precompile_24;
+		::demo::LocalizedStringsTabPage* __vwsn_precompile_25;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_26;
+		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_);
+	public:
+		MainWindowConstructor();
+	};
+
+	class MyDataItem : public ::vl::Object, public ::vl::reflection::Description<MyDataItem>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyDataItem>;
+#endif
+	private:
+		::vl::WString __vwsn_prop_Name;
+	public:
+		::vl::WString GetName();
+		void SetName(const ::vl::WString& __vwsn_value_);
+	private:
+		::demo::MyGender __vwsn_prop_Gender;
+	public:
+		::demo::MyGender GetGender();
+		void SetGender(::demo::MyGender __vwsn_value_);
+	private:
+		::demo::MyCategory __vwsn_prop_Category;
+	public:
+		::demo::MyCategory GetCategory();
+		void SetCategory(::demo::MyCategory __vwsn_value_);
+	private:
+		::vl::DateTime __vwsn_prop_Birthday;
+	public:
+		::vl::DateTime GetBirthday();
+		void SetBirthday(::vl::DateTime __vwsn_value_);
+	private:
+		::vl::WString __vwsn_prop_Website;
+	public:
+		::vl::WString GetWebsite();
+		void SetWebsite(const ::vl::WString& __vwsn_value_);
+	private:
+		::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_prop_LargeImage;
+	public:
+		::vl::Ptr<::vl::presentation::GuiImageData> GetLargeImage();
+		void SetLargeImage(::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_value_);
+	private:
+		::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_prop_SmallImage;
+	public:
+		::vl::Ptr<::vl::presentation::GuiImageData> GetSmallImage();
+		void SetSmallImage(::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_value_);
+		MyDataItem();
+		MyDataItem(const ::vl::WString& name, ::demo::MyGender gender, ::demo::MyCategory category, ::vl::DateTime birthday, const ::vl::WString& website);
+	};
+
+	class MyTextItem : public ::vl::Object, public ::vl::reflection::Description<MyTextItem>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyTextItem>;
+#endif
+	private:
+		::vl::WString __vwsn_prop_Name;
+	public:
+		::vl::WString GetName();
+		void SetName(const ::vl::WString& __vwsn_value_);
+	private:
+		bool __vwsn_prop_Checked;
+	public:
+		bool GetChecked();
+		void SetChecked(bool __vwsn_value_);
+		MyTextItem();
+	};
+
 	class RepeatItemTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RepeatItemTemplateConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc87_Demo_demo_RepeatItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -1540,6 +1418,64 @@ namespace demo
 		void __vwsn_initialize_instance_(::demo::RepeatItemTemplate* __vwsn_this_);
 	public:
 		RepeatItemTemplateConstructor();
+	};
+
+	class RepeatTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<RepeatTabPageConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf39_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf40_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf41_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf42_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf43_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf45_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RepeatTabPageConstructor>;
+#endif
+	protected:
+		::demo::RepeatTabPage* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiScrollContainer* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiScrollContainer* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_13;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_16;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_17;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_18;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_19;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_20;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_21;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_22;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_23;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
+		::vl::presentation::compositions::GuiRepeatStackComposition* repeatStack;
+		::vl::presentation::compositions::GuiRepeatFlowComposition* repeatFlow;
+		::vl::presentation::controls::GuiScroll* hTracker;
+		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_25;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_26;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_27;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_28;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_29;
+		::vl::presentation::controls::GuiScroll* __vwsn_precompile_30;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_31;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_32;
+		::vl::presentation::controls::GuiScroll* __vwsn_precompile_33;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_34;
+		void __vwsn_initialize_instance_(::demo::RepeatTabPage* __vwsn_this_);
+	public:
+		RepeatTabPageConstructor();
 	};
 
 	class ResponsiveGroupControlConstructor : public ::vl::Object, public ::vl::reflection::Description<ResponsiveGroupControlConstructor>
@@ -1754,6 +1690,19 @@ namespace demo
 		ResponsiveViewControlConstructor();
 	};
 
+	class StringResource : public ::vl::Object, public ::vl::reflection::Description<StringResource>
+	{
+		friend class ::vl_workflow_global::__vwsnc100_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
+		friend class ::vl_workflow_global::__vwsnc99_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<StringResource>;
+#endif
+	public:
+		static ::vl::WString __vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats);
+		static ::vl::Ptr<::demo::IStringResourceStrings> Get(::vl::Locale __vwsn_ls_locale);
+		StringResource();
+	};
+
 	class TextBoxTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextBoxTabPageConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc98_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -1799,197 +1748,26 @@ namespace demo
 		TextBoxTabPageConstructor();
 	};
 
-	class MyTextItem : public ::vl::Object, public ::vl::reflection::Description<MyTextItem>
+	class TextEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<TextEditorConstructor>
 	{
+		friend class ::vl_workflow_global::__vwsnc18_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc19_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf76_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf77_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyTextItem>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextEditorConstructor>;
 #endif
-	private:
-		::vl::WString __vwsn_prop_Name;
+	protected:
+		::demo::TextEditor* self;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::presentation::controls::GuiSinglelineTextBox* textBox;
+		void __vwsn_initialize_instance_(::demo::TextEditor* __vwsn_this_);
 	public:
-		::vl::WString GetName();
-		void SetName(const ::vl::WString& __vwsn_value_);
-	private:
-		bool __vwsn_prop_Checked;
-	public:
-		bool GetChecked();
-		void SetChecked(bool __vwsn_value_);
-		MyTextItem();
+		TextEditorConstructor();
 	};
 
-	class MyDataItem : public ::vl::Object, public ::vl::reflection::Description<MyDataItem>
+	class TextListTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextListTabPageConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyDataItem>;
-#endif
-	private:
-		::vl::WString __vwsn_prop_Name;
-	public:
-		::vl::WString GetName();
-		void SetName(const ::vl::WString& __vwsn_value_);
-	private:
-		::demo::MyGender __vwsn_prop_Gender;
-	public:
-		::demo::MyGender GetGender();
-		void SetGender(::demo::MyGender __vwsn_value_);
-	private:
-		::demo::MyCategory __vwsn_prop_Category;
-	public:
-		::demo::MyCategory GetCategory();
-		void SetCategory(::demo::MyCategory __vwsn_value_);
-	private:
-		::vl::DateTime __vwsn_prop_Birthday;
-	public:
-		::vl::DateTime GetBirthday();
-		void SetBirthday(::vl::DateTime __vwsn_value_);
-	private:
-		::vl::WString __vwsn_prop_Website;
-	public:
-		::vl::WString GetWebsite();
-		void SetWebsite(const ::vl::WString& __vwsn_value_);
-	private:
-		::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_prop_LargeImage;
-	public:
-		::vl::Ptr<::vl::presentation::GuiImageData> GetLargeImage();
-		void SetLargeImage(::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_value_);
-	private:
-		::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_prop_SmallImage;
-	public:
-		::vl::Ptr<::vl::presentation::GuiImageData> GetSmallImage();
-		void SetSmallImage(::vl::Ptr<::vl::presentation::GuiImageData> __vwsn_value_);
-		MyDataItem();
-		MyDataItem(const ::vl::WString& name, ::demo::MyGender gender, ::demo::MyCategory category, ::vl::DateTime birthday, const ::vl::WString& website);
-	};
-
-	class ColorDef : public ::vl::Object, public ::vl::reflection::Description<ColorDef>
-	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ColorDef>;
-#endif
-	private:
-		::vl::presentation::Color __vwsn_prop_Top;
-	public:
-		::vl::presentation::Color GetTop();
-		void SetTop(::vl::presentation::Color __vwsn_value_);
-		::vl::Event<void()> TopChanged;
-	private:
-		::vl::presentation::Color __vwsn_prop_Bottom;
-	public:
-		::vl::presentation::Color GetBottom();
-		void SetBottom(::vl::presentation::Color __vwsn_value_);
-		::vl::Event<void()> BottomChanged;
-	private:
-		::vl::presentation::Color __vwsn_prop_Shadow;
-	public:
-		::vl::presentation::Color GetShadow();
-		void SetShadow(::vl::presentation::Color __vwsn_value_);
-		::vl::Event<void()> ShadowChanged;
-	private:
-		::vl::vint32_t __vwsn_prop_Thickness;
-	public:
-		::vl::vint32_t GetThickness();
-		void SetThickness(::vl::vint32_t __vwsn_value_);
-		::vl::Event<void()> ThicknessChanged;
-		static ::vl::Ptr<::demo::ColorDef> Dark();
-		static ::vl::Ptr<::demo::ColorDef> Light();
-		static ::vl::Ptr<::demo::ColorDef> Sink();
-		ColorDef();
-	};
-
-	class IStringResourceStrings : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IStringResourceStrings>
-	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IStringResourceStrings>;
-#endif
-	public:
-		virtual ::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) = 0;
-		virtual ::vl::WString DateFormat(::vl::DateTime __vwsn_ls_0) = 0;
-		virtual ::vl::WString Label() = 0;
-		virtual ::vl::WString LongDate(::vl::DateTime __vwsn_ls_0) = 0;
-		virtual ::vl::WString LongTime(::vl::DateTime __vwsn_ls_0) = 0;
-		virtual ::vl::WString Number(const ::vl::WString& __vwsn_ls_0) = 0;
-		virtual ::vl::WString Sentence(const ::vl::WString& __vwsn_ls_0) = 0;
-		virtual ::vl::WString ShortDate(::vl::DateTime __vwsn_ls_0) = 0;
-		virtual ::vl::WString ShortTime(::vl::DateTime __vwsn_ls_0) = 0;
-		virtual ::vl::WString TimeFormat(::vl::DateTime __vwsn_ls_0) = 0;
-		virtual ::vl::WString Title() = 0;
-		virtual ::vl::WString YearMonthDate(::vl::DateTime __vwsn_ls_0) = 0;
-	};
-
-	class StringResource : public ::vl::Object, public ::vl::reflection::Description<StringResource>
-	{
-		friend class ::vl_workflow_global::__vwsnc100_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
-		friend class ::vl_workflow_global::__vwsnc99_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<StringResource>;
-#endif
-	public:
-		static ::vl::WString __vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats);
-		static ::vl::Ptr<::demo::IStringResourceStrings> Get(::vl::Locale __vwsn_ls_locale);
-		StringResource();
-	};
-
-	class ElementTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ElementTabPageConstructor, public ::vl::reflection::Description<ElementTabPage>
-	{
-		friend class ::demo::ElementTabPageConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ElementTabPage>;
-#endif
-	public:
-		ElementTabPage();
-		~ElementTabPage();
-	};
-
-	class ListViewTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ListViewTabPageConstructor, public ::vl::reflection::Description<ListViewTabPage>
-	{
-		friend struct ::vl_workflow_global::__vwsnf37_Demo_demo_ListViewTabPage___vwsn_instance_ctor__;
-		friend struct ::vl_workflow_global::__vwsnf38_Demo_demo_ListViewTabPage___vwsn_instance_ctor__;
-		friend class ::demo::ListViewTabPageConstructor;
-		friend struct ::vl_workflow_global::__vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf31_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf32_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf34_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf35_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf36_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTabPage>;
-#endif
-	public:
-		ListViewTabPage();
-		void __vwsn_instance_ctor_();
-		~ListViewTabPage();
-	};
-
-	class RepeatTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::RepeatTabPageConstructor, public ::vl::reflection::Description<RepeatTabPage>
-	{
-		friend class ::demo::RepeatTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf39_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf40_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf41_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf42_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf43_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf45_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RepeatTabPage>;
-#endif
-	public:
-		::vl::vint32_t counter;
-		::vl::Ptr<::vl::reflection::description::IValueObservableList> itemsToBind;
-		::vl::WString ToText_1to9(::vl::vint32_t i);
-		::vl::WString ToText_11to19(::vl::vint32_t i);
-		::vl::WString NumberToText_1To99(::vl::vint32_t i);
-		::vl::WString NumberToText_0to999(::vl::vint32_t i);
-		::vl::WString NumberToText(::vl::vint32_t i);
-		RepeatTabPage();
-		~RepeatTabPage();
-	};
-
-	class TextListTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextListTabPageConstructor, public ::vl::reflection::Description<TextListTabPage>
-	{
-		friend class ::demo::TextListTabPageConstructor;
 		friend struct ::vl_workflow_global::__vwsnf46_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf47_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf48_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
@@ -1998,29 +1776,111 @@ namespace demo
 		friend struct ::vl_workflow_global::__vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTabPage>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTabPageConstructor>;
 #endif
+	protected:
+		::demo::TextListTabPage* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_12;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_13;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_15;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_18;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_19;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_20;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_21;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_22;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_23;
+		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_24;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
+		::vl::presentation::controls::GuiTextList* textList;
+		::vl::presentation::controls::GuiBindableTextList* bindableTextList;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_25;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_26;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_27;
+		void __vwsn_initialize_instance_(::demo::TextListTabPage* __vwsn_this_);
 	public:
-		::vl::vint32_t counter;
-		::vl::Ptr<::vl::reflection::description::IValueObservableList> itemsToBind;
-		TextListTabPage();
-		~TextListTabPage();
+		TextListTabPageConstructor();
 	};
 
-	class TreeViewTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TreeViewTabPageConstructor, public ::vl::reflection::Description<TreeViewTabPage>
+	class TreeViewTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TreeViewTabPageConstructor>
 	{
-		friend class ::demo::TreeViewTabPageConstructor;
 		friend struct ::vl_workflow_global::__vwsnf53_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf54_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf55_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTabPage>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTabPageConstructor>;
 #endif
+	protected:
+		::demo::TreeViewTabPage* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_6;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_7;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_8;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_9;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_10;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_11;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_12;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_13;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_14;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_15;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_16;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_17;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_18;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_19;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_20;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_21;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_22;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_23;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
+		::vl::presentation::controls::GuiTreeView* treeView;
+		::vl::presentation::controls::GuiBindableTreeView* bindableTreeView;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_25;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_26;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_27;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_28;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_29;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_30;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_31;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_32;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_33;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_34;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_35;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_36;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_37;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_38;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_39;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_40;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_41;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_42;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_43;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_44;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_45;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_46;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_47;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_48;
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_49;
+		void __vwsn_initialize_instance_(::demo::TreeViewTabPage* __vwsn_this_);
 	public:
-		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> nodesToBind;
-		TreeViewTabPage();
-		void __vwsn_instance_ctor_();
-		~TreeViewTabPage();
+		TreeViewTabPageConstructor();
 	};
 
 	class AnimationTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::AnimationTabPageConstructor, public ::vl::reflection::Description<AnimationTabPage>
@@ -2057,63 +1917,6 @@ namespace demo
 		AnimationTabPage();
 		void __vwsn_instance_ctor_();
 		~AnimationTabPage();
-	};
-
-	class DateEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::DateEditorConstructor, public ::vl::reflection::Description<DateEditor>
-	{
-		friend class ::demo::DateEditorConstructor;
-		friend class ::vl_workflow_global::__vwsnc13_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc14_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf68_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf69_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateEditor>;
-#endif
-	public:
-		DateEditor();
-		~DateEditor();
-	};
-
-	class DateFilter : public ::vl::presentation::controls::GuiCustomControl, public ::demo::DateFilterConstructor, public ::vl::reflection::Description<DateFilter>
-	{
-		friend class ::vl_workflow_global::__vwsnc17_Demo_demo_DateFilter___vwsn_instance_ctor___vl_presentation_controls_list_IDataFilter;
-		friend class ::demo::DateFilterConstructor;
-		friend class ::vl_workflow_global::__vwsnc15_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc16_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf70_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf71_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf72_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf73_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf74_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf75_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateFilter>;
-#endif
-	private:
-		::vl::presentation::controls::list::IDataProcessorCallback* callback;
-		void UpdateFilter();
-	public:
-		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> __vwsn_prop_Filter;
-		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> GetFilter();
-		void SetFilter(::vl::Ptr<::vl::presentation::controls::list::IDataFilter> __vwsn_value_);
-		DateFilter();
-		void __vwsn_instance_ctor_();
-		~DateFilter();
-	};
-
-	class TextEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::TextEditorConstructor, public ::vl::reflection::Description<TextEditor>
-	{
-		friend class ::demo::TextEditorConstructor;
-		friend class ::vl_workflow_global::__vwsnc18_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc19_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf76_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf77_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextEditor>;
-#endif
-	public:
-		TextEditor();
-		~TextEditor();
 	};
 
 	class CategoryDisplayer : public ::vl::presentation::controls::GuiCustomControl, public ::demo::CategoryDisplayerConstructor, public ::vl::reflection::Description<CategoryDisplayer>
@@ -2185,120 +1988,92 @@ namespace demo
 		~CategoryVisualizer();
 	};
 
-	class GenderDisplayer : public ::vl::presentation::controls::GuiCustomControl, public ::demo::GenderDisplayerConstructor, public ::vl::reflection::Description<GenderDisplayer>
+	class DataGridTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::DataGridTabPageConstructor, public ::vl::reflection::Description<DataGridTabPage>
 	{
-		friend class ::demo::GenderDisplayerConstructor;
-		friend class ::vl_workflow_global::__vwsnc28_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf88_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
+		friend class ::demo::DataGridTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
+		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
+		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
+		friend class ::vl_workflow_global::__vwsnc4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
+		friend class ::vl_workflow_global::__vwsnc5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
+		friend struct ::vl_workflow_global::__vwsnf10_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf17_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf21_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf26_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf27_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf28_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsno15_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
+		friend struct ::vl_workflow_global::__vwsno19_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
+		friend struct ::vl_workflow_global::__vwsno25_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
+		friend struct ::vl_workflow_global::__vwsno3_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
+		friend struct ::vl_workflow_global::__vwsno9_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__Compare_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderDisplayer>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTabPage>;
 #endif
 	public:
-		::demo::MyGender __vwsn_prop_Gender;
-		::demo::MyGender GetGender();
-		void SetGender(::demo::MyGender __vwsn_value_);
-		::vl::Event<void()> GenderChanged;
-		GenderDisplayer();
-		~GenderDisplayer();
+		DataGridTabPage();
+		void __vwsn_instance_ctor_();
+		~DataGridTabPage();
 	};
 
-	class GenderEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::GenderEditorConstructor, public ::vl::reflection::Description<GenderEditor>
+	class DateEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::DateEditorConstructor, public ::vl::reflection::Description<DateEditor>
 	{
-		friend class ::demo::GenderEditorConstructor;
-		friend class ::vl_workflow_global::__vwsnc29_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc30_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf89_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf90_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf91_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf92_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend class ::demo::DateEditorConstructor;
+		friend class ::vl_workflow_global::__vwsnc13_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc14_Demo_demo_DateEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf68_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf69_Demo_demo_DateEditorConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderEditor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateEditor>;
 #endif
 	public:
-		::vl::Ptr<::vl::reflection::description::IValueList> items;
-		GenderEditor();
-		~GenderEditor();
+		DateEditor();
+		~DateEditor();
 	};
 
-	class GenderItemTemplate : public ::vl::presentation::templates::GuiTextListItemTemplate, public ::demo::GenderItemTemplateConstructor, public ::vl::reflection::Description<GenderItemTemplate>
+	class DateFilter : public ::vl::presentation::controls::GuiCustomControl, public ::demo::DateFilterConstructor, public ::vl::reflection::Description<DateFilter>
 	{
-		friend class ::demo::GenderItemTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc17_Demo_demo_DateFilter___vwsn_instance_ctor___vl_presentation_controls_list_IDataFilter;
+		friend class ::demo::DateFilterConstructor;
+		friend class ::vl_workflow_global::__vwsnc15_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc16_Demo_demo_DateFilterConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf70_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf71_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf72_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf73_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf74_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf75_Demo_demo_DateFilterConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplate>;
-#endif
-	public:
-		::demo::MyGender __vwsn_parameter_SelectedGender;
-		::demo::MyGender GetSelectedGender();
-		GenderItemTemplate(::demo::MyGender __vwsn_ctor_parameter_SelectedGender);
-		~GenderItemTemplate();
-	};
-
-	class GenderVisualizer : public ::vl::presentation::templates::GuiGridVisualizerTemplate, public ::demo::GenderVisualizerConstructor, public ::vl::reflection::Description<GenderVisualizer>
-	{
-		friend class ::demo::GenderVisualizerConstructor;
-		friend class ::vl_workflow_global::__vwsnc31_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf93_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderVisualizer>;
-#endif
-	public:
-		GenderVisualizer();
-		~GenderVisualizer();
-	};
-
-	class HyperlinkWindow : public ::vl::presentation::controls::GuiWindow, public ::demo::HyperlinkWindowConstructor, public ::vl::reflection::Description<HyperlinkWindow>
-	{
-		friend class ::demo::HyperlinkWindowConstructor;
-		friend struct ::vl_workflow_global::__vwsnf94_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf95_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HyperlinkWindow>;
-#endif
-	public:
-		::vl::Nullable<::vl::WString> __vwsn_prop_Url;
-		::vl::Nullable<::vl::WString> GetUrl();
-		void SetUrl(const ::vl::Nullable<::vl::WString>& __vwsn_value_);
-		::vl::Event<void()> UrlChanged;
-		HyperlinkWindow();
-		~HyperlinkWindow();
-	};
-
-	class DocumentRibbonTabPage : public ::demo::DocumentTabPageBase, public ::demo::DocumentRibbonTabPageConstructor, public ::vl::reflection::Description<DocumentRibbonTabPage>
-	{
-		friend class ::demo::DocumentRibbonTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc32_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc33_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc34_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc35_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc36_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc37_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc38_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf100_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf101_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf102_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf96_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf97_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf98_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf99_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentRibbonTabPage>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateFilter>;
 #endif
 	private:
-		bool __vwsn_prop_AlignLeftSelected;
-		bool GetAlignLeftSelected();
-		void SetAlignLeftSelected(bool __vwsn_value_);
-		::vl::Event<void()> AlignLeftSelectedChanged;
-		bool __vwsn_prop_AlignCenterSelected;
-		bool GetAlignCenterSelected();
-		void SetAlignCenterSelected(bool __vwsn_value_);
-		::vl::Event<void()> AlignCenterSelectedChanged;
-		bool __vwsn_prop_AlignRightSelected;
-		bool GetAlignRightSelected();
-		void SetAlignRightSelected(bool __vwsn_value_);
-		::vl::Event<void()> AlignRightSelectedChanged;
+		::vl::presentation::controls::list::IDataProcessorCallback* callback;
+		void UpdateFilter();
 	public:
-		DocumentRibbonTabPage();
-		~DocumentRibbonTabPage();
+		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> __vwsn_prop_Filter;
+		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> GetFilter();
+		void SetFilter(::vl::Ptr<::vl::presentation::controls::list::IDataFilter> __vwsn_value_);
+		DateFilter();
+		void __vwsn_instance_ctor_();
+		~DateFilter();
 	};
 
 	class DocumentTabPageBase : public ::vl::presentation::controls::GuiTabPage, public ::demo::DocumentTabPageBaseConstructor, public ::vl::reflection::Description<DocumentTabPageBase>
@@ -2420,19 +2195,114 @@ namespace demo
 		~DocumentTabPageBase();
 	};
 
-	class DocumentToolstripTabPage : public ::demo::DocumentTabPageBase, public ::demo::DocumentToolstripTabPageConstructor, public ::vl::reflection::Description<DocumentToolstripTabPage>
+	class ElementTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ElementTabPageConstructor, public ::vl::reflection::Description<ElementTabPage>
 	{
-		friend class ::demo::DocumentToolstripTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc68_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc69_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf157_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf158_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance__;
+		friend class ::demo::ElementTabPageConstructor;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentToolstripTabPage>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ElementTabPage>;
 #endif
 	public:
-		DocumentToolstripTabPage();
-		~DocumentToolstripTabPage();
+		ElementTabPage();
+		~ElementTabPage();
+	};
+
+	class GenderDisplayer : public ::vl::presentation::controls::GuiCustomControl, public ::demo::GenderDisplayerConstructor, public ::vl::reflection::Description<GenderDisplayer>
+	{
+		friend class ::demo::GenderDisplayerConstructor;
+		friend class ::vl_workflow_global::__vwsnc28_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf88_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderDisplayer>;
+#endif
+	public:
+		::demo::MyGender __vwsn_prop_Gender;
+		::demo::MyGender GetGender();
+		void SetGender(::demo::MyGender __vwsn_value_);
+		::vl::Event<void()> GenderChanged;
+		GenderDisplayer();
+		~GenderDisplayer();
+	};
+
+	class GenderEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::GenderEditorConstructor, public ::vl::reflection::Description<GenderEditor>
+	{
+		friend class ::demo::GenderEditorConstructor;
+		friend class ::vl_workflow_global::__vwsnc29_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc30_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf89_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf90_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf91_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf92_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderEditor>;
+#endif
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueList> items;
+		GenderEditor();
+		~GenderEditor();
+	};
+
+	class GenderItemTemplate : public ::vl::presentation::templates::GuiTextListItemTemplate, public ::demo::GenderItemTemplateConstructor, public ::vl::reflection::Description<GenderItemTemplate>
+	{
+		friend class ::demo::GenderItemTemplateConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplate>;
+#endif
+	public:
+		::demo::MyGender __vwsn_parameter_SelectedGender;
+		::demo::MyGender GetSelectedGender();
+		GenderItemTemplate(::demo::MyGender __vwsn_ctor_parameter_SelectedGender);
+		~GenderItemTemplate();
+	};
+
+	class GenderVisualizer : public ::vl::presentation::templates::GuiGridVisualizerTemplate, public ::demo::GenderVisualizerConstructor, public ::vl::reflection::Description<GenderVisualizer>
+	{
+		friend class ::demo::GenderVisualizerConstructor;
+		friend class ::vl_workflow_global::__vwsnc31_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf93_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderVisualizer>;
+#endif
+	public:
+		GenderVisualizer();
+		~GenderVisualizer();
+	};
+
+	class HyperlinkWindow : public ::vl::presentation::controls::GuiWindow, public ::demo::HyperlinkWindowConstructor, public ::vl::reflection::Description<HyperlinkWindow>
+	{
+		friend class ::demo::HyperlinkWindowConstructor;
+		friend struct ::vl_workflow_global::__vwsnf94_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf95_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HyperlinkWindow>;
+#endif
+	public:
+		::vl::Nullable<::vl::WString> __vwsn_prop_Url;
+		::vl::Nullable<::vl::WString> GetUrl();
+		void SetUrl(const ::vl::Nullable<::vl::WString>& __vwsn_value_);
+		::vl::Event<void()> UrlChanged;
+		HyperlinkWindow();
+		~HyperlinkWindow();
+	};
+
+	class ListViewTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ListViewTabPageConstructor, public ::vl::reflection::Description<ListViewTabPage>
+	{
+		friend struct ::vl_workflow_global::__vwsnf37_Demo_demo_ListViewTabPage___vwsn_instance_ctor__;
+		friend struct ::vl_workflow_global::__vwsnf38_Demo_demo_ListViewTabPage___vwsn_instance_ctor__;
+		friend class ::demo::ListViewTabPageConstructor;
+		friend struct ::vl_workflow_global::__vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf31_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf32_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf34_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf35_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf36_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTabPage>;
+#endif
+	public:
+		ListViewTabPage();
+		void __vwsn_instance_ctor_();
+		~ListViewTabPage();
 	};
 
 	class LocalizedStringsTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::LocalizedStringsTabPageConstructor, public ::vl::reflection::Description<LocalizedStringsTabPage>
@@ -2502,6 +2372,32 @@ namespace demo
 		::vl::Ptr<::demo::MyTextItem> GetViewModel();
 		RepeatItemTemplate(::vl::Ptr<::demo::MyTextItem> __vwsn_ctor_parameter_ViewModel);
 		~RepeatItemTemplate();
+	};
+
+	class RepeatTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::RepeatTabPageConstructor, public ::vl::reflection::Description<RepeatTabPage>
+	{
+		friend class ::demo::RepeatTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf39_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf40_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf41_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf42_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf43_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf45_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RepeatTabPage>;
+#endif
+	public:
+		::vl::vint32_t counter;
+		::vl::Ptr<::vl::reflection::description::IValueObservableList> itemsToBind;
+		::vl::WString ToText_1to9(::vl::vint32_t i);
+		::vl::WString ToText_11to19(::vl::vint32_t i);
+		::vl::WString NumberToText_1To99(::vl::vint32_t i);
+		::vl::WString NumberToText_0to999(::vl::vint32_t i);
+		::vl::WString NumberToText(::vl::vint32_t i);
+		RepeatTabPage();
+		~RepeatTabPage();
 	};
 
 	class ResponsiveGroupControl : public ::vl::presentation::controls::GuiCustomControl, public ::demo::ResponsiveGroupControlConstructor, public ::vl::reflection::Description<ResponsiveGroupControl>
@@ -2596,6 +2492,110 @@ namespace demo
 	public:
 		TextBoxTabPage();
 		~TextBoxTabPage();
+	};
+
+	class TextEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::TextEditorConstructor, public ::vl::reflection::Description<TextEditor>
+	{
+		friend class ::demo::TextEditorConstructor;
+		friend class ::vl_workflow_global::__vwsnc18_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc19_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf76_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf77_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextEditor>;
+#endif
+	public:
+		TextEditor();
+		~TextEditor();
+	};
+
+	class TextListTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextListTabPageConstructor, public ::vl::reflection::Description<TextListTabPage>
+	{
+		friend class ::demo::TextListTabPageConstructor;
+		friend struct ::vl_workflow_global::__vwsnf46_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf47_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf48_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf49_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf50_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTabPage>;
+#endif
+	public:
+		::vl::vint32_t counter;
+		::vl::Ptr<::vl::reflection::description::IValueObservableList> itemsToBind;
+		TextListTabPage();
+		~TextListTabPage();
+	};
+
+	class TreeViewTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TreeViewTabPageConstructor, public ::vl::reflection::Description<TreeViewTabPage>
+	{
+		friend class ::demo::TreeViewTabPageConstructor;
+		friend struct ::vl_workflow_global::__vwsnf53_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf54_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf55_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTabPage>;
+#endif
+	public:
+		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> nodesToBind;
+		TreeViewTabPage();
+		void __vwsn_instance_ctor_();
+		~TreeViewTabPage();
+	};
+
+	class DocumentRibbonTabPage : public ::demo::DocumentTabPageBase, public ::demo::DocumentRibbonTabPageConstructor, public ::vl::reflection::Description<DocumentRibbonTabPage>
+	{
+		friend class ::demo::DocumentRibbonTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc32_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc33_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc34_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc35_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc36_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc37_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc38_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf100_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf101_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf102_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf96_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf97_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf98_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf99_Demo_demo_DocumentRibbonTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentRibbonTabPage>;
+#endif
+	private:
+		bool __vwsn_prop_AlignLeftSelected;
+		bool GetAlignLeftSelected();
+		void SetAlignLeftSelected(bool __vwsn_value_);
+		::vl::Event<void()> AlignLeftSelectedChanged;
+		bool __vwsn_prop_AlignCenterSelected;
+		bool GetAlignCenterSelected();
+		void SetAlignCenterSelected(bool __vwsn_value_);
+		::vl::Event<void()> AlignCenterSelectedChanged;
+		bool __vwsn_prop_AlignRightSelected;
+		bool GetAlignRightSelected();
+		void SetAlignRightSelected(bool __vwsn_value_);
+		::vl::Event<void()> AlignRightSelectedChanged;
+	public:
+		DocumentRibbonTabPage();
+		~DocumentRibbonTabPage();
+	};
+
+	class DocumentToolstripTabPage : public ::demo::DocumentTabPageBase, public ::demo::DocumentToolstripTabPageConstructor, public ::vl::reflection::Description<DocumentToolstripTabPage>
+	{
+		friend class ::demo::DocumentToolstripTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc68_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc69_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf157_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf158_Demo_demo_DocumentToolstripTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentToolstripTabPage>;
+#endif
+	public:
+		DocumentToolstripTabPage();
+		~DocumentToolstripTabPage();
 	};
 
 }

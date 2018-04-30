@@ -29340,73 +29340,117 @@ WfCppConfig
 			}
 
 			template<typename T, typename U>
-			void WfCppConfig::SortInternal(collections::List<Ptr<T>>& decls, U isFound)
+			void WfCppConfig::SortInternal(collections::List<Ptr<T>>& decls, U dependOn)
 			{
 				List<ITypeDescriptor*> tds;
+				Dictionary<ITypeDescriptor*, Ptr<T>> tdMap;
 				FOREACH_INDEXER(Ptr<T>, decl, index, decls)
 				{
-					tds.Add(manager->declarationTypes[decl.Obj()].Obj());
+					auto td = manager->declarationTypes[decl.Obj()].Obj();
+					tds.Add(td);
+					tdMap.Add(td, decl);
+				}
+				// key depends on values
+				Group<ITypeDescriptor*, ITypeDescriptor*> deps;
+				FOREACH(ITypeDescriptor*, td, tds)
+				{
+					deps.Add(td, td);
 				}
 
 				for (vint i = 0; i < tds.Count(); i++)
 				{
-					for (vint j = i; j < tds.Count(); j++)
+					for (vint j = 0; j < tds.Count(); j++)
 					{
-						auto td = tds[j];
-						if (!isFound(td, tds))
+						if (dependOn(tds[i], tds[j]))
 						{
-							if (j != i)
+							if (!deps.Contains(tds[i], tds[j]))
 							{
-								tds.RemoveAt(j);
-								tds.Insert(i, td);
-
-								auto decl = decls[j];
-								decls.RemoveAt(j);
-								decls.Insert(i, decl);
+								deps.Add(tds[i], tds[j]);
 							}
-
-							break;
 						}
 					}
 				}
+
+				tds.Clear();
+				while (deps.Count() != 0)
+				{
+					List<ITypeDescriptor*> selected;
+
+					for (vint i = 0; i < deps.Count(); i++)
+					{
+						if (deps.GetByIndex(i).Count() == 1)
+						{
+							selected.Add(deps.Keys()[i]);
+						}
+					}
+
+					for (vint i = deps.Count() - 1; i >= 0; i--)
+					{
+						if (deps.GetByIndex(i).Count() == 1)
+						{
+							deps.Remove(deps.Keys()[i]);
+						}
+					}
+
+					for (vint i = deps.Count() - 1; i >= 0; i--)
+					{
+						for (vint j = 0; j < selected.Count(); j++)
+						{
+							deps.Remove(deps.Keys()[i], selected[j]);
+						}
+					}
+
+					CopyFrom(selected, From(selected).OrderBy([](ITypeDescriptor* a, ITypeDescriptor* b) {return WString::Compare(a->GetTypeName(), b->GetTypeName()); }));
+					CopyFrom(tds, selected, true);
+					CHECK_ERROR(selected.Count() > 0, L"WfCppConfig::SortInternal<T, U>(collections::List<Ptr<T>>&, U)#Internal error: Unexpected circle dependency found, which should be cought by the Workflow semantic analyzer.");
+				}
+
+				CopyFrom(decls, From(tds).Select([&](ITypeDescriptor* td) {return tdMap[td]; }));
 			}
 
 			void WfCppConfig::Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls)
 			{
-				SortInternal(structDecls, [](ITypeDescriptor* td, List<ITypeDescriptor*>& tds)
+				SortInternal(structDecls, [](ITypeDescriptor* type, ITypeDescriptor* field)
 				{
-					vint count = td->GetPropertyCount();
-					bool found = false;
-
-					for (vint k = 0; k < count && !found; k++)
+					vint count = type->GetPropertyCount();
+					for (vint i = 0; i < count; i++)
 					{
-						auto prop = td->GetProperty(k);
-						auto propTd = prop->GetReturn()->GetTypeDescriptor();
-						for (vint l = k + 1; l < tds.Count() && !found; l++)
+						auto propType = type->GetProperty(i)->GetReturn();
+						if (propType->GetDecorator() == ITypeInfo::TypeDescriptor)
 						{
-							found = tds[l] == propTd;
+							auto td = propType->GetTypeDescriptor();
+							if (td == field)
+							{
+								return true;
+							}
+							else if (INVLOC.StartsWith(td->GetTypeName(), field->GetTypeName() + L"::", Locale::None))
+							{
+								return true;
+							}
 						}
 					}
-					return found;
+					return false;
 				});
 			}
 
 			void WfCppConfig::Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls)
 			{
-				SortInternal(classDecls, [](ITypeDescriptor* td, List<ITypeDescriptor*>& tds)
+				SortInternal(classDecls, [](ITypeDescriptor* derived, ITypeDescriptor* base)
 				{
-					vint count = td->GetBaseTypeDescriptorCount();
-					bool found = false;
-
-					for (vint k = 0; k < count && !found; k++)
+					vint count = derived->GetBaseTypeDescriptorCount();
+					for (vint i = 0; i < count; i++)
 					{
-						auto baseTd = td->GetBaseTypeDescriptor(k);
-						for (vint l = k + 1; l < tds.Count() && !found; l++)
+						auto td = derived->GetBaseTypeDescriptor(i);
+						if (td == base)
 						{
-							found = tds[l] == baseTd;
+							return true;
+						}
+						else if (INVLOC.StartsWith(td->GetTypeName(), base->GetTypeName() + L"::", Locale::None))
+						{
+							return true;
 						}
 					}
-					return found;
+					return false;
 				});
 			}
 

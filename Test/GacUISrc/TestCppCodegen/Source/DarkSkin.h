@@ -525,27 +525,32 @@ namespace vl_workflow_global
 
 namespace darkskin
 {
-	class ThemeConstructor;
-	class Theme;
+	class BottomScrollButtonTemplateConstructor;
 	class ButtonTemplateConstructor;
 	class CheckBoxTemplateConstructor;
-	class RadioButtonTemplateConstructor;
+	class CheckItemBackgroundTemplateConstructor;
+	class ComboBoxTemplateConstructor;
+	class CustomControlTemplateConstructor;
+	class DatePickerTemplateConstructor;
 	class DocumentLabelTemplateConstructor;
 	class DocumentTextBoxTemplateConstructor;
 	class DocumentViewerTemplateConstructor;
-	class CheckItemBackgroundTemplateConstructor;
-	class ComboBoxTemplateConstructor;
 	class ExpandingDecoratorTemplateConstructor;
+	class GroupBoxTemplateConstructor;
+	class HScrollHandleTemplateConstructor;
+	class HScrollTemplateConstructor;
+	class HTrackerTemplateConstructor;
 	class ItemBackgroundTemplateConstructor;
+	class LabelTemplateConstructor;
+	class LeftScrollButtonTemplateConstructor;
 	class ListViewColumnHeaderTemplateConstructor;
 	class ListViewTemplateConstructor;
-	class TextListTemplateConstructor;
-	class TreeViewTemplateConstructor;
-	class DatePickerTemplateConstructor;
-	class GroupBoxTemplateConstructor;
-	class LabelTemplateConstructor;
-	class ShortcutKeyTemplateConstructor;
-	class RibbonSplitArrowTemplateConstructor;
+	class MenuBarButtonTemplateConstructor;
+	class MenuItemButtonTemplateConstructor;
+	class MenuSplitterTemplateConstructor;
+	class MultilineTextBoxTemplateConstructor;
+	class ProgressBarTemplateConstructor;
+	class RadioButtonTemplateConstructor;
 	class RibbonButtonsTemplateConstructor;
 	class RibbonGroupTemplateConstructor;
 	class RibbonLargeButtonTemplateConstructor;
@@ -554,56 +559,57 @@ namespace darkskin
 	class RibbonSmallButtonTemplateConstructor;
 	class RibbonSmallDropdownButtonTemplateConstructor;
 	class RibbonSmallSplitButtonTemplateConstructor;
+	class RibbonSplitArrowTemplateConstructor;
 	class RibbonToolstripsTemplateConstructor;
-	class BottomScrollButtonTemplateConstructor;
-	class HScrollHandleTemplateConstructor;
-	class HScrollTemplateConstructor;
-	class HTrackerTemplateConstructor;
-	class LeftScrollButtonTemplateConstructor;
-	class ProgressBarTemplateConstructor;
 	class RightScrollButtonTemplateConstructor;
 	class ScrollViewTemplateConstructor;
-	class TopScrollButtonTemplateConstructor;
-	class VScrollHandleTemplateConstructor;
-	class VScrollTemplateConstructor;
-	class VTrackerTemplateConstructor;
+	class ShortcutKeyTemplateConstructor;
+	class SinglelineTextBoxTemplateConstructor;
 	class TabHeaderButtonTemplateConstructor;
 	class TabHeaderTemplateConstructor;
 	class TabTemplateConstructor;
-	class MultilineTextBoxTemplateConstructor;
-	class SinglelineTextBoxTemplateConstructor;
-	class MenuBarButtonTemplateConstructor;
-	class MenuItemButtonTemplateConstructor;
-	class MenuSplitterTemplateConstructor;
-	class ToolstripSplitArrowTemplateConstructor;
+	class TextListTemplateConstructor;
+	class ThemeConstructor;
 	class ToolstripButtonTemplateConstructor;
 	class ToolstripDropdownButtonTemplateConstructor;
 	class ToolstripMenuTemplateConstructor;
+	class ToolstripSplitArrowTemplateConstructor;
 	class ToolstripSplitButtonTemplateConstructor;
 	class ToolstripSplitterTemplateConstructor;
 	class ToolstripTemplateConstructor;
-	class CustomControlTemplateConstructor;
 	class TooltipTemplateConstructor;
+	class TopScrollButtonTemplateConstructor;
+	class TreeViewTemplateConstructor;
+	class VScrollHandleTemplateConstructor;
+	class VScrollTemplateConstructor;
+	class VTrackerTemplateConstructor;
 	class WindowTemplateConstructor;
+	class BottomScrollButtonTemplate;
 	class ButtonTemplate;
 	class CheckBoxTemplate;
-	class RadioButtonTemplate;
+	class CheckItemBackgroundTemplate;
+	class ComboBoxTemplate;
+	class CustomControlTemplate;
+	class DatePickerTemplate;
 	class DocumentLabelTemplate;
 	class DocumentTextBoxTemplate;
 	class DocumentViewerTemplate;
-	class CheckItemBackgroundTemplate;
-	class ComboBoxTemplate;
 	class ExpandingDecoratorTemplate;
+	class GroupBoxTemplate;
+	class HScrollHandleTemplate;
+	class HScrollTemplate;
+	class HTrackerTemplate;
 	class ItemBackgroundTemplate;
+	class LabelTemplate;
+	class LeftScrollButtonTemplate;
 	class ListViewColumnHeaderTemplate;
 	class ListViewTemplate;
-	class TextListTemplate;
-	class TreeViewTemplate;
-	class DatePickerTemplate;
-	class GroupBoxTemplate;
-	class LabelTemplate;
-	class ShortcutKeyTemplate;
-	class RibbonSplitArrowTemplate;
+	class MenuBarButtonTemplate;
+	class MenuItemButtonTemplate;
+	class MenuSplitterTemplate;
+	class MultilineTextBoxTemplate;
+	class ProgressBarTemplate;
+	class RadioButtonTemplate;
 	class RibbonButtonsTemplate;
 	class RibbonGroupTemplate;
 	class RibbonLargeButtonTemplate;
@@ -612,153 +618,49 @@ namespace darkskin
 	class RibbonSmallButtonTemplate;
 	class RibbonSmallDropdownButtonTemplate;
 	class RibbonSmallSplitButtonTemplate;
+	class RibbonSplitArrowTemplate;
 	class RibbonToolstripsTemplate;
-	class BottomScrollButtonTemplate;
-	class HScrollHandleTemplate;
-	class HScrollTemplate;
-	class HTrackerTemplate;
-	class LeftScrollButtonTemplate;
-	class ProgressBarTemplate;
 	class RightScrollButtonTemplate;
 	class ScrollViewTemplate;
-	class TopScrollButtonTemplate;
-	class VScrollHandleTemplate;
-	class VScrollTemplate;
-	class VTrackerTemplate;
+	class ShortcutKeyTemplate;
+	class SinglelineTextBoxTemplate;
 	class TabHeaderButtonTemplate;
 	class TabHeaderTemplate;
 	class TabTemplate;
-	class MultilineTextBoxTemplate;
-	class SinglelineTextBoxTemplate;
-	class MenuBarButtonTemplate;
-	class MenuItemButtonTemplate;
-	class MenuSplitterTemplate;
-	class ToolstripSplitArrowTemplate;
+	class TextListTemplate;
+	class Theme;
 	class ToolstripButtonTemplate;
 	class ToolstripDropdownButtonTemplate;
 	class ToolstripMenuTemplate;
+	class ToolstripSplitArrowTemplate;
 	class ToolstripSplitButtonTemplate;
 	class ToolstripSplitterTemplate;
 	class ToolstripTemplate;
-	class CustomControlTemplate;
 	class TooltipTemplate;
+	class TopScrollButtonTemplate;
+	class TreeViewTemplate;
+	class VScrollHandleTemplate;
+	class VScrollTemplate;
+	class VTrackerTemplate;
 	class WindowTemplate;
 
-	class ThemeConstructor : public ::vl::Object, public ::vl::reflection::Description<ThemeConstructor>
+	class BottomScrollButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<BottomScrollButtonTemplateConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf16_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf17_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf18_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf19_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf1_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf20_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf21_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf22_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf23_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf24_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf25_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf26_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf27_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf28_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf29_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf2_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf30_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf31_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf32_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf33_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf34_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf35_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf36_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf37_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf38_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf39_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf3_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf40_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf41_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf42_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf43_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf44_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf45_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf46_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf47_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf4_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf5_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf6_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf7_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf8_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc126_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc127_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf203_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf204_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ThemeConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<BottomScrollButtonTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::Theme* __vwsn_precompile_0;
-		void __vwsn_initialize_instance_(::darkskin::Theme* __vwsn_this_);
+		::darkskin::BottomScrollButtonTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2;
+		void __vwsn_initialize_instance_(::darkskin::BottomScrollButtonTemplate* __vwsn_this_);
 	public:
-		ThemeConstructor();
-	};
-
-	class Theme : public ::vl::presentation::theme::ThemeTemplates, public ::darkskin::ThemeConstructor, public ::vl::reflection::Description<Theme>
-	{
-		friend class ::darkskin::ThemeConstructor;
-		friend struct ::vl_workflow_global::__vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf16_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf17_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf18_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf19_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf1_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf20_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf21_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf22_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf23_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf24_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf25_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf26_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf27_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf28_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf29_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf2_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf30_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf31_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf32_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf33_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf34_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf35_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf36_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf37_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf38_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf39_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf3_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf40_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf41_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf42_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf43_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf44_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf45_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf46_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf47_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf4_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf5_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf6_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf7_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf8_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Theme>;
-#endif
-	public:
-		Theme();
-		~Theme();
+		BottomScrollButtonTemplateConstructor();
 	};
 
 	class ButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ButtonTemplateConstructor>
@@ -825,88 +727,6 @@ namespace darkskin
 		CheckBoxTemplateConstructor();
 	};
 
-	class RadioButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RadioButtonTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc13_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc14_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc15_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc16_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc17_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc18_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc19_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf60_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf61_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf62_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf63_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf64_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf65_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf66_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RadioButtonTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::RadioButtonTemplate* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_7;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_10;
-		void __vwsn_initialize_instance_(::darkskin::RadioButtonTemplate* __vwsn_this_);
-	public:
-		RadioButtonTemplateConstructor();
-	};
-
-	class DocumentLabelTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentLabelTemplateConstructor>
-	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentLabelTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::DocumentLabelTemplate* self;
-		void __vwsn_initialize_instance_(::darkskin::DocumentLabelTemplate* __vwsn_this_);
-	public:
-		DocumentLabelTemplateConstructor();
-	};
-
-	class DocumentTextBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentTextBoxTemplateConstructor>
-	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTextBoxTemplateConstructor>;
-#endif
-	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container;
-		::darkskin::DocumentTextBoxTemplate* self;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
-		void __vwsn_initialize_instance_(::darkskin::DocumentTextBoxTemplate* __vwsn_this_);
-	public:
-		DocumentTextBoxTemplateConstructor();
-	};
-
-	class DocumentViewerTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentViewerTemplateConstructor>
-	{
-		friend struct ::vl_workflow_global::__vwsnf67_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf68_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentViewerTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::DocumentViewerTemplate* self;
-		::vl::presentation::templates::GuiCommonScrollViewLook* look;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
-		void __vwsn_initialize_instance_(::darkskin::DocumentViewerTemplate* __vwsn_this_);
-	public:
-		DocumentViewerTemplateConstructor();
-	};
-
 	class CheckItemBackgroundTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<CheckItemBackgroundTemplateConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc20_DarkSkin_darkskin_CheckItemBackgroundTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -963,6 +783,89 @@ namespace darkskin
 		ComboBoxTemplateConstructor();
 	};
 
+	class CustomControlTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<CustomControlTemplateConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CustomControlTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::CustomControlTemplate* __vwsn_precompile_0;
+		void __vwsn_initialize_instance_(::darkskin::CustomControlTemplate* __vwsn_this_);
+	public:
+		CustomControlTemplateConstructor();
+	};
+
+	class DatePickerTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<DatePickerTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc48_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc49_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc50_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc51_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc52_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf114_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf115_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf116_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf117_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf118_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf119_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf120_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf121_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DatePickerTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::DatePickerTemplate* self;
+		::vl::presentation::templates::GuiCommonDatePickerLook* look;
+		void __vwsn_initialize_instance_(::darkskin::DatePickerTemplate* __vwsn_this_);
+	public:
+		DatePickerTemplateConstructor();
+	};
+
+	class DocumentLabelTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentLabelTemplateConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentLabelTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::DocumentLabelTemplate* self;
+		void __vwsn_initialize_instance_(::darkskin::DocumentLabelTemplate* __vwsn_this_);
+	public:
+		DocumentLabelTemplateConstructor();
+	};
+
+	class DocumentTextBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentTextBoxTemplateConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTextBoxTemplateConstructor>;
+#endif
+	protected:
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::DocumentTextBoxTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		void __vwsn_initialize_instance_(::darkskin::DocumentTextBoxTemplate* __vwsn_this_);
+	public:
+		DocumentTextBoxTemplateConstructor();
+	};
+
+	class DocumentViewerTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentViewerTemplateConstructor>
+	{
+		friend struct ::vl_workflow_global::__vwsnf67_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf68_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentViewerTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::DocumentViewerTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollViewLook* look;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		void __vwsn_initialize_instance_(::darkskin::DocumentViewerTemplate* __vwsn_this_);
+	public:
+		DocumentViewerTemplateConstructor();
+	};
+
 	class ExpandingDecoratorTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ExpandingDecoratorTemplateConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc29_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -993,6 +896,106 @@ namespace darkskin
 		ExpandingDecoratorTemplateConstructor();
 	};
 
+	class GroupBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<GroupBoxTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc53_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc54_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc55_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc56_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf122_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf123_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf124_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf125_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GroupBoxTemplateConstructor>;
+#endif
+	protected:
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::GroupBoxTemplate* self;
+		::vl::presentation::compositions::GuiBoundsComposition* titleBounds;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_5;
+		void __vwsn_initialize_instance_(::darkskin::GroupBoxTemplate* __vwsn_this_);
+	public:
+		GroupBoxTemplateConstructor();
+	};
+
+	class HScrollHandleTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<HScrollHandleTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc128_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf205_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollHandleTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::HScrollHandleTemplate* self;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		void __vwsn_initialize_instance_(::darkskin::HScrollHandleTemplate* __vwsn_this_);
+	public:
+		HScrollHandleTemplateConstructor();
+	};
+
+	class HScrollTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<HScrollTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc129_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc130_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf206_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf207_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf208_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf209_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf210_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::HScrollTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
+		::vl::presentation::controls::GuiButton* buttonDecrease;
+		::vl::presentation::controls::GuiButton* buttonIncrease;
+		::vl::presentation::compositions::GuiBoundsComposition* handleContainer;
+		::vl::presentation::compositions::GuiPartialViewComposition* handle;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		void __vwsn_initialize_instance_(::darkskin::HScrollTemplate* __vwsn_this_);
+	public:
+		HScrollTemplateConstructor();
+	};
+
+	class HTrackerTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<HTrackerTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc131_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf211_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf212_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HTrackerTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::HTrackerTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
+		::vl::presentation::compositions::GuiPartialViewComposition* handle;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
+		void __vwsn_initialize_instance_(::darkskin::HTrackerTemplate* __vwsn_this_);
+	public:
+		HTrackerTemplateConstructor();
+	};
+
 	class ItemBackgroundTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ItemBackgroundTemplateConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc35_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -1007,6 +1010,44 @@ namespace darkskin
 		void __vwsn_initialize_instance_(::darkskin::ItemBackgroundTemplate* __vwsn_this_);
 	public:
 		ItemBackgroundTemplateConstructor();
+	};
+
+	class LabelTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<LabelTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc57_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc58_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc59_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf126_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf127_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf128_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LabelTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::LabelTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_0;
+		void __vwsn_initialize_instance_(::darkskin::LabelTemplate* __vwsn_this_);
+	public:
+		LabelTemplateConstructor();
+	};
+
+	class LeftScrollButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<LeftScrollButtonTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc133_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf213_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf214_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LeftScrollButtonTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::LeftScrollButtonTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2;
+		void __vwsn_initialize_instance_(::darkskin::LeftScrollButtonTemplate* __vwsn_this_);
+	public:
+		LeftScrollButtonTemplateConstructor();
 	};
 
 	class ListViewColumnHeaderTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ListViewColumnHeaderTemplateConstructor>
@@ -1084,172 +1125,169 @@ namespace darkskin
 		ListViewTemplateConstructor();
 	};
 
-	class TextListTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TextListTemplateConstructor>
+	class MenuBarButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MenuBarButtonTemplateConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf105_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf106_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf107_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf108_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf109_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc154_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc155_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc156_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc157_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf249_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf250_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf251_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf252_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf253_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTemplateConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuBarButtonTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::TextListTemplate* self;
+		::darkskin::MenuBarButtonTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_2;
+		void __vwsn_initialize_instance_(::darkskin::MenuBarButtonTemplate* __vwsn_this_);
+	public:
+		MenuBarButtonTemplateConstructor();
+	};
+
+	class MenuItemButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MenuItemButtonTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc158_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc159_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc160_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc161_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc162_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc163_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc164_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc165_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc166_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc167_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc168_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc169_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc170_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf254_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf255_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf256_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf257_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf258_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf259_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf260_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf261_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf262_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf263_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf264_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf265_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf266_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf267_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuItemButtonTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::MenuItemButtonTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_8;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_11;
+		void __vwsn_initialize_instance_(::darkskin::MenuItemButtonTemplate* __vwsn_this_);
+	public:
+		MenuItemButtonTemplateConstructor();
+	};
+
+	class MenuSplitterTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MenuSplitterTemplateConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuSplitterTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::MenuSplitterTemplate* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
+		void __vwsn_initialize_instance_(::darkskin::MenuSplitterTemplate* __vwsn_this_);
+	public:
+		MenuSplitterTemplateConstructor();
+	};
+
+	class MultilineTextBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MultilineTextBoxTemplateConstructor>
+	{
+		friend struct ::vl_workflow_global::__vwsnf247_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf248_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MultilineTextBoxTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::MultilineTextBoxTemplate* self;
 		::vl::presentation::templates::GuiCommonScrollViewLook* look;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
-		void __vwsn_initialize_instance_(::darkskin::TextListTemplate* __vwsn_this_);
+		void __vwsn_initialize_instance_(::darkskin::MultilineTextBoxTemplate* __vwsn_this_);
 	public:
-		TextListTemplateConstructor();
+		MultilineTextBoxTemplateConstructor();
 	};
 
-	class TreeViewTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TreeViewTemplateConstructor>
+	class ProgressBarTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ProgressBarTemplateConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf110_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf111_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf112_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf113_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc134_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf215_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::TreeViewTemplate* self;
-		::vl::presentation::templates::GuiCommonScrollViewLook* look;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
-		void __vwsn_initialize_instance_(::darkskin::TreeViewTemplate* __vwsn_this_);
-	public:
-		TreeViewTemplateConstructor();
-	};
-
-	class DatePickerTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<DatePickerTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc48_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc49_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc50_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc51_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc52_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf114_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf115_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf116_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf117_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf118_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf119_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf120_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf121_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DatePickerTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::DatePickerTemplate* self;
-		::vl::presentation::templates::GuiCommonDatePickerLook* look;
-		void __vwsn_initialize_instance_(::darkskin::DatePickerTemplate* __vwsn_this_);
-	public:
-		DatePickerTemplateConstructor();
-	};
-
-	class GroupBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<GroupBoxTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc53_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc54_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc55_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc56_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf122_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf123_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf124_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf125_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GroupBoxTemplateConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ProgressBarTemplateConstructor>;
 #endif
 	protected:
 		::vl::presentation::compositions::GuiBoundsComposition* container;
-		::darkskin::GroupBoxTemplate* self;
-		::vl::presentation::compositions::GuiBoundsComposition* titleBounds;
+		::darkskin::ProgressBarTemplate* self;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiPartialViewComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_4;
+		void __vwsn_initialize_instance_(::darkskin::ProgressBarTemplate* __vwsn_this_);
+	public:
+		ProgressBarTemplateConstructor();
+	};
+
+	class RadioButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RadioButtonTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc13_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc14_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc15_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc16_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc17_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc18_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc19_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf60_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf61_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf62_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf63_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf64_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf65_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf66_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RadioButtonTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::RadioButtonTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_5;
-		void __vwsn_initialize_instance_(::darkskin::GroupBoxTemplate* __vwsn_this_);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_10;
+		void __vwsn_initialize_instance_(::darkskin::RadioButtonTemplate* __vwsn_this_);
 	public:
-		GroupBoxTemplateConstructor();
-	};
-
-	class LabelTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<LabelTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc57_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc58_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc59_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf126_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf127_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf128_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LabelTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::LabelTemplate* self;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_0;
-		void __vwsn_initialize_instance_(::darkskin::LabelTemplate* __vwsn_this_);
-	public:
-		LabelTemplateConstructor();
-	};
-
-	class ShortcutKeyTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ShortcutKeyTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc60_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc61_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc62_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf129_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf130_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf131_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ShortcutKeyTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::ShortcutKeyTemplate* self;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4;
-		void __vwsn_initialize_instance_(::darkskin::ShortcutKeyTemplate* __vwsn_this_);
-	public:
-		ShortcutKeyTemplateConstructor();
-	};
-
-	class RibbonSplitArrowTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonSplitArrowTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc63_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc64_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc65_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc66_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc67_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc68_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf132_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf133_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf134_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf135_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf136_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf137_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSplitArrowTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::RibbonSplitArrowTemplate* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_6;
-		void __vwsn_initialize_instance_(::darkskin::RibbonSplitArrowTemplate* __vwsn_this_);
-	public:
-		RibbonSplitArrowTemplateConstructor();
+		RadioButtonTemplateConstructor();
 	};
 
 	class RibbonButtonsTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonButtonsTemplateConstructor>
@@ -1551,6 +1589,37 @@ namespace darkskin
 		RibbonSmallSplitButtonTemplateConstructor();
 	};
 
+	class RibbonSplitArrowTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonSplitArrowTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc63_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc64_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc65_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc66_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc67_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc68_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf132_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf133_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf134_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf135_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf136_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf137_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSplitArrowTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::RibbonSplitArrowTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_6;
+		void __vwsn_initialize_instance_(::darkskin::RibbonSplitArrowTemplate* __vwsn_this_);
+	public:
+		RibbonSplitArrowTemplateConstructor();
+	};
+
 	class RibbonToolstripsTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonToolstripsTemplateConstructor>
 	{
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -1561,136 +1630,6 @@ namespace darkskin
 		void __vwsn_initialize_instance_(::darkskin::RibbonToolstripsTemplate* __vwsn_this_);
 	public:
 		RibbonToolstripsTemplateConstructor();
-	};
-
-	class BottomScrollButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<BottomScrollButtonTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc126_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc127_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf203_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf204_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<BottomScrollButtonTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::BottomScrollButtonTemplate* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2;
-		void __vwsn_initialize_instance_(::darkskin::BottomScrollButtonTemplate* __vwsn_this_);
-	public:
-		BottomScrollButtonTemplateConstructor();
-	};
-
-	class HScrollHandleTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<HScrollHandleTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc128_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf205_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollHandleTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::HScrollHandleTemplate* self;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
-		void __vwsn_initialize_instance_(::darkskin::HScrollHandleTemplate* __vwsn_this_);
-	public:
-		HScrollHandleTemplateConstructor();
-	};
-
-	class HScrollTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<HScrollTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc129_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc130_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf206_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf207_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf208_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf209_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf210_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::HScrollTemplate* self;
-		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
-		::vl::presentation::controls::GuiButton* buttonDecrease;
-		::vl::presentation::controls::GuiButton* buttonIncrease;
-		::vl::presentation::compositions::GuiBoundsComposition* handleContainer;
-		::vl::presentation::compositions::GuiPartialViewComposition* handle;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_5;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
-		void __vwsn_initialize_instance_(::darkskin::HScrollTemplate* __vwsn_this_);
-	public:
-		HScrollTemplateConstructor();
-	};
-
-	class HTrackerTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<HTrackerTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc131_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf211_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf212_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HTrackerTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::HTrackerTemplate* self;
-		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
-		::vl::presentation::compositions::GuiPartialViewComposition* handle;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
-		void __vwsn_initialize_instance_(::darkskin::HTrackerTemplate* __vwsn_this_);
-	public:
-		HTrackerTemplateConstructor();
-	};
-
-	class LeftScrollButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<LeftScrollButtonTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc133_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf213_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf214_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LeftScrollButtonTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::LeftScrollButtonTemplate* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2;
-		void __vwsn_initialize_instance_(::darkskin::LeftScrollButtonTemplate* __vwsn_this_);
-	public:
-		LeftScrollButtonTemplateConstructor();
-	};
-
-	class ProgressBarTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ProgressBarTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc134_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf215_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ProgressBarTemplateConstructor>;
-#endif
-	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container;
-		::darkskin::ProgressBarTemplate* self;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiPartialViewComposition* __vwsn_precompile_3;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_4;
-		void __vwsn_initialize_instance_(::darkskin::ProgressBarTemplate* __vwsn_this_);
-	public:
-		ProgressBarTemplateConstructor();
 	};
 
 	class RightScrollButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RightScrollButtonTemplateConstructor>
@@ -1730,95 +1669,42 @@ namespace darkskin
 		ScrollViewTemplateConstructor();
 	};
 
-	class TopScrollButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TopScrollButtonTemplateConstructor>
+	class ShortcutKeyTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ShortcutKeyTemplateConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc137_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc138_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf220_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf221_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc60_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc61_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc62_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf129_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf130_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf131_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TopScrollButtonTemplateConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ShortcutKeyTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::TopScrollButtonTemplate* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2;
-		void __vwsn_initialize_instance_(::darkskin::TopScrollButtonTemplate* __vwsn_this_);
-	public:
-		TopScrollButtonTemplateConstructor();
-	};
-
-	class VScrollHandleTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<VScrollHandleTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc139_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf222_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollHandleTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::VScrollHandleTemplate* self;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
-		void __vwsn_initialize_instance_(::darkskin::VScrollHandleTemplate* __vwsn_this_);
-	public:
-		VScrollHandleTemplateConstructor();
-	};
-
-	class VScrollTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<VScrollTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc140_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc141_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf223_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf224_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf225_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf226_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf227_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::VScrollTemplate* self;
-		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
-		::vl::presentation::controls::GuiButton* buttonDecrease;
-		::vl::presentation::controls::GuiButton* buttonIncrease;
-		::vl::presentation::compositions::GuiBoundsComposition* handleContainer;
-		::vl::presentation::compositions::GuiPartialViewComposition* handle;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_5;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
-		void __vwsn_initialize_instance_(::darkskin::VScrollTemplate* __vwsn_this_);
-	public:
-		VScrollTemplateConstructor();
-	};
-
-	class VTrackerTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<VTrackerTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc142_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf228_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf229_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VTrackerTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::VTrackerTemplate* self;
-		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
-		::vl::presentation::compositions::GuiPartialViewComposition* handle;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::darkskin::ShortcutKeyTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
-		void __vwsn_initialize_instance_(::darkskin::VTrackerTemplate* __vwsn_this_);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4;
+		void __vwsn_initialize_instance_(::darkskin::ShortcutKeyTemplate* __vwsn_this_);
 	public:
-		VTrackerTemplateConstructor();
+		ShortcutKeyTemplateConstructor();
+	};
+
+	class SinglelineTextBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<SinglelineTextBoxTemplateConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SinglelineTextBoxTemplateConstructor>;
+#endif
+	protected:
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::darkskin::SinglelineTextBoxTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		void __vwsn_initialize_instance_(::darkskin::SinglelineTextBoxTemplate* __vwsn_this_);
+	public:
+		SinglelineTextBoxTemplateConstructor();
 	};
 
 	class TabHeaderButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TabHeaderButtonTemplateConstructor>
@@ -1902,149 +1788,84 @@ namespace darkskin
 		TabTemplateConstructor();
 	};
 
-	class MultilineTextBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MultilineTextBoxTemplateConstructor>
+	class TextListTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TextListTemplateConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf247_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf248_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf105_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf106_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf107_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf108_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf109_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MultilineTextBoxTemplateConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTemplateConstructor>;
 #endif
 	protected:
-		::darkskin::MultilineTextBoxTemplate* self;
+		::darkskin::TextListTemplate* self;
 		::vl::presentation::templates::GuiCommonScrollViewLook* look;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
-		void __vwsn_initialize_instance_(::darkskin::MultilineTextBoxTemplate* __vwsn_this_);
+		void __vwsn_initialize_instance_(::darkskin::TextListTemplate* __vwsn_this_);
 	public:
-		MultilineTextBoxTemplateConstructor();
+		TextListTemplateConstructor();
 	};
 
-	class SinglelineTextBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<SinglelineTextBoxTemplateConstructor>
+	class ThemeConstructor : public ::vl::Object, public ::vl::reflection::Description<ThemeConstructor>
 	{
+		friend struct ::vl_workflow_global::__vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf16_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf17_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf18_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf19_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf1_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf20_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf21_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf22_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf23_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf24_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf25_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf26_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf27_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf28_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf29_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf2_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf30_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf31_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf32_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf33_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf34_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf35_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf36_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf37_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf38_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf39_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf3_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf40_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf41_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf42_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf43_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf44_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf45_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf46_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf47_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf4_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf5_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf6_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf7_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf8_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SinglelineTextBoxTemplateConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ThemeConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container;
-		::darkskin::SinglelineTextBoxTemplate* self;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
-		void __vwsn_initialize_instance_(::darkskin::SinglelineTextBoxTemplate* __vwsn_this_);
+		::darkskin::Theme* __vwsn_precompile_0;
+		void __vwsn_initialize_instance_(::darkskin::Theme* __vwsn_this_);
 	public:
-		SinglelineTextBoxTemplateConstructor();
-	};
-
-	class MenuBarButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MenuBarButtonTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc154_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc155_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc156_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc157_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf249_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf250_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf251_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf252_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf253_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuBarButtonTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::MenuBarButtonTemplate* self;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_2;
-		void __vwsn_initialize_instance_(::darkskin::MenuBarButtonTemplate* __vwsn_this_);
-	public:
-		MenuBarButtonTemplateConstructor();
-	};
-
-	class MenuItemButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MenuItemButtonTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc158_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc159_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc160_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc161_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc162_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc163_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc164_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc165_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc166_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc167_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc168_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc169_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc170_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf254_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf255_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf256_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf257_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf258_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf259_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf260_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf261_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf262_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf263_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf264_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf265_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf266_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf267_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuItemButtonTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::MenuItemButtonTemplate* self;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
-		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
-		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_5;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
-		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_8;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_9;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_11;
-		void __vwsn_initialize_instance_(::darkskin::MenuItemButtonTemplate* __vwsn_this_);
-	public:
-		MenuItemButtonTemplateConstructor();
-	};
-
-	class MenuSplitterTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MenuSplitterTemplateConstructor>
-	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuSplitterTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::MenuSplitterTemplate* __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_3;
-		void __vwsn_initialize_instance_(::darkskin::MenuSplitterTemplate* __vwsn_this_);
-	public:
-		MenuSplitterTemplateConstructor();
-	};
-
-	class ToolstripSplitArrowTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ToolstripSplitArrowTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc171_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc172_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc173_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf268_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf269_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf270_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitArrowTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::ToolstripSplitArrowTemplate* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
-		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_3;
-		void __vwsn_initialize_instance_(::darkskin::ToolstripSplitArrowTemplate* __vwsn_this_);
-	public:
-		ToolstripSplitArrowTemplateConstructor();
+		ThemeConstructor();
 	};
 
 	class ToolstripButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ToolstripButtonTemplateConstructor>
@@ -2130,6 +1951,28 @@ namespace darkskin
 		ToolstripMenuTemplateConstructor();
 	};
 
+	class ToolstripSplitArrowTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ToolstripSplitArrowTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc171_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc172_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc173_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf268_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf269_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf270_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitArrowTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::ToolstripSplitArrowTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_3;
+		void __vwsn_initialize_instance_(::darkskin::ToolstripSplitArrowTemplate* __vwsn_this_);
+	public:
+		ToolstripSplitArrowTemplateConstructor();
+	};
+
 	class ToolstripSplitButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ToolstripSplitButtonTemplateConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc187_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -2197,18 +2040,6 @@ namespace darkskin
 		ToolstripTemplateConstructor();
 	};
 
-	class CustomControlTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<CustomControlTemplateConstructor>
-	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CustomControlTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::CustomControlTemplate* __vwsn_precompile_0;
-		void __vwsn_initialize_instance_(::darkskin::CustomControlTemplate* __vwsn_this_);
-	public:
-		CustomControlTemplateConstructor();
-	};
-
 	class TooltipTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TooltipTemplateConstructor>
 	{
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -2223,6 +2054,117 @@ namespace darkskin
 		void __vwsn_initialize_instance_(::darkskin::TooltipTemplate* __vwsn_this_);
 	public:
 		TooltipTemplateConstructor();
+	};
+
+	class TopScrollButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TopScrollButtonTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc137_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc138_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf220_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf221_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TopScrollButtonTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::TopScrollButtonTemplate* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiPolygonElement> __vwsn_precompile_2;
+		void __vwsn_initialize_instance_(::darkskin::TopScrollButtonTemplate* __vwsn_this_);
+	public:
+		TopScrollButtonTemplateConstructor();
+	};
+
+	class TreeViewTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TreeViewTemplateConstructor>
+	{
+		friend struct ::vl_workflow_global::__vwsnf110_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf111_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf112_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf113_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::TreeViewTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollViewLook* look;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		void __vwsn_initialize_instance_(::darkskin::TreeViewTemplate* __vwsn_this_);
+	public:
+		TreeViewTemplateConstructor();
+	};
+
+	class VScrollHandleTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<VScrollHandleTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc139_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf222_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollHandleTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::VScrollHandleTemplate* self;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		void __vwsn_initialize_instance_(::darkskin::VScrollHandleTemplate* __vwsn_this_);
+	public:
+		VScrollHandleTemplateConstructor();
+	};
+
+	class VScrollTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<VScrollTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc140_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc141_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf223_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf224_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf225_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf226_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf227_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::VScrollTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
+		::vl::presentation::controls::GuiButton* buttonDecrease;
+		::vl::presentation::controls::GuiButton* buttonIncrease;
+		::vl::presentation::compositions::GuiBoundsComposition* handleContainer;
+		::vl::presentation::compositions::GuiPartialViewComposition* handle;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiSideAlignedComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		void __vwsn_initialize_instance_(::darkskin::VScrollTemplate* __vwsn_this_);
+	public:
+		VScrollTemplateConstructor();
+	};
+
+	class VTrackerTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<VTrackerTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc142_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf228_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf229_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VTrackerTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::VTrackerTemplate* self;
+		::vl::presentation::templates::GuiCommonScrollBehavior* behavior;
+		::vl::presentation::compositions::GuiPartialViewComposition* handle;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_5;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
+		void __vwsn_initialize_instance_(::darkskin::VTrackerTemplate* __vwsn_this_);
+	public:
+		VTrackerTemplateConstructor();
 	};
 
 	class WindowTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<WindowTemplateConstructor>
@@ -2271,6 +2213,21 @@ namespace darkskin
 		WindowTemplateConstructor();
 	};
 
+	class BottomScrollButtonTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::BottomScrollButtonTemplateConstructor, public ::vl::reflection::Description<BottomScrollButtonTemplate>
+	{
+		friend class ::darkskin::BottomScrollButtonTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc126_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc127_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf203_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf204_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<BottomScrollButtonTemplate>;
+#endif
+	public:
+		BottomScrollButtonTemplate();
+		~BottomScrollButtonTemplate();
+	};
+
 	class ButtonTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::ButtonTemplateConstructor, public ::vl::reflection::Description<ButtonTemplate>
 	{
 		friend class ::darkskin::ButtonTemplateConstructor;
@@ -2317,66 +2274,6 @@ namespace darkskin
 		~CheckBoxTemplate();
 	};
 
-	class RadioButtonTemplate : public ::vl::presentation::templates::GuiSelectableButtonTemplate, public ::darkskin::RadioButtonTemplateConstructor, public ::vl::reflection::Description<RadioButtonTemplate>
-	{
-		friend class ::darkskin::RadioButtonTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc13_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc14_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc15_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc16_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc17_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc18_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc19_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf60_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf61_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf62_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf63_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf64_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf65_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf66_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RadioButtonTemplate>;
-#endif
-	public:
-		RadioButtonTemplate();
-		~RadioButtonTemplate();
-	};
-
-	class DocumentLabelTemplate : public ::vl::presentation::templates::GuiDocumentLabelTemplate, public ::darkskin::DocumentLabelTemplateConstructor, public ::vl::reflection::Description<DocumentLabelTemplate>
-	{
-		friend class ::darkskin::DocumentLabelTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentLabelTemplate>;
-#endif
-	public:
-		DocumentLabelTemplate();
-		~DocumentLabelTemplate();
-	};
-
-	class DocumentTextBoxTemplate : public ::vl::presentation::templates::GuiDocumentLabelTemplate, public ::darkskin::DocumentTextBoxTemplateConstructor, public ::vl::reflection::Description<DocumentTextBoxTemplate>
-	{
-		friend class ::darkskin::DocumentTextBoxTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTextBoxTemplate>;
-#endif
-	public:
-		DocumentTextBoxTemplate();
-		~DocumentTextBoxTemplate();
-	};
-
-	class DocumentViewerTemplate : public ::vl::presentation::templates::GuiDocumentViewerTemplate, public ::darkskin::DocumentViewerTemplateConstructor, public ::vl::reflection::Description<DocumentViewerTemplate>
-	{
-		friend class ::darkskin::DocumentViewerTemplateConstructor;
-		friend struct ::vl_workflow_global::__vwsnf67_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf68_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentViewerTemplate>;
-#endif
-	public:
-		DocumentViewerTemplate();
-		~DocumentViewerTemplate();
-	};
-
 	class CheckItemBackgroundTemplate : public ::vl::presentation::templates::GuiSelectableButtonTemplate, public ::darkskin::CheckItemBackgroundTemplateConstructor, public ::vl::reflection::Description<CheckItemBackgroundTemplate>
 	{
 		friend class ::darkskin::CheckItemBackgroundTemplateConstructor;
@@ -2419,6 +2316,76 @@ namespace darkskin
 		~ComboBoxTemplate();
 	};
 
+	class CustomControlTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::darkskin::CustomControlTemplateConstructor, public ::vl::reflection::Description<CustomControlTemplate>
+	{
+		friend class ::darkskin::CustomControlTemplateConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CustomControlTemplate>;
+#endif
+	public:
+		CustomControlTemplate();
+		~CustomControlTemplate();
+	};
+
+	class DatePickerTemplate : public ::vl::presentation::templates::GuiDatePickerTemplate, public ::darkskin::DatePickerTemplateConstructor, public ::vl::reflection::Description<DatePickerTemplate>
+	{
+		friend class ::darkskin::DatePickerTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc48_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc49_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc50_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc51_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc52_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf114_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf115_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf116_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf117_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf118_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf119_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf120_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf121_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DatePickerTemplate>;
+#endif
+	public:
+		DatePickerTemplate();
+		~DatePickerTemplate();
+	};
+
+	class DocumentLabelTemplate : public ::vl::presentation::templates::GuiDocumentLabelTemplate, public ::darkskin::DocumentLabelTemplateConstructor, public ::vl::reflection::Description<DocumentLabelTemplate>
+	{
+		friend class ::darkskin::DocumentLabelTemplateConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentLabelTemplate>;
+#endif
+	public:
+		DocumentLabelTemplate();
+		~DocumentLabelTemplate();
+	};
+
+	class DocumentTextBoxTemplate : public ::vl::presentation::templates::GuiDocumentLabelTemplate, public ::darkskin::DocumentTextBoxTemplateConstructor, public ::vl::reflection::Description<DocumentTextBoxTemplate>
+	{
+		friend class ::darkskin::DocumentTextBoxTemplateConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTextBoxTemplate>;
+#endif
+	public:
+		DocumentTextBoxTemplate();
+		~DocumentTextBoxTemplate();
+	};
+
+	class DocumentViewerTemplate : public ::vl::presentation::templates::GuiDocumentViewerTemplate, public ::darkskin::DocumentViewerTemplateConstructor, public ::vl::reflection::Description<DocumentViewerTemplate>
+	{
+		friend class ::darkskin::DocumentViewerTemplateConstructor;
+		friend struct ::vl_workflow_global::__vwsnf67_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf68_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentViewerTemplate>;
+#endif
+	public:
+		DocumentViewerTemplate();
+		~DocumentViewerTemplate();
+	};
+
 	class ExpandingDecoratorTemplate : public ::vl::presentation::templates::GuiSelectableButtonTemplate, public ::darkskin::ExpandingDecoratorTemplateConstructor, public ::vl::reflection::Description<ExpandingDecoratorTemplate>
 	{
 		friend class ::darkskin::ExpandingDecoratorTemplateConstructor;
@@ -2442,6 +2409,72 @@ namespace darkskin
 		~ExpandingDecoratorTemplate();
 	};
 
+	class GroupBoxTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::darkskin::GroupBoxTemplateConstructor, public ::vl::reflection::Description<GroupBoxTemplate>
+	{
+		friend class ::darkskin::GroupBoxTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc53_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc54_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc55_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc56_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf122_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf123_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf124_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf125_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GroupBoxTemplate>;
+#endif
+	public:
+		GroupBoxTemplate();
+		~GroupBoxTemplate();
+	};
+
+	class HScrollHandleTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::HScrollHandleTemplateConstructor, public ::vl::reflection::Description<HScrollHandleTemplate>
+	{
+		friend class ::darkskin::HScrollHandleTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc128_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf205_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollHandleTemplate>;
+#endif
+	public:
+		HScrollHandleTemplate();
+		~HScrollHandleTemplate();
+	};
+
+	class HScrollTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::HScrollTemplateConstructor, public ::vl::reflection::Description<HScrollTemplate>
+	{
+		friend class ::darkskin::HScrollTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc129_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc130_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf206_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf207_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf208_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf209_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf210_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollTemplate>;
+#endif
+	public:
+		HScrollTemplate();
+		void __vwsn_instance_ctor_();
+		~HScrollTemplate();
+	};
+
+	class HTrackerTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::HTrackerTemplateConstructor, public ::vl::reflection::Description<HTrackerTemplate>
+	{
+		friend class ::darkskin::HTrackerTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc131_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf211_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf212_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HTrackerTemplate>;
+#endif
+	public:
+		HTrackerTemplate();
+		void __vwsn_instance_ctor_();
+		~HTrackerTemplate();
+	};
+
 	class ItemBackgroundTemplate : public ::vl::presentation::templates::GuiSelectableButtonTemplate, public ::darkskin::ItemBackgroundTemplateConstructor, public ::vl::reflection::Description<ItemBackgroundTemplate>
 	{
 		friend class ::darkskin::ItemBackgroundTemplateConstructor;
@@ -2453,6 +2486,38 @@ namespace darkskin
 	public:
 		ItemBackgroundTemplate();
 		~ItemBackgroundTemplate();
+	};
+
+	class LabelTemplate : public ::vl::presentation::templates::GuiLabelTemplate, public ::darkskin::LabelTemplateConstructor, public ::vl::reflection::Description<LabelTemplate>
+	{
+		friend class ::darkskin::LabelTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc57_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc58_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc59_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf126_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf127_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf128_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LabelTemplate>;
+#endif
+	public:
+		LabelTemplate();
+		~LabelTemplate();
+	};
+
+	class LeftScrollButtonTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::LeftScrollButtonTemplateConstructor, public ::vl::reflection::Description<LeftScrollButtonTemplate>
+	{
+		friend class ::darkskin::LeftScrollButtonTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc133_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf213_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf214_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LeftScrollButtonTemplate>;
+#endif
+	public:
+		LeftScrollButtonTemplate();
+		~LeftScrollButtonTemplate();
 	};
 
 	class ListViewColumnHeaderTemplate : public ::vl::presentation::templates::GuiListViewColumnHeaderTemplate, public ::darkskin::ListViewColumnHeaderTemplateConstructor, public ::vl::reflection::Description<ListViewColumnHeaderTemplate>
@@ -2507,135 +2572,124 @@ namespace darkskin
 		~ListViewTemplate();
 	};
 
-	class TextListTemplate : public ::vl::presentation::templates::GuiTextListTemplate, public ::darkskin::TextListTemplateConstructor, public ::vl::reflection::Description<TextListTemplate>
+	class MenuBarButtonTemplate : public ::vl::presentation::templates::GuiToolstripButtonTemplate, public ::darkskin::MenuBarButtonTemplateConstructor, public ::vl::reflection::Description<MenuBarButtonTemplate>
 	{
-		friend class ::darkskin::TextListTemplateConstructor;
-		friend struct ::vl_workflow_global::__vwsnf105_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf106_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf107_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf108_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf109_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::darkskin::MenuBarButtonTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc154_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc155_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc156_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc157_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf249_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf250_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf251_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf252_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf253_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTemplate>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuBarButtonTemplate>;
 #endif
 	public:
-		TextListTemplate();
-		~TextListTemplate();
+		MenuBarButtonTemplate();
+		~MenuBarButtonTemplate();
 	};
 
-	class TreeViewTemplate : public ::vl::presentation::templates::GuiTreeViewTemplate, public ::darkskin::TreeViewTemplateConstructor, public ::vl::reflection::Description<TreeViewTemplate>
+	class MenuItemButtonTemplate : public ::vl::presentation::templates::GuiToolstripButtonTemplate, public ::darkskin::MenuItemButtonTemplateConstructor, public ::vl::reflection::Description<MenuItemButtonTemplate>
 	{
-		friend class ::darkskin::TreeViewTemplateConstructor;
-		friend struct ::vl_workflow_global::__vwsnf110_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf111_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf112_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf113_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::darkskin::MenuItemButtonTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc158_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc159_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc160_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc161_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc162_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc163_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc164_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc165_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc166_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc167_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc168_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc169_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc170_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf254_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf255_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf256_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf257_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf258_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf259_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf260_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf261_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf262_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf263_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf264_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf265_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf266_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf267_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTemplate>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuItemButtonTemplate>;
 #endif
 	public:
-		TreeViewTemplate();
-		~TreeViewTemplate();
+		MenuItemButtonTemplate();
+		~MenuItemButtonTemplate();
 	};
 
-	class DatePickerTemplate : public ::vl::presentation::templates::GuiDatePickerTemplate, public ::darkskin::DatePickerTemplateConstructor, public ::vl::reflection::Description<DatePickerTemplate>
+	class MenuSplitterTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::darkskin::MenuSplitterTemplateConstructor, public ::vl::reflection::Description<MenuSplitterTemplate>
 	{
-		friend class ::darkskin::DatePickerTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc48_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc49_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc50_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc51_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc52_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf114_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf115_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf116_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf117_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf118_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf119_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf120_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf121_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::darkskin::MenuSplitterTemplateConstructor;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DatePickerTemplate>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuSplitterTemplate>;
 #endif
 	public:
-		DatePickerTemplate();
-		~DatePickerTemplate();
+		MenuSplitterTemplate();
+		~MenuSplitterTemplate();
 	};
 
-	class GroupBoxTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::darkskin::GroupBoxTemplateConstructor, public ::vl::reflection::Description<GroupBoxTemplate>
+	class MultilineTextBoxTemplate : public ::vl::presentation::templates::GuiMultilineTextBoxTemplate, public ::darkskin::MultilineTextBoxTemplateConstructor, public ::vl::reflection::Description<MultilineTextBoxTemplate>
 	{
-		friend class ::darkskin::GroupBoxTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc53_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc54_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc55_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc56_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf122_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf123_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf124_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf125_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::darkskin::MultilineTextBoxTemplateConstructor;
+		friend struct ::vl_workflow_global::__vwsnf247_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf248_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GroupBoxTemplate>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MultilineTextBoxTemplate>;
 #endif
 	public:
-		GroupBoxTemplate();
-		~GroupBoxTemplate();
+		MultilineTextBoxTemplate();
+		~MultilineTextBoxTemplate();
 	};
 
-	class LabelTemplate : public ::vl::presentation::templates::GuiLabelTemplate, public ::darkskin::LabelTemplateConstructor, public ::vl::reflection::Description<LabelTemplate>
+	class ProgressBarTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::ProgressBarTemplateConstructor, public ::vl::reflection::Description<ProgressBarTemplate>
 	{
-		friend class ::darkskin::LabelTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc57_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc58_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc59_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf126_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf127_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf128_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::darkskin::ProgressBarTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc134_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf215_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LabelTemplate>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ProgressBarTemplate>;
 #endif
 	public:
-		LabelTemplate();
-		~LabelTemplate();
+		ProgressBarTemplate();
+		~ProgressBarTemplate();
 	};
 
-	class ShortcutKeyTemplate : public ::vl::presentation::templates::GuiLabelTemplate, public ::darkskin::ShortcutKeyTemplateConstructor, public ::vl::reflection::Description<ShortcutKeyTemplate>
+	class RadioButtonTemplate : public ::vl::presentation::templates::GuiSelectableButtonTemplate, public ::darkskin::RadioButtonTemplateConstructor, public ::vl::reflection::Description<RadioButtonTemplate>
 	{
-		friend class ::darkskin::ShortcutKeyTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc60_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc61_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc62_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf129_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf130_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf131_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::darkskin::RadioButtonTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc13_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc14_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc15_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc16_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc17_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc18_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc19_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf60_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf61_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf62_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf63_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf64_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf65_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf66_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ShortcutKeyTemplate>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RadioButtonTemplate>;
 #endif
 	public:
-		ShortcutKeyTemplate();
-		~ShortcutKeyTemplate();
-	};
-
-	class RibbonSplitArrowTemplate : public ::vl::presentation::templates::GuiSelectableButtonTemplate, public ::darkskin::RibbonSplitArrowTemplateConstructor, public ::vl::reflection::Description<RibbonSplitArrowTemplate>
-	{
-		friend class ::darkskin::RibbonSplitArrowTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc63_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc64_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc65_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc66_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc67_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc68_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf132_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf133_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf134_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf135_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf136_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf137_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSplitArrowTemplate>;
-#endif
-	public:
-		RibbonSplitArrowTemplate();
-		~RibbonSplitArrowTemplate();
+		RadioButtonTemplate();
+		~RadioButtonTemplate();
 	};
 
 	class RibbonButtonsTemplate : public ::vl::presentation::templates::GuiRibbonButtonsTemplate, public ::darkskin::RibbonButtonsTemplateConstructor, public ::vl::reflection::Description<RibbonButtonsTemplate>
@@ -2848,6 +2902,29 @@ namespace darkskin
 		~RibbonSmallSplitButtonTemplate();
 	};
 
+	class RibbonSplitArrowTemplate : public ::vl::presentation::templates::GuiSelectableButtonTemplate, public ::darkskin::RibbonSplitArrowTemplateConstructor, public ::vl::reflection::Description<RibbonSplitArrowTemplate>
+	{
+		friend class ::darkskin::RibbonSplitArrowTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc63_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc64_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc65_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc66_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc67_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc68_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf132_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf133_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf134_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf135_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf136_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf137_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSplitArrowTemplate>;
+#endif
+	public:
+		RibbonSplitArrowTemplate();
+		~RibbonSplitArrowTemplate();
+	};
+
 	class RibbonToolstripsTemplate : public ::vl::presentation::templates::GuiRibbonToolstripsTemplate, public ::darkskin::RibbonToolstripsTemplateConstructor, public ::vl::reflection::Description<RibbonToolstripsTemplate>
 	{
 		friend class ::darkskin::RibbonToolstripsTemplateConstructor;
@@ -2857,96 +2934,6 @@ namespace darkskin
 	public:
 		RibbonToolstripsTemplate();
 		~RibbonToolstripsTemplate();
-	};
-
-	class BottomScrollButtonTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::BottomScrollButtonTemplateConstructor, public ::vl::reflection::Description<BottomScrollButtonTemplate>
-	{
-		friend class ::darkskin::BottomScrollButtonTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc126_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc127_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf203_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf204_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<BottomScrollButtonTemplate>;
-#endif
-	public:
-		BottomScrollButtonTemplate();
-		~BottomScrollButtonTemplate();
-	};
-
-	class HScrollHandleTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::HScrollHandleTemplateConstructor, public ::vl::reflection::Description<HScrollHandleTemplate>
-	{
-		friend class ::darkskin::HScrollHandleTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc128_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf205_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollHandleTemplate>;
-#endif
-	public:
-		HScrollHandleTemplate();
-		~HScrollHandleTemplate();
-	};
-
-	class HScrollTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::HScrollTemplateConstructor, public ::vl::reflection::Description<HScrollTemplate>
-	{
-		friend class ::darkskin::HScrollTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc129_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc130_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf206_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf207_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf208_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf209_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf210_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollTemplate>;
-#endif
-	public:
-		HScrollTemplate();
-		void __vwsn_instance_ctor_();
-		~HScrollTemplate();
-	};
-
-	class HTrackerTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::HTrackerTemplateConstructor, public ::vl::reflection::Description<HTrackerTemplate>
-	{
-		friend class ::darkskin::HTrackerTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc131_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf211_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf212_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HTrackerTemplate>;
-#endif
-	public:
-		HTrackerTemplate();
-		void __vwsn_instance_ctor_();
-		~HTrackerTemplate();
-	};
-
-	class LeftScrollButtonTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::LeftScrollButtonTemplateConstructor, public ::vl::reflection::Description<LeftScrollButtonTemplate>
-	{
-		friend class ::darkskin::LeftScrollButtonTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc132_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc133_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf213_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf214_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LeftScrollButtonTemplate>;
-#endif
-	public:
-		LeftScrollButtonTemplate();
-		~LeftScrollButtonTemplate();
-	};
-
-	class ProgressBarTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::ProgressBarTemplateConstructor, public ::vl::reflection::Description<ProgressBarTemplate>
-	{
-		friend class ::darkskin::ProgressBarTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc134_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf215_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ProgressBarTemplate>;
-#endif
-	public:
-		ProgressBarTemplate();
-		~ProgressBarTemplate();
 	};
 
 	class RightScrollButtonTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::RightScrollButtonTemplateConstructor, public ::vl::reflection::Description<RightScrollButtonTemplate>
@@ -2977,66 +2964,32 @@ namespace darkskin
 		~ScrollViewTemplate();
 	};
 
-	class TopScrollButtonTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::TopScrollButtonTemplateConstructor, public ::vl::reflection::Description<TopScrollButtonTemplate>
+	class ShortcutKeyTemplate : public ::vl::presentation::templates::GuiLabelTemplate, public ::darkskin::ShortcutKeyTemplateConstructor, public ::vl::reflection::Description<ShortcutKeyTemplate>
 	{
-		friend class ::darkskin::TopScrollButtonTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc137_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc138_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf220_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf221_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::darkskin::ShortcutKeyTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc60_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc61_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc62_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf129_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf130_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf131_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TopScrollButtonTemplate>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ShortcutKeyTemplate>;
 #endif
 	public:
-		TopScrollButtonTemplate();
-		~TopScrollButtonTemplate();
+		ShortcutKeyTemplate();
+		~ShortcutKeyTemplate();
 	};
 
-	class VScrollHandleTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::VScrollHandleTemplateConstructor, public ::vl::reflection::Description<VScrollHandleTemplate>
+	class SinglelineTextBoxTemplate : public ::vl::presentation::templates::GuiSinglelineTextBoxTemplate, public ::darkskin::SinglelineTextBoxTemplateConstructor, public ::vl::reflection::Description<SinglelineTextBoxTemplate>
 	{
-		friend class ::darkskin::VScrollHandleTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc139_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf222_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::darkskin::SinglelineTextBoxTemplateConstructor;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollHandleTemplate>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SinglelineTextBoxTemplate>;
 #endif
 	public:
-		VScrollHandleTemplate();
-		~VScrollHandleTemplate();
-	};
-
-	class VScrollTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::VScrollTemplateConstructor, public ::vl::reflection::Description<VScrollTemplate>
-	{
-		friend class ::darkskin::VScrollTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc140_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc141_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf223_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf224_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf225_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf226_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf227_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollTemplate>;
-#endif
-	public:
-		VScrollTemplate();
-		void __vwsn_instance_ctor_();
-		~VScrollTemplate();
-	};
-
-	class VTrackerTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::VTrackerTemplateConstructor, public ::vl::reflection::Description<VTrackerTemplate>
-	{
-		friend class ::darkskin::VTrackerTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc142_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf228_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf229_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VTrackerTemplate>;
-#endif
-	public:
-		VTrackerTemplate();
-		void __vwsn_instance_ctor_();
-		~VTrackerTemplate();
+		SinglelineTextBoxTemplate();
+		~SinglelineTextBoxTemplate();
 	};
 
 	class TabHeaderButtonTemplate : public ::vl::presentation::templates::GuiSelectableButtonTemplate, public ::darkskin::TabHeaderButtonTemplateConstructor, public ::vl::reflection::Description<TabHeaderButtonTemplate>
@@ -3115,114 +3068,78 @@ namespace darkskin
 		~TabTemplate();
 	};
 
-	class MultilineTextBoxTemplate : public ::vl::presentation::templates::GuiMultilineTextBoxTemplate, public ::darkskin::MultilineTextBoxTemplateConstructor, public ::vl::reflection::Description<MultilineTextBoxTemplate>
+	class TextListTemplate : public ::vl::presentation::templates::GuiTextListTemplate, public ::darkskin::TextListTemplateConstructor, public ::vl::reflection::Description<TextListTemplate>
 	{
-		friend class ::darkskin::MultilineTextBoxTemplateConstructor;
-		friend struct ::vl_workflow_global::__vwsnf247_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf248_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__;
+		friend class ::darkskin::TextListTemplateConstructor;
+		friend struct ::vl_workflow_global::__vwsnf105_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf106_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf107_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf108_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf109_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MultilineTextBoxTemplate>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTemplate>;
 #endif
 	public:
-		MultilineTextBoxTemplate();
-		~MultilineTextBoxTemplate();
+		TextListTemplate();
+		~TextListTemplate();
 	};
 
-	class SinglelineTextBoxTemplate : public ::vl::presentation::templates::GuiSinglelineTextBoxTemplate, public ::darkskin::SinglelineTextBoxTemplateConstructor, public ::vl::reflection::Description<SinglelineTextBoxTemplate>
+	class Theme : public ::vl::presentation::theme::ThemeTemplates, public ::darkskin::ThemeConstructor, public ::vl::reflection::Description<Theme>
 	{
-		friend class ::darkskin::SinglelineTextBoxTemplateConstructor;
+		friend class ::darkskin::ThemeConstructor;
+		friend struct ::vl_workflow_global::__vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf16_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf17_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf18_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf19_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf1_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf20_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf21_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf22_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf23_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf24_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf25_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf26_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf27_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf28_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf29_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf2_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf30_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf31_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf32_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf33_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf34_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf35_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf36_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf37_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf38_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf39_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf3_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf40_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf41_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf42_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf43_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf44_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf45_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf46_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf47_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf4_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf5_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf6_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf7_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf8_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SinglelineTextBoxTemplate>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Theme>;
 #endif
 	public:
-		SinglelineTextBoxTemplate();
-		~SinglelineTextBoxTemplate();
-	};
-
-	class MenuBarButtonTemplate : public ::vl::presentation::templates::GuiToolstripButtonTemplate, public ::darkskin::MenuBarButtonTemplateConstructor, public ::vl::reflection::Description<MenuBarButtonTemplate>
-	{
-		friend class ::darkskin::MenuBarButtonTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc154_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc155_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc156_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc157_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf249_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf250_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf251_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf252_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf253_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuBarButtonTemplate>;
-#endif
-	public:
-		MenuBarButtonTemplate();
-		~MenuBarButtonTemplate();
-	};
-
-	class MenuItemButtonTemplate : public ::vl::presentation::templates::GuiToolstripButtonTemplate, public ::darkskin::MenuItemButtonTemplateConstructor, public ::vl::reflection::Description<MenuItemButtonTemplate>
-	{
-		friend class ::darkskin::MenuItemButtonTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc158_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc159_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc160_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc161_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc162_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc163_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc164_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc165_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc166_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc167_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc168_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc169_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc170_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf254_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf255_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf256_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf257_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf258_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf259_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf260_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf261_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf262_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf263_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf264_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf265_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf266_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf267_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuItemButtonTemplate>;
-#endif
-	public:
-		MenuItemButtonTemplate();
-		~MenuItemButtonTemplate();
-	};
-
-	class MenuSplitterTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::darkskin::MenuSplitterTemplateConstructor, public ::vl::reflection::Description<MenuSplitterTemplate>
-	{
-		friend class ::darkskin::MenuSplitterTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuSplitterTemplate>;
-#endif
-	public:
-		MenuSplitterTemplate();
-		~MenuSplitterTemplate();
-	};
-
-	class ToolstripSplitArrowTemplate : public ::vl::presentation::templates::GuiSelectableButtonTemplate, public ::darkskin::ToolstripSplitArrowTemplateConstructor, public ::vl::reflection::Description<ToolstripSplitArrowTemplate>
-	{
-		friend class ::darkskin::ToolstripSplitArrowTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc171_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc172_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc173_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf268_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf269_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf270_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitArrowTemplate>;
-#endif
-	public:
-		ToolstripSplitArrowTemplate();
-		~ToolstripSplitArrowTemplate();
+		Theme();
+		~Theme();
 	};
 
 	class ToolstripButtonTemplate : public ::vl::presentation::templates::GuiToolstripButtonTemplate, public ::darkskin::ToolstripButtonTemplateConstructor, public ::vl::reflection::Description<ToolstripButtonTemplate>
@@ -3286,6 +3203,23 @@ namespace darkskin
 		~ToolstripMenuTemplate();
 	};
 
+	class ToolstripSplitArrowTemplate : public ::vl::presentation::templates::GuiSelectableButtonTemplate, public ::darkskin::ToolstripSplitArrowTemplateConstructor, public ::vl::reflection::Description<ToolstripSplitArrowTemplate>
+	{
+		friend class ::darkskin::ToolstripSplitArrowTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc171_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc172_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc173_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf268_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf269_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf270_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitArrowTemplate>;
+#endif
+	public:
+		ToolstripSplitArrowTemplate();
+		~ToolstripSplitArrowTemplate();
+	};
+
 	class ToolstripSplitButtonTemplate : public ::vl::presentation::templates::GuiToolstripButtonTemplate, public ::darkskin::ToolstripSplitButtonTemplateConstructor, public ::vl::reflection::Description<ToolstripSplitButtonTemplate>
 	{
 		friend class ::darkskin::ToolstripSplitButtonTemplateConstructor;
@@ -3335,17 +3269,6 @@ namespace darkskin
 		~ToolstripTemplate();
 	};
 
-	class CustomControlTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::darkskin::CustomControlTemplateConstructor, public ::vl::reflection::Description<CustomControlTemplate>
-	{
-		friend class ::darkskin::CustomControlTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CustomControlTemplate>;
-#endif
-	public:
-		CustomControlTemplate();
-		~CustomControlTemplate();
-	};
-
 	class TooltipTemplate : public ::vl::presentation::templates::GuiWindowTemplate, public ::darkskin::TooltipTemplateConstructor, public ::vl::reflection::Description<TooltipTemplate>
 	{
 		friend class ::darkskin::TooltipTemplateConstructor;
@@ -3355,6 +3278,83 @@ namespace darkskin
 	public:
 		TooltipTemplate();
 		~TooltipTemplate();
+	};
+
+	class TopScrollButtonTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::TopScrollButtonTemplateConstructor, public ::vl::reflection::Description<TopScrollButtonTemplate>
+	{
+		friend class ::darkskin::TopScrollButtonTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc137_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc138_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf220_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf221_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TopScrollButtonTemplate>;
+#endif
+	public:
+		TopScrollButtonTemplate();
+		~TopScrollButtonTemplate();
+	};
+
+	class TreeViewTemplate : public ::vl::presentation::templates::GuiTreeViewTemplate, public ::darkskin::TreeViewTemplateConstructor, public ::vl::reflection::Description<TreeViewTemplate>
+	{
+		friend class ::darkskin::TreeViewTemplateConstructor;
+		friend struct ::vl_workflow_global::__vwsnf110_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf111_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf112_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf113_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTemplate>;
+#endif
+	public:
+		TreeViewTemplate();
+		~TreeViewTemplate();
+	};
+
+	class VScrollHandleTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::VScrollHandleTemplateConstructor, public ::vl::reflection::Description<VScrollHandleTemplate>
+	{
+		friend class ::darkskin::VScrollHandleTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc139_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf222_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollHandleTemplate>;
+#endif
+	public:
+		VScrollHandleTemplate();
+		~VScrollHandleTemplate();
+	};
+
+	class VScrollTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::VScrollTemplateConstructor, public ::vl::reflection::Description<VScrollTemplate>
+	{
+		friend class ::darkskin::VScrollTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc140_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc141_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf223_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf224_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf225_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf226_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf227_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollTemplate>;
+#endif
+	public:
+		VScrollTemplate();
+		void __vwsn_instance_ctor_();
+		~VScrollTemplate();
+	};
+
+	class VTrackerTemplate : public ::vl::presentation::templates::GuiScrollTemplate, public ::darkskin::VTrackerTemplateConstructor, public ::vl::reflection::Description<VTrackerTemplate>
+	{
+		friend class ::darkskin::VTrackerTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc142_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf228_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf229_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VTrackerTemplate>;
+#endif
+	public:
+		VTrackerTemplate();
+		void __vwsn_instance_ctor_();
+		~VTrackerTemplate();
 	};
 
 	class WindowTemplate : public ::vl::presentation::templates::GuiWindowTemplate, public ::darkskin::WindowTemplateConstructor, public ::vl::reflection::Description<WindowTemplate>

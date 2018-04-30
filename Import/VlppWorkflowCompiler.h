@@ -4578,7 +4578,7 @@ namespace vl
 				void												Collect();
 
 				template<typename T, typename U>
-				void												SortInternal(collections::List<Ptr<T>>& decls, U isFound);
+				void												SortInternal(collections::List<Ptr<T>>& decls, U dependOn);
 				void												Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls);
 				void												Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls);
 
