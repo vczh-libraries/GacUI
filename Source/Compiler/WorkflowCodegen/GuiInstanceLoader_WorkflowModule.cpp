@@ -131,11 +131,15 @@ Workflow_InstallCtorClass
 
 			auto func = MakePtr<WfFunctionDeclaration>();
 			func->anonymity = WfFunctionAnonymity::Named;
-			func->name.value = L"<initialize-instance>";
 			func->arguments.Add(thisParam);
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 			func->statement = block;
 
+			{
+				List<WString> fragments;
+				SplitTypeName(resolvingResult.context->className, fragments);
+				func->name.value = L"<" + From(fragments).Aggregate([](const WString& a, const WString& b) {return a + L"-" + b; }) + L">Initialize";
+			}
 			{
 				auto att = MakePtr<WfAttribute>();
 				att->category.value = L"cpp";

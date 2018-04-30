@@ -830,13 +830,15 @@ Workflow_GenerateInstanceClass
 				{
 					auto initRef = MakePtr<WfMemberExpression>();
 					initRef->parent = MakePtr<WfThisExpression>();
-					initRef->name.value = L"<initialize-instance>";
-
-					auto refThis = MakePtr<WfThisExpression>();
+					{
+						List<WString> fragments;
+						SplitTypeName(resolvingResult.context->className, fragments);
+						initRef->name.value = L"<" + From(fragments).Aggregate([](const WString& a, const WString& b) {return a + L"-" + b; }) + L">Initialize";
+					}
 
 					auto callExpr = MakePtr<WfCallExpression>();
 					callExpr->function = initRef;
-					callExpr->arguments.Add(refThis);
+					callExpr->arguments.Add(MakePtr<WfThisExpression>());
 
 					auto stat = MakePtr<WfExpressionStatement>();
 					stat->expression = callExpr;
