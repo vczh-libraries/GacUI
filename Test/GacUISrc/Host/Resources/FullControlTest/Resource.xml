@@ -41,7 +41,6 @@
                   <demo:DocumentToolstripTabPage Alt="D"/>
                   <demo:DocumentRibbonTabPage Alt="D"/>
                   <demo:TextBoxTabPage Alt="T"/>
-                  <demo:RibbonTabPage Alt="R"/>
                 </att.Pages>
               </Tab>
             </TabPage>

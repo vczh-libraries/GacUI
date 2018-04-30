@@ -3382,7 +3382,7 @@ Closures
 
 		__vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf110_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_initialize_instance__
@@ -3481,7 +3481,7 @@ Closures
 
 		__vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf120_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_initialize_instance__
@@ -3580,7 +3580,7 @@ Closures
 
 		__vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiDatePickerTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf130_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_initialize_instance__
@@ -3679,7 +3679,7 @@ Closures
 
 		__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiSelectableButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf140_DarkSkin_darkskin_RibbonLargeButtonTemplateConstructor___vwsn_initialize_instance__
@@ -3778,7 +3778,7 @@ Closures
 
 		__vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiSelectableButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf150_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_initialize_instance__
@@ -3877,7 +3877,7 @@ Closures
 
 		__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf160_DarkSkin_darkskin_RibbonLargeSplitButtonTemplateConstructor___vwsn_initialize_instance__
@@ -4282,7 +4282,7 @@ Closures
 
 		__vwsnf1_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf200_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_initialize_instance__
@@ -5236,7 +5236,7 @@ Closures
 
 		__vwsnf2_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf30_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__
@@ -5335,7 +5335,7 @@ Closures
 
 		__vwsnf3_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf40_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__
@@ -5434,7 +5434,7 @@ Closures
 
 		__vwsnf4_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf50_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_initialize_instance__
@@ -5533,7 +5533,7 @@ Closures
 
 		__vwsnf5_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf60_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_initialize_instance__
@@ -5632,7 +5632,7 @@ Closures
 
 		__vwsnf6_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiToolstripButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiDatePickerTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf70_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_initialize_instance__
@@ -5731,7 +5731,7 @@ Closures
 
 		__vwsnf7_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiSelectableButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf80_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_initialize_instance__
@@ -5830,7 +5830,7 @@ Closures
 
 		__vwsnf8_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiSelectableButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf90_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_initialize_instance__
@@ -5929,7 +5929,7 @@ Closures
 
 		__vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiButtonTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	class __vwsnc100_DarkSkin_darkskin_RibbonSmallButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription

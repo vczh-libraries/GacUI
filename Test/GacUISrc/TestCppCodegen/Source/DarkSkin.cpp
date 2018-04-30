@@ -203,10 +203,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonLargeSplitButtonTemplate());
 		}
 	}
 
@@ -385,10 +385,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonLargeDropdownButtonTemplate());
 		}
 	}
 
@@ -579,10 +579,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiDatePickerTemplate* __vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiDatePickerTemplate*>(new ::darkskin::DatePickerTemplate());
+			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonLargeButtonTemplate());
 		}
 	}
 
@@ -769,10 +769,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::RadioButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonSmallSplitButtonTemplate());
 		}
 	}
 
@@ -959,10 +959,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::CheckBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonSmallDropdownButtonTemplate());
 		}
 	}
 
@@ -1145,10 +1145,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiButtonTemplate* __vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonSmallButtonTemplate());
 		}
 	}
 
@@ -1919,10 +1919,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf1_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf1_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonLargeSplitButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::ProgressBarTemplate());
 		}
 	}
 
@@ -3670,10 +3670,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf2_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf2_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonLargeDropdownButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VTrackerTemplate());
 		}
 	}
 
@@ -3824,10 +3824,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf3_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf3_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonLargeButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HTrackerTemplate());
 		}
 	}
 
@@ -4002,10 +4002,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf4_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf4_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonSmallSplitButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
 		}
 	}
 
@@ -4196,10 +4196,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf5_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf5_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonSmallDropdownButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
 		}
 	}
 
@@ -4374,10 +4374,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiToolstripButtonTemplate* __vwsnf6_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiDatePickerTemplate* __vwsnf6_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiToolstripButtonTemplate*>(new ::darkskin::RibbonSmallButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiDatePickerTemplate*>(new ::darkskin::DatePickerTemplate());
 		}
 	}
 
@@ -4568,10 +4568,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf7_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf7_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::ProgressBarTemplate());
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::RadioButtonTemplate());
 		}
 	}
 
@@ -4754,10 +4754,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf8_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf8_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VTrackerTemplate());
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::darkskin::CheckBoxTemplate());
 		}
 	}
 
@@ -4936,10 +4936,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiButtonTemplate* __vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HTrackerTemplate());
+			return static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
 		}
 	}
 
@@ -18966,49 +18966,49 @@ namespace darkskin
 	{
 		(this->__vwsn_precompile_0 = __vwsn_this_);
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonLargeSplitButton = LAMBDA(::vl_workflow_global::__vwsnf1_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ProgressBar = LAMBDA(::vl_workflow_global::__vwsnf1_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonLargeDropdownButton = LAMBDA(::vl_workflow_global::__vwsnf2_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->VTracker = LAMBDA(::vl_workflow_global::__vwsnf2_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonLargeButton = LAMBDA(::vl_workflow_global::__vwsnf3_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->HTracker = LAMBDA(::vl_workflow_global::__vwsnf3_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonSmallSplitButton = LAMBDA(::vl_workflow_global::__vwsnf4_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->VScroll = LAMBDA(::vl_workflow_global::__vwsnf4_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonSmallDropdownButton = LAMBDA(::vl_workflow_global::__vwsnf5_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->HScroll = LAMBDA(::vl_workflow_global::__vwsnf5_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonSmallButton = LAMBDA(::vl_workflow_global::__vwsnf6_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->DatePicker = LAMBDA(::vl_workflow_global::__vwsnf6_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->ProgressBar = LAMBDA(::vl_workflow_global::__vwsnf7_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RadioButton = LAMBDA(::vl_workflow_global::__vwsnf7_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->VTracker = LAMBDA(::vl_workflow_global::__vwsnf8_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->CheckBox = LAMBDA(::vl_workflow_global::__vwsnf8_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->HTracker = LAMBDA(::vl_workflow_global::__vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Button = LAMBDA(::vl_workflow_global::__vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->VScroll = LAMBDA(::vl_workflow_global::__vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonLargeSplitButton = LAMBDA(::vl_workflow_global::__vwsnf10_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->HScroll = LAMBDA(::vl_workflow_global::__vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonLargeDropdownButton = LAMBDA(::vl_workflow_global::__vwsnf11_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->DatePicker = LAMBDA(::vl_workflow_global::__vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonLargeButton = LAMBDA(::vl_workflow_global::__vwsnf12_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RadioButton = LAMBDA(::vl_workflow_global::__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonSmallSplitButton = LAMBDA(::vl_workflow_global::__vwsnf13_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->CheckBox = LAMBDA(::vl_workflow_global::__vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonSmallDropdownButton = LAMBDA(::vl_workflow_global::__vwsnf14_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Button = LAMBDA(::vl_workflow_global::__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonSmallButton = LAMBDA(::vl_workflow_global::__vwsnf15_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonTab = LAMBDA(::vl_workflow_global::__vwsnf16_DarkSkin_darkskin_ThemeConstructor___vwsn_initialize_instance__(this)));

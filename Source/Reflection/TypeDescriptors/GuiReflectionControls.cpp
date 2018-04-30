@@ -939,14 +939,14 @@ Type Declaration
 			END_STRUCT_MEMBER(GalleryPos)
 
 			BEGIN_CLASS_MEMBER(GuiBindableRibbonGalleryBase)
-				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(GroupEnabled)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupTitleProperty)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupChildrenProperty)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Selection)
-				
-				CLASS_MEMBER_METHOD(GetGroupValue, { L"groupIndex" })
-				CLASS_MEMBER_METHOD(GetItemValue, { L"pos" })
+				//CLASS_MEMBER_PROPERTY_FAST(ItemSource)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(GroupEnabled)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupTitleProperty)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupChildrenProperty)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Selection)
+				//
+				//CLASS_MEMBER_METHOD(GetGroupValue, { L"groupIndex" })
+				//CLASS_MEMBER_METHOD(GetItemValue, { L"pos" })
 			END_CLASS_MEMBER(GuiBindableRibbonGalleryBase)
 
 			BEGIN_CLASS_MEMBER(GuiBindableRibbonGallery)
@@ -954,8 +954,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiBindableRibbonGalleryBase)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiBindableRibbonGallery)
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemTemplate)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(PreviewSelection)
+				//CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemTemplate)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(PreviewSelection)
 			END_CLASS_MEMBER(GuiBindableRibbonGallery)
 
 			BEGIN_CLASS_MEMBER(GuiBindableRibbonGalleryMenu)
@@ -963,8 +963,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiBindableRibbonGalleryBase)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiBindableRibbonGalleryMenu, GuiControl*, owner)
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemTemplate)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(PreviewSelection)
+				//CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemTemplate)
+				//CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(PreviewSelection)
 			END_CLASS_MEMBER(GuiBindableRibbonGalleryMenu)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)
