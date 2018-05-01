@@ -245,15 +245,15 @@ GuiToolstripButtonInstanceLoader
 #undef BASE_TYPE
 
 /***********************************************************************
-GuiBindableRibbonGalleryMenuInstanceLoader
+GuiRibbonToolstripMenuInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableRibbonGalleryMenu>
-			class GuiBindableRibbonGalleryMenuInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiRibbonToolstripMenu>
+			class GuiRibbonToolstripMenuInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
-				GuiBindableRibbonGalleryMenuInstanceLoader()
-					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiBindableRibbonGalleryMenu>::content.typeName, theme::ThemeName::RibbonGalleryMenu)
+				GuiRibbonToolstripMenuInstanceLoader()
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiRibbonToolstripMenu>::content.typeName, theme::ThemeName::RibbonToolstripMenu)
 				{
 				}
 			};
@@ -328,7 +328,7 @@ Initialization
 				manager->SetLoader(new GuiToolstripGroupInstanceLoader);
 				manager->SetLoader(new GuiToolstripButtonInstanceLoader);
 				manager->SetLoader(new GuiRibbonButtonsInstanceLoader);
-				manager->SetLoader(new GuiBindableRibbonGalleryMenuInstanceLoader);
+				manager->SetLoader(new GuiRibbonToolstripMenuInstanceLoader);
 			}
 		}
 	}

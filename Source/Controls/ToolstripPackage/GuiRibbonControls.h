@@ -280,21 +280,16 @@ Ribbon Gallery
 				GalleryPos												GetPreviewSelection();
 			};
 
-			class GuiBindableRibbonGalleryMenu : public GuiToolstripMenu, public GuiBindableRibbonGalleryBase, public Description<GuiBindableRibbonGallery>
+			class GuiRibbonToolstripMenu : public GuiToolstripMenu, public Description<GuiRibbonToolstripMenu>
 			{
-				using ItemStyle = templates::GuiListItemTemplate;
-				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonToolstripMenuTemplate, GuiToolstripMenu)
+			protected:
+				compositions::GuiBoundsComposition*						contentComposition;
 			public:
-				GuiBindableRibbonGalleryMenu(theme::ThemeName themeName, GuiControl* owner);
-				~GuiBindableRibbonGalleryMenu();
+				GuiRibbonToolstripMenu(theme::ThemeName themeName, GuiControl* owner);
+				~GuiRibbonToolstripMenu();
 
-				compositions::GuiNotifyEvent							ItemTemplateChanged;
-				compositions::GuiNotifyEvent							PreviewSelectionChanged;
-
-				ItemStyleProperty										GetItemTemplate();
-				void													SetItemTemplate(const ItemStyleProperty& value);
-
-				GalleryPos												GetPreviewSelection();
+				compositions::GuiGraphicsComposition*					GetContentComposition();
 			};
 		}
 	}

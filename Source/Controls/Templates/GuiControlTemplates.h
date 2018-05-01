@@ -101,7 +101,7 @@ namespace vl
 			F(GuiRibbonGroupTemplate,			GuiControlTemplate)			\
 			F(GuiRibbonButtonsTemplate,			GuiControlTemplate)			\
 			F(GuiRibbonToolstripsTemplate,		GuiControlTemplate)			\
-			F(GuiRibbonGalleryMenuTemplate,		GuiMenuTemplate)			\
+			F(GuiRibbonToolstripMenuTemplate,	GuiMenuTemplate)			\
 			F(GuiRibbonGalleryTemplate,			GuiControlTemplate)			\
 
 #define GUI_ITEM_TEMPLATE_DECL(F)\
@@ -301,13 +301,12 @@ Control Template
 #define GuiRibbonToolstripsTemplate_PROPERTIES(F)\
 				F(GuiRibbonToolstripsTemplate, TemplateProperty<GuiControlTemplate>, ToolbarTemplate, {})\
 
+#define GuiRibbonToolstripMenuTemplate_PROPERTIES(F)\
+				F(GuiRibbonToolstripMenuTemplate, compositions::GuiGraphicsComposition*, ContentComposition, nullptr)\
+
 #define GuiRibbonGalleryTemplate_PROPERTIES(F)\
 				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
-				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiRibbonGalleryMenuTemplate>, SubMenuTemplate, {})\
-
-#define GuiRibbonGalleryMenuTemplate_PROPERTIES(F)\
-				F(GuiRibbonGalleryMenuTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
-				F(GuiRibbonGalleryMenuTemplate, TemplateProperty<GuiControlTemplate>, HeaderTemplate, {})\
+				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiRibbonToolstripMenuTemplate>, SubMenuTemplate, {})\
 
 /***********************************************************************
 Item Template

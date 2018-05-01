@@ -754,16 +754,46 @@ GuiBindableRibbonGallery
 			}
 
 /***********************************************************************
-GuiBindableRibbonGalleryMenu
+GuiRibbonToolstripMenu
 ***********************************************************************/
 
-			GuiBindableRibbonGalleryMenu::GuiBindableRibbonGalleryMenu(theme::ThemeName themeName, GuiControl* owner)
-				:GuiToolstripMenu(themeName, owner)
+			void GuiRibbonToolstripMenu::BeforeControlTemplateUninstalled_()
 			{
+				auto ct = GetControlTemplateObject();
+				if (auto cc = ct->GetContentComposition())
+				{
+					cc->RemoveChild(contentComposition);
+				}
 			}
 
-			GuiBindableRibbonGalleryMenu::~GuiBindableRibbonGalleryMenu()
+			void GuiRibbonToolstripMenu::AfterControlTemplateInstalled_(bool initialize)
 			{
+				auto ct = GetControlTemplateObject();
+				if (auto cc = ct->GetContentComposition())
+				{
+					cc->AddChild(contentComposition);
+				}
+			}
+
+			GuiRibbonToolstripMenu::GuiRibbonToolstripMenu(theme::ThemeName themeName, GuiControl* owner)
+				:GuiToolstripMenu(themeName, owner)
+			{
+				contentComposition = new GuiBoundsComposition();
+				contentComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				contentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			}
+
+			GuiRibbonToolstripMenu::~GuiRibbonToolstripMenu()
+			{
+				if (!contentComposition->GetParent())
+				{
+					SafeDeleteComposition(contentComposition);
+				}
+			}
+
+			compositions::GuiGraphicsComposition* GuiRibbonToolstripMenu::GetContentComposition()
+			{
+				return contentComposition;
 			}
 		}
 	}

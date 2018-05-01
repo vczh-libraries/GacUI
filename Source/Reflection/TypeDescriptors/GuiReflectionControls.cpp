@@ -958,14 +958,12 @@ Type Declaration
 				//CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(PreviewSelection)
 			END_CLASS_MEMBER(GuiBindableRibbonGallery)
 
-			BEGIN_CLASS_MEMBER(GuiBindableRibbonGalleryMenu)
+			BEGIN_CLASS_MEMBER(GuiRibbonToolstripMenu)
 				CLASS_MEMBER_BASE(GuiToolstripMenu)
-				CLASS_MEMBER_BASE(GuiBindableRibbonGalleryBase)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiBindableRibbonGalleryMenu, GuiControl*, owner)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiRibbonToolstripMenu, GuiControl*, owner)
 
-				//CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemTemplate)
-				//CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(PreviewSelection)
-			END_CLASS_MEMBER(GuiBindableRibbonGalleryMenu)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContentComposition)
+			END_CLASS_MEMBER(GuiRibbonToolstripMenu)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDocumentItem>(const WString&), { L"name" })
