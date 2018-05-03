@@ -588,35 +588,30 @@ GuiSolidLabelElementRenderer
 
 			void GuiSolidLabelElementRenderer::CreateTextLayout()
 			{
-				if(textFormat)
+				if (textFormat)
 				{
-					HRESULT hr=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory()->CreateTextLayout(
+					HRESULT hr = GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory()->CreateTextLayout(
 						oldText.Buffer(),
 						(int)oldText.Length(),
 						textFormat->textFormat.Obj(),
 						0,
 						0,
 						&textLayout);
-					if(!FAILED(hr))
+					CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+
+					if (oldFont.underline)
 					{
-						if(oldFont.underline)
-						{
-							DWRITE_TEXT_RANGE textRange;
-							textRange.startPosition=0;
-							textRange.length=(int)oldText.Length();
-							textLayout->SetUnderline(TRUE, textRange);
-						}
-						if(oldFont.strikeline)
-						{
-							DWRITE_TEXT_RANGE textRange;
-							textRange.startPosition=0;
-							textRange.length=(int)oldText.Length();
-							textLayout->SetStrikethrough(TRUE, textRange);
-						}
+						DWRITE_TEXT_RANGE textRange;
+						textRange.startPosition = 0;
+						textRange.length = (int)oldText.Length();
+						textLayout->SetUnderline(TRUE, textRange);
 					}
-					else
+					if (oldFont.strikeline)
 					{
-						textLayout=0;
+						DWRITE_TEXT_RANGE textRange;
+						textRange.startPosition = 0;
+						textRange.length = (int)oldText.Length();
+						textLayout->SetStrikethrough(TRUE, textRange);
 					}
 				}
 			}
@@ -760,7 +755,10 @@ GuiSolidLabelElementRenderer
 					IDWriteFactory* dwriteFactory=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
 					DWRITE_TRIMMING trimming;
 					IDWriteInlineObject* inlineObject;
-					textLayout->GetTrimming(&trimming, &inlineObject);
+					{
+						HRESULT hr = textLayout->GetTrimming(&trimming, &inlineObject);
+						CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+					}
 
 					textLayout->SetWordWrapping(element->GetWrapLine()?DWRITE_WORD_WRAPPING_WRAP:DWRITE_WORD_WRAPPING_NO_WRAP);
 					if(element->GetEllipse())
@@ -992,19 +990,18 @@ GuiPolygonElementRenderer
 			void GuiPolygonElementRenderer::CreateGeometry()
 			{
 				oldPoints.Resize(element->GetPointCount());
-				if(oldPoints.Count()>0)
+				if (oldPoints.Count() > 0)
 				{
 					memcpy(&oldPoints[0], &element->GetPoint(0), sizeof(Point)*element->GetPointCount());
 				}
-				if(oldPoints.Count()>=3)
+				if (oldPoints.Count() >= 3)
 				{
-					ID2D1PathGeometry* pg=0;
-					GetWindowsDirect2DObjectProvider()->GetDirect2DFactory()->CreatePathGeometry(&pg);
-					if(pg)
-					{
-						geometry=pg;
-						FillGeometry(Point(0, 0));
-					}
+					ID2D1PathGeometry* pg = 0;
+					HRESULT hr = GetWindowsDirect2DObjectProvider()->GetDirect2DFactory()->CreatePathGeometry(&pg);
+					CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+
+					geometry = pg;
+					FillGeometry(Point(0, 0));
 				}
 			}
 
@@ -1018,26 +1015,25 @@ GuiPolygonElementRenderer
 
 			void GuiPolygonElementRenderer::FillGeometry(Point offset)
 			{
-				if(geometry)
+				if (geometry)
 				{
-					ID2D1GeometrySink* pgs=0;
-					geometry->Open(&pgs);
-					if(pgs)
+					ID2D1GeometrySink* pgs = 0;
+					HRESULT hr = geometry->Open(&pgs);
+					CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+
+					D2D1_POINT_2F p;
+					p.x = (FLOAT)(oldPoints[0].x + offset.x) + 0.5f;
+					p.y = (FLOAT)(oldPoints[0].y + offset.y) + 0.5f;
+					pgs->BeginFigure(p, D2D1_FIGURE_BEGIN_FILLED);
+					for (vint i = 1; i < oldPoints.Count(); i++)
 					{
-						D2D1_POINT_2F p;
-						p.x=(FLOAT)(oldPoints[0].x+offset.x)+0.5f;
-						p.y=(FLOAT)(oldPoints[0].y+offset.y)+0.5f;
-						pgs->BeginFigure(p, D2D1_FIGURE_BEGIN_FILLED);
-						for(vint i=1;i<oldPoints.Count();i++)
-						{
-							p.x=(FLOAT)(oldPoints[i].x+offset.x)+0.5f;
-							p.y=(FLOAT)(oldPoints[i].y+offset.y)+0.5f;
-							pgs->AddLine(p);
-						}
-						pgs->EndFigure(D2D1_FIGURE_END_CLOSED);
-						pgs->Close();
-						pgs->Release();
+						p.x = (FLOAT)(oldPoints[i].x + offset.x) + 0.5f;
+						p.y = (FLOAT)(oldPoints[i].y + offset.y) + 0.5f;
+						pgs->AddLine(p);
 					}
+					pgs->EndFigure(D2D1_FIGURE_END_CLOSED);
+					pgs->Close();
+					pgs->Release();
 				}
 			}
 
