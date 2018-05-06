@@ -158,6 +158,21 @@ GuiCompositionInstanceLoader
 
 								expr = call;
 							}
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControlHost>()))
+							{
+								auto refControl = MakePtr<WfReferenceExpression>();
+								refControl->name.value = variableName.ToString();
+
+								auto refAddControlHostComponent = MakePtr<WfMemberExpression>();
+								refAddControlHostComponent->parent = refControl;
+								refAddControlHostComponent->name.value = L"AddControlHostComponent";
+
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAddControlHostComponent;
+								call->arguments.Add(value);
+
+								expr = call;
+							}
 							else if (td->CanConvertTo(description::GetTypeDescriptor<IGuiGraphicsElement>()))
 							{
 								auto refComposition = MakePtr<WfReferenceExpression>();
