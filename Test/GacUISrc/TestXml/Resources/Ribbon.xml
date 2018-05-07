@@ -14,6 +14,12 @@
     <att.AlignCenterSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignCenter on _.SelectionChanged)</att.AlignCenterSelected-bind>
     <att.AlignRightSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignRight on _.SelectionChanged)</att.AlignRightSelected-bind>
 
+    <RibbonToolstripMenu ref.Name="menuStyles">
+      <MenuItemButton Text="Item 1"/>
+      <MenuItemButton Text="Item 2"/>
+      <MenuItemButton Text="Item 3"/>
+    </RibbonToolstripMenu>
+
     <att.MenuContainer-set>
       <RibbonTab>
         <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -97,7 +103,7 @@
 
               <RibbonGroup Text="Style">
                 <att.Items>
-                  <RibbonGallery>
+                  <RibbonGallery ref.Name="gallery" ev.RequestedDropdown-eval="menuStyles.ShowPopup(gallery, {x:0 y:0} of Point);">
                     <att.BoundsComposition-set PreferredMinSize="x:200"/>
                   </RibbonGallery>
                 </att.Items>
