@@ -174,7 +174,7 @@
             </Cell>
 
             <Cell Site="row:2 column:1">
-              <Button ControlTemplate="x:BottomScrollButtonTemplate" ev.Clicked-eval="self.Commands.NotifyDropdown();">
+              <Button ControlTemplate="x:RibbonGalleryDropdownButtonTemplate" ev.Clicked-eval="self.Commands.NotifyDropdown();">
                 <att.BoundsComposition-set AlignmentToParent="left:4 top:0 right:4 bottom:0"/>
               </Button>
             </Cell>
@@ -223,6 +223,41 @@
             </Table>
           </Bounds>
         </RibbonToolstripMenuTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="RibbonGalleryDropdownButtonTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGalleryDropdownButtonTemplate" ref.Styles="res://DarkSkin/Style">
+        <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.Rows>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:1</CellOption>
+              <CellOption>composeType:Absolute absolute:2</CellOption>
+              <CellOption>composeType:Absolute absolute:5</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:9</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Columns>
+
+            <Cell Site="row:1 column:1">
+              <SolidBackground ref.Style="scrollArrowColor"/>
+            </Cell>
+
+            <Cell Site="row:3 column:1">
+              <Polygon ref.Style="scrollArrow" Size="x:9 y:5">
+                <att.Points>
+                  <Point>x:0 y:0</Point>
+                  <Point>x:4 y:4</Point>
+                  <Point>x:8 y:0</Point>
+                </att.Points>
+              </Polygon>
+            </Cell>
+          </Table>
+        </ButtonTemplate>
       </Instance>
     </Instance>
   </Folder>
