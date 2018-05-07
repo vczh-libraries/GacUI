@@ -15,6 +15,7 @@
     <att.AlignRightSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignRight on _.SelectionChanged)</att.AlignRightSelected-bind>
 
     <RibbonToolstripMenu ref.Name="menuStyles">
+      <att.BoundsComposition-set PreferredMinSize-bind="{x:let bounds = gallery.BoundsComposition.Bounds in (bounds.x2 - bounds.x1)}"/>
       <MenuItemButton Text="Item 1"/>
       <MenuItemButton Text="Item 2"/>
       <MenuItemButton Text="Item 3"/>
