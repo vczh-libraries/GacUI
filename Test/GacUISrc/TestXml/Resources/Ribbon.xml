@@ -94,6 +94,14 @@
                   </RibbonToolstrips>
                 </att.Items>
               </RibbonGroup>
+
+              <RibbonGroup Text="Style">
+                <att.Items>
+                  <RibbonGallery>
+                    <att.BoundsComposition-set PreferredMinSize="x:200"/>
+                  </RibbonGallery>
+                </att.Items>
+              </RibbonGroup>
             </att.Groups>
           </RibbonTabPage>
 

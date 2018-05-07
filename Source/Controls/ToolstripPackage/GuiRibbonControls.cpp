@@ -764,10 +764,6 @@ GuiRibbonGallery
 			{
 				auto ct = GetControlTemplateObject();
 				ct->SetCommands(nullptr);
-				if (auto cc = ct->GetContentComposition())
-				{
-					cc->RemoveChild(contentComposition);
-				}
 			}
 
 			void GuiRibbonGallery::AfterControlTemplateInstalled_(bool initialize)
@@ -776,20 +772,12 @@ GuiRibbonGallery
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetScrollUpEnabled(scrollUpEnabled);
 				ct->SetScrollDownEnabled(scrollDownEnabled);
-				if (auto cc = ct->GetContentComposition())
-				{
-					cc->AddChild(contentComposition);
-				}
 			}
 
 			GuiRibbonGallery::GuiRibbonGallery(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
 				commandExecutor = new CommandExecutor(this);
-
-				contentComposition = new GuiBoundsComposition();
-				contentComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				contentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 				ScrollUpEnabledChanged.SetAssociatedComposition(boundsComposition);
 				ScrollDownEnabledChanged.SetAssociatedComposition(boundsComposition);
@@ -800,10 +788,6 @@ GuiRibbonGallery
 
 			GuiRibbonGallery::~GuiRibbonGallery()
 			{
-				if (!contentComposition->GetParent())
-				{
-					SafeDeleteComposition(contentComposition);
-				}
 			}
 
 			bool GuiRibbonGallery::GetScrollUpEnabled()
@@ -832,11 +816,6 @@ GuiRibbonGallery
 					scrollDownEnabled = value;
 					RequestedScrollDown.Execute(GetNotifyEventArguments());
 				}
-			}
-
-			compositions::GuiGraphicsComposition* GuiRibbonGallery::GetContentComposition()
-			{
-				return contentComposition;
 			}
 
 /***********************************************************************

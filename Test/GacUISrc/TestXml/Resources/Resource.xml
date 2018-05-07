@@ -132,9 +132,62 @@
     <Instance name="DarkSkinThemeResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonTheme" xmlns:x="darkskin::*">
         <ThemeTemplates>
+          <att.RibbonGallery>x:RibbonGalleryTemplate</att.RibbonGallery>
+          <att.RibbonToolstripMenu>x:RibbonToolstripMenuTemplate</att.RibbonToolstripMenu>
         </ThemeTemplates>
       </Instance>
     </Instance>
     <InstanceStyle name="Style" content="File">../../Host/Resources/DarkSkin/Style.xml</InstanceStyle>
+
+    <Instance name="RibbonGalleryTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGalleryTemplate" xmlns:x="darkskin::*" ref.Styles="res://DarkSkin/Style">
+        <RibbonGalleryTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.Rows>
+              <_>composeType:Percentage percentage:1.0</_>
+              <_>composeType:Percentage percentage:1.0</_>
+              <_>composeType:Percentage percentage:1.0</_>
+            </att.Rows>
+            <att.Columns>
+              <_>composeType:Percentage percentage:1.0</_>
+              <_>composeType:MinSize</_>
+            </att.Columns>
+
+            <Cell Site="row:0 column:0 rowSpan:3">
+              <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+                <SolidBorder Color="#3F3F46"/>
+                <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                </Bounds>
+              </Bounds>
+            </Cell>
+
+            <Cell Site="row:0 column:1">
+              <Button ControlTemplate="x:TopScrollButtonTemplate" ev.Clicked-eval="self.Commands.NotifyScrollUp();">
+                <att.BoundsComposition-set AlignmentToParent="left:4 top:0 right:4 bottom:0"/>
+              </Button>
+            </Cell>
+
+            <Cell Site="row:1 column:1">
+              <Button ControlTemplate="x:BottomScrollButtonTemplate" ev.Clicked-eval="self.Commands.NotifyScrollDown();">
+                <att.BoundsComposition-set AlignmentToParent="left:4 top:0 right:4 bottom:0"/>
+              </Button>
+            </Cell>
+
+            <Cell Site="row:2 column:1">
+              <Button ControlTemplate="x:BottomScrollButtonTemplate" ev.Clicked-eval="self.Commands.NotifyDropdown();">
+                <att.BoundsComposition-set AlignmentToParent="left:4 top:0 right:4 bottom:0"/>
+              </Button>
+            </Cell>
+          </Table>
+        </RibbonGalleryTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="RibbonToolstripMenuTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonToolstripMenuTemplate" xmlns:x="darkskin::*">
+        <RibbonToolstripMenuTemplate>
+        </RibbonToolstripMenuTemplate>
+      </Instance>
+    </Instance>
   </Folder>
 </Resource>

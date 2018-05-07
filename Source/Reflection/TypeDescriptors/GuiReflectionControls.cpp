@@ -943,7 +943,6 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ScrollUpEnabled)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ScrollDownEnabled)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContentComposition)
 			END_CLASS_MEMBER(GuiRibbonGallery)
 
 			BEGIN_CLASS_MEMBER(GuiRibbonToolstripMenu)

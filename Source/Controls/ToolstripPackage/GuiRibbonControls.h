@@ -226,7 +226,6 @@ Ribbon Gallery
 					void												NotifyDropdown()override;
 				};
 
-				compositions::GuiBoundsComposition*						contentComposition;
 				bool													scrollUpEnabled = true;
 				bool													scrollDownEnabled = true;
 				Ptr<CommandExecutor>									commandExecutor;
@@ -246,8 +245,6 @@ Ribbon Gallery
 
 				bool													GetScrollDownEnabled();
 				void													SetScrollDownEnabled(bool value);
-
-				compositions::GuiGraphicsComposition*					GetContentComposition();
 			};
 
 			class GuiRibbonToolstripMenu : public GuiToolstripMenu, public Description<GuiRibbonToolstripMenu>

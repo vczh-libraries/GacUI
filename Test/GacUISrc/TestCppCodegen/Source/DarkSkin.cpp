@@ -21680,6 +21680,9 @@ Class (::darkskin::RibbonGroupTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(10); __vwsn_temp__.top = static_cast<::vl::vint32_t>(2); __vwsn_temp__.right = static_cast<::vl::vint32_t>(10); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(2); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetPreferredMinSize([&]() { ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
