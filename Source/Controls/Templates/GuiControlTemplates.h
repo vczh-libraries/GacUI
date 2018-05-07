@@ -305,8 +305,9 @@ Control Template
 				F(GuiRibbonToolstripMenuTemplate, compositions::GuiGraphicsComposition*, ContentComposition, nullptr)\
 
 #define GuiRibbonGalleryTemplate_PROPERTIES(F)\
-				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
-				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiRibbonToolstripMenuTemplate>, SubMenuTemplate, {})\
+				F(GuiRibbonGalleryTemplate, compositions::GuiGraphicsComposition*, ContentComposition, nullptr)\
+				F(GuiRibbonGalleryTemplate, bool, ScrollUpEnabled, true)\
+				F(GuiRibbonGalleryTemplate, bool, ScrollDownEnabled, true)\
 
 /***********************************************************************
 Item Template

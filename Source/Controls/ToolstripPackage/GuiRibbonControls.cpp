@@ -729,28 +729,82 @@ GuiRibbonToolstrips
 #undef ARRLEN
 
 /***********************************************************************
-GuiBindableRibbonGalleryBase
+GuiRibbonGallery
 ***********************************************************************/
 
-			GuiBindableRibbonGalleryBase::GuiBindableRibbonGalleryBase()
+			void GuiRibbonGallery::BeforeControlTemplateUninstalled_()
 			{
+				auto ct = GetControlTemplateObject();
+				if (auto cc = ct->GetContentComposition())
+				{
+					cc->RemoveChild(contentComposition);
+				}
 			}
 
-			GuiBindableRibbonGalleryBase::~GuiBindableRibbonGalleryBase()
+			void GuiRibbonGallery::AfterControlTemplateInstalled_(bool initialize)
 			{
+				auto ct = GetControlTemplateObject();
+				ct->SetScrollUpEnabled(scrollUpEnabled);
+				ct->SetScrollDownEnabled(scrollDownEnabled);
+				if (auto cc = ct->GetContentComposition())
+				{
+					cc->AddChild(contentComposition);
+				}
 			}
 
-/***********************************************************************
-GuiBindableRibbonGallery
-***********************************************************************/
-
-			GuiBindableRibbonGallery::GuiBindableRibbonGallery(theme::ThemeName themeName)
+			GuiRibbonGallery::GuiRibbonGallery(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
+				contentComposition = new GuiBoundsComposition();
+				contentComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				contentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+				ScrollUpEnabledChanged.SetAssociatedComposition(boundsComposition);
+				ScrollDownEnabledChanged.SetAssociatedComposition(boundsComposition);
+				RequestedScrollUp.SetAssociatedComposition(boundsComposition);
+				RequestedScrollDown.SetAssociatedComposition(boundsComposition);
+				RequestedDropdown.SetAssociatedComposition(boundsComposition);
 			}
 
-			GuiBindableRibbonGallery::~GuiBindableRibbonGallery()
+			GuiRibbonGallery::~GuiRibbonGallery()
 			{
+				if (!contentComposition->GetParent())
+				{
+					SafeDeleteComposition(contentComposition);
+				}
+			}
+
+			bool GuiRibbonGallery::GetScrollUpEnabled()
+			{
+				return scrollUpEnabled;
+			}
+
+			void GuiRibbonGallery::SetScrollUpEnabled(bool value)
+			{
+				if (scrollUpEnabled != value)
+				{
+					scrollUpEnabled = value;
+					RequestedScrollUp.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			bool GuiRibbonGallery::GetScrollDownEnabled()
+			{
+				return scrollDownEnabled;
+			}
+
+			void GuiRibbonGallery::SetScrollDownEnabled(bool value)
+			{
+				if (scrollDownEnabled != value)
+				{
+					scrollDownEnabled = value;
+					RequestedScrollDown.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			compositions::GuiGraphicsComposition* GuiRibbonGallery::GetContentComposition()
+			{
+				return contentComposition;
 			}
 
 /***********************************************************************
@@ -794,6 +848,18 @@ GuiRibbonToolstripMenu
 			compositions::GuiGraphicsComposition* GuiRibbonToolstripMenu::GetContentComposition()
 			{
 				return contentComposition;
+			}
+
+/***********************************************************************
+GuiBindableRibbonGalleryBase
+***********************************************************************/
+
+			GuiBindableRibbonGalleryBase::GuiBindableRibbonGalleryBase()
+			{
+			}
+
+			GuiBindableRibbonGalleryBase::~GuiBindableRibbonGalleryBase()
+			{
 			}
 		}
 	}

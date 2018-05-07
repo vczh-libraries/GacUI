@@ -205,6 +205,53 @@ Ribbon Toolstrips
 Ribbon Gallery
 ***********************************************************************/
 
+			class GuiRibbonGallery : public GuiControl, public Description<GuiRibbonGallery>
+			{
+				using ItemStyle = templates::GuiListItemTemplate;
+				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
+
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGalleryTemplate, GuiControl)
+			protected:
+				compositions::GuiBoundsComposition*						contentComposition;
+				bool													scrollUpEnabled = true;
+				bool													scrollDownEnabled = true;
+
+			public:
+				GuiRibbonGallery(theme::ThemeName themeName);
+				~GuiRibbonGallery();
+
+				compositions::GuiNotifyEvent							ScrollUpEnabledChanged;
+				compositions::GuiNotifyEvent							ScrollDownEnabledChanged;
+				compositions::GuiNotifyEvent							RequestedScrollUp;
+				compositions::GuiNotifyEvent							RequestedScrollDown;
+				compositions::GuiNotifyEvent							RequestedDropdown;
+
+				bool													GetScrollUpEnabled();
+				void													SetScrollUpEnabled(bool value);
+
+				bool													GetScrollDownEnabled();
+				void													SetScrollDownEnabled(bool value);
+
+				compositions::GuiGraphicsComposition*					GetContentComposition();
+			};
+
+			class GuiRibbonToolstripMenu : public GuiToolstripMenu, public Description<GuiRibbonToolstripMenu>
+			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonToolstripMenuTemplate, GuiToolstripMenu)
+			protected:
+				compositions::GuiBoundsComposition*						contentComposition;
+
+			public:
+				GuiRibbonToolstripMenu(theme::ThemeName themeName, GuiControl* owner);
+				~GuiRibbonToolstripMenu();
+
+				compositions::GuiGraphicsComposition*					GetContentComposition();
+			};
+
+/***********************************************************************
+Ribbon Gallery List
+***********************************************************************/
+
 			struct GalleryPos
 			{
 				vint			group;
@@ -261,35 +308,6 @@ Ribbon Gallery
 
 				description::Value										GetGroupValue(vint groupIndex);
 				description::Value										GetItemValue(GalleryPos pos);
-			};
-
-			class GuiBindableRibbonGallery : public GuiControl, public GuiBindableRibbonGalleryBase, public Description<GuiBindableRibbonGallery>
-			{
-				using ItemStyle = templates::GuiListItemTemplate;
-				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
-			public:
-				GuiBindableRibbonGallery(theme::ThemeName themeName);
-				~GuiBindableRibbonGallery();
-
-				compositions::GuiNotifyEvent							ItemTemplateChanged;
-				compositions::GuiNotifyEvent							PreviewSelectionChanged;
-
-				ItemStyleProperty										GetItemTemplate();
-				void													SetItemTemplate(const ItemStyleProperty& value);
-
-				GalleryPos												GetPreviewSelection();
-			};
-
-			class GuiRibbonToolstripMenu : public GuiToolstripMenu, public Description<GuiRibbonToolstripMenu>
-			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonToolstripMenuTemplate, GuiToolstripMenu)
-			protected:
-				compositions::GuiBoundsComposition*						contentComposition;
-			public:
-				GuiRibbonToolstripMenu(theme::ThemeName themeName, GuiControl* owner);
-				~GuiRibbonToolstripMenu();
-
-				compositions::GuiGraphicsComposition*					GetContentComposition();
 			};
 		}
 	}

@@ -339,10 +339,10 @@ Type List (Controls)
 			F(presentation::controls::RibbonButtonSize)\
 			F(presentation::controls::GuiRibbonButtons)\
 			F(presentation::controls::GuiRibbonToolstrips)\
+			F(presentation::controls::GuiRibbonGallery)\
+			F(presentation::controls::GuiRibbonToolstripMenu)\
 			F(presentation::controls::GalleryPos)\
 			F(presentation::controls::GuiBindableRibbonGalleryBase)\
-			F(presentation::controls::GuiBindableRibbonGallery)\
-			F(presentation::controls::GuiRibbonToolstripMenu)\
 			F(presentation::controls::GuiDocumentItem)\
 			F(presentation::controls::GuiDocumentCommonInterface)\
 			F(presentation::controls::GuiDocumentCommonInterface::EditMode)\

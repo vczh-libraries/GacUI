@@ -308,7 +308,7 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonTabPage,			CustomControl										);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonGroup,				RibbonGroup											);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonToolstrips,		RibbonToolstrips									);
-					ADD_TEMPLATE_CONTROL	(							GuiBindableRibbonGallery,	RibbonGallery										);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonGallery,			RibbonGallery										);
 
 					/*						VIRTUAL-CONTROL-TYPE		REAL-CONTROL-TYPE			THEME-NAME											*/
 					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,					GroupBox											);

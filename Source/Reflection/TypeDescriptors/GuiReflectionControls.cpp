@@ -933,6 +933,26 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Groups)
 			END_CLASS_MEMBER(GuiRibbonToolstrips)
 
+			BEGIN_CLASS_MEMBER(GuiRibbonGallery)
+				CLASS_MEMBER_BASE(GuiControl)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiRibbonGallery)
+
+				CLASS_MEMBER_GUIEVENT(RequestedScrollUp)
+				CLASS_MEMBER_GUIEVENT(RequestedScrollDown)
+				CLASS_MEMBER_GUIEVENT(RequestedDropdown)
+
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ScrollUpEnabled)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ScrollDownEnabled)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContentComposition)
+			END_CLASS_MEMBER(GuiRibbonGallery)
+
+			BEGIN_CLASS_MEMBER(GuiRibbonToolstripMenu)
+				CLASS_MEMBER_BASE(GuiToolstripMenu)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiRibbonToolstripMenu, GuiControl*, owner)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContentComposition)
+			END_CLASS_MEMBER(GuiRibbonToolstripMenu)
+
 			BEGIN_STRUCT_MEMBER(GalleryPos)
 				STRUCT_MEMBER(group)
 				STRUCT_MEMBER(item)
@@ -948,22 +968,6 @@ Type Declaration
 				//CLASS_MEMBER_METHOD(GetGroupValue, { L"groupIndex" })
 				//CLASS_MEMBER_METHOD(GetItemValue, { L"pos" })
 			END_CLASS_MEMBER(GuiBindableRibbonGalleryBase)
-
-			BEGIN_CLASS_MEMBER(GuiBindableRibbonGallery)
-				CLASS_MEMBER_BASE(GuiControl)
-				CLASS_MEMBER_BASE(GuiBindableRibbonGalleryBase)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiBindableRibbonGallery)
-
-				//CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemTemplate)
-				//CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(PreviewSelection)
-			END_CLASS_MEMBER(GuiBindableRibbonGallery)
-
-			BEGIN_CLASS_MEMBER(GuiRibbonToolstripMenu)
-				CLASS_MEMBER_BASE(GuiToolstripMenu)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiRibbonToolstripMenu, GuiControl*, owner)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContentComposition)
-			END_CLASS_MEMBER(GuiRibbonToolstripMenu)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDocumentItem>(const WString&), { L"name" })
