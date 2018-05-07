@@ -184,7 +184,7 @@
     </Instance>
 
     <Instance name="RibbonToolstripMenuTemplateResource">
-      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonToolstripMenuTemplate" xmlns:x="darkskin::*">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonToolstripMenuTemplate" xmlns:x="darkskin::*" ref.Styles="res://DarkSkin/Style">
         <RibbonToolstripMenuTemplate ContainerComposition-ref="container" ContentComposition-ref="content" MinSizeLimitation="LimitToElementAndChildren">
           <att.SizeBoxOption>AlwaysTrue</att.SizeBoxOption>
 
@@ -200,28 +200,24 @@
                 <_>composeType:Absolute absolute:4</_>
               </att.Rows>
               <att.Columns>
-                <_>composeType:Absolute absolute:4</_>
                 <_>composeType:Percentage percentage:1.0</_>
                 <_>composeType:Absolute absolute:4</_>
               </att.Columns>
 
-              <Cell ref.Name="content" Site="row:0 column:0 columnSpan:3"/>
+              <Cell ref.Name="content" Site="row:0 column:0 columnSpan:2"/>
 
-              <Cell Site="row:1 column:0 columnSpan:3">
+              <Cell Site="row:1 column:0 columnSpan:2">
                 <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
                   <SolidBackground Color="#333337"/>
                 </Bounds>
               </Cell>
 
-              <Cell Site="row:2 column:0 columnSpan:3" ref.Name="container" InternalMargin="left:3 top:3 right:3 bottom:3"/>
-
-              <Cell Site="row:3 column:0" AssociatedHitTestResult="BorderLeftBottom">
+              <Cell Site="row:2 column:0 columnSpan:2" ref.Name="container" InternalMargin="left:3 top:3 right:3 bottom:3"/>
+              
+              <Cell Site="row:3 column:0" AssociatedHitTestResult="BorderBottom">
                 <SolidBackground Color="#007ACC"/>
               </Cell>
-              <Cell Site="row:3 column:1" AssociatedHitTestResult="BorderBottom">
-                <SolidBackground Color="#007ACC"/>
-              </Cell>
-              <Cell Site="row:3 column:2" AssociatedHitTestResult="BorderRightBottom">
+              <Cell Site="row:3 column:1" AssociatedHitTestResult="BorderRightBottom">
                 <SolidBackground Color="#007ACC"/>
               </Cell>
             </Table>
