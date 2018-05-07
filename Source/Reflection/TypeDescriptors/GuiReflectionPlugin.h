@@ -202,6 +202,7 @@ Type List (Templates)
 			F(presentation::controls::IScrollCommandExecutor)\
 			F(presentation::controls::ITabCommandExecutor)\
 			F(presentation::controls::IDatePickerCommandExecutor)\
+			F(presentation::controls::IRibbonGalleryCommandExecutor)\
 			F(presentation::controls::GuiComponent)\
 			F(presentation::controls::IGuiAnimation)\
 			F(presentation::controls::IGuiAnimationCoroutine::IImpl)\

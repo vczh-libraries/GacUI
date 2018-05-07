@@ -729,12 +729,41 @@ GuiRibbonToolstrips
 #undef ARRLEN
 
 /***********************************************************************
+GuiRibbonGallery::CommandExecutor
+***********************************************************************/
+
+			GuiRibbonGallery::CommandExecutor::CommandExecutor(GuiRibbonGallery* _gallery)
+				:gallery(_gallery)
+			{
+			}
+
+			GuiRibbonGallery::CommandExecutor::~CommandExecutor()
+			{
+			}
+
+			void GuiRibbonGallery::CommandExecutor::NotifyScrollUp()
+			{
+				gallery->RequestedScrollUp.Execute(gallery->GetNotifyEventArguments());
+			}
+
+			void GuiRibbonGallery::CommandExecutor::NotifyScrollDown()
+			{
+				gallery->RequestedScrollDown.Execute(gallery->GetNotifyEventArguments());
+			}
+
+			void GuiRibbonGallery::CommandExecutor::NotifyDropdown()
+			{
+				gallery->RequestedDropdown.Execute(gallery->GetNotifyEventArguments());
+			}
+
+/***********************************************************************
 GuiRibbonGallery
 ***********************************************************************/
 
 			void GuiRibbonGallery::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
+				ct->SetCommands(nullptr);
 				if (auto cc = ct->GetContentComposition())
 				{
 					cc->RemoveChild(contentComposition);
@@ -744,6 +773,7 @@ GuiRibbonGallery
 			void GuiRibbonGallery::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject();
+				ct->SetCommands(commandExecutor.Obj());
 				ct->SetScrollUpEnabled(scrollUpEnabled);
 				ct->SetScrollDownEnabled(scrollDownEnabled);
 				if (auto cc = ct->GetContentComposition())
@@ -755,6 +785,8 @@ GuiRibbonGallery
 			GuiRibbonGallery::GuiRibbonGallery(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
+				commandExecutor = new CommandExecutor(this);
+
 				contentComposition = new GuiBoundsComposition();
 				contentComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				contentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);

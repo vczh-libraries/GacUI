@@ -104,6 +104,18 @@ namespace vl
 				virtual void						NotifyDateSelected() = 0;
 			};
 
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IRibbonGalleryCommandExecutor : public virtual IDescriptable, public Description<IRibbonGalleryCommandExecutor>
+			{
+			public:
+				/// <summary>Called when the scroll up button is clicked.</summary>
+				virtual void						NotifyScrollUp() = 0;
+				/// <summary>Called when the scroll down button is clicked.</summary>
+				virtual void						NotifyScrollDown() = 0;
+				/// <summary>Called when the dropdown button is clicked.</summary>
+				virtual void						NotifyDropdown() = 0;
+			};
+
 			class GuiInstanceRootObject;
 
 			/// <summary>

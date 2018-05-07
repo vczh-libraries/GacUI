@@ -74,6 +74,13 @@ Type Declaration
 				CLASS_MEMBER_METHOD(NotifyDateSelected, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IDatePickerCommandExecutor)
 
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IRibbonGalleryCommandExecutor)
+				CLASS_MEMBER_BASE(IDescriptable)
+				CLASS_MEMBER_METHOD(NotifyScrollUp, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(NotifyScrollDown, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(NotifyDropdown, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IRibbonGalleryCommandExecutor)
+
 			BEGIN_CLASS_MEMBER(GuiComponent)
 			END_CLASS_MEMBER(GuiComponent)
 

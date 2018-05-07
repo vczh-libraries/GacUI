@@ -212,9 +212,24 @@ Ribbon Gallery
 
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGalleryTemplate, GuiControl)
 			protected:
+				class CommandExecutor : public Object, public IRibbonGalleryCommandExecutor
+				{
+				protected:
+					GuiRibbonGallery*									gallery;
+
+				public:
+					CommandExecutor(GuiRibbonGallery* _gallery);
+					~CommandExecutor();
+
+					void												NotifyScrollUp()override;
+					void												NotifyScrollDown()override;
+					void												NotifyDropdown()override;
+				};
+
 				compositions::GuiBoundsComposition*						contentComposition;
 				bool													scrollUpEnabled = true;
 				bool													scrollDownEnabled = true;
+				Ptr<CommandExecutor>									commandExecutor;
 
 			public:
 				GuiRibbonGallery(theme::ThemeName themeName);
