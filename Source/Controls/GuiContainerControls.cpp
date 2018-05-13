@@ -312,7 +312,7 @@ GuiScrollView
 
 				auto hVisible2 = hScroll ? hScroll->GetVisible() : false;
 				auto vVisible2 = vScroll ? vScroll->GetVisible() : false;
-				return hVisible != hVisible2 || vVisible2;
+				return hVisible != hVisible2 || vVisible != vVisible2;
 			}
 
 			GuiScrollView::GuiScrollView(theme::ThemeName themeName)
