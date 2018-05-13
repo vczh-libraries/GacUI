@@ -33,7 +33,7 @@ GuiMultilineTextBox::DefaultTextElementOperatorCallback
 			{
 				point.x+=TextMargin;
 				point.y+=TextMargin;
-				Point oldPoint(textControl->GetHorizontalScroll()->GetPosition(), textControl->GetVerticalScroll()->GetPosition());
+				Point oldPoint = textControl->GetViewPosition();
 				vint marginX=0;
 				vint marginY=0;
 				if(oldPoint.x<point.x)
@@ -52,8 +52,7 @@ GuiMultilineTextBox::DefaultTextElementOperatorCallback
 				{
 					marginY=-TextMargin;
 				}
-				textControl->GetHorizontalScroll()->SetPosition(point.x+marginX);
-				textControl->GetVerticalScroll()->SetPosition(point.y+marginY);
+				textControl->SetViewPosition(Point(point.x + marginX, point.y + marginY));
 			}
 
 			vint GuiMultilineTextBox::TextElementOperatorCallback::GetTextMargin()
@@ -105,10 +104,18 @@ GuiMultilineTextBox
 				CalculateView();
 				vint smallMove = textElement->GetLines().GetRowHeight();
 				vint bigMove = smallMove * 5;
-				ct->GetHorizontalScroll()->SetSmallMove(smallMove);
-				ct->GetHorizontalScroll()->SetBigMove(bigMove);
-				ct->GetVerticalScroll()->SetSmallMove(smallMove);
-				ct->GetVerticalScroll()->SetBigMove(bigMove);
+
+				if (auto scroll = ct->GetHorizontalScroll())
+				{
+					scroll->SetSmallMove(smallMove);
+					scroll->SetBigMove(bigMove);
+				}
+
+				if (auto scroll = ct->GetVerticalScroll())
+				{
+					scroll->SetSmallMove(smallMove);
+					scroll->SetBigMove(bigMove);
+				}
 			}
 
 			void GuiMultilineTextBox::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

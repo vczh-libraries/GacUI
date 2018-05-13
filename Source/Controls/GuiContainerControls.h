@@ -154,6 +154,12 @@ Scroll View
 				/// <returns>The view bounds.</returns>
 				Rect									GetViewBounds();
 				
+				/// <summary>Get the position of the left-top corner of the view bounds.</summary>
+				/// <returns>The view position.</returns>
+				Point									GetViewPosition();
+				/// <summary>Set the position of the left-top corner of the view bounds.</summary>
+				void									SetViewPosition(Point value);
+				
 				/// <summary>Get the horizontal scroll control.</summary>
 				/// <returns>The horizontal scroll control.</returns>
 				GuiScroll*								GetHorizontalScroll();

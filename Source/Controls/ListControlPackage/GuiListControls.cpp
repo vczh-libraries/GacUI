@@ -94,8 +94,7 @@ GuiListControl::ItemCallback
 			{
 				Rect virtualRect(value, listControl->GetViewSize());
 				Rect realRect = listControl->axis->VirtualRectToRealRect(listControl->fullSize, virtualRect);
-				listControl->GetHorizontalScroll()->SetPosition(realRect.Left());
-				listControl->GetVerticalScroll()->SetPosition(realRect.Top());
+				listControl->SetViewPosition(realRect.LeftTop());
 			}
 
 			Size GuiListControl::ItemCallback::GetStylePreferredSize(compositions::GuiBoundsComposition* style)
