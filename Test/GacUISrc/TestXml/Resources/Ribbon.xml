@@ -17,11 +17,25 @@
     <att.MenuContainer-set>
       <RibbonTab>
         <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+
         <att.BeforeHeaders-set>
           <Button Text="HOME">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80"/>
           </Button>
         </att.BeforeHeaders-set>
+
+        <att.AfterHeaders-set>
+          <Stack Direction="Horizontal" AlignmentToParent="left:0 top:-1 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+            <StackItem InternalMargin="left:0 top:0 right:10 bottom:0">
+              <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text="Search:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </StackItem>
+            <StackItem>
+              <SinglelineTextBox>
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:1" PreferredMinSize="x:180"/>
+              </SinglelineTextBox>
+            </StackItem>
+          </Stack>
+        </att.AfterHeaders-set>
 
         <att.Pages>
           <RibbonTabPage Text="Edit">
@@ -97,7 +111,7 @@
 
               <RibbonGroup Text="Style">
                 <att.Items>
-                  <BindableRibbonGalleryList ref.Name="gallery" ev.RequestedDropdown-eval="menuStyles.ShowPopup(gallery, {x:0 y:0} of Point);">
+                  <BindableRibbonGalleryList>
                     <att.BoundsComposition-set PreferredMinSize="x:200"/>
                     <att.SubMenu-set>
                       <MenuItemButton Text="Item 1"/>

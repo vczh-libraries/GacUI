@@ -960,7 +960,7 @@ GuiBindableRibbonGalleryList
 				throw 0;
 			}
 
-			GuiRibbonToolstripMenu* GuiBindableRibbonGalleryList::GetSubMenu()
+			GuiToolstripMenu* GuiBindableRibbonGalleryList::GetSubMenu()
 			{
 				return subMenu;
 			}

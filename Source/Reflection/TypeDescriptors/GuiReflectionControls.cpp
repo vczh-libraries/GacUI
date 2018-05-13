@@ -960,6 +960,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableRibbonGalleryList)
 				CLASS_MEMBER_BASE(GuiRibbonGallery)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiBindableRibbonGalleryList)
 
 				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(GroupEnabled)

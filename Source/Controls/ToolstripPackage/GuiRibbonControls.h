@@ -328,7 +328,7 @@ Ribbon Gallery List
 				description::Value										GetGroupValue(vint groupIndex);
 				description::Value										GetItemValue(GalleryPos pos);
 
-				GuiRibbonToolstripMenu*									GetSubMenu();
+				GuiToolstripMenu*										GetSubMenu();
 			};
 		}
 	}
