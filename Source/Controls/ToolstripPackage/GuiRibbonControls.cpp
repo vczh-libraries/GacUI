@@ -7,6 +7,7 @@ namespace vl
 	{
 		namespace controls
 		{
+			using namespace reflection::description;
 			using namespace collections;
 			using namespace compositions;
 			using namespace theme;
@@ -862,15 +863,106 @@ GuiRibbonToolstripMenu
 			}
 
 /***********************************************************************
-GuiBindableRibbonGalleryBase
+GuiBindableRibbonGalleryList
 ***********************************************************************/
 
-			GuiBindableRibbonGalleryBase::GuiBindableRibbonGalleryBase()
+			void GuiBindableRibbonGalleryList::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
+				subMenu->GetBoundsComposition()->SetPreferredMinSize(Size(boundsComposition->GetBounds().Width(), 1));
 			}
 
-			GuiBindableRibbonGalleryBase::~GuiBindableRibbonGalleryBase()
+			void GuiBindableRibbonGalleryList::OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
+				subMenu->ShowPopup(this, Point(0, 0));
+			}
+
+			GuiBindableRibbonGalleryList::GuiBindableRibbonGalleryList(theme::ThemeName themeName)
+				:GuiRibbonGallery(themeName)
+			{
+				GroupEnabledChanged.SetAssociatedComposition(boundsComposition);
+				GroupTitlePropertyChanged.SetAssociatedComposition(boundsComposition);
+				GroupChildrenPropertyChanged.SetAssociatedComposition(boundsComposition);
+				SelectionChanged.SetAssociatedComposition(boundsComposition);
+
+				subMenu = new GuiRibbonToolstripMenu(theme::ThemeName::RibbonToolstripMenu, this);
+
+				RequestedDropdown.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedDropdown);
+				boundsComposition->BoundsChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnBoundsChanged);
+			}
+
+			GuiBindableRibbonGalleryList::~GuiBindableRibbonGalleryList()
+			{
+				delete subMenu;
+			}
+
+			Ptr<IValueEnumerable> GuiBindableRibbonGalleryList::GetItemSource()
+			{
+				throw 0;
+			}
+
+			void GuiBindableRibbonGalleryList::SetItemSource(Ptr<IValueEnumerable> value)
+			{
+				throw 0;
+			}
+
+			bool GuiBindableRibbonGalleryList::GetGroupEnabled()
+			{
+				return titleProperty && childrenProperty;
+			}
+
+			ItemProperty<WString> GuiBindableRibbonGalleryList::GetGroupTitleProperty()
+			{
+				return titleProperty;
+			}
+
+			void GuiBindableRibbonGalleryList::SetGroupTitleProperty(const ItemProperty<WString>& value)
+			{
+				if (titleProperty != value)
+				{
+					titleProperty = value;
+					GroupTitlePropertyChanged.Execute(GetNotifyEventArguments());
+					GroupEnabledChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			ItemProperty<Ptr<IValueEnumerable>> GuiBindableRibbonGalleryList::GetGroupChildrenProperty()
+			{
+				return childrenProperty;
+			}
+
+			void GuiBindableRibbonGalleryList::SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value)
+			{
+				if (childrenProperty != value)
+				{
+					childrenProperty = value;
+					GroupChildrenPropertyChanged.Execute(GetNotifyEventArguments());
+					GroupEnabledChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			GalleryPos GuiBindableRibbonGalleryList::GetSelection()
+			{
+				throw 0;
+			}
+
+			void GuiBindableRibbonGalleryList::SetSelection(GalleryPos value)
+			{
+				throw 0;
+			}
+
+			description::Value GuiBindableRibbonGalleryList::GetGroupValue(vint groupIndex)
+			{
+				throw 0;
+			}
+
+			description::Value GuiBindableRibbonGalleryList::GetItemValue(GalleryPos pos)
+			{
+				throw 0;
+			}
+
+			GuiRibbonToolstripMenu* GuiBindableRibbonGalleryList::GetSubMenu()
+			{
+				return subMenu;
 			}
 		}
 	}

@@ -56,6 +56,7 @@ namespace vl
 			F(RibbonToolstripsTemplate,		RibbonToolstrips)			\
 			F(RibbonGalleryTemplate,		RibbonGallery)				\
 			F(RibbonToolstripMenuTemplate,	RibbonToolstripMenu)		\
+			F(RibbonGalleryListTemplate,	RibbonGalleryList)			\
 			F(ToolstripButtonTemplate,		RibbonSmallButton)			\
 			F(ToolstripButtonTemplate,		RibbonSmallDropdownButton)	\
 			F(ToolstripButtonTemplate,		RibbonSmallSplitButton)		\

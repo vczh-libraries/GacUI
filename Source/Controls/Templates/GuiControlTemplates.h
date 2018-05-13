@@ -103,6 +103,7 @@ namespace vl
 			F(GuiRibbonToolstripsTemplate,		GuiControlTemplate)			\
 			F(GuiRibbonToolstripMenuTemplate,	GuiMenuTemplate)			\
 			F(GuiRibbonGalleryTemplate,			GuiControlTemplate)			\
+			F(GuiRibbonGalleryListTemplate,		GuiRibbonGalleryTemplate)	\
 
 #define GUI_ITEM_TEMPLATE_DECL(F)\
 			F(GuiTextListItemTemplate,			GuiListItemTemplate)		\
@@ -308,6 +309,9 @@ Control Template
 				F(GuiRibbonGalleryTemplate, controls::IRibbonGalleryCommandExecutor*, Commands, nullptr)\
 				F(GuiRibbonGalleryTemplate, bool, ScrollUpEnabled, true)\
 				F(GuiRibbonGalleryTemplate, bool, ScrollDownEnabled, true)\
+
+#define GuiRibbonGalleryListTemplate_PROPERTIES(F)\
+				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiRibbonToolstripMenuTemplate>, MenuTemplate, {})\
 
 /***********************************************************************
 Item Template

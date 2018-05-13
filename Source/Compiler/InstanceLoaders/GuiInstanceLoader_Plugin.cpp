@@ -288,52 +288,53 @@ GuiPredefinedInstanceLoadersPlugin
 
 					manager->SetLoader(new GuiControlInstanceLoader);
 
-					/*													REAL-CONTROL-TYPE			THEME-NAME											*/
-					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,			CustomControl										);
-					ADD_TEMPLATE_CONTROL	(							GuiLabel,					Label												);
-					ADD_TEMPLATE_CONTROL	(							GuiButton,					Button												);
-					ADD_TEMPLATE_CONTROL	(							GuiTabPage,					CustomControl										);
-					ADD_TEMPLATE_CONTROL	(							GuiTab,						Tab													);
-					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,			ScrollView											);
-					ADD_TEMPLATE_CONTROL	(							GuiWindow,					Window												);
-					ADD_TEMPLATE_CONTROL	(							GuiTextList,				TextList											);
-					ADD_TEMPLATE_CONTROL	(							GuiBindableTextList,		TextList											);
-					ADD_TEMPLATE_CONTROL	(							GuiListView,				ListView											);
-					ADD_TEMPLATE_CONTROL	(							GuiBindableListView,		ListView											);
-					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,		MultilineTextBox									);
-					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,		SinglelineTextBox									);
-					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,				DatePicker											);
-					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,			ComboBox,				CreateStandardDataPicker	);
-					ADD_TEMPLATE_CONTROL	(							GuiRibbonTab,				RibbonTab											);
-					ADD_TEMPLATE_CONTROL	(							GuiRibbonTabPage,			CustomControl										);
-					ADD_TEMPLATE_CONTROL	(							GuiRibbonGroup,				RibbonGroup											);
-					ADD_TEMPLATE_CONTROL	(							GuiRibbonToolstrips,		RibbonToolstrips									);
-					ADD_TEMPLATE_CONTROL	(							GuiRibbonGallery,			RibbonGallery										);
+					/*													REAL-CONTROL-TYPE				THEME-NAME											*/
+					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,				CustomControl										);
+					ADD_TEMPLATE_CONTROL	(							GuiLabel,						Label												);
+					ADD_TEMPLATE_CONTROL	(							GuiButton,						Button												);
+					ADD_TEMPLATE_CONTROL	(							GuiTabPage,						CustomControl										);
+					ADD_TEMPLATE_CONTROL	(							GuiTab,							Tab													);
+					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,				ScrollView											);
+					ADD_TEMPLATE_CONTROL	(							GuiWindow,						Window												);
+					ADD_TEMPLATE_CONTROL	(							GuiTextList,					TextList											);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableTextList,			TextList											);
+					ADD_TEMPLATE_CONTROL	(							GuiListView,					ListView											);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableListView,			ListView											);
+					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,			MultilineTextBox									);
+					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,			SinglelineTextBox									);
+					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,					DatePicker											);
+					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,				ComboBox,				CreateStandardDataPicker	);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonTab,					RibbonTab											);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonTabPage,				CustomControl										);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonGroup,					RibbonGroup											);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonToolstrips,			RibbonToolstrips									);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonGallery,				RibbonGallery										);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableRibbonGalleryList,	RibbonGalleryList									);
 
-					/*						VIRTUAL-CONTROL-TYPE		REAL-CONTROL-TYPE			THEME-NAME											*/
-					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,					GroupBox											);
-					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,					MenuSplitter										);
-					ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,			MenuBarButton										);
-					ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,			MenuItemButton										);
-					ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,			ToolstripDropdownButton								);
-					ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,			ToolstripSplitButton								);
-					ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,					ToolstripSplitter									);
-					ADD_VIRTUAL_CONTROL		(RibbonSmallButton,			GuiToolstripButton,			RibbonSmallButton									);
-					ADD_VIRTUAL_CONTROL		(RibbonSmallDropdownButton,	GuiToolstripButton,			RibbonSmallDropdownButton							);
-					ADD_VIRTUAL_CONTROL		(RibbonSmallSplitButton,	GuiToolstripButton,			RibbonSmallSplitButton								);
-					ADD_VIRTUAL_CONTROL		(RibbonLargeButton,			GuiToolstripButton,			RibbonLargeButton									);
-					ADD_VIRTUAL_CONTROL		(RibbonLargeDropdownButton,	GuiToolstripButton,			RibbonLargeDropdownButton							);
-					ADD_VIRTUAL_CONTROL		(RibbonLargeSplitButton,	GuiToolstripButton,			RibbonLargeSplitButton								);
-					ADD_VIRTUAL_CONTROL		(RibbonSplitter,			GuiControl,					RibbonSplitter										);
-					ADD_VIRTUAL_CONTROL		(RibbonToolstripHeader,		GuiControl,					RibbonToolstripHeader								);
-					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,		CheckBox											);
-					ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,		RadioButton											);
-					ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,					HScroll												);
-					ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,					VScroll												);
-					ADD_VIRTUAL_CONTROL		(DocumentTextBox,			GuiDocumentLabel,			DocumentTextBox										);
-					ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,					HTracker,				InitializeTrackerProgressBar);
-					ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,					VTracker,				InitializeTrackerProgressBar);
-					ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,					ProgressBar,			InitializeTrackerProgressBar);
+					/*						VIRTUAL-CONTROL-TYPE		REAL-CONTROL-TYPE				THEME-NAME											*/
+					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,						GroupBox											);
+					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,						MenuSplitter										);
+					ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,				MenuBarButton										);
+					ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,				MenuItemButton										);
+					ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,				ToolstripDropdownButton								);
+					ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,				ToolstripSplitButton								);
+					ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,						ToolstripSplitter									);
+					ADD_VIRTUAL_CONTROL		(RibbonSmallButton,			GuiToolstripButton,				RibbonSmallButton									);
+					ADD_VIRTUAL_CONTROL		(RibbonSmallDropdownButton,	GuiToolstripButton,				RibbonSmallDropdownButton							);
+					ADD_VIRTUAL_CONTROL		(RibbonSmallSplitButton,	GuiToolstripButton,				RibbonSmallSplitButton								);
+					ADD_VIRTUAL_CONTROL		(RibbonLargeButton,			GuiToolstripButton,				RibbonLargeButton									);
+					ADD_VIRTUAL_CONTROL		(RibbonLargeDropdownButton,	GuiToolstripButton,				RibbonLargeDropdownButton							);
+					ADD_VIRTUAL_CONTROL		(RibbonLargeSplitButton,	GuiToolstripButton,				RibbonLargeSplitButton								);
+					ADD_VIRTUAL_CONTROL		(RibbonSplitter,			GuiControl,						RibbonSplitter										);
+					ADD_VIRTUAL_CONTROL		(RibbonToolstripHeader,		GuiControl,						RibbonToolstripHeader								);
+					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,			CheckBox											);
+					ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,			RadioButton											);
+					ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,						HScroll												);
+					ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,						VScroll												);
+					ADD_VIRTUAL_CONTROL		(DocumentTextBox,			GuiDocumentLabel,				DocumentTextBox										);
+					ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,						HTracker,				InitializeTrackerProgressBar);
+					ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,						VTracker,				InitializeTrackerProgressBar);
+					ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,						ProgressBar,			InitializeTrackerProgressBar);
 
 					LoadToolstripControls(manager);
 					LoadListControls(manager);

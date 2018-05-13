@@ -958,16 +958,19 @@ Type Declaration
 				STRUCT_MEMBER(item)
 			END_STRUCT_MEMBER(GalleryPos)
 
-			BEGIN_CLASS_MEMBER(GuiBindableRibbonGalleryBase)
-				//CLASS_MEMBER_PROPERTY_FAST(ItemSource)
-				//CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(GroupEnabled)
-				//CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupTitleProperty)
-				//CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupChildrenProperty)
-				//CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Selection)
-				//
-				//CLASS_MEMBER_METHOD(GetGroupValue, { L"groupIndex" })
-				//CLASS_MEMBER_METHOD(GetItemValue, { L"pos" })
-			END_CLASS_MEMBER(GuiBindableRibbonGalleryBase)
+			BEGIN_CLASS_MEMBER(GuiBindableRibbonGalleryList)
+				CLASS_MEMBER_BASE(GuiRibbonGallery)
+
+				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(GroupEnabled)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupTitleProperty)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(GroupChildrenProperty)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Selection)
+				
+				CLASS_MEMBER_METHOD(GetGroupValue, { L"groupIndex" })
+				CLASS_MEMBER_METHOD(GetItemValue, { L"pos" })
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(SubMenu)
+			END_CLASS_MEMBER(GuiBindableRibbonGalleryList)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDocumentItem>(const WString&), { L"name" })

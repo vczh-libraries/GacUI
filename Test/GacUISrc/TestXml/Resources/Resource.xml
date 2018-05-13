@@ -133,6 +133,7 @@
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonTheme" xmlns:x="darkskin::*">
         <ThemeTemplates>
           <att.RibbonGallery>x:RibbonGalleryTemplate</att.RibbonGallery>
+          <att.RibbonGalleryList>x:RibbonGalleryTemplate</att.RibbonGalleryList>
           <att.RibbonToolstripMenu>x:RibbonToolstripMenuTemplate</att.RibbonToolstripMenu>
         </ThemeTemplates>
       </Instance>
@@ -141,7 +142,7 @@
 
     <Instance name="RibbonGalleryTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGalleryTemplate" xmlns:x="darkskin::*" ref.Styles="res://DarkSkin/Style">
-        <RibbonGalleryTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <RibbonGalleryListTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.Rows>
               <_>composeType:Percentage percentage:1.0</_>
@@ -179,7 +180,7 @@
               </Button>
             </Cell>
           </Table>
-        </RibbonGalleryTemplate>
+        </RibbonGalleryListTemplate>
       </Instance>
     </Instance>
 

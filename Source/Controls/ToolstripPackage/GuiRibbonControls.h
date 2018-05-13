@@ -294,12 +294,19 @@ Ribbon Gallery List
 				bool operator>=(const GalleryPos& value)const { return Compare(value) >= 0; }
 			};
 
-			class GuiBindableRibbonGalleryBase : public Description<GuiBindableRibbonGalleryBase>
+			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public Description<GuiBindableRibbonGalleryList>
 			{
 				using IValueEnumerable = reflection::description::IValueEnumerable;
+			protected:
+				GuiRibbonToolstripMenu*									subMenu;
+				ItemProperty<WString>									titleProperty;
+				ItemProperty<Ptr<IValueEnumerable>>						childrenProperty;
+
+				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				GuiBindableRibbonGalleryBase();
-				~GuiBindableRibbonGalleryBase();
+				GuiBindableRibbonGalleryList(theme::ThemeName themeName);
+				~GuiBindableRibbonGalleryList();
 
 				compositions::GuiNotifyEvent							GroupEnabledChanged;
 				compositions::GuiNotifyEvent							GroupTitlePropertyChanged;
@@ -320,6 +327,8 @@ Ribbon Gallery List
 
 				description::Value										GetGroupValue(vint groupIndex);
 				description::Value										GetItemValue(GalleryPos pos);
+
+				GuiRibbonToolstripMenu*									GetSubMenu();
 			};
 		}
 	}
