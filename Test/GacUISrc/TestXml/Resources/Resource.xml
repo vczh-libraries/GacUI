@@ -87,7 +87,6 @@
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGalleryItemListTemplate" ref.Styles="res://DarkSkin/Style">
         <TextListTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
           <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
-          <SolidBorder Color="#00FF00"/>
         </TextListTemplate>
       </Instance>
     </Instance>
