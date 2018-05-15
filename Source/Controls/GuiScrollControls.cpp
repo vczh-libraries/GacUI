@@ -65,7 +65,10 @@ GuiScroll
 
 			void GuiScroll::BeforeControlTemplateUninstalled_()
 			{
-				GetControlTemplateObject()->SetCommands(nullptr);
+				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
+				ct->SetCommands(nullptr);
 			}
 
 			void GuiScroll::AfterControlTemplateInstalled_(bool initialize)

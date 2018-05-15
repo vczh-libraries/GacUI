@@ -85,6 +85,8 @@ GuiMultilineTextBox
 			void GuiMultilineTextBox::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
 				ct->SetCommands(nullptr);
 			}
 

@@ -32,7 +32,10 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::BeforeControlTemplateUninstalled_()
 			{
-				GetControlTemplateObject()->SetCommands(nullptr);
+				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
+				ct->SetCommands(nullptr);
 			}
 
 			void GuiComboBoxBase::AfterControlTemplateInstalled_(bool initialize)

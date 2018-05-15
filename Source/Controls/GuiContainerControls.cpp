@@ -93,6 +93,8 @@ GuiTab
 			void GuiTab::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
 				ct->SetCommands(nullptr);
 				ct->SetTabPages(nullptr);
 				ct->SetSelectedTabPage(nullptr);
@@ -178,6 +180,8 @@ GuiScrollView
 			void GuiScrollView::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
 				if (auto scroll = ct->GetHorizontalScroll())
 				{
 					scroll->PositionChanged.Detach(hScrollHandler);

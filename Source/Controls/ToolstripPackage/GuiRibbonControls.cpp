@@ -20,6 +20,8 @@ GuiRibbonTab
 			void GuiRibbonTab::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
 				if (auto bhc = ct->GetBeforeHeadersContainer())
 				{
 					bhc->RemoveChild(beforeHeaders);
@@ -764,6 +766,8 @@ GuiRibbonGallery
 			void GuiRibbonGallery::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
 				ct->SetCommands(nullptr);
 			}
 
@@ -826,6 +830,8 @@ GuiRibbonToolstripMenu
 			void GuiRibbonToolstripMenu::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
 				if (auto cc = ct->GetContentComposition())
 				{
 					cc->RemoveChild(contentComposition);
