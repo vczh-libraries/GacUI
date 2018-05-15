@@ -11,6 +11,7 @@ Interfaces:
 
 #include "GuiToolstripMenu.h"
 #include "../GuiContainerControls.h"
+#include "../ListControlPackage/GuiBindableListControls.h"
 
 namespace vl
 {
@@ -297,7 +298,9 @@ Ribbon Gallery List
 			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public Description<GuiBindableRibbonGalleryList>
 			{
 				using IValueEnumerable = reflection::description::IValueEnumerable;
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGalleryListTemplate, GuiRibbonGallery)
 			protected:
+				GuiBindableTextList*									itemList;
 				GuiRibbonToolstripMenu*									subMenu;
 				ItemProperty<WString>									titleProperty;
 				ItemProperty<Ptr<IValueEnumerable>>						childrenProperty;

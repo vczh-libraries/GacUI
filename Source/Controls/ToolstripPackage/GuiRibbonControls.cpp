@@ -866,6 +866,17 @@ GuiRibbonToolstripMenu
 GuiBindableRibbonGalleryList
 ***********************************************************************/
 
+			void GuiBindableRibbonGalleryList::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiBindableRibbonGalleryList::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				itemList->SetControlTemplate(ct->GetItemListTemplate());
+				subMenu->SetControlTemplate(ct->GetMenuTemplate());
+			}
+
 			void GuiBindableRibbonGalleryList::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				subMenu->GetBoundsComposition()->SetPreferredMinSize(Size(boundsComposition->GetBounds().Width(), 1));
@@ -883,6 +894,9 @@ GuiBindableRibbonGalleryList
 				GroupTitlePropertyChanged.SetAssociatedComposition(boundsComposition);
 				GroupChildrenPropertyChanged.SetAssociatedComposition(boundsComposition);
 				SelectionChanged.SetAssociatedComposition(boundsComposition);
+
+				itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
+				containerComposition->AddChild(itemList->GetBoundsComposition());
 
 				subMenu = new GuiRibbonToolstripMenu(theme::ThemeName::RibbonToolstripMenu, this);
 

@@ -311,6 +311,7 @@ Control Template
 				F(GuiRibbonGalleryTemplate, bool, ScrollDownEnabled, true)\
 
 #define GuiRibbonGalleryListTemplate_PROPERTIES(F)\
+				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiTextListTemplate>, ItemListTemplate, {})\
 				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiRibbonToolstripMenuTemplate>, MenuTemplate, {})\
 
 /***********************************************************************

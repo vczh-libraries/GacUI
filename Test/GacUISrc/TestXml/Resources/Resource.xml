@@ -29,6 +29,7 @@
         <ThemeTemplates>
           <att.RibbonGallery>x:RibbonGalleryTemplate</att.RibbonGallery>
           <att.RibbonGalleryList>x:RibbonGalleryTemplate</att.RibbonGalleryList>
+          <att.RibbonGalleryItemList>x:RibbonGalleryItemListTemplate</att.RibbonGalleryItemList>
           <att.RibbonToolstripMenu>x:RibbonToolstripMenuTemplate</att.RibbonToolstripMenu>
         </ThemeTemplates>
       </Instance>
@@ -38,6 +39,9 @@
     <Instance name="RibbonGalleryTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGalleryTemplate" xmlns:x="darkskin::*" ref.Styles="res://DarkSkin/Style">
         <RibbonGalleryListTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+          <att.ItemListTemplate>x:RibbonGalleryItemListTemplate</att.ItemListTemplate>
+          <att.MenuTemplate>x:RibbonToolstripMenuTemplate</att.MenuTemplate>
+
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.Rows>
               <_>composeType:Percentage percentage:1.0</_>
@@ -79,6 +83,15 @@
       </Instance>
     </Instance>
 
+    <Instance name="RibbonGalleryItemListResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGalleryItemListTemplate" ref.Styles="res://DarkSkin/Style">
+        <TextListTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+          <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
+          <SolidBorder Color="#00FF00"/>
+        </TextListTemplate>
+      </Instance>
+    </Instance>
+
     <Instance name="RibbonToolstripMenuTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonToolstripMenuTemplate" xmlns:x="darkskin::*" ref.Styles="res://DarkSkin/Style">
         <RibbonToolstripMenuTemplate ContainerComposition-ref="container" ContentComposition-ref="content" MinSizeLimitation="LimitToElementAndChildren">
@@ -87,7 +100,7 @@
           <SolidBackground Color="#1B1B1C"/>
           <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <SolidBorder Color="#333337"/>
-            
+
             <Table AlignmentToParent="left:1 top:1 right:1 bottom:1">
               <att.Rows>
                 <_>composeType:Percentage percentage:1.0</_>
@@ -109,7 +122,7 @@
               </Cell>
 
               <Cell Site="row:2 column:0 columnSpan:2" ref.Name="container" InternalMargin="left:3 top:3 right:3 bottom:3"/>
-              
+
               <Cell Site="row:3 column:0" AssociatedHitTestResult="BorderBottom">
                 <SolidBackground Color="#007ACC"/>
               </Cell>
