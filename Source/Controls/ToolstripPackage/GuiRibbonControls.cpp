@@ -896,6 +896,7 @@ GuiBindableRibbonGalleryList
 				SelectionChanged.SetAssociatedComposition(boundsComposition);
 
 				itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
+				itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				containerComposition->AddChild(itemList->GetBoundsComposition());
 
 				subMenu = new GuiRibbonToolstripMenu(theme::ThemeName::RibbonToolstripMenu, this);

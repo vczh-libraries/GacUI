@@ -217,8 +217,15 @@ GuiListControl
 
 				itemStyleProperty = styleProperty;
 				itemArranger = arranger;
-				GetVerticalScroll()->SetPosition(0);
-				GetHorizontalScroll()->SetPosition(0);
+
+				if (auto scroll = GetVerticalScroll())
+				{
+					scroll->SetPosition(0);
+				}
+				if (auto scroll = GetHorizontalScroll())
+				{
+					scroll->SetPosition(0);
+				}
 
 				if (itemArranger)
 				{

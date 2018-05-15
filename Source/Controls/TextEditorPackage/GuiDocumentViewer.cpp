@@ -1143,7 +1143,10 @@ GuiDocumentViewer
 					offset=bounds.y2-viewBounds.y2;
 				}
 
-				GetVerticalScroll()->SetPosition(viewBounds.y1+offset);
+				if (auto scroll = GetVerticalScroll())
+				{
+					scroll->SetPosition(viewBounds.y1 + offset);
+				}
 			}
 
 			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName)
