@@ -55,8 +55,11 @@ Ribbon Gallery List
 			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public Description<GuiBindableRibbonGalleryList>
 			{
 				using IValueEnumerable = reflection::description::IValueEnumerable;
+				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
+
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGalleryListTemplate, GuiRibbonGallery)
 			protected:
+				ItemStyleProperty										itemStyle;
 				GuiBindableTextList*									itemList;
 				GuiRibbonToolstripMenu*									subMenu;
 				ItemProperty<WString>									titleProperty;
@@ -68,13 +71,25 @@ Ribbon Gallery List
 				GuiBindableRibbonGalleryList(theme::ThemeName themeName);
 				~GuiBindableRibbonGalleryList();
 
+				compositions::GuiNotifyEvent							ItemTemplateChanged;
 				compositions::GuiNotifyEvent							GroupEnabledChanged;
 				compositions::GuiNotifyEvent							GroupTitlePropertyChanged;
 				compositions::GuiNotifyEvent							GroupChildrenPropertyChanged;
 				compositions::GuiNotifyEvent							SelectionChanged;
 
+				/// <summary>Get the item source.</summary>
+				/// <returns>The item source.</returns>
 				Ptr<IValueEnumerable>									GetItemSource();
+				/// <summary>Set the item source.</summary>
+				/// <param name="value">The item source. Null is acceptable if you want to clear all data.</param>
 				void													SetItemSource(Ptr<IValueEnumerable> value);
+
+				/// <summary>Get the item style provider.</summary>
+				/// <returns>The item style provider.</returns>
+				ItemStyleProperty										GetItemTemplate();
+				/// <summary>Set the item style provider</summary>
+				/// <param name="value">The new item style provider</param>
+				void													SetItemTemplate(ItemStyleProperty value);
 
 				bool													GetGroupEnabled();
 				ItemProperty<WString>									GetGroupTitleProperty();

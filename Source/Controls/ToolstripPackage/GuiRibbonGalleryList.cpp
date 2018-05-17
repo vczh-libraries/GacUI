@@ -39,6 +39,7 @@ GuiBindableRibbonGalleryList
 			GuiBindableRibbonGalleryList::GuiBindableRibbonGalleryList(theme::ThemeName themeName)
 				:GuiRibbonGallery(themeName)
 			{
+				ItemTemplateChanged.SetAssociatedComposition(boundsComposition);
 				GroupEnabledChanged.SetAssociatedComposition(boundsComposition);
 				GroupTitlePropertyChanged.SetAssociatedComposition(boundsComposition);
 				GroupChildrenPropertyChanged.SetAssociatedComposition(boundsComposition);
@@ -61,12 +62,27 @@ GuiBindableRibbonGalleryList
 
 			Ptr<IValueEnumerable> GuiBindableRibbonGalleryList::GetItemSource()
 			{
-				throw 0;
+				return itemList->GetItemSource();
 			}
 
 			void GuiBindableRibbonGalleryList::SetItemSource(Ptr<IValueEnumerable> value)
 			{
-				throw 0;
+				itemList->SetItemSource(value);
+			}
+
+			GuiBindableRibbonGalleryList::ItemStyleProperty GuiBindableRibbonGalleryList::GetItemTemplate()
+			{
+				return itemStyle;
+			}
+
+			void GuiBindableRibbonGalleryList::SetItemTemplate(ItemStyleProperty value)
+			{
+				if (itemStyle != value)
+				{
+					itemStyle = value;
+					itemList->SetItemTemplate(value);
+					ItemTemplateChanged.Execute(GetNotifyEventArguments());
+				}
 			}
 
 			bool GuiBindableRibbonGalleryList::GetGroupEnabled()

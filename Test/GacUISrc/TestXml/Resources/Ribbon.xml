@@ -1,146 +1,193 @@
-<Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorRibbonWindow" xmlns:demo="demo::*">
-  <ref.Members>
-    <![CDATA[
-      @cpp:Private
-      prop AlignLeftSelected : bool = true {}
-      @cpp:Private
-      prop AlignCenterSelected : bool = true {}
-      @cpp:Private
-      prop AlignRightSelected : bool = true {}
-    ]]>
-  </ref.Members>
-  <demo:DocumentEditorWindowBase ref.Name="self" Text="Document Editor (Ribbon)">
-    <att.AlignLeftSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignLeft on _.SelectionChanged)</att.AlignLeftSelected-bind>
-    <att.AlignCenterSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignCenter on _.SelectionChanged)</att.AlignCenterSelected-bind>
-    <att.AlignRightSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignRight on _.SelectionChanged)</att.AlignRightSelected-bind>
+<Folder>
+  <Script name="RibbonScript">
+    <Workflow>
+      <![CDATA[
+        module ribbonscript;
 
-    <att.MenuContainer-set>
-      <RibbonTab>
-        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        namespace demo
+        {
+          class StyleItem
+          {
+            new(value : int)
+            {
+              Value = value;
+            }
+          
+            prop Value : int = 0 {not observe}
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
 
-        <att.BeforeHeaders-set>
-          <Button Text="HOME">
-            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80"/>
-          </Button>
-        </att.BeforeHeaders-set>
+  <Instance name="StyleItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::StyleItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="demo::StyleItem"/>
+      <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <SolidLabel Text-bind="ViewModel.Value" Color="#FF8000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+      </TextListItemTemplate>
+    </Instance>
+  </Instance>
 
-        <att.AfterHeaders-set>
-          <Stack Direction="Horizontal" AlignmentToParent="left:0 top:-1 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-            <StackItem InternalMargin="left:0 top:0 right:10 bottom:0">
-              <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text="Search:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </StackItem>
-            <StackItem>
-              <SinglelineTextBox>
-                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:1" PreferredMinSize="x:180"/>
-              </SinglelineTextBox>
-            </StackItem>
-          </Stack>
-        </att.AfterHeaders-set>
+  <Instance name="DocumentEditorRibbonWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorRibbonWindow" xmlns:demo="demo::*">
+      <ref.Members>
+        <![CDATA[
+          @cpp:Private
+          prop AlignLeftSelected : bool = true {}
+          @cpp:Private
+          prop AlignCenterSelected : bool = true {}
+          @cpp:Private
+          prop AlignRightSelected : bool = true {}
+          
+          @cpp:Private
+          func GetStyleItems(): demo::StyleItem^[]
+          {
+            return
+            {
+              new demo::StyleItem^(1)
+              new demo::StyleItem^(2)
+              new demo::StyleItem^(3)
+              new demo::StyleItem^(4)
+              new demo::StyleItem^(5)
+            };
+          }
+        ]]>
+      </ref.Members>
+      <demo:DocumentEditorWindowBase ref.Name="self" Text="Document Editor (Ribbon)">
+        <att.AlignLeftSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignLeft on _.SelectionChanged)</att.AlignLeftSelected-bind>
+        <att.AlignCenterSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignCenter on _.SelectionChanged)</att.AlignCenterSelected-bind>
+        <att.AlignRightSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignRight on _.SelectionChanged)</att.AlignRightSelected-bind>
 
-        <att.Pages>
-          <RibbonTabPage Text="Edit">
-            <att.ContainerComposition-set PreferredMinSize="y:110"/>
-            <att.Groups>
-              <RibbonGroup Text="Alignment">
-                <att.Items>
-                  <RibbonLargeDropdownButton Text="Edit Mode">
-                    <att.LargeImage-bind>self.EditModeCommand.LargeImage ?? null</att.LargeImage-bind>
-                    <att.SubMenu-set>
-                      <MenuItemButton Command-eval="self.commandViewOnly" Alt="V"/>
-                      <MenuItemButton Command-eval="self.commandSelectable" Alt="S"/>
-                      <MenuItemButton Command-eval="self.commandEditable" Alt="E"/>
-                    </att.SubMenu-set>
-                  </RibbonLargeDropdownButton>
-                  <RibbonSplitter/>
-                  <RibbonButtons MaxSize="Large" MinSize="Icon">
-                    <att.Buttons>
-                      <ToolstripButton Command-eval="self.commandAlignLeft" Selected-bind="self.AlignLeftSelected"/>
-                      <ToolstripButton Command-eval="self.commandAlignCenter" Selected-bind="self.AlignCenterSelected"/>
-                      <ToolstripButton Command-eval="self.commandAlignRight" Selected-bind="self.AlignRightSelected"/>
-                    </att.Buttons>
-                  </RibbonButtons>
-                </att.Items>
-              </RibbonGroup>
+        <att.MenuContainer-set>
+          <RibbonTab>
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
 
-              <RibbonGroup Text="Edit">
-                <att.Items>
-                  <RibbonButtons MaxSize="Large" MinSize="Icon">
-                    <att.Buttons>
-                      <ToolstripButton Command-eval="self.commandUndo"/>
-                      <ToolstripButton Command-eval="self.commandRedo"/>
-                    </att.Buttons>
-                  </RibbonButtons>
-                  <RibbonSplitter/>
-                  <RibbonButtons MaxSize="Large" MinSize="Icon">
-                    <att.Buttons>
-                      <ToolstripButton Command-eval="self.commandCopy"/>
-                      <ToolstripButton Command-eval="self.commandCut"/>
-                      <ToolstripButton Command-eval="self.commandPaste"/>
-                    </att.Buttons>
-                  </RibbonButtons>
-                  <RibbonSplitter/>
-                  <RibbonLargeButton Command-eval="self.commandDelete"/>
-                </att.Items>
-              </RibbonGroup>
+            <att.BeforeHeaders-set>
+              <Button Text="HOME">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80"/>
+              </Button>
+            </att.BeforeHeaders-set>
 
-              <RibbonGroup Text="Text">
-                <att.Items>
-                  <RibbonToolstrips>
-                    <att.Groups>
-                      <ToolstripGroup>
-                        <ToolstripButton Command-eval="self.commandBold"/>
-                        <ToolstripButton Command-eval="self.commandItalic"/>
-                      </ToolstripGroup>
-                      <ToolstripGroup>
-                        <ToolstripButton Command-eval="self.commandUnderline"/>
-                        <ToolstripButton Command-eval="self.commandStrike"/>
-                      </ToolstripGroup>
-                      <ToolstripGroup>
-                        <ToolstripButton Command-eval="self.commandFont"/>
-                        <ToolstripButton Command-eval="self.commandColor"/>
-                        <ToolstripButton Command-eval="self.commandBackColor"/>
-                      </ToolstripGroup>
-                      <ToolstripGroup>
-                        <ToolstripButton Command-eval="self.commandEditHyperlink"/>
-                        <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
-                      </ToolstripGroup>
-                    </att.Groups>
-                  </RibbonToolstrips>
-                </att.Items>
-              </RibbonGroup>
+            <att.AfterHeaders-set>
+              <Stack Direction="Horizontal" AlignmentToParent="left:0 top:-1 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                <StackItem InternalMargin="left:0 top:0 right:10 bottom:0">
+                  <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text="Search:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </StackItem>
+                <StackItem>
+                  <SinglelineTextBox>
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:1" PreferredMinSize="x:180"/>
+                  </SinglelineTextBox>
+                </StackItem>
+              </Stack>
+            </att.AfterHeaders-set>
 
-              <RibbonGroup Text="Style">
-                <att.Items>
-                  <BindableRibbonGalleryList>
-                    <att.BoundsComposition-set PreferredMinSize="x:200"/>
-                    <att.SubMenu-set>
-                      <MenuItemButton Text="Item 1"/>
-                      <MenuItemButton Text="Item 2"/>
-                      <MenuItemButton Text="Item 3"/>
-                    </att.SubMenu-set>
-                  </BindableRibbonGalleryList>
-                </att.Items>
-              </RibbonGroup>
-            </att.Groups>
-          </RibbonTabPage>
+            <att.Pages>
+              <RibbonTabPage Text="Edit">
+                <att.ContainerComposition-set PreferredMinSize="y:110"/>
+                <att.Groups>
+                  <RibbonGroup Text="Alignment">
+                    <att.Items>
+                      <RibbonLargeDropdownButton Text="Edit Mode">
+                        <att.LargeImage-bind>self.EditModeCommand.LargeImage ?? null</att.LargeImage-bind>
+                        <att.SubMenu-set>
+                          <MenuItemButton Command-eval="self.commandViewOnly" Alt="V"/>
+                          <MenuItemButton Command-eval="self.commandSelectable" Alt="S"/>
+                          <MenuItemButton Command-eval="self.commandEditable" Alt="E"/>
+                        </att.SubMenu-set>
+                      </RibbonLargeDropdownButton>
+                      <RibbonSplitter/>
+                      <RibbonButtons MaxSize="Large" MinSize="Icon">
+                        <att.Buttons>
+                          <ToolstripButton Command-eval="self.commandAlignLeft" Selected-bind="self.AlignLeftSelected"/>
+                          <ToolstripButton Command-eval="self.commandAlignCenter" Selected-bind="self.AlignCenterSelected"/>
+                          <ToolstripButton Command-eval="self.commandAlignRight" Selected-bind="self.AlignRightSelected"/>
+                        </att.Buttons>
+                      </RibbonButtons>
+                    </att.Items>
+                  </RibbonGroup>
 
-          <RibbonTabPage Text="Insert" Highlighted="true">
-            <att.Groups>
-              <RibbonGroup Text="Object">
-                <att.Items>
-                  <RibbonButtons MaxSize="Large" MinSize="Small">
-                    <att.Buttons>
-                      <ToolstripButton Command-eval="self.commandInsertImage"/>
-                      <ToolstripButton Command-eval="self.commandEditHyperlink"/>
-                      <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
-                    </att.Buttons>
-                  </RibbonButtons>
-                </att.Items>
-              </RibbonGroup>
-            </att.Groups>
-          </RibbonTabPage>
-        </att.Pages>
-      </RibbonTab>
-    </att.MenuContainer-set>
-  </demo:DocumentEditorWindowBase>
-</Instance>
+                  <RibbonGroup Text="Edit">
+                    <att.Items>
+                      <RibbonButtons MaxSize="Large" MinSize="Icon">
+                        <att.Buttons>
+                          <ToolstripButton Command-eval="self.commandUndo"/>
+                          <ToolstripButton Command-eval="self.commandRedo"/>
+                        </att.Buttons>
+                      </RibbonButtons>
+                      <RibbonSplitter/>
+                      <RibbonButtons MaxSize="Large" MinSize="Icon">
+                        <att.Buttons>
+                          <ToolstripButton Command-eval="self.commandCopy"/>
+                          <ToolstripButton Command-eval="self.commandCut"/>
+                          <ToolstripButton Command-eval="self.commandPaste"/>
+                        </att.Buttons>
+                      </RibbonButtons>
+                      <RibbonSplitter/>
+                      <RibbonLargeButton Command-eval="self.commandDelete"/>
+                    </att.Items>
+                  </RibbonGroup>
+
+                  <RibbonGroup Text="Text">
+                    <att.Items>
+                      <RibbonToolstrips>
+                        <att.Groups>
+                          <ToolstripGroup>
+                            <ToolstripButton Command-eval="self.commandBold"/>
+                            <ToolstripButton Command-eval="self.commandItalic"/>
+                          </ToolstripGroup>
+                          <ToolstripGroup>
+                            <ToolstripButton Command-eval="self.commandUnderline"/>
+                            <ToolstripButton Command-eval="self.commandStrike"/>
+                          </ToolstripGroup>
+                          <ToolstripGroup>
+                            <ToolstripButton Command-eval="self.commandFont"/>
+                            <ToolstripButton Command-eval="self.commandColor"/>
+                            <ToolstripButton Command-eval="self.commandBackColor"/>
+                          </ToolstripGroup>
+                          <ToolstripGroup>
+                            <ToolstripButton Command-eval="self.commandEditHyperlink"/>
+                            <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
+                          </ToolstripGroup>
+                        </att.Groups>
+                      </RibbonToolstrips>
+                    </att.Items>
+                  </RibbonGroup>
+
+                  <RibbonGroup Text="Style">
+                    <att.Items>
+                      <BindableRibbonGalleryList ItemTemplate="x:StyleItemTemplate" ItemSource-eval="self.GetStyleItems()">
+                        <att.BoundsComposition-set PreferredMinSize="x:200"/>
+                        <att.SubMenu-set>
+                          <MenuItemButton Text="Item 1"/>
+                          <MenuItemButton Text="Item 2"/>
+                          <MenuItemButton Text="Item 3"/>
+                        </att.SubMenu-set>
+                      </BindableRibbonGalleryList>
+                    </att.Items>
+                  </RibbonGroup>
+                </att.Groups>
+              </RibbonTabPage>
+
+              <RibbonTabPage Text="Insert" Highlighted="true">
+                <att.Groups>
+                  <RibbonGroup Text="Object">
+                    <att.Items>
+                      <RibbonButtons MaxSize="Large" MinSize="Small">
+                        <att.Buttons>
+                          <ToolstripButton Command-eval="self.commandInsertImage"/>
+                          <ToolstripButton Command-eval="self.commandEditHyperlink"/>
+                          <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
+                        </att.Buttons>
+                      </RibbonButtons>
+                    </att.Items>
+                  </RibbonGroup>
+                </att.Groups>
+              </RibbonTabPage>
+            </att.Pages>
+          </RibbonTab>
+        </att.MenuContainer-set>
+      </demo:DocumentEditorWindowBase>
+    </Instance>
+  </Instance>
+</Folder>
