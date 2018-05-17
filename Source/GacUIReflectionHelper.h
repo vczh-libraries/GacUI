@@ -34,6 +34,7 @@ GacUI Reflection Helper
 #include "Controls/ToolstripPackage/GuiMenuControls.h"
 #include "Controls/ToolstripPackage/GuiToolstripMenu.h"
 #include "Controls/ToolstripPackage/GuiRibbonControls.h"
+#include "Controls/ToolstripPackage/GuiRibbonGalleryList.h"
 
 namespace vl
 {
