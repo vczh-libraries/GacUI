@@ -156,7 +156,7 @@
 
                   <RibbonGroup Text="Style">
                     <att.Items>
-                      <BindableRibbonGalleryList ItemTemplate="x:StyleItemTemplate" ItemSource-eval="self.GetStyleItems()">
+                      <BindableRibbonGalleryList ItemTemplate="demo:StyleItemTemplate" ItemSource-eval="self.GetStyleItems()">
                         <att.BoundsComposition-set PreferredMinSize="x:200"/>
                         <att.SubMenu-set>
                           <MenuItemButton Text="Item 1"/>
