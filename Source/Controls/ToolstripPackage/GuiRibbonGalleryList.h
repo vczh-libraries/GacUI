@@ -52,7 +52,46 @@ Ribbon Gallery List
 				bool operator>=(const GalleryPos& value)const { return Compare(value) >= 0; }
 			};
 
-			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public Description<GuiBindableRibbonGalleryList>
+			namespace list
+			{
+				class GroupedDataSource : public Description<GroupedDataSource>
+				{
+					using IValueEnumerable = reflection::description::IValueEnumerable;
+				protected:
+					compositions::GuiGraphicsComposition*				associatedComposition;
+					Ptr<IValueEnumerable>								itemSource;
+					ItemProperty<WString>								titleProperty;
+					ItemProperty<Ptr<IValueEnumerable>>					childrenProperty;
+
+					virtual void										OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source) = 0;
+
+				public:
+					GroupedDataSource(compositions::GuiGraphicsComposition* _associatedComposition);
+					~GroupedDataSource();
+
+					compositions::GuiNotifyEvent						GroupEnabledChanged;
+					compositions::GuiNotifyEvent						GroupTitlePropertyChanged;
+					compositions::GuiNotifyEvent						GroupChildrenPropertyChanged;
+
+					/// <summary>Get the item source.</summary>
+					/// <returns>The item source.</returns>
+					Ptr<IValueEnumerable>								GetItemSource();
+					/// <summary>Set the item source.</summary>
+					/// <param name="value">The item source. Null is acceptable if you want to clear all data.</param>
+					void												SetItemSource(Ptr<IValueEnumerable> value);
+
+					bool												GetGroupEnabled();
+					ItemProperty<WString>								GetGroupTitleProperty();
+					void												SetGroupTitleProperty(const ItemProperty<WString>& value);
+					ItemProperty<Ptr<IValueEnumerable>>					GetGroupChildrenProperty();
+					void												SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
+
+					description::Value									GetGroupValue(vint groupIndex);
+					description::Value									GetItemValue(GalleryPos pos);
+				};
+			}
+
+			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, public Description<GuiBindableRibbonGalleryList>
 			{
 				using IValueEnumerable = reflection::description::IValueEnumerable;
 				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
@@ -62,9 +101,8 @@ Ribbon Gallery List
 				ItemStyleProperty										itemStyle;
 				GuiBindableTextList*									itemList;
 				GuiRibbonToolstripMenu*									subMenu;
-				ItemProperty<WString>									titleProperty;
-				ItemProperty<Ptr<IValueEnumerable>>						childrenProperty;
 
+				void													OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source)override;
 				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
@@ -72,17 +110,7 @@ Ribbon Gallery List
 				~GuiBindableRibbonGalleryList();
 
 				compositions::GuiNotifyEvent							ItemTemplateChanged;
-				compositions::GuiNotifyEvent							GroupEnabledChanged;
-				compositions::GuiNotifyEvent							GroupTitlePropertyChanged;
-				compositions::GuiNotifyEvent							GroupChildrenPropertyChanged;
 				compositions::GuiNotifyEvent							SelectionChanged;
-
-				/// <summary>Get the item source.</summary>
-				/// <returns>The item source.</returns>
-				Ptr<IValueEnumerable>									GetItemSource();
-				/// <summary>Set the item source.</summary>
-				/// <param name="value">The item source. Null is acceptable if you want to clear all data.</param>
-				void													SetItemSource(Ptr<IValueEnumerable> value);
 
 				/// <summary>Get the item style provider.</summary>
 				/// <returns>The item style provider.</returns>
@@ -91,17 +119,8 @@ Ribbon Gallery List
 				/// <param name="value">The new item style provider</param>
 				void													SetItemTemplate(ItemStyleProperty value);
 
-				bool													GetGroupEnabled();
-				ItemProperty<WString>									GetGroupTitleProperty();
-				void													SetGroupTitleProperty(const ItemProperty<WString>& value);
-				ItemProperty<Ptr<IValueEnumerable>>						GetGroupChildrenProperty();
-				void													SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
-
 				GalleryPos												GetSelection();
 				void													SetSelection(GalleryPos value);
-
-				description::Value										GetGroupValue(vint groupIndex);
-				description::Value										GetItemValue(GalleryPos pos);
 
 				GuiToolstripMenu*										GetSubMenu();
 			};
