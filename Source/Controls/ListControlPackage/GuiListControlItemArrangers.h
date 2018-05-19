@@ -83,7 +83,7 @@ Predefined ItemArranger
 					vint										pim_rowHeight = 0;
 
 				protected:
-					vint										rowHeight;
+					vint										rowHeight = 1;
 
 					virtual vint								GetWidth();
 					virtual vint								GetYOffset();
@@ -111,7 +111,7 @@ Predefined ItemArranger
 					Size										pim_itemSize;
 
 				protected:
-					Size										itemSize;
+					Size										itemSize{ 1,1 };
 
 					void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
 

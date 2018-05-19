@@ -23,7 +23,7 @@
   <Instance name="StyleItemTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::StyleItemTemplate">
       <ref.Parameter Name="ViewModel" Class="demo::StyleItem"/>
-      <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren">
+      <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:64">
         <SolidLabel Text-bind="ViewModel.Value" Color="#FF8000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
       </TextListItemTemplate>
     </Instance>

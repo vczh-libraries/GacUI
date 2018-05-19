@@ -423,7 +423,6 @@ FixedHeightItemArranger
 				}
 
 				FixedHeightItemArranger::FixedHeightItemArranger()
-					:rowHeight(1)
 				{
 				}
 
@@ -600,7 +599,6 @@ FixedSizeMultiColumnItemArranger
 				}
 
 				FixedSizeMultiColumnItemArranger::FixedSizeMultiColumnItemArranger()
-					:itemSize(1, 1)
 				{
 				}
 

@@ -91,26 +91,54 @@ list::GalleryItemArranger
 
 				void GalleryItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
 				{
+					if (forMoving)
+					{
+						pim_itemWidth = itemWidth;
+						newStartIndex = startIndex;
+					}
 				}
 
 				void GalleryItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
+					alignmentToParent = Margin(-1, 0, -1, 0);
+					bounds = Rect(Point((index - startIndex)*itemWidth, 0), Size(itemWidth, 0));
+
+					if (forMoving)
+					{
+						vint styleWidth = callback->GetStylePreferredSize(GetStyleBounds(style)).x;
+						if (pim_itemWidth < styleWidth)
+						{
+							pim_itemWidth = styleWidth;
+						}
+					}
 				}
 
 				bool GalleryItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
 				{
+					return bounds.Left() >= viewBounds.Right();
 				}
 
 				bool GalleryItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
 				{
+					if (forMoving)
+					{
+						if (pim_itemWidth != itemWidth)
+						{
+							itemWidth = pim_itemWidth;
+							return true;
+						}
+					}
+					return false;
 				}
 
 				void GalleryItemArranger::InvalidateItemSizeCache()
 				{
+					itemWidth = 1;
 				}
 
 				Size GalleryItemArranger::OnCalculateTotalSize()
 				{
+					return Size(1, 1);
 				}
 
 				GalleryItemArranger::GalleryItemArranger()
@@ -123,14 +151,46 @@ list::GalleryItemArranger
 
 				vint GalleryItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
 				{
+					vint count = itemProvider->Count();
+					vint groupCount = viewBounds.Width() / itemWidth;
+
+					switch (key)
+					{
+					case KeyDirection::Left:
+						itemIndex--;
+						break;
+					case KeyDirection::Right:
+						itemIndex++;
+						break;
+					case KeyDirection::Home:
+						itemIndex = 0;
+						break;
+					case KeyDirection::End:
+						itemIndex = count;
+						break;
+					case KeyDirection::PageUp:
+						itemIndex -= groupCount;
+						break;
+					case KeyDirection::PageDown:
+						itemIndex += groupCount;
+						break;
+					default:
+						return -1;
+					}
+
+					if (itemIndex < 0) return 0;
+					else if (itemIndex >= count) return count - 1;
+					else return itemIndex;
 				}
 
 				bool GalleryItemArranger::EnsureItemVisible(vint itemIndex)
 				{
+					return false;
 				}
 
 				Size GalleryItemArranger::GetAdoptedSize(Size expectedSize)
 				{
+					return Size(1, 1);
 				}
 
 				void GalleryItemArranger::SetStartIndex(vint value)
