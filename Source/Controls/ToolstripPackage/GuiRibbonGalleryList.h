@@ -103,6 +103,7 @@ Ribbon Gallery List
 				protected:
 					GuiBindableRibbonGalleryList*				owner;
 					vint										itemWidth = 1;
+					vint										firstIndex = 0;
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
 					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;

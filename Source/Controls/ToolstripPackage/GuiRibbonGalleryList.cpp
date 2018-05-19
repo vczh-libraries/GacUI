@@ -94,14 +94,14 @@ list::GalleryItemArranger
 					if (forMoving)
 					{
 						pim_itemWidth = itemWidth;
-						newStartIndex = startIndex;
+						newStartIndex = firstIndex;
 					}
 				}
 
 				void GalleryItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
 					alignmentToParent = Margin(-1, 0, -1, 0);
-					bounds = Rect(Point((index - startIndex)*itemWidth, 0), Size(itemWidth, 0));
+					bounds = Rect(Point((index - firstIndex) * itemWidth, 0), Size(itemWidth, 0));
 
 					if (forMoving)
 					{
@@ -115,7 +115,7 @@ list::GalleryItemArranger
 
 				bool GalleryItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
 				{
-					return bounds.Left() >= viewBounds.Right();
+					return bounds.Right() + pim_itemWidth >= viewBounds.Right();
 				}
 
 				bool GalleryItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
@@ -207,10 +207,10 @@ list::GalleryItemArranger
 					vint groupCount = viewBounds.Width() / itemWidth;
 					if (count > groupCount)
 					{
-						startIndex -= groupCount;
-						if (startIndex < 0)
+						firstIndex -= groupCount;
+						if (firstIndex < 0)
 						{
-							startIndex = 0;
+							firstIndex = 0;
 						}
 						callback->OnTotalSizeChanged();
 					}
@@ -222,10 +222,10 @@ list::GalleryItemArranger
 					vint groupCount = viewBounds.Width() / itemWidth;
 					if (count > groupCount)
 					{
-						startIndex += groupCount;
-						if (startIndex > count - groupCount)
+						firstIndex += groupCount;
+						if (firstIndex > count - groupCount)
 						{
-							startIndex = count - groupCount;
+							firstIndex = count - groupCount;
 						}
 						callback->OnTotalSizeChanged();
 					}
@@ -237,8 +237,8 @@ list::GalleryItemArranger
 
 					vint count = itemProvider->Count();
 					vint groupCount = viewBounds.Width() / pim_itemWidth;
-					owner->SetScrollUpEnabled(startIndex > 0);
-					owner->SetScrollDownEnabled(startIndex + groupCount < count);
+					owner->SetScrollUpEnabled(firstIndex > 0);
+					owner->SetScrollDownEnabled(firstIndex + groupCount < count);
 				}
 			}
 
