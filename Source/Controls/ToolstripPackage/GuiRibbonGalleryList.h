@@ -92,38 +92,11 @@ Ribbon Gallery List
 					description::Value									GetGroupValue(vint groupIndex);
 					description::Value									GetItemValue(GalleryPos pos);
 				};
+			}
 
-				/// <summary>Item arranger for the ribbon gallery control, which handle responsive layout.</summary>
-				class GalleryItemArranger : public RangedItemArrangerBase, public Description<GalleryItemArranger>
-				{
-				private:
-					vint										pim_itemWidth = 0;
-					bool										blockScrollUpdate = true;
-
-				protected:
-					GuiBindableRibbonGalleryList*				owner;
-					vint										itemWidth = 1;
-					vint										firstIndex = 0;
-
-					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
-					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
-					void										InvalidateItemSizeCache()override;
-					Size										OnCalculateTotalSize()override;
-				public:
-					/// <summary>Create the arranger.</summary>
-					GalleryItemArranger(GuiBindableRibbonGalleryList* _owner);
-					~GalleryItemArranger();
-
-					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
-					Size										GetAdoptedSize(Size expectedSize)override;
-
-					void										ScrollUp();
-					void										ScrollDown();
-					void										UnblockScrollUpdate();
-				};
+			namespace ribbon_impl
+			{
+				class GalleryItemArranger;
 			}
 
 			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, public Description<GuiBindableRibbonGalleryList>
@@ -135,7 +108,7 @@ Ribbon Gallery List
 			protected:
 				ItemStyleProperty										itemStyle;
 				GuiBindableTextList*									itemList;
-				list::GalleryItemArranger*								itemListArranger;
+				ribbon_impl::GalleryItemArranger*						itemListArranger;
 				GuiRibbonToolstripMenu*									subMenu;
 
 				void													OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source)override;

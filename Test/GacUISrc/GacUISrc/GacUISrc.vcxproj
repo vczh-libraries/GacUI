@@ -369,6 +369,7 @@
     <ClCompile Include="..\..\..\Source\Controls\ToolstripPackage\GuiMenuControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ToolstripPackage\GuiRibbonControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ToolstripPackage\GuiRibbonGalleryList.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ToolstripPackage\GuiRibbonImpl.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ToolstripPackage\GuiToolstripCommand.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ToolstripPackage\GuiToolstripMenu.cpp" />
     <ClCompile Include="..\..\..\Source\GacUIReflectionHelper.cpp" />
@@ -566,6 +567,7 @@
     <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiMenuControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiRibbonControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiRibbonGalleryList.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiRibbonImpl.h" />
     <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiToolstripCommand.h" />
     <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiToolstripMenu.h" />
     <ClInclude Include="..\..\..\Source\GacUI.h" />
