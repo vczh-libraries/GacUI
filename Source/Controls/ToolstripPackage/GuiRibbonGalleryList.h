@@ -115,7 +115,8 @@ Ribbon Gallery List
 					bool										EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;
 
-					void										SetStartIndex(vint value);
+					void										ScrollUp();
+					void										ScrollDown();
 				};
 			}
 
@@ -133,6 +134,8 @@ Ribbon Gallery List
 				void													OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source)override;
 				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnRequestedScrollDown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				GuiBindableRibbonGalleryList(theme::ThemeName themeName);
 				~GuiBindableRibbonGalleryList();

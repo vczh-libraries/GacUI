@@ -193,8 +193,34 @@ list::GalleryItemArranger
 					return Size(1, 1);
 				}
 
-				void GalleryItemArranger::SetStartIndex(vint value)
+				void GalleryItemArranger::ScrollUp()
 				{
+					vint count = itemProvider->Count();
+					vint groupCount = viewBounds.Width() / itemWidth;
+					if (count > groupCount)
+					{
+						startIndex -= groupCount;
+						if (startIndex < 0)
+						{
+							startIndex = 0;
+						}
+						ClearStyles();
+					}
+				}
+
+				void GalleryItemArranger::ScrollDown()
+				{
+					vint count = itemProvider->Count();
+					vint groupCount = viewBounds.Width() / itemWidth;
+					if (count > groupCount)
+					{
+						startIndex += groupCount;
+						if (startIndex > count - groupCount)
+						{
+							startIndex = count - groupCount;
+						}
+						ClearStyles();
+					}
 				}
 			}
 
@@ -228,6 +254,20 @@ GuiBindableRibbonGalleryList
 				subMenu->ShowPopup(this, Point(0, 0));
 			}
 
+			void GuiBindableRibbonGalleryList::OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				auto arranger = dynamic_cast<list::GalleryItemArranger*>(itemList->GetArranger());
+				CHECK_ERROR(arranger != nullptr, L"GuiBindableRibbonGalleryList::OnRequestedScrollUp(GuiGraphicsComposition*, GuiEventArgs&)#The arranger should not be changed.");
+				arranger->ScrollUp();
+			}
+
+			void GuiBindableRibbonGalleryList::OnRequestedScrollDown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				auto arranger = dynamic_cast<list::GalleryItemArranger*>(itemList->GetArranger());
+				CHECK_ERROR(arranger != nullptr, L"GuiBindableRibbonGalleryList::OnRequestedScrollDown(GuiGraphicsComposition*, GuiEventArgs&)#The arranger should not be changed.");
+				arranger->ScrollDown();
+			}
+
 			GuiBindableRibbonGalleryList::GuiBindableRibbonGalleryList(theme::ThemeName themeName)
 				:GuiRibbonGallery(themeName)
 				, GroupedDataSource(boundsComposition)
@@ -242,6 +282,8 @@ GuiBindableRibbonGalleryList
 
 				subMenu = new GuiRibbonToolstripMenu(theme::ThemeName::RibbonToolstripMenu, this);
 
+				RequestedScrollUp.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedScrollUp);
+				RequestedScrollDown.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedScrollDown);
 				RequestedDropdown.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedDropdown);
 				boundsComposition->BoundsChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnBoundsChanged);
 			}
