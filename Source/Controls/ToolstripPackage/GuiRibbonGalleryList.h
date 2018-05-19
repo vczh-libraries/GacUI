@@ -23,8 +23,6 @@ namespace vl
 Ribbon Gallery List
 ***********************************************************************/
 
-			class GuiBindableRibbonGalleryList;
-
 			struct GalleryPos
 			{
 				vint			group;
