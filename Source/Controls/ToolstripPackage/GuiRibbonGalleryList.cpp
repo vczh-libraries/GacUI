@@ -84,6 +84,58 @@ list::GroupedDataSource
 				{
 					throw 0;
 				}
+
+/***********************************************************************
+list::GalleryItemArranger
+***********************************************************************/
+
+				void GalleryItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
+				{
+				}
+
+				void GalleryItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				{
+				}
+
+				bool GalleryItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
+				{
+				}
+
+				bool GalleryItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+				{
+				}
+
+				void GalleryItemArranger::InvalidateItemSizeCache()
+				{
+				}
+
+				Size GalleryItemArranger::OnCalculateTotalSize()
+				{
+				}
+
+				GalleryItemArranger::GalleryItemArranger()
+				{
+				}
+
+				GalleryItemArranger::~GalleryItemArranger()
+				{
+				}
+
+				vint GalleryItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
+				{
+				}
+
+				bool GalleryItemArranger::EnsureItemVisible(vint itemIndex)
+				{
+				}
+
+				Size GalleryItemArranger::GetAdoptedSize(Size expectedSize)
+				{
+				}
+
+				void GalleryItemArranger::SetStartIndex(vint value)
+				{
+				}
 			}
 
 /***********************************************************************
@@ -125,6 +177,7 @@ GuiBindableRibbonGalleryList
 
 				itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
 				itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				itemList->SetArranger(new list::GalleryItemArranger);
 				containerComposition->AddChild(itemList->GetBoundsComposition());
 
 				subMenu = new GuiRibbonToolstripMenu(theme::ThemeName::RibbonToolstripMenu, this);

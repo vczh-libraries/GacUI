@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUIRIBBONGALLERYLIST
 
 #include "GuiRibbonControls.h"
+#include "../ListControlPackage/GuiListControlItemArrangers.h"
 
 namespace vl
 {
@@ -88,6 +89,31 @@ Ribbon Gallery List
 
 					description::Value									GetGroupValue(vint groupIndex);
 					description::Value									GetItemValue(GalleryPos pos);
+				};
+
+				/// <summary>Item arranger for the ribbon gallery control, which handle responsive layout.</summary>
+				class GalleryItemArranger : public RangedItemArrangerBase, public Description<GalleryItemArranger>
+				{
+				private:
+					vint										pim_itemWidth = 0;
+
+				protected:
+					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
+					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+					void										InvalidateItemSizeCache()override;
+					Size										OnCalculateTotalSize()override;
+				public:
+					/// <summary>Create the arranger.</summary>
+					GalleryItemArranger();
+					~GalleryItemArranger();
+
+					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
+					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
+
+					void										SetStartIndex(vint value);
 				};
 			}
 

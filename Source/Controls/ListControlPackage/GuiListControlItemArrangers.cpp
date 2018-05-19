@@ -722,6 +722,13 @@ FixedSizeMultiColumnItemArranger
 FixedHeightMultiColumnItemArranger
 ***********************************************************************/
 
+				void FixedHeightMultiColumnItemArranger::CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn)
+				{
+					rows = bounds.Height() / itemHeight;
+					if (rows < 1) rows = 1;
+					startColumn = bounds.Left() / bounds.Width();
+				}
+
 				void FixedHeightMultiColumnItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
 				{
 					pi_currentWidth = 0;
@@ -773,13 +780,6 @@ FixedHeightMultiColumnItemArranger
 						}
 					}
 					return false;
-				}
-
-				void FixedHeightMultiColumnItemArranger::CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn)
-				{
-					rows = bounds.Height() / itemHeight;
-					if (rows < 1) rows = 1;
-					startColumn = bounds.Left() / bounds.Width();
 				}
 
 				void FixedHeightMultiColumnItemArranger::InvalidateItemSizeCache()
