@@ -120,15 +120,22 @@ list::GalleryItemArranger
 
 				bool GalleryItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
 				{
+					bool result = false;
 					if (forMoving)
 					{
 						if (pim_itemWidth != itemWidth)
 						{
 							itemWidth = pim_itemWidth;
-							return true;
+							result = true;
 						}
 					}
-					return false;
+
+					if (!blockScrollUpdate)
+					{
+						UnblockScrollUpdate();
+					}
+
+					return result;
 				}
 
 				void GalleryItemArranger::InvalidateItemSizeCache()
@@ -141,7 +148,8 @@ list::GalleryItemArranger
 					return Size(1, 1);
 				}
 
-				GalleryItemArranger::GalleryItemArranger()
+				GalleryItemArranger::GalleryItemArranger(GuiBindableRibbonGalleryList* _owner)
+					:owner(_owner)
 				{
 				}
 
@@ -204,7 +212,7 @@ list::GalleryItemArranger
 						{
 							startIndex = 0;
 						}
-						ClearStyles();
+						callback->OnTotalSizeChanged();
 					}
 				}
 
@@ -219,8 +227,18 @@ list::GalleryItemArranger
 						{
 							startIndex = count - groupCount;
 						}
-						ClearStyles();
+						callback->OnTotalSizeChanged();
 					}
+				}
+
+				void GalleryItemArranger::UnblockScrollUpdate()
+				{
+					blockScrollUpdate = false;
+
+					vint count = itemProvider->Count();
+					vint groupCount = viewBounds.Width() / pim_itemWidth;
+					owner->SetScrollUpEnabled(startIndex > 0);
+					owner->SetScrollDownEnabled(startIndex + groupCount < count);
 				}
 			}
 
@@ -256,16 +274,12 @@ GuiBindableRibbonGalleryList
 
 			void GuiBindableRibbonGalleryList::OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				auto arranger = dynamic_cast<list::GalleryItemArranger*>(itemList->GetArranger());
-				CHECK_ERROR(arranger != nullptr, L"GuiBindableRibbonGalleryList::OnRequestedScrollUp(GuiGraphicsComposition*, GuiEventArgs&)#The arranger should not be changed.");
-				arranger->ScrollUp();
+				itemListArranger->ScrollUp();
 			}
 
 			void GuiBindableRibbonGalleryList::OnRequestedScrollDown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				auto arranger = dynamic_cast<list::GalleryItemArranger*>(itemList->GetArranger());
-				CHECK_ERROR(arranger != nullptr, L"GuiBindableRibbonGalleryList::OnRequestedScrollDown(GuiGraphicsComposition*, GuiEventArgs&)#The arranger should not be changed.");
-				arranger->ScrollDown();
+				itemListArranger->ScrollDown();
 			}
 
 			GuiBindableRibbonGalleryList::GuiBindableRibbonGalleryList(theme::ThemeName themeName)
@@ -275,9 +289,10 @@ GuiBindableRibbonGalleryList
 				ItemTemplateChanged.SetAssociatedComposition(boundsComposition);
 				SelectionChanged.SetAssociatedComposition(boundsComposition);
 
+				itemListArranger = new list::GalleryItemArranger(this);
 				itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
 				itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				itemList->SetArranger(new list::GalleryItemArranger);
+				itemList->SetArranger(itemListArranger);
 				containerComposition->AddChild(itemList->GetBoundsComposition());
 
 				subMenu = new GuiRibbonToolstripMenu(theme::ThemeName::RibbonToolstripMenu, this);
@@ -286,6 +301,8 @@ GuiBindableRibbonGalleryList
 				RequestedScrollDown.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedScrollDown);
 				RequestedDropdown.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedDropdown);
 				boundsComposition->BoundsChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnBoundsChanged);
+
+				itemListArranger->UnblockScrollUpdate();
 			}
 
 			GuiBindableRibbonGalleryList::~GuiBindableRibbonGalleryList()

@@ -23,6 +23,8 @@ namespace vl
 Ribbon Gallery List
 ***********************************************************************/
 
+			class GuiBindableRibbonGalleryList;
+
 			struct GalleryPos
 			{
 				vint			group;
@@ -96,8 +98,10 @@ Ribbon Gallery List
 				{
 				private:
 					vint										pim_itemWidth = 0;
+					bool										blockScrollUpdate = true;
 
 				protected:
+					GuiBindableRibbonGalleryList*				owner;
 					vint										itemWidth = 1;
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
@@ -108,7 +112,7 @@ Ribbon Gallery List
 					Size										OnCalculateTotalSize()override;
 				public:
 					/// <summary>Create the arranger.</summary>
-					GalleryItemArranger();
+					GalleryItemArranger(GuiBindableRibbonGalleryList* _owner);
 					~GalleryItemArranger();
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
@@ -117,6 +121,7 @@ Ribbon Gallery List
 
 					void										ScrollUp();
 					void										ScrollDown();
+					void										UnblockScrollUpdate();
 				};
 			}
 
@@ -129,6 +134,7 @@ Ribbon Gallery List
 			protected:
 				ItemStyleProperty										itemStyle;
 				GuiBindableTextList*									itemList;
+				list::GalleryItemArranger*								itemListArranger;
 				GuiRibbonToolstripMenu*									subMenu;
 
 				void													OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source)override;

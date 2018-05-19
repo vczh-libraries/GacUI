@@ -805,6 +805,7 @@ GuiRibbonGallery
 				if (scrollUpEnabled != value)
 				{
 					scrollUpEnabled = value;
+					GetControlTemplateObject()->SetScrollUpEnabled(value);
 					RequestedScrollUp.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -819,6 +820,7 @@ GuiRibbonGallery
 				if (scrollDownEnabled != value)
 				{
 					scrollDownEnabled = value;
+					GetControlTemplateObject()->SetScrollDownEnabled(value);
 					RequestedScrollDown.Execute(GetNotifyEventArguments());
 				}
 			}
