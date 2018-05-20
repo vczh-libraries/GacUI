@@ -96,6 +96,7 @@ Ribbon Gallery List
 
 					void												RebuildItemSource();
 					Ptr<IValueList>										GetChildren(Ptr<IValueEnumerable> children);
+					void												AttachGroupChanged(Ptr<GalleryGroup> group, vint index);
 					void												OnGroupChanged(vint start, vint oldCount, vint newCount);
 					void												OnGroupItemChanged(vint index, vint start, vint oldCount, vint newCount);
 					vint												GetCountBeforeGroup(vint index);

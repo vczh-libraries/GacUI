@@ -58,6 +58,7 @@ list::GroupedDataSource
 					joinedItemSource.Clear();
 					groupedItemSource.Clear();
 					cachedGroupItemCounts.Clear();
+					ignoreGroupChanged = false;
 
 					if (itemSource)
 					{
@@ -68,15 +69,7 @@ list::GroupedDataSource
 								auto group = MakePtr<GalleryGroup>();
 								group->name = titleProperty(groupValue);
 								group->itemValues = GetChildren(childrenProperty(groupValue));
-
-								if (auto observable = group->itemValues.Cast<IValueObservableList>())
-								{
-									group->eventHandler = observable->ItemChanged.Add([this, index](vint start, vint oldCount, vint newCount)
-									{
-										OnGroupItemChanged(index, start, oldCount, newCount);
-									});
-								}
-
+								AttachGroupChanged(group, index);
 								groupedItemSource.Add(group);
 							}
 						}
@@ -84,28 +77,10 @@ list::GroupedDataSource
 						{
 							auto group = MakePtr<GalleryGroup>();
 							group->itemValues = GetChildren(itemSource);
+							AttachGroupChanged(group, 0);
 							groupedItemSource.Add(group);
 						}
 					}
-
-					FOREACH(Ptr<GalleryGroup>, group, groupedItemSource)
-					{
-						if (group->itemValues)
-						{
-							vint count = group->itemValues->GetCount();
-							cachedGroupItemCounts.Add(count);
-							for (vint i = 0; i < count; i++)
-							{
-
-							}
-						}
-						else
-						{
-							cachedGroupItemCounts.Add(0);
-						}
-					}
-
-					ignoreGroupChanged = false;
 				}
 
 				Ptr<IValueList> GroupedDataSource::GetChildren(Ptr<IValueEnumerable> children)
@@ -121,6 +96,17 @@ list::GroupedDataSource
 					else
 					{
 						return IValueList::Create(GetLazyList<Value>(children));
+					}
+				}
+
+				void GroupedDataSource::AttachGroupChanged(Ptr<GalleryGroup> group, vint index)
+				{
+					if (auto observable = group->itemValues.Cast<IValueObservableList>())
+					{
+						group->eventHandler = observable->ItemChanged.Add([this, index](vint start, vint oldCount, vint newCount)
+						{
+							OnGroupItemChanged(index, start, oldCount, newCount);
+						});
 					}
 				}
 
