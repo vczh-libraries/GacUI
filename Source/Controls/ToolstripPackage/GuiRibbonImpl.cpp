@@ -119,6 +119,21 @@ GalleryItemArranger
 
 				bool GalleryItemArranger::EnsureItemVisible(vint itemIndex)
 				{
+					if (callback && 0 <= itemIndex && itemIndex < itemProvider->Count())
+					{
+						vint groupCount = viewBounds.Width() / itemWidth;
+						if (itemIndex < firstIndex)
+						{
+							firstIndex = itemIndex;
+							callback->OnTotalSizeChanged();
+						}
+						else if (itemIndex >= firstIndex + groupCount)
+						{
+							firstIndex = itemIndex - groupCount + 1;
+							callback->OnTotalSizeChanged();
+						}
+						return true;
+					}
 					return false;
 				}
 
@@ -138,7 +153,11 @@ GalleryItemArranger
 						{
 							firstIndex = 0;
 						}
-						callback->OnTotalSizeChanged();
+
+						if (callback)
+						{
+							callback->OnTotalSizeChanged();
+						}
 					}
 				}
 
@@ -153,7 +172,11 @@ GalleryItemArranger
 						{
 							firstIndex = count - groupCount;
 						}
-						callback->OnTotalSizeChanged();
+
+						if (callback)
+						{
+							callback->OnTotalSizeChanged();
+						}
 					}
 				}
 
