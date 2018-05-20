@@ -8,7 +8,7 @@
         {
           class StyleItem
           {
-            new(name : string)
+            new(value : string)
             {
               Value = value;
             }
@@ -171,8 +171,8 @@
                     <att.Items>
                       <BindableRibbonGalleryList ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" env.ItemType="demo::StyleGroup^">
                         <att.ItemSource-eval>self.GetStyleGroups()</att.ItemSource-eval>
-                        <TitleProperty>Name</TitleProperty>
-                        <ChildrenProperty>Items</ChildrenProperty>
+                        <att.GroupTitleProperty>Name</att.GroupTitleProperty>
+                        <att.GroupChildrenProperty>Items</att.GroupChildrenProperty>
 
                         <att.SubMenu-set>
                           <MenuItemButton Text="Item 1"/>
