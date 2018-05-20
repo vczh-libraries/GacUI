@@ -125,7 +125,6 @@ list::GroupedDataSource
 								}
 							}
 						}
-
 					}
 					else
 					{
