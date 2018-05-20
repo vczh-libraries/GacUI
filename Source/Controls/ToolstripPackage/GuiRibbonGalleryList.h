@@ -62,10 +62,14 @@ Ribbon Gallery List
 					friend class GroupedDataSource;
 					using IValueList = reflection::description::IValueList;
 				protected:
+					Ptr<EventHandler>									eventHandler;
 					WString												name;
 					Ptr<IValueList>										itemValues;
 
 				public:
+					GalleryGroup();
+					~GalleryGroup();
+
 					WString												GetName();
 					Ptr<IValueList>										GetItemValues();
 				};

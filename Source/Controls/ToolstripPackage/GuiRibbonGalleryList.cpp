@@ -26,6 +26,18 @@ namespace vl
 list::GalleryGroup
 ***********************************************************************/
 
+				GalleryGroup::GalleryGroup()
+				{
+				}
+
+				GalleryGroup::~GalleryGroup()
+				{
+					if (eventHandler)
+					{
+						itemValues.Cast<IValueObservableList>()->ItemChanged.Remove(eventHandler);
+					}
+				}
+
 				WString GalleryGroup::GetName()
 				{
 					return name;
@@ -41,14 +53,79 @@ list::GroupedDataSource
 ***********************************************************************/
 				void GroupedDataSource::RebuildItemSource()
 				{
+					groupedItemSource.Clear();
+
 					if (!itemSource)
 					{
 						joinedItemSource = nullptr;
-						groupedItemSource.Clear();
 					}
 					else if (GetGroupEnabled())
 					{
-						throw 0;
+						joinedItemSource = IValueObservableList::Create();
+
+						FOREACH_INDEXER(Value, groupValue, index, GetLazyList<Value>(itemSource))
+						{
+							auto group = MakePtr<GalleryGroup>();
+							group->name = titleProperty(groupValue);
+
+							auto itemValues = childrenProperty(groupValue);
+							if (itemValues)
+							{
+								group->itemValues = itemValues.Cast<IValueList>();
+								if (!group->itemValues)
+								{
+									group->itemValues = IValueList::Create(GetLazyList<Value>(itemValues));
+								}
+							}
+
+							if (auto observable = group->itemValues.Cast<IValueObservableList>())
+							{
+								group->eventHandler = observable->ItemChanged.Add([this, index](vint start, vint oldCount, vint newCount)
+								{
+									vint joinedIndex = 0;
+									for (vint i = 0; i < index; i++)
+									{
+										joinedIndex += groupedItemSource.Count();
+									}
+									joinedIndex += start;
+									
+									vint minCount = oldCount < newCount ? oldCount : newCount;
+									auto itemValues = groupedItemSource[index]->itemValues;
+
+									for (vint i = 0; i < minCount; i++)
+									{
+										joinedItemSource->Set(joinedIndex + i, itemValues->Get(start + i));
+									}
+
+									if (oldCount < newCount)
+									{
+										for (vint i = minCount; i < newCount; i++)
+										{
+											joinedItemSource->Insert(joinedIndex + i, itemValues->Get(start + i));
+										}
+									}
+									else if (oldCount > newCount)
+									{
+										for (vint i = minCount; i < oldCount; i++)
+										{
+											joinedItemSource->RemoveAt(joinedIndex + i);
+										}
+									}
+								});
+							}
+
+							groupedItemSource.Add(group);
+
+							if (group->itemValues)
+							{
+								vint count = group->itemValues->GetCount();
+								for (vint i = 0; i < count; i++)
+								{
+									joinedItemSource->Add(group->itemValues->Get(i));
+								}
+							}
+						}
+
 					}
 					else
 					{
@@ -58,7 +135,6 @@ list::GroupedDataSource
 							joinedItemSource = IValueList::Create(GetLazyList<Value>(itemSource));
 						}
 
-						groupedItemSource.Clear();
 						auto group = MakePtr<GalleryGroup>();
 						group->itemValues = joinedItemSource;
 						groupedItemSource.Add(group);
