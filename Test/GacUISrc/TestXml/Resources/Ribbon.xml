@@ -8,12 +8,18 @@
         {
           class StyleItem
           {
-            new(value : int)
+            new(name : string)
             {
               Value = value;
             }
           
-            prop Value : int = 0 {not observe}
+            prop Value : string = 0 {not observe}
+          }
+          
+          class StyleGroup
+          {
+            prop Name : string = "" {}
+            prop Items : observe StyleItem^[] = {} {const, not observe}
           }
         }
       ]]>
@@ -41,16 +47,23 @@
           prop AlignRightSelected : bool = true {}
           
           @cpp:Private
-          func GetStyleItems(): demo::StyleItem^[]
+          func GetStyleItems(): demo::StyleGroup^[]
           {
-            return
+            var group1 = new StyleGroup^();
+            group1.Name = "Group A";
+            for (i in range [1, 5])
             {
-              new demo::StyleItem^(1)
-              new demo::StyleItem^(2)
-              new demo::StyleItem^(3)
-              new demo::StyleItem^(4)
-              new demo::StyleItem^(5)
-            };
+              group1.Items.Add(new StyleItem^("A" & i));
+            }
+
+            var group2 = new StyleGroup^();
+            group2.Name = "Group B";
+            for (i in range [1, 5])
+            {
+              group2.Items.Add(new StyleItem^("A" & i));
+            }
+
+            return {group1 group2};
           }
         ]]>
       </ref.Members>
@@ -156,7 +169,11 @@
 
                   <RibbonGroup Text="Style">
                     <att.Items>
-                      <BindableRibbonGalleryList ItemTemplate="demo:StyleItemTemplate" ItemSource-eval="self.GetStyleItems()" MinCount="2" MaxCount="5">
+                      <BindableRibbonGalleryList ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" env.ItemType="demo::StyleGroup^">
+                        <att.ItemSource-eval>self.GetStyleItems()</att.ItemSource-eval>
+                        <TitleProperty>Name</TitleProperty>
+                        <ChildrenProperty>Items</ChildrenProperty>
+
                         <att.SubMenu-set>
                           <MenuItemButton Text="Item 1"/>
                           <MenuItemButton Text="Item 2"/>
