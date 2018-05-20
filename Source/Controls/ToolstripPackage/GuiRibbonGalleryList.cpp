@@ -127,32 +127,35 @@ list::GroupedDataSource
 
 				void GroupedDataSource::OnGroupItemChanged(vint index, vint start, vint oldCount, vint newCount)
 				{
-					vint countBeforeGroup = GetCountBeforeGroup(index);
-					vint joinedIndex = countBeforeGroup + start;
-					vint minCount = oldCount < newCount ? oldCount : newCount;
-					auto itemValues = groupedItemSource[index]->itemValues;
-
-					for (vint i = 0; i < minCount; i++)
+					if (!ignoreGroupChanged)
 					{
-						joinedItemSource.Set(joinedIndex + i, itemValues->Get(start + i));
-					}
+						vint countBeforeGroup = GetCountBeforeGroup(index);
+						vint joinedIndex = countBeforeGroup + start;
+						vint minCount = oldCount < newCount ? oldCount : newCount;
+						auto itemValues = groupedItemSource[index]->itemValues;
 
-					if (oldCount < newCount)
-					{
-						for (vint i = minCount; i < newCount; i++)
+						for (vint i = 0; i < minCount; i++)
 						{
-							joinedItemSource.Insert(joinedIndex + i, itemValues->Get(start + i));
+							joinedItemSource.Set(joinedIndex + i, itemValues->Get(start + i));
 						}
-					}
-					else if (oldCount > newCount)
-					{
-						for (vint i = minCount; i < oldCount; i++)
-						{
-							joinedItemSource.RemoveAt(joinedIndex + i);
-						}
-					}
 
-					cachedGroupItemCounts[index] += newCount - oldCount;
+						if (oldCount < newCount)
+						{
+							for (vint i = minCount; i < newCount; i++)
+							{
+								joinedItemSource.Insert(joinedIndex + i, itemValues->Get(start + i));
+							}
+						}
+						else if (oldCount > newCount)
+						{
+							for (vint i = minCount; i < oldCount; i++)
+							{
+								joinedItemSource.RemoveAt(joinedIndex + i);
+							}
+						}
+
+						cachedGroupItemCounts[index] += newCount - oldCount;
+					}
 				}
 
 				vint GroupedDataSource::GetCountBeforeGroup(vint index)
@@ -169,17 +172,14 @@ list::GroupedDataSource
 				{
 					vint countBeforeGroup = GetCountBeforeGroup(index);
 					auto group = groupedItemSource[index];
-					FOREACH(Ptr<GalleryGroup>, group, groupedItemSource)
-					{
-						vint itemCount = group->itemValues ? group->itemValues->GetCount() : 0;
-						cachedGroupItemCounts.Insert(index, itemCount);
+					vint itemCount = group->itemValues ? group->itemValues->GetCount() : 0;
+					cachedGroupItemCounts.Insert(index, itemCount);
 
-						if (itemCount > 0)
+					if (itemCount > 0)
+					{
+						for (vint i = 0; i < itemCount; i++)
 						{
-							for (vint i = 0; i < itemCount; i++)
-							{
-								joinedItemSource.Insert(countBeforeGroup + i, group->itemValues->Get(i));
-							}
+							joinedItemSource.Insert(countBeforeGroup + i, group->itemValues->Get(i));
 						}
 					}
 				}
