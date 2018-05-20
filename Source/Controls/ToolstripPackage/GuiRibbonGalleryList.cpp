@@ -139,6 +139,7 @@ GuiBindableRibbonGalleryList
 				SelectionChanged.SetAssociatedComposition(boundsComposition);
 
 				layout = new ribbon_impl::GalleryResponsiveLayout;
+				layout->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				containerComposition->AddChild(layout);
 
 				itemListArranger = new ribbon_impl::GalleryItemArranger(this);

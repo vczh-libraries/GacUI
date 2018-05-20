@@ -286,7 +286,7 @@ GalleryResponsiveLayout
 
 				bool GalleryResponsiveLayout::LevelUp()
 				{
-					if (itemCount < minCount)
+					if (itemCount < maxCount)
 					{
 						itemCount++;
 						CurrentLevelChanged.Execute(GuiEventArgs(this));
