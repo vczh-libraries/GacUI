@@ -198,7 +198,7 @@ list::GroupedDataSource
 					GroupTitlePropertyChanged.SetAssociatedComposition(associatedComposition);
 					GroupChildrenPropertyChanged.SetAssociatedComposition(associatedComposition);
 
-					groupChangedHandler = joinedItemSource.GetWrapper()->ItemChanged.Add(this, &GroupedDataSource::OnGroupChanged);
+					groupChangedHandler = groupedItemSource.GetWrapper()->ItemChanged.Add(this, &GroupedDataSource::OnGroupChanged);
 				}
 
 				GroupedDataSource::~GroupedDataSource()

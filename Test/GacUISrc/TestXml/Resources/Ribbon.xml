@@ -60,7 +60,7 @@
             group2.Name = "Group B";
             for (i in range [1, 5])
             {
-              group2.Items.Add(new StyleItem^("A" & i));
+              group2.Items.Add(new StyleItem^("B" & i));
             }
 
             return {group1 group2};
