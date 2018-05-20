@@ -54,6 +54,31 @@ GalleryItemArranger
 					void										ScrollDown();
 					void										UnblockScrollUpdate();
 				};
+
+				class GalleryResponsiveLayout : public compositions::GuiResponsiveCompositionBase, public Description<GalleryResponsiveLayout>
+				{
+				protected:
+					vint										minCount = 0;
+					vint										maxCount = 0;
+					Size										sizeOffset;
+					vint										itemCount = 0;
+					vint										itemWidth = 1;
+
+					void										UpdateMinSize();
+				public:
+					GalleryResponsiveLayout();
+					~GalleryResponsiveLayout();
+
+					void										SetMinCount(vint value);
+					void										SetMaxCount(vint value);
+					void										SetItemWidth(vint value);
+					void										SetSizeOffset(Size value);
+
+					vint										GetLevelCount()override;
+					vint										GetCurrentLevel()override;
+					bool										LevelDown()override;
+					bool										LevelUp()override;
+				};
 			}
 		}
 	}

@@ -10,7 +10,7 @@ namespace vl
 			using namespace compositions;
 
 /***********************************************************************
-ribbon_impl::GalleryItemArranger
+GalleryItemArranger
 ***********************************************************************/
 
 			namespace ribbon_impl
@@ -41,7 +41,7 @@ ribbon_impl::GalleryItemArranger
 
 				bool GalleryItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
 				{
-					return bounds.Right() + pim_itemWidth >= viewBounds.Right();
+					return bounds.Right() + pim_itemWidth > viewBounds.Right();
 				}
 
 				bool GalleryItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
@@ -165,6 +165,113 @@ ribbon_impl::GalleryItemArranger
 					vint groupCount = viewBounds.Width() / pim_itemWidth;
 					owner->SetScrollUpEnabled(firstIndex > 0);
 					owner->SetScrollDownEnabled(firstIndex + groupCount < count);
+				}
+
+/***********************************************************************
+GalleryResponsiveLayout
+***********************************************************************/
+
+				void GalleryResponsiveLayout::UpdateMinSize()
+				{
+					SetPreferredMinSize(Size(itemCount * itemWidth + sizeOffset.x, sizeOffset.y));
+				}
+
+				GalleryResponsiveLayout::GalleryResponsiveLayout()
+				{
+					SetDirection(ResponsiveDirection::Horizontal);
+				}
+
+				GalleryResponsiveLayout::~GalleryResponsiveLayout()
+				{
+				}
+
+				void GalleryResponsiveLayout::SetMinCount(vint value)
+				{
+					vint oldCount = GetLevelCount();
+					vint oldLevel = GetCurrentLevel();
+
+					if (minCount != value)
+					{
+						if (value < 0) value = 0;
+						minCount = value;
+						if (maxCount < minCount) maxCount = minCount;
+						if (itemCount < minCount) itemCount = minCount;
+						UpdateMinSize();
+					}
+
+					bool countChanged = oldCount != GetLevelCount();
+					bool levelChanged = oldLevel != GetCurrentLevel();
+					if (countChanged) LevelCountChanged.Execute(GuiEventArgs(this));
+					if (levelChanged) CurrentLevelChanged.Execute(GuiEventArgs(this));
+					if (countChanged || levelChanged) OnResponsiveChildLevelUpdated();
+				}
+
+				void GalleryResponsiveLayout::SetMaxCount(vint value)
+				{
+					vint oldCount = GetLevelCount();
+					vint oldLevel = GetCurrentLevel();
+
+					if (maxCount != value)
+					{
+						if (value < 0) value = 0;
+						maxCount = value;
+						if (minCount > maxCount) minCount = maxCount;
+						if (itemCount > maxCount) itemCount = maxCount;
+						UpdateMinSize();
+					}
+
+					if (oldCount != GetLevelCount()) LevelCountChanged.Execute(GuiEventArgs(this));
+					if (oldLevel != GetCurrentLevel()) CurrentLevelChanged.Execute(GuiEventArgs(this));
+				}
+
+				void GalleryResponsiveLayout::SetItemWidth(vint value)
+				{
+					if (itemWidth != value)
+					{
+						itemWidth = value;
+						UpdateMinSize();
+					}
+				}
+
+				void GalleryResponsiveLayout::SetSizeOffset(Size value)
+				{
+					if (sizeOffset != value)
+					{
+						sizeOffset = value;
+						UpdateMinSize();
+					}
+				}
+
+				vint GalleryResponsiveLayout::GetLevelCount()
+				{
+					return maxCount - minCount + 1;
+				}
+
+				vint GalleryResponsiveLayout::GetCurrentLevel()
+				{
+					return itemCount - minCount;
+				}
+
+				bool GalleryResponsiveLayout::LevelDown()
+				{
+					if (itemCount > minCount)
+					{
+						itemCount--;
+						CurrentLevelChanged.Execute(GuiEventArgs(this));
+						return true;
+					}
+					return false;
+				}
+
+				bool GalleryResponsiveLayout::LevelUp()
+				{
+					if (itemCount < minCount)
+					{
+						itemCount++;
+						CurrentLevelChanged.Execute(GuiEventArgs(this));
+						return true;
+					}
+					return false;
 				}
 			}
 		}

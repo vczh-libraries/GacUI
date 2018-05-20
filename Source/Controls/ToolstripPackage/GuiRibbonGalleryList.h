@@ -95,6 +95,7 @@ Ribbon Gallery List
 			namespace ribbon_impl
 			{
 				class GalleryItemArranger;
+				class GalleryResponsiveLayout;
 			}
 
 			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, public Description<GuiBindableRibbonGalleryList>
