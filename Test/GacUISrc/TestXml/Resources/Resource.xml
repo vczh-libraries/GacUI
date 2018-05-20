@@ -27,6 +27,7 @@
     <Instance name="DarkSkinThemeResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonTheme" xmlns:x="darkskin::*">
         <ThemeTemplates>
+          <att.RibbonToolstripHeader>x:RibbonToolstripHeaderTemplate</att.RibbonToolstripHeader>
           <att.RibbonGallery>x:RibbonGalleryTemplate</att.RibbonGallery>
           <att.RibbonGalleryList>x:RibbonGalleryTemplate</att.RibbonGalleryList>
           <att.RibbonGalleryItemList>x:RibbonGalleryItemListTemplate</att.RibbonGalleryItemList>
@@ -35,6 +36,16 @@
       </Instance>
     </Instance>
     <InstanceStyle name="Style" content="File">../../Host/Resources/DarkSkin/Style.xml</InstanceStyle>
+
+    <Instance name="RibbonToolstripHeaderTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonToolstripHeaderTemplate" ref.Styles="res://DarkSkin/Style">
+        <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+          <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+            <SolidLabel Color="#6D6D6D" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+          </Bounds>
+        </ControlTemplate>
+      </Instance>
+    </Instance>
 
     <Instance name="RibbonGalleryTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGalleryTemplate" xmlns:x="darkskin::*" ref.Styles="res://DarkSkin/Style">

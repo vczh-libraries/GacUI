@@ -175,9 +175,14 @@
                         <att.GroupChildrenProperty>Items</att.GroupChildrenProperty>
 
                         <att.SubMenu-set>
-                          <MenuItemButton Text="Item 1"/>
-                          <MenuItemButton Text="Item 2"/>
-                          <MenuItemButton Text="Item 3"/>
+                          <RibbonToolstripHeader Text="Header A"/>
+                          <MenuItemButton Text="Item A1"/>
+                          <MenuItemButton Text="Item A2"/>
+                          <MenuItemButton Text="Item A3"/>
+                          <RibbonToolstripHeader Text="Header B"/>
+                          <MenuItemButton Text="Item B1"/>
+                          <MenuItemButton Text="Item B2"/>
+                          <MenuItemButton Text="Item B3"/>
                         </att.SubMenu-set>
                       </BindableRibbonGalleryList>
                     </att.Items>
