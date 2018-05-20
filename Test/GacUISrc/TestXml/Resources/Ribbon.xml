@@ -47,7 +47,7 @@
           prop AlignRightSelected : bool = true {}
           
           @cpp:Private
-          func GetStyleItems(): demo::StyleGroup^[]
+          func GetStyleGroups(): demo::StyleGroup^[]
           {
             var group1 = new StyleGroup^();
             group1.Name = "Group A";
@@ -170,7 +170,7 @@
                   <RibbonGroup Text="Style">
                     <att.Items>
                       <BindableRibbonGalleryList ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" env.ItemType="demo::StyleGroup^">
-                        <att.ItemSource-eval>self.GetStyleItems()</att.ItemSource-eval>
+                        <att.ItemSource-eval>self.GetStyleGroups()</att.ItemSource-eval>
                         <TitleProperty>Name</TitleProperty>
                         <ChildrenProperty>Items</ChildrenProperty>
 

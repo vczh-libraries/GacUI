@@ -78,19 +78,29 @@ Ribbon Gallery List
 				{
 					using IValueEnumerable = reflection::description::IValueEnumerable;
 					using IValueList = reflection::description::IValueList;
+					using IValueObservableList = reflection::description::IValueObservableList;
+					using GalleryItemList = collections::ObservableList<reflection::description::Value>;
 					using GalleryGroupList = collections::ObservableList<Ptr<GalleryGroup>>;
+
 				protected:
 					compositions::GuiGraphicsComposition*				associatedComposition;
 					Ptr<IValueEnumerable>								itemSource;
 					ItemProperty<WString>								titleProperty;
 					ItemProperty<Ptr<IValueEnumerable>>					childrenProperty;
 
-					Ptr<IValueList>										joinedItemSource;
+					GalleryItemList										joinedItemSource;
 					GalleryGroupList									groupedItemSource;
+					collections::List<vint>								cachedGroupItemCounts;
+					Ptr<EventHandler>									groupChangedHandler;
+					bool												ignoreGroupChanged = false;
 
-					virtual void										OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source) = 0;
-					virtual void										OnGroupedItemSourceChanged(Ptr<IValueEnumerable> source) = 0;
 					void												RebuildItemSource();
+					Ptr<IValueList>										GetChildren(Ptr<IValueEnumerable> children);
+					void												OnGroupChanged(vint start, vint oldCount, vint newCount);
+					void												OnGroupItemChanged(vint index, vint start, vint oldCount, vint newCount);
+					vint												GetCountBeforeGroup(vint index);
+					void												InsertGroupToJoined(vint index);
+					void												RemoveGroupFromJoined(vint index);
 
 				public:
 					GroupedDataSource(compositions::GuiGraphicsComposition* _associatedComposition);
@@ -128,6 +138,7 @@ Ribbon Gallery List
 				friend class ribbon_impl::GalleryItemArranger;
 
 				using IValueEnumerable = reflection::description::IValueEnumerable;
+				using IValueObservableList = reflection::description::IValueObservableList;
 				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
 
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGalleryListTemplate, GuiRibbonGallery)
@@ -139,8 +150,6 @@ Ribbon Gallery List
 				GuiRibbonToolstripMenu*									subMenu;
 
 				void													UpdateLayoutSizeOffset();
-				void													OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source)override;
-				void													OnGroupedItemSourceChanged(Ptr<IValueEnumerable> source)override;
 				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

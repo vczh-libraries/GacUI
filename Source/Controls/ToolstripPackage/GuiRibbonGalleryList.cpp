@@ -51,96 +51,158 @@ list::GalleryGroup
 /***********************************************************************
 list::GroupedDataSource
 ***********************************************************************/
+
 				void GroupedDataSource::RebuildItemSource()
 				{
+					ignoreGroupChanged = true;
+					joinedItemSource.Clear();
 					groupedItemSource.Clear();
+					cachedGroupItemCounts.Clear();
 
-					if (!itemSource)
+					if (itemSource)
 					{
-						joinedItemSource = nullptr;
-					}
-					else if (GetGroupEnabled())
-					{
-						joinedItemSource = IValueObservableList::Create();
-
-						FOREACH_INDEXER(Value, groupValue, index, GetLazyList<Value>(itemSource))
+						if (GetGroupEnabled())
 						{
-							auto group = MakePtr<GalleryGroup>();
-							group->name = titleProperty(groupValue);
-
-							auto itemValues = childrenProperty(groupValue);
-							if (itemValues)
+							FOREACH_INDEXER(Value, groupValue, index, GetLazyList<Value>(itemSource))
 							{
-								group->itemValues = itemValues.Cast<IValueList>();
-								if (!group->itemValues)
+								auto group = MakePtr<GalleryGroup>();
+								group->name = titleProperty(groupValue);
+								group->itemValues = GetChildren(childrenProperty(groupValue));
+
+								if (auto observable = group->itemValues.Cast<IValueObservableList>())
 								{
-									group->itemValues = IValueList::Create(GetLazyList<Value>(itemValues));
+									group->eventHandler = observable->ItemChanged.Add([this, index](vint start, vint oldCount, vint newCount)
+									{
+										OnGroupItemChanged(index, start, oldCount, newCount);
+									});
 								}
-							}
 
-							if (auto observable = group->itemValues.Cast<IValueObservableList>())
-							{
-								group->eventHandler = observable->ItemChanged.Add([this, index](vint start, vint oldCount, vint newCount)
-								{
-									vint joinedIndex = 0;
-									for (vint i = 0; i < index; i++)
-									{
-										joinedIndex += groupedItemSource.Count();
-									}
-									joinedIndex += start;
-									
-									vint minCount = oldCount < newCount ? oldCount : newCount;
-									auto itemValues = groupedItemSource[index]->itemValues;
-
-									for (vint i = 0; i < minCount; i++)
-									{
-										joinedItemSource->Set(joinedIndex + i, itemValues->Get(start + i));
-									}
-
-									if (oldCount < newCount)
-									{
-										for (vint i = minCount; i < newCount; i++)
-										{
-											joinedItemSource->Insert(joinedIndex + i, itemValues->Get(start + i));
-										}
-									}
-									else if (oldCount > newCount)
-									{
-										for (vint i = minCount; i < oldCount; i++)
-										{
-											joinedItemSource->RemoveAt(joinedIndex + i);
-										}
-									}
-								});
-							}
-
-							groupedItemSource.Add(group);
-
-							if (group->itemValues)
-							{
-								vint count = group->itemValues->GetCount();
-								for (vint i = 0; i < count; i++)
-								{
-									joinedItemSource->Add(group->itemValues->Get(i));
-								}
+								groupedItemSource.Add(group);
 							}
 						}
+						else
+						{
+							auto group = MakePtr<GalleryGroup>();
+							group->itemValues = GetChildren(itemSource);
+							groupedItemSource.Add(group);
+						}
+					}
+
+					FOREACH(Ptr<GalleryGroup>, group, groupedItemSource)
+					{
+						if (group->itemValues)
+						{
+							vint count = group->itemValues->GetCount();
+							cachedGroupItemCounts.Add(count);
+							for (vint i = 0; i < count; i++)
+							{
+
+							}
+						}
+						else
+						{
+							cachedGroupItemCounts.Add(0);
+						}
+					}
+
+					ignoreGroupChanged = false;
+				}
+
+				Ptr<IValueList> GroupedDataSource::GetChildren(Ptr<IValueEnumerable> children)
+				{
+					if (!children)
+					{
+						return nullptr;
+					}
+					else if (auto list = children.Cast<IValueList>())
+					{
+						return list;
 					}
 					else
 					{
-						joinedItemSource = itemSource.Cast<IValueList>();
-						if (!joinedItemSource)
-						{
-							joinedItemSource = IValueList::Create(GetLazyList<Value>(itemSource));
-						}
+						return IValueList::Create(GetLazyList<Value>(children));
+					}
+				}
 
-						auto group = MakePtr<GalleryGroup>();
-						group->itemValues = joinedItemSource;
-						groupedItemSource.Add(group);
+				void GroupedDataSource::OnGroupChanged(vint start, vint oldCount, vint newCount)
+				{
+					if (!ignoreGroupChanged)
+					{
+						for (vint i = 0; i < oldCount; i++)
+						{
+							RemoveGroupFromJoined(start);
+						}
+						for (vint i = 0; i < newCount; i++)
+						{
+							InsertGroupToJoined(start + i);
+						}
+					}
+				}
+
+				void GroupedDataSource::OnGroupItemChanged(vint index, vint start, vint oldCount, vint newCount)
+				{
+					vint countBeforeGroup = GetCountBeforeGroup(index);
+					vint joinedIndex = countBeforeGroup + start;
+					vint minCount = oldCount < newCount ? oldCount : newCount;
+					auto itemValues = groupedItemSource[index]->itemValues;
+
+					for (vint i = 0; i < minCount; i++)
+					{
+						joinedItemSource.Set(joinedIndex + i, itemValues->Get(start + i));
 					}
 
-					OnJoinedItemSourceChanged(joinedItemSource);
-					OnGroupedItemSourceChanged(groupedItemSource.GetWrapper());
+					if (oldCount < newCount)
+					{
+						for (vint i = minCount; i < newCount; i++)
+						{
+							joinedItemSource.Insert(joinedIndex + i, itemValues->Get(start + i));
+						}
+					}
+					else if (oldCount > newCount)
+					{
+						for (vint i = minCount; i < oldCount; i++)
+						{
+							joinedItemSource.RemoveAt(joinedIndex + i);
+						}
+					}
+
+					cachedGroupItemCounts[index] += newCount - oldCount;
+				}
+
+				vint GroupedDataSource::GetCountBeforeGroup(vint index)
+				{
+					vint count = 0;
+					for (vint i = 0; i < index; i++)
+					{
+						count += cachedGroupItemCounts[i];
+					}
+					return count;
+				}
+
+				void GroupedDataSource::InsertGroupToJoined(vint index)
+				{
+					vint countBeforeGroup = GetCountBeforeGroup(index);
+					auto group = groupedItemSource[index];
+					FOREACH(Ptr<GalleryGroup>, group, groupedItemSource)
+					{
+						vint itemCount = group->itemValues ? group->itemValues->GetCount() : 0;
+						cachedGroupItemCounts.Insert(index, itemCount);
+
+						if (itemCount > 0)
+						{
+							for (vint i = 0; i < itemCount; i++)
+							{
+								joinedItemSource.Insert(countBeforeGroup + i, group->itemValues->Get(i));
+							}
+						}
+					}
+				}
+
+				void GroupedDataSource::RemoveGroupFromJoined(vint index)
+				{
+					vint countBeforeGroup = GetCountBeforeGroup(index);
+					joinedItemSource.RemoveRange(countBeforeGroup, cachedGroupItemCounts[index]);
+					cachedGroupItemCounts.RemoveAt(index);
 				}
 
 				GroupedDataSource::GroupedDataSource(compositions::GuiGraphicsComposition* _associatedComposition)
@@ -149,10 +211,13 @@ list::GroupedDataSource
 					GroupEnabledChanged.SetAssociatedComposition(associatedComposition);
 					GroupTitlePropertyChanged.SetAssociatedComposition(associatedComposition);
 					GroupChildrenPropertyChanged.SetAssociatedComposition(associatedComposition);
+
+					groupChangedHandler = joinedItemSource.GetWrapper()->ItemChanged.Add(this, &GroupedDataSource::OnGroupChanged);
 				}
 
 				GroupedDataSource::~GroupedDataSource()
 				{
+					joinedItemSource.GetWrapper()->ItemChanged.Remove(groupChangedHandler);
 				}
 
 				Ptr<IValueEnumerable> GroupedDataSource::GetItemSource()
@@ -235,15 +300,6 @@ GuiBindableRibbonGalleryList
 				layout->SetSizeOffset(Size(bSize.Width() - cSize.Width(), bSize.Height() - cSize.Height()));
 			}
 
-			void GuiBindableRibbonGalleryList::OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source)
-			{
-				itemList->SetItemSource(source);
-			}
-
-			void GuiBindableRibbonGalleryList::OnGroupedItemSourceChanged(Ptr<IValueEnumerable> source)
-			{
-			}
-
 			void GuiBindableRibbonGalleryList::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				UpdateLayoutSizeOffset();
@@ -280,6 +336,7 @@ GuiBindableRibbonGalleryList
 				itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
 				itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				itemList->SetArranger(itemListArranger);
+				itemList->SetItemSource(joinedItemSource.GetWrapper());
 				layout->AddChild(itemList->GetBoundsComposition());
 
 				subMenu = new GuiRibbonToolstripMenu(theme::ThemeName::RibbonToolstripMenu, this);
