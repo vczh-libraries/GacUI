@@ -67,6 +67,8 @@ RangedItemArrangerBase
 						{
 							backgroundButton->SetSelected(itemStyle->GetSelected());
 						});
+
+						backgroundButton->SetSelected(itemStyle->GetSelected());
 						backgroundButton->GetContainerComposition()->AddChild(itemStyle);
 					}
 					return { itemStyle, backgroundButton };
