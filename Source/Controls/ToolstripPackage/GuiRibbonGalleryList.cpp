@@ -100,6 +100,10 @@ GuiBindableRibbonGalleryList
 				auto ct = GetControlTemplateObject();
 				itemList->SetControlTemplate(ct->GetItemListTemplate());
 				subMenu->SetControlTemplate(ct->GetMenuTemplate());
+
+				auto cSize = ct->GetContainerComposition()->GetBounds();
+				auto bSize = ct->GetBounds();
+				layout->SetSizeOffset(Size(bSize.Width() - cSize.Width(), bSize.Height() - cSize.Height()));
 			}
 
 			void GuiBindableRibbonGalleryList::OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source)
@@ -134,11 +138,14 @@ GuiBindableRibbonGalleryList
 				ItemTemplateChanged.SetAssociatedComposition(boundsComposition);
 				SelectionChanged.SetAssociatedComposition(boundsComposition);
 
+				layout = new ribbon_impl::GalleryResponsiveLayout;
+				containerComposition->AddChild(layout);
+
 				itemListArranger = new ribbon_impl::GalleryItemArranger(this);
 				itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
 				itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				itemList->SetArranger(itemListArranger);
-				containerComposition->AddChild(itemList->GetBoundsComposition());
+				layout->AddChild(itemList->GetBoundsComposition());
 
 				subMenu = new GuiRibbonToolstripMenu(theme::ThemeName::RibbonToolstripMenu, this);
 
@@ -168,6 +175,26 @@ GuiBindableRibbonGalleryList
 					itemList->SetItemTemplate(value);
 					ItemTemplateChanged.Execute(GetNotifyEventArguments());
 				}
+			}
+
+			vint GuiBindableRibbonGalleryList::GetMinCount()
+			{
+				return layout->GetMinCount();
+			}
+
+			void GuiBindableRibbonGalleryList::SetMinCount(vint value)
+			{
+				layout->SetMinCount(value);
+			}
+
+			vint GuiBindableRibbonGalleryList::GetMaxCount()
+			{
+				return layout->GetMaxCount();
+			}
+
+			void GuiBindableRibbonGalleryList::SetMaxCount(vint value)
+			{
+				layout->SetMaxCount(value);
 			}
 
 			GalleryPos GuiBindableRibbonGalleryList::GetSelection()

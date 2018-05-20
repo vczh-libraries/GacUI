@@ -100,6 +100,8 @@ Ribbon Gallery List
 
 			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, public Description<GuiBindableRibbonGalleryList>
 			{
+				friend class ribbon_impl::GalleryItemArranger;
+
 				using IValueEnumerable = reflection::description::IValueEnumerable;
 				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
 
@@ -108,6 +110,7 @@ Ribbon Gallery List
 				ItemStyleProperty										itemStyle;
 				GuiBindableTextList*									itemList;
 				ribbon_impl::GalleryItemArranger*						itemListArranger;
+				ribbon_impl::GalleryResponsiveLayout*					layout;
 				GuiRibbonToolstripMenu*									subMenu;
 
 				void													OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source)override;
@@ -128,6 +131,11 @@ Ribbon Gallery List
 				/// <summary>Set the item style provider</summary>
 				/// <param name="value">The new item style provider</param>
 				void													SetItemTemplate(ItemStyleProperty value);
+
+				vint													GetMinCount();
+				void													SetMinCount(vint value);
+				vint													GetMaxCount();
+				void													SetMaxCount(vint value);
 
 				GalleryPos												GetSelection();
 				void													SetSelection(GalleryPos value);

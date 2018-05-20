@@ -69,6 +69,11 @@ GalleryItemArranger
 					GalleryResponsiveLayout();
 					~GalleryResponsiveLayout();
 
+					vint										GetMinCount();
+					vint										GetMaxCount();
+					vint										GetItemWidth();
+					Size										GetSizeOffset();
+
 					void										SetMinCount(vint value);
 					void										SetMaxCount(vint value);
 					void										SetItemWidth(vint value);
