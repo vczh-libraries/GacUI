@@ -113,6 +113,7 @@ Ribbon Gallery List
 				ribbon_impl::GalleryResponsiveLayout*					layout;
 				GuiRibbonToolstripMenu*									subMenu;
 
+				void													UpdateLayoutSizeOffset();
 				void													OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source)override;
 				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

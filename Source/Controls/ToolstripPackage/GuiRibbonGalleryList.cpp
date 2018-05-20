@@ -100,9 +100,13 @@ GuiBindableRibbonGalleryList
 				auto ct = GetControlTemplateObject();
 				itemList->SetControlTemplate(ct->GetItemListTemplate());
 				subMenu->SetControlTemplate(ct->GetMenuTemplate());
+				UpdateLayoutSizeOffset();
+			}
 
-				auto cSize = ct->GetContainerComposition()->GetBounds();
-				auto bSize = ct->GetBounds();
+			void GuiBindableRibbonGalleryList::UpdateLayoutSizeOffset()
+			{
+				auto cSize = itemList->GetContainerComposition()->GetBounds();
+				auto bSize = itemList->GetBoundsComposition()->GetBounds();
 				layout->SetSizeOffset(Size(bSize.Width() - cSize.Width(), bSize.Height() - cSize.Height()));
 			}
 
@@ -113,6 +117,7 @@ GuiBindableRibbonGalleryList
 
 			void GuiBindableRibbonGalleryList::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
+				UpdateLayoutSizeOffset();
 				subMenu->GetBoundsComposition()->SetPreferredMinSize(Size(boundsComposition->GetBounds().Width(), 1));
 			}
 

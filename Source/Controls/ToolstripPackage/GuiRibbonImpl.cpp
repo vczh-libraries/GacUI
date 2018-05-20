@@ -278,6 +278,7 @@ GalleryResponsiveLayout
 					if (itemCount > minCount)
 					{
 						itemCount--;
+						UpdateMinSize();
 						CurrentLevelChanged.Execute(GuiEventArgs(this));
 						return true;
 					}
@@ -289,6 +290,7 @@ GalleryResponsiveLayout
 					if (itemCount < maxCount)
 					{
 						itemCount++;
+						UpdateMinSize();
 						CurrentLevelChanged.Execute(GuiEventArgs(this));
 						return true;
 					}
