@@ -310,6 +310,7 @@ Type List (Controls)
 			F(presentation::controls::GuiRibbonGallery)\
 			F(presentation::controls::GuiRibbonToolstripMenu)\
 			F(presentation::controls::GalleryPos)\
+			F(presentation::controls::list::GalleryGroup)\
 			F(presentation::controls::list::GroupedDataSource)\
 			F(presentation::controls::GuiBindableRibbonGalleryList)\
 			F(presentation::controls::GuiDocumentItem)\

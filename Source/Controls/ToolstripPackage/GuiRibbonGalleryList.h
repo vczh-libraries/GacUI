@@ -55,16 +55,38 @@ Ribbon Gallery List
 
 			namespace list
 			{
+				class GroupedDataSource;
+
+				class GalleryGroup : public Description<GalleryGroup>
+				{
+					friend class GroupedDataSource;
+					using IValueList = reflection::description::IValueList;
+				protected:
+					WString												name;
+					Ptr<IValueList>										itemValues;
+
+				public:
+					WString												GetName();
+					Ptr<IValueList>										GetItemValues();
+				};
+
 				class GroupedDataSource : public Description<GroupedDataSource>
 				{
 					using IValueEnumerable = reflection::description::IValueEnumerable;
+					using IValueList = reflection::description::IValueList;
+					using GalleryGroupList = collections::ObservableList<Ptr<GalleryGroup>>;
 				protected:
 					compositions::GuiGraphicsComposition*				associatedComposition;
 					Ptr<IValueEnumerable>								itemSource;
 					ItemProperty<WString>								titleProperty;
 					ItemProperty<Ptr<IValueEnumerable>>					childrenProperty;
 
+					Ptr<IValueList>										joinedItemSource;
+					GalleryGroupList									groupedItemSource;
+
 					virtual void										OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source) = 0;
+					virtual void										OnGroupedItemSourceChanged(Ptr<IValueEnumerable> source) = 0;
+					void												RebuildItemSource();
 
 				public:
 					GroupedDataSource(compositions::GuiGraphicsComposition* _associatedComposition);
@@ -87,8 +109,7 @@ Ribbon Gallery List
 					ItemProperty<Ptr<IValueEnumerable>>					GetGroupChildrenProperty();
 					void												SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
 
-					description::Value									GetGroupValue(vint groupIndex);
-					description::Value									GetItemValue(GalleryPos pos);
+					const GalleryGroupList&								GetGroups();
 				};
 			}
 
@@ -115,6 +136,7 @@ Ribbon Gallery List
 
 				void													UpdateLayoutSizeOffset();
 				void													OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source)override;
+				void													OnGroupedItemSourceChanged(Ptr<IValueEnumerable> source)override;
 				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

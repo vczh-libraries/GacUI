@@ -2,6 +2,13 @@
 #include "GuiRibbonImpl.h"
 #include "../Templates/GuiThemeStyleFactory.h"
 
+/* CodePack:BeginIgnore() */
+#ifndef VCZH_DEBUG_NO_REFLECTION
+/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, ../Reflection/TypeDescriptors/GuiReflectionPlugin.h) */
+#include "../../Reflection/TypeDescriptors/GuiReflectionPlugin.h"
+#endif
+/* CodePack:EndIgnore() */
+
 namespace vl
 {
 	namespace presentation
@@ -12,12 +19,55 @@ namespace vl
 			using namespace collections;
 			using namespace compositions;
 
+			namespace list
+			{
+
+/***********************************************************************
+list::GalleryGroup
+***********************************************************************/
+
+				WString GalleryGroup::GetName()
+				{
+					return name;
+				}
+
+				Ptr<IValueList> GalleryGroup::GetItemValues()
+				{
+					return itemValues;
+				}
+
 /***********************************************************************
 list::GroupedDataSource
 ***********************************************************************/
+				void GroupedDataSource::RebuildItemSource()
+				{
+					if (!itemSource)
+					{
+						joinedItemSource = nullptr;
+						groupedItemSource.Clear();
+					}
+					else if (GetGroupEnabled())
+					{
+						throw 0;
+					}
+					else
+					{
+						joinedItemSource = itemSource.Cast<IValueList>();
+						if (!joinedItemSource)
+						{
+							joinedItemSource = IValueList::Create(GetLazyList<Value>(itemSource));
+						}
 
-			namespace list
-			{
+						groupedItemSource.Clear();
+						auto group = MakePtr<GalleryGroup>();
+						group->itemValues = joinedItemSource;
+						groupedItemSource.Add(group);
+					}
+
+					OnJoinedItemSourceChanged(joinedItemSource);
+					OnGroupedItemSourceChanged(groupedItemSource.GetWrapper());
+				}
+
 				GroupedDataSource::GroupedDataSource(compositions::GuiGraphicsComposition* _associatedComposition)
 					:associatedComposition(_associatedComposition)
 				{
@@ -37,8 +87,11 @@ list::GroupedDataSource
 
 				void GroupedDataSource::SetItemSource(Ptr<IValueEnumerable> value)
 				{
-					itemSource = value;
-					OnJoinedItemSourceChanged(itemSource);
+					if (itemSource != value)
+					{
+						itemSource = value;
+						RebuildItemSource();
+					}
 				}
 
 				bool GroupedDataSource::GetGroupEnabled()
@@ -58,6 +111,7 @@ list::GroupedDataSource
 						titleProperty = value;
 						GroupTitlePropertyChanged.Execute(GuiEventArgs(associatedComposition));
 						GroupEnabledChanged.Execute(GuiEventArgs(associatedComposition));
+						RebuildItemSource();
 					}
 				}
 
@@ -73,17 +127,13 @@ list::GroupedDataSource
 						childrenProperty = value;
 						GroupChildrenPropertyChanged.Execute(GuiEventArgs(associatedComposition));
 						GroupEnabledChanged.Execute(GuiEventArgs(associatedComposition));
+						RebuildItemSource();
 					}
 				}
 
-				description::Value GroupedDataSource::GetGroupValue(vint groupIndex)
+				const GroupedDataSource::GalleryGroupList& GroupedDataSource::GetGroups()
 				{
-					throw 0;
-				}
-
-				description::Value GroupedDataSource::GetItemValue(GalleryPos pos)
-				{
-					throw 0;
+					return groupedItemSource;
 				}
 			}
 
@@ -113,6 +163,10 @@ GuiBindableRibbonGalleryList
 			void GuiBindableRibbonGalleryList::OnJoinedItemSourceChanged(Ptr<IValueEnumerable> source)
 			{
 				itemList->SetItemSource(source);
+			}
+
+			void GuiBindableRibbonGalleryList::OnGroupedItemSourceChanged(Ptr<IValueEnumerable> source)
+			{
 			}
 
 			void GuiBindableRibbonGalleryList::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
