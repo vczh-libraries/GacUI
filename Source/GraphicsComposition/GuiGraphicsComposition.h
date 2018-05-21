@@ -100,10 +100,11 @@ namespace vl
 			class GuiRepeatCompositionBase : public Object, public Description<GuiRepeatCompositionBase>
 			{
 				using ItemStyleProperty = TemplateProperty<templates::GuiTemplate>;
-				using ItemSourceType = Ptr<reflection::description::IValueObservableList>;
+				using IValueEnumerable = reflection::description::IValueEnumerable;
+				using IValueList = reflection::description::IValueList;
 			protected:
 				ItemStyleProperty									itemTemplate;
-				ItemSourceType										itemSource;
+				Ptr<IValueList>										itemSource;
 				Ptr<EventHandler>									itemChangedHandler;
 				
 				virtual vint										GetRepeatCompositionCount() = 0;
@@ -134,10 +135,10 @@ namespace vl
 
 				/// <summary>Get the item source.</summary>
 				/// <returns>The item source.</returns>
-				ItemSourceType										GetItemSource();
+				Ptr<IValueEnumerable>								GetItemSource();
 				/// <summary>Set the item source.</summary>
 				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
-				void												SetItemSource(ItemSourceType value);
+				void												SetItemSource(Ptr<IValueEnumerable> value);
 			};
 
 			/// <summary>Bindable stack composition.</summary>

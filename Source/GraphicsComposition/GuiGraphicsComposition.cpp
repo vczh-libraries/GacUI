@@ -7,6 +7,7 @@ namespace vl
 	{
 		namespace compositions
 		{
+			using namespace reflection::description;
 			using namespace collections;
 			using namespace controls;
 			using namespace elements;
@@ -294,28 +295,34 @@ GuiRepeatCompositionBase
 				}
 			}
 
-			GuiRepeatCompositionBase::ItemSourceType GuiRepeatCompositionBase::GetItemSource()
+			Ptr<IValueEnumerable> GuiRepeatCompositionBase::GetItemSource()
 			{
 				return itemSource;
 			}
 
-			void GuiRepeatCompositionBase::SetItemSource(ItemSourceType value)
+			void GuiRepeatCompositionBase::SetItemSource(Ptr<IValueEnumerable> value)
 			{
-				if (itemSource != value)
+				if (value != itemSource)
 				{
-					if (itemSource)
+					if (itemChangedHandler)
 					{
-						itemSource->ItemChanged.Remove(itemChangedHandler);
+						itemSource.Cast<IValueObservableList>()->ItemChanged.Remove(itemChangedHandler);
 					}
+
 					ClearItems();
-					itemSource = value;
+					itemSource = value.Cast<IValueList>();
+					if (!itemSource && value)
+					{
+						itemSource = IValueList::Create(GetLazyList<Value>(value));
+					}
+
 					if (itemTemplate && itemSource)
 					{
 						InstallItems();
 					}
-					if (itemSource)
+					if (auto observable = itemSource.Cast<IValueObservableList>())
 					{
-						itemChangedHandler = itemSource->ItemChanged.Add(this, &GuiRepeatCompositionBase::OnItemChanged);
+						itemChangedHandler = observable->ItemChanged.Add(this, &GuiRepeatCompositionBase::OnItemChanged);
 					}
 				}
 			}
