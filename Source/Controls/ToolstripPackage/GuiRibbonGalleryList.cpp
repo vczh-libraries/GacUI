@@ -333,9 +333,35 @@ GuiBindableRibbonGalleryList
 						header->SetText(group->GetName());
 						item->AddChild(header->GetBoundsComposition());
 					}
+					if (itemStyle)
 					{
 						auto item = new GuiStackItemComposition;
 						groupContentStack->AddChild(item);
+
+						auto groupItemFlow = new GuiRepeatFlowComposition();
+						groupItemFlow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+						groupItemFlow->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						groupItemFlow->SetItemSource(group->GetItemValues());
+						groupItemFlow->SetItemTemplate([this](const Value& groupItemValue)->GuiTemplate*
+						{
+							auto groupItemTemplate = new GuiTemplate;
+							groupItemTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+							auto backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
+							if (auto style = GetControlTemplateObject()->GetBackgroundTemplate())
+							{
+								backgroundButton->SetControlTemplate(style);
+							}
+							backgroundButton->SetAutoSelection(false);
+							groupItemTemplate->AddChild(backgroundButton->GetBoundsComposition());
+
+							auto itemTemplate = itemStyle(groupItemValue);
+							itemTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
+							backgroundButton->GetContainerComposition()->AddChild(itemTemplate);
+
+							return groupItemTemplate;
+						});
+						item->AddChild(groupItemFlow);
 					}
 					groupTemplate->AddChild(groupContentStack);
 
