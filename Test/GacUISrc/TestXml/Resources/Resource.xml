@@ -54,6 +54,7 @@
           <att.MenuTemplate>x:RibbonToolstripMenuTemplate</att.MenuTemplate>
           <att.HeaderTemplate>x:RibbonToolstripHeaderTemplate</att.HeaderTemplate>
           <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
+          <att.GroupContainerTemplate>darkskin::ScrollViewTemplate</att.GroupContainerTemplate>
 
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.Rows>

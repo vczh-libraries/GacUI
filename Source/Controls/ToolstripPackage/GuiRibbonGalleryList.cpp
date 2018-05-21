@@ -276,6 +276,8 @@ GuiBindableRibbonGalleryList
 				auto ct = GetControlTemplateObject();
 				itemList->SetControlTemplate(ct->GetItemListTemplate());
 				subMenu->SetControlTemplate(ct->GetMenuTemplate());
+				groupContainer->SetControlTemplate(ct->GetGroupContainerTemplate());
+				ResetGroupTemplate();
 				UpdateLayoutSizeOffset();
 			}
 
@@ -307,31 +309,50 @@ GuiBindableRibbonGalleryList
 				itemListArranger->ScrollDown();
 			}
 
+			void GuiBindableRibbonGalleryList::ResetGroupTemplate()
+			{
+			}
+
 			GuiBindableRibbonGalleryList::GuiBindableRibbonGalleryList(theme::ThemeName themeName)
 				:GuiRibbonGallery(themeName)
 				, GroupedDataSource(boundsComposition)
 			{
 				ItemTemplateChanged.SetAssociatedComposition(boundsComposition);
 				SelectionChanged.SetAssociatedComposition(boundsComposition);
-
-				layout = new ribbon_impl::GalleryResponsiveLayout;
-				layout->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				containerComposition->AddChild(layout);
-
-				itemListArranger = new ribbon_impl::GalleryItemArranger(this);
-				itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
-				itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				itemList->SetArranger(itemListArranger);
-				itemList->SetItemSource(joinedItemSource.GetWrapper());
-				layout->AddChild(itemList->GetBoundsComposition());
-
 				subMenu = new GuiRibbonToolstripMenu(theme::ThemeName::RibbonToolstripMenu, this);
+
+				{
+					layout = new ribbon_impl::GalleryResponsiveLayout;
+					layout->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					containerComposition->AddChild(layout);
+
+					itemListArranger = new ribbon_impl::GalleryItemArranger(this);
+					itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
+					itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					itemList->SetArranger(itemListArranger);
+					itemList->SetItemSource(joinedItemSource.GetWrapper());
+					layout->AddChild(itemList->GetBoundsComposition());
+				}
+				{
+					groupContainer = new GuiScrollContainer(theme::ThemeName::ScrollView);
+					groupContainer->SetHorizontalAlwaysVisible(false);
+					groupContainer->SetVerticalAlwaysVisible(false);
+					groupContainer->SetExtendToFullWidth(true);
+					groupContainer->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					subMenu->GetContentComposition()->AddChild(groupContainer->GetBoundsComposition());
+
+					groupStack = new GuiRepeatStackComposition();
+					groupStack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					groupStack->SetDirection(GuiStackComposition::Vertical);
+					groupStack->SetItemSource(groupedItemSource.GetWrapper());
+					groupContainer->GetContainerComposition()->AddChild(groupStack);
+					ResetGroupTemplate();
+				}
 
 				RequestedScrollUp.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedScrollUp);
 				RequestedScrollDown.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedScrollDown);
 				RequestedDropdown.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedDropdown);
 				boundsComposition->BoundsChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnBoundsChanged);
-
 				itemListArranger->UnblockScrollUpdate();
 			}
 

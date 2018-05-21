@@ -146,15 +146,19 @@ Ribbon Gallery List
 			protected:
 				ItemStyleProperty										itemStyle;
 				GuiBindableTextList*									itemList;
+				GuiRibbonToolstripMenu*									subMenu;
+
 				ribbon_impl::GalleryItemArranger*						itemListArranger;
 				ribbon_impl::GalleryResponsiveLayout*					layout;
-				GuiRibbonToolstripMenu*									subMenu;
+				GuiScrollContainer*										groupContainer;
+				compositions::GuiRepeatStackComposition*				groupStack;
 
 				void													UpdateLayoutSizeOffset();
 				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollDown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													ResetGroupTemplate();
 			public:
 				GuiBindableRibbonGalleryList(theme::ThemeName themeName);
 				~GuiBindableRibbonGalleryList();
