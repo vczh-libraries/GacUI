@@ -160,7 +160,12 @@
   <ItemGroup>
     <ClCompile Include="..\Host\ResourceCompiler.cpp" />
     <ClCompile Include="..\TestCppCodegen\Source\DarkSkin.cpp" />
-    <ClCompile Include="..\TestCppCodegen\Source\DarkSkinReflection.cpp" />
+    <ClCompile Include="..\TestCppCodegen\Source\DarkSkinReflection.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\TestCppCodegen\Source\DarkSkinResource.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
