@@ -292,7 +292,23 @@ GuiBindableRibbonGalleryList
 			void GuiBindableRibbonGalleryList::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				UpdateLayoutSizeOffset();
-				subMenu->GetBoundsComposition()->SetPreferredMinSize(Size(boundsComposition->GetBounds().Width(), 1));
+
+				auto bounds = boundsComposition->GetBounds();
+				subMenu->GetBoundsComposition()->SetPreferredMinSize(Size(bounds.Width() + 20, 1));
+
+				for (vint i = 0; i < groupedItemSource.Count(); i++)
+				{
+					auto group = groupedItemSource[i];
+					if (group->GetItemValues())
+					{
+						vint count = group->GetItemValues()->GetCount();
+						for (vint j = 0; j < count; j++)
+						{
+							auto background = MenuGetGroupItemBackground(i, j);
+							background->GetBoundsComposition()->SetPreferredMinSize(Size(0, bounds.Height()));
+						}
+					}
+				}
 			}
 
 			void GuiBindableRibbonGalleryList::OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
