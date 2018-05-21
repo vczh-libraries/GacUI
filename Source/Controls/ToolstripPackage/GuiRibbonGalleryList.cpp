@@ -278,7 +278,7 @@ GuiBindableRibbonGalleryList
 				itemList->SetControlTemplate(ct->GetItemListTemplate());
 				subMenu->SetControlTemplate(ct->GetMenuTemplate());
 				groupContainer->SetControlTemplate(ct->GetGroupContainerTemplate());
-				ResetGroupTemplate();
+				MenuResetGroupTemplate();
 				UpdateLayoutSizeOffset();
 			}
 
@@ -310,7 +310,7 @@ GuiBindableRibbonGalleryList
 				itemListArranger->ScrollDown();
 			}
 
-			void GuiBindableRibbonGalleryList::ResetGroupTemplate()
+			void GuiBindableRibbonGalleryList::MenuResetGroupTemplate()
 			{
 				groupStack->SetItemTemplate([this](const Value& groupValue)->GuiTemplate*
 				{
@@ -370,6 +370,45 @@ GuiBindableRibbonGalleryList
 				});
 			}
 
+			GuiControl* GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint groupIndex)
+			{
+				CHECK_ERROR(0 <= groupIndex && groupIndex < groupedItemSource.Count(), L"GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint)#Group index out of range");
+				auto stackItem = groupStack->GetStackItems()[groupIndex];
+				auto groupTemplate = stackItem->Children()[0];
+				auto groupContentStack = dynamic_cast<GuiStackComposition*>(groupTemplate->Children()[0]);
+				auto groupHeaderItem = groupContentStack->GetStackItems()[0];
+				auto groupHeader = groupHeaderItem->Children()[0]->GetAssociatedControl();
+				CHECK_ERROR(groupHeader, L"GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint)#Internal error.");
+				return groupHeader;
+			}
+
+			compositions::GuiRepeatFlowComposition* GuiBindableRibbonGalleryList::MenuGetGroupFlow(vint groupIndex)
+			{
+				CHECK_ERROR(0 <= groupIndex && groupIndex < groupedItemSource.Count(), L"GuiBindableRibbonGalleryList::MenuGetGroupFlow(vint)#Group index out of range");
+				if (!itemStyle) return nullptr;
+				auto stackItem = groupStack->GetStackItems()[groupIndex];
+				auto groupTemplate = stackItem->Children()[0];
+				auto groupContentStack = dynamic_cast<GuiStackComposition*>(groupTemplate->Children()[0]);
+				auto groupContentItem = groupContentStack->GetStackItems()[1];
+				auto groupFlow = dynamic_cast<GuiRepeatFlowComposition*>(groupContentItem->Children()[0]);
+				CHECK_ERROR(groupFlow, L"GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint)#Internal error.");
+				return groupFlow;
+			}
+
+			GuiSelectableButton* GuiBindableRibbonGalleryList::MenuGetGroupItemBackground(vint groupIndex, vint itemIndex)
+			{
+				CHECK_ERROR(0 <= groupIndex && groupIndex < groupedItemSource.Count(), L"GuiBindableRibbonGalleryList::MenuGetGroupItemBackground(vint, vint)#Group index out of range");
+				auto group = groupedItemSource[groupIndex];
+				CHECK_ERROR(group->GetItemValues() && 0 <= itemIndex && itemIndex < group->GetItemValues()->GetCount(), L"GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint, vint)#Item index out of range");
+
+				auto groupFlow = MenuGetGroupFlow(groupIndex);
+				auto groupFlowItem = groupFlow->GetFlowItems()[itemIndex];
+				auto groupItemTemplate = groupFlowItem->Children()[0];
+				auto groupItemBackground = dynamic_cast<GuiSelectableButton*>(groupItemTemplate->Children()[0]->GetAssociatedControl());
+				CHECK_ERROR(groupItemBackground, L"GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint, vint)#Internal error.");
+				return groupItemBackground;
+			}
+
 			GuiBindableRibbonGalleryList::GuiBindableRibbonGalleryList(theme::ThemeName themeName)
 				:GuiRibbonGallery(themeName)
 				, GroupedDataSource(boundsComposition)
@@ -404,7 +443,7 @@ GuiBindableRibbonGalleryList
 					groupStack->SetDirection(GuiStackComposition::Vertical);
 					groupStack->SetItemSource(groupedItemSource.GetWrapper());
 					groupContainer->GetContainerComposition()->AddChild(groupStack);
-					ResetGroupTemplate();
+					MenuResetGroupTemplate();
 				}
 
 				RequestedScrollUp.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedScrollUp);

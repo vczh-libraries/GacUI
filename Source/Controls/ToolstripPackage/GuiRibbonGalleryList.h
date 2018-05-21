@@ -158,7 +158,11 @@ Ribbon Gallery List
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollDown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void													ResetGroupTemplate();
+
+				void													MenuResetGroupTemplate();
+				GuiControl*												MenuGetGroupHeader(vint groupIndex);
+				compositions::GuiRepeatFlowComposition*					MenuGetGroupFlow(vint groupIndex);
+				GuiSelectableButton*									MenuGetGroupItemBackground(vint groupIndex, vint itemIndex);
 			public:
 				GuiBindableRibbonGalleryList(theme::ThemeName themeName);
 				~GuiBindableRibbonGalleryList();
