@@ -6356,7 +6356,10 @@ GuiLabel
 
 			void GuiLabel::BeforeControlTemplateUninstalled_()
 			{
-				textColorConsisted = (textColor == GetControlTemplateObject()->GetDefaultTextColor());
+				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
+				textColorConsisted = (textColor == ct->GetDefaultTextColor());
 			}
 
 			void GuiLabel::AfterControlTemplateInstalled_(bool initialize)
@@ -7523,6 +7526,7 @@ namespace vl
 	{
 		namespace compositions
 		{
+			using namespace reflection::description;
 			using namespace collections;
 			using namespace controls;
 			using namespace elements;
@@ -7810,28 +7814,34 @@ GuiRepeatCompositionBase
 				}
 			}
 
-			GuiRepeatCompositionBase::ItemSourceType GuiRepeatCompositionBase::GetItemSource()
+			Ptr<IValueEnumerable> GuiRepeatCompositionBase::GetItemSource()
 			{
 				return itemSource;
 			}
 
-			void GuiRepeatCompositionBase::SetItemSource(ItemSourceType value)
+			void GuiRepeatCompositionBase::SetItemSource(Ptr<IValueEnumerable> value)
 			{
-				if (itemSource != value)
+				if (value != itemSource)
 				{
-					if (itemSource)
+					if (itemChangedHandler)
 					{
-						itemSource->ItemChanged.Remove(itemChangedHandler);
+						itemSource.Cast<IValueObservableList>()->ItemChanged.Remove(itemChangedHandler);
 					}
+
 					ClearItems();
-					itemSource = value;
+					itemSource = value.Cast<IValueList>();
+					if (!itemSource && value)
+					{
+						itemSource = IValueList::Create(GetLazyList<Value>(value));
+					}
+
 					if (itemTemplate && itemSource)
 					{
 						InstallItems();
 					}
-					if (itemSource)
+					if (auto observable = itemSource.Cast<IValueObservableList>())
 					{
-						itemChangedHandler = itemSource->ItemChanged.Add(this, &GuiRepeatCompositionBase::OnItemChanged);
+						itemChangedHandler = observable->ItemChanged.Add(this, &GuiRepeatCompositionBase::OnItemChanged);
 					}
 				}
 			}
@@ -12576,6 +12586,8 @@ GuiTab
 			void GuiTab::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
 				ct->SetCommands(nullptr);
 				ct->SetTabPages(nullptr);
 				ct->SetSelectedTabPage(nullptr);
@@ -12661,8 +12673,16 @@ GuiScrollView
 			void GuiScrollView::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
-				ct->GetHorizontalScroll()->PositionChanged.Detach(hScrollHandler);
-				ct->GetVerticalScroll()->PositionChanged.Detach(vScrollHandler);
+				if (!ct) return;
+
+				if (auto scroll = ct->GetHorizontalScroll())
+				{
+					scroll->PositionChanged.Detach(hScrollHandler);
+				}
+				if (auto scroll = ct->GetVerticalScroll())
+				{
+					scroll->PositionChanged.Detach(vScrollHandler);
+				}
 				ct->GetEventReceiver()->horizontalWheel.Detach(hWheelHandler);
 				ct->GetEventReceiver()->verticalWheel.Detach(vWheelHandler);
 				ct->BoundsChanged.Detach(containerBoundsChangedHandler);
@@ -12678,8 +12698,14 @@ GuiScrollView
 			void GuiScrollView::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject();
-				hScrollHandler = ct->GetHorizontalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
-				vScrollHandler = ct->GetVerticalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnVerticalScroll);
+				if (auto scroll = ct->GetHorizontalScroll())
+				{
+					hScrollHandler = scroll->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
+				}
+				if (auto scroll = ct->GetVerticalScroll())
+				{
+					vScrollHandler = scroll->PositionChanged.AttachMethod(this, &GuiScrollView::OnVerticalScroll);
+				}
 				hWheelHandler = ct->GetEventReceiver()->horizontalWheel.AttachMethod(this, &GuiScrollView::OnHorizontalWheel);
 				vWheelHandler = ct->GetEventReceiver()->verticalWheel.AttachMethod(this, &GuiScrollView::OnVerticalWheel);
 				containerBoundsChangedHandler = ct->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);
@@ -12711,11 +12737,13 @@ GuiScrollView
 			{
 				if(!supressScrolling)
 				{
-					auto scroll = GetControlTemplateObject()->GetHorizontalScroll();
-					vint position = scroll->GetPosition();
-					vint move = scroll->GetSmallMove();
-					position -= move*arguments.wheel / 60;
-					scroll->SetPosition(position);
+					if (auto scroll = GetControlTemplateObject()->GetHorizontalScroll())
+					{
+						vint position = scroll->GetPosition();
+						vint move = scroll->GetSmallMove();
+						position -= move * arguments.wheel / 60;
+						scroll->SetPosition(position);
+					}
 				}
 			}
 
@@ -12723,11 +12751,13 @@ GuiScrollView
 			{
 				if(!supressScrolling && GetVisuallyEnabled())
 				{
-					auto scroll = GetControlTemplateObject()->GetVerticalScroll();
-					vint position = scroll->GetPosition();
-					vint move = scroll->GetSmallMove();
-					position -= move*arguments.wheel / 60;
-					scroll->SetPosition(position);
+					if (auto scroll = GetControlTemplateObject()->GetVerticalScroll())
+					{
+						vint position = scroll->GetPosition();
+						vint move = scroll->GetSmallMove();
+						position -= move * arguments.wheel / 60;
+						scroll->SetPosition(position);
+					}
 				}
 			}
 
@@ -12742,40 +12772,48 @@ GuiScrollView
 				auto ct = GetControlTemplateObject();
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
-
-				auto hVisible = hScroll->GetVisible();
-				auto vVisible = vScroll->GetVisible();
-
 				Size viewSize = ct->GetContainerComposition()->GetBounds().GetSize();
-				if (fullSize.x <= viewSize.x)
+
+				auto hVisible = hScroll ? hScroll->GetVisible() : false;
+				auto vVisible = vScroll ? vScroll->GetVisible() : false;
+
+				if (hScroll)
 				{
-					hScroll->SetVisible(horizontalAlwaysVisible);
-					hScroll->SetEnabled(false);
-					hScroll->SetPosition(0);
-				}
-				else
-				{
-					hScroll->SetVisible(true);
-					hScroll->SetEnabled(true);
-					hScroll->SetTotalSize(fullSize.x);
-					hScroll->SetPageSize(viewSize.x);
+					if (fullSize.x <= viewSize.x)
+					{
+						hScroll->SetVisible(horizontalAlwaysVisible);
+						hScroll->SetEnabled(false);
+						hScroll->SetPosition(0);
+					}
+					else
+					{
+						hScroll->SetVisible(true);
+						hScroll->SetEnabled(true);
+						hScroll->SetTotalSize(fullSize.x);
+						hScroll->SetPageSize(viewSize.x);
+					}
 				}
 
-				if (fullSize.y <= viewSize.y)
+				if (vScroll)
 				{
-					vScroll->SetVisible(verticalAlwaysVisible);
-					vScroll->SetEnabled(false);
-					vScroll->SetPosition(0);
-				}
-				else
-				{
-					vScroll->SetVisible(true);
-					vScroll->SetEnabled(true);
-					vScroll->SetTotalSize(fullSize.y);
-					vScroll->SetPageSize(viewSize.y);
+					if (fullSize.y <= viewSize.y)
+					{
+						vScroll->SetVisible(verticalAlwaysVisible);
+						vScroll->SetEnabled(false);
+						vScroll->SetPosition(0);
+					}
+					else
+					{
+						vScroll->SetVisible(true);
+						vScroll->SetEnabled(true);
+						vScroll->SetTotalSize(fullSize.y);
+						vScroll->SetPageSize(viewSize.y);
+					}
 				}
 
-				return hVisible != hScroll->GetVisible() || vVisible != vScroll->GetVisible();
+				auto hVisible2 = hScroll ? hScroll->GetVisible() : false;
+				auto vVisible2 = vScroll ? vScroll->GetVisible() : false;
+				return hVisible != hVisible2 || vVisible != vVisible2;
 			}
 
 			GuiScrollView::GuiScrollView(theme::ThemeName themeName)
@@ -12822,11 +12860,17 @@ GuiScrollView
 						if (fullSize == newSize)
 						{
 							vint smallMove = GetSmallMove();
-							ct->GetHorizontalScroll()->SetSmallMove(smallMove);
-							ct->GetVerticalScroll()->SetSmallMove(smallMove);
 							Size bigMove = GetBigMove();
-							ct->GetHorizontalScroll()->SetBigMove(bigMove.x);
-							ct->GetVerticalScroll()->SetBigMove(bigMove.y);
+							if (auto scroll = ct->GetHorizontalScroll())
+							{
+								scroll->SetSmallMove(smallMove);
+								scroll->SetBigMove(bigMove.x);
+							}
+							if (auto scroll = ct->GetVerticalScroll())
+							{
+								scroll->SetSmallMove(smallMove);
+								scroll->SetBigMove(bigMove.y);
+							}
 
 							if (!flagA && !flagB)
 							{
@@ -12849,14 +12893,28 @@ GuiScrollView
 
 			Rect GuiScrollView::GetViewBounds()
 			{
+				return Rect(GetViewPosition(), GetViewSize());
+			}
+
+			Point GuiScrollView::GetViewPosition()
+			{
 				auto ct = GetControlTemplateObject();
-				Point viewPosition=
-					Point(
-						ct->GetHorizontalScroll()->GetPosition(),
-						ct->GetVerticalScroll()->GetPosition()
-						);
-				Size viewSize=GetViewSize();
-				return Rect(viewPosition, viewSize);
+				auto hScroll = ct->GetHorizontalScroll();
+				auto vScroll = ct->GetVerticalScroll();
+				return Point(hScroll ? hScroll->GetPosition() : 0, vScroll ? vScroll->GetPosition() : 0);
+			}
+
+			void GuiScrollView::SetViewPosition(Point value)
+			{
+				auto ct = GetControlTemplateObject();
+				if (auto hScroll = ct->GetHorizontalScroll())
+				{
+					hScroll->SetPosition(value.x);
+				}
+				if (auto vScroll = ct->GetVerticalScroll())
+				{
+					vScroll->SetPosition(value.y);
+				}
 			}
 
 			GuiScroll* GuiScrollView::GetHorizontalScroll()
@@ -13039,7 +13097,10 @@ GuiScroll
 
 			void GuiScroll::BeforeControlTemplateUninstalled_()
 			{
-				GetControlTemplateObject()->SetCommands(nullptr);
+				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
+				ct->SetCommands(nullptr);
 			}
 
 			void GuiScroll::AfterControlTemplateInstalled_(bool initialize)
@@ -13268,8 +13329,7 @@ GuiListControl::ItemCallback
 			{
 				Rect virtualRect(value, listControl->GetViewSize());
 				Rect realRect = listControl->axis->VirtualRectToRealRect(listControl->fullSize, virtualRect);
-				listControl->GetHorizontalScroll()->SetPosition(realRect.Left());
-				listControl->GetVerticalScroll()->SetPosition(realRect.Top());
+				listControl->SetViewPosition(realRect.LeftTop());
 			}
 
 			Size GuiListControl::ItemCallback::GetStylePreferredSize(compositions::GuiBoundsComposition* style)
@@ -13392,8 +13452,15 @@ GuiListControl
 
 				itemStyleProperty = styleProperty;
 				itemArranger = arranger;
-				GetVerticalScroll()->SetPosition(0);
-				GetHorizontalScroll()->SetPosition(0);
+
+				if (auto scroll = GetVerticalScroll())
+				{
+					scroll->SetPosition(0);
+				}
+				if (auto scroll = GetHorizontalScroll())
+				{
+					scroll->SetPosition(0);
+				}
 
 				if (itemArranger)
 				{
@@ -14223,6 +14290,8 @@ RangedItemArrangerBase
 						{
 							backgroundButton->SetSelected(itemStyle->GetSelected());
 						});
+
+						backgroundButton->SetSelected(itemStyle->GetSelected());
 						backgroundButton->GetContainerComposition()->AddChild(itemStyle);
 					}
 					return { itemStyle, backgroundButton };
@@ -14579,7 +14648,6 @@ FixedHeightItemArranger
 				}
 
 				FixedHeightItemArranger::FixedHeightItemArranger()
-					:rowHeight(1)
 				{
 				}
 
@@ -14756,7 +14824,6 @@ FixedSizeMultiColumnItemArranger
 				}
 
 				FixedSizeMultiColumnItemArranger::FixedSizeMultiColumnItemArranger()
-					:itemSize(1, 1)
 				{
 				}
 
@@ -14878,6 +14945,13 @@ FixedSizeMultiColumnItemArranger
 FixedHeightMultiColumnItemArranger
 ***********************************************************************/
 
+				void FixedHeightMultiColumnItemArranger::CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn)
+				{
+					rows = bounds.Height() / itemHeight;
+					if (rows < 1) rows = 1;
+					startColumn = bounds.Left() / bounds.Width();
+				}
+
 				void FixedHeightMultiColumnItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
 				{
 					pi_currentWidth = 0;
@@ -14929,13 +15003,6 @@ FixedHeightMultiColumnItemArranger
 						}
 					}
 					return false;
-				}
-
-				void FixedHeightMultiColumnItemArranger::CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn)
-				{
-					rows = bounds.Height() / itemHeight;
-					if (rows < 1) rows = 1;
-					startColumn = bounds.Left() / bounds.Width();
 				}
 
 				void FixedHeightMultiColumnItemArranger::InvalidateItemSizeCache()
@@ -16630,6 +16697,8 @@ GuiDatePicker
 			void GuiDatePicker::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
 				ct->SetCommands(nullptr);
 			}
 
@@ -16838,7 +16907,10 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::BeforeControlTemplateUninstalled_()
 			{
-				GetControlTemplateObject()->SetCommands(nullptr);
+				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
+				ct->SetCommands(nullptr);
 			}
 
 			void GuiComboBoxBase::AfterControlTemplateInstalled_(bool initialize)
@@ -25021,7 +25093,7 @@ GuiMultilineTextBox::DefaultTextElementOperatorCallback
 			{
 				point.x+=TextMargin;
 				point.y+=TextMargin;
-				Point oldPoint(textControl->GetHorizontalScroll()->GetPosition(), textControl->GetVerticalScroll()->GetPosition());
+				Point oldPoint = textControl->GetViewPosition();
 				vint marginX=0;
 				vint marginY=0;
 				if(oldPoint.x<point.x)
@@ -25040,8 +25112,7 @@ GuiMultilineTextBox::DefaultTextElementOperatorCallback
 				{
 					marginY=-TextMargin;
 				}
-				textControl->GetHorizontalScroll()->SetPosition(point.x+marginX);
-				textControl->GetVerticalScroll()->SetPosition(point.y+marginY);
+				textControl->SetViewPosition(Point(point.x + marginX, point.y + marginY));
 			}
 
 			vint GuiMultilineTextBox::TextElementOperatorCallback::GetTextMargin()
@@ -25074,6 +25145,8 @@ GuiMultilineTextBox
 			void GuiMultilineTextBox::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
 				ct->SetCommands(nullptr);
 			}
 
@@ -25093,10 +25166,18 @@ GuiMultilineTextBox
 				CalculateView();
 				vint smallMove = textElement->GetLines().GetRowHeight();
 				vint bigMove = smallMove * 5;
-				ct->GetHorizontalScroll()->SetSmallMove(smallMove);
-				ct->GetHorizontalScroll()->SetBigMove(bigMove);
-				ct->GetVerticalScroll()->SetSmallMove(smallMove);
-				ct->GetVerticalScroll()->SetBigMove(bigMove);
+
+				if (auto scroll = ct->GetHorizontalScroll())
+				{
+					scroll->SetSmallMove(smallMove);
+					scroll->SetBigMove(bigMove);
+				}
+
+				if (auto scroll = ct->GetVerticalScroll())
+				{
+					scroll->SetSmallMove(smallMove);
+					scroll->SetBigMove(bigMove);
+				}
 			}
 
 			void GuiMultilineTextBox::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -27114,7 +27195,10 @@ GuiDocumentViewer
 					offset=bounds.y2-viewBounds.y2;
 				}
 
-				GetVerticalScroll()->SetPosition(viewBounds.y1+offset);
+				if (auto scroll = GetVerticalScroll())
+				{
+					scroll->SetPosition(viewBounds.y1 + offset);
+				}
 			}
 
 			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName)
@@ -28999,6 +29083,7 @@ namespace vl
 	{
 		namespace controls
 		{
+			using namespace reflection::description;
 			using namespace collections;
 			using namespace compositions;
 			using namespace theme;
@@ -29011,6 +29096,8 @@ GuiRibbonTab
 			void GuiRibbonTab::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
 				if (auto bhc = ct->GetBeforeHeadersContainer())
 				{
 					bhc->RemoveChild(beforeHeaders);
@@ -29721,41 +29808,140 @@ GuiRibbonToolstrips
 #undef ARRLEN
 
 /***********************************************************************
-GuiBindableRibbonGalleryBase
+GuiRibbonGallery::CommandExecutor
 ***********************************************************************/
 
-			GuiBindableRibbonGalleryBase::GuiBindableRibbonGalleryBase()
+			GuiRibbonGallery::CommandExecutor::CommandExecutor(GuiRibbonGallery* _gallery)
+				:gallery(_gallery)
 			{
 			}
 
-			GuiBindableRibbonGalleryBase::~GuiBindableRibbonGalleryBase()
+			GuiRibbonGallery::CommandExecutor::~CommandExecutor()
 			{
+			}
+
+			void GuiRibbonGallery::CommandExecutor::NotifyScrollUp()
+			{
+				gallery->RequestedScrollUp.Execute(gallery->GetNotifyEventArguments());
+			}
+
+			void GuiRibbonGallery::CommandExecutor::NotifyScrollDown()
+			{
+				gallery->RequestedScrollDown.Execute(gallery->GetNotifyEventArguments());
+			}
+
+			void GuiRibbonGallery::CommandExecutor::NotifyDropdown()
+			{
+				gallery->RequestedDropdown.Execute(gallery->GetNotifyEventArguments());
 			}
 
 /***********************************************************************
-GuiBindableRibbonGallery
+GuiRibbonGallery
 ***********************************************************************/
 
-			GuiBindableRibbonGallery::GuiBindableRibbonGallery(theme::ThemeName themeName)
+			void GuiRibbonGallery::BeforeControlTemplateUninstalled_()
+			{
+				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
+				ct->SetCommands(nullptr);
+			}
+
+			void GuiRibbonGallery::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				ct->SetCommands(commandExecutor.Obj());
+				ct->SetScrollUpEnabled(scrollUpEnabled);
+				ct->SetScrollDownEnabled(scrollDownEnabled);
+			}
+
+			GuiRibbonGallery::GuiRibbonGallery(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
+				commandExecutor = new CommandExecutor(this);
+
+				ScrollUpEnabledChanged.SetAssociatedComposition(boundsComposition);
+				ScrollDownEnabledChanged.SetAssociatedComposition(boundsComposition);
+				RequestedScrollUp.SetAssociatedComposition(boundsComposition);
+				RequestedScrollDown.SetAssociatedComposition(boundsComposition);
+				RequestedDropdown.SetAssociatedComposition(boundsComposition);
 			}
 
-			GuiBindableRibbonGallery::~GuiBindableRibbonGallery()
+			GuiRibbonGallery::~GuiRibbonGallery()
 			{
+			}
+
+			bool GuiRibbonGallery::GetScrollUpEnabled()
+			{
+				return scrollUpEnabled;
+			}
+
+			void GuiRibbonGallery::SetScrollUpEnabled(bool value)
+			{
+				if (scrollUpEnabled != value)
+				{
+					scrollUpEnabled = value;
+					GetControlTemplateObject()->SetScrollUpEnabled(value);
+				}
+			}
+
+			bool GuiRibbonGallery::GetScrollDownEnabled()
+			{
+				return scrollDownEnabled;
+			}
+
+			void GuiRibbonGallery::SetScrollDownEnabled(bool value)
+			{
+				if (scrollDownEnabled != value)
+				{
+					scrollDownEnabled = value;
+					GetControlTemplateObject()->SetScrollDownEnabled(value);
+				}
 			}
 
 /***********************************************************************
-GuiBindableRibbonGalleryMenu
+GuiRibbonToolstripMenu
 ***********************************************************************/
 
-			GuiBindableRibbonGalleryMenu::GuiBindableRibbonGalleryMenu(theme::ThemeName themeName, GuiControl* owner)
-				:GuiToolstripMenu(themeName, owner)
+			void GuiRibbonToolstripMenu::BeforeControlTemplateUninstalled_()
 			{
+				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
+				if (auto cc = ct->GetContentComposition())
+				{
+					cc->RemoveChild(contentComposition);
+				}
 			}
 
-			GuiBindableRibbonGalleryMenu::~GuiBindableRibbonGalleryMenu()
+			void GuiRibbonToolstripMenu::AfterControlTemplateInstalled_(bool initialize)
 			{
+				auto ct = GetControlTemplateObject();
+				if (auto cc = ct->GetContentComposition())
+				{
+					cc->AddChild(contentComposition);
+				}
+			}
+
+			GuiRibbonToolstripMenu::GuiRibbonToolstripMenu(theme::ThemeName themeName, GuiControl* owner)
+				:GuiToolstripMenu(themeName, owner)
+			{
+				contentComposition = new GuiBoundsComposition();
+				contentComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				contentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			}
+
+			GuiRibbonToolstripMenu::~GuiRibbonToolstripMenu()
+			{
+				if (!contentComposition->GetParent())
+				{
+					SafeDeleteComposition(contentComposition);
+				}
+			}
+
+			compositions::GuiGraphicsComposition* GuiRibbonToolstripMenu::GetContentComposition()
+			{
+				return contentComposition;
 			}
 		}
 	}
@@ -30364,6 +30550,923 @@ GuiToolstripGroup
 			collections::ObservableListBase<GuiControl*>& GuiToolstripGroup::GetToolstripItems()
 			{
 				return *toolstripItems.Obj();
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\TOOLSTRIPPACKAGE\GUIRIBBONGALLERYLIST.CPP
+***********************************************************************/
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			using namespace reflection::description;
+			using namespace collections;
+			using namespace compositions;
+			using namespace templates;
+
+			namespace list
+			{
+
+/***********************************************************************
+list::GalleryGroup
+***********************************************************************/
+
+				GalleryGroup::GalleryGroup()
+				{
+				}
+
+				GalleryGroup::~GalleryGroup()
+				{
+					if (eventHandler)
+					{
+						itemValues.Cast<IValueObservableList>()->ItemChanged.Remove(eventHandler);
+					}
+				}
+
+				WString GalleryGroup::GetName()
+				{
+					return name;
+				}
+
+				Ptr<IValueList> GalleryGroup::GetItemValues()
+				{
+					return itemValues;
+				}
+
+/***********************************************************************
+list::GroupedDataSource
+***********************************************************************/
+
+				void GroupedDataSource::RebuildItemSource()
+				{
+					ignoreGroupChanged = true;
+					joinedItemSource.Clear();
+					groupedItemSource.Clear();
+					cachedGroupItemCounts.Clear();
+					ignoreGroupChanged = false;
+
+					if (itemSource)
+					{
+						if (GetGroupEnabled())
+						{
+							FOREACH_INDEXER(Value, groupValue, index, GetLazyList<Value>(itemSource))
+							{
+								auto group = MakePtr<GalleryGroup>();
+								group->name = titleProperty(groupValue);
+								group->itemValues = GetChildren(childrenProperty(groupValue));
+								AttachGroupChanged(group, index);
+								groupedItemSource.Add(group);
+							}
+						}
+						else
+						{
+							auto group = MakePtr<GalleryGroup>();
+							group->itemValues = GetChildren(itemSource);
+							AttachGroupChanged(group, 0);
+							groupedItemSource.Add(group);
+						}
+					}
+				}
+
+				Ptr<IValueList> GroupedDataSource::GetChildren(Ptr<IValueEnumerable> children)
+				{
+					if (!children)
+					{
+						return nullptr;
+					}
+					else if (auto list = children.Cast<IValueList>())
+					{
+						return list;
+					}
+					else
+					{
+						return IValueList::Create(GetLazyList<Value>(children));
+					}
+				}
+
+				void GroupedDataSource::AttachGroupChanged(Ptr<GalleryGroup> group, vint index)
+				{
+					if (auto observable = group->itemValues.Cast<IValueObservableList>())
+					{
+						group->eventHandler = observable->ItemChanged.Add([this, index](vint start, vint oldCount, vint newCount)
+						{
+							OnGroupItemChanged(index, start, oldCount, newCount);
+						});
+					}
+				}
+
+				void GroupedDataSource::OnGroupChanged(vint start, vint oldCount, vint newCount)
+				{
+					if (!ignoreGroupChanged)
+					{
+						for (vint i = 0; i < oldCount; i++)
+						{
+							RemoveGroupFromJoined(start);
+						}
+						for (vint i = 0; i < newCount; i++)
+						{
+							InsertGroupToJoined(start + i);
+						}
+					}
+				}
+
+				void GroupedDataSource::OnGroupItemChanged(vint index, vint start, vint oldCount, vint newCount)
+				{
+					if (!ignoreGroupChanged)
+					{
+						vint countBeforeGroup = GetCountBeforeGroup(index);
+						vint joinedIndex = countBeforeGroup + start;
+						vint minCount = oldCount < newCount ? oldCount : newCount;
+						auto itemValues = groupedItemSource[index]->itemValues;
+
+						for (vint i = 0; i < minCount; i++)
+						{
+							joinedItemSource.Set(joinedIndex + i, itemValues->Get(start + i));
+						}
+
+						if (oldCount < newCount)
+						{
+							for (vint i = minCount; i < newCount; i++)
+							{
+								joinedItemSource.Insert(joinedIndex + i, itemValues->Get(start + i));
+							}
+						}
+						else if (oldCount > newCount)
+						{
+							for (vint i = minCount; i < oldCount; i++)
+							{
+								joinedItemSource.RemoveAt(joinedIndex + i);
+							}
+						}
+
+						cachedGroupItemCounts[index] += newCount - oldCount;
+					}
+				}
+
+				vint GroupedDataSource::GetCountBeforeGroup(vint index)
+				{
+					vint count = 0;
+					for (vint i = 0; i < index; i++)
+					{
+						count += cachedGroupItemCounts[i];
+					}
+					return count;
+				}
+
+				void GroupedDataSource::InsertGroupToJoined(vint index)
+				{
+					vint countBeforeGroup = GetCountBeforeGroup(index);
+					auto group = groupedItemSource[index];
+					vint itemCount = group->itemValues ? group->itemValues->GetCount() : 0;
+					cachedGroupItemCounts.Insert(index, itemCount);
+
+					if (itemCount > 0)
+					{
+						for (vint i = 0; i < itemCount; i++)
+						{
+							joinedItemSource.Insert(countBeforeGroup + i, group->itemValues->Get(i));
+						}
+					}
+				}
+
+				void GroupedDataSource::RemoveGroupFromJoined(vint index)
+				{
+					vint countBeforeGroup = GetCountBeforeGroup(index);
+					joinedItemSource.RemoveRange(countBeforeGroup, cachedGroupItemCounts[index]);
+					cachedGroupItemCounts.RemoveAt(index);
+				}
+
+				GroupedDataSource::GroupedDataSource(compositions::GuiGraphicsComposition* _associatedComposition)
+					:associatedComposition(_associatedComposition)
+				{
+					GroupEnabledChanged.SetAssociatedComposition(associatedComposition);
+					GroupTitlePropertyChanged.SetAssociatedComposition(associatedComposition);
+					GroupChildrenPropertyChanged.SetAssociatedComposition(associatedComposition);
+
+					groupChangedHandler = groupedItemSource.GetWrapper()->ItemChanged.Add(this, &GroupedDataSource::OnGroupChanged);
+				}
+
+				GroupedDataSource::~GroupedDataSource()
+				{
+					joinedItemSource.GetWrapper()->ItemChanged.Remove(groupChangedHandler);
+				}
+
+				Ptr<IValueEnumerable> GroupedDataSource::GetItemSource()
+				{
+					return itemSource;
+				}
+
+				void GroupedDataSource::SetItemSource(Ptr<IValueEnumerable> value)
+				{
+					if (itemSource != value)
+					{
+						itemSource = value;
+						RebuildItemSource();
+					}
+				}
+
+				bool GroupedDataSource::GetGroupEnabled()
+				{
+					return titleProperty && childrenProperty;
+				}
+
+				ItemProperty<WString> GroupedDataSource::GetGroupTitleProperty()
+				{
+					return titleProperty;
+				}
+
+				void GroupedDataSource::SetGroupTitleProperty(const ItemProperty<WString>& value)
+				{
+					if (titleProperty != value)
+					{
+						titleProperty = value;
+						GroupTitlePropertyChanged.Execute(GuiEventArgs(associatedComposition));
+						GroupEnabledChanged.Execute(GuiEventArgs(associatedComposition));
+						RebuildItemSource();
+					}
+				}
+
+				ItemProperty<Ptr<IValueEnumerable>> GroupedDataSource::GetGroupChildrenProperty()
+				{
+					return childrenProperty;
+				}
+
+				void GroupedDataSource::SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value)
+				{
+					if (childrenProperty != value)
+					{
+						childrenProperty = value;
+						GroupChildrenPropertyChanged.Execute(GuiEventArgs(associatedComposition));
+						GroupEnabledChanged.Execute(GuiEventArgs(associatedComposition));
+						RebuildItemSource();
+					}
+				}
+
+				const GroupedDataSource::GalleryGroupList& GroupedDataSource::GetGroups()
+				{
+					return groupedItemSource;
+				}
+			}
+
+/***********************************************************************
+GuiBindableRibbonGalleryList
+***********************************************************************/
+
+			void GuiBindableRibbonGalleryList::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiBindableRibbonGalleryList::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject();
+				itemList->SetControlTemplate(ct->GetItemListTemplate());
+				subMenu->SetControlTemplate(ct->GetMenuTemplate());
+				groupContainer->SetControlTemplate(ct->GetGroupContainerTemplate());
+				MenuResetGroupTemplate();
+				UpdateLayoutSizeOffset();
+			}
+
+			void GuiBindableRibbonGalleryList::UpdateLayoutSizeOffset()
+			{
+				auto cSize = itemList->GetContainerComposition()->GetBounds();
+				auto bSize = itemList->GetBoundsComposition()->GetBounds();
+				layout->SetSizeOffset(Size(bSize.Width() - cSize.Width(), bSize.Height() - cSize.Height()));
+			}
+
+			void GuiBindableRibbonGalleryList::OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				auto pos = IndexToGalleryPos(itemList->GetSelectedItemIndex());
+				if (pos.group != -1 && pos.item != -1)
+				{
+					for (vint i = 0; i < groupedItemSource.Count(); i++)
+					{
+						auto group = groupedItemSource[i];
+						if (group->GetItemValues())
+						{
+							vint count = group->GetItemValues()->GetCount();
+							for (vint j = 0; j < count; j++)
+							{
+								auto background = MenuGetGroupItemBackground(i, j);
+								background->SetSelected(pos.group == i && pos.item == j);
+							}
+						}
+					}
+				}
+			}
+
+			void GuiBindableRibbonGalleryList::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				UpdateLayoutSizeOffset();
+
+				auto bounds = boundsComposition->GetBounds();
+				subMenu->GetBoundsComposition()->SetPreferredMinSize(Size(bounds.Width() + 20, 1));
+
+				for (vint i = 0; i < groupedItemSource.Count(); i++)
+				{
+					auto group = groupedItemSource[i];
+					if (group->GetItemValues())
+					{
+						vint count = group->GetItemValues()->GetCount();
+						for (vint j = 0; j < count; j++)
+						{
+							auto background = MenuGetGroupItemBackground(i, j);
+							background->GetBoundsComposition()->SetPreferredMinSize(Size(0, bounds.Height()));
+						}
+					}
+				}
+			}
+
+			void GuiBindableRibbonGalleryList::OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				subMenu->ShowPopup(this, Point(0, 0));
+			}
+
+			void GuiBindableRibbonGalleryList::OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				itemListArranger->ScrollUp();
+			}
+
+			void GuiBindableRibbonGalleryList::OnRequestedScrollDown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				itemListArranger->ScrollDown();
+			}
+
+			void GuiBindableRibbonGalleryList::MenuResetGroupTemplate()
+			{
+				groupStack->SetItemTemplate([this](const Value& groupValue)->GuiTemplate*
+				{
+					auto group = UnboxValue<Ptr<list::GalleryGroup>>(groupValue);
+
+					auto groupTemplate = new GuiTemplate;
+					groupTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+					auto groupContentStack = new GuiStackComposition;
+					groupContentStack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					groupContentStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					groupContentStack->SetDirection(GuiStackComposition::Vertical);
+					{
+						auto item = new GuiStackItemComposition;
+						groupContentStack->AddChild(item);
+
+						auto header = new GuiControl(theme::ThemeName::RibbonToolstripHeader);
+						header->SetControlTemplate(GetControlTemplateObject()->GetHeaderTemplate());
+						header->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						header->SetText(group->GetName());
+						item->AddChild(header->GetBoundsComposition());
+					}
+					if (itemStyle)
+					{
+						auto item = new GuiStackItemComposition;
+						item->SetPreferredMinSize(Size(1, 1));
+						groupContentStack->AddChild(item);
+
+						auto groupItemFlow = new GuiRepeatFlowComposition();
+						groupItemFlow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+						groupItemFlow->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						groupItemFlow->SetItemSource(group->GetItemValues());
+						groupItemFlow->SetItemTemplate([=](const Value& groupItemValue)->GuiTemplate*
+						{
+							auto groupItemTemplate = new GuiTemplate;
+							groupItemTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+							auto backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
+							if (auto style = GetControlTemplateObject()->GetBackgroundTemplate())
+							{
+								backgroundButton->SetControlTemplate(style);
+							}
+							backgroundButton->SetAutoSelection(false);
+							backgroundButton->Clicked.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+							{
+								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
+								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));
+								auto index = GalleryPosToIndex({ groupIndex,itemIndex });
+								itemList->SetSelected(index, true);
+								itemList->EnsureItemVisible(index);
+								subMenu->Close();
+							});
+							groupItemTemplate->AddChild(backgroundButton->GetBoundsComposition());
+
+							auto itemTemplate = itemStyle(groupItemValue);
+							itemTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
+							backgroundButton->GetContainerComposition()->AddChild(itemTemplate);
+
+							return groupItemTemplate;
+						});
+						item->AddChild(groupItemFlow);
+					}
+					groupTemplate->AddChild(groupContentStack);
+
+					return groupTemplate;
+				});
+			}
+
+			GuiControl* GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint groupIndex)
+			{
+				CHECK_ERROR(0 <= groupIndex && groupIndex < groupedItemSource.Count(), L"GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint)#Group index out of range");
+				auto stackItem = groupStack->GetStackItems()[groupIndex];
+				auto groupTemplate = stackItem->Children()[0];
+				auto groupContentStack = dynamic_cast<GuiStackComposition*>(groupTemplate->Children()[0]);
+				auto groupHeaderItem = groupContentStack->GetStackItems()[0];
+				auto groupHeader = groupHeaderItem->Children()[0]->GetAssociatedControl();
+				CHECK_ERROR(groupHeader, L"GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint)#Internal error.");
+				return groupHeader;
+			}
+
+			compositions::GuiRepeatFlowComposition* GuiBindableRibbonGalleryList::MenuGetGroupFlow(vint groupIndex)
+			{
+				CHECK_ERROR(0 <= groupIndex && groupIndex < groupedItemSource.Count(), L"GuiBindableRibbonGalleryList::MenuGetGroupFlow(vint)#Group index out of range");
+				if (!itemStyle) return nullptr;
+				auto stackItem = groupStack->GetStackItems()[groupIndex];
+				auto groupTemplate = stackItem->Children()[0];
+				auto groupContentStack = dynamic_cast<GuiStackComposition*>(groupTemplate->Children()[0]);
+				auto groupContentItem = groupContentStack->GetStackItems()[1];
+				auto groupFlow = dynamic_cast<GuiRepeatFlowComposition*>(groupContentItem->Children()[0]);
+				CHECK_ERROR(groupFlow, L"GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint)#Internal error.");
+				return groupFlow;
+			}
+
+			GuiSelectableButton* GuiBindableRibbonGalleryList::MenuGetGroupItemBackground(vint groupIndex, vint itemIndex)
+			{
+				CHECK_ERROR(0 <= groupIndex && groupIndex < groupedItemSource.Count(), L"GuiBindableRibbonGalleryList::MenuGetGroupItemBackground(vint, vint)#Group index out of range");
+				auto group = groupedItemSource[groupIndex];
+				CHECK_ERROR(group->GetItemValues() && 0 <= itemIndex && itemIndex < group->GetItemValues()->GetCount(), L"GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint, vint)#Item index out of range");
+
+				auto groupFlow = MenuGetGroupFlow(groupIndex);
+				auto groupFlowItem = groupFlow->GetFlowItems()[itemIndex];
+				auto groupItemTemplate = groupFlowItem->Children()[0];
+				auto groupItemBackground = dynamic_cast<GuiSelectableButton*>(groupItemTemplate->Children()[0]->GetAssociatedControl());
+				CHECK_ERROR(groupItemBackground, L"GuiBindableRibbonGalleryList::MenuGetGroupHeader(vint, vint)#Internal error.");
+				return groupItemBackground;
+			}
+
+			GuiBindableRibbonGalleryList::GuiBindableRibbonGalleryList(theme::ThemeName themeName)
+				:GuiRibbonGallery(themeName)
+				, GroupedDataSource(boundsComposition)
+			{
+				ItemTemplateChanged.SetAssociatedComposition(boundsComposition);
+				SelectionChanged.SetAssociatedComposition(boundsComposition);
+				subMenu = new GuiRibbonToolstripMenu(theme::ThemeName::RibbonToolstripMenu, this);
+
+				{
+					layout = new ribbon_impl::GalleryResponsiveLayout;
+					layout->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					containerComposition->AddChild(layout);
+
+					itemListArranger = new ribbon_impl::GalleryItemArranger(this);
+					itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
+					itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					itemList->SetArranger(itemListArranger);
+					itemList->SetItemSource(joinedItemSource.GetWrapper());
+					itemList->SelectionChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnItemListSelectionChanged);
+					layout->AddChild(itemList->GetBoundsComposition());
+				}
+				{
+					groupContainer = new GuiScrollContainer(theme::ThemeName::ScrollView);
+					groupContainer->SetHorizontalAlwaysVisible(false);
+					groupContainer->SetVerticalAlwaysVisible(false);
+					groupContainer->SetExtendToFullWidth(true);
+					groupContainer->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					subMenu->GetContentComposition()->AddChild(groupContainer->GetBoundsComposition());
+
+					groupStack = new GuiRepeatStackComposition();
+					groupStack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					groupStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					groupStack->SetDirection(GuiStackComposition::Vertical);
+					groupStack->SetItemSource(groupedItemSource.GetWrapper());
+					groupContainer->GetContainerComposition()->AddChild(groupStack);
+					MenuResetGroupTemplate();
+				}
+
+				RequestedScrollUp.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedScrollUp);
+				RequestedScrollDown.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedScrollDown);
+				RequestedDropdown.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedDropdown);
+				boundsComposition->BoundsChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnBoundsChanged);
+				itemListArranger->UnblockScrollUpdate();
+			}
+
+			GuiBindableRibbonGalleryList::~GuiBindableRibbonGalleryList()
+			{
+				delete subMenu;
+			}
+
+			GuiBindableRibbonGalleryList::ItemStyleProperty GuiBindableRibbonGalleryList::GetItemTemplate()
+			{
+				return itemStyle;
+			}
+
+			void GuiBindableRibbonGalleryList::SetItemTemplate(ItemStyleProperty value)
+			{
+				if (itemStyle != value)
+				{
+					itemStyle = value;
+					itemList->SetItemTemplate(value);
+					ItemTemplateChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			GalleryPos GuiBindableRibbonGalleryList::IndexToGalleryPos(vint index)
+			{
+				if (0 <= index && index < joinedItemSource.Count())
+				{
+					FOREACH_INDEXER(Ptr<list::GalleryGroup>, group, groupIndex, groupedItemSource)
+					{
+						auto itemValues = group->GetItemValues();
+						vint itemCount = itemValues ? itemValues->GetCount() : 0;
+						if (index >= itemCount)
+						{
+							index -= itemCount;
+						}
+						else
+						{
+							return GalleryPos(groupIndex, index);
+						}
+					}
+				}
+				return {};
+			}
+
+			vint GuiBindableRibbonGalleryList::GalleryPosToIndex(GalleryPos pos)
+			{
+				if (0 <= pos.group && pos.group < groupedItemSource.Count())
+				{
+					auto countBeforeGroup = GetCountBeforeGroup(pos.group);
+					auto itemValues = groupedItemSource[pos.group]->GetItemValues();
+					vint itemCount = itemValues ? itemValues->GetCount() : 0;
+					if (0 <= pos.item && pos.item < itemCount)
+					{
+						return countBeforeGroup + pos.item;
+					}
+				}
+				return -1;
+			}
+
+			vint GuiBindableRibbonGalleryList::GetMinCount()
+			{
+				return layout->GetMinCount();
+			}
+
+			void GuiBindableRibbonGalleryList::SetMinCount(vint value)
+			{
+				layout->SetMinCount(value);
+			}
+
+			vint GuiBindableRibbonGalleryList::GetMaxCount()
+			{
+				return layout->GetMaxCount();
+			}
+
+			void GuiBindableRibbonGalleryList::SetMaxCount(vint value)
+			{
+				layout->SetMaxCount(value);
+			}
+
+			GalleryPos GuiBindableRibbonGalleryList::GetSelection()
+			{
+				throw 0;
+			}
+
+			void GuiBindableRibbonGalleryList::SetSelection(GalleryPos value)
+			{
+				throw 0;
+			}
+
+			GuiToolstripMenu* GuiBindableRibbonGalleryList::GetSubMenu()
+			{
+				return subMenu;
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\TOOLSTRIPPACKAGE\GUIRIBBONIMPL.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			using namespace compositions;
+
+/***********************************************************************
+GalleryItemArranger
+***********************************************************************/
+
+			namespace ribbon_impl
+			{
+				void GalleryItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
+				{
+					if (forMoving)
+					{
+						pim_itemWidth = itemWidth;
+						newStartIndex = firstIndex;
+					}
+				}
+
+				void GalleryItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				{
+					alignmentToParent = Margin(-1, 0, -1, 0);
+					bounds = Rect(Point((index - firstIndex) * itemWidth, 0), Size(itemWidth, 0));
+
+					if (forMoving)
+					{
+						vint styleWidth = callback->GetStylePreferredSize(GetStyleBounds(style)).x;
+						if (pim_itemWidth < styleWidth)
+						{
+							pim_itemWidth = styleWidth;
+						}
+					}
+				}
+
+				bool GalleryItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
+				{
+					return bounds.Right() + pim_itemWidth > viewBounds.Right();
+				}
+
+				bool GalleryItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+				{
+					bool result = false;
+					if (forMoving)
+					{
+						if (pim_itemWidth != itemWidth)
+						{
+							itemWidth = pim_itemWidth;
+							result = true;
+						}
+					}
+
+					if (!blockScrollUpdate)
+					{
+						UnblockScrollUpdate();
+					}
+
+					return result;
+				}
+
+				void GalleryItemArranger::InvalidateItemSizeCache()
+				{
+					itemWidth = 1;
+				}
+
+				Size GalleryItemArranger::OnCalculateTotalSize()
+				{
+					return Size(1, 1);
+				}
+
+				GalleryItemArranger::GalleryItemArranger(GuiBindableRibbonGalleryList* _owner)
+					:owner(_owner)
+				{
+				}
+
+				GalleryItemArranger::~GalleryItemArranger()
+				{
+				}
+
+				vint GalleryItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
+				{
+					vint count = itemProvider->Count();
+					vint groupCount = viewBounds.Width() / itemWidth;
+
+					switch (key)
+					{
+					case KeyDirection::Left:
+						itemIndex--;
+						break;
+					case KeyDirection::Right:
+						itemIndex++;
+						break;
+					case KeyDirection::Home:
+						itemIndex = 0;
+						break;
+					case KeyDirection::End:
+						itemIndex = count;
+						break;
+					case KeyDirection::PageUp:
+						itemIndex -= groupCount;
+						break;
+					case KeyDirection::PageDown:
+						itemIndex += groupCount;
+						break;
+					default:
+						return -1;
+					}
+
+					if (itemIndex < 0) return 0;
+					else if (itemIndex >= count) return count - 1;
+					else return itemIndex;
+				}
+
+				bool GalleryItemArranger::EnsureItemVisible(vint itemIndex)
+				{
+					if (callback && 0 <= itemIndex && itemIndex < itemProvider->Count())
+					{
+						vint groupCount = viewBounds.Width() / itemWidth;
+						if (itemIndex < firstIndex)
+						{
+							firstIndex = itemIndex;
+							callback->OnTotalSizeChanged();
+						}
+						else if (itemIndex >= firstIndex + groupCount)
+						{
+							firstIndex = itemIndex - groupCount + 1;
+							callback->OnTotalSizeChanged();
+						}
+						return true;
+					}
+					return false;
+				}
+
+				Size GalleryItemArranger::GetAdoptedSize(Size expectedSize)
+				{
+					return Size(1, 1);
+				}
+
+				void GalleryItemArranger::ScrollUp()
+				{
+					vint count = itemProvider->Count();
+					vint groupCount = viewBounds.Width() / itemWidth;
+					if (count > groupCount)
+					{
+						firstIndex -= groupCount;
+						if (firstIndex < 0)
+						{
+							firstIndex = 0;
+						}
+
+						if (callback)
+						{
+							callback->OnTotalSizeChanged();
+						}
+					}
+				}
+
+				void GalleryItemArranger::ScrollDown()
+				{
+					vint count = itemProvider->Count();
+					vint groupCount = viewBounds.Width() / itemWidth;
+					if (count > groupCount)
+					{
+						firstIndex += groupCount;
+						if (firstIndex > count - groupCount)
+						{
+							firstIndex = count - groupCount;
+						}
+
+						if (callback)
+						{
+							callback->OnTotalSizeChanged();
+						}
+					}
+				}
+
+				void GalleryItemArranger::UnblockScrollUpdate()
+				{
+					blockScrollUpdate = false;
+
+					vint count = itemProvider->Count();
+					vint groupCount = viewBounds.Width() / pim_itemWidth;
+					owner->SetScrollUpEnabled(firstIndex > 0);
+					owner->SetScrollDownEnabled(firstIndex + groupCount < count);
+					owner->layout->SetItemWidth(pim_itemWidth);
+				}
+
+/***********************************************************************
+GalleryResponsiveLayout
+***********************************************************************/
+
+				void GalleryResponsiveLayout::UpdateMinSize()
+				{
+					SetPreferredMinSize(Size(itemCount * itemWidth + sizeOffset.x, sizeOffset.y));
+				}
+
+				GalleryResponsiveLayout::GalleryResponsiveLayout()
+				{
+					SetDirection(ResponsiveDirection::Horizontal);
+				}
+
+				GalleryResponsiveLayout::~GalleryResponsiveLayout()
+				{
+				}
+
+				vint GalleryResponsiveLayout::GetMinCount()
+				{
+					return minCount;
+				}
+
+				vint GalleryResponsiveLayout::GetMaxCount()
+				{
+					return maxCount;
+				}
+
+				vint GalleryResponsiveLayout::GetItemWidth()
+				{
+					return itemWidth;
+				}
+
+				Size GalleryResponsiveLayout::GetSizeOffset()
+				{
+					return sizeOffset;
+				}
+
+				void GalleryResponsiveLayout::SetMinCount(vint value)
+				{
+					vint oldCount = GetLevelCount();
+					vint oldLevel = GetCurrentLevel();
+
+					if (minCount != value)
+					{
+						if (value < 0) value = 0;
+						minCount = value;
+						if (maxCount < minCount) maxCount = minCount;
+						if (itemCount < minCount) itemCount = minCount;
+						UpdateMinSize();
+					}
+
+					bool countChanged = oldCount != GetLevelCount();
+					bool levelChanged = oldLevel != GetCurrentLevel();
+					if (countChanged) LevelCountChanged.Execute(GuiEventArgs(this));
+					if (levelChanged) CurrentLevelChanged.Execute(GuiEventArgs(this));
+					if (countChanged || levelChanged) OnResponsiveChildLevelUpdated();
+				}
+
+				void GalleryResponsiveLayout::SetMaxCount(vint value)
+				{
+					vint oldCount = GetLevelCount();
+					vint oldLevel = GetCurrentLevel();
+
+					if (maxCount != value)
+					{
+						if (value < 0) value = 0;
+						maxCount = value;
+						if (minCount > maxCount) minCount = maxCount;
+						if (itemCount > maxCount) itemCount = maxCount;
+						UpdateMinSize();
+					}
+
+					if (oldCount != GetLevelCount()) LevelCountChanged.Execute(GuiEventArgs(this));
+					if (oldLevel != GetCurrentLevel()) CurrentLevelChanged.Execute(GuiEventArgs(this));
+				}
+
+				void GalleryResponsiveLayout::SetItemWidth(vint value)
+				{
+					if (itemWidth != value)
+					{
+						itemWidth = value;
+						UpdateMinSize();
+					}
+				}
+
+				void GalleryResponsiveLayout::SetSizeOffset(Size value)
+				{
+					if (sizeOffset != value)
+					{
+						sizeOffset = value;
+						UpdateMinSize();
+					}
+				}
+
+				vint GalleryResponsiveLayout::GetLevelCount()
+				{
+					return maxCount - minCount + 1;
+				}
+
+				vint GalleryResponsiveLayout::GetCurrentLevel()
+				{
+					return itemCount - minCount;
+				}
+
+				bool GalleryResponsiveLayout::LevelDown()
+				{
+					if (itemCount > minCount)
+					{
+						itemCount--;
+						UpdateMinSize();
+						CurrentLevelChanged.Execute(GuiEventArgs(this));
+						return true;
+					}
+					return false;
+				}
+
+				bool GalleryResponsiveLayout::LevelUp()
+				{
+					if (itemCount < maxCount)
+					{
+						itemCount++;
+						UpdateMinSize();
+						CurrentLevelChanged.Execute(GuiEventArgs(this));
+						return true;
+					}
+					return false;
+				}
 			}
 		}
 	}

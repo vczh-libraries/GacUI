@@ -8201,10 +8201,11 @@ namespace vl
 			class GuiRepeatCompositionBase : public Object, public Description<GuiRepeatCompositionBase>
 			{
 				using ItemStyleProperty = TemplateProperty<templates::GuiTemplate>;
-				using ItemSourceType = Ptr<reflection::description::IValueObservableList>;
+				using IValueEnumerable = reflection::description::IValueEnumerable;
+				using IValueList = reflection::description::IValueList;
 			protected:
 				ItemStyleProperty									itemTemplate;
-				ItemSourceType										itemSource;
+				Ptr<IValueList>										itemSource;
 				Ptr<EventHandler>									itemChangedHandler;
 				
 				virtual vint										GetRepeatCompositionCount() = 0;
@@ -8235,10 +8236,10 @@ namespace vl
 
 				/// <summary>Get the item source.</summary>
 				/// <returns>The item source.</returns>
-				ItemSourceType										GetItemSource();
+				Ptr<IValueEnumerable>								GetItemSource();
 				/// <summary>Set the item source.</summary>
 				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
-				void												SetItemSource(ItemSourceType value);
+				void												SetItemSource(Ptr<IValueEnumerable> value);
 			};
 
 			/// <summary>Bindable stack composition.</summary>
@@ -8374,6 +8375,18 @@ namespace vl
 				virtual void						NotifyDateNavigated() = 0;
 				/// <summary>Called when selected a date.</summary>
 				virtual void						NotifyDateSelected() = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IRibbonGalleryCommandExecutor : public virtual IDescriptable, public Description<IRibbonGalleryCommandExecutor>
+			{
+			public:
+				/// <summary>Called when the scroll up button is clicked.</summary>
+				virtual void						NotifyScrollUp() = 0;
+				/// <summary>Called when the scroll down button is clicked.</summary>
+				virtual void						NotifyScrollDown() = 0;
+				/// <summary>Called when the dropdown button is clicked.</summary>
+				virtual void						NotifyDropdown() = 0;
 			};
 
 			class GuiInstanceRootObject;
@@ -8657,8 +8670,9 @@ namespace vl
 			F(GuiRibbonGroupTemplate,			GuiControlTemplate)			\
 			F(GuiRibbonButtonsTemplate,			GuiControlTemplate)			\
 			F(GuiRibbonToolstripsTemplate,		GuiControlTemplate)			\
-			F(GuiRibbonGalleryMenuTemplate,		GuiMenuTemplate)			\
+			F(GuiRibbonToolstripMenuTemplate,	GuiMenuTemplate)			\
 			F(GuiRibbonGalleryTemplate,			GuiControlTemplate)			\
+			F(GuiRibbonGalleryListTemplate,		GuiRibbonGalleryTemplate)	\
 
 #define GUI_ITEM_TEMPLATE_DECL(F)\
 			F(GuiTextListItemTemplate,			GuiListItemTemplate)		\
@@ -8857,13 +8871,20 @@ Control Template
 #define GuiRibbonToolstripsTemplate_PROPERTIES(F)\
 				F(GuiRibbonToolstripsTemplate, TemplateProperty<GuiControlTemplate>, ToolbarTemplate, {})\
 
-#define GuiRibbonGalleryTemplate_PROPERTIES(F)\
-				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
-				F(GuiRibbonGalleryTemplate, TemplateProperty<GuiRibbonGalleryMenuTemplate>, SubMenuTemplate, {})\
+#define GuiRibbonToolstripMenuTemplate_PROPERTIES(F)\
+				F(GuiRibbonToolstripMenuTemplate, compositions::GuiGraphicsComposition*, ContentComposition, nullptr)\
 
-#define GuiRibbonGalleryMenuTemplate_PROPERTIES(F)\
-				F(GuiRibbonGalleryMenuTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
-				F(GuiRibbonGalleryMenuTemplate, TemplateProperty<GuiControlTemplate>, HeaderTemplate, {})\
+#define GuiRibbonGalleryTemplate_PROPERTIES(F)\
+				F(GuiRibbonGalleryTemplate, controls::IRibbonGalleryCommandExecutor*, Commands, nullptr)\
+				F(GuiRibbonGalleryTemplate, bool, ScrollUpEnabled, true)\
+				F(GuiRibbonGalleryTemplate, bool, ScrollDownEnabled, true)\
+
+#define GuiRibbonGalleryListTemplate_PROPERTIES(F)\
+				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiTextListTemplate>, ItemListTemplate, {})\
+				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiRibbonToolstripMenuTemplate>, MenuTemplate, {})\
+				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiControlTemplate>, HeaderTemplate, {})\
+				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
+				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiScrollViewTemplate>, GroupContainerTemplate, {})\
 
 /***********************************************************************
 Item Template
@@ -9128,7 +9149,9 @@ namespace vl
 			F(RibbonButtonsTemplate,		RibbonButtons)				\
 			F(RibbonToolstripsTemplate,		RibbonToolstrips)			\
 			F(RibbonGalleryTemplate,		RibbonGallery)				\
-			F(RibbonGalleryMenuTemplate,	RibbonGalleryMenu)			\
+			F(RibbonToolstripMenuTemplate,	RibbonToolstripMenu)		\
+			F(RibbonGalleryListTemplate,	RibbonGalleryList)			\
+			F(TextListTemplate,				RibbonGalleryItemList)		\
 			F(ToolstripButtonTemplate,		RibbonSmallButton)			\
 			F(ToolstripButtonTemplate,		RibbonSmallDropdownButton)	\
 			F(ToolstripButtonTemplate,		RibbonSmallSplitButton)		\
@@ -10699,6 +10722,12 @@ Scroll View
 				/// <returns>The view bounds.</returns>
 				Rect									GetViewBounds();
 				
+				/// <summary>Get the position of the left-top corner of the view bounds.</summary>
+				/// <returns>The view position.</returns>
+				Point									GetViewPosition();
+				/// <summary>Set the position of the left-top corner of the view bounds.</summary>
+				void									SetViewPosition(Point value);
+				
 				/// <summary>Get the horizontal scroll control.</summary>
 				/// <returns>The horizontal scroll control.</returns>
 				GuiScroll*								GetHorizontalScroll();
@@ -11990,7 +12019,7 @@ Predefined ItemArranger
 					vint										pim_rowHeight = 0;
 
 				protected:
-					vint										rowHeight;
+					vint										rowHeight = 1;
 
 					virtual vint								GetWidth();
 					virtual vint								GetYOffset();
@@ -12018,7 +12047,7 @@ Predefined ItemArranger
 					Size										pim_itemSize;
 
 				protected:
-					Size										itemSize;
+					Size										itemSize{ 1,1 };
 
 					void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
 
@@ -17309,6 +17338,102 @@ GuiBindableTreeView
 
 
 /***********************************************************************
+.\CONTROLS\TOOLSTRIPPACKAGE\GUIRIBBONIMPL.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUIRIBBONIMPL
+#define VCZH_PRESENTATION_CONTROLS_GUIRIBBONIMPL
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			class GuiBindableRibbonGalleryList;
+
+/***********************************************************************
+GalleryItemArranger
+***********************************************************************/
+
+			namespace ribbon_impl
+			{
+				class GalleryItemArranger : public list::RangedItemArrangerBase, public Description<GalleryItemArranger>
+				{
+				private:
+					vint										pim_itemWidth = 0;
+					bool										blockScrollUpdate = true;
+
+				protected:
+					GuiBindableRibbonGalleryList*				owner;
+					vint										itemWidth = 1;
+					vint										firstIndex = 0;
+
+					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
+					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+					void										InvalidateItemSizeCache()override;
+					Size										OnCalculateTotalSize()override;
+				public:
+					GalleryItemArranger(GuiBindableRibbonGalleryList* _owner);
+					~GalleryItemArranger();
+
+					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
+					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
+
+					void										ScrollUp();
+					void										ScrollDown();
+					void										UnblockScrollUpdate();
+				};
+
+				class GalleryResponsiveLayout : public compositions::GuiResponsiveCompositionBase, public Description<GalleryResponsiveLayout>
+				{
+				protected:
+					vint										minCount = 0;
+					vint										maxCount = 0;
+					Size										sizeOffset;
+					vint										itemCount = 0;
+					vint										itemWidth = 1;
+
+					void										UpdateMinSize();
+				public:
+					GalleryResponsiveLayout();
+					~GalleryResponsiveLayout();
+
+					vint										GetMinCount();
+					vint										GetMaxCount();
+					vint										GetItemWidth();
+					Size										GetSizeOffset();
+
+					void										SetMinCount(vint value);
+					void										SetMaxCount(vint value);
+					void										SetItemWidth(vint value);
+					void										SetSizeOffset(Size value);
+
+					vint										GetLevelCount()override;
+					vint										GetCurrentLevel()override;
+					bool										LevelDown()override;
+					bool										LevelUp()override;
+				};
+			}
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
 .\CONTROLS\TOOLSTRIPPACKAGE\GUITOOLSTRIPCOMMAND.H
 ***********************************************************************/
 /***********************************************************************
@@ -17911,6 +18036,93 @@ Ribbon Toolstrips
 Ribbon Gallery
 ***********************************************************************/
 
+			class GuiRibbonGallery : public GuiControl, public Description<GuiRibbonGallery>
+			{
+				using ItemStyle = templates::GuiListItemTemplate;
+				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
+
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGalleryTemplate, GuiControl)
+			protected:
+				class CommandExecutor : public Object, public IRibbonGalleryCommandExecutor
+				{
+				protected:
+					GuiRibbonGallery*									gallery;
+
+				public:
+					CommandExecutor(GuiRibbonGallery* _gallery);
+					~CommandExecutor();
+
+					void												NotifyScrollUp()override;
+					void												NotifyScrollDown()override;
+					void												NotifyDropdown()override;
+				};
+
+				bool													scrollUpEnabled = true;
+				bool													scrollDownEnabled = true;
+				Ptr<CommandExecutor>									commandExecutor;
+
+			public:
+				GuiRibbonGallery(theme::ThemeName themeName);
+				~GuiRibbonGallery();
+
+				compositions::GuiNotifyEvent							ScrollUpEnabledChanged;
+				compositions::GuiNotifyEvent							ScrollDownEnabledChanged;
+				compositions::GuiNotifyEvent							RequestedScrollUp;
+				compositions::GuiNotifyEvent							RequestedScrollDown;
+				compositions::GuiNotifyEvent							RequestedDropdown;
+
+				bool													GetScrollUpEnabled();
+				void													SetScrollUpEnabled(bool value);
+
+				bool													GetScrollDownEnabled();
+				void													SetScrollDownEnabled(bool value);
+			};
+
+			class GuiRibbonToolstripMenu : public GuiToolstripMenu, public Description<GuiRibbonToolstripMenu>
+			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonToolstripMenuTemplate, GuiToolstripMenu)
+			protected:
+				compositions::GuiBoundsComposition*						contentComposition;
+
+			public:
+				GuiRibbonToolstripMenu(theme::ThemeName themeName, GuiControl* owner);
+				~GuiRibbonToolstripMenu();
+
+				compositions::GuiGraphicsComposition*					GetContentComposition();
+			};
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\CONTROLS\TOOLSTRIPPACKAGE\GUIRIBBONGALLERYLIST.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUIRIBBONGALLERYLIST
+#define VCZH_PRESENTATION_CONTROLS_GUIRIBBONGALLERYLIST
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+
+/***********************************************************************
+Ribbon Gallery List
+***********************************************************************/
+
 			struct GalleryPos
 			{
 				vint			group;
@@ -17941,66 +18153,143 @@ Ribbon Gallery
 				bool operator>=(const GalleryPos& value)const { return Compare(value) >= 0; }
 			};
 
-			class GuiBindableRibbonGalleryBase : public Description<GuiBindableRibbonGalleryBase>
+			namespace list
 			{
-				using IValueEnumerable = reflection::description::IValueEnumerable;
-			public:
-				GuiBindableRibbonGalleryBase();
-				~GuiBindableRibbonGalleryBase();
+				class GroupedDataSource;
 
-				compositions::GuiNotifyEvent							GroupEnabledChanged;
-				compositions::GuiNotifyEvent							GroupTitlePropertyChanged;
-				compositions::GuiNotifyEvent							GroupChildrenPropertyChanged;
+				class GalleryGroup : public Description<GalleryGroup>
+				{
+					friend class GroupedDataSource;
+					using IValueList = reflection::description::IValueList;
+				protected:
+					Ptr<EventHandler>									eventHandler;
+					WString												name;
+					Ptr<IValueList>										itemValues;
+
+				public:
+					GalleryGroup();
+					~GalleryGroup();
+
+					WString												GetName();
+					Ptr<IValueList>										GetItemValues();
+				};
+
+				class GroupedDataSource : public Description<GroupedDataSource>
+				{
+					using IValueEnumerable = reflection::description::IValueEnumerable;
+					using IValueList = reflection::description::IValueList;
+					using IValueObservableList = reflection::description::IValueObservableList;
+					using GalleryItemList = collections::ObservableList<reflection::description::Value>;
+					using GalleryGroupList = collections::ObservableList<Ptr<GalleryGroup>>;
+
+				protected:
+					compositions::GuiGraphicsComposition*				associatedComposition;
+					Ptr<IValueEnumerable>								itemSource;
+					ItemProperty<WString>								titleProperty;
+					ItemProperty<Ptr<IValueEnumerable>>					childrenProperty;
+
+					GalleryItemList										joinedItemSource;
+					GalleryGroupList									groupedItemSource;
+					collections::List<vint>								cachedGroupItemCounts;
+					Ptr<EventHandler>									groupChangedHandler;
+					bool												ignoreGroupChanged = false;
+
+					void												RebuildItemSource();
+					Ptr<IValueList>										GetChildren(Ptr<IValueEnumerable> children);
+					void												AttachGroupChanged(Ptr<GalleryGroup> group, vint index);
+					void												OnGroupChanged(vint start, vint oldCount, vint newCount);
+					void												OnGroupItemChanged(vint index, vint start, vint oldCount, vint newCount);
+					vint												GetCountBeforeGroup(vint index);
+					void												InsertGroupToJoined(vint index);
+					void												RemoveGroupFromJoined(vint index);
+
+				public:
+					GroupedDataSource(compositions::GuiGraphicsComposition* _associatedComposition);
+					~GroupedDataSource();
+
+					compositions::GuiNotifyEvent						GroupEnabledChanged;
+					compositions::GuiNotifyEvent						GroupTitlePropertyChanged;
+					compositions::GuiNotifyEvent						GroupChildrenPropertyChanged;
+
+					/// <summary>Get the item source.</summary>
+					/// <returns>The item source.</returns>
+					Ptr<IValueEnumerable>								GetItemSource();
+					/// <summary>Set the item source.</summary>
+					/// <param name="value">The item source. Null is acceptable if you want to clear all data.</param>
+					void												SetItemSource(Ptr<IValueEnumerable> value);
+
+					bool												GetGroupEnabled();
+					ItemProperty<WString>								GetGroupTitleProperty();
+					void												SetGroupTitleProperty(const ItemProperty<WString>& value);
+					ItemProperty<Ptr<IValueEnumerable>>					GetGroupChildrenProperty();
+					void												SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
+
+					const GalleryGroupList&								GetGroups();
+				};
+			}
+
+			namespace ribbon_impl
+			{
+				class GalleryItemArranger;
+				class GalleryResponsiveLayout;
+			}
+
+			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, public Description<GuiBindableRibbonGalleryList>
+			{
+				friend class ribbon_impl::GalleryItemArranger;
+
+				using IValueEnumerable = reflection::description::IValueEnumerable;
+				using IValueObservableList = reflection::description::IValueObservableList;
+				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
+
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGalleryListTemplate, GuiRibbonGallery)
+			protected:
+				ItemStyleProperty										itemStyle;
+				GuiBindableTextList*									itemList;
+				GuiRibbonToolstripMenu*									subMenu;
+
+				ribbon_impl::GalleryItemArranger*						itemListArranger;
+				ribbon_impl::GalleryResponsiveLayout*					layout;
+				GuiScrollContainer*										groupContainer;
+				compositions::GuiRepeatStackComposition*				groupStack;
+
+				void													UpdateLayoutSizeOffset();
+				void													OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnRequestedScrollDown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+				void													MenuResetGroupTemplate();
+				GuiControl*												MenuGetGroupHeader(vint groupIndex);
+				compositions::GuiRepeatFlowComposition*					MenuGetGroupFlow(vint groupIndex);
+				GuiSelectableButton*									MenuGetGroupItemBackground(vint groupIndex, vint itemIndex);
+			public:
+				GuiBindableRibbonGalleryList(theme::ThemeName themeName);
+				~GuiBindableRibbonGalleryList();
+
+				compositions::GuiNotifyEvent							ItemTemplateChanged;
 				compositions::GuiNotifyEvent							SelectionChanged;
 
-				Ptr<IValueEnumerable>									GetItemSource();
-				void													SetItemSource(Ptr<IValueEnumerable> value);
+				/// <summary>Get the item style provider.</summary>
+				/// <returns>The item style provider.</returns>
+				ItemStyleProperty										GetItemTemplate();
+				/// <summary>Set the item style provider</summary>
+				/// <param name="value">The new item style provider</param>
+				void													SetItemTemplate(ItemStyleProperty value);
 
-				bool													GetGroupEnabled();
-				ItemProperty<WString>									GetGroupTitleProperty();
-				void													SetGroupTitleProperty(const ItemProperty<WString>& value);
-				ItemProperty<Ptr<IValueEnumerable>>						GetGroupChildrenProperty();
-				void													SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
+				GalleryPos												IndexToGalleryPos(vint index);
+				vint													GalleryPosToIndex(GalleryPos pos);
+
+				vint													GetMinCount();
+				void													SetMinCount(vint value);
+				vint													GetMaxCount();
+				void													SetMaxCount(vint value);
 
 				GalleryPos												GetSelection();
 				void													SetSelection(GalleryPos value);
 
-				description::Value										GetGroupValue(vint groupIndex);
-				description::Value										GetItemValue(GalleryPos pos);
-			};
-
-			class GuiBindableRibbonGallery : public GuiControl, public GuiBindableRibbonGalleryBase, public Description<GuiBindableRibbonGallery>
-			{
-				using ItemStyle = templates::GuiListItemTemplate;
-				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
-			public:
-				GuiBindableRibbonGallery(theme::ThemeName themeName);
-				~GuiBindableRibbonGallery();
-
-				compositions::GuiNotifyEvent							ItemTemplateChanged;
-				compositions::GuiNotifyEvent							PreviewSelectionChanged;
-
-				ItemStyleProperty										GetItemTemplate();
-				void													SetItemTemplate(const ItemStyleProperty& value);
-
-				GalleryPos												GetPreviewSelection();
-			};
-
-			class GuiBindableRibbonGalleryMenu : public GuiToolstripMenu, public GuiBindableRibbonGalleryBase, public Description<GuiBindableRibbonGallery>
-			{
-				using ItemStyle = templates::GuiListItemTemplate;
-				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
-			public:
-				GuiBindableRibbonGalleryMenu(theme::ThemeName themeName, GuiControl* owner);
-				~GuiBindableRibbonGalleryMenu();
-
-				compositions::GuiNotifyEvent							ItemTemplateChanged;
-				compositions::GuiNotifyEvent							PreviewSelectionChanged;
-
-				ItemStyleProperty										GetItemTemplate();
-				void													SetItemTemplate(const ItemStyleProperty& value);
-
-				GalleryPos												GetPreviewSelection();
+				GuiToolstripMenu*										GetSubMenu();
 			};
 		}
 	}

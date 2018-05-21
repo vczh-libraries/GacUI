@@ -6736,8 +6736,10 @@ Bootstrap
 .\PARSING\PARSINGSTATE.CPP
 ***********************************************************************/
 
+#if defined(VCZH_GCC) && defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wnull-dereference"
+#endif
 
 namespace vl
 {
@@ -7851,7 +7853,9 @@ ParsingTransitionCollector
 	}
 }
 
+#if defined(VCZH_GCC) && defined(__clang__)
 #pragma clang diagnostic pop
+#endif
 
 
 /***********************************************************************
@@ -8154,8 +8158,10 @@ ParsingTable::TransitionItem
 ParsingTable
 ***********************************************************************/
 
+#if defined(VCZH_GCC) && defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wnull-dereference"
+#endif
 
 			ParsingTable::ParsingTable(vint _attributeInfoCount, vint _treeTypeInfoCount, vint _treeFieldInfoCount, vint _tokenCount, vint discardTokenCount, vint _stateCount, vint _ruleCount)
 				:ambiguity(false)
@@ -8391,7 +8397,9 @@ ParsingTable
 				return regexTokenIndex>=tokenCount-UserTokenStart?regexTokenIndex-(tokenCount-UserTokenStart):-1;
 			}
 
+#if defined(VCZH_GCC) && defined(__clang__)
 #pragma clang diagnostic pop
+#endif
 		}
 	}
 }
@@ -9303,8 +9311,10 @@ DescriptableObject
 		{
 		}
 
+#if defined(VCZH_GCC) && defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexceptions"
+#endif
 		DescriptableObject::~DescriptableObject()
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -9336,7 +9346,9 @@ DescriptableObject
 			}
 #endif
 		}
+#if defined(VCZH_GCC) && defined(__clang__)
 #pragma clang diagnostic pop
+#endif
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 

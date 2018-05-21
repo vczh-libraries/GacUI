@@ -27,6 +27,15 @@
     <att.ToolstripDropdownButton>x:ToolstripDropdownButtonTemplate</att.ToolstripDropdownButton>
     <att.ToolstripSplitButton>x:ToolstripSplitButtonTemplate</att.ToolstripSplitButton>
     <att.ToolstripSplitter>x:ToolstripSplitterTemplate</att.ToolstripSplitter>
+    <att.Button>x:ButtonTemplate</att.Button>
+    <att.CheckBox>x:CheckBoxTemplate</att.CheckBox>
+    <att.RadioButton>x:RadioButtonTemplate</att.RadioButton>
+    <att.DatePicker>x:DatePickerTemplate</att.DatePicker>
+    <att.HScroll>x:HScrollTemplate</att.HScroll>
+    <att.VScroll>x:VScrollTemplate</att.VScroll>
+    <att.HTracker>x:HTrackerTemplate</att.HTracker>
+    <att.VTracker>x:VTrackerTemplate</att.VTracker>
+    <att.ProgressBar>x:ProgressBarTemplate</att.ProgressBar>
     <att.RibbonTab>x:TabTemplate</att.RibbonTab>
     <att.RibbonSmallButton>x:RibbonSmallButtonTemplate</att.RibbonSmallButton>
     <att.RibbonSmallDropdownButton>x:RibbonSmallDropdownButtonTemplate</att.RibbonSmallDropdownButton>
@@ -38,14 +47,10 @@
     <att.RibbonSplitter>x:ToolstripSplitterTemplate</att.RibbonSplitter>
     <att.RibbonButtons>x:RibbonButtonsTemplate</att.RibbonButtons>
     <att.RibbonToolstrips>x:RibbonToolstripsTemplate</att.RibbonToolstrips>
-    <att.Button>x:ButtonTemplate</att.Button>
-    <att.CheckBox>x:CheckBoxTemplate</att.CheckBox>
-    <att.RadioButton>x:RadioButtonTemplate</att.RadioButton>
-    <att.DatePicker>x:DatePickerTemplate</att.DatePicker>
-    <att.HScroll>x:HScrollTemplate</att.HScroll>
-    <att.VScroll>x:VScrollTemplate</att.VScroll>
-    <att.HTracker>x:HTrackerTemplate</att.HTracker>
-    <att.VTracker>x:VTrackerTemplate</att.VTracker>
-    <att.ProgressBar>x:ProgressBarTemplate</att.ProgressBar>
+    <att.RibbonToolstripHeader>x:RibbonToolstripHeaderTemplate</att.RibbonToolstripHeader>
+    <att.RibbonGallery>x:RibbonGalleryTemplate</att.RibbonGallery>
+    <att.RibbonGalleryList>x:RibbonGalleryTemplate</att.RibbonGalleryList>
+    <att.RibbonGalleryItemList>x:RibbonGalleryItemListTemplate</att.RibbonGalleryItemList>
+    <att.RibbonToolstripMenu>x:RibbonToolstripMenuTemplate</att.RibbonToolstripMenu>
   </ThemeTemplates>
 </Instance>

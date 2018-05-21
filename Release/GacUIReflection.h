@@ -261,7 +261,7 @@ Type List (Events)
 Type List (Templates)
 ***********************************************************************/
 
-#define GUIREFLECTIONTEMPLATES_TYPELIST(F)\
+#define GUIREFLECTIONTEMPLATES_EXTRA_TYPELIST(F)\
 			F(presentation::controls::ButtonState)\
 			F(presentation::controls::ColumnSortingState)\
 			F(presentation::templates::BoolOption)\
@@ -270,46 +270,14 @@ Type List (Templates)
 			F(presentation::controls::IScrollCommandExecutor)\
 			F(presentation::controls::ITabCommandExecutor)\
 			F(presentation::controls::IDatePickerCommandExecutor)\
+			F(presentation::controls::IRibbonGalleryCommandExecutor)\
 			F(presentation::controls::GuiComponent)\
 			F(presentation::controls::IGuiAnimation)\
 			F(presentation::controls::IGuiAnimationCoroutine::IImpl)\
 			F(presentation::controls::IGuiAnimationCoroutine)\
 			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::templates::GuiTemplate)\
-			F(presentation::templates::GuiControlTemplate)\
-			F(presentation::templates::GuiLabelTemplate)\
-			F(presentation::templates::GuiSinglelineTextBoxTemplate)\
-			F(presentation::templates::GuiDocumentLabelTemplate)\
-			F(presentation::templates::GuiMultilineTextBoxTemplate)\
-			F(presentation::templates::GuiDocumentViewerTemplate)\
-			F(presentation::templates::GuiMenuTemplate)\
-			F(presentation::templates::GuiWindowTemplate)\
-			F(presentation::templates::GuiButtonTemplate)\
-			F(presentation::templates::GuiSelectableButtonTemplate)\
-			F(presentation::templates::GuiToolstripButtonTemplate)\
-			F(presentation::templates::GuiListViewColumnHeaderTemplate)\
-			F(presentation::templates::GuiComboBoxTemplate)\
-			F(presentation::templates::GuiScrollTemplate)\
-			F(presentation::templates::GuiScrollViewTemplate)\
-			F(presentation::templates::GuiListControlTemplate)\
-			F(presentation::templates::GuiTextListTemplate)\
-			F(presentation::templates::GuiListViewTemplate)\
-			F(presentation::templates::GuiTreeViewTemplate)\
-			F(presentation::templates::GuiTabTemplate)\
-			F(presentation::templates::GuiDatePickerTemplate)\
-			F(presentation::templates::GuiDateComboBoxTemplate)\
-			F(presentation::templates::GuiRibbonTabTemplate)\
-			F(presentation::templates::GuiRibbonGroupTemplate)\
-			F(presentation::templates::GuiRibbonButtonsTemplate)\
-			F(presentation::templates::GuiRibbonToolstripsTemplate)\
-			F(presentation::templates::GuiRibbonGalleryTemplate)\
-			F(presentation::templates::GuiRibbonGalleryMenuTemplate)\
 			F(presentation::templates::GuiListItemTemplate)\
-			F(presentation::templates::GuiTextListItemTemplate)\
-			F(presentation::templates::GuiTreeItemTemplate)\
-			F(presentation::templates::GuiGridCellTemplate)\
-			F(presentation::templates::GuiGridVisualizerTemplate)\
-			F(presentation::templates::GuiGridEditorTemplate)\
 			F(presentation::templates::GuiCommonDatePickerLook)\
 			F(presentation::templates::GuiCommonScrollViewLook)\
 			F(presentation::templates::GuiCommonScrollBehavior)\
@@ -407,10 +375,12 @@ Type List (Controls)
 			F(presentation::controls::RibbonButtonSize)\
 			F(presentation::controls::GuiRibbonButtons)\
 			F(presentation::controls::GuiRibbonToolstrips)\
+			F(presentation::controls::GuiRibbonGallery)\
+			F(presentation::controls::GuiRibbonToolstripMenu)\
 			F(presentation::controls::GalleryPos)\
-			F(presentation::controls::GuiBindableRibbonGalleryBase)\
-			F(presentation::controls::GuiBindableRibbonGallery)\
-			F(presentation::controls::GuiBindableRibbonGalleryMenu)\
+			F(presentation::controls::list::GalleryGroup)\
+			F(presentation::controls::list::GroupedDataSource)\
+			F(presentation::controls::GuiBindableRibbonGalleryList)\
 			F(presentation::controls::GuiDocumentItem)\
 			F(presentation::controls::GuiDocumentCommonInterface)\
 			F(presentation::controls::GuiDocumentCommonInterface::EditMode)\
@@ -462,8 +432,13 @@ Type List
 			GUIREFLECTIONELEMENT_TYPELIST(DECL_TYPE_INFO)
 			GUIREFLECTIONCOMPOSITION_TYPELIST(DECL_TYPE_INFO)
 			GUIREFLECTIONEVENT_TYPELIST(DECL_TYPE_INFO)
-			GUIREFLECTIONTEMPLATES_TYPELIST(DECL_TYPE_INFO)
+			GUIREFLECTIONTEMPLATES_EXTRA_TYPELIST(DECL_TYPE_INFO)
 			GUIREFLECTIONCONTROLS_TYPELIST(DECL_TYPE_INFO)
+
+#define GUIREFLECTIONTEMPLATE_DECL_TYPE_INFO(CLASS, BASE) DECL_TYPE_INFO(presentation::templates::##CLASS)
+			GUI_CONTROL_TEMPLATE_DECL(GUIREFLECTIONTEMPLATE_DECL_TYPE_INFO)
+			GUI_ITEM_TEMPLATE_DECL(GUIREFLECTIONTEMPLATE_DECL_TYPE_INFO)
+#undef GUIREFLECTIONTEMPLATE_DECL_TYPE_INFO
 
 #pragma warning(push)
 #pragma warning(disable:4250)

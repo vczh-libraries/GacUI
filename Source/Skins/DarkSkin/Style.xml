@@ -83,6 +83,18 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.scrollArrowColor">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#555558" :
+          state == ButtonState::Active ? "#1997EA" :
+          state == ButtonState::Pressed ? "#007ACC" :
+          "#999999"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
   <Style ref.Path="//*.scrollArrow">
     <att.BorderColor-bind>
       <![CDATA[

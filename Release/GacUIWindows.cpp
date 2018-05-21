@@ -1806,35 +1806,30 @@ GuiSolidLabelElementRenderer
 
 			void GuiSolidLabelElementRenderer::CreateTextLayout()
 			{
-				if(textFormat)
+				if (textFormat)
 				{
-					HRESULT hr=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory()->CreateTextLayout(
+					HRESULT hr = GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory()->CreateTextLayout(
 						oldText.Buffer(),
 						(int)oldText.Length(),
 						textFormat->textFormat.Obj(),
 						0,
 						0,
 						&textLayout);
-					if(!FAILED(hr))
+					CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+
+					if (oldFont.underline)
 					{
-						if(oldFont.underline)
-						{
-							DWRITE_TEXT_RANGE textRange;
-							textRange.startPosition=0;
-							textRange.length=(int)oldText.Length();
-							textLayout->SetUnderline(TRUE, textRange);
-						}
-						if(oldFont.strikeline)
-						{
-							DWRITE_TEXT_RANGE textRange;
-							textRange.startPosition=0;
-							textRange.length=(int)oldText.Length();
-							textLayout->SetStrikethrough(TRUE, textRange);
-						}
+						DWRITE_TEXT_RANGE textRange;
+						textRange.startPosition = 0;
+						textRange.length = (int)oldText.Length();
+						textLayout->SetUnderline(TRUE, textRange);
 					}
-					else
+					if (oldFont.strikeline)
 					{
-						textLayout=0;
+						DWRITE_TEXT_RANGE textRange;
+						textRange.startPosition = 0;
+						textRange.length = (int)oldText.Length();
+						textLayout->SetStrikethrough(TRUE, textRange);
 					}
 				}
 			}
@@ -1978,7 +1973,10 @@ GuiSolidLabelElementRenderer
 					IDWriteFactory* dwriteFactory=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
 					DWRITE_TRIMMING trimming;
 					IDWriteInlineObject* inlineObject;
-					textLayout->GetTrimming(&trimming, &inlineObject);
+					{
+						HRESULT hr = textLayout->GetTrimming(&trimming, &inlineObject);
+						CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+					}
 
 					textLayout->SetWordWrapping(element->GetWrapLine()?DWRITE_WORD_WRAPPING_WRAP:DWRITE_WORD_WRAPPING_NO_WRAP);
 					if(element->GetEllipse())
@@ -2210,19 +2208,18 @@ GuiPolygonElementRenderer
 			void GuiPolygonElementRenderer::CreateGeometry()
 			{
 				oldPoints.Resize(element->GetPointCount());
-				if(oldPoints.Count()>0)
+				if (oldPoints.Count() > 0)
 				{
 					memcpy(&oldPoints[0], &element->GetPoint(0), sizeof(Point)*element->GetPointCount());
 				}
-				if(oldPoints.Count()>=3)
+				if (oldPoints.Count() >= 3)
 				{
-					ID2D1PathGeometry* pg=0;
-					GetWindowsDirect2DObjectProvider()->GetDirect2DFactory()->CreatePathGeometry(&pg);
-					if(pg)
-					{
-						geometry=pg;
-						FillGeometry(Point(0, 0));
-					}
+					ID2D1PathGeometry* pg = 0;
+					HRESULT hr = GetWindowsDirect2DObjectProvider()->GetDirect2DFactory()->CreatePathGeometry(&pg);
+					CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+
+					geometry = pg;
+					FillGeometry(Point(0, 0));
 				}
 			}
 
@@ -2236,26 +2233,25 @@ GuiPolygonElementRenderer
 
 			void GuiPolygonElementRenderer::FillGeometry(Point offset)
 			{
-				if(geometry)
+				if (geometry)
 				{
-					ID2D1GeometrySink* pgs=0;
-					geometry->Open(&pgs);
-					if(pgs)
+					ID2D1GeometrySink* pgs = 0;
+					HRESULT hr = geometry->Open(&pgs);
+					CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+
+					D2D1_POINT_2F p;
+					p.x = (FLOAT)(oldPoints[0].x + offset.x) + 0.5f;
+					p.y = (FLOAT)(oldPoints[0].y + offset.y) + 0.5f;
+					pgs->BeginFigure(p, D2D1_FIGURE_BEGIN_FILLED);
+					for (vint i = 1; i < oldPoints.Count(); i++)
 					{
-						D2D1_POINT_2F p;
-						p.x=(FLOAT)(oldPoints[0].x+offset.x)+0.5f;
-						p.y=(FLOAT)(oldPoints[0].y+offset.y)+0.5f;
-						pgs->BeginFigure(p, D2D1_FIGURE_BEGIN_FILLED);
-						for(vint i=1;i<oldPoints.Count();i++)
-						{
-							p.x=(FLOAT)(oldPoints[i].x+offset.x)+0.5f;
-							p.y=(FLOAT)(oldPoints[i].y+offset.y)+0.5f;
-							pgs->AddLine(p);
-						}
-						pgs->EndFigure(D2D1_FIGURE_END_CLOSED);
-						pgs->Close();
-						pgs->Release();
+						p.x = (FLOAT)(oldPoints[i].x + offset.x) + 0.5f;
+						p.y = (FLOAT)(oldPoints[i].y + offset.y) + 0.5f;
+						pgs->AddLine(p);
 					}
+					pgs->EndFigure(D2D1_FIGURE_END_CLOSED);
+					pgs->Close();
+					pgs->Release();
 				}
 			}
 
@@ -3724,22 +3720,16 @@ CachedResourceAllocator
 
 				void SetRenderTarget(IWindowsDirect2DRenderTarget* _guiRenderTarget)
 				{
-					guiRenderTarget=_guiRenderTarget;
+					guiRenderTarget = _guiRenderTarget;
 				}
 
 				ComPtr<ID2D1SolidColorBrush> CreateInternal(Color color)
 				{
-					ID2D1SolidColorBrush* brush=0;
-					ID2D1RenderTarget* renderTarget=guiRenderTarget->GetDirect2DRenderTarget();
-					HRESULT hr=renderTarget->CreateSolidColorBrush(GetD2DColor(color), &brush);
-					if(!FAILED(hr))
-					{
-						return brush;
-					}
-					else
-					{
-						return 0;
-					}
+					ID2D1SolidColorBrush* brush = 0;
+					auto renderTarget = guiRenderTarget->GetDirect2DRenderTarget();
+					HRESULT hr = renderTarget->CreateSolidColorBrush(GetD2DColor(color), &brush);
+					CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+					return brush;
 				}
 			};
 
@@ -3757,38 +3747,38 @@ CachedResourceAllocator
 
 				void SetRenderTarget(IWindowsDirect2DRenderTarget* _guiRenderTarget)
 				{
-					guiRenderTarget=_guiRenderTarget;
+					guiRenderTarget = _guiRenderTarget;
 				}
 
 				ComPtr<ID2D1LinearGradientBrush> CreateInternal(ColorPair colors)
 				{
-					ID2D1RenderTarget* renderTarget=guiRenderTarget->GetDirect2DRenderTarget();
-					ID2D1GradientStopCollection* stopCollection=0;
+					ID2D1RenderTarget* renderTarget = guiRenderTarget->GetDirect2DRenderTarget();
+					ID2D1GradientStopCollection* stopCollection = 0;
 					{
 						D2D1_GRADIENT_STOP stops[2];
-						stops[0].color=GetD2DColor(colors.key);
-						stops[0].position=0.0f;
-						stops[1].color=GetD2DColor(colors.value);
-						stops[1].position=1.0f;
+						stops[0].color = GetD2DColor(colors.key);
+						stops[0].position = 0.0f;
+						stops[1].color = GetD2DColor(colors.value);
+						stops[1].position = 1.0f;
 
-						HRESULT hr=renderTarget->CreateGradientStopCollection(
+						HRESULT hr = renderTarget->CreateGradientStopCollection(
 							stops,
 							2,
 							D2D1_GAMMA_2_2,
 							D2D1_EXTEND_MODE_CLAMP,
 							&stopCollection);
-						if(FAILED(hr)) return 0;
+						CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
 					}
 
-					ID2D1LinearGradientBrush* brush=0;
+					ID2D1LinearGradientBrush* brush = 0;
 					{
-						D2D1_POINT_2F points[2]={{0, 0}, {0, 0}};
-						HRESULT hr=renderTarget->CreateLinearGradientBrush(
+						D2D1_POINT_2F points[2] = { {0, 0}, {0, 0} };
+						HRESULT hr = renderTarget->CreateLinearGradientBrush(
 							D2D1::LinearGradientBrushProperties(points[0], points[1]),
 							stopCollection,
 							&brush);
 						stopCollection->Release();
-						if(FAILED(hr)) return 0;
+						CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
 					}
 					return brush;
 				}
@@ -3808,38 +3798,38 @@ CachedResourceAllocator
 
 				void SetRenderTarget(IWindowsDirect2DRenderTarget* _guiRenderTarget)
 				{
-					guiRenderTarget=_guiRenderTarget;
+					guiRenderTarget = _guiRenderTarget;
 				}
 
 				ComPtr<ID2D1RadialGradientBrush> CreateInternal(ColorPair colors)
 				{
-					ID2D1RenderTarget* renderTarget=guiRenderTarget->GetDirect2DRenderTarget();
-					ID2D1GradientStopCollection* stopCollection=0;
+					ID2D1RenderTarget* renderTarget = guiRenderTarget->GetDirect2DRenderTarget();
+					ID2D1GradientStopCollection* stopCollection = 0;
 					{
 						D2D1_GRADIENT_STOP stops[2];
-						stops[0].color=GetD2DColor(colors.key);
-						stops[0].position=0.0f;
-						stops[1].color=GetD2DColor(colors.value);
-						stops[1].position=1.0f;
+						stops[0].color = GetD2DColor(colors.key);
+						stops[0].position = 0.0f;
+						stops[1].color = GetD2DColor(colors.value);
+						stops[1].position = 1.0f;
 
-						HRESULT hr=renderTarget->CreateGradientStopCollection(
+						HRESULT hr = renderTarget->CreateGradientStopCollection(
 							stops,
 							2,
 							D2D1_GAMMA_2_2,
 							D2D1_EXTEND_MODE_CLAMP,
 							&stopCollection);
-						if(FAILED(hr)) return 0;
+						CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
 					}
 
-					ID2D1RadialGradientBrush* brush=0;
+					ID2D1RadialGradientBrush* brush = 0;
 					{
-						D2D1_POINT_2F points[2]={{0, 0}, {0, 0}};
-						HRESULT hr=renderTarget->CreateRadialGradientBrush(
+						D2D1_POINT_2F points[2] = { {0, 0}, {0, 0} };
+						HRESULT hr = renderTarget->CreateRadialGradientBrush(
 							D2D1::RadialGradientBrushProperties(points[0], points[1], 1, 1),
 							stopCollection,
 							&brush);
 						stopCollection->Release();
-						if(FAILED(hr)) return 0;
+						CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
 					}
 					return brush;
 				}
@@ -3853,39 +3843,33 @@ CachedResourceAllocator
 
 				static ComPtr<IDWriteTextFormat> CreateDirect2DFont(const FontProperties& fontProperties)
 				{
-					IDWriteFactory* dwriteFactory=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
-					IDWriteTextFormat* format=0;
-					HRESULT hr=dwriteFactory->CreateTextFormat(
+					IDWriteFactory* dwriteFactory = GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
+					IDWriteTextFormat* format = 0;
+					HRESULT hr = dwriteFactory->CreateTextFormat(
 						fontProperties.fontFamily.Buffer(),
 						NULL,
-						(fontProperties.bold?DWRITE_FONT_WEIGHT_BOLD:DWRITE_FONT_WEIGHT_NORMAL),
-						(fontProperties.italic?DWRITE_FONT_STYLE_ITALIC:DWRITE_FONT_STYLE_NORMAL),
+						(fontProperties.bold ? DWRITE_FONT_WEIGHT_BOLD : DWRITE_FONT_WEIGHT_NORMAL),
+						(fontProperties.italic ? DWRITE_FONT_STYLE_ITALIC : DWRITE_FONT_STYLE_NORMAL),
 						DWRITE_FONT_STRETCH_NORMAL,
 						(FLOAT)fontProperties.size,
 						L"",
 						&format);
-					if(!FAILED(hr))
-					{
-						format->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
-						return format;
-					}
-					else
-					{
-						return 0;
-					}
+					CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+					format->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+					return format;
 				}
 
 				Ptr<Direct2DTextFormatPackage> CreateInternal(const FontProperties& fontProperties)
 				{
-					Ptr<Direct2DTextFormatPackage> textFormat=new Direct2DTextFormatPackage;
-					textFormat->textFormat=CreateDirect2DFont(fontProperties);
-					textFormat->trimming.granularity=DWRITE_TRIMMING_GRANULARITY_CHARACTER;
-					textFormat->trimming.delimiter=0;
-					textFormat->trimming.delimiterCount=0;
+					Ptr<Direct2DTextFormatPackage> textFormat = new Direct2DTextFormatPackage;
+					textFormat->textFormat = CreateDirect2DFont(fontProperties);
+					textFormat->trimming.granularity = DWRITE_TRIMMING_GRANULARITY_CHARACTER;
+					textFormat->trimming.delimiter = 0;
+					textFormat->trimming.delimiterCount = 0;
 
-					IDWriteInlineObject* ellipseInlineObject=0;
+					IDWriteInlineObject* ellipseInlineObject = 0;
 					GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory()->CreateEllipsisTrimmingSign(textFormat->textFormat.Obj(), &ellipseInlineObject);
-					textFormat->ellipseInlineObject=ellipseInlineObject;
+					textFormat->ellipseInlineObject = ellipseInlineObject;
 					return textFormat;
 				}
 			};
@@ -3904,24 +3888,23 @@ CachedResourceAllocator
 					Size MeasureInternal(wchar_t character, IGuiGraphicsRenderTarget* renderTarget)
 					{
 						Size charSize(0, 0);
-						IDWriteTextLayout* textLayout=0;
-						HRESULT hr=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory()->CreateTextLayout(
+						IDWriteTextLayout* textLayout = 0;
+						HRESULT hr = GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory()->CreateTextLayout(
 							&character,
 							1,
 							font.Obj(),
 							0,
 							0,
 							&textLayout);
-						if(!FAILED(hr))
+						CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+
+						DWRITE_TEXT_METRICS metrics;
+						hr = textLayout->GetMetrics(&metrics);
+						if (!FAILED(hr))
 						{
-							DWRITE_TEXT_METRICS metrics;
-							hr=textLayout->GetMetrics(&metrics);
-							if(!FAILED(hr))
-							{
-								charSize=Size((vint)ceil(metrics.widthIncludingTrailingWhitespace), (vint)ceil(metrics.height));
-							}
-							textLayout->Release();
+							charSize = Size((vint)ceil(metrics.widthIncludingTrailingWhitespace), (vint)ceil(metrics.height));
 						}
+						textLayout->Release();
 						return charSize;
 					}
 
@@ -3972,16 +3955,14 @@ WindowsDirect2DRenderTarget
 
 				void OnAttach(INativeImageFrame* frame)override
 				{
-					cachedFrame=frame;
- 					ID2D1Bitmap* d2dBitmap=0;
-					HRESULT hr=renderTarget->GetDirect2DRenderTarget()->CreateBitmapFromWicBitmap(
+					cachedFrame = frame;
+					ID2D1Bitmap* d2dBitmap = 0;
+					HRESULT hr = renderTarget->GetDirect2DRenderTarget()->CreateBitmapFromWicBitmap(
 						GetWindowsDirect2DObjectProvider()->GetWICBitmap(frame),
 						&d2dBitmap
-						);
-					if(SUCCEEDED(hr))
-					{
-						bitmap=d2dBitmap;
-					}
+					);
+					CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
+					bitmap = d2dBitmap;
 				}
 				
 				void OnDetach(INativeImageFrame* frame)override
@@ -4002,46 +3983,44 @@ WindowsDirect2DRenderTarget
 					}
 					else
 					{
-						if(!disabledBitmap)
+						if (!disabledBitmap)
 						{
-							IWICBitmap* frameBitmap=GetWindowsDirect2DObjectProvider()->GetWICBitmap(cachedFrame);
- 							ID2D1Bitmap* d2dBitmap=0;
-							HRESULT hr=renderTarget->GetDirect2DRenderTarget()->CreateBitmapFromWicBitmap(
+							IWICBitmap* frameBitmap = GetWindowsDirect2DObjectProvider()->GetWICBitmap(cachedFrame);
+							ID2D1Bitmap* d2dBitmap = 0;
+							HRESULT hr = renderTarget->GetDirect2DRenderTarget()->CreateBitmapFromWicBitmap(
 								frameBitmap,
 								&d2dBitmap
-								);
-							if(SUCCEEDED(hr))
-							{
-								disabledBitmap=d2dBitmap;
+							);
+							CHECK_ERROR(SUCCEEDED(hr), L"You should check HRESULT to see why it failed.");
 
-								WICRect rect;
-								rect.X=0;
-								rect.Y=0;
-								rect.Width=bitmap->GetPixelSize().width;
-								rect.Height=bitmap->GetPixelSize().height;
-								BYTE* buffer=new BYTE[rect.Width*rect.Height*4];
-								hr=frameBitmap->CopyPixels(&rect, rect.Width*4, rect.Width*rect.Height*4, buffer);
-								if(SUCCEEDED(hr))
+							disabledBitmap = d2dBitmap;
+							WICRect rect;
+							rect.X = 0;
+							rect.Y = 0;
+							rect.Width = bitmap->GetPixelSize().width;
+							rect.Height = bitmap->GetPixelSize().height;
+							BYTE* buffer = new BYTE[rect.Width*rect.Height * 4];
+							hr = frameBitmap->CopyPixels(&rect, rect.Width * 4, rect.Width*rect.Height * 4, buffer);
+							if (SUCCEEDED(hr))
+							{
+								vint count = rect.Width*rect.Height;
+								BYTE* read = buffer;
+								for (vint i = 0; i < count; i++)
 								{
-									vint count=rect.Width*rect.Height;
-									BYTE* read=buffer;
-									for(vint i=0;i<count;i++)
-									{
-										BYTE g=(read[0]+read[1]+read[2])/6+read[3]/2;
-										read[0]=g;
-										read[1]=g;
-										read[2]=g;
-										read+=4;
-									}
-									D2D1_RECT_U d2dRect;
-									d2dRect.left=0;
-									d2dRect.top=0;
-									d2dRect.right=rect.Width;
-									d2dRect.bottom=rect.Height;
-									d2dBitmap->CopyFromMemory(&d2dRect, buffer, rect.Width*4);
+									BYTE g = (read[0] + read[1] + read[2]) / 6 + read[3] / 2;
+									read[0] = g;
+									read[1] = g;
+									read[2] = g;
+									read += 4;
 								}
-								delete[] buffer;
+								D2D1_RECT_U d2dRect;
+								d2dRect.left = 0;
+								d2dRect.top = 0;
+								d2dRect.right = rect.Width;
+								d2dRect.bottom = rect.Height;
+								d2dBitmap->CopyFromMemory(&d2dRect, buffer, rect.Width * 4);
 							}
+							delete[] buffer;
 						}
 						return disabledBitmap;
 					}
@@ -4097,14 +4076,14 @@ WindowsDirect2DRenderTarget
 					linearBrushes.SetRenderTarget(this);
 					radialBrushes.SetRenderTarget(this);
 
-					IDWriteFactory* dwriteFactory=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
-					IDWriteRenderingParams* defaultParams=0;
-					HRESULT hr=dwriteFactory->CreateRenderingParams(&defaultParams);
-					if(!FAILED(hr))
+					IDWriteFactory* dwriteFactory = GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
+					IDWriteRenderingParams* defaultParams = 0;
+					HRESULT hr = dwriteFactory->CreateRenderingParams(&defaultParams);
+					if (!FAILED(hr))
 					{
-						noAntialiasParams=CreateRenderingParams(DWRITE_RENDERING_MODE_CLEARTYPE_GDI_NATURAL, defaultParams, dwriteFactory);
-						horizontalAntialiasParams=CreateRenderingParams(DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL, defaultParams, dwriteFactory);
-						bidirectionalAntialiasParams=CreateRenderingParams(DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC, defaultParams, dwriteFactory);
+						noAntialiasParams = CreateRenderingParams(DWRITE_RENDERING_MODE_CLEARTYPE_GDI_NATURAL, defaultParams, dwriteFactory);
+						horizontalAntialiasParams = CreateRenderingParams(DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL, defaultParams, dwriteFactory);
+						bidirectionalAntialiasParams = CreateRenderingParams(DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC, defaultParams, dwriteFactory);
 						defaultParams->Release();
 					}
 				}

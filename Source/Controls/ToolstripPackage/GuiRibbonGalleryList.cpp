@@ -4,7 +4,7 @@
 
 /* CodePack:BeginIgnore() */
 #ifndef VCZH_DEBUG_NO_REFLECTION
-/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, ../Reflection/TypeDescriptors/GuiReflectionPlugin.h) */
+/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, ../../Reflection/TypeDescriptors/GuiReflectionPlugin.h) */
 #include "../../Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #endif
 /* CodePack:EndIgnore() */
