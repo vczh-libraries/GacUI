@@ -519,6 +519,42 @@
       </demo:DocumentTabPageBase>
     </Instance>
   </Instance>
+  
+  <Script name="RibbonScript">
+    <Workflow>
+      <![CDATA[
+        module ribbonscript;
+
+        namespace demo
+        {
+          class StyleItem
+          {
+            new(value : string)
+            {
+              Value = value;
+            }
+          
+            prop Value : string = 0 {not observe}
+          }
+          
+          class StyleGroup
+          {
+            prop Name : string = "" {}
+            prop Items : observe StyleItem^[] = {} {const, not observe}
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
+  <Instance name="StyleItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::StyleItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="demo::StyleItem"/>
+      <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:64">
+        <SolidLabel Text-bind="ViewModel.Value" Color="#FF8000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+      </TextListItemTemplate>
+    </Instance>
+  </Instance>
 
   <Instance name="DocumentRibbonTabPageResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::DocumentRibbonTabPage" xmlns:demo="demo::*">
@@ -530,6 +566,26 @@
           prop AlignCenterSelected : bool = true {}
           @cpp:Private
           prop AlignRightSelected : bool = true {}
+
+          @cpp:Private
+          func GetStyleGroups(): demo::StyleGroup^[]
+          {
+            var group1 = new StyleGroup^();
+            group1.Name = "Group A";
+            for (i in range [1, 5])
+            {
+              group1.Items.Add(new StyleItem^("A" & i));
+            }
+
+            var group2 = new StyleGroup^();
+            group2.Name = "Group B";
+            for (i in range [1, 5])
+            {
+              group2.Items.Add(new StyleItem^("B" & i));
+            }
+
+            return {group1 group2};
+          }
         ]]>
       </ref.Members>
       <demo:DocumentTabPageBase ref.Name="self" Text="Document Editor (Ribbon)">
@@ -540,11 +596,25 @@
         <att.MenuContainer-set>
           <RibbonTab>
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+
             <att.BeforeHeaders-set>
               <Button Text="HOME">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80"/>
               </Button>
             </att.BeforeHeaders-set>
+
+            <att.AfterHeaders-set>
+              <Stack Direction="Horizontal" AlignmentToParent="left:0 top:-1 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                <StackItem InternalMargin="left:0 top:0 right:10 bottom:0">
+                  <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text="Search:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </StackItem>
+                <StackItem>
+                  <SinglelineTextBox>
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:1" PreferredMinSize="x:180"/>
+                  </SinglelineTextBox>
+                </StackItem>
+              </Stack>
+            </att.AfterHeaders-set>
 
             <att.Pages>
               <RibbonTabPage Text="Edit">
@@ -615,6 +685,27 @@
                           </ToolstripGroup>
                         </att.Groups>
                       </RibbonToolstrips>
+                    </att.Items>
+                  </RibbonGroup>
+
+                  <RibbonGroup Text="Style">
+                    <att.Items>
+                      <BindableRibbonGalleryList ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" env.ItemType="demo::StyleGroup^">
+                        <att.ItemSource-eval>self.GetStyleGroups()</att.ItemSource-eval>
+                        <att.GroupTitleProperty>Name</att.GroupTitleProperty>
+                        <att.GroupChildrenProperty>Items</att.GroupChildrenProperty>
+
+                        <att.SubMenu-set>
+                          <RibbonToolstripHeader Text="Header A"/>
+                          <MenuItemButton Text="Item A1"/>
+                          <MenuItemButton Text="Item A2"/>
+                          <MenuItemButton Text="Item A3"/>
+                          <RibbonToolstripHeader Text="Header B"/>
+                          <MenuItemButton Text="Item B1"/>
+                          <MenuItemButton Text="Item B2"/>
+                          <MenuItemButton Text="Item B3"/>
+                        </att.SubMenu-set>
+                      </BindableRibbonGalleryList>
                     </att.Items>
                   </RibbonGroup>
                 </att.Groups>
