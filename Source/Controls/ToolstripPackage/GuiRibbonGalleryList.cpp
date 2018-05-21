@@ -336,6 +336,7 @@ GuiBindableRibbonGalleryList
 					if (itemStyle)
 					{
 						auto item = new GuiStackItemComposition;
+						item->SetPreferredMinSize(Size(1, 1));
 						groupContentStack->AddChild(item);
 
 						auto groupItemFlow = new GuiRepeatFlowComposition();
@@ -399,6 +400,7 @@ GuiBindableRibbonGalleryList
 
 					groupStack = new GuiRepeatStackComposition();
 					groupStack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					groupStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					groupStack->SetDirection(GuiStackComposition::Vertical);
 					groupStack->SetItemSource(groupedItemSource.GetWrapper());
 					groupContainer->GetContainerComposition()->AddChild(groupStack);
