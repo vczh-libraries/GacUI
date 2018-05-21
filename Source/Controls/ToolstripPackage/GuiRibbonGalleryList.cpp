@@ -18,6 +18,7 @@ namespace vl
 			using namespace reflection::description;
 			using namespace collections;
 			using namespace compositions;
+			using namespace templates;
 
 			namespace list
 			{
@@ -311,6 +312,35 @@ GuiBindableRibbonGalleryList
 
 			void GuiBindableRibbonGalleryList::ResetGroupTemplate()
 			{
+				groupStack->SetItemTemplate([this](const Value& groupValue)->GuiTemplate*
+				{
+					auto group = UnboxValue<Ptr<list::GalleryGroup>>(groupValue);
+
+					auto groupTemplate = new GuiTemplate;
+					groupTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+					auto groupContentStack = new GuiStackComposition;
+					groupContentStack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					groupContentStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					groupContentStack->SetDirection(GuiStackComposition::Vertical);
+					{
+						auto item = new GuiStackItemComposition;
+						groupContentStack->AddChild(item);
+
+						auto header = new GuiControl(theme::ThemeName::RibbonToolstripHeader);
+						header->SetControlTemplate(GetControlTemplateObject()->GetHeaderTemplate());
+						header->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						header->SetText(group->GetName());
+						item->AddChild(header->GetBoundsComposition());
+					}
+					{
+						auto item = new GuiStackItemComposition;
+						groupContentStack->AddChild(item);
+					}
+					groupTemplate->AddChild(groupContentStack);
+
+					return groupTemplate;
+				});
 			}
 
 			GuiBindableRibbonGalleryList::GuiBindableRibbonGalleryList(theme::ThemeName themeName)
