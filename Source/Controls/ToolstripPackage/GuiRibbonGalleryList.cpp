@@ -289,6 +289,27 @@ GuiBindableRibbonGalleryList
 				layout->SetSizeOffset(Size(bSize.Width() - cSize.Width(), bSize.Height() - cSize.Height()));
 			}
 
+			void GuiBindableRibbonGalleryList::OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				auto pos = IndexToGalleryPos(itemList->GetSelectedItemIndex());
+				if (pos.group != -1 && pos.item != -1)
+				{
+					for (vint i = 0; i < groupedItemSource.Count(); i++)
+					{
+						auto group = groupedItemSource[i];
+						if (group->GetItemValues())
+						{
+							vint count = group->GetItemValues()->GetCount();
+							for (vint j = 0; j < count; j++)
+							{
+								auto background = MenuGetGroupItemBackground(i, j);
+								background->SetSelected(pos.group == i && pos.item == j);
+							}
+						}
+					}
+				}
+			}
+
 			void GuiBindableRibbonGalleryList::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				UpdateLayoutSizeOffset();
@@ -359,7 +380,7 @@ GuiBindableRibbonGalleryList
 						groupItemFlow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						groupItemFlow->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						groupItemFlow->SetItemSource(group->GetItemValues());
-						groupItemFlow->SetItemTemplate([this](const Value& groupItemValue)->GuiTemplate*
+						groupItemFlow->SetItemTemplate([=](const Value& groupItemValue)->GuiTemplate*
 						{
 							auto groupItemTemplate = new GuiTemplate;
 							groupItemTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -370,6 +391,15 @@ GuiBindableRibbonGalleryList
 								backgroundButton->SetControlTemplate(style);
 							}
 							backgroundButton->SetAutoSelection(false);
+							backgroundButton->Clicked.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+							{
+								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
+								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));
+								auto index = GalleryPosToIndex({ groupIndex,itemIndex });
+								itemList->SetSelected(index, true);
+								itemList->EnsureItemVisible(index);
+								subMenu->Close();
+							});
 							groupItemTemplate->AddChild(backgroundButton->GetBoundsComposition());
 
 							auto itemTemplate = itemStyle(groupItemValue);
@@ -443,6 +473,7 @@ GuiBindableRibbonGalleryList
 					itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					itemList->SetArranger(itemListArranger);
 					itemList->SetItemSource(joinedItemSource.GetWrapper());
+					itemList->SelectionChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnItemListSelectionChanged);
 					layout->AddChild(itemList->GetBoundsComposition());
 				}
 				{
@@ -487,6 +518,42 @@ GuiBindableRibbonGalleryList
 					itemList->SetItemTemplate(value);
 					ItemTemplateChanged.Execute(GetNotifyEventArguments());
 				}
+			}
+
+			GalleryPos GuiBindableRibbonGalleryList::IndexToGalleryPos(vint index)
+			{
+				if (0 <= index && index < joinedItemSource.Count())
+				{
+					FOREACH_INDEXER(Ptr<list::GalleryGroup>, group, groupIndex, groupedItemSource)
+					{
+						auto itemValues = group->GetItemValues();
+						vint itemCount = itemValues ? itemValues->GetCount() : 0;
+						if (index >= itemCount)
+						{
+							index -= itemCount;
+						}
+						else
+						{
+							return GalleryPos(groupIndex, index);
+						}
+					}
+				}
+				return {};
+			}
+
+			vint GuiBindableRibbonGalleryList::GalleryPosToIndex(GalleryPos pos)
+			{
+				if (0 <= pos.group && pos.group < groupedItemSource.Count())
+				{
+					auto countBeforeGroup = GetCountBeforeGroup(pos.group);
+					auto itemValues = groupedItemSource[pos.group]->GetItemValues();
+					vint itemCount = itemValues ? itemValues->GetCount() : 0;
+					if (0 <= pos.item && pos.item < itemCount)
+					{
+						return countBeforeGroup + pos.item;
+					}
+				}
+				return -1;
 			}
 
 			vint GuiBindableRibbonGalleryList::GetMinCount()

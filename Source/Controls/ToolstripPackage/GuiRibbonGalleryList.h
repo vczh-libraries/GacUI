@@ -154,6 +154,7 @@ Ribbon Gallery List
 				compositions::GuiRepeatStackComposition*				groupStack;
 
 				void													UpdateLayoutSizeOffset();
+				void													OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -176,6 +177,9 @@ Ribbon Gallery List
 				/// <summary>Set the item style provider</summary>
 				/// <param name="value">The new item style provider</param>
 				void													SetItemTemplate(ItemStyleProperty value);
+
+				GalleryPos												IndexToGalleryPos(vint index);
+				vint													GalleryPosToIndex(GalleryPos pos);
 
 				vint													GetMinCount();
 				void													SetMinCount(vint value);
