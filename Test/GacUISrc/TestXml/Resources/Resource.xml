@@ -52,6 +52,8 @@
         <RibbonGalleryListTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
           <att.ItemListTemplate>x:RibbonGalleryItemListTemplate</att.ItemListTemplate>
           <att.MenuTemplate>x:RibbonToolstripMenuTemplate</att.MenuTemplate>
+          <att.HeaderTemplate>x:RibbonToolstripHeaderTemplate</att.HeaderTemplate>
+          <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
 
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.Rows>

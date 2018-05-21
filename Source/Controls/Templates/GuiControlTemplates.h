@@ -313,6 +313,8 @@ Control Template
 #define GuiRibbonGalleryListTemplate_PROPERTIES(F)\
 				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiTextListTemplate>, ItemListTemplate, {})\
 				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiRibbonToolstripMenuTemplate>, MenuTemplate, {})\
+				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiControlTemplate>, HeaderTemplate, {})\
+				F(GuiRibbonGalleryListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate, {})\
 
 /***********************************************************************
 Item Template
