@@ -147,6 +147,7 @@ Ribbon Gallery List
 				ItemStyleProperty										itemStyle;
 				GuiBindableTextList*									itemList;
 				GuiRibbonToolstripMenu*									subMenu;
+				bool													skipItemAppliedEvent = false;
 
 				ribbon_impl::GalleryItemArranger*						itemListArranger;
 				ribbon_impl::GalleryResponsiveLayout*					layout;
@@ -166,6 +167,9 @@ Ribbon Gallery List
 				GuiControl*												MenuGetGroupHeader(vint groupIndex);
 				compositions::GuiRepeatFlowComposition*					MenuGetGroupFlow(vint groupIndex);
 				GuiSelectableButton*									MenuGetGroupItemBackground(vint groupIndex, vint itemIndex);
+
+				void													StartPreview(vint index);
+				void													StopPreview(vint index);
 			public:
 				GuiBindableRibbonGalleryList(theme::ThemeName themeName);
 				~GuiBindableRibbonGalleryList();
@@ -174,6 +178,7 @@ Ribbon Gallery List
 				compositions::GuiNotifyEvent							SelectionChanged;
 				compositions::GuiItemNotifyEvent						PreviewStarted;
 				compositions::GuiItemNotifyEvent						PreviewStopped;
+				compositions::GuiItemNotifyEvent						ItemApplied;
 
 				/// <summary>Get the item style provider.</summary>
 				/// <returns>The item style provider.</returns>
@@ -191,7 +196,8 @@ Ribbon Gallery List
 				void													SetMaxCount(vint value);
 
 				vint													GetSelectedIndex();
-				void													SetSelectedIndex(vint value);
+				void													ApplyItem(vint index);
+				void													SelectItem(vint index);
 
 				GuiToolstripMenu*										GetSubMenu();
 			};

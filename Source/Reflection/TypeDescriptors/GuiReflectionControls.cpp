@@ -979,15 +979,18 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
 				CLASS_MEMBER_GUIEVENT(PreviewStarted)
 				CLASS_MEMBER_GUIEVENT(PreviewStopped)
+				CLASS_MEMBER_GUIEVENT(ItemApplied)
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ItemTemplate)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SubMenu)
 				CLASS_MEMBER_PROPERTY_FAST(MinCount)
 				CLASS_MEMBER_PROPERTY_FAST(MaxCount)
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectedIndex, SelectionChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedIndex, SelectionChanged)
 
 				CLASS_MEMBER_METHOD(IndexToGalleryPos, { L"index" })
 				CLASS_MEMBER_METHOD(GalleryPosToIndex, { L"pos" })
+				CLASS_MEMBER_METHOD(ApplyItem, { L"index" })
+				CLASS_MEMBER_METHOD(SelectItem, { L"index" })
 			END_CLASS_MEMBER(GuiBindableRibbonGalleryList)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentItem)

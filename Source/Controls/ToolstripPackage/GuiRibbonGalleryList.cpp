@@ -308,17 +308,24 @@ GuiBindableRibbonGalleryList
 						}
 					}
 				}
+				
+				if (skipItemAppliedEvent && itemList->GetSelectedItemIndex() != -1)
+				{
+					GuiItemEventArgs itemAppliedArgs(boundsComposition);
+					itemAppliedArgs.itemIndex = itemList->GetSelectedItemIndex();
+					ItemApplied.Execute(itemAppliedArgs);
+				}
 				SelectionChanged.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiBindableRibbonGalleryList::OnItemListItemMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
 			{
-				PreviewStarted.Execute(arguments);
+				StartPreview(arguments.itemIndex);
 			}
 
 			void GuiBindableRibbonGalleryList::OnItemListItemMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
 			{
-				PreviewStopped.Execute(arguments);
+				StopPreview(arguments.itemIndex);
 			}
 
 			void GuiBindableRibbonGalleryList::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -416,18 +423,14 @@ GuiBindableRibbonGalleryList
 								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
 								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));
 								auto index = GalleryPosToIndex({ groupIndex,itemIndex });
-								GuiItemEventArgs previewArgs(boundsComposition);
-								previewArgs.itemIndex = index;
-								PreviewStarted.Execute(previewArgs);
+								StartPreview(index);
 							});
 							backgroundButton->GetBoundsComposition()->GetEventReceiver()->mouseLeave.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 							{
 								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
 								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));
 								auto index = GalleryPosToIndex({ groupIndex,itemIndex });
-								GuiItemEventArgs previewArgs(boundsComposition);
-								previewArgs.itemIndex = index;
-								PreviewStopped.Execute(previewArgs);
+								StopPreview(index);
 							});
 							groupItemTemplate->AddChild(backgroundButton->GetBoundsComposition());
 
@@ -484,6 +487,26 @@ GuiBindableRibbonGalleryList
 				return groupItemBackground;
 			}
 
+			void GuiBindableRibbonGalleryList::StartPreview(vint index)
+			{
+				if (index != itemList->GetSelectedItemIndex())
+				{
+					GuiItemEventArgs previewArgs(boundsComposition);
+					previewArgs.itemIndex = index;
+					PreviewStarted.Execute(previewArgs);
+				}
+			}
+
+			void GuiBindableRibbonGalleryList::StopPreview(vint index)
+			{
+				if (index != itemList->GetSelectedItemIndex())
+				{
+					GuiItemEventArgs previewArgs(boundsComposition);
+					previewArgs.itemIndex = index;
+					PreviewStopped.Execute(previewArgs);
+				}
+			}
+
 			GuiBindableRibbonGalleryList::GuiBindableRibbonGalleryList(theme::ThemeName themeName)
 				:GuiRibbonGallery(themeName)
 				, GroupedDataSource(boundsComposition)
@@ -492,6 +515,7 @@ GuiBindableRibbonGalleryList
 				SelectionChanged.SetAssociatedComposition(boundsComposition);
 				PreviewStarted.SetAssociatedComposition(boundsComposition);
 				PreviewStopped.SetAssociatedComposition(boundsComposition);
+				ItemApplied.SetAssociatedComposition(boundsComposition);
 				subMenu = new GuiRibbonToolstripMenu(theme::ThemeName::RibbonToolstripMenu, this);
 
 				{
@@ -614,16 +638,23 @@ GuiBindableRibbonGalleryList
 				return itemList->GetSelectedItemIndex();
 			}
 
-			void GuiBindableRibbonGalleryList::SetSelectedIndex(vint value)
+			void GuiBindableRibbonGalleryList::ApplyItem(vint index)
 			{
-				if (value == -1)
+				if (index == -1)
 				{
 					itemList->ClearSelection();
 				}
 				else
 				{
-					itemList->SetSelected(value, true);
+					itemList->SetSelected(index, true);
 				}
+			}
+
+			void GuiBindableRibbonGalleryList::SelectItem(vint index)
+			{
+				skipItemAppliedEvent = true;
+				ApplyItem(index);
+				skipItemAppliedEvent = false;
 			}
 
 			GuiToolstripMenu* GuiBindableRibbonGalleryList::GetSubMenu()
