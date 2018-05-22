@@ -308,6 +308,7 @@ Ribbon Gallery
 				void													SetScrollDownEnabled(bool value);
 			};
 
+			/// <summary>Resizable ribbon toolstrip menu with a space above of all menu items to display extra content.</summary>
 			class GuiRibbonToolstripMenu : public GuiToolstripMenu, public Description<GuiRibbonToolstripMenu>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonToolstripMenuTemplate, GuiToolstripMenu)
@@ -315,9 +316,13 @@ Ribbon Gallery
 				compositions::GuiBoundsComposition*						contentComposition;
 
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonToolstripMenu(theme::ThemeName themeName, GuiControl* owner);
 				~GuiRibbonToolstripMenu();
 
+				/// <summary>Get the composition representing the space above of menu items.</summary>
+				/// <returns>The composition representing the space above of menu items.</summary>
 				compositions::GuiGraphicsComposition*					GetContentComposition();
 			};
 		}
