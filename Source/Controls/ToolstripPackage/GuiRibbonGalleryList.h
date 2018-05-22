@@ -148,7 +148,7 @@ Ribbon Gallery List
 					void												SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
 
 					/// <summary>Get all groups.</summary>
-					/// <returns>All groups.</summary>
+					/// <returns>All groups.</returns>
 					const GalleryGroupList&								GetGroups();
 				};
 			}
@@ -159,6 +159,7 @@ Ribbon Gallery List
 				class GalleryResponsiveLayout;
 			}
 
+			/// <summary>Auto resizable ribbon gallyer list.</summary>
 			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, public Description<GuiBindableRibbonGalleryList>
 			{
 				friend class ribbon_impl::GalleryItemArranger;
@@ -196,13 +197,20 @@ Ribbon Gallery List
 				void													StartPreview(vint index);
 				void													StopPreview(vint index);
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiBindableRibbonGalleryList(theme::ThemeName themeName);
 				~GuiBindableRibbonGalleryList();
 
+				/// <summary>Item template changed event.</summary>
 				compositions::GuiNotifyEvent							ItemTemplateChanged;
+				/// <summary>Selection changed event.</summary>
 				compositions::GuiNotifyEvent							SelectionChanged;
+				/// <summary>Preview started event.</summary>
 				compositions::GuiItemNotifyEvent						PreviewStarted;
+				/// <summary>Preview stopped event.</summary>
 				compositions::GuiItemNotifyEvent						PreviewStopped;
+				/// <summary>Item applied event.</summary>
 				compositions::GuiItemNotifyEvent						ItemApplied;
 
 				/// <summary>Get the item style provider.</summary>
@@ -212,18 +220,41 @@ Ribbon Gallery List
 				/// <param name="value">The new item style provider</param>
 				void													SetItemTemplate(ItemStyleProperty value);
 
+				/// <summary>Convert an item index to a gallery item position.</summary>
+				/// <returns>The gallery item position.</returns>
+				/// <param name="index">The item index.</param>
 				GalleryPos												IndexToGalleryPos(vint index);
+				/// <summary>Convert a gallery item position to an item index.</summary>
+				/// <returns>The item index.</returns>
+				/// <param name="pos">The gallery item position.</param>
 				vint													GalleryPosToIndex(GalleryPos pos);
 
+				/// <summary>Get the minimum number of items should be displayed.</summary>
+				/// <returns>The minimum number of items should be displayed.</returns>
 				vint													GetMinCount();
+				/// <summary>Set the minimum number of items should be displayed.</summary>
+				/// <param name="value">The minimum number of items should be displayed.</param>
 				void													SetMinCount(vint value);
+
+				/// <summary>Get the maximum number of items should be displayed.</summary>
+				/// <returns>The maximum number of items should be displayed.</returns>
 				vint													GetMaxCount();
+				/// <summary>Set the maximum number of items should be displayed.</summary>
+				/// <param name="value">The maximum number of items should be displayed.</param>
 				void													SetMaxCount(vint value);
 
+				/// <summary>Get the selected item index.</summary>
+				/// <returns>The index of the selected item.</returns>
 				vint													GetSelectedIndex();
+				/// <summary>Select an item with <see cref="ItemApplied"/> event raised.</summary>
+				/// <param name="index">The index of the item to select. Set to -1 to clear the selection.</param>
 				void													ApplyItem(vint index);
+				/// <summary>Select an item without <see cref="ItemApplied"/> event raised.</summary>
+				/// <param name="index">The index of the item to select. Set to -1 to clear the selection.</param>
 				void													SelectItem(vint index);
 
+				/// <summary>Get the dropdown menu.</summary>
+				/// <returns>The dropdown menu.</returns>
 				GuiToolstripMenu*										GetSubMenu();
 			};
 		}
