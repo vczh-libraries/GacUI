@@ -282,16 +282,29 @@ Ribbon Gallery
 				GuiRibbonGallery(theme::ThemeName themeName);
 				~GuiRibbonGallery();
 
+				/// <summary>Scroll up enabled changed event.</summary>
 				compositions::GuiNotifyEvent							ScrollUpEnabledChanged;
+				/// <summary>Scroll down enabled changed event.</summary>
 				compositions::GuiNotifyEvent							ScrollDownEnabledChanged;
+				/// <summary>Scroll up button clicked event.</summary>
 				compositions::GuiNotifyEvent							RequestedScrollUp;
+				/// <summary>Scroll down button clicked event.</summary>
 				compositions::GuiNotifyEvent							RequestedScrollDown;
+				/// <summary>Dropdown button clicked event.</summary>
 				compositions::GuiNotifyEvent							RequestedDropdown;
 
+				/// <summary>Test if the scroll up button is enabled.</summary>
+				/// <returns>Returns true if the scroll up button is enabled.</summary>
 				bool													GetScrollUpEnabled();
+				/// <summary>Set if the scroll up button is enabled.</summary>
+				/// <param name="value">Set to true to enable the scroll up button.</param>
 				void													SetScrollUpEnabled(bool value);
 
+				/// <summary>Test if the scroll down button is enabled.</summary>
+				/// <returns>Returns true if the scroll down button is enabled.</summary>
 				bool													GetScrollDownEnabled();
+				/// <summary>Set if the scroll down button is enabled.</summary>
+				/// <param name="value">Set to true to enable the scroll down button.</param>
 				void													SetScrollDownEnabled(bool value);
 			};
 
