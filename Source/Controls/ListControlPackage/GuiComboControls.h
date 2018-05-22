@@ -50,7 +50,7 @@ ComboBox Base
 				virtual void								SelectItem();
 				void										OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiComboBoxBase(theme::ThemeName themeName);
 				~GuiComboBoxBase();
@@ -91,7 +91,7 @@ ComboBox with GuiListControl
 				void										OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller and a list control that will be put in the popup control to show all items.</summary>
+				/// <summary>Create a control with a specified default theme and a list control that will be put in the popup control to show all items.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_containedListControl">The list controller.</param>
 				GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl);

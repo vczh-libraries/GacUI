@@ -93,7 +93,7 @@ Basic Construction
 			public:
 				using ControlTemplateType = templates::GuiControlTemplate;
 
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
@@ -266,7 +266,7 @@ Basic Construction
 				controls::GuiControlHost*				GetControlHostForInstance()override;
 				void									OnParentLineChanged()override;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiCustomControl(theme::ThemeName themeName);
 				~GuiCustomControl();

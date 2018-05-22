@@ -75,7 +75,7 @@ Tab Control
 				GuiTabPageList									tabPages;
 				GuiTabPage*										selectedPage = nullptr;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiTab(theme::ThemeName themeName);
 				~GuiTab();

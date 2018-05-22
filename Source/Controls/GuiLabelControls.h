@@ -31,7 +31,7 @@ Label
 				bool									textColorConsisted = true;
 
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiLabel(theme::ThemeName themeName);
 				~GuiLabel();

@@ -54,7 +54,7 @@ Scrolls
 				vint									smallMove = 1;
 				vint									bigMove = 10;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiScroll(theme::ThemeName themeName);
 				~GuiScroll();

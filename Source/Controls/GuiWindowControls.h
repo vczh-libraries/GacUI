@@ -61,7 +61,7 @@ Control Host
 
 				virtual void									UpdateClientSizeAfterRendering(Size clientSize);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiControlHost(theme::ThemeName themeName);
 				~GuiControlHost();
@@ -231,7 +231,7 @@ Window
 				void									OnDeactivatedAltHost()override;
 				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiWindow(theme::ThemeName themeName);
 				~GuiWindow();
@@ -359,7 +359,7 @@ Window
 
 				void									ShowPopupInternal();
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiPopup(theme::ThemeName themeName);
 				~GuiPopup();
@@ -397,7 +397,7 @@ Window
 				void									TooltipOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiTooltip(theme::ThemeName themeName);
 				~GuiTooltip();

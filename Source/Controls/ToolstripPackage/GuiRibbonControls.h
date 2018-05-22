@@ -35,7 +35,7 @@ Ribbon Containers
 				compositions::GuiBoundsComposition*					beforeHeaders = nullptr;
 				compositions::GuiBoundsComposition*					afterHeaders = nullptr;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonTab(theme::ThemeName themeName);
 				~GuiRibbonTab();
@@ -74,7 +74,7 @@ Ribbon Containers
 				compositions::GuiStackComposition*					stack = nullptr;
 
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonTabPage(theme::ThemeName themeName);
 				~GuiRibbonTabPage();
@@ -120,7 +120,7 @@ Ribbon Containers
 				compositions::GuiStackComposition*					stack = nullptr;
 
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonGroup(theme::ThemeName themeName);
 				~GuiRibbonGroup();
@@ -188,7 +188,7 @@ Ribbon Buttons
 				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiControl* button);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_maxSize">Max allowed size.</param>
 				/// <param name="_minSize">Min allowed size.</param>
@@ -220,6 +220,7 @@ Ribbon Toolstrips
 				~GuiRibbonToolstripsGroupCollection();
 			};
 
+			/// <summary>Auto resizable ribbon toolstrips.</summary>
 			class GuiRibbonToolstrips : public GuiControl, public Description<GuiRibbonToolstrips>
 			{
 				friend class GuiRibbonToolstripsGroupCollection;
@@ -235,9 +236,13 @@ Ribbon Toolstrips
 				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													RearrangeToolstripGroups(vint viewIndex = -1);
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonToolstrips(theme::ThemeName themeName);
 				~GuiRibbonToolstrips();
 
+				/// <summary>Get the collection of toolstrip groups. <see cref="GuiRibbonToolstrips"/> will decide the order of these toolstrip groups.</summary>
+				/// <returns>The collection of toolstrip groups.</summary>
 				collections::ObservableListBase<GuiToolstripGroup*>&	GetGroups();
 			};
 
@@ -245,6 +250,7 @@ Ribbon Toolstrips
 Ribbon Gallery
 ***********************************************************************/
 
+			/// <summary>Ribbon gallery, with scroll up, scroll down, dropdown buttons.</summary>
 			class GuiRibbonGallery : public GuiControl, public Description<GuiRibbonGallery>
 			{
 				using ItemStyle = templates::GuiListItemTemplate;
@@ -271,6 +277,8 @@ Ribbon Gallery
 				Ptr<CommandExecutor>									commandExecutor;
 
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonGallery(theme::ThemeName themeName);
 				~GuiRibbonGallery();
 

@@ -90,7 +90,7 @@ Toolstrip Container
 
 				void											UpdateLayout()override;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
 				GuiToolstripMenu(theme::ThemeName themeName, GuiControl* _owner);
@@ -109,7 +109,7 @@ Toolstrip Container
 				Ptr<GuiToolstripCollection>						toolstripItems;
 
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiToolstripMenuBar(theme::ThemeName themeName);
 				~GuiToolstripMenuBar();
@@ -127,7 +127,7 @@ Toolstrip Container
 				Ptr<GuiToolstripCollection>						toolstripItems;
 
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiToolstripToolBar(theme::ThemeName themeName);
 				~GuiToolstripToolBar();
@@ -155,7 +155,7 @@ Toolstrip Component
 				void											OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnCommandDescriptionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiToolstripButton(theme::ThemeName themeName);
 				~GuiToolstripButton();

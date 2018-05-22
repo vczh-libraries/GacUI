@@ -95,7 +95,7 @@ Menu
 				void									OnWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
 				GuiMenu(theme::ThemeName themeName, GuiControl* _owner);
@@ -115,7 +115,7 @@ Menu
 				bool									IsActiveState()override;
 				bool									IsSubMenuActivatedByMouseDown()override;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiMenuBar(theme::ThemeName themeName);
 				~GuiMenuBar();
@@ -158,7 +158,7 @@ MenuButton
 
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiMenuButton(theme::ThemeName themeName);
 				~GuiMenuButton();

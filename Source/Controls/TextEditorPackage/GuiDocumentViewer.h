@@ -362,7 +362,7 @@ GuiDocumentViewer
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate, GuiControl)
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiDocumentLabel(theme::ThemeName themeName);
 				~GuiDocumentLabel();
