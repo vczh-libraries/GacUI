@@ -23,9 +23,12 @@ namespace vl
 Ribbon Gallery List
 ***********************************************************************/
 
+			/// <summary>Represents the position of an item in the gallery list.</summary>
 			struct GalleryPos
 			{
+				/// <summary>Group index.</summary>
 				vint			group;
+				/// <summary>Item index.</summary>
 				vint			item;
 
 				GalleryPos()
@@ -57,6 +60,7 @@ Ribbon Gallery List
 			{
 				class GroupedDataSource;
 
+				/// <summary>A gallery group.</summary>
 				class GalleryGroup : public Description<GalleryGroup>
 				{
 					friend class GroupedDataSource;
@@ -70,7 +74,11 @@ Ribbon Gallery List
 					GalleryGroup();
 					~GalleryGroup();
 
+					/// <summary>Get the title of this group.</summary>
+					/// <returns>The title of this group.</returns>
 					WString												GetName();
+					/// <summary>Get the all items of this group, could be null.</summary>
+					/// <returns>All items of this group.</returns>
 					Ptr<IValueList>										GetItemValues();
 				};
 
@@ -107,8 +115,11 @@ Ribbon Gallery List
 					GroupedDataSource(compositions::GuiGraphicsComposition* _associatedComposition);
 					~GroupedDataSource();
 
+					/// <summary>Group enabled event.<summary>
 					compositions::GuiNotifyEvent						GroupEnabledChanged;
+					/// <summary>Group title property changed event.<summary>
 					compositions::GuiNotifyEvent						GroupTitlePropertyChanged;
+					/// <summary>Group children property changed event.<summary>
 					compositions::GuiNotifyEvent						GroupChildrenPropertyChanged;
 
 					/// <summary>Get the item source.</summary>
@@ -118,12 +129,26 @@ Ribbon Gallery List
 					/// <param name="value">The item source. Null is acceptable if you want to clear all data.</param>
 					void												SetItemSource(Ptr<IValueEnumerable> value);
 
+					/// <summary>Test if grouping is enabled. Enabled means there is really both GroupTitleProperty and GroupChildrenProperty is not empty.</summary>
+					/// <returns>Returns true if grouping is enabled.</returns>
 					bool												GetGroupEnabled();
+
+					/// <summary>Get the group title property.</summary>
+					/// <returns>The group title property.</returns>
 					ItemProperty<WString>								GetGroupTitleProperty();
+					/// <summary>Get the group title property.</summary>
+					/// <param name="value">The group title property.</param>
 					void												SetGroupTitleProperty(const ItemProperty<WString>& value);
+
+					/// <summary>Get the group children property.</summary>
+					/// <returns>The group children property.</returns>
 					ItemProperty<Ptr<IValueEnumerable>>					GetGroupChildrenProperty();
+					/// <summary>Get the group children property.</summary>
+					/// <param name="value">The children title property.</param>
 					void												SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
 
+					/// <summary>Get all groups.</summary>
+					/// <returns>All groups.</summary>
 					const GalleryGroupList&								GetGroups();
 				};
 			}

@@ -41,10 +41,10 @@ Ribbon Containers
 				~GuiRibbonTab();
 
 				/// <summary>Get the composition representing the space before tabs.</summary>
-				/// <returns>The composition representing the space before tabs.</summary>
+				/// <returns>The composition representing the space before tabs.</returns>
 				compositions::GuiGraphicsComposition*				GetBeforeHeaders();
 				/// <summary>Get the composition representing the space after tabs.</summary>
-				/// <returns>The composition representing the space after tabs.</summary>
+				/// <returns>The composition representing the space after tabs.</returns>
 				compositions::GuiGraphicsComposition*				GetAfterHeaders();
 			};
 
@@ -83,14 +83,14 @@ Ribbon Containers
 				compositions::GuiNotifyEvent						HighlightedChanged;
 
 				/// <summary>Test if this is a highlighted tab page.</summary>
-				/// <returns>Returns true if this is a highlighted tab page.</summary>
+				/// <returns>Returns true if this is a highlighted tab page.</returns>
 				bool												GetHighlighted();
 				/// <summary>Set if this is a highlighted tab page.</summary>
 				/// <param name="value">Set to true to highlight the tab page.</param>
 				void												SetHighlighted(bool value);
 
 				/// <summary>Get the collection of ribbon groups.</summary>
-				/// <returns>The collection of ribbon groups.</summary>
+				/// <returns>The collection of ribbon groups.</returns>
 				collections::ObservableListBase<GuiRibbonGroup*>&	GetGroups();
 			};
 
@@ -131,14 +131,14 @@ Ribbon Containers
 				compositions::GuiNotifyEvent						ExpandButtonClicked;
 
 				/// <summary>Test if this group is expandable. An expandable group will display an extra small button, which raises <see cref="ExpandButtonClicked"/>.</summary>
-				/// <returns>Returns true if this group is expandable.</summary>
+				/// <returns>Returns true if this group is expandable.</returns>
 				bool												GetExpandable();
 				/// <summary>Set if this group is expandable.</summary>
 				/// <param name="value">Set to true to make this group is expandable.</param>
 				void												SetExpandable(bool value);
 
 				/// <summary>Get the collection of controls in this group.</summary>
-				/// <returns>The collection of controls.</summary>
+				/// <returns>The collection of controls.</returns>
 				collections::ObservableListBase<GuiControl*>&		GetItems();
 			};
 
@@ -196,7 +196,7 @@ Ribbon Buttons
 				~GuiRibbonButtons();
 
 				/// <summary>Get the collection of buttons. <see cref="GuiToolstripButton"/> is expected.</summary>
-				/// <returns>The collection of buttons.</summary>
+				/// <returns>The collection of buttons.</returns>
 				collections::ObservableListBase<GuiControl*>&			GetButtons();
 			};
 
@@ -242,7 +242,7 @@ Ribbon Toolstrips
 				~GuiRibbonToolstrips();
 
 				/// <summary>Get the collection of toolstrip groups. <see cref="GuiRibbonToolstrips"/> will decide the order of these toolstrip groups.</summary>
-				/// <returns>The collection of toolstrip groups.</summary>
+				/// <returns>The collection of toolstrip groups.</returns>
 				collections::ObservableListBase<GuiToolstripGroup*>&	GetGroups();
 			};
 
@@ -294,14 +294,14 @@ Ribbon Gallery
 				compositions::GuiNotifyEvent							RequestedDropdown;
 
 				/// <summary>Test if the scroll up button is enabled.</summary>
-				/// <returns>Returns true if the scroll up button is enabled.</summary>
+				/// <returns>Returns true if the scroll up button is enabled.</returns>
 				bool													GetScrollUpEnabled();
 				/// <summary>Set if the scroll up button is enabled.</summary>
 				/// <param name="value">Set to true to enable the scroll up button.</param>
 				void													SetScrollUpEnabled(bool value);
 
 				/// <summary>Test if the scroll down button is enabled.</summary>
-				/// <returns>Returns true if the scroll down button is enabled.</summary>
+				/// <returns>Returns true if the scroll down button is enabled.</returns>
 				bool													GetScrollDownEnabled();
 				/// <summary>Set if the scroll down button is enabled.</summary>
 				/// <param name="value">Set to true to enable the scroll down button.</param>
@@ -322,7 +322,7 @@ Ribbon Gallery
 				~GuiRibbonToolstripMenu();
 
 				/// <summary>Get the composition representing the space above of menu items.</summary>
-				/// <returns>The composition representing the space above of menu items.</summary>
+				/// <returns>The composition representing the space above of menu items.</returns>
 				compositions::GuiGraphicsComposition*					GetContentComposition();
 			};
 		}
