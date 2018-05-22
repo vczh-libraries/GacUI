@@ -334,10 +334,15 @@ Window
 			protected:
 				union PopupInfo
 				{
-					struct { Point location; INativeScreen* screen; } _1;
-					struct { GuiControl* control; INativeWindow* controlWindow; Rect bounds; bool preferredTopBottomSide; } _2;
-					struct { GuiControl* control; INativeWindow* controlWindow; Point location; } _3;
-					struct { GuiControl* control; INativeWindow* controlWindow; bool preferredTopBottomSide; } _4;
+					struct _s1 { Point location; INativeScreen* screen; };
+					struct _s2 { GuiControl* control; INativeWindow* controlWindow; Rect bounds; bool preferredTopBottomSide; };
+					struct _s3 { GuiControl* control; INativeWindow* controlWindow; Point location; };
+					struct _s4 { GuiControl* control; INativeWindow* controlWindow; bool preferredTopBottomSide; };
+
+					_s1 _1;
+					_s2 _2;
+					_s3 _3;
+					_s4 _4;
 
 					PopupInfo() {}
 				};
