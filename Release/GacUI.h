@@ -9673,7 +9673,7 @@ Basic Construction
 			public:
 				using ControlTemplateType = templates::GuiControlTemplate;
 
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
@@ -9846,7 +9846,7 @@ Basic Construction
 				controls::GuiControlHost*				GetControlHostForInstance()override;
 				void									OnParentLineChanged()override;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiCustomControl(theme::ThemeName themeName);
 				~GuiCustomControl();
@@ -9962,7 +9962,7 @@ Buttons
 				void									OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiButton(theme::ThemeName themeName);
 				~GuiButton();
@@ -10022,7 +10022,7 @@ Buttons
 
 				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiSelectableButton(theme::ThemeName themeName);
 				~GuiSelectableButton();
@@ -10427,7 +10427,7 @@ Label
 				bool									textColorConsisted = true;
 
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiLabel(theme::ThemeName themeName);
 				~GuiLabel();
@@ -10503,7 +10503,7 @@ Scrolls
 				vint									smallMove = 1;
 				vint									bigMove = 10;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiScroll(theme::ThemeName themeName);
 				~GuiScroll();
@@ -10643,7 +10643,7 @@ Tab Control
 				GuiTabPageList									tabPages;
 				GuiTabPage*										selectedPage = nullptr;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiTab(theme::ThemeName themeName);
 				~GuiTab();
@@ -10849,7 +10849,7 @@ Control Host
 
 				virtual void									UpdateClientSizeAfterRendering(Size clientSize);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiControlHost(theme::ThemeName themeName);
 				~GuiControlHost();
@@ -11019,7 +11019,7 @@ Window
 				void									OnDeactivatedAltHost()override;
 				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiWindow(theme::ThemeName themeName);
 				~GuiWindow();
@@ -11147,7 +11147,7 @@ Window
 
 				void									ShowPopupInternal();
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiPopup(theme::ThemeName themeName);
 				~GuiPopup();
@@ -11185,7 +11185,7 @@ Window
 				void									TooltipOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiTooltip(theme::ThemeName themeName);
 				~GuiTooltip();
@@ -13826,7 +13826,7 @@ GuiDocumentViewer
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate, GuiControl)
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiDocumentLabel(theme::ThemeName themeName);
 				~GuiDocumentLabel();
@@ -14912,7 +14912,7 @@ Menu
 				void									OnWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
 				GuiMenu(theme::ThemeName themeName, GuiControl* _owner);
@@ -14932,7 +14932,7 @@ Menu
 				bool									IsActiveState()override;
 				bool									IsSubMenuActivatedByMouseDown()override;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiMenuBar(theme::ThemeName themeName);
 				~GuiMenuBar();
@@ -14975,7 +14975,7 @@ MenuButton
 
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiMenuButton(theme::ThemeName themeName);
 				~GuiMenuButton();
@@ -15084,7 +15084,7 @@ namespace vl
 				ColumnSortingState								columnSortingState = ColumnSortingState::NotSorted;
 
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiListViewColumnHeader(theme::ThemeName themeName);
 				~GuiListViewColumnHeader();
@@ -15607,7 +15607,7 @@ ComboBox Base
 				virtual void								SelectItem();
 				void										OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiComboBoxBase(theme::ThemeName themeName);
 				~GuiComboBoxBase();
@@ -15648,7 +15648,7 @@ ComboBox with GuiListControl
 				void										OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller and a list control that will be put in the popup control to show all items.</summary>
+				/// <summary>Create a control with a specified default theme and a list control that will be put in the popup control to show all items.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_containedListControl">The list controller.</param>
 				GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl);
@@ -17643,7 +17643,7 @@ Toolstrip Container
 
 				void											UpdateLayout()override;
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
 				GuiToolstripMenu(theme::ThemeName themeName, GuiControl* _owner);
@@ -17662,7 +17662,7 @@ Toolstrip Container
 				Ptr<GuiToolstripCollection>						toolstripItems;
 
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiToolstripMenuBar(theme::ThemeName themeName);
 				~GuiToolstripMenuBar();
@@ -17680,7 +17680,7 @@ Toolstrip Container
 				Ptr<GuiToolstripCollection>						toolstripItems;
 
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiToolstripToolBar(theme::ThemeName themeName);
 				~GuiToolstripToolBar();
@@ -17708,7 +17708,7 @@ Toolstrip Component
 				void											OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnCommandDescriptionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a control with a specified style controller.</summary>
+				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiToolstripButton(theme::ThemeName themeName);
 				~GuiToolstripButton();
@@ -17857,6 +17857,7 @@ Ribbon Containers
 			class GuiRibbonTabPage;
 			class GuiRibbonGroup;
 
+			/// <summary>Ribbon tab control, for displaying ribbon tab pages.</summary>
 			class GuiRibbonTab : public GuiTab, public Description<GuiRibbonTab>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonTabTemplate, GuiTab)
@@ -17864,10 +17865,16 @@ Ribbon Containers
 				compositions::GuiBoundsComposition*					beforeHeaders = nullptr;
 				compositions::GuiBoundsComposition*					afterHeaders = nullptr;
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonTab(theme::ThemeName themeName);
 				~GuiRibbonTab();
 
+				/// <summary>Get the composition representing the space before tabs.</summary>
+				/// <returns>The composition representing the space before tabs.</returns>
 				compositions::GuiGraphicsComposition*				GetBeforeHeaders();
+				/// <summary>Get the composition representing the space after tabs.</summary>
+				/// <returns>The composition representing the space after tabs.</returns>
 				compositions::GuiGraphicsComposition*				GetAfterHeaders();
 			};
 
@@ -17885,6 +17892,7 @@ Ribbon Containers
 				~GuiRibbonGroupCollection();
 			};
 
+			/// <summary>Ribbon tab page control, adding to the Pages property of a <see cref="GuiRibbonTab"/>.</summary>
 			class GuiRibbonTabPage : public GuiTabPage, public Description<GuiRibbonTabPage>
 			{
 				friend class GuiRibbonGroupCollection;
@@ -17896,14 +17904,23 @@ Ribbon Containers
 				compositions::GuiStackComposition*					stack = nullptr;
 
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonTabPage(theme::ThemeName themeName);
 				~GuiRibbonTabPage();
-
+				
+				/// <summary>Highlighted changed event.</summary>
 				compositions::GuiNotifyEvent						HighlightedChanged;
 
+				/// <summary>Test if this is a highlighted tab page.</summary>
+				/// <returns>Returns true if this is a highlighted tab page.</returns>
 				bool												GetHighlighted();
+				/// <summary>Set if this is a highlighted tab page.</summary>
+				/// <param name="value">Set to true to highlight the tab page.</param>
 				void												SetHighlighted(bool value);
 
+				/// <summary>Get the collection of ribbon groups.</summary>
+				/// <returns>The collection of ribbon groups.</returns>
 				collections::ObservableListBase<GuiRibbonGroup*>&	GetGroups();
 			};
 
@@ -17921,6 +17938,7 @@ Ribbon Containers
 				~GuiRibbonGroupItemCollection();
 			};
 
+			/// <summary>Ribbon group control, adding to the Groups property of a <see cref="GuiRibbonTabPage"/>.</summary>
 			class GuiRibbonGroup : public GuiControl, public Description<GuiRibbonGroup>
 			{
 				friend class GuiRibbonGroupItemCollection;
@@ -17932,15 +17950,25 @@ Ribbon Containers
 				compositions::GuiStackComposition*					stack = nullptr;
 
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonGroup(theme::ThemeName themeName);
 				~GuiRibbonGroup();
 
+				/// <summary>Expandable changed event.</summary>
 				compositions::GuiNotifyEvent						ExpandableChanged;
+				/// <summary>Expand button clicked event.</summary>
 				compositions::GuiNotifyEvent						ExpandButtonClicked;
 
+				/// <summary>Test if this group is expandable. An expandable group will display an extra small button, which raises <see cref="ExpandButtonClicked"/>.</summary>
+				/// <returns>Returns true if this group is expandable.</returns>
 				bool												GetExpandable();
+				/// <summary>Set if this group is expandable.</summary>
+				/// <param name="value">Set to true to make this group is expandable.</param>
 				void												SetExpandable(bool value);
 
+				/// <summary>Get the collection of controls in this group.</summary>
+				/// <returns>The collection of controls.</returns>
 				collections::ObservableListBase<GuiControl*>&		GetItems();
 			};
 
@@ -17948,10 +17976,14 @@ Ribbon Containers
 Ribbon Buttons
 ***********************************************************************/
 
+			/// <summary>Represents the size of a ribbon button in a <see cref="GuiRibbonButtons"/> control.</summary>
 			enum class RibbonButtonSize
 			{
+				/// <summary>Large icon with text.</summary>
 				Large = 0,
+				/// <summary>Small icon with text.</summary>
 				Small = 1,
+				/// <summary>Small icon only.</summary>
 				Icon = 2,
 			};
 
@@ -17971,6 +18003,7 @@ Ribbon Buttons
 				~GuiRibbonButtonsItemCollection();
 			};
 
+			/// <summary>Auto resizable ribbon buttons.</summary>
 			class GuiRibbonButtons : public GuiControl, public Description<GuiRibbonButtons>
 			{
 				friend class GuiRibbonButtonsItemCollection;
@@ -17985,9 +18018,15 @@ Ribbon Buttons
 				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiControl* button);
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="_maxSize">Max allowed size.</param>
+				/// <param name="_minSize">Min allowed size.</param>
 				GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize);
 				~GuiRibbonButtons();
 
+				/// <summary>Get the collection of buttons. <see cref="GuiToolstripButton"/> is expected.</summary>
+				/// <returns>The collection of buttons.</returns>
 				collections::ObservableListBase<GuiControl*>&			GetButtons();
 			};
 
@@ -18011,6 +18050,7 @@ Ribbon Toolstrips
 				~GuiRibbonToolstripsGroupCollection();
 			};
 
+			/// <summary>Auto resizable ribbon toolstrips.</summary>
 			class GuiRibbonToolstrips : public GuiControl, public Description<GuiRibbonToolstrips>
 			{
 				friend class GuiRibbonToolstripsGroupCollection;
@@ -18026,9 +18066,13 @@ Ribbon Toolstrips
 				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													RearrangeToolstripGroups(vint viewIndex = -1);
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonToolstrips(theme::ThemeName themeName);
 				~GuiRibbonToolstrips();
 
+				/// <summary>Get the collection of toolstrip groups. <see cref="GuiRibbonToolstrips"/> will decide the order of these toolstrip groups.</summary>
+				/// <returns>The collection of toolstrip groups.</returns>
 				collections::ObservableListBase<GuiToolstripGroup*>&	GetGroups();
 			};
 
@@ -18036,6 +18080,7 @@ Ribbon Toolstrips
 Ribbon Gallery
 ***********************************************************************/
 
+			/// <summary>Ribbon gallery, with scroll up, scroll down, dropdown buttons.</summary>
 			class GuiRibbonGallery : public GuiControl, public Description<GuiRibbonGallery>
 			{
 				using ItemStyle = templates::GuiListItemTemplate;
@@ -18062,22 +18107,38 @@ Ribbon Gallery
 				Ptr<CommandExecutor>									commandExecutor;
 
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonGallery(theme::ThemeName themeName);
 				~GuiRibbonGallery();
 
+				/// <summary>Scroll up enabled changed event.</summary>
 				compositions::GuiNotifyEvent							ScrollUpEnabledChanged;
+				/// <summary>Scroll down enabled changed event.</summary>
 				compositions::GuiNotifyEvent							ScrollDownEnabledChanged;
+				/// <summary>Scroll up button clicked event.</summary>
 				compositions::GuiNotifyEvent							RequestedScrollUp;
+				/// <summary>Scroll down button clicked event.</summary>
 				compositions::GuiNotifyEvent							RequestedScrollDown;
+				/// <summary>Dropdown button clicked event.</summary>
 				compositions::GuiNotifyEvent							RequestedDropdown;
 
+				/// <summary>Test if the scroll up button is enabled.</summary>
+				/// <returns>Returns true if the scroll up button is enabled.</returns>
 				bool													GetScrollUpEnabled();
+				/// <summary>Set if the scroll up button is enabled.</summary>
+				/// <param name="value">Set to true to enable the scroll up button.</param>
 				void													SetScrollUpEnabled(bool value);
 
+				/// <summary>Test if the scroll down button is enabled.</summary>
+				/// <returns>Returns true if the scroll down button is enabled.</returns>
 				bool													GetScrollDownEnabled();
+				/// <summary>Set if the scroll down button is enabled.</summary>
+				/// <param name="value">Set to true to enable the scroll down button.</param>
 				void													SetScrollDownEnabled(bool value);
 			};
 
+			/// <summary>Resizable ribbon toolstrip menu with a space above of all menu items to display extra content.</summary>
 			class GuiRibbonToolstripMenu : public GuiToolstripMenu, public Description<GuiRibbonToolstripMenu>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonToolstripMenuTemplate, GuiToolstripMenu)
@@ -18085,9 +18146,13 @@ Ribbon Gallery
 				compositions::GuiBoundsComposition*						contentComposition;
 
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonToolstripMenu(theme::ThemeName themeName, GuiControl* owner);
 				~GuiRibbonToolstripMenu();
 
+				/// <summary>Get the composition representing the space above of menu items.</summary>
+				/// <returns>The composition representing the space above of menu items.</returns>
 				compositions::GuiGraphicsComposition*					GetContentComposition();
 			};
 		}
@@ -18123,9 +18188,12 @@ namespace vl
 Ribbon Gallery List
 ***********************************************************************/
 
+			/// <summary>Represents the position of an item in the gallery list.</summary>
 			struct GalleryPos
 			{
+				/// <summary>Group index.</summary>
 				vint			group;
+				/// <summary>Item index.</summary>
 				vint			item;
 
 				GalleryPos()
@@ -18157,6 +18225,7 @@ Ribbon Gallery List
 			{
 				class GroupedDataSource;
 
+				/// <summary>A gallery group.</summary>
 				class GalleryGroup : public Description<GalleryGroup>
 				{
 					friend class GroupedDataSource;
@@ -18170,7 +18239,11 @@ Ribbon Gallery List
 					GalleryGroup();
 					~GalleryGroup();
 
+					/// <summary>Get the title of this group.</summary>
+					/// <returns>The title of this group.</returns>
 					WString												GetName();
+					/// <summary>Get the all items of this group, could be null.</summary>
+					/// <returns>All items of this group.</returns>
 					Ptr<IValueList>										GetItemValues();
 				};
 
@@ -18207,8 +18280,11 @@ Ribbon Gallery List
 					GroupedDataSource(compositions::GuiGraphicsComposition* _associatedComposition);
 					~GroupedDataSource();
 
+					/// <summary>Group enabled event.<summary>
 					compositions::GuiNotifyEvent						GroupEnabledChanged;
+					/// <summary>Group title property changed event.<summary>
 					compositions::GuiNotifyEvent						GroupTitlePropertyChanged;
+					/// <summary>Group children property changed event.<summary>
 					compositions::GuiNotifyEvent						GroupChildrenPropertyChanged;
 
 					/// <summary>Get the item source.</summary>
@@ -18218,12 +18294,26 @@ Ribbon Gallery List
 					/// <param name="value">The item source. Null is acceptable if you want to clear all data.</param>
 					void												SetItemSource(Ptr<IValueEnumerable> value);
 
+					/// <summary>Test if grouping is enabled. Enabled means there is really both GroupTitleProperty and GroupChildrenProperty is not empty.</summary>
+					/// <returns>Returns true if grouping is enabled.</returns>
 					bool												GetGroupEnabled();
+
+					/// <summary>Get the group title property.</summary>
+					/// <returns>The group title property.</returns>
 					ItemProperty<WString>								GetGroupTitleProperty();
+					/// <summary>Get the group title property.</summary>
+					/// <param name="value">The group title property.</param>
 					void												SetGroupTitleProperty(const ItemProperty<WString>& value);
+
+					/// <summary>Get the group children property.</summary>
+					/// <returns>The group children property.</returns>
 					ItemProperty<Ptr<IValueEnumerable>>					GetGroupChildrenProperty();
+					/// <summary>Get the group children property.</summary>
+					/// <param name="value">The children title property.</param>
 					void												SetGroupChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
 
+					/// <summary>Get all groups.</summary>
+					/// <returns>All groups.</returns>
 					const GalleryGroupList&								GetGroups();
 				};
 			}
@@ -18234,6 +18324,7 @@ Ribbon Gallery List
 				class GalleryResponsiveLayout;
 			}
 
+			/// <summary>Auto resizable ribbon gallyer list.</summary>
 			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, public Description<GuiBindableRibbonGalleryList>
 			{
 				friend class ribbon_impl::GalleryItemArranger;
@@ -18247,6 +18338,7 @@ Ribbon Gallery List
 				ItemStyleProperty										itemStyle;
 				GuiBindableTextList*									itemList;
 				GuiRibbonToolstripMenu*									subMenu;
+				bool													skipItemAppliedEvent = false;
 
 				ribbon_impl::GalleryItemArranger*						itemListArranger;
 				ribbon_impl::GalleryResponsiveLayout*					layout;
@@ -18255,6 +18347,8 @@ Ribbon Gallery List
 
 				void													UpdateLayoutSizeOffset();
 				void													OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnItemListItemMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
+				void													OnItemListItemMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -18264,12 +18358,25 @@ Ribbon Gallery List
 				GuiControl*												MenuGetGroupHeader(vint groupIndex);
 				compositions::GuiRepeatFlowComposition*					MenuGetGroupFlow(vint groupIndex);
 				GuiSelectableButton*									MenuGetGroupItemBackground(vint groupIndex, vint itemIndex);
+
+				void													StartPreview(vint index);
+				void													StopPreview(vint index);
 			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiBindableRibbonGalleryList(theme::ThemeName themeName);
 				~GuiBindableRibbonGalleryList();
 
+				/// <summary>Item template changed event.</summary>
 				compositions::GuiNotifyEvent							ItemTemplateChanged;
+				/// <summary>Selection changed event.</summary>
 				compositions::GuiNotifyEvent							SelectionChanged;
+				/// <summary>Preview started event.</summary>
+				compositions::GuiItemNotifyEvent						PreviewStarted;
+				/// <summary>Preview stopped event.</summary>
+				compositions::GuiItemNotifyEvent						PreviewStopped;
+				/// <summary>Item applied event.</summary>
+				compositions::GuiItemNotifyEvent						ItemApplied;
 
 				/// <summary>Get the item style provider.</summary>
 				/// <returns>The item style provider.</returns>
@@ -18278,17 +18385,41 @@ Ribbon Gallery List
 				/// <param name="value">The new item style provider</param>
 				void													SetItemTemplate(ItemStyleProperty value);
 
+				/// <summary>Convert an item index to a gallery item position.</summary>
+				/// <returns>The gallery item position.</returns>
+				/// <param name="index">The item index.</param>
 				GalleryPos												IndexToGalleryPos(vint index);
+				/// <summary>Convert a gallery item position to an item index.</summary>
+				/// <returns>The item index.</returns>
+				/// <param name="pos">The gallery item position.</param>
 				vint													GalleryPosToIndex(GalleryPos pos);
 
+				/// <summary>Get the minimum number of items should be displayed.</summary>
+				/// <returns>The minimum number of items should be displayed.</returns>
 				vint													GetMinCount();
+				/// <summary>Set the minimum number of items should be displayed.</summary>
+				/// <param name="value">The minimum number of items should be displayed.</param>
 				void													SetMinCount(vint value);
+
+				/// <summary>Get the maximum number of items should be displayed.</summary>
+				/// <returns>The maximum number of items should be displayed.</returns>
 				vint													GetMaxCount();
+				/// <summary>Set the maximum number of items should be displayed.</summary>
+				/// <param name="value">The maximum number of items should be displayed.</param>
 				void													SetMaxCount(vint value);
 
-				GalleryPos												GetSelection();
-				void													SetSelection(GalleryPos value);
+				/// <summary>Get the selected item index.</summary>
+				/// <returns>The index of the selected item.</returns>
+				vint													GetSelectedIndex();
+				/// <summary>Select an item with <see cref="ItemApplied"/> event raised.</summary>
+				/// <param name="index">The index of the item to select. Set to -1 to clear the selection.</param>
+				void													ApplyItem(vint index);
+				/// <summary>Select an item without <see cref="ItemApplied"/> event raised.</summary>
+				/// <param name="index">The index of the item to select. Set to -1 to clear the selection.</param>
+				void													SelectItem(vint index);
 
+				/// <summary>Get the dropdown menu.</summary>
+				/// <returns>The dropdown menu.</returns>
 				GuiToolstripMenu*										GetSubMenu();
 			};
 		}
