@@ -27,6 +27,7 @@ Ribbon Containers
 			class GuiRibbonTabPage;
 			class GuiRibbonGroup;
 
+			/// <summary>Ribbon tab control, for displaying ribbon tab pages.</summary>
 			class GuiRibbonTab : public GuiTab, public Description<GuiRibbonTab>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonTabTemplate, GuiTab)
@@ -34,10 +35,16 @@ Ribbon Containers
 				compositions::GuiBoundsComposition*					beforeHeaders = nullptr;
 				compositions::GuiBoundsComposition*					afterHeaders = nullptr;
 			public:
+				/// <summary>Create a control with a specified style controller.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonTab(theme::ThemeName themeName);
 				~GuiRibbonTab();
 
+				/// <summary>Get the composition representing the space before tabs.</summary>
+				/// <returns>The composition representing the space before tabs.</summary>
 				compositions::GuiGraphicsComposition*				GetBeforeHeaders();
+				/// <summary>Get the composition representing the space after tabs.</summary>
+				/// <returns>The composition representing the space after tabs.</summary>
 				compositions::GuiGraphicsComposition*				GetAfterHeaders();
 			};
 
@@ -55,6 +62,7 @@ Ribbon Containers
 				~GuiRibbonGroupCollection();
 			};
 
+			/// <summary>Ribbon tab page control, adding to the Pages property of a <see cref="GuiRibbonTab"/>.</summary>
 			class GuiRibbonTabPage : public GuiTabPage, public Description<GuiRibbonTabPage>
 			{
 				friend class GuiRibbonGroupCollection;
@@ -66,14 +74,23 @@ Ribbon Containers
 				compositions::GuiStackComposition*					stack = nullptr;
 
 			public:
+				/// <summary>Create a control with a specified style controller.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonTabPage(theme::ThemeName themeName);
 				~GuiRibbonTabPage();
-
+				
+				/// <summary>Highlighted changed event.</summary>
 				compositions::GuiNotifyEvent						HighlightedChanged;
 
+				/// <summary>Test if this is a highlighted tab page.</summary>
+				/// <returns>Returns true if this is a highlighted tab page.</summary>
 				bool												GetHighlighted();
+				/// <summary>Set if this is a highlighted tab page.</summary>
+				/// <param name="value">Set to true to highlight the tab page.</param>
 				void												SetHighlighted(bool value);
 
+				/// <summary>Get the collection of ribbon groups.</summary>
+				/// <returns>The collection of ribbon groups.</summary>
 				collections::ObservableListBase<GuiRibbonGroup*>&	GetGroups();
 			};
 
@@ -91,6 +108,7 @@ Ribbon Containers
 				~GuiRibbonGroupItemCollection();
 			};
 
+			/// <summary>Ribbon group control, adding to the Groups property of a <see cref="GuiRibbonTabPage"/>.</summary>
 			class GuiRibbonGroup : public GuiControl, public Description<GuiRibbonGroup>
 			{
 				friend class GuiRibbonGroupItemCollection;
@@ -102,15 +120,25 @@ Ribbon Containers
 				compositions::GuiStackComposition*					stack = nullptr;
 
 			public:
+				/// <summary>Create a control with a specified style controller.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonGroup(theme::ThemeName themeName);
 				~GuiRibbonGroup();
 
+				/// <summary>Expandable changed event.</summary>
 				compositions::GuiNotifyEvent						ExpandableChanged;
+				/// <summary>Expand button clicked event.</summary>
 				compositions::GuiNotifyEvent						ExpandButtonClicked;
 
+				/// <summary>Test if this group is expandable. An expandable group will display an extra small button, which raises <see cref="ExpandButtonClicked"/>.</summary>
+				/// <returns>Returns true if this group is expandable.</summary>
 				bool												GetExpandable();
+				/// <summary>Set if this group is expandable.</summary>
+				/// <param name="value">Set to true to make this group is expandable.</param>
 				void												SetExpandable(bool value);
 
+				/// <summary>Get the collection of controls in this group.</summary>
+				/// <returns>The collection of controls.</summary>
 				collections::ObservableListBase<GuiControl*>&		GetItems();
 			};
 
@@ -118,10 +146,14 @@ Ribbon Containers
 Ribbon Buttons
 ***********************************************************************/
 
+			/// <summary>Represents the size of a ribbon button in a <see cref="GuiRibbonButtons"/> control.</summary>
 			enum class RibbonButtonSize
 			{
+				/// <summary>Large icon with text.</summary>
 				Large = 0,
+				/// <summary>Small icon with text.</summary>
 				Small = 1,
+				/// <summary>Small icon only.</summary>
 				Icon = 2,
 			};
 
@@ -141,6 +173,7 @@ Ribbon Buttons
 				~GuiRibbonButtonsItemCollection();
 			};
 
+			/// <summary>Auto resizable ribbon buttons.</summary>
 			class GuiRibbonButtons : public GuiControl, public Description<GuiRibbonButtons>
 			{
 				friend class GuiRibbonButtonsItemCollection;
@@ -155,9 +188,15 @@ Ribbon Buttons
 				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													SetButtonThemeName(compositions::GuiResponsiveCompositionBase* fixed, GuiControl* button);
 			public:
+				/// <summary>Create a control with a specified style controller.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="_maxSize">Max allowed size.</param>
+				/// <param name="_minSize">Min allowed size.</param>
 				GuiRibbonButtons(theme::ThemeName themeName, RibbonButtonSize _maxSize, RibbonButtonSize _minSize);
 				~GuiRibbonButtons();
 
+				/// <summary>Get the collection of buttons. <see cref="GuiToolstripButton"/> is expected.</summary>
+				/// <returns>The collection of buttons.</summary>
 				collections::ObservableListBase<GuiControl*>&			GetButtons();
 			};
 
