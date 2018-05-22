@@ -975,12 +975,16 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiRibbonGallery)
 				CLASS_MEMBER_BASE(GroupedDataSource)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiBindableRibbonGalleryList)
+					
+				CLASS_MEMBER_GUIEVENT(SelectionChanged)
+				CLASS_MEMBER_GUIEVENT(PreviewStarted)
+				CLASS_MEMBER_GUIEVENT(PreviewStopped)
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ItemTemplate)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Selection)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SubMenu)
 				CLASS_MEMBER_PROPERTY_FAST(MinCount)
 				CLASS_MEMBER_PROPERTY_FAST(MaxCount)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectedIndex, SelectionChanged)
 
 				CLASS_MEMBER_METHOD(IndexToGalleryPos, { L"index" })
 				CLASS_MEMBER_METHOD(GalleryPosToIndex, { L"pos" })

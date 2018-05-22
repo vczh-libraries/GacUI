@@ -155,6 +155,8 @@ Ribbon Gallery List
 
 				void													UpdateLayoutSizeOffset();
 				void													OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnItemListItemMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
+				void													OnItemListItemMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -170,6 +172,8 @@ Ribbon Gallery List
 
 				compositions::GuiNotifyEvent							ItemTemplateChanged;
 				compositions::GuiNotifyEvent							SelectionChanged;
+				compositions::GuiItemNotifyEvent						PreviewStarted;
+				compositions::GuiItemNotifyEvent						PreviewStopped;
 
 				/// <summary>Get the item style provider.</summary>
 				/// <returns>The item style provider.</returns>
@@ -186,8 +190,8 @@ Ribbon Gallery List
 				vint													GetMaxCount();
 				void													SetMaxCount(vint value);
 
-				GalleryPos												GetSelection();
-				void													SetSelection(GalleryPos value);
+				vint													GetSelectedIndex();
+				void													SetSelectedIndex(vint value);
 
 				GuiToolstripMenu*										GetSubMenu();
 			};
