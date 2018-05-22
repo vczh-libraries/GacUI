@@ -18285,11 +18285,11 @@ Ribbon Gallery List
 					GroupedDataSource(compositions::GuiGraphicsComposition* _associatedComposition);
 					~GroupedDataSource();
 
-					/// <summary>Group enabled event.<summary>
+					/// <summary>Group enabled event.</summary>
 					compositions::GuiNotifyEvent						GroupEnabledChanged;
-					/// <summary>Group title property changed event.<summary>
+					/// <summary>Group title property changed event.</summary>
 					compositions::GuiNotifyEvent						GroupTitlePropertyChanged;
-					/// <summary>Group children property changed event.<summary>
+					/// <summary>Group children property changed event.</summary>
 					compositions::GuiNotifyEvent						GroupChildrenPropertyChanged;
 
 					/// <summary>Get the item source.</summary>
