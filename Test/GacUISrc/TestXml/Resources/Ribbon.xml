@@ -40,8 +40,54 @@
   <Instance name="StyleItemTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::StyleItemTemplate">
       <ref.Parameter Name="ViewModel" Class="demo::StyleItem"/>
+      <ref.Ctor>
+        <![CDATA[
+          {
+            var styles = ViewModel.Style.styles;
+            if (styles.color is not null) { styleLabel.Color = cast Color styles.color; }
+
+            var font = containerControl.Font;
+            var fontFamily = font.fontFamily;
+            var bold = font.bold;
+            var italic = font.italic;
+            var underline = font.underline;
+            var strikeline = font.strikeline;
+            var size = font.size;
+
+            if (styles.face is not null) { fontFamily = cast string styles.face; }
+            if (styles.bold is not null) { bold = cast bool styles.bold; }
+            if (styles.italic is not null) { italic = cast bool styles.italic; }
+            if (styles.underline is not null) { underline = cast bool styles.underline; }
+            if (styles.strikeline is not null) { strikeline = cast bool styles.strikeline; }
+
+            if(styles.size is not null)
+            {
+              var dsize = styles.size;
+              if (dsize.relative)
+              {
+                size = cast int Math::Round(dsize.size * font.size);
+              }
+              else
+              {
+                size = cast int Math::Round(dsize.size);
+              }
+            }
+
+            styleLabel.Font = {
+              fontFamily : fontFamily
+              size : size
+              bold : bold
+              italic : italic
+              underline : underline
+              strikeline : strikeline
+              antialias : font.antialias
+              verticalAntialias : font.verticalAntialias
+            };
+          }
+        ]]>
+      </ref.Ctor>
       <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:72">
-        <CustomControl>
+        <CustomControl ref.Name="containerControl">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="5">
             <att.Rows>
@@ -53,18 +99,18 @@
             </att.Columns>
             
             <Cell Site="row:0 column:0">
-              <SolidLabel Text="AaBbCc" Ellipse="true" Color="#FF8000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              <SolidLabel ref.Name="styleLabel" Text="AaBbCc" Ellipse="true" Color="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Cell>
 
             <Cell Site="row:1 column:0">
-              <SolidLabel Text-bind="ViewModel.Name" Ellipse="true" Color="#A0A0A0" HorizontalAlignment="Center"/>
+              <SolidLabel Text-bind="ViewModel.Name" Font-eval="containerControl.Font" Ellipse="true" Color="#808080" HorizontalAlignment="Center"/>
             </Cell>
           </Table>
 
           <att.TooltipControl>
             <CustomControl>
               <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
-                <SolidLabel Text-bind="ViewModel.Name" Color="#FFFFFF"/>
+                <SolidLabel Text-bind="ViewModel.Name" Color="#FFFFFF" Font-eval="containerControl.Font"/>
               </Bounds>
             </CustomControl>
           </att.TooltipControl>
@@ -89,14 +135,14 @@
           {
             var group1 = new StyleGroup^();
             group1.Name = "Headers";
-            group1.Items.Add(new StyleItem^("Header 1", {size:2  relative:true}, (cast Color "#FF8000"), true, null, null, null));
-            group1.Items.Add(new StyleItem^("Header 2", {size:1.6  relative:true}, (cast Color "#FF8000"), true, null, null, null));
-            group1.Items.Add(new StyleItem^("Header 3", {size:1.3  relative:true}, null, true, null, null, null));
+            group1.Items.Add(new StyleItem^("Header 1", {size:2  relative:true}, (cast Color "#FF8000"), null, null, null, null));
+            group1.Items.Add(new StyleItem^("Header 2", {size:1.6  relative:true}, (cast Color "#FF8000"), null, null, null, null));
+            group1.Items.Add(new StyleItem^("Header 3", {size:1.3  relative:true}, null, null, null, null, null));
 
             var group2 = new StyleGroup^();
             group2.Name = "Content";
             group2.Items.Add(new StyleItem^("Strong", null, null, true, null, null, null));
-            group2.Items.Add(new StyleItem^("Quote", null, null, true, null, null, null));
+            group2.Items.Add(new StyleItem^("Quote", null, null, null, true, null, null));
             group2.Items.Add(new StyleItem^("Emphasis", null, null, null, true, true, null));
             group2.Items.Add(new StyleItem^("Intense Emphasis", null, (cast Color "#8080FF"), null, true, true, null));
             group2.Items.Add(new StyleItem^("Deleted", null, null, null, null, null, true));
