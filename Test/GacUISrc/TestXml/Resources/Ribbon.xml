@@ -3,23 +3,34 @@
     <Workflow>
       <![CDATA[
         module ribbonscript;
+        using presentation::*;
 
         namespace demo
         {
           class StyleItem
           {
-            new(value : string)
+            var Name : string = "";
+            var Style : DocumentStyle^ = null;
+
+            new (name : string, size : DocumentFontSize?, color : Color?, bold : bool?, italic : bool?, underline : bool?, strikeline : bool?)
             {
-              Value = value;
+              Name = name;
+              Style = new DocumentStyle^();
+              Style.parentStyleName = "#Context";
+              Style.styles = new DocumentStyleProperties^();
+              Style.styles.size = size;
+              Style.styles.color = color;
+              Style.styles.bold = bold;
+              Style.styles.italic = italic;
+              Style.styles.underline = underline;
+              Style.styles.strikeline = strikeline;
             }
-          
-            prop Value : string = 0 {not observe}
           }
           
           class StyleGroup
           {
-            prop Name : string = "" {}
-            prop Items : observe StyleItem^[] = {} {const, not observe}
+            var Name : string = "";
+            var Items : observe StyleItem^[] = {};
           }
         }
       ]]>
@@ -29,8 +40,8 @@
   <Instance name="StyleItemTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::StyleItemTemplate">
       <ref.Parameter Name="ViewModel" Class="demo::StyleItem"/>
-      <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:64">
-        <SolidLabel Text-bind="ViewModel.Value" Color="#FF8000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+      <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:72">
+        <SolidLabel Text-bind="ViewModel.Name" Ellipse="true" Color="#FF8000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
       </TextListItemTemplate>
     </Instance>
   </Instance>
@@ -50,18 +61,18 @@
           func GetStyleGroups(): demo::StyleGroup^[]
           {
             var group1 = new StyleGroup^();
-            group1.Name = "Group A";
-            for (i in range [1, 5])
-            {
-              group1.Items.Add(new StyleItem^("A" & i));
-            }
+            group1.Name = "Headers";
+            group1.Items.Add(new StyleItem^("Header 1", {size:2  relative:true}, (cast Color "#FF8000"), true, null, null, null));
+            group1.Items.Add(new StyleItem^("Header 2", {size:1.6  relative:true}, (cast Color "#FF8000"), true, null, null, null));
+            group1.Items.Add(new StyleItem^("Header 3", {size:1.3  relative:true}, null, true, null, null, null));
 
             var group2 = new StyleGroup^();
-            group2.Name = "Group B";
-            for (i in range [1, 5])
-            {
-              group2.Items.Add(new StyleItem^("B" & i));
-            }
+            group2.Name = "Content";
+            group2.Items.Add(new StyleItem^("Strong", null, null, true, null, null, null));
+            group2.Items.Add(new StyleItem^("Quote", null, null, true, null, null, null));
+            group2.Items.Add(new StyleItem^("Emphasis", null, null, null, true, true, null));
+            group2.Items.Add(new StyleItem^("Intense Emphasis", null, (cast Color "#8080FF"), null, true, true, null));
+            group2.Items.Add(new StyleItem^("Deleted", null, null, null, null, null, true));
 
             return {group1 group2};
           }
