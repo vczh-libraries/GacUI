@@ -43,9 +43,23 @@
       <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:72">
         <CustomControl>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-            <SolidLabel Text-bind="ViewModel.Name" Ellipse="true" Color="#FF8000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-          </Bounds>
+          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="5">
+            <att.Rows>
+              <_>composeType:Percentage percentage:1.0</_>
+              <_>composeType:MinSize</_>
+            </att.Rows>
+            <att.Columns>
+              <_>composeType:Percentage percentage:1.0</_>
+            </att.Columns>
+            
+            <Cell Site="row:0 column:0">
+              <SolidLabel Text="AaBbCc" Ellipse="true" Color="#FF8000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Cell>
+
+            <Cell Site="row:1 column:0">
+              <SolidLabel Text-bind="ViewModel.Name" Ellipse="true" Color="#A0A0A0" HorizontalAlignment="Center"/>
+            </Cell>
+          </Table>
 
           <att.TooltipControl>
             <CustomControl>
