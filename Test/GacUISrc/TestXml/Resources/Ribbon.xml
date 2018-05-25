@@ -41,7 +41,20 @@
     <Instance ref.CodeBehind="false" ref.Class="demo::StyleItemTemplate">
       <ref.Parameter Name="ViewModel" Class="demo::StyleItem"/>
       <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:72">
-        <SolidLabel Text-bind="ViewModel.Name" Ellipse="true" Color="#FF8000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <CustomControl>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+            <SolidLabel Text-bind="ViewModel.Name" Ellipse="true" Color="#FF8000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Bounds>
+
+          <att.TooltipControl>
+            <CustomControl>
+              <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
+                <SolidLabel Text-bind="ViewModel.Name" Color="#FFFFFF"/>
+              </Bounds>
+            </CustomControl>
+          </att.TooltipControl>
+        </CustomControl>
       </TextListItemTemplate>
     </Instance>
   </Instance>
