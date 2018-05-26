@@ -165,12 +165,37 @@
 
             return {group1 group2};
           }
+
+          @cpp:Private
+          func SelectStyleName(styleName : string?): void
+          {
+            if (styleName is not null)
+            {
+              for (groupIndex in range[0, StyleGroups.Count))
+              {
+                var group = StyleGroups[groupIndex];
+                for (itemIndex in range[0, group.Items.Count))
+                {
+                  if (group.Items[itemIndex].Name == cast string styleName)
+                  {
+                    styleGallery.SelectItem(styleGallery.GalleryPosToIndex({group:groupIndex item:itemIndex}));
+                    return;
+                  }
+                }
+              }
+            }
+            styleGallery.SelectItem(-1);
+          }
         ]]>
       </ref.Members>
       <ref.Ctor>
         <![CDATA[
           {
             StyleGroups = GenerateStyleGroups();
+            attach(document.SelectionChanged, func(sender: GuiGraphicsComposition*, arguments: GuiEventArgs*):void
+            {
+              SelectStyleName(document.SummarizeStyleName(document.CaretBegin, document.CaretEnd));
+            });
           }
         ]]>
       </ref.Ctor>
