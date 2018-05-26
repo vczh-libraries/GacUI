@@ -195,6 +195,7 @@ Calculate if all text in the specified range has a common style name
 				DocumentModel*							model;
 				vint									start;
 				vint									end;
+				Nullable<WString>						currentStyleName;
 				Nullable<WString>						styleName;
 				bool									assignedStyleName = false;
 
@@ -204,6 +205,19 @@ Calculate if all text in the specified range has a common style name
 					, start(_start)
 					, end(_end)
 				{
+				}
+
+				void VisitContentRun(DocumentContentRun* run)
+				{
+					if (!assignedStyleName)
+					{
+						styleName = currentStyleName;
+						assignedStyleName = true;
+					}
+					else if (styleName && (!currentStyleName || styleName.Value() != currentStyleName.Value()))
+					{
+						styleName = {};
+					}
 				}
 
 				void VisitContainer(DocumentContainerRun* run)
@@ -221,6 +235,7 @@ Calculate if all text in the specified range has a common style name
 
 				void Visit(DocumentTextRun* run)override
 				{
+					VisitContentRun(run);
 				}
 
 				void Visit(DocumentStylePropertiesRun* run)override
@@ -230,15 +245,10 @@ Calculate if all text in the specified range has a common style name
 
 				void Visit(DocumentStyleApplicationRun* run)override
 				{
-					if (!assignedStyleName)
-					{
-						styleName = run->styleName;
-					}
-					else if (styleName && styleName.Value() != run->styleName)
-					{
-						styleName = {};
-					}
+					auto oldStyleName = currentStyleName;
+					currentStyleName = run->styleName;
 					VisitContainer(run);
+					currentStyleName = oldStyleName;
 				}
 
 				void Visit(DocumentHyperlinkRun* run)override
@@ -248,10 +258,12 @@ Calculate if all text in the specified range has a common style name
 
 				void Visit(DocumentImageRun* run)override
 				{
+					VisitContentRun(run);
 				}
 
 				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
+					VisitContentRun(run);
 				}
 
 				void Visit(DocumentParagraphRun* run)override
