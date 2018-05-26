@@ -868,8 +868,7 @@ GuiDocumentElement
 
 			TextPos GuiDocumentElement::CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide)
 			{
-				Ptr<GuiDocumentElementRenderer> elementRenderer=renderer.Cast<GuiDocumentElementRenderer>();
-				if(elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					TextPos caret=elementRenderer->CalculateCaret(comparingCaret, position, preferFrontSide);
 					return caret.column==-1?comparingCaret:caret;
@@ -882,8 +881,7 @@ GuiDocumentElement
 
 			TextPos GuiDocumentElement::CalculateCaretFromPoint(Point point)
 			{
-				Ptr<GuiDocumentElementRenderer> elementRenderer=renderer.Cast<GuiDocumentElementRenderer>();
-				if(elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					return elementRenderer->CalculateCaretFromPoint(point);
 				}
@@ -895,8 +893,7 @@ GuiDocumentElement
 
 			Rect GuiDocumentElement::GetCaretBounds(TextPos caret, bool frontSide)
 			{
-				Ptr<GuiDocumentElementRenderer> elementRenderer=renderer.Cast<GuiDocumentElementRenderer>();
-				if(elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					return elementRenderer->GetCaretBounds(caret, frontSide);
 				}
@@ -908,8 +905,7 @@ GuiDocumentElement
 			
 			void GuiDocumentElement::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					elementRenderer->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
 					InvokeOnCompositionStateChanged();
@@ -918,8 +914,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -939,8 +934,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -960,8 +954,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -980,8 +973,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -1000,8 +992,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName, const WString& activeStyleName)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -1020,8 +1011,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::RemoveHyperlink(vint paragraphIndex, vint begin, vint end)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -1040,8 +1030,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditStyleName(TextPos begin, TextPos end, const WString& styleName)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -1060,8 +1049,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::RemoveStyleName(TextPos begin, TextPos end)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -1080,8 +1068,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::RenameStyle(const WString& oldStyleName, const WString& newStyleName)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					document->RenameStyle(oldStyleName, newStyleName);
 				}
@@ -1089,8 +1076,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::ClearStyle(TextPos begin, TextPos end)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -1109,8 +1095,7 @@ GuiDocumentElement
 
 			Ptr<DocumentStyleProperties> GuiDocumentElement::SummarizeStyle(TextPos begin, TextPos end)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -1124,10 +1109,13 @@ GuiDocumentElement
 				return nullptr;
 			}
 
+			WString GuiDocumentElement::SummarizeStyleName(TextPos begin, TextPos end)
+			{
+			}
+
 			void GuiDocumentElement::SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					vint first = begin.row;
 					vint last = end.row;
@@ -1152,8 +1140,7 @@ GuiDocumentElement
 
 			Nullable<Alignment> GuiDocumentElement::SummarizeParagraphAlignment(TextPos begin, TextPos end)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -1169,8 +1156,7 @@ GuiDocumentElement
 
 			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElement::GetHyperlinkFromPoint(Point point)
 			{
-				auto elementRenderer=renderer.Cast<GuiDocumentElementRenderer>();
-				if(elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					return elementRenderer->GetHyperlinkFromPoint(point);
 				}

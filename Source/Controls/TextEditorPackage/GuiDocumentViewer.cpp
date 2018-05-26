@@ -807,6 +807,17 @@ GuiDocumentCommonInterface
 				return documentElement->SummarizeStyle(begin, end);
 			}
 
+			WString GuiDocumentCommonInterface::SummerizeStyleName(TextPos begin, TextPos end)
+			{
+				if (begin>end)
+				{
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
+				return documentElement->SummarizeStyleName(begin, end);
+			}
+
 			void GuiDocumentCommonInterface::SetParagraphAlignments(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)
 			{
 				vint first = begin.row;
