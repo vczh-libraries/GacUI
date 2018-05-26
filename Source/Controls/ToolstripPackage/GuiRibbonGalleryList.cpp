@@ -309,7 +309,7 @@ GuiBindableRibbonGalleryList
 					}
 				}
 				
-				if (skipItemAppliedEvent && itemList->GetSelectedItemIndex() != -1)
+				if (!skipItemAppliedEvent && itemList->GetSelectedItemIndex() != -1)
 				{
 					GuiItemEventArgs itemAppliedArgs(boundsComposition);
 					itemAppliedArgs.itemIndex = itemList->GetSelectedItemIndex();
