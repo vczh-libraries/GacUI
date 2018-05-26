@@ -1111,6 +1111,18 @@ GuiDocumentElement
 
 			WString GuiDocumentElement::SummarizeStyleName(TextPos begin, TextPos end)
 			{
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				{
+					if (begin > end)
+					{
+						TextPos temp = begin;
+						begin = end;
+						end = temp;
+					}
+
+					return document->SummarizeStyleName(begin, end);
+				}
+				return L"";
 			}
 
 			void GuiDocumentElement::SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)

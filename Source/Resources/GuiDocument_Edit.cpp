@@ -605,6 +605,11 @@ DocumentModel::ClearStyle
 			return style;
 		}
 
+		WString DocumentModel::SummarizeStyleName(TextPos begin, TextPos end)
+		{
+			return L"";
+		}
+
 		Nullable<Alignment> DocumentModel::SummarizeParagraphAlignment(TextPos begin, TextPos end)
 		{
 			bool left = false;

@@ -246,7 +246,7 @@ GuiDocumentCommonInterface
 				/// <returns>The style name summary.</returns>
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
-				WString										SummerizeStyleName(TextPos begin, TextPos end);
+				WString										SummarizeStyleName(TextPos begin, TextPos end);
 				/// <summary>Set the alignment of paragraphs in a specified range.</summary>
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
