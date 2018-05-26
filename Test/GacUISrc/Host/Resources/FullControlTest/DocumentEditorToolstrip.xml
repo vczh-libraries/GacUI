@@ -1,0 +1,107 @@
+<Folder>
+  <Instance name="DocumentEditorToolstripResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorToolstrip" xmlns:demo="demo::*">
+      <demo:DocumentEditorBase ref.Name="self" Text="Document Editor (Toolstrip)">
+        <att.MenuContainer-set>
+          <ToolstripMenuBar>
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <MenuBarButton Text="Edit" Alt="E">
+              <att.SubMenu-set>
+                <ToolstripGroupContainer>
+                  <ToolstripGroup>
+                    <MenuItemButton Command-eval="self.commandUndo" Alt="U"/>
+                    <MenuItemButton Command-eval="self.commandRedo" Alt="R"/>
+                  </ToolstripGroup>
+                  <ToolstripGroup>
+                    <MenuItemButton Command-eval="self.commandCopy" Alt="C"/>
+                    <MenuItemButton Command-eval="self.commandCut" Alt="X"/>
+                    <MenuItemButton Command-eval="self.commandPaste" Alt="P"/>
+                  </ToolstripGroup>
+                  <MenuItemButton Command-eval="self.commandDelete" Alt="D"/>
+                  <ToolstripGroup>
+                    <MenuItemButton Command-eval="self.commandSelect" Alt="A"/>
+                    <MenuItemButton Text="Object" Alt="O">
+                      <att.SubMenu-set>
+                        <MenuItemButton Command-eval="self.commandInsertImage" Alt="I"/>
+                        <MenuItemButton Command-eval="self.commandEditHyperlink" Alt="L"/>
+                        <MenuItemButton Command-eval="self.commandRemoveHyperlink" Alt="R"/>
+                      </att.SubMenu-set>
+                    </MenuItemButton>
+                    <MenuItemButton Text="Paragram Alignment" Alt="P">
+                      <att.SubMenu-set>
+                        <MenuItemButton Command-eval="self.commandAlignDefault" Alt="D"/>
+                        <MenuItemButton Command-eval="self.commandAlignLeft" Alt="L"/>
+                        <MenuItemButton Command-eval="self.commandAlignCenter" Alt="C"/>
+                        <MenuItemButton Command-eval="self.commandAlignRight" Alt="R"/>
+                      </att.SubMenu-set>
+                    </MenuItemButton>
+                  </ToolstripGroup>
+                </ToolstripGroupContainer>
+              </att.SubMenu-set>
+            </MenuBarButton>
+            <MenuBarButton Text="View" Alt="V">
+              <att.SubMenu-set>
+                <MenuItemButton Command-eval="self.commandViewOnly" Alt="V"/>
+                <MenuItemButton Command-eval="self.commandSelectable" Alt="S"/>
+                <MenuItemButton Command-eval="self.commandEditable" Alt="E"/>
+              </att.SubMenu-set>
+            </MenuBarButton>
+          </ToolstripMenuBar>
+        </att.MenuContainer-set>
+
+        <att.ToolstripContainer-set>
+          <ToolstripToolBar>
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <ToolstripGroupContainer>
+              <ToolstripGroup>
+                <ToolstripDropdownButton Alt="V">
+                  <att.Image-bind>self.EditModeCommand.Image ?? null</att.Image-bind>
+                  <att.SubMenu-set>
+                    <MenuItemButton Command-eval="self.commandViewOnly" Alt="V"/>
+                    <MenuItemButton Command-eval="self.commandSelectable" Alt="S"/>
+                    <MenuItemButton Command-eval="self.commandEditable" Alt="E"/>
+                  </att.SubMenu-set>
+                </ToolstripDropdownButton>
+                <ToolstripDropdownButton ref.Name="buttonAlignment" Alt="P">
+                  <att.Image-bind>self.document.observe as _(self.SelectAlignmentCommand().Image on _.SelectionChanged)</att.Image-bind>
+                  <att.SubMenu-set>
+                    <MenuItemButton Command-eval="self.commandAlignDefault" Alt="D"/>
+                    <MenuItemButton Command-eval="self.commandAlignLeft" Alt="L"/>
+                    <MenuItemButton Command-eval="self.commandAlignCenter" Alt="C"/>
+                    <MenuItemButton Command-eval="self.commandAlignRight" Alt="R"/>
+                  </att.SubMenu-set>
+                </ToolstripDropdownButton>
+              </ToolstripGroup>
+              <ToolstripGroup>
+                <ToolstripButton Command-eval="self.commandUndo" Alt="U"/>
+                <ToolstripButton Command-eval="self.commandRedo" Alt="R"/>
+              </ToolstripGroup>
+              <ToolstripGroup>
+                <ToolstripButton Command-eval="self.commandCopy" Alt="C"/>
+                <ToolstripButton Command-eval="self.commandCut" Alt="X"/>
+                <ToolstripButton Command-eval="self.commandPaste" Alt="P"/>
+              </ToolstripGroup>
+              <ToolstripButton Command-eval="self.commandDelete" Alt="D"/>
+              <ToolstripGroup>
+                <ToolstripSplitButton Command-eval="self.commandInsertImage" Alt="I">
+                  <att.SubMenu-set>
+                    <MenuItemButton Command-eval="self.commandInsertImage" Alt="I"/>
+                    <MenuItemButton Command-eval="self.commandEditHyperlink" Alt="L"/>
+                    <MenuItemButton Command-eval="self.commandRemoveHyperlink" Alt="R"/>
+                  </att.SubMenu-set>
+                </ToolstripSplitButton>
+                <ToolstripButton Command-eval="self.commandBold" Alt="B"/>
+                <ToolstripButton Command-eval="self.commandItalic" Alt="I"/>
+                <ToolstripButton Command-eval="self.commandUnderline" Alt="U"/>
+                <ToolstripButton Command-eval="self.commandStrike" Alt="S"/>
+                <ToolstripButton Command-eval="self.commandFont" Alt="F"/>
+                <ToolstripButton Command-eval="self.commandColor" Alt="C"/>
+                <ToolstripButton Command-eval="self.commandBackColor" Alt="K"/>
+              </ToolstripGroup>
+            </ToolstripGroupContainer>
+          </ToolstripToolBar>
+        </att.ToolstripContainer-set>
+      </demo:DocumentEditorBase>
+    </Instance>
+  </Instance>
+</Folder>

@@ -55,19 +55,7 @@
     <Xml Include="Resources\Resource.xml">
       <Filter>Resource Files</Filter>
     </Xml>
-    <Xml Include="Resources\Toolstrip.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\Base.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
     <Xml Include="Resources\ToolbarImages\Images.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\Hyperlink.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\Ribbon.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>

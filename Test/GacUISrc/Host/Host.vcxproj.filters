@@ -60,9 +60,6 @@
     <Xml Include="Resources\FullControlTest\DataGridComponents.xml">
       <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
-    <Xml Include="Resources\FullControlTest\DocumentTabPage.xml">
-      <Filter>Resource Files\FullControlTest</Filter>
-    </Xml>
     <Xml Include="Resources\FullControlTest\ToolbarImages\Images.xml">
       <Filter>Resource Files\FullControlTest\ToolbarImages</Filter>
     </Xml>
@@ -131,6 +128,15 @@
     </Xml>
     <Xml Include="Resources\DarkSkin\Template_Ribbon.xml">
       <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\FullControlTest\DocumentEditorRibbon.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="Resources\FullControlTest\DocumentEditorToolstrip.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="Resources\FullControlTest\DocumentEditorBase.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

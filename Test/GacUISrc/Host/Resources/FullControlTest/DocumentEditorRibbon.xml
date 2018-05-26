@@ -119,8 +119,8 @@
     </Instance>
   </Instance>
 
-  <Instance name="DocumentEditorRibbonWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorRibbonWindow" xmlns:demo="demo::*">
+  <Instance name="DocumentEditorRibbonResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorRibbon" xmlns:demo="demo::*">
       <ref.Members>
         <![CDATA[
           @cpp:Private
@@ -151,7 +151,7 @@
           }
         ]]>
       </ref.Members>
-      <demo:DocumentEditorWindowBase ref.Name="self" Text="Document Editor (Ribbon)">
+      <demo:DocumentEditorBase ref.Name="self" Text="Document Editor (Ribbon)">
         <att.AlignLeftSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignLeft on _.SelectionChanged)</att.AlignLeftSelected-bind>
         <att.AlignCenterSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignCenter on _.SelectionChanged)</att.AlignCenterSelected-bind>
         <att.AlignRightSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignRight on _.SelectionChanged)</att.AlignRightSelected-bind>
@@ -292,7 +292,7 @@
             </att.Pages>
           </RibbonTab>
         </att.MenuContainer-set>
-      </demo:DocumentEditorWindowBase>
+      </demo:DocumentEditorBase>
     </Instance>
   </Instance>
 </Folder>

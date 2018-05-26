@@ -242,7 +242,9 @@
     <Xml Include="Resources\FullControlTest\DataGridComponents.xml" />
     <Xml Include="Resources\FullControlTest\DataGridTabPage.xml" />
     <Xml Include="Resources\FullControlTest\DocumentComponents.xml" />
-    <Xml Include="Resources\FullControlTest\DocumentTabPage.xml" />
+    <Xml Include="Resources\FullControlTest\DocumentEditorBase.xml" />
+    <Xml Include="Resources\FullControlTest\DocumentEditorRibbon.xml" />
+    <Xml Include="Resources\FullControlTest\DocumentEditorToolstrip.xml" />
     <Xml Include="Resources\FullControlTest\ElementTabPage.xml" />
     <Xml Include="Resources\FullControlTest\Images\ImageLoader.xml" />
     <Xml Include="Resources\FullControlTest\Images\LargeImages.xml" />
