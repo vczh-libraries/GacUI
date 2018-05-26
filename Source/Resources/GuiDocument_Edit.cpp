@@ -616,35 +616,42 @@ DocumentModel::ClearStyle
 			// Summarize container
 			Nullable<WString> styleName;
 
-			for (vint i = begin.row; i <= end.row; i++)
+			if (begin.row == end.row)
 			{
-				Ptr<DocumentParagraphRun> paragraph = paragraphs[i];
-				if (begin.row < i && i < end.row)
+				styleName = document_editor::SummarizeStyleName(paragraphs[begin.row].Obj(), runRanges, this, begin.column, end.column);
+			}
+			else
+			{
+				for (vint i = begin.row; i <= end.row; i++)
 				{
-					GetRunRange(paragraph.Obj(), runRanges);
-				}
-				RunRange range = runRanges[paragraph.Obj()];
-				Nullable<WString> newStyleName;
-				if (i == begin.row)
-				{
-					newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, begin.column, range.end);
-				}
-				else if (i == end.row)
-				{
-					auto newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, range.start, end.column);
-				}
-				else
-				{
-					auto newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, range.start, end.column);
-				}
+					Ptr<DocumentParagraphRun> paragraph = paragraphs[i];
+					if (begin.row < i && i < end.row)
+					{
+						GetRunRange(paragraph.Obj(), runRanges);
+					}
+					RunRange range = runRanges[paragraph.Obj()];
+					Nullable<WString> newStyleName;
+					if (i == begin.row)
+					{
+						newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, begin.column, range.end);
+					}
+					else if (i == end.row)
+					{
+						newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, range.start, end.column);
+					}
+					else
+					{
+						newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, range.start, end.column);
+					}
 
-				if (i == begin.row)
-				{
-					styleName = newStyleName;
-				}
-				else if (!styleName || !newStyleName || styleName.Value() != newStyleName.Value())
-				{
-					styleName = {};
+					if (i == begin.row)
+					{
+						styleName = newStyleName;
+					}
+					else if (!styleName || !newStyleName || styleName.Value() != newStyleName.Value())
+					{
+						styleName = {};
+					}
 				}
 			}
 			return styleName;

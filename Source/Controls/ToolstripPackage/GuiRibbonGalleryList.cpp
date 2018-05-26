@@ -656,6 +656,7 @@ GuiBindableRibbonGalleryList
 				else
 				{
 					itemList->SetSelected(index, true);
+					itemList->EnsureItemVisible(index);
 				}
 			}
 
