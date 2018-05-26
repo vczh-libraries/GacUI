@@ -638,6 +638,15 @@ GuiBindableRibbonGalleryList
 				return itemList->GetSelectedItemIndex();
 			}
 
+			description::Value GuiBindableRibbonGalleryList::GetSelectedItem()
+			{
+				vint index = itemList->GetSelectedItemIndex();
+				if (index == -1) return Value();
+
+				auto pos = IndexToGalleryPos(index);
+				return groupedItemSource[pos.group]->GetItemValues()->Get(pos.item);
+			}
+
 			void GuiBindableRibbonGalleryList::ApplyItem(vint index)
 			{
 				if (index == -1)

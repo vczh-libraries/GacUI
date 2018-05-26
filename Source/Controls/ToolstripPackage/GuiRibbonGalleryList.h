@@ -244,8 +244,11 @@ Ribbon Gallery List
 				void													SetMaxCount(vint value);
 
 				/// <summary>Get the selected item index.</summary>
-				/// <returns>The index of the selected item.</returns>
+				/// <returns>The index of the selected item. If there are multiple selected items, or there is no selected item, -1 will be returned.</returns>
 				vint													GetSelectedIndex();
+				/// <summary>Get the selected item.</summary>
+				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
+				description::Value										GetSelectedItem();
 				/// <summary>Select an item with <see cref="ItemApplied"/> event raised.</summary>
 				/// <param name="index">The index of the item to select. Set to -1 to clear the selection.</param>
 				void													ApplyItem(vint index);

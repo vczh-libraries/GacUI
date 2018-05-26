@@ -267,7 +267,7 @@
 
                   <RibbonGroup Text="Style">
                     <att.Items>
-                      <BindableRibbonGalleryList ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" env.ItemType="demo::StyleGroup^">
+                      <BindableRibbonGalleryList ref.Name="styleGallery" ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" env.ItemType="demo::StyleGroup^">
                         <att.ItemSource-eval>self.GetStyleGroups()</att.ItemSource-eval>
                         <att.GroupTitleProperty>Name</att.GroupTitleProperty>
                         <att.GroupChildrenProperty>Items</att.GroupChildrenProperty>
@@ -282,6 +282,19 @@
                           <MenuItemButton Text="Item B2"/>
                           <MenuItemButton Text="Item B3"/>
                         </att.SubMenu-set>
+
+                        <ev.ItemApplied-eval>
+                          <![CDATA[
+                            {
+                              if (styleGallery.ItemIndex != -1)
+                              {
+                                var style = cast (StyleItem^) styleGallery.SelectedItem;
+                                self.document.ClearStyle(document.CaretBegin, document.CaretEnd);
+                                self.document.EditStyleName(document.CaretBegin, document.CaretEnd, style.Name);
+                              }
+                            }
+                          ]]>
+                        </ev.ItemApplied-eval>
                       </BindableRibbonGalleryList>
                     </att.Items>
                   </RibbonGroup>

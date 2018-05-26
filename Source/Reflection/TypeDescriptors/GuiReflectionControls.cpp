@@ -986,6 +986,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(MinCount)
 				CLASS_MEMBER_PROPERTY_FAST(MaxCount)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedIndex, SelectionChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
 
 				CLASS_MEMBER_METHOD(IndexToGalleryPos, { L"index" })
 				CLASS_MEMBER_METHOD(GalleryPosToIndex, { L"pos" })
