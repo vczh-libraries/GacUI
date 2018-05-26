@@ -6,12 +6,13 @@ namespace vl
 	{
 		using namespace collections;
 
+		namespace document_operation_visitors
+		{
+
 /***********************************************************************
 Calculate if all text in the specified range has some common styles
 ***********************************************************************/
 
-		namespace document_operation_visitors
-		{
 			class SummarizeStyleVisitor : public Object, public DocumentRun::IVisitor
 			{
 			public:
@@ -182,6 +183,82 @@ Calculate if all text in the specified range has some common styles
 					VisitContainer(run);
 				}
 			};
+
+/***********************************************************************
+Calculate if all text in the specified range has a common style name
+***********************************************************************/
+
+			class SummarizeStyleNameVisitor : public Object, public DocumentRun::IVisitor
+			{
+			public:
+				RunRangeMap&							runRanges;
+				DocumentModel*							model;
+				vint									start;
+				vint									end;
+				Nullable<WString>						styleName;
+				bool									assignedStyleName = false;
+
+				SummarizeStyleNameVisitor(RunRangeMap& _runRanges, DocumentModel* _model, vint _start, vint _end)
+					:runRanges(_runRanges)
+					, model(_model)
+					, start(_start)
+					, end(_end)
+				{
+				}
+
+				void VisitContainer(DocumentContainerRun* run)
+				{
+					for (vint i = run->runs.Count() - 1; i >= 0; i--)
+					{
+						Ptr<DocumentRun> subRun = run->runs[i];
+						RunRange range = runRanges[subRun.Obj()];
+						if (range.start<end && start<range.end)
+						{
+							subRun->Accept(this);
+						}
+					}
+				}
+
+				void Visit(DocumentTextRun* run)override
+				{
+				}
+
+				void Visit(DocumentStylePropertiesRun* run)override
+				{
+					VisitContainer(run);
+				}
+
+				void Visit(DocumentStyleApplicationRun* run)override
+				{
+					if (!assignedStyleName)
+					{
+						styleName = run->styleName;
+					}
+					else if (styleName && styleName.Value() != run->styleName)
+					{
+						styleName = {};
+					}
+					VisitContainer(run);
+				}
+
+				void Visit(DocumentHyperlinkRun* run)override
+				{
+					VisitContainer(run);
+				}
+
+				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+
+				void Visit(DocumentParagraphRun* run)override
+				{
+					VisitContainer(run);
+				}
+			};
 		}
 		using namespace document_operation_visitors;
 
@@ -196,7 +273,9 @@ Calculate if all text in the specified range has some common styles
 
 			Nullable<WString> SummarizeStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end)
 			{
-				return {};
+				SummarizeStyleNameVisitor visitor(runRanges, model, start, end);
+				run->Accept(&visitor);
+				return visitor.styleName;
 			}
 
 			template<typename T>
