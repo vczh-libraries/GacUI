@@ -12,7 +12,7 @@ Calculate if all text in the specified range has some common styles
 
 		namespace document_operation_visitors
 		{
-			class SummerizeStyleVisitor : public Object, public DocumentRun::IVisitor
+			class SummarizeStyleVisitor : public Object, public DocumentRun::IVisitor
 			{
 			public:
 				RunRangeMap&							runRanges;
@@ -22,7 +22,7 @@ Calculate if all text in the specified range has some common styles
 				Ptr<DocumentStyleProperties>			style;
 				List<DocumentModel::ResolvedStyle>		resolvedStyles;
 
-				SummerizeStyleVisitor(RunRangeMap& _runRanges, DocumentModel* _model, vint _start, vint _end)
+				SummarizeStyleVisitor(RunRangeMap& _runRanges, DocumentModel* _model, vint _start, vint _end)
 					:runRanges(_runRanges)
 					, model(_model)
 					, start(_start)
@@ -187,11 +187,16 @@ Calculate if all text in the specified range has some common styles
 
 		namespace document_editor
 		{
-			Ptr<DocumentStyleProperties> SummerizeStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end)
+			Ptr<DocumentStyleProperties> SummarizeStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end)
 			{
-				SummerizeStyleVisitor visitor(runRanges, model, start, end);
+				SummarizeStyleVisitor visitor(runRanges, model, start, end);
 				run->Accept(&visitor);
 				return visitor.style;
+			}
+
+			Nullable<WString> SummarizeStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end)
+			{
+				return {};
 			}
 
 			template<typename T>

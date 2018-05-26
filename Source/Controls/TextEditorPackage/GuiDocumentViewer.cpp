@@ -807,7 +807,7 @@ GuiDocumentCommonInterface
 				return documentElement->SummarizeStyle(begin, end);
 			}
 
-			WString GuiDocumentCommonInterface::SummarizeStyleName(TextPos begin, TextPos end)
+			Nullable<WString> GuiDocumentCommonInterface::SummarizeStyleName(TextPos begin, TextPos end)
 			{
 				if (begin>end)
 				{

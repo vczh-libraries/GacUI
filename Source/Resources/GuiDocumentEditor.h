@@ -38,7 +38,8 @@ namespace vl
 			extern void									RemoveHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
 			extern void									RemoveStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
 			extern void									ClearStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
-			extern Ptr<DocumentStyleProperties>			SummerizeStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end);
+			extern Ptr<DocumentStyleProperties>			SummarizeStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end);
+			extern Nullable<WString>					SummarizeStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end);
 			extern void									AggregateStyle(Ptr<DocumentStyleProperties>& dst, Ptr<DocumentStyleProperties> src);
 		}
 	}

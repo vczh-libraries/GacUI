@@ -1109,7 +1109,7 @@ GuiDocumentElement
 				return nullptr;
 			}
 
-			WString GuiDocumentElement::SummarizeStyleName(TextPos begin, TextPos end)
+			Nullable<WString> GuiDocumentElement::SummarizeStyleName(TextPos begin, TextPos end)
 			{
 				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
@@ -1122,7 +1122,7 @@ GuiDocumentElement
 
 					return document->SummarizeStyleName(begin, end);
 				}
-				return L"";
+				return {};
 			}
 
 			void GuiDocumentElement::SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)

@@ -552,45 +552,45 @@ DocumentModel::ClearStyle
 			Ptr<DocumentStyleProperties> style;
 			RunRangeMap runRanges;
 
-			if(begin==end) goto END_OF_SUMMERIZING;
+			if (begin == end) goto END_OF_SUMMERIZING;
 
 			// check caret range
-			if(!CheckEditRange(begin, end, runRanges)) return nullptr;
+			if (!CheckEditRange(begin, end, runRanges)) return nullptr;
 
-			// summerize container
-			if(begin.row==end.row)
+			// Summarize container
+			if (begin.row == end.row)
 			{
-				style=SummerizeStyle(paragraphs[begin.row].Obj(), runRanges, this, begin.column, end.column);
+				style = document_editor::SummarizeStyle(paragraphs[begin.row].Obj(), runRanges, this, begin.column, end.column);
 			}
 			else
 			{
-				for(vint i=begin.row;i<=end.row;i++)
+				for (vint i = begin.row; i <= end.row; i++)
 				{
-					Ptr<DocumentParagraphRun> paragraph=paragraphs[i];
-					if(begin.row<i && i<end.row)
+					Ptr<DocumentParagraphRun> paragraph = paragraphs[i];
+					if (begin.row < i && i < end.row)
 					{
 						GetRunRange(paragraph.Obj(), runRanges);
 					}
-					RunRange range=runRanges[paragraph.Obj()];
+					RunRange range = runRanges[paragraph.Obj()];
 					Ptr<DocumentStyleProperties> paragraphStyle;
-					if(i==begin.row)
+					if (i == begin.row)
 					{
-						paragraphStyle=SummerizeStyle(paragraph.Obj(), runRanges, this, begin.column, range.end);
+						paragraphStyle = document_editor::SummarizeStyle(paragraph.Obj(), runRanges, this, begin.column, range.end);
 					}
-					else if(i==end.row)
+					else if (i == end.row)
 					{
-						paragraphStyle=SummerizeStyle(paragraph.Obj(), runRanges, this, range.start, end.column);
+						paragraphStyle = document_editor::SummarizeStyle(paragraph.Obj(), runRanges, this, range.start, end.column);
 					}
 					else
 					{
-						paragraphStyle=SummerizeStyle(paragraph.Obj(), runRanges, this, range.start, range.end);
+						paragraphStyle = document_editor::SummarizeStyle(paragraph.Obj(), runRanges, this, range.start, range.end);
 					}
 
-					if(!style)
+					if (!style)
 					{
-						style=paragraphStyle;
+						style = paragraphStyle;
 					}
-					else if(paragraphStyle)
+					else if (paragraphStyle)
 					{
 						AggregateStyle(style, paragraphStyle);
 					}
@@ -598,16 +598,56 @@ DocumentModel::ClearStyle
 			}
 
 		END_OF_SUMMERIZING:
-			if(!style)
+			if (!style)
 			{
-				style=new DocumentStyleProperties;
+				style = new DocumentStyleProperties;
 			}
 			return style;
 		}
 
-		WString DocumentModel::SummarizeStyleName(TextPos begin, TextPos end)
+		Nullable<WString> DocumentModel::SummarizeStyleName(TextPos begin, TextPos end)
 		{
-			return L"";
+			if (begin == end) return {};
+
+			// check caret range
+			RunRangeMap runRanges;
+			if (!CheckEditRange(begin, end, runRanges)) return nullptr;
+
+			// Summarize container
+			Nullable<WString> styleName;
+
+			for (vint i = begin.row; i <= end.row; i++)
+			{
+				Ptr<DocumentParagraphRun> paragraph = paragraphs[i];
+				if (begin.row < i && i < end.row)
+				{
+					GetRunRange(paragraph.Obj(), runRanges);
+				}
+				RunRange range = runRanges[paragraph.Obj()];
+				Nullable<WString> newStyleName;
+				if (i == begin.row)
+				{
+					newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, begin.column, range.end);
+				}
+				else if (i == end.row)
+				{
+					auto newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, range.start, end.column);
+				}
+				else
+				{
+					auto newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, range.start, end.column);
+				}
+
+				if (i == begin.row)
+				{
+					styleName = newStyleName;
+				}
+				else if (!styleName || !newStyleName || styleName.Value() != newStyleName.Value())
+				{
+					styleName = {};
+				}
+			}
+			return styleName;
 		}
 
 		Nullable<Alignment> DocumentModel::SummarizeParagraphAlignment(TextPos begin, TextPos end)
