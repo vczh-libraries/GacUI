@@ -133,9 +133,11 @@
           prop AlignCenterSelected : bool = true {}
           @cpp:Private
           prop AlignRightSelected : bool = true {}
+          @cpp:Private
+          prop StyleGroups : demo::StyleGroup^[] = null {}
 
           @cpp:Private
-          func GetStyleGroups(): demo::StyleGroup^[]
+          func GenerateStyleGroups(): demo::StyleGroup^[]
           {
             var group1 = new StyleGroup^();
             group1.Name = "Headers";
@@ -165,6 +167,13 @@
           }
         ]]>
       </ref.Members>
+      <ref.Ctor>
+        <![CDATA[
+          {
+            StyleGroups = GenerateStyleGroups();
+          }
+        ]]>
+      </ref.Ctor>
       <demo:DocumentEditorBase ref.Name="self" Text="Document Editor (Ribbon)">
         <att.AlignLeftSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignLeft on _.SelectionChanged)</att.AlignLeftSelected-bind>
         <att.AlignCenterSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignCenter on _.SelectionChanged)</att.AlignCenterSelected-bind>
@@ -268,7 +277,7 @@
                   <RibbonGroup Text="Style">
                     <att.Items>
                       <BindableRibbonGalleryList ref.Name="styleGallery" ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" env.ItemType="demo::StyleGroup^">
-                        <att.ItemSource-eval>self.GetStyleGroups()</att.ItemSource-eval>
+                        <att.ItemSource-bind>self.StyleGroups</att.ItemSource-bind>
                         <att.GroupTitleProperty>Name</att.GroupTitleProperty>
                         <att.GroupChildrenProperty>Items</att.GroupChildrenProperty>
 
@@ -286,11 +295,11 @@
                         <ev.ItemApplied-eval>
                           <![CDATA[
                             {
-                              if (styleGallery.ItemIndex != -1)
+                              if (arguments.itemIndex != -1)
                               {
-                                var style = cast (StyleItem^) styleGallery.SelectedItem;
-                                self.document.ClearStyle(document.CaretBegin, document.CaretEnd);
-                                self.document.EditStyleName(document.CaretBegin, document.CaretEnd, style.Name);
+                                var pos = styleGallery.IndexToGalleryPos(arguments.itemIndex);
+                                self.document.ClearStyle(self.document.CaretBegin, self.document.CaretEnd);
+                                self.document.EditStyleName(self.document.CaretBegin, self.document.CaretEnd, self.StyleGroups[pos.group].Items[pos.item].Name);
                               }
                             }
                           ]]>
