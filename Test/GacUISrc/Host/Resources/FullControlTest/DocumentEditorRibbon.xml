@@ -86,7 +86,7 @@
           }
         ]]>
       </ref.Ctor>
-      <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:72">
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:72">
         <CustomControl ref.Name="containerControl">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="5">
@@ -97,13 +97,17 @@
             <att.Columns>
               <_>composeType:Percentage percentage:1.0</_>
             </att.Columns>
-            
+
             <Cell Site="row:0 column:0">
               <SolidLabel ref.Name="styleLabel" Text="AaBbCc" Ellipse="true" Color="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Cell>
 
             <Cell Site="row:1 column:0">
-              <SolidLabel Text-bind="ViewModel.Name" Font-eval="containerControl.Font" Ellipse="true" Color="#808080" HorizontalAlignment="Center"/>
+              <SolidLabel Text-bind="ViewModel.Name" Font-eval="containerControl.Font" Ellipse="true" HorizontalAlignment="Center">
+                <att.Color-bind>
+                  <![CDATA[cast Color (self.Selected ? "#FFFFFF" : "#808080")]]>
+                </att.Color-bind>
+              </SolidLabel>
             </Cell>
           </Table>
 
@@ -146,6 +150,16 @@
             group2.Items.Add(new StyleItem^("Emphasis", null, null, null, true, true, null));
             group2.Items.Add(new StyleItem^("Intense Emphasis", null, (cast Color "#8080FF"), null, true, true, null));
             group2.Items.Add(new StyleItem^("Deleted", null, null, null, null, null, true));
+
+            var styles = document.Document.styles;
+            for (styleItem in group1.Items)
+            {
+              styles.Set(styleItem.Name, styleItem.Style);
+            }
+            for (styleItem in group2.Items)
+            {
+              styles.Set(styleItem.Name, styleItem.Style);
+            }
 
             return {group1 group2};
           }
