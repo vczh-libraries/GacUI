@@ -71,6 +71,18 @@ Menu Service
 				virtual void							MenuClosed(GuiMenu* menu);
 			};
 
+			/// <summary>IGuiMenuService is a required service to tell a ribbon group that this control has a dropdown to display.</summary>
+			class IGuiMenuDropdownProvider : public virtual IDescriptable, public Description<IGuiMenuDropdownProvider>
+			{
+			public:
+				/// <summary>The identifier for this service.</summary>
+				static const wchar_t* const				Identifier;
+
+				/// <summary>Get the dropdown to display.</summary>
+				/// <returns>The dropdown to display. Returns null to indicate the dropdown cannot be displaied temporary.</returns>
+				virtual GuiPopup*						ProvideDropdown() = 0;
+			};
+
 /***********************************************************************
 Menu
 ***********************************************************************/
@@ -128,7 +140,7 @@ MenuButton
 ***********************************************************************/
 
 			/// <summary>Menu item.</summary>
-			class GuiMenuButton : public GuiSelectableButton, public Description<GuiMenuButton>
+			class GuiMenuButton : public GuiSelectableButton, private IGuiMenuDropdownProvider, public Description<GuiMenuButton>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ToolstripButtonTemplate, GuiSelectableButton)
 
@@ -157,6 +169,10 @@ MenuButton
 				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
+
+			private:
+				GuiPopup*								ProvideDropdown()override;
+
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -231,6 +247,8 @@ MenuButton
 				/// <summary>Enable or disable cascade action.</summary>
 				/// <param name="value">Set to true to enable cascade action.</param>
 				void									SetCascadeAction(bool value);
+
+				IDescriptable*							QueryService(const WString& identifier)override;
 			};
 		}
 	}

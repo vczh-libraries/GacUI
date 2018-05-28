@@ -14,6 +14,7 @@ IGuiMenuService
 ***********************************************************************/
 
 			const wchar_t* const IGuiMenuService::Identifier = L"vl::presentation::controls::IGuiMenuService";
+			const wchar_t* const IGuiMenuDropdownProvider::Identifier = L"vl::presentation::controls::IGuiMenuDropdownProvider";
 
 			IGuiMenuService::IGuiMenuService()
 				:openingMenu(0)
@@ -329,6 +330,11 @@ GuiMenuButton
 				return ownerMenuService?ownerMenuService->GetPreferredDirection():IGuiMenuService::Horizontal;
 			}
 
+			GuiPopup* GuiMenuButton::ProvideDropdown()
+			{
+				return GetSubMenu();
+			}
+
 			GuiMenuButton::GuiMenuButton(theme::ThemeName themeName)
 				:GuiSelectableButton(themeName)
 				,subMenu(0)
@@ -502,6 +508,18 @@ GuiMenuButton
 			void GuiMenuButton::SetCascadeAction(bool value)
 			{
 				cascadeAction=value;
+			}
+
+			IDescriptable* GuiMenuButton::QueryService(const WString& identifier)
+			{
+				if (identifier == IGuiMenuDropdownProvider::Identifier)
+				{
+					return (IGuiMenuDropdownProvider*)this;
+				}
+				else
+				{
+					return GuiSelectableButton::QueryService(identifier);
+				}
 			}
 		}
 	}

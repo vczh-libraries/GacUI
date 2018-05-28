@@ -115,6 +115,7 @@ Ribbon Containers
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGroupTemplate, GuiControl)
 			protected:
 				bool												expandable = false;
+				Ptr<GuiImageData>									largeImage;
 				GuiRibbonGroupItemCollection						items;
 				compositions::GuiResponsiveStackComposition*		responsiveStack = nullptr;
 				compositions::GuiStackComposition*					stack = nullptr;
@@ -129,6 +130,8 @@ Ribbon Containers
 				compositions::GuiNotifyEvent						ExpandableChanged;
 				/// <summary>Expand button clicked event.</summary>
 				compositions::GuiNotifyEvent						ExpandButtonClicked;
+				/// <summary>Large image changed event.</summary>
+				compositions::GuiNotifyEvent						LargeImageChanged;
 
 				/// <summary>Test if this group is expandable. An expandable group will display an extra small button, which raises <see cref="ExpandButtonClicked"/>.</summary>
 				/// <returns>Returns true if this group is expandable.</returns>
@@ -136,6 +139,13 @@ Ribbon Containers
 				/// <summary>Set if this group is expandable.</summary>
 				/// <param name="value">Set to true to make this group is expandable.</param>
 				void												SetExpandable(bool value);
+
+				/// <summary>Get the large image for the collapsed ribbon group.</summary>
+				/// <returns>The large image for the collapsed ribbon group.</returns>
+				Ptr<GuiImageData>									GetLargeImage();
+				/// <summary>Set the large image for the collapsed ribbon group.</summary>
+				/// <param name="value">The large image for the collapsed ribbon group.</param>
+				void												SetLargeImage(Ptr<GuiImageData> value);
 
 				/// <summary>Get the collection of controls in this group.</summary>
 				/// <returns>The collection of controls.</returns>

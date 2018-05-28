@@ -23,14 +23,14 @@ namespace vl
 Toolstrip Item Collection
 ***********************************************************************/
 
-			/// <summary>IToolstripUpdateLayout is required for all menu item container.</summary>
+			/// <summary>IToolstripUpdateLayout is a required service for all menu item container.</summary>
 			class IToolstripUpdateLayout : public IDescriptable
 			{
 			public:
 				virtual void								UpdateLayout() = 0;
 			};
 
-			/// <summary>IToolstripUpdateLayout is required for a menu item which want to force the container to redo layout.</summary>
+			/// <summary>IToolstripUpdateLayout is a required service for a menu item which want to force the container to redo layout.</summary>
 			class IToolstripUpdateLayoutInvoker : public IDescriptable
 			{
 			public:

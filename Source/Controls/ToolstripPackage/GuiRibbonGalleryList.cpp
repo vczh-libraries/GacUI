@@ -520,6 +520,11 @@ GuiBindableRibbonGalleryList
 				}
 			}
 
+			GuiPopup* GuiBindableRibbonGalleryList::ProvideDropdown()
+			{
+				return GetSubMenu();
+			}
+
 			GuiBindableRibbonGalleryList::GuiBindableRibbonGalleryList(theme::ThemeName themeName)
 				:GuiRibbonGallery(themeName)
 				, GroupedDataSource(boundsComposition)
@@ -697,6 +702,18 @@ GuiBindableRibbonGalleryList
 			GuiToolstripMenu* GuiBindableRibbonGalleryList::GetSubMenu()
 			{
 				return subMenu;
+			}
+
+			IDescriptable* GuiBindableRibbonGalleryList::QueryService(const WString& identifier)
+			{
+				if (identifier == IGuiMenuDropdownProvider::Identifier)
+				{
+					return (IGuiMenuDropdownProvider*)this;
+				}
+				else
+				{
+					return GuiRibbonGallery::QueryService(identifier);
+				}
 			}
 		}
 	}

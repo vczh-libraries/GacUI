@@ -160,7 +160,7 @@ Ribbon Gallery List
 			}
 
 			/// <summary>Auto resizable ribbon gallyer list.</summary>
-			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, public Description<GuiBindableRibbonGalleryList>
+			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, private IGuiMenuDropdownProvider, public Description<GuiBindableRibbonGalleryList>
 			{
 				friend class ribbon_impl::GalleryItemArranger;
 
@@ -197,6 +197,10 @@ Ribbon Gallery List
 
 				void													StartPreview(vint index);
 				void													StopPreview(vint index);
+
+			private:
+				GuiPopup*												ProvideDropdown()override;
+
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -267,6 +271,8 @@ Ribbon Gallery List
 				/// <summary>Get the dropdown menu.</summary>
 				/// <returns>The dropdown menu.</returns>
 				GuiToolstripMenu*										GetSubMenu();
+
+				IDescriptable*											QueryService(const WString& identifier)override;
 			};
 		}
 	}

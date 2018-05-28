@@ -638,6 +638,12 @@ Type Declaration
 				CLASS_MEMBER_METHOD(MenuClosed, {L"menu"})
 			END_INTERFACE_MEMBER(IGuiMenuService)
 
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiMenuDropdownProvider)
+				INTERFACE_IDENTIFIER(vl::presentation::controls::IGuiMenuDropdownProvider)
+
+				CLASS_MEMBER_METHOD(ProvideDropdown, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IGuiMenuDropdownProvider)
+
 			BEGIN_ENUM_ITEM(IGuiMenuService::Direction)
 				ENUM_ITEM_NAMESPACE(IGuiMenuService)
 				ENUM_NAMESPACE_ITEM(Horizontal)
@@ -911,6 +917,7 @@ Type Declaration
 
 				CLASS_MEMBER_GUIEVENT(ExpandButtonClicked)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Expandable)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(LargeImage)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
 			END_CLASS_MEMBER(GuiRibbonGroup)
 

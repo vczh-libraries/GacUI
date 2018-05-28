@@ -242,6 +242,7 @@ GuiRibbonGroup
 
 				ExpandableChanged.SetAssociatedComposition(boundsComposition);
 				ExpandButtonClicked.SetAssociatedComposition(boundsComposition);
+				LargeImageChanged.SetAssociatedComposition(boundsComposition);
 			}
 
 			GuiRibbonGroup::~GuiRibbonGroup()
@@ -260,6 +261,20 @@ GuiRibbonGroup
 					expandable = value;
 					GetControlTemplateObject()->SetExpandable(expandable);
 					ExpandableChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			Ptr<GuiImageData> GuiRibbonGroup::GetLargeImage()
+			{
+				return largeImage;
+			}
+
+			void GuiRibbonGroup::SetLargeImage(Ptr<GuiImageData> value)
+			{
+				if (largeImage != value)
+				{
+					largeImage = value;
+					LargeImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
 

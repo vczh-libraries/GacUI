@@ -287,6 +287,7 @@ Control Template
 
 #define GuiRibbonGroupTemplate_PROPERTIES(F)\
 				F(GuiRibbonGroupTemplate, bool, Expandable, false)\
+				F(GuiRibbonGroupTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeDropdownButtonTemplate, {})\
 
 #define GuiRibbonButtonsTemplate_PROPERTIES(F)\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeButtonTemplate, {})\
