@@ -188,7 +188,11 @@ GalleryItemArranger
 					vint groupCount = viewBounds.Width() / pim_itemWidth;
 					owner->SetScrollUpEnabled(firstIndex > 0);
 					owner->SetScrollDownEnabled(firstIndex + groupCount < count);
-					owner->layout->SetItemWidth(pim_itemWidth);
+					if (owner->layout->GetItemWidth() != pim_itemWidth)
+					{
+						owner->layout->SetItemWidth(pim_itemWidth);
+						owner->UpdateLayoutSizeOffset();
+					}
 				}
 
 /***********************************************************************
@@ -227,6 +231,11 @@ GalleryResponsiveLayout
 				Size GalleryResponsiveLayout::GetSizeOffset()
 				{
 					return sizeOffset;
+				}
+
+				vint GalleryResponsiveLayout::GetVisibleItemCount()
+				{
+					return itemCount;
 				}
 
 				void GalleryResponsiveLayout::SetMinCount(vint value)

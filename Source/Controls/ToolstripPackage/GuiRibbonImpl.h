@@ -73,6 +73,7 @@ GalleryItemArranger
 					vint										GetMaxCount();
 					vint										GetItemWidth();
 					Size										GetSizeOffset();
+					vint										GetVisibleItemCount();
 
 					void										SetMinCount(vint value);
 					void										SetMaxCount(vint value);

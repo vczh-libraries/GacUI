@@ -287,6 +287,19 @@ GuiBindableRibbonGalleryList
 				auto cSize = itemList->GetContainerComposition()->GetBounds();
 				auto bSize = itemList->GetBoundsComposition()->GetBounds();
 				layout->SetSizeOffset(Size(bSize.Width() - cSize.Width(), bSize.Height() - cSize.Height()));
+
+				if (layout->GetItemWidth() > 0)
+				{
+					vint columns = layout->GetVisibleItemCount();
+					if (columns == 0) columns = 1;
+					vint rows = (visibleItemCount + columns - 1) / columns;
+					vint height = (vint)(layout->GetBounds().Height()*(rows + 0.5));
+					groupContainer->GetBoundsComposition()->SetPreferredMinSize(Size(0, height));
+				}
+				else
+				{
+					groupContainer->GetBoundsComposition()->SetPreferredMinSize(Size(0, 0));
+				}
 			}
 
 			void GuiBindableRibbonGalleryList::OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
