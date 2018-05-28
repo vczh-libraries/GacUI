@@ -114,11 +114,25 @@ Ribbon Containers
 				friend class GuiRibbonGroupItemCollection;
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGroupTemplate, GuiControl)
 			protected:
+
+				class CommandExecutor : public Object, public IRibbonGroupCommandExecutor
+				{
+				protected:
+					GuiRibbonGroup*									group;
+
+				public:
+					CommandExecutor(GuiRibbonGroup* _group);
+					~CommandExecutor();
+
+					void											NotifyExpandButtonClicked()override;
+				};
+
 				bool												expandable = false;
 				Ptr<GuiImageData>									largeImage;
 				GuiRibbonGroupItemCollection						items;
 				compositions::GuiResponsiveStackComposition*		responsiveStack = nullptr;
 				compositions::GuiStackComposition*					stack = nullptr;
+				Ptr<CommandExecutor>								commandExecutor;
 
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>

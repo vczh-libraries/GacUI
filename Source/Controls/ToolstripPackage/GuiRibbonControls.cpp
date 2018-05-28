@@ -211,22 +211,48 @@ GuiRibbonGroupItemCollection
 			}
 
 /***********************************************************************
+GuiRibbonGroup::CommandExecutor
+***********************************************************************/
+
+			GuiRibbonGroup::CommandExecutor::CommandExecutor(GuiRibbonGroup* _group)
+				:group(_group)
+			{
+			}
+
+			GuiRibbonGroup::CommandExecutor::~CommandExecutor()
+			{
+			}
+
+			void GuiRibbonGroup::CommandExecutor::NotifyExpandButtonClicked()
+			{
+				group->ExpandButtonClicked.Execute(group->GetNotifyEventArguments());
+			}
+
+/***********************************************************************
 GuiRibbonGroup
 ***********************************************************************/
 
 			void GuiRibbonGroup::BeforeControlTemplateUninstalled_()
 			{
+				auto ct = GetControlTemplateObject();
+				if (!ct) return;
+
+				ct->SetCommands(nullptr);
 			}
 
 			void GuiRibbonGroup::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject()->SetExpandable(expandable);
+				auto ct = GetControlTemplateObject();
+				ct->SetExpandable(expandable);
+				ct->SetCommands(commandExecutor.Obj());
 			}
 
 			GuiRibbonGroup::GuiRibbonGroup(theme::ThemeName themeName)
 				:GuiControl(themeName)
 				, items(this)
 			{
+				commandExecutor = new CommandExecutor(this);
+
 				stack = new GuiStackComposition();
 				stack->SetDirection(GuiStackComposition::Horizontal);
 				stack->SetAlignmentToParent(Margin(0, 0, 0, 0));

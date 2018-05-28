@@ -286,6 +286,7 @@ Control Template
 				F(GuiRibbonTabTemplate, compositions::GuiGraphicsComposition*, AfterHeadersContainer, nullptr)\
 
 #define GuiRibbonGroupTemplate_PROPERTIES(F)\
+				F(GuiRibbonGroupTemplate, controls::IRibbonGroupCommandExecutor*, Commands, nullptr)\
 				F(GuiRibbonGroupTemplate, bool, Expandable, false)\
 				F(GuiRibbonGroupTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeDropdownButtonTemplate, {})\
 
