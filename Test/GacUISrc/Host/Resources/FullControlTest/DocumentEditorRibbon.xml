@@ -301,7 +301,7 @@
 
                   <RibbonGroup Text="Style">
                     <att.Items>
-                      <BindableRibbonGalleryList ref.Name="styleGallery" ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" env.ItemType="demo::StyleGroup^">
+                      <BindableRibbonGalleryList ref.Name="styleGallery" ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" VisibleItemCount="5" env.ItemType="demo::StyleGroup^">
                         <att.ItemSource-bind>self.StyleGroups</att.ItemSource-bind>
                         <att.GroupTitleProperty>Name</att.GroupTitleProperty>
                         <att.GroupChildrenProperty>Items</att.GroupChildrenProperty>

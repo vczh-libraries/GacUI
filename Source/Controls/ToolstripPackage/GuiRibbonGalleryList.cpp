@@ -667,6 +667,20 @@ GuiBindableRibbonGalleryList
 				skipItemAppliedEvent = false;
 			}
 
+			vint GuiBindableRibbonGalleryList::GetVisibleItemCount()
+			{
+				return visibleItemCount;
+			}
+
+			void GuiBindableRibbonGalleryList::SetVisibleItemCount(vint value)
+			{
+				if (visibleItemCount != value)
+				{
+					visibleItemCount = value;
+					UpdateLayoutSizeOffset();
+				}
+			}
+
 			GuiToolstripMenu* GuiBindableRibbonGalleryList::GetSubMenu()
 			{
 				return subMenu;

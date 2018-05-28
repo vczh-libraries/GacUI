@@ -173,6 +173,7 @@ Ribbon Gallery List
 				ItemStyleProperty										itemStyle;
 				GuiBindableTextList*									itemList;
 				GuiRibbonToolstripMenu*									subMenu;
+				vint													visibleItemCount = 1;
 				bool													skipItemAppliedEvent = false;
 
 				ribbon_impl::GalleryItemArranger*						itemListArranger;
@@ -255,6 +256,13 @@ Ribbon Gallery List
 				/// <summary>Select an item without <see cref="ItemApplied"/> event raised.</summary>
 				/// <param name="index">The index of the item to select. Set to -1 to clear the selection.</param>
 				void													SelectItem(vint index);
+
+				/// <summary>Get the minimum items visible in the drop down menu.</summary>
+				/// <returns>The minimum items visible in the drop down menu.</summary>
+				vint													GetVisibleItemCount();
+				/// <summary>Set minimum items visible in the drop down menu.</summary>
+				/// <param name="value">The minimum items visible in the drop down menu.</param>
+				void													SetVisibleItemCount(vint value);
 
 				/// <summary>Get the dropdown menu.</summary>
 				/// <returns>The dropdown menu.</returns>
