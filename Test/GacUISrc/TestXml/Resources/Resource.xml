@@ -65,11 +65,37 @@
                 <SolidBackground Color="#007ACC"/>
                 <Bounds AlignmentToParent="left:10 top:2 right:10 bottom:2">
                   <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                  <Button Visible-bind="self.Expandable" ControlTemplate="darkskin::RibbonGroupExpandButtonTemplate">
+                    <att.BoundsComposition-set AlignmentToParent="left:-1 top:-1 right:0 bottom:0"/>
+                    <ev.Clicked-eval>
+                      <![CDATA[
+                        {
+                          self.Commands.NotifyExpandButtonClicked();
+                        }
+                      ]]>
+                    </ev.Clicked-eval>
+                  </Button>
                 </Bounds>
               </Bounds>
             </Cell>
           </Table>
         </RibbonGroupTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="RibbonGroupExpandButtonTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGroupExpandButtonTemplate" ref.Styles="res://DarkSkin/Style">
+        <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+          <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2" MinSizeLimitation="LimitToElementAndChildren">
+            <Polygon ref.Style="ribbonExpandableArrow" Size="x:7 y:7">
+              <att.Points>
+                <Point>x:6 y:0</Point>
+                <Point>x:6 y:6</Point>
+                <Point>x:0 y:6</Point>
+              </att.Points>
+            </Polygon>
+          </Bounds>
+        </ButtonTemplate>
       </Instance>
     </Instance>
   </Folder>

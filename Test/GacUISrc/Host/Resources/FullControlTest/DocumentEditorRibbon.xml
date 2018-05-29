@@ -231,7 +231,7 @@
               <RibbonTabPage Text="Edit">
                 <att.ContainerComposition-set PreferredMinSize="y:110"/>
                 <att.Groups>
-                  <RibbonGroup Text="Alignment">
+                  <RibbonGroup Text="Alignment" Expandable="true">
                     <att.Items>
                       <RibbonLargeDropdownButton Text="Edit Mode">
                         <att.LargeImage-bind>self.EditModeCommand.LargeImage ?? null</att.LargeImage-bind>
