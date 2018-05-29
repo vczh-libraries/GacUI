@@ -22,7 +22,7 @@ GuiButton
 			void GuiButton::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject(true);
-				GetControlTemplateObject()->SetState(controlState);
+				GetControlTemplateObject(true)->SetState(controlState);
 			}
 
 			void GuiButton::OnParentLineChanged()

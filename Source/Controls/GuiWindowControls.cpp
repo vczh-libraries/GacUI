@@ -737,7 +737,6 @@ GuiWindow
 				if (ct->Get ## NAME ## Option() == templates::BoolOption::Customizable) \
 				{ \
 					VARIABLE = visible; \
-					auto ct = GetControlTemplateObject(); \
 					ct->Set ## NAME(visible); \
 					if (auto window = GetNativeWindow()) \
 					{ \

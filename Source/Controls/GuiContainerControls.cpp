@@ -394,7 +394,7 @@ GuiScrollView
 
 			Size GuiScrollView::GetViewSize()
 			{
-				Size viewSize = GetControlTemplateObject()->GetContainerComposition()->GetBounds().GetSize();
+				Size viewSize = GetControlTemplateObject(true)->GetContainerComposition()->GetBounds().GetSize();
 				return viewSize;
 			}
 
@@ -405,7 +405,7 @@ GuiScrollView
 
 			Point GuiScrollView::GetViewPosition()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
 				return Point(hScroll ? hScroll->GetPosition() : 0, vScroll ? vScroll->GetPosition() : 0);
@@ -413,7 +413,7 @@ GuiScrollView
 
 			void GuiScrollView::SetViewPosition(Point value)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				if (auto hScroll = ct->GetHorizontalScroll())
 				{
 					hScroll->SetPosition(value.x);
@@ -426,12 +426,12 @@ GuiScrollView
 
 			GuiScroll* GuiScrollView::GetHorizontalScroll()
 			{
-				return GetControlTemplateObject()->GetHorizontalScroll();
+				return GetControlTemplateObject(true)->GetHorizontalScroll();
 			}
 
 			GuiScroll* GuiScrollView::GetVerticalScroll()
 			{
-				return GetControlTemplateObject()->GetVerticalScroll();
+				return GetControlTemplateObject(true)->GetVerticalScroll();
 			}
 
 			bool GuiScrollView::GetHorizontalAlwaysVisible()
