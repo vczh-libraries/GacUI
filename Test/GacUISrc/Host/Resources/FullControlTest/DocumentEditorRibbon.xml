@@ -204,6 +204,8 @@
         <att.AlignCenterSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignCenter on _.SelectionChanged)</att.AlignCenterSelected-bind>
         <att.AlignRightSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignRight on _.SelectionChanged)</att.AlignRightSelected-bind>
 
+        <MessageDialog ref.Name="dialogMessage" Title="You Expanded a Group!" Text="GuiRibbonGroup::ExpandButtonClicked is executed!"/>
+
         <att.MenuContainer-set>
           <RibbonTab>
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -232,6 +234,13 @@
                 <att.ContainerComposition-set PreferredMinSize="y:110"/>
                 <att.Groups>
                   <RibbonGroup Text="Alignment" Expandable="true">
+                    <ev.ExpandButtonClicked-eval>
+                      <![CDATA[
+                        {
+                          dialogMessage.ShowDialog();
+                        }
+                      ]]>
+                    </ev.ExpandButtonClicked-eval>
                     <att.Items>
                       <RibbonLargeDropdownButton Text="Edit Mode">
                         <att.LargeImage-bind>self.EditModeCommand.LargeImage ?? null</att.LargeImage-bind>
