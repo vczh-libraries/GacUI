@@ -322,9 +322,12 @@ Basic Construction
 					return NAME != nullptr; \
 				} \
 			public: \
-				templates::Gui##TEMPLATE* GetControlTemplateObject() \
+				templates::Gui##TEMPLATE* GetControlTemplateObject(bool ensureExists) \
 				{ \
-					EnsureControlTemplateExists(); \
+					if (ensureExists) \
+					{ \
+						EnsureControlTemplateExists(); \
+					} \
 					return NAME; \
 				} \
 			private: \

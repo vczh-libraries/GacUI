@@ -25,7 +25,7 @@ GuiDatePicker::CommandExecutor
 
 			void GuiDatePicker::CommandExecutor::NotifyDateChanged()
 			{
-				datePicker->date = datePicker->GetControlTemplateObject()->GetDate();
+				datePicker->date = datePicker->GetControlTemplateObject(true)->GetDate();
 				datePicker->UpdateText();
 				datePicker->DateChanged.Execute(datePicker->GetNotifyEventArguments());
 			}
@@ -46,7 +46,7 @@ GuiDatePicker
 
 			void GuiDatePicker::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -54,7 +54,7 @@ GuiDatePicker
 
 			void GuiDatePicker::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetDate(date);
 				ct->SetDateLocale(dateLocale);
@@ -96,7 +96,7 @@ GuiDatePicker
 				if (date != value)
 				{
 					date = value;
-					GetControlTemplateObject()->SetDate(value);
+					GetControlTemplateObject(true)->SetDate(value);
 				}
 			}
 
@@ -126,7 +126,7 @@ GuiDatePicker
 				{
 					dateFormat=formats[0];
 				}
-				GetControlTemplateObject()->SetDateLocale(dateLocale);
+				GetControlTemplateObject(true)->SetDateLocale(dateLocale);
 
 				UpdateText();
 				DateFormatChanged.Execute(GetNotifyEventArguments());

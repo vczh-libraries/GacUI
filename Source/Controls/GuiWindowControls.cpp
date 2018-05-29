@@ -569,7 +569,7 @@ GuiWindow
 
 			void GuiWindow::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 #define FIX_WINDOW_PROPERTY(VARIABLE, NAME) \
 				switch (ct->Get ## NAME ## Option()) \
 				{ \
@@ -604,7 +604,7 @@ GuiWindow
 			{
 				if (auto window = GetNativeWindow())
 				{
-					if (GetControlTemplateObject()->GetCustomFrameEnabled())
+					if (GetControlTemplateObject(true)->GetCustomFrameEnabled())
 					{
 						window->EnableCustomFrameMode();
 						window->SetBorder(false);
@@ -626,7 +626,7 @@ GuiWindow
 			void GuiWindow::Moved()
 			{
 				GuiControlHost::Moved();
-				GetControlTemplateObject()->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+				GetControlTemplateObject(true)->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
 			}
 
 			void GuiWindow::OnNativeWindowChanged()
@@ -733,7 +733,7 @@ GuiWindow
 			} \
 			void GuiWindow::Set ## NAME(bool visible) \
 			{ \
-				auto ct = GetControlTemplateObject(); \
+				auto ct = GetControlTemplateObject(true); \
 				if (ct->Get ## NAME ## Option() == templates::BoolOption::Customizable) \
 				{ \
 					VARIABLE = visible; \

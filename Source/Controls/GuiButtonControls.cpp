@@ -21,7 +21,7 @@ GuiButton
 
 			void GuiButton::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				GetControlTemplateObject()->SetState(controlState);
 			}
 
@@ -69,7 +69,7 @@ GuiButton
 				if (controlState != newControlState)
 				{
 					controlState = newControlState;
-					GetControlTemplateObject()->SetState(controlState);
+					GetControlTemplateObject(true)->SetState(controlState);
 				}
 			}
 
@@ -221,7 +221,7 @@ GuiSelectableButton
 
 			void GuiSelectableButton::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject()->SetSelected(isSelected);
+				GetControlTemplateObject(true)->SetSelected(isSelected);
 			}
 
 			void GuiSelectableButton::OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -293,7 +293,7 @@ GuiSelectableButton
 				if (isSelected != value)
 				{
 					isSelected = value;
-					GetControlTemplateObject()->SetSelected(isSelected);
+					GetControlTemplateObject(true)->SetSelected(isSelected);
 					if (groupController)
 					{
 						groupController->OnSelectedChanged(this);

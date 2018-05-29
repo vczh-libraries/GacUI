@@ -443,7 +443,7 @@ GuiVirtualDataGrid (IDataGridContext)
 
 			templates::GuiListViewTemplate* GuiVirtualDataGrid::GetListViewControlTemplate()
 			{
-				return GetControlTemplateObject();
+				return GetControlTemplateObject(true);
 			}
 
 			void GuiVirtualDataGrid::RequestSaveData()

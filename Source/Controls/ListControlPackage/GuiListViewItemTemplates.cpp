@@ -85,7 +85,7 @@ BigIconListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
 
@@ -163,7 +163,7 @@ SmallIconListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
 
@@ -240,7 +240,7 @@ ListListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
 
@@ -349,7 +349,7 @@ TileListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 
 							vint dataColumnCount = view->GetDataColumnCount();
 							ResetTextTable(dataColumnCount + 1);
@@ -358,7 +358,7 @@ TileListViewItemTemplate
 							{
 								dataTexts[i] = CreateTextElement(i + 1);
 								dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
-								dataTexts[i]->SetColor(listView->GetControlTemplateObject()->GetSecondaryTextColor());
+								dataTexts[i]->SetColor(listView->GetControlTemplateObject(true)->GetSecondaryTextColor());
 							}
 						}
 					}
@@ -464,8 +464,8 @@ InformationListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
-							bottomLine->SetColor(listView->GetControlTemplateObject()->GetItemSeparatorColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
+							bottomLine->SetColor(listView->GetControlTemplateObject(true)->GetItemSeparatorColor());
 
 							vint dataColumnCount = view->GetDataColumnCount();
 							columnTexts.Resize(dataColumnCount);
@@ -501,7 +501,7 @@ InformationListViewItemTemplate
 
 									columnTexts[i] = GuiSolidLabelElement::Create();
 									columnTexts[i]->SetText(view->GetColumnText(view->GetDataColumn(i) + 1) + L": ");
-									columnTexts[i]->SetColor(listView->GetControlTemplateObject()->GetSecondaryTextColor());
+									columnTexts[i]->SetColor(listView->GetControlTemplateObject(true)->GetSecondaryTextColor());
 									cell->SetOwnedElement(columnTexts[i]);
 								}
 								{
@@ -512,7 +512,7 @@ InformationListViewItemTemplate
 									dataTexts[i]= GuiSolidLabelElement::Create();
 									dataTexts[i]->SetEllipse(true);
 									dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
-									dataTexts[i]->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+									dataTexts[i]->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 									cell->SetOwnedElement(dataTexts[i]);
 								}
 							}
@@ -620,7 +620,7 @@ DetailListViewItemTemplate
 								image->SetImage(0);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 
 							vint columnCount = view->GetColumnCount() - 1;
 							subItems.Resize(columnCount);
@@ -637,7 +637,7 @@ DetailListViewItemTemplate
 								subItems[i]->SetFont(text->GetFont());
 								subItems[i]->SetEllipse(true);
 								subItems[i]->SetText(view->GetSubItem(itemIndex, i));
-								subItems[i]->SetColor(listView->GetControlTemplateObject()->GetSecondaryTextColor());
+								subItems[i]->SetColor(listView->GetControlTemplateObject(true)->GetSecondaryTextColor());
 								cell->SetOwnedElement(subItems[i]);
 							}
 							OnColumnChanged();

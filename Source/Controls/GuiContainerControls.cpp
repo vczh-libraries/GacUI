@@ -92,7 +92,7 @@ GuiTab
 
 			void GuiTab::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -102,7 +102,7 @@ GuiTab
 
 			void GuiTab::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetTabPages(tabPages.GetWrapper());
 				ct->SetSelectedTabPage(selectedPage);
@@ -165,9 +165,9 @@ GuiTab
 						tabPage->SetVisible(tabPage == selectedPage);
 					}
 				}
-				if (HasControlTemplateObject())
+				if (auto ct = GetControlTemplateObject(false))
 				{
-					GetControlTemplateObject()->SetSelectedTabPage(selectedPage);
+					ct->SetSelectedTabPage(selectedPage);
 				}
 				SelectedPageChanged.Execute(GetNotifyEventArguments());
 				return selectedPage == value;
@@ -179,7 +179,7 @@ GuiScrollView
 
 			void GuiScrollView::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				if (auto scroll = ct->GetHorizontalScroll())
@@ -204,7 +204,7 @@ GuiScrollView
 
 			void GuiScrollView::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				if (auto scroll = ct->GetHorizontalScroll())
 				{
 					hScrollHandler = scroll->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
@@ -244,7 +244,7 @@ GuiScrollView
 			{
 				if(!supressScrolling)
 				{
-					if (auto scroll = GetControlTemplateObject()->GetHorizontalScroll())
+					if (auto scroll = GetControlTemplateObject(true)->GetHorizontalScroll())
 					{
 						vint position = scroll->GetPosition();
 						vint move = scroll->GetSmallMove();
@@ -258,7 +258,7 @@ GuiScrollView
 			{
 				if(!supressScrolling && GetVisuallyEnabled())
 				{
-					if (auto scroll = GetControlTemplateObject()->GetVerticalScroll())
+					if (auto scroll = GetControlTemplateObject(true)->GetVerticalScroll())
 					{
 						vint position = scroll->GetPosition();
 						vint move = scroll->GetSmallMove();
@@ -276,7 +276,7 @@ GuiScrollView
 
 			bool GuiScrollView::AdjustView(Size fullSize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
 				Size viewSize = ct->GetContainerComposition()->GetBounds().GetSize();
@@ -351,7 +351,7 @@ GuiScrollView
 
 			void GuiScrollView::CalculateView()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				if (!supressScrolling)
 				{
 					Size fullSize = QueryFullSize();

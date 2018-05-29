@@ -52,7 +52,7 @@ RangedItemArrangerBase
 					if (listControl->GetDisplayItemBackground())
 					{
 						backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
-						if (auto style = listControl->GetControlTemplateObject()->GetBackgroundTemplate())
+						if (auto style = listControl->GetControlTemplateObject(true)->GetBackgroundTemplate())
 						{
 							backgroundButton->SetControlTemplate(style);
 						}

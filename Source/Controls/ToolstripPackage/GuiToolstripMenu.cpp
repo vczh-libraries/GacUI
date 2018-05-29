@@ -341,7 +341,7 @@ GuiToolstripButton
 					}
 					else
 					{
-						newSubMenu->SetControlTemplate(GetControlTemplateObject()->GetSubMenuTemplate());
+						newSubMenu->SetControlTemplate(GetControlTemplateObject(true)->GetSubMenuTemplate());
 					}
 					SetSubMenu(newSubMenu, true);
 				}

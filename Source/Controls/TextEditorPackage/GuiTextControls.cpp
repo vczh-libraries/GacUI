@@ -84,7 +84,7 @@ GuiMultilineTextBox
 
 			void GuiMultilineTextBox::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -92,7 +92,7 @@ GuiMultilineTextBox
 
 			void GuiMultilineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				Array<text::ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);
@@ -102,7 +102,7 @@ GuiMultilineTextBox
 
 			void GuiMultilineTextBox::CalculateViewAndSetScroll()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				CalculateView();
 				vint smallMove = textElement->GetLines().GetRowHeight();
 				vint bigMove = smallMove * 5;
@@ -277,7 +277,7 @@ GuiSinglelineTextBox
 
 			void GuiSinglelineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				Array<text::ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);

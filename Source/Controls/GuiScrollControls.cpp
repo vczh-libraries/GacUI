@@ -65,7 +65,7 @@ GuiScroll
 
 			void GuiScroll::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -73,7 +73,7 @@ GuiScroll
 
 			void GuiScroll::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetPageSize(pageSize);
 				ct->SetTotalSize(totalSize);
@@ -114,7 +114,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					GetControlTemplateObject()->SetTotalSize(totalSize);
+					GetControlTemplateObject(true)->SetTotalSize(totalSize);
 					TotalSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -133,7 +133,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					GetControlTemplateObject()->SetPageSize(pageSize);
+					GetControlTemplateObject(true)->SetPageSize(pageSize);
 					PageSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -154,7 +154,7 @@ GuiScroll
 				if(position!=newPosition)
 				{
 					position=newPosition;
-					GetControlTemplateObject()->SetPosition(position);
+					GetControlTemplateObject(true)->SetPosition(position);
 					PositionChanged.Execute(GetNotifyEventArguments());
 				}
 			}

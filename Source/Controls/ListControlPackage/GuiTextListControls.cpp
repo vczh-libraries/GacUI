@@ -137,7 +137,7 @@ DefaultCheckTextListItemTemplate
 				{
 					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
-						auto style = textList->GetControlTemplateObject()->GetCheckBulletTemplate();
+						auto style = textList->GetControlTemplateObject(true)->GetCheckBulletTemplate();
 						if (style) return style;
 					}
 					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::CheckTextListItem);
@@ -151,7 +151,7 @@ DefaultRadioTextListItemTemplate
 				{
 					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
-						auto style = textList->GetControlTemplateObject()->GetRadioBulletTemplate();
+						auto style = textList->GetControlTemplateObject(true)->GetRadioBulletTemplate();
 						if (style) return style;
 					}
 					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::RadioTextListItem);
@@ -303,7 +303,7 @@ GuiTextList
 				GuiSelectableListControl::OnStyleInstalled(itemIndex, style);
 				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
 				{
-					textItemStyle->SetTextColor(GetControlTemplateObject()->GetTextColor());
+					textItemStyle->SetTextColor(GetControlTemplateObject(true)->GetTextColor());
 					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(list::ITextItemView::Identifier)))
 					{
 						textItemStyle->SetChecked(textItemView->GetChecked(itemIndex));

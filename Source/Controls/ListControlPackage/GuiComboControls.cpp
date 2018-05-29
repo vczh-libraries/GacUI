@@ -32,7 +32,7 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -40,7 +40,7 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject()->SetCommands(commandExecutor.Obj());
+				GetControlTemplateObject(true)->SetCommands(commandExecutor.Obj());
 			}
 
 			bool GuiComboBoxBase::IsAltAvailable()
@@ -92,7 +92,7 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::AfterControlTemplateInstalled(bool initialize)
 			{
 				GuiComboBoxBase::AfterControlTemplateInstalled(initialize);
-				GetControlTemplateObject()->SetTextVisible(!itemStyleProperty);
+				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
 			}
 
 			bool GuiComboBoxListControl::IsAltAvailable()
@@ -269,7 +269,7 @@ GuiComboBoxListControl
 			{
 				RemoveStyleController();
 				itemStyleProperty = value;
-				GetControlTemplateObject()->SetTextVisible(!itemStyleProperty);
+				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
 				InstallStyleController(GetSelectedIndex());
 				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}

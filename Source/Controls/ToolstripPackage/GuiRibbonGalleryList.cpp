@@ -274,7 +274,7 @@ GuiBindableRibbonGalleryList
 
 			void GuiBindableRibbonGalleryList::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				itemList->SetControlTemplate(ct->GetItemListTemplate());
 				subMenu->SetControlTemplate(ct->GetMenuTemplate());
 				groupContainer->SetControlTemplate(ct->GetGroupContainerTemplate());
@@ -396,7 +396,7 @@ GuiBindableRibbonGalleryList
 						groupContentStack->AddChild(item);
 
 						auto header = new GuiControl(theme::ThemeName::RibbonToolstripHeader);
-						header->SetControlTemplate(GetControlTemplateObject()->GetHeaderTemplate());
+						header->SetControlTemplate(GetControlTemplateObject(true)->GetHeaderTemplate());
 						header->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						header->SetText(group->GetName());
 						item->AddChild(header->GetBoundsComposition());
@@ -417,7 +417,7 @@ GuiBindableRibbonGalleryList
 							groupItemTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 							auto backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
-							if (auto style = GetControlTemplateObject()->GetBackgroundTemplate())
+							if (auto style = GetControlTemplateObject(true)->GetBackgroundTemplate())
 							{
 								backgroundButton->SetControlTemplate(style);
 							}

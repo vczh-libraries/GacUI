@@ -19,7 +19,7 @@ GuiRibbonTab
 
 			void GuiRibbonTab::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				if (auto bhc = ct->GetBeforeHeadersContainer())
@@ -34,7 +34,7 @@ GuiRibbonTab
 
 			void GuiRibbonTab::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				if (auto bhc = ct->GetBeforeHeadersContainer())
 				{
 					bhc->AddChild(beforeHeaders);
@@ -234,7 +234,7 @@ GuiRibbonGroup
 
 			void GuiRibbonGroup::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -242,8 +242,9 @@ GuiRibbonGroup
 
 			void GuiRibbonGroup::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				ct->SetExpandable(expandable);
+				ct->SetCollapsed(responsiveView->GetCurrentView() == responsiveFixedButton);
 				ct->SetCommands(commandExecutor.Obj());
 				dropdownButton->SetControlTemplate(ct->GetLargeDropdownButtonTemplate());
 			}
@@ -251,6 +252,14 @@ GuiRibbonGroup
 			void GuiRibbonGroup::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				dropdownButton->SetText(GetText());
+			}
+
+			void GuiRibbonGroup::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
+			{
+				if (auto ct = GetControlTemplateObject(false))
+				{
+					ct->SetCollapsed(arguments.itemIndex == 1);
+				}
 			}
 
 			GuiRibbonGroup::GuiRibbonGroup(theme::ThemeName themeName)
@@ -290,6 +299,7 @@ GuiRibbonGroup
 				LargeImageChanged.SetAssociatedComposition(boundsComposition);
 
 				TextChanged.AttachMethod(this, &GuiRibbonGroup::OnTextChanged);
+				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonGroup::OnBeforeSwitchingView);
 			}
 
 			GuiRibbonGroup::~GuiRibbonGroup()
@@ -310,7 +320,7 @@ GuiRibbonGroup
 				if (expandable != value)
 				{
 					expandable = value;
-					GetControlTemplateObject()->SetExpandable(expandable);
+					GetControlTemplateObject(true)->SetExpandable(expandable);
 					ExpandableChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -478,7 +488,7 @@ GuiRibbonButtons
 							}
 						}
 
-						if (auto ct = GetControlTemplateObject())
+						if (auto ct = GetControlTemplateObject(false))
 						{
 							if (fixed == views[(vint)RibbonButtonSize::Large])
 							{
@@ -605,7 +615,7 @@ GuiRibbonToolstrips
 
 			void GuiRibbonToolstrips::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				for (vint i = 0; i < ARRLEN(toolbars); i++)
 				{
 					toolbars[i]->SetControlTemplate(ct->GetToolbarTemplate());
@@ -847,7 +857,7 @@ GuiRibbonGallery
 
 			void GuiRibbonGallery::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -855,7 +865,7 @@ GuiRibbonGallery
 
 			void GuiRibbonGallery::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetScrollUpEnabled(scrollUpEnabled);
 				ct->SetScrollDownEnabled(scrollDownEnabled);
@@ -887,7 +897,7 @@ GuiRibbonGallery
 				if (scrollUpEnabled != value)
 				{
 					scrollUpEnabled = value;
-					GetControlTemplateObject()->SetScrollUpEnabled(value);
+					GetControlTemplateObject(true)->SetScrollUpEnabled(value);
 				}
 			}
 
@@ -901,7 +911,7 @@ GuiRibbonGallery
 				if (scrollDownEnabled != value)
 				{
 					scrollDownEnabled = value;
-					GetControlTemplateObject()->SetScrollDownEnabled(value);
+					GetControlTemplateObject(true)->SetScrollDownEnabled(value);
 				}
 			}
 
@@ -911,7 +921,7 @@ GuiRibbonToolstripMenu
 
 			void GuiRibbonToolstripMenu::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				if (auto cc = ct->GetContentComposition())
@@ -922,7 +932,7 @@ GuiRibbonToolstripMenu
 
 			void GuiRibbonToolstripMenu::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				if (auto cc = ct->GetContentComposition())
 				{
 					cc->AddChild(contentComposition);

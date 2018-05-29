@@ -139,6 +139,7 @@ Ribbon Containers
 				GuiToolstripButton*									dropdownButton = nullptr;
 
 				void												OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
