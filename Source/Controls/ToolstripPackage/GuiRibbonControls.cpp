@@ -294,7 +294,7 @@ GuiRibbonGroup
 
 			GuiRibbonGroup::~GuiRibbonGroup()
 			{
-				if (!responsiveFixedButton->GetParent())
+				if (!responsiveView->GetViews().Contains(responsiveFixedButton))
 				{
 					SafeDeleteComposition(responsiveFixedButton);
 				}
@@ -327,6 +327,21 @@ GuiRibbonGroup
 					largeImage = value;
 					dropdownButton->SetLargeImage(value);
 					LargeImageChanged.Execute(GetNotifyEventArguments());
+
+					if (value)
+					{
+						if (!responsiveView->GetViews().Contains(responsiveFixedButton))
+						{
+							responsiveView->GetViews().Add(responsiveFixedButton);
+						}
+					}
+					else
+					{
+						if (responsiveView->GetViews().Contains(responsiveFixedButton))
+						{
+							responsiveView->GetViews().Remove(responsiveFixedButton);
+						}
+					}
 				}
 			}
 
