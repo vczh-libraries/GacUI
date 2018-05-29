@@ -245,6 +245,12 @@ GuiRibbonGroup
 				auto ct = GetControlTemplateObject();
 				ct->SetExpandable(expandable);
 				ct->SetCommands(commandExecutor.Obj());
+				dropdownButton->SetControlTemplate(ct->GetLargeDropdownButtonTemplate());
+			}
+
+			void GuiRibbonGroup::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				dropdownButton->SetText(GetText());
 			}
 
 			GuiRibbonGroup::GuiRibbonGroup(theme::ThemeName themeName)
@@ -252,27 +258,46 @@ GuiRibbonGroup
 				, items(this)
 			{
 				commandExecutor = new CommandExecutor(this);
+				{
+					stack = new GuiStackComposition();
+					stack->SetDirection(GuiStackComposition::Horizontal);
+					stack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					stack->SetPadding(2);
+					stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
-				stack = new GuiStackComposition();
-				stack->SetDirection(GuiStackComposition::Horizontal);
-				stack->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				stack->SetPadding(2);
-				stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					responsiveStack = new GuiResponsiveStackComposition();
+					responsiveStack->SetDirection(ResponsiveDirection::Horizontal);
+					responsiveStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					responsiveStack->AddChild(stack);
+				}
+				{
+					dropdownButton = new GuiToolstripButton(theme::ThemeName::RibbonLargeDropdownButton);
+					dropdownButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
-				responsiveStack = new GuiResponsiveStackComposition();
-				responsiveStack->SetDirection(ResponsiveDirection::Horizontal);
-				responsiveStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				responsiveStack->AddChild(stack);
+					responsiveFixedButton = new GuiResponsiveFixedComposition();
+					responsiveFixedButton->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					responsiveFixedButton->AddChild(dropdownButton->GetBoundsComposition());
+				}
 
-				containerComposition->AddChild(responsiveStack);
+				responsiveView = new GuiResponsiveViewComposition();
+				responsiveView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				responsiveView->GetViews().Add(responsiveStack);
+
+				containerComposition->AddChild(responsiveView);
 
 				ExpandableChanged.SetAssociatedComposition(boundsComposition);
 				ExpandButtonClicked.SetAssociatedComposition(boundsComposition);
 				LargeImageChanged.SetAssociatedComposition(boundsComposition);
+
+				TextChanged.AttachMethod(this, &GuiRibbonGroup::OnTextChanged);
 			}
 
 			GuiRibbonGroup::~GuiRibbonGroup()
 			{
+				if (!responsiveFixedButton->GetParent())
+				{
+					SafeDeleteComposition(responsiveFixedButton);
+				}
 			}
 
 			bool GuiRibbonGroup::GetExpandable()
@@ -300,6 +325,7 @@ GuiRibbonGroup
 				if (largeImage != value)
 				{
 					largeImage = value;
+					dropdownButton->SetLargeImage(value);
 					LargeImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}

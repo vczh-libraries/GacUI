@@ -233,7 +233,7 @@
               <RibbonTabPage Text="Edit">
                 <att.ContainerComposition-set PreferredMinSize="y:110"/>
                 <att.Groups>
-                  <RibbonGroup Text="Alignment" Expandable="true">
+                  <RibbonGroup Text="Alignment" Expandable="true" LargeImage-uri="res://ToolbarImages/EditableLarge">
                     <ev.ExpandButtonClicked-eval>
                       <![CDATA[
                         {
@@ -261,7 +261,7 @@
                     </att.Items>
                   </RibbonGroup>
 
-                  <RibbonGroup Text="Edit">
+                  <RibbonGroup Text="Edit" LargeImage-uri="res://ToolbarImages/PasteLarge">
                     <att.Items>
                       <RibbonButtons MaxSize="Large" MinSize="Icon">
                         <att.Buttons>
@@ -308,7 +308,7 @@
                     </att.Items>
                   </RibbonGroup>
 
-                  <RibbonGroup Text="Style">
+                  <RibbonGroup Text="Style" LargeImage-uri="res://ToolbarImages/EditableLarge">
                     <att.Items>
                       <BindableRibbonGalleryList ref.Name="styleGallery" ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" VisibleItemCount="5" env.ItemType="demo::StyleGroup^">
                         <att.ItemSource-bind>self.StyleGroups</att.ItemSource-bind>
