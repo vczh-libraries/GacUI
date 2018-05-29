@@ -60,6 +60,9 @@ Type Declaration
 			END_CLASS_MEMBER(GuiAxis)
 
 			BEGIN_CLASS_MEMBER(GuiGraphicsComposition)
+
+				CLASS_MEMBER_EXTERNALMETHOD(SafeDelete, NO_PARAMETER, void(GuiGraphicsComposition::*)(), vl::presentation::compositions::SafeDeleteComposition)
+
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDown)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonUp)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDoubleClick)

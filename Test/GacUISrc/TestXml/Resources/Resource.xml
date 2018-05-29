@@ -45,7 +45,21 @@
     <Instance name="RibbonGroupTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGroupTemplate2" ref.Styles="res://DarkSkin/Style">
         <RibbonGroupTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <ev.CollapsedChanged-eval>
+            <![CDATA[
+              {
+                if (self.Collapsed)
+                {
+                  table.SetRowOption(1, {composeType:Absolute absolute:0});
+                }
+                else
+                {
+                  table.SetRowOption(1, {composeType:MinSize});
+                }
+              }
+            ]]>
+          </ev.CollapsedChanged-eval>
+          <Table ref.Name="table" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.Rows>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
               <CellOption>composeType:MinSize</CellOption>
