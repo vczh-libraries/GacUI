@@ -65,17 +65,18 @@
                 <SolidBackground Color="#007ACC"/>
                 <Bounds AlignmentToParent="left:10 top:2 right:10 bottom:2">
                   <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                  <Button Visible-bind="self.Expandable" ControlTemplate="darkskin::RibbonGroupExpandButtonTemplate">
-                    <att.BoundsComposition-set AlignmentToParent="left:-1 top:-1 right:0 bottom:0"/>
-                    <ev.Clicked-eval>
-                      <![CDATA[
+                </Bounds>
+
+                <Button Visible-bind="self.Expandable" ControlTemplate="darkskin::RibbonGroupExpandButtonTemplate">
+                  <att.BoundsComposition-set AlignmentToParent="left:-1 top:-1 right:0 bottom:0"/>
+                  <ev.Clicked-eval>
+                    <![CDATA[
                         {
                           self.Commands.NotifyExpandButtonClicked();
                         }
                       ]]>
-                    </ev.Clicked-eval>
-                  </Button>
-                </Bounds>
+                  </ev.Clicked-eval>
+                </Button>
               </Bounds>
             </Cell>
           </Table>
