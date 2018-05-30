@@ -88,7 +88,7 @@ Menu
 ***********************************************************************/
 
 			/// <summary>Popup menu.</summary>
-			class GuiMenu : public GuiPopup, private IGuiMenuService, public Description<GuiMenu>
+			class GuiMenu : public GuiPopup, protected IGuiMenuService, public Description<GuiMenu>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MenuTemplate, GuiPopup)
 			private:
@@ -99,6 +99,7 @@ Menu
 				bool									IsActiveState()override;
 				bool									IsSubMenuActivatedByMouseDown()override;
 				void									MenuItemExecuted()override;
+
 			protected:
 				GuiControl*								owner;
 
@@ -119,13 +120,14 @@ Menu
 			};
 			
 			/// <summary>Menu bar.</summary>
-			class GuiMenuBar : public GuiControl, private IGuiMenuService, public Description<GuiMenuBar>
+			class GuiMenuBar : public GuiControl, protected IGuiMenuService, public Description<GuiMenuBar>
 			{
 			private:
 				IGuiMenuService*						GetParentMenuService()override;
 				Direction								GetPreferredDirection()override;
 				bool									IsActiveState()override;
 				bool									IsSubMenuActivatedByMouseDown()override;
+
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

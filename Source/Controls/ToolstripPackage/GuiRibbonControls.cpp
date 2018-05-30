@@ -229,6 +229,30 @@ GuiRibbonGroup::CommandExecutor
 			}
 
 /***********************************************************************
+GuiRibbonGroupMenu
+***********************************************************************/
+
+			class GuiRibbonGroupMenu : public GuiMenu, public Description<GuiRibbonGroupMenu>
+			{
+			private:
+				IGuiMenuService::Direction GetPreferredDirection()override
+				{
+					return IGuiMenuService::Horizontal;
+				}
+
+				bool IsSubMenuActivatedByMouseDown()override
+				{
+					return true;
+				}
+
+			public:
+				GuiRibbonGroupMenu(theme::ThemeName themeName, GuiControl* _owner)
+					:GuiMenu(themeName, _owner)
+				{
+				}
+			};
+
+/***********************************************************************
 GuiRibbonGroup
 ***********************************************************************/
 
@@ -326,7 +350,7 @@ GuiRibbonGroup
 					responsiveFixedButton->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					responsiveFixedButton->AddChild(dropdownButton->GetBoundsComposition());
 
-					dropdownMenu = new GuiMenu(theme::ThemeName::Menu, dropdownButton);
+					dropdownMenu = new GuiRibbonGroupMenu(theme::ThemeName::Menu, dropdownButton);
 				}
 
 				responsiveView = new GuiResponsiveViewComposition();
