@@ -344,6 +344,7 @@ GuiMenuButton
 				,cascadeAction(true)
 			{
 				SetAutoSelection(false);
+				BeforeSubMenuOpening.SetAssociatedComposition(boundsComposition);
 				SubMenuOpeningChanged.SetAssociatedComposition(boundsComposition);
 				LargeImageChanged.SetAssociatedComposition(boundsComposition);
 				ImageChanged.SetAssociatedComposition(boundsComposition);
