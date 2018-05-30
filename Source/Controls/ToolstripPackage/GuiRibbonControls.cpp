@@ -260,6 +260,19 @@ GuiRibbonGroup
 				{
 					ct->SetCollapsed(arguments.itemIndex == 1);
 				}
+
+				if (arguments.itemIndex == 0)
+				{
+					while (responsiveStack->LevelDown());
+					dropdownPopup->GetContainerComposition()->RemoveChild(stack);
+					responsiveStack->AddChild(stack);
+				}
+				else
+				{
+					while (responsiveStack->LevelUp());
+					responsiveStack->RemoveChild(stack);
+					dropdownPopup->GetContainerComposition()->AddChild(stack);
+				}
 			}
 
 			GuiRibbonGroup::GuiRibbonGroup(theme::ThemeName themeName)
@@ -286,6 +299,8 @@ GuiRibbonGroup
 					responsiveFixedButton = new GuiResponsiveFixedComposition();
 					responsiveFixedButton->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					responsiveFixedButton->AddChild(dropdownButton->GetBoundsComposition());
+
+					dropdownPopup = new GuiPopup(theme::ThemeName::Menu);
 				}
 
 				responsiveView = new GuiResponsiveViewComposition();
@@ -308,6 +323,7 @@ GuiRibbonGroup
 				{
 					SafeDeleteComposition(responsiveFixedButton);
 				}
+				delete dropdownPopup;
 			}
 
 			bool GuiRibbonGroup::GetExpandable()

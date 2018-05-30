@@ -137,6 +137,7 @@ Ribbon Containers
 				compositions::GuiResponsiveViewComposition*			responsiveView = nullptr;
 				compositions::GuiResponsiveFixedComposition*		responsiveFixedButton = nullptr;
 				GuiToolstripButton*									dropdownButton = nullptr;
+				GuiPopup*											dropdownPopup = nullptr;
 
 				void												OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void												OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
