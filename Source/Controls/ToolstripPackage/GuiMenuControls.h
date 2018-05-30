@@ -80,7 +80,7 @@ Menu Service
 
 				/// <summary>Get the dropdown to display.</summary>
 				/// <returns>The dropdown to display. Returns null to indicate the dropdown cannot be displaied temporary.</returns>
-				virtual GuiPopup*						ProvideDropdown() = 0;
+				virtual GuiMenu*						ProvideDropdownMenu() = 0;
 			};
 
 /***********************************************************************
@@ -171,7 +171,7 @@ MenuButton
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
 
 			private:
-				GuiPopup*								ProvideDropdown()override;
+				GuiMenu*								ProvideDropdownMenu()override;
 
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
@@ -179,6 +179,8 @@ MenuButton
 				GuiMenuButton(theme::ThemeName themeName);
 				~GuiMenuButton();
 
+				/// <summary>Before sub menu opening event.</summary>
+				compositions::GuiNotifyEvent			BeforeSubMenuOpening;
 				/// <summary>Sub menu opening changed event.</summary>
 				compositions::GuiNotifyEvent			SubMenuOpeningChanged;
 				/// <summary>Large image changed event.</summary>

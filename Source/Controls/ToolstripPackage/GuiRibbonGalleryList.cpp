@@ -520,7 +520,7 @@ GuiBindableRibbonGalleryList
 				}
 			}
 
-			GuiPopup* GuiBindableRibbonGalleryList::ProvideDropdown()
+			GuiMenu* GuiBindableRibbonGalleryList::ProvideDropdownMenu()
 			{
 				return GetSubMenu();
 			}

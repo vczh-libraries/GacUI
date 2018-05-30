@@ -249,9 +249,33 @@ GuiRibbonGroup
 				dropdownButton->SetControlTemplate(ct->GetLargeDropdownButtonTemplate());
 			}
 
+			void GuiRibbonGroup::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				dropdownMenu->GetBoundsComposition()->SetPreferredMinSize(Size(0, containerComposition->GetBounds().Height()));
+			}
+
 			void GuiRibbonGroup::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				dropdownButton->SetText(GetText());
+			}
+
+			void GuiRibbonGroup::OnBeforeSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (responsiveView->GetViews().Contains(responsiveFixedButton))
+				{
+					auto currentDropdown = dropdownMenu;
+					if (items.Count() == 1)
+					{
+						if (auto provider = items[0]->QueryTypedService<IGuiMenuDropdownProvider>())
+						{
+							if (auto menu = provider->ProvideDropdownMenu())
+							{
+								currentDropdown = menu;
+							}
+						}
+					}
+					dropdownButton->SetSubMenu(currentDropdown, false);
+				}
 			}
 
 			void GuiRibbonGroup::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
@@ -264,14 +288,15 @@ GuiRibbonGroup
 				if (arguments.itemIndex == 0)
 				{
 					while (responsiveStack->LevelDown());
-					dropdownPopup->GetContainerComposition()->RemoveChild(stack);
+					dropdownMenu->GetContainerComposition()->RemoveChild(stack);
 					responsiveStack->AddChild(stack);
+					dropdownButton->SetSubMenu(nullptr, false);
 				}
 				else
 				{
 					while (responsiveStack->LevelUp());
 					responsiveStack->RemoveChild(stack);
-					dropdownPopup->GetContainerComposition()->AddChild(stack);
+					dropdownMenu->GetContainerComposition()->AddChild(stack);
 				}
 			}
 
@@ -300,7 +325,7 @@ GuiRibbonGroup
 					responsiveFixedButton->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					responsiveFixedButton->AddChild(dropdownButton->GetBoundsComposition());
 
-					dropdownPopup = new GuiPopup(theme::ThemeName::Menu);
+					dropdownMenu = new GuiMenu(theme::ThemeName::Menu, dropdownButton);
 				}
 
 				responsiveView = new GuiResponsiveViewComposition();
@@ -314,7 +339,9 @@ GuiRibbonGroup
 				LargeImageChanged.SetAssociatedComposition(boundsComposition);
 
 				TextChanged.AttachMethod(this, &GuiRibbonGroup::OnTextChanged);
+				boundsComposition->BoundsChanged.AttachMethod(this, &GuiRibbonGroup::OnBoundsChanged);
 				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonGroup::OnBeforeSwitchingView);
+				dropdownButton->BeforeSubMenuOpening.AttachMethod(this, &GuiRibbonGroup::OnBeforeSubMenuOpening);
 			}
 
 			GuiRibbonGroup::~GuiRibbonGroup()
@@ -323,7 +350,7 @@ GuiRibbonGroup
 				{
 					SafeDeleteComposition(responsiveFixedButton);
 				}
-				delete dropdownPopup;
+				delete dropdownMenu;
 			}
 
 			bool GuiRibbonGroup::GetExpandable()

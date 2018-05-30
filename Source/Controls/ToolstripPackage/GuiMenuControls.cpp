@@ -314,6 +314,7 @@ GuiMenuButton
 			{
 				if(GetVisuallyEnabled())
 				{
+					BeforeSubMenuOpening.Execute(GetNotifyEventArguments());
 					if(GetSubMenu())
 					{
 						OpenSubMenuInternal();
@@ -330,7 +331,7 @@ GuiMenuButton
 				return ownerMenuService?ownerMenuService->GetPreferredDirection():IGuiMenuService::Horizontal;
 			}
 
-			GuiPopup* GuiMenuButton::ProvideDropdown()
+			GuiMenu* GuiMenuButton::ProvideDropdownMenu()
 			{
 				return GetSubMenu();
 			}

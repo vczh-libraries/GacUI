@@ -199,7 +199,7 @@ Ribbon Gallery List
 				void													StopPreview(vint index);
 
 			private:
-				GuiPopup*												ProvideDropdown()override;
+				GuiMenu*												ProvideDropdownMenu()override;
 
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>

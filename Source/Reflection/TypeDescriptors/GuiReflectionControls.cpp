@@ -643,7 +643,7 @@ Type Declaration
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiMenuDropdownProvider)
 				INTERFACE_IDENTIFIER(vl::presentation::controls::IGuiMenuDropdownProvider)
 
-				CLASS_MEMBER_METHOD(ProvideDropdown, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(ProvideDropdownMenu, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IGuiMenuDropdownProvider)
 
 			BEGIN_ENUM_ITEM(IGuiMenuService::Direction)
@@ -668,6 +668,8 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiMenuButton)
 				CLASS_MEMBER_BASE(GuiSelectableButton)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiMenuButton)
+
+				CLASS_MEMBER_GUIEVENT(BeforeSubMenuOpening)
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(LargeImage)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Image)
