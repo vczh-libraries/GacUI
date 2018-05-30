@@ -99,6 +99,8 @@ namespace vl
 			DECL_TYPE_INFO(::darkskin::RibbonGalleryTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::RibbonGroupExpandButtonTemplate)
 			DECL_TYPE_INFO(::darkskin::RibbonGroupExpandButtonTemplateConstructor)
+			DECL_TYPE_INFO(::darkskin::RibbonGroupMenuTemplate)
+			DECL_TYPE_INFO(::darkskin::RibbonGroupMenuTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::RibbonGroupTemplate)
 			DECL_TYPE_INFO(::darkskin::RibbonGroupTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::RibbonLargeButtonTemplate)

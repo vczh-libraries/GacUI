@@ -287,6 +287,8 @@
   <Instance name="RibbonGroupTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGroupTemplate" ref.Styles="res://DarkSkin/Style">
       <RibbonGroupTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::RibbonGroupMenuTemplate</att.SubMenuTemplate>
+        
         <ev.CollapsedChanged-eval>
           <![CDATA[
               {
@@ -353,6 +355,17 @@
           </Polygon>
         </Bounds>
       </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="RibbonGroupMenuTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGroupMenuTemplate" ref.Styles="res://DarkSkin/Style">
+      <MenuTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#2D2D30"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:3 top:3 right:3 bottom:3">
+          <SolidBorder Color="#333337"/>
+        </Bounds>
+      </MenuTemplate>
     </Instance>
   </Instance>
 

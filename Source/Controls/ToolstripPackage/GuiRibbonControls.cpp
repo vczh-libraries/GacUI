@@ -247,6 +247,7 @@ GuiRibbonGroup
 				ct->SetCollapsed(responsiveView->GetCurrentView() == responsiveFixedButton);
 				ct->SetCommands(commandExecutor.Obj());
 				dropdownButton->SetControlTemplate(ct->GetLargeDropdownButtonTemplate());
+				dropdownMenu->SetControlTemplate(ct->GetSubMenuTemplate());
 			}
 
 			void GuiRibbonGroup::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

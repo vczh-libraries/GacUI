@@ -290,6 +290,7 @@ Control Template
 				F(GuiRibbonGroupTemplate, bool, Expandable, false)\
 				F(GuiRibbonGroupTemplate, bool, Collapsed, false)\
 				F(GuiRibbonGroupTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeDropdownButtonTemplate, {})\
+				F(GuiRibbonGroupTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate, {})\
 
 #define GuiRibbonButtonsTemplate_PROPERTIES(F)\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeButtonTemplate, {})\
