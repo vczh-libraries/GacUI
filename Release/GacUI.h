@@ -16855,7 +16855,7 @@ DataProvider
 					ItemProperty<Ptr<GuiImageData>>							smallImageProperty;
 
 				public:
-					/// <summary>Create a data provider from a <see cref="IDataProvider"/>.</summary>
+					/// <summary>Create a data provider.</summary>
 					DataProvider();
 					~DataProvider();
 
