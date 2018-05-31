@@ -865,6 +865,9 @@ Type Declaration
 			END_CLASS_MEMBER(GuiAxis)
 
 			BEGIN_CLASS_MEMBER(GuiGraphicsComposition)
+
+				CLASS_MEMBER_EXTERNALMETHOD(SafeDelete, NO_PARAMETER, void(GuiGraphicsComposition::*)(), vl::presentation::compositions::SafeDeleteComposition)
+
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDown)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonUp)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDoubleClick)
@@ -1471,6 +1474,8 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiControl)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiControl)
 
+				CLASS_MEMBER_EXTERNALMETHOD(SafeDelete, NO_PARAMETER, void(GuiControl::*)(), vl::presentation::compositions::SafeDeleteControl)
+
 				CLASS_MEMBER_GUIEVENT(RenderTargetChanged)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ControlThemeName)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ControlTemplate)
@@ -1943,6 +1948,12 @@ Type Declaration
 				CLASS_MEMBER_METHOD(MenuClosed, {L"menu"})
 			END_INTERFACE_MEMBER(IGuiMenuService)
 
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiMenuDropdownProvider)
+				INTERFACE_IDENTIFIER(vl::presentation::controls::IGuiMenuDropdownProvider)
+
+				CLASS_MEMBER_METHOD(ProvideDropdownMenu, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IGuiMenuDropdownProvider)
+
 			BEGIN_ENUM_ITEM(IGuiMenuService::Direction)
 				ENUM_ITEM_NAMESPACE(IGuiMenuService)
 				ENUM_NAMESPACE_ITEM(Horizontal)
@@ -1965,6 +1976,8 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiMenuButton)
 				CLASS_MEMBER_BASE(GuiSelectableButton)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiMenuButton)
+
+				CLASS_MEMBER_GUIEVENT(BeforeSubMenuOpening)
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(LargeImage)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Image)
@@ -2216,6 +2229,7 @@ Type Declaration
 
 				CLASS_MEMBER_GUIEVENT(ExpandButtonClicked)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Expandable)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(LargeImage)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
 			END_CLASS_MEMBER(GuiRibbonGroup)
 
@@ -2291,6 +2305,8 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(MinCount)
 				CLASS_MEMBER_PROPERTY_FAST(MaxCount)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedIndex, SelectionChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
+				CLASS_MEMBER_PROPERTY_FAST(VisibleItemCount)
 
 				CLASS_MEMBER_METHOD(IndexToGalleryPos, { L"index" })
 				CLASS_MEMBER_METHOD(GalleryPosToIndex, { L"pos" })
@@ -2340,6 +2356,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(RenameStyle, {L"oldStyleName" _ L"newStyleName"})
 				CLASS_MEMBER_METHOD(ClearStyle, {L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(SummarizeStyle, {L"begin" _ L"end"})
+				CLASS_MEMBER_METHOD(SummarizeStyleName, { L"begin" _ L"end" })
 				CLASS_MEMBER_METHOD(SetParagraphAlignments, { L"begin" _ L"end" _ L"alignments" })
 				CLASS_MEMBER_METHOD(SetParagraphAlignment, { L"begin" _ L"end" _ L"alignment" })
 				CLASS_MEMBER_METHOD(SummarizeParagraphAlignment, { L"begin" _ L"end" })
@@ -2989,6 +3006,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(RenameStyle, {L"oldStyleName" _ L"newStyleName"})
 				CLASS_MEMBER_METHOD(ClearStyle, {L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(SummarizeStyle, {L"begin" _ L"end"})
+				CLASS_MEMBER_METHOD(SummarizeStyleName, { L"begin" _ L"end" })
 				CLASS_MEMBER_METHOD(SetParagraphAlignment, {L"begin" _ L"end" _ L"alignments"})
 				CLASS_MEMBER_METHOD(SummarizeParagraphAlignment, { L"begin" _ L"end" })
 				CLASS_MEMBER_METHOD(GetHyperlinkFromPoint, {L"point"})
@@ -3316,6 +3334,11 @@ Type Declaration
 				CLASS_MEMBER_METHOD(NotifyDateNavigated, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(NotifyDateSelected, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IDatePickerCommandExecutor)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IRibbonGroupCommandExecutor)
+				CLASS_MEMBER_BASE(IDescriptable)
+				CLASS_MEMBER_METHOD(NotifyExpandButtonClicked, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IRibbonGroupCommandExecutor)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IRibbonGalleryCommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)

@@ -270,6 +270,7 @@ Type List (Templates)
 			F(presentation::controls::IScrollCommandExecutor)\
 			F(presentation::controls::ITabCommandExecutor)\
 			F(presentation::controls::IDatePickerCommandExecutor)\
+			F(presentation::controls::IRibbonGroupCommandExecutor)\
 			F(presentation::controls::IRibbonGalleryCommandExecutor)\
 			F(presentation::controls::GuiComponent)\
 			F(presentation::controls::IGuiAnimation)\
@@ -343,6 +344,7 @@ Type List (Controls)
 			F(presentation::controls::GuiListView)\
 			F(presentation::controls::IGuiMenuService)\
 			F(presentation::controls::IGuiMenuService::Direction)\
+			F(presentation::controls::IGuiMenuDropdownProvider)\
 			F(presentation::controls::GuiMenu)\
 			F(presentation::controls::GuiMenuBar)\
 			F(presentation::controls::GuiMenuButton)\

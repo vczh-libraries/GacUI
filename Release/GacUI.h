@@ -4925,6 +4925,7 @@ Rich Content Document (model)
 			bool									RenameStyle(const WString& oldStyleName, const WString& newStyleName);
 			bool									ClearStyle(TextPos begin, TextPos end);
 			Ptr<DocumentStyleProperties>			SummarizeStyle(TextPos begin, TextPos end);
+			Nullable<WString>						SummarizeStyleName(TextPos begin, TextPos end);
 			Nullable<Alignment>						SummarizeParagraphAlignment(TextPos begin, TextPos end);
 
 			/// <summary>Load a document model from an xml.</summary>
@@ -5860,6 +5861,11 @@ Rich Content Document (element)
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
 				Ptr<DocumentStyleProperties>				SummarizeStyle(TextPos begin, TextPos end);
+				/// <summary>Summarize the style name in a specified range.</summary>
+				/// <returns>The style name summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Nullable<WString>							SummarizeStyleName(TextPos begin, TextPos end);
 				/// <summary>Set the alignment of paragraphs in a specified range.</summary>
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
@@ -8378,6 +8384,14 @@ namespace vl
 			};
 
 			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IRibbonGroupCommandExecutor : public virtual IDescriptable, public Description<IRibbonGroupCommandExecutor>
+			{
+			public:
+				/// <summary>Called when the expand button is clicked.</summary>
+				virtual void						NotifyExpandButtonClicked() = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
 			class IRibbonGalleryCommandExecutor : public virtual IDescriptable, public Description<IRibbonGalleryCommandExecutor>
 			{
 			public:
@@ -8855,7 +8869,11 @@ Control Template
 				F(GuiRibbonTabTemplate, compositions::GuiGraphicsComposition*, AfterHeadersContainer, nullptr)\
 
 #define GuiRibbonGroupTemplate_PROPERTIES(F)\
+				F(GuiRibbonGroupTemplate, controls::IRibbonGroupCommandExecutor*, Commands, nullptr)\
 				F(GuiRibbonGroupTemplate, bool, Expandable, false)\
+				F(GuiRibbonGroupTemplate, bool, Collapsed, false)\
+				F(GuiRibbonGroupTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeDropdownButtonTemplate, {})\
+				F(GuiRibbonGroupTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate, {})\
 
 #define GuiRibbonButtonsTemplate_PROPERTIES(F)\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeButtonTemplate, {})\
@@ -9897,14 +9915,13 @@ Basic Construction
 					NAME = ct; \
 					BASE_TYPE::CheckAndStoreControlTemplate(value); \
 				} \
-				bool HasControlTemplateObject() \
-				{ \
-					return NAME != nullptr; \
-				} \
 			public: \
-				templates::Gui##TEMPLATE* GetControlTemplateObject() \
+				templates::Gui##TEMPLATE* GetControlTemplateObject(bool ensureExists) \
 				{ \
-					EnsureControlTemplateExists(); \
+					if (ensureExists) \
+					{ \
+						EnsureControlTemplateExists(); \
+					} \
 					return NAME; \
 				} \
 			private: \
@@ -13711,6 +13728,11 @@ GuiDocumentCommonInterface
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
 				Ptr<DocumentStyleProperties>				SummarizeStyle(TextPos begin, TextPos end);
+				/// <summary>Summarize the style name in a specified range.</summary>
+				/// <returns>The style name summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Nullable<WString>							SummarizeStyleName(TextPos begin, TextPos end);
 				/// <summary>Set the alignment of paragraphs in a specified range.</summary>
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
@@ -14893,12 +14915,24 @@ Menu Service
 				virtual void							MenuClosed(GuiMenu* menu);
 			};
 
+			/// <summary>IGuiMenuService is a required service to tell a ribbon group that this control has a dropdown to display.</summary>
+			class IGuiMenuDropdownProvider : public virtual IDescriptable, public Description<IGuiMenuDropdownProvider>
+			{
+			public:
+				/// <summary>The identifier for this service.</summary>
+				static const wchar_t* const				Identifier;
+
+				/// <summary>Get the dropdown to display.</summary>
+				/// <returns>The dropdown to display. Returns null to indicate the dropdown cannot be displaied temporary.</returns>
+				virtual GuiMenu*						ProvideDropdownMenu() = 0;
+			};
+
 /***********************************************************************
 Menu
 ***********************************************************************/
 
 			/// <summary>Popup menu.</summary>
-			class GuiMenu : public GuiPopup, private IGuiMenuService, public Description<GuiMenu>
+			class GuiMenu : public GuiPopup, protected IGuiMenuService, public Description<GuiMenu>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MenuTemplate, GuiPopup)
 			private:
@@ -14909,6 +14943,7 @@ Menu
 				bool									IsActiveState()override;
 				bool									IsSubMenuActivatedByMouseDown()override;
 				void									MenuItemExecuted()override;
+
 			protected:
 				GuiControl*								owner;
 
@@ -14929,13 +14964,14 @@ Menu
 			};
 			
 			/// <summary>Menu bar.</summary>
-			class GuiMenuBar : public GuiControl, private IGuiMenuService, public Description<GuiMenuBar>
+			class GuiMenuBar : public GuiControl, protected IGuiMenuService, public Description<GuiMenuBar>
 			{
 			private:
 				IGuiMenuService*						GetParentMenuService()override;
 				Direction								GetPreferredDirection()override;
 				bool									IsActiveState()override;
 				bool									IsSubMenuActivatedByMouseDown()override;
+
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -14950,7 +14986,7 @@ MenuButton
 ***********************************************************************/
 
 			/// <summary>Menu item.</summary>
-			class GuiMenuButton : public GuiSelectableButton, public Description<GuiMenuButton>
+			class GuiMenuButton : public GuiSelectableButton, private IGuiMenuDropdownProvider, public Description<GuiMenuButton>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ToolstripButtonTemplate, GuiSelectableButton)
 
@@ -14979,12 +15015,18 @@ MenuButton
 				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
+
+			private:
+				GuiMenu*								ProvideDropdownMenu()override;
+
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiMenuButton(theme::ThemeName themeName);
 				~GuiMenuButton();
 
+				/// <summary>Before sub menu opening event.</summary>
+				compositions::GuiNotifyEvent			BeforeSubMenuOpening;
 				/// <summary>Sub menu opening changed event.</summary>
 				compositions::GuiNotifyEvent			SubMenuOpeningChanged;
 				/// <summary>Large image changed event.</summary>
@@ -15053,6 +15095,8 @@ MenuButton
 				/// <summary>Enable or disable cascade action.</summary>
 				/// <param name="value">Set to true to enable cascade action.</param>
 				void									SetCascadeAction(bool value);
+
+				IDescriptable*							QueryService(const WString& identifier)override;
 			};
 		}
 	}
@@ -17419,6 +17463,7 @@ GalleryItemArranger
 					vint										GetMaxCount();
 					vint										GetItemWidth();
 					Size										GetSizeOffset();
+					vint										GetVisibleItemCount();
 
 					void										SetMinCount(vint value);
 					void										SetMaxCount(vint value);
@@ -17581,14 +17626,14 @@ namespace vl
 Toolstrip Item Collection
 ***********************************************************************/
 
-			/// <summary>IToolstripUpdateLayout is required for all menu item container.</summary>
+			/// <summary>IToolstripUpdateLayout is a required service for all menu item container.</summary>
 			class IToolstripUpdateLayout : public IDescriptable
 			{
 			public:
 				virtual void								UpdateLayout() = 0;
 			};
 
-			/// <summary>IToolstripUpdateLayout is required for a menu item which want to force the container to redo layout.</summary>
+			/// <summary>IToolstripUpdateLayout is a required service for a menu item which want to force the container to redo layout.</summary>
 			class IToolstripUpdateLayoutInvoker : public IDescriptable
 			{
 			public:
@@ -17949,10 +17994,35 @@ Ribbon Containers
 				friend class GuiRibbonGroupItemCollection;
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGroupTemplate, GuiControl)
 			protected:
+
+				class CommandExecutor : public Object, public IRibbonGroupCommandExecutor
+				{
+				protected:
+					GuiRibbonGroup*									group;
+
+				public:
+					CommandExecutor(GuiRibbonGroup* _group);
+					~CommandExecutor();
+
+					void											NotifyExpandButtonClicked()override;
+				};
+
 				bool												expandable = false;
+				Ptr<GuiImageData>									largeImage;
 				GuiRibbonGroupItemCollection						items;
 				compositions::GuiResponsiveStackComposition*		responsiveStack = nullptr;
 				compositions::GuiStackComposition*					stack = nullptr;
+				Ptr<CommandExecutor>								commandExecutor;
+
+				compositions::GuiResponsiveViewComposition*			responsiveView = nullptr;
+				compositions::GuiResponsiveFixedComposition*		responsiveFixedButton = nullptr;
+				GuiToolstripButton*									dropdownButton = nullptr;
+				GuiMenu*											dropdownMenu = nullptr;
+
+				void												OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
+				void												OnBeforeSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
@@ -17964,6 +18034,8 @@ Ribbon Containers
 				compositions::GuiNotifyEvent						ExpandableChanged;
 				/// <summary>Expand button clicked event.</summary>
 				compositions::GuiNotifyEvent						ExpandButtonClicked;
+				/// <summary>Large image changed event.</summary>
+				compositions::GuiNotifyEvent						LargeImageChanged;
 
 				/// <summary>Test if this group is expandable. An expandable group will display an extra small button, which raises <see cref="ExpandButtonClicked"/>.</summary>
 				/// <returns>Returns true if this group is expandable.</returns>
@@ -17971,6 +18043,13 @@ Ribbon Containers
 				/// <summary>Set if this group is expandable.</summary>
 				/// <param name="value">Set to true to make this group is expandable.</param>
 				void												SetExpandable(bool value);
+
+				/// <summary>Get the large image for the collapsed ribbon group.</summary>
+				/// <returns>The large image for the collapsed ribbon group.</returns>
+				Ptr<GuiImageData>									GetLargeImage();
+				/// <summary>Set the large image for the collapsed ribbon group.</summary>
+				/// <param name="value">The large image for the collapsed ribbon group.</param>
+				void												SetLargeImage(Ptr<GuiImageData> value);
 
 				/// <summary>Get the collection of controls in this group.</summary>
 				/// <returns>The collection of controls.</returns>
@@ -18330,7 +18409,7 @@ Ribbon Gallery List
 			}
 
 			/// <summary>Auto resizable ribbon gallyer list.</summary>
-			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, public Description<GuiBindableRibbonGalleryList>
+			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, private IGuiMenuDropdownProvider, public Description<GuiBindableRibbonGalleryList>
 			{
 				friend class ribbon_impl::GalleryItemArranger;
 
@@ -18343,6 +18422,7 @@ Ribbon Gallery List
 				ItemStyleProperty										itemStyle;
 				GuiBindableTextList*									itemList;
 				GuiRibbonToolstripMenu*									subMenu;
+				vint													visibleItemCount = 1;
 				bool													skipItemAppliedEvent = false;
 
 				ribbon_impl::GalleryItemArranger*						itemListArranger;
@@ -18366,6 +18446,10 @@ Ribbon Gallery List
 
 				void													StartPreview(vint index);
 				void													StopPreview(vint index);
+
+			private:
+				GuiMenu*												ProvideDropdownMenu()override;
+
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -18414,8 +18498,11 @@ Ribbon Gallery List
 				void													SetMaxCount(vint value);
 
 				/// <summary>Get the selected item index.</summary>
-				/// <returns>The index of the selected item.</returns>
+				/// <returns>The index of the selected item. If there are multiple selected items, or there is no selected item, -1 will be returned.</returns>
 				vint													GetSelectedIndex();
+				/// <summary>Get the selected item.</summary>
+				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
+				description::Value										GetSelectedItem();
 				/// <summary>Select an item with <see cref="ItemApplied"/> event raised.</summary>
 				/// <param name="index">The index of the item to select. Set to -1 to clear the selection.</param>
 				void													ApplyItem(vint index);
@@ -18423,9 +18510,18 @@ Ribbon Gallery List
 				/// <param name="index">The index of the item to select. Set to -1 to clear the selection.</param>
 				void													SelectItem(vint index);
 
+				/// <summary>Get the minimum items visible in the drop down menu.</summary>
+				/// <returns>The minimum items visible in the drop down menu.</summary>
+				vint													GetVisibleItemCount();
+				/// <summary>Set minimum items visible in the drop down menu.</summary>
+				/// <param name="value">The minimum items visible in the drop down menu.</param>
+				void													SetVisibleItemCount(vint value);
+
 				/// <summary>Get the dropdown menu.</summary>
 				/// <returns>The dropdown menu.</returns>
 				GuiToolstripMenu*										GetSubMenu();
+
+				IDescriptable*											QueryService(const WString& identifier)override;
 			};
 		}
 	}
@@ -18476,7 +18572,8 @@ namespace vl
 			extern void									RemoveHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
 			extern void									RemoveStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
 			extern void									ClearStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
-			extern Ptr<DocumentStyleProperties>			SummerizeStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end);
+			extern Ptr<DocumentStyleProperties>			SummarizeStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end);
+			extern Nullable<WString>					SummarizeStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end);
 			extern void									AggregateStyle(Ptr<DocumentStyleProperties>& dst, Ptr<DocumentStyleProperties> src);
 		}
 	}

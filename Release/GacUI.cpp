@@ -2611,8 +2611,7 @@ GuiDocumentElement
 
 			TextPos GuiDocumentElement::CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide)
 			{
-				Ptr<GuiDocumentElementRenderer> elementRenderer=renderer.Cast<GuiDocumentElementRenderer>();
-				if(elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					TextPos caret=elementRenderer->CalculateCaret(comparingCaret, position, preferFrontSide);
 					return caret.column==-1?comparingCaret:caret;
@@ -2625,8 +2624,7 @@ GuiDocumentElement
 
 			TextPos GuiDocumentElement::CalculateCaretFromPoint(Point point)
 			{
-				Ptr<GuiDocumentElementRenderer> elementRenderer=renderer.Cast<GuiDocumentElementRenderer>();
-				if(elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					return elementRenderer->CalculateCaretFromPoint(point);
 				}
@@ -2638,8 +2636,7 @@ GuiDocumentElement
 
 			Rect GuiDocumentElement::GetCaretBounds(TextPos caret, bool frontSide)
 			{
-				Ptr<GuiDocumentElementRenderer> elementRenderer=renderer.Cast<GuiDocumentElementRenderer>();
-				if(elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					return elementRenderer->GetCaretBounds(caret, frontSide);
 				}
@@ -2651,8 +2648,7 @@ GuiDocumentElement
 			
 			void GuiDocumentElement::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					elementRenderer->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
 					InvokeOnCompositionStateChanged();
@@ -2661,8 +2657,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -2682,8 +2677,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -2703,8 +2697,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -2723,8 +2716,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -2743,8 +2735,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName, const WString& activeStyleName)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -2763,8 +2754,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::RemoveHyperlink(vint paragraphIndex, vint begin, vint end)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -2783,8 +2773,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditStyleName(TextPos begin, TextPos end, const WString& styleName)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -2803,8 +2792,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::RemoveStyleName(TextPos begin, TextPos end)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -2823,8 +2811,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::RenameStyle(const WString& oldStyleName, const WString& newStyleName)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					document->RenameStyle(oldStyleName, newStyleName);
 				}
@@ -2832,8 +2819,7 @@ GuiDocumentElement
 
 			void GuiDocumentElement::ClearStyle(TextPos begin, TextPos end)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -2852,8 +2838,7 @@ GuiDocumentElement
 
 			Ptr<DocumentStyleProperties> GuiDocumentElement::SummarizeStyle(TextPos begin, TextPos end)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -2867,10 +2852,25 @@ GuiDocumentElement
 				return nullptr;
 			}
 
+			Nullable<WString> GuiDocumentElement::SummarizeStyleName(TextPos begin, TextPos end)
+			{
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				{
+					if (begin > end)
+					{
+						TextPos temp = begin;
+						begin = end;
+						end = temp;
+					}
+
+					return document->SummarizeStyleName(begin, end);
+				}
+				return {};
+			}
+
 			void GuiDocumentElement::SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					vint first = begin.row;
 					vint last = end.row;
@@ -2895,8 +2895,7 @@ GuiDocumentElement
 
 			Nullable<Alignment> GuiDocumentElement::SummarizeParagraphAlignment(TextPos begin, TextPos end)
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					if (begin > end)
 					{
@@ -2912,8 +2911,7 @@ GuiDocumentElement
 
 			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElement::GetHyperlinkFromPoint(Point point)
 			{
-				auto elementRenderer=renderer.Cast<GuiDocumentElementRenderer>();
-				if(elementRenderer)
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
 				{
 					return elementRenderer->GetHyperlinkFromPoint(point);
 				}
@@ -6356,7 +6354,7 @@ GuiLabel
 
 			void GuiLabel::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				textColorConsisted = (textColor == ct->GetDefaultTextColor());
@@ -6364,7 +6362,7 @@ GuiLabel
 
 			void GuiLabel::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				if (initialize || textColorConsisted)
 				{
 					SetTextColor(ct->GetDefaultTextColor());
@@ -6394,7 +6392,7 @@ GuiLabel
 				if (textColor != value)
 				{
 					textColor = value;
-					GetControlTemplateObject()->SetTextColor(textColor);
+					GetControlTemplateObject(true)->SetTextColor(textColor);
 				}
 			}
 		}
@@ -6973,7 +6971,7 @@ GuiWindow
 
 			void GuiWindow::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 #define FIX_WINDOW_PROPERTY(VARIABLE, NAME) \
 				switch (ct->Get ## NAME ## Option()) \
 				{ \
@@ -7008,7 +7006,7 @@ GuiWindow
 			{
 				if (auto window = GetNativeWindow())
 				{
-					if (GetControlTemplateObject()->GetCustomFrameEnabled())
+					if (GetControlTemplateObject(true)->GetCustomFrameEnabled())
 					{
 						window->EnableCustomFrameMode();
 						window->SetBorder(false);
@@ -7030,7 +7028,7 @@ GuiWindow
 			void GuiWindow::Moved()
 			{
 				GuiControlHost::Moved();
-				GetControlTemplateObject()->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+				GetControlTemplateObject(true)->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
 			}
 
 			void GuiWindow::OnNativeWindowChanged()
@@ -7137,11 +7135,10 @@ GuiWindow
 			} \
 			void GuiWindow::Set ## NAME(bool visible) \
 			{ \
-				auto ct = GetControlTemplateObject(); \
+				auto ct = GetControlTemplateObject(true); \
 				if (ct->Get ## NAME ## Option() == templates::BoolOption::Customizable) \
 				{ \
 					VARIABLE = visible; \
-					auto ct = GetControlTemplateObject(); \
 					ct->Set ## NAME(visible); \
 					if (auto window = GetNativeWindow()) \
 					{ \
@@ -9687,7 +9684,7 @@ GuiApplication
 					sharedTooltipControl = new GuiTooltip(theme::ThemeName::Tooltip);
 					if (ownerWindow)
 					{
-						if (auto tooltipStyle = ownerWindow->GetControlTemplateObject()->GetTooltipTemplate())
+						if (auto tooltipStyle = ownerWindow->GetControlTemplateObject(true)->GetTooltipTemplate())
 						{
 							sharedTooltipControl->SetControlTemplate(tooltipStyle);
 						}
@@ -11272,7 +11269,7 @@ GuiGraphicsHost
 						auto composition = currentActiveAltActions.Values()[i]->GetAltComposition();
 
 						auto label = new GuiLabel(theme::ThemeName::ShortcutKey);
-						if (auto labelStyle = window->GetControlTemplateObject()->GetShortcutKeyTemplate())
+						if (auto labelStyle = window->GetControlTemplateObject(true)->GetShortcutKeyTemplate())
 						{
 							label->SetControlTemplate(labelStyle);
 						}
@@ -12211,8 +12208,8 @@ GuiButton
 
 			void GuiButton::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
-				GetControlTemplateObject()->SetState(controlState);
+				auto ct = GetControlTemplateObject(true);
+				GetControlTemplateObject(true)->SetState(controlState);
 			}
 
 			void GuiButton::OnParentLineChanged()
@@ -12259,7 +12256,7 @@ GuiButton
 				if (controlState != newControlState)
 				{
 					controlState = newControlState;
-					GetControlTemplateObject()->SetState(controlState);
+					GetControlTemplateObject(true)->SetState(controlState);
 				}
 			}
 
@@ -12411,7 +12408,7 @@ GuiSelectableButton
 
 			void GuiSelectableButton::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject()->SetSelected(isSelected);
+				GetControlTemplateObject(true)->SetSelected(isSelected);
 			}
 
 			void GuiSelectableButton::OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -12483,7 +12480,7 @@ GuiSelectableButton
 				if (isSelected != value)
 				{
 					isSelected = value;
-					GetControlTemplateObject()->SetSelected(isSelected);
+					GetControlTemplateObject(true)->SetSelected(isSelected);
 					if (groupController)
 					{
 						groupController->OnSelectedChanged(this);
@@ -12585,7 +12582,7 @@ GuiTab
 
 			void GuiTab::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -12595,7 +12592,7 @@ GuiTab
 
 			void GuiTab::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetTabPages(tabPages.GetWrapper());
 				ct->SetSelectedTabPage(selectedPage);
@@ -12658,9 +12655,9 @@ GuiTab
 						tabPage->SetVisible(tabPage == selectedPage);
 					}
 				}
-				if (HasControlTemplateObject())
+				if (auto ct = GetControlTemplateObject(false))
 				{
-					GetControlTemplateObject()->SetSelectedTabPage(selectedPage);
+					ct->SetSelectedTabPage(selectedPage);
 				}
 				SelectedPageChanged.Execute(GetNotifyEventArguments());
 				return selectedPage == value;
@@ -12672,7 +12669,7 @@ GuiScrollView
 
 			void GuiScrollView::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				if (auto scroll = ct->GetHorizontalScroll())
@@ -12697,7 +12694,7 @@ GuiScrollView
 
 			void GuiScrollView::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				if (auto scroll = ct->GetHorizontalScroll())
 				{
 					hScrollHandler = scroll->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
@@ -12737,7 +12734,7 @@ GuiScrollView
 			{
 				if(!supressScrolling)
 				{
-					if (auto scroll = GetControlTemplateObject()->GetHorizontalScroll())
+					if (auto scroll = GetControlTemplateObject(true)->GetHorizontalScroll())
 					{
 						vint position = scroll->GetPosition();
 						vint move = scroll->GetSmallMove();
@@ -12751,7 +12748,7 @@ GuiScrollView
 			{
 				if(!supressScrolling && GetVisuallyEnabled())
 				{
-					if (auto scroll = GetControlTemplateObject()->GetVerticalScroll())
+					if (auto scroll = GetControlTemplateObject(true)->GetVerticalScroll())
 					{
 						vint position = scroll->GetPosition();
 						vint move = scroll->GetSmallMove();
@@ -12769,7 +12766,7 @@ GuiScrollView
 
 			bool GuiScrollView::AdjustView(Size fullSize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
 				Size viewSize = ct->GetContainerComposition()->GetBounds().GetSize();
@@ -12844,7 +12841,7 @@ GuiScrollView
 
 			void GuiScrollView::CalculateView()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				if (!supressScrolling)
 				{
 					Size fullSize = QueryFullSize();
@@ -12887,7 +12884,7 @@ GuiScrollView
 
 			Size GuiScrollView::GetViewSize()
 			{
-				Size viewSize = GetControlTemplateObject()->GetContainerComposition()->GetBounds().GetSize();
+				Size viewSize = GetControlTemplateObject(true)->GetContainerComposition()->GetBounds().GetSize();
 				return viewSize;
 			}
 
@@ -12898,7 +12895,7 @@ GuiScrollView
 
 			Point GuiScrollView::GetViewPosition()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
 				return Point(hScroll ? hScroll->GetPosition() : 0, vScroll ? vScroll->GetPosition() : 0);
@@ -12906,7 +12903,7 @@ GuiScrollView
 
 			void GuiScrollView::SetViewPosition(Point value)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				if (auto hScroll = ct->GetHorizontalScroll())
 				{
 					hScroll->SetPosition(value.x);
@@ -12919,12 +12916,12 @@ GuiScrollView
 
 			GuiScroll* GuiScrollView::GetHorizontalScroll()
 			{
-				return GetControlTemplateObject()->GetHorizontalScroll();
+				return GetControlTemplateObject(true)->GetHorizontalScroll();
 			}
 
 			GuiScroll* GuiScrollView::GetVerticalScroll()
 			{
-				return GetControlTemplateObject()->GetVerticalScroll();
+				return GetControlTemplateObject(true)->GetVerticalScroll();
 			}
 
 			bool GuiScrollView::GetHorizontalAlwaysVisible()
@@ -13097,7 +13094,7 @@ GuiScroll
 
 			void GuiScroll::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -13105,7 +13102,7 @@ GuiScroll
 
 			void GuiScroll::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetPageSize(pageSize);
 				ct->SetTotalSize(totalSize);
@@ -13146,7 +13143,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					GetControlTemplateObject()->SetTotalSize(totalSize);
+					GetControlTemplateObject(true)->SetTotalSize(totalSize);
 					TotalSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -13165,7 +13162,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					GetControlTemplateObject()->SetPageSize(pageSize);
+					GetControlTemplateObject(true)->SetPageSize(pageSize);
 					PageSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -13186,7 +13183,7 @@ GuiScroll
 				if(position!=newPosition)
 				{
 					position=newPosition;
-					GetControlTemplateObject()->SetPosition(position);
+					GetControlTemplateObject(true)->SetPosition(position);
 					PositionChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -14275,7 +14272,7 @@ RangedItemArrangerBase
 					if (listControl->GetDisplayItemBackground())
 					{
 						backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
-						if (auto style = listControl->GetControlTemplateObject()->GetBackgroundTemplate())
+						if (auto style = listControl->GetControlTemplateObject(true)->GetBackgroundTemplate())
 						{
 							backgroundButton->SetControlTemplate(style);
 						}
@@ -15277,7 +15274,7 @@ DefaultCheckTextListItemTemplate
 				{
 					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
-						auto style = textList->GetControlTemplateObject()->GetCheckBulletTemplate();
+						auto style = textList->GetControlTemplateObject(true)->GetCheckBulletTemplate();
 						if (style) return style;
 					}
 					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::CheckTextListItem);
@@ -15291,7 +15288,7 @@ DefaultRadioTextListItemTemplate
 				{
 					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
-						auto style = textList->GetControlTemplateObject()->GetRadioBulletTemplate();
+						auto style = textList->GetControlTemplateObject(true)->GetRadioBulletTemplate();
 						if (style) return style;
 					}
 					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::RadioTextListItem);
@@ -15443,7 +15440,7 @@ GuiTextList
 				GuiSelectableListControl::OnStyleInstalled(itemIndex, style);
 				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
 				{
-					textItemStyle->SetTextColor(GetControlTemplateObject()->GetTextColor());
+					textItemStyle->SetTextColor(GetControlTemplateObject(true)->GetTextColor());
 					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(list::ITextItemView::Identifier)))
 					{
 						textItemStyle->SetChecked(textItemView->GetChecked(itemIndex));
@@ -16408,7 +16405,7 @@ GuiVirtualTreeView
 				GuiVirtualTreeListControl::OnStyleInstalled(itemIndex, style);
 				if (auto treeItemStyle = dynamic_cast<templates::GuiTreeItemTemplate*>(style))
 				{
-					treeItemStyle->SetTextColor(GetControlTemplateObject()->GetTextColor());
+					treeItemStyle->SetTextColor(GetControlTemplateObject(true)->GetTextColor());
 
 					if (treeViewItemView)
 					{
@@ -16515,7 +16512,7 @@ DefaultTreeItemTemplate
 						expandingButton = new GuiSelectableButton(theme::ThemeName::TreeItemExpander);
 						if (auto treeView = dynamic_cast<GuiVirtualTreeView*>(listControl))
 						{
-							if (auto expanderStyle = treeView->GetControlTemplateObject()->GetExpandingDecoratorTemplate())
+							if (auto expanderStyle = treeView->GetControlTemplateObject(true)->GetExpandingDecoratorTemplate())
 							{
 								expandingButton->SetControlTemplate(expanderStyle);
 							}
@@ -16675,7 +16672,7 @@ GuiDatePicker::CommandExecutor
 
 			void GuiDatePicker::CommandExecutor::NotifyDateChanged()
 			{
-				datePicker->date = datePicker->GetControlTemplateObject()->GetDate();
+				datePicker->date = datePicker->GetControlTemplateObject(true)->GetDate();
 				datePicker->UpdateText();
 				datePicker->DateChanged.Execute(datePicker->GetNotifyEventArguments());
 			}
@@ -16696,7 +16693,7 @@ GuiDatePicker
 
 			void GuiDatePicker::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -16704,7 +16701,7 @@ GuiDatePicker
 
 			void GuiDatePicker::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetDate(date);
 				ct->SetDateLocale(dateLocale);
@@ -16746,7 +16743,7 @@ GuiDatePicker
 				if (date != value)
 				{
 					date = value;
-					GetControlTemplateObject()->SetDate(value);
+					GetControlTemplateObject(true)->SetDate(value);
 				}
 			}
 
@@ -16776,7 +16773,7 @@ GuiDatePicker
 				{
 					dateFormat=formats[0];
 				}
-				GetControlTemplateObject()->SetDateLocale(dateLocale);
+				GetControlTemplateObject(true)->SetDateLocale(dateLocale);
 
 				UpdateText();
 				DateFormatChanged.Execute(GetNotifyEventArguments());
@@ -16907,7 +16904,7 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -16915,7 +16912,7 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject()->SetCommands(commandExecutor.Obj());
+				GetControlTemplateObject(true)->SetCommands(commandExecutor.Obj());
 			}
 
 			bool GuiComboBoxBase::IsAltAvailable()
@@ -16967,7 +16964,7 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::AfterControlTemplateInstalled(bool initialize)
 			{
 				GuiComboBoxBase::AfterControlTemplateInstalled(initialize);
-				GetControlTemplateObject()->SetTextVisible(!itemStyleProperty);
+				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
 			}
 
 			bool GuiComboBoxListControl::IsAltAvailable()
@@ -17144,7 +17141,7 @@ GuiComboBoxListControl
 			{
 				RemoveStyleController();
 				itemStyleProperty = value;
-				GetControlTemplateObject()->SetTextVisible(!itemStyleProperty);
+				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
 				InstallStyleController(GetSelectedIndex());
 				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}
@@ -17917,6 +17914,7 @@ IGuiMenuService
 ***********************************************************************/
 
 			const wchar_t* const IGuiMenuService::Identifier = L"vl::presentation::controls::IGuiMenuService";
+			const wchar_t* const IGuiMenuDropdownProvider::Identifier = L"vl::presentation::controls::IGuiMenuDropdownProvider";
 
 			IGuiMenuService::IGuiMenuService()
 				:openingMenu(0)
@@ -18126,7 +18124,7 @@ GuiMenuButton
 
 			void GuiMenuButton::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				auto host = GetSubMenuHost();
 
 				ct->SetSubMenuOpening(GetSubMenuOpening());
@@ -18141,7 +18139,7 @@ GuiMenuButton
 
 			GuiButton* GuiMenuButton::GetSubMenuHost()
 			{
-				GuiButton* button = GetControlTemplateObject()->GetSubMenuHost();
+				GuiButton* button = GetControlTemplateObject(true)->GetSubMenuHost();
 				return button ? button : this;
 			}
 
@@ -18192,13 +18190,13 @@ GuiMenuButton
 			void GuiMenuButton::OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				GetControlTemplateObject()->SetSubMenuOpening(true);
+				GetControlTemplateObject(true)->SetSubMenuOpening(true);
 			}
 
 			void GuiMenuButton::OnSubMenuWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				GetControlTemplateObject()->SetSubMenuOpening(false);
+				GetControlTemplateObject(true)->SetSubMenuOpening(false);
 			}
 
 			void GuiMenuButton::OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -18216,6 +18214,7 @@ GuiMenuButton
 			{
 				if(GetVisuallyEnabled())
 				{
+					BeforeSubMenuOpening.Execute(GetNotifyEventArguments());
 					if(GetSubMenu())
 					{
 						OpenSubMenuInternal();
@@ -18232,6 +18231,11 @@ GuiMenuButton
 				return ownerMenuService?ownerMenuService->GetPreferredDirection():IGuiMenuService::Horizontal;
 			}
 
+			GuiMenu* GuiMenuButton::ProvideDropdownMenu()
+			{
+				return GetSubMenu();
+			}
+
 			GuiMenuButton::GuiMenuButton(theme::ThemeName themeName)
 				:GuiSelectableButton(themeName)
 				,subMenu(0)
@@ -18240,6 +18244,7 @@ GuiMenuButton
 				,cascadeAction(true)
 			{
 				SetAutoSelection(false);
+				BeforeSubMenuOpening.SetAssociatedComposition(boundsComposition);
 				SubMenuOpeningChanged.SetAssociatedComposition(boundsComposition);
 				LargeImageChanged.SetAssociatedComposition(boundsComposition);
 				ImageChanged.SetAssociatedComposition(boundsComposition);
@@ -18264,7 +18269,7 @@ GuiMenuButton
 				if (largeImage != value)
 				{
 					largeImage = value;
-					GetControlTemplateObject()->SetLargeImage(largeImage);
+					GetControlTemplateObject(true)->SetLargeImage(largeImage);
 					LargeImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -18279,7 +18284,7 @@ GuiMenuButton
 				if (image != value)
 				{
 					image = value;
-					GetControlTemplateObject()->SetImage(image);
+					GetControlTemplateObject(true)->SetImage(image);
 					ImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -18294,7 +18299,7 @@ GuiMenuButton
 				if (shortcutText != value)
 				{
 					shortcutText = value;
-					GetControlTemplateObject()->SetShortcutText(shortcutText);
+					GetControlTemplateObject(true)->SetShortcutText(shortcutText);
 					ShortcutTextChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -18314,7 +18319,7 @@ GuiMenuButton
 				if (!subMenu)
 				{
 					GuiMenu* newSubMenu = new GuiMenu(theme::ThemeName::Menu, this);
-					newSubMenu->SetControlTemplate(subMenuTemplate ? subMenuTemplate : GetControlTemplateObject()->GetSubMenuTemplate());
+					newSubMenu->SetControlTemplate(subMenuTemplate ? subMenuTemplate : GetControlTemplateObject(true)->GetSubMenuTemplate());
 					SetSubMenu(newSubMenu, true);
 				}
 				return subMenu;
@@ -18336,7 +18341,7 @@ GuiMenuButton
 					subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
 					subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
 				}
-				GetControlTemplateObject()->SetSubMenuExisting(subMenu != nullptr);
+				GetControlTemplateObject(true)->SetSubMenuExisting(subMenu != nullptr);
 			}
 
 			void GuiMenuButton::DestroySubMenu()
@@ -18349,7 +18354,7 @@ GuiMenuButton
 					}
 					subMenu=0;
 					ownedSubMenu=false;
-					GetControlTemplateObject()->SetSubMenuExisting(false);
+					GetControlTemplateObject(true)->SetSubMenuExisting(false);
 				}
 			}
 
@@ -18405,6 +18410,18 @@ GuiMenuButton
 			void GuiMenuButton::SetCascadeAction(bool value)
 			{
 				cascadeAction=value;
+			}
+
+			IDescriptable* GuiMenuButton::QueryService(const WString& identifier)
+			{
+				if (identifier == IGuiMenuDropdownProvider::Identifier)
+				{
+					return (IGuiMenuDropdownProvider*)this;
+				}
+				else
+				{
+					return GuiSelectableButton::QueryService(identifier);
+				}
 			}
 		}
 	}
@@ -20824,7 +20841,7 @@ GuiListViewColumnHeader
 
 			void GuiListViewColumnHeader::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject()->SetSortingState(columnSortingState);
+				GetControlTemplateObject(true)->SetSortingState(columnSortingState);
 			}
 			
 			GuiListViewColumnHeader::GuiListViewColumnHeader(theme::ThemeName themeName)
@@ -20851,7 +20868,7 @@ GuiListViewColumnHeader
 				if (columnSortingState != value)
 				{
 					columnSortingState = value;
-					GetControlTemplateObject()->SetSortingState(columnSortingState);
+					GetControlTemplateObject(true)->SetSortingState(columnSortingState);
 				}
 			}
 
@@ -21052,7 +21069,7 @@ ListViewColumnItemArranger
 							for (vint i = 0; i < listViewItemView->GetColumnCount(); i++)
 							{
 								GuiListViewColumnHeader* button = new GuiListViewColumnHeader(theme::ThemeName::Unknown);
-								button->SetControlTemplate(listView->GetControlTemplateObject()->GetColumnHeaderTemplate());
+								button->SetControlTemplate(listView->GetControlTemplateObject(true)->GetColumnHeaderTemplate());
 								button->SetText(listViewItemView->GetColumnText(i));
 								button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
 								button->SetColumnSortingState(columnItemView->GetSortingState(i));
@@ -21777,7 +21794,7 @@ BigIconListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
 
@@ -21855,7 +21872,7 @@ SmallIconListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
 
@@ -21932,7 +21949,7 @@ ListListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
 
@@ -22041,7 +22058,7 @@ TileListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 
 							vint dataColumnCount = view->GetDataColumnCount();
 							ResetTextTable(dataColumnCount + 1);
@@ -22050,7 +22067,7 @@ TileListViewItemTemplate
 							{
 								dataTexts[i] = CreateTextElement(i + 1);
 								dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
-								dataTexts[i]->SetColor(listView->GetControlTemplateObject()->GetSecondaryTextColor());
+								dataTexts[i]->SetColor(listView->GetControlTemplateObject(true)->GetSecondaryTextColor());
 							}
 						}
 					}
@@ -22156,8 +22173,8 @@ InformationListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
-							bottomLine->SetColor(listView->GetControlTemplateObject()->GetItemSeparatorColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
+							bottomLine->SetColor(listView->GetControlTemplateObject(true)->GetItemSeparatorColor());
 
 							vint dataColumnCount = view->GetDataColumnCount();
 							columnTexts.Resize(dataColumnCount);
@@ -22193,7 +22210,7 @@ InformationListViewItemTemplate
 
 									columnTexts[i] = GuiSolidLabelElement::Create();
 									columnTexts[i]->SetText(view->GetColumnText(view->GetDataColumn(i) + 1) + L": ");
-									columnTexts[i]->SetColor(listView->GetControlTemplateObject()->GetSecondaryTextColor());
+									columnTexts[i]->SetColor(listView->GetControlTemplateObject(true)->GetSecondaryTextColor());
 									cell->SetOwnedElement(columnTexts[i]);
 								}
 								{
@@ -22204,7 +22221,7 @@ InformationListViewItemTemplate
 									dataTexts[i]= GuiSolidLabelElement::Create();
 									dataTexts[i]->SetEllipse(true);
 									dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
-									dataTexts[i]->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+									dataTexts[i]->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 									cell->SetOwnedElement(dataTexts[i]);
 								}
 							}
@@ -22312,7 +22329,7 @@ DetailListViewItemTemplate
 								image->SetImage(0);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject()->GetPrimaryTextColor());
+							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
 
 							vint columnCount = view->GetColumnCount() - 1;
 							subItems.Resize(columnCount);
@@ -22329,7 +22346,7 @@ DetailListViewItemTemplate
 								subItems[i]->SetFont(text->GetFont());
 								subItems[i]->SetEllipse(true);
 								subItems[i]->SetText(view->GetSubItem(itemIndex, i));
-								subItems[i]->SetColor(listView->GetControlTemplateObject()->GetSecondaryTextColor());
+								subItems[i]->SetColor(listView->GetControlTemplateObject(true)->GetSecondaryTextColor());
 								cell->SetOwnedElement(subItems[i]);
 							}
 							OnColumnChanged();
@@ -23211,7 +23228,7 @@ GuiVirtualDataGrid (IDataGridContext)
 
 			templates::GuiListViewTemplate* GuiVirtualDataGrid::GetListViewControlTemplate()
 			{
-				return GetControlTemplateObject();
+				return GetControlTemplateObject(true);
 			}
 
 			void GuiVirtualDataGrid::RequestSaveData()
@@ -25144,7 +25161,7 @@ GuiMultilineTextBox
 
 			void GuiMultilineTextBox::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -25152,7 +25169,7 @@ GuiMultilineTextBox
 
 			void GuiMultilineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				Array<text::ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);
@@ -25162,7 +25179,7 @@ GuiMultilineTextBox
 
 			void GuiMultilineTextBox::CalculateViewAndSetScroll()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				CalculateView();
 				vint smallMove = textElement->GetLines().GetRowHeight();
 				vint bigMove = smallMove * 5;
@@ -25337,7 +25354,7 @@ GuiSinglelineTextBox
 
 			void GuiSinglelineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				Array<text::ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);
@@ -26859,6 +26876,17 @@ GuiDocumentCommonInterface
 				return documentElement->SummarizeStyle(begin, end);
 			}
 
+			Nullable<WString> GuiDocumentCommonInterface::SummarizeStyleName(TextPos begin, TextPos end)
+			{
+				if (begin>end)
+				{
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
+				return documentElement->SummarizeStyleName(begin, end);
+			}
+
 			void GuiDocumentCommonInterface::SetParagraphAlignments(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)
 			{
 				vint first = begin.row;
@@ -27168,7 +27196,7 @@ GuiDocumentViewer
 
 			void GuiDocumentViewer::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				baselineDocument = ct->GetBaselineDocument();
 				if (documentElement)
 				{
@@ -27237,7 +27265,7 @@ GuiDocumentLabel
 
 			void GuiDocumentLabel::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				baselineDocument = ct->GetBaselineDocument();
 				if (documentElement)
 				{
@@ -29095,7 +29123,7 @@ GuiRibbonTab
 
 			void GuiRibbonTab::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				if (auto bhc = ct->GetBeforeHeadersContainer())
@@ -29110,7 +29138,7 @@ GuiRibbonTab
 
 			void GuiRibbonTab::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				if (auto bhc = ct->GetBeforeHeadersContainer())
 				{
 					bhc->AddChild(beforeHeaders);
@@ -29287,41 +29315,171 @@ GuiRibbonGroupItemCollection
 			}
 
 /***********************************************************************
+GuiRibbonGroup::CommandExecutor
+***********************************************************************/
+
+			GuiRibbonGroup::CommandExecutor::CommandExecutor(GuiRibbonGroup* _group)
+				:group(_group)
+			{
+			}
+
+			GuiRibbonGroup::CommandExecutor::~CommandExecutor()
+			{
+			}
+
+			void GuiRibbonGroup::CommandExecutor::NotifyExpandButtonClicked()
+			{
+				group->ExpandButtonClicked.Execute(group->GetNotifyEventArguments());
+			}
+
+/***********************************************************************
+GuiRibbonGroupMenu
+***********************************************************************/
+
+			class GuiRibbonGroupMenu : public GuiMenu, public Description<GuiRibbonGroupMenu>
+			{
+			private:
+				IGuiMenuService::Direction GetPreferredDirection()override
+				{
+					return IGuiMenuService::Horizontal;
+				}
+
+				bool IsSubMenuActivatedByMouseDown()override
+				{
+					return true;
+				}
+
+			public:
+				GuiRibbonGroupMenu(theme::ThemeName themeName, GuiControl* _owner)
+					:GuiMenu(themeName, _owner)
+				{
+				}
+			};
+
+/***********************************************************************
 GuiRibbonGroup
 ***********************************************************************/
 
 			void GuiRibbonGroup::BeforeControlTemplateUninstalled_()
 			{
+				auto ct = GetControlTemplateObject(false);
+				if (!ct) return;
+
+				ct->SetCommands(nullptr);
 			}
 
 			void GuiRibbonGroup::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject()->SetExpandable(expandable);
+				auto ct = GetControlTemplateObject(true);
+				ct->SetExpandable(expandable);
+				ct->SetCollapsed(responsiveView->GetCurrentView() == responsiveFixedButton);
+				ct->SetCommands(commandExecutor.Obj());
+				dropdownButton->SetControlTemplate(ct->GetLargeDropdownButtonTemplate());
+				dropdownMenu->SetControlTemplate(ct->GetSubMenuTemplate());
+			}
+
+			void GuiRibbonGroup::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				dropdownMenu->GetBoundsComposition()->SetPreferredMinSize(Size(0, containerComposition->GetBounds().Height()));
+			}
+
+			void GuiRibbonGroup::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				dropdownButton->SetText(GetText());
+			}
+
+			void GuiRibbonGroup::OnBeforeSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (responsiveView->GetViews().Contains(responsiveFixedButton))
+				{
+					auto currentDropdown = dropdownMenu;
+					if (items.Count() == 1)
+					{
+						if (auto provider = items[0]->QueryTypedService<IGuiMenuDropdownProvider>())
+						{
+							if (auto menu = provider->ProvideDropdownMenu())
+							{
+								currentDropdown = menu;
+							}
+						}
+					}
+					dropdownButton->SetSubMenu(currentDropdown, false);
+				}
+			}
+
+			void GuiRibbonGroup::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
+			{
+				if (auto ct = GetControlTemplateObject(false))
+				{
+					ct->SetCollapsed(arguments.itemIndex == 1);
+				}
+
+				if (arguments.itemIndex == 0)
+				{
+					while (responsiveStack->LevelDown());
+					dropdownMenu->GetContainerComposition()->RemoveChild(stack);
+					responsiveStack->AddChild(stack);
+					dropdownButton->SetSubMenu(nullptr, false);
+				}
+				else
+				{
+					while (responsiveStack->LevelUp());
+					responsiveStack->RemoveChild(stack);
+					dropdownMenu->GetContainerComposition()->AddChild(stack);
+				}
 			}
 
 			GuiRibbonGroup::GuiRibbonGroup(theme::ThemeName themeName)
 				:GuiControl(themeName)
 				, items(this)
 			{
-				stack = new GuiStackComposition();
-				stack->SetDirection(GuiStackComposition::Horizontal);
-				stack->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				stack->SetPadding(2);
-				stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				commandExecutor = new CommandExecutor(this);
+				{
+					stack = new GuiStackComposition();
+					stack->SetDirection(GuiStackComposition::Horizontal);
+					stack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					stack->SetPadding(2);
+					stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
-				responsiveStack = new GuiResponsiveStackComposition();
-				responsiveStack->SetDirection(ResponsiveDirection::Horizontal);
-				responsiveStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				responsiveStack->AddChild(stack);
+					responsiveStack = new GuiResponsiveStackComposition();
+					responsiveStack->SetDirection(ResponsiveDirection::Horizontal);
+					responsiveStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					responsiveStack->AddChild(stack);
+				}
+				{
+					dropdownButton = new GuiToolstripButton(theme::ThemeName::RibbonLargeDropdownButton);
+					dropdownButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
-				containerComposition->AddChild(responsiveStack);
+					responsiveFixedButton = new GuiResponsiveFixedComposition();
+					responsiveFixedButton->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					responsiveFixedButton->AddChild(dropdownButton->GetBoundsComposition());
+
+					dropdownMenu = new GuiRibbonGroupMenu(theme::ThemeName::Menu, dropdownButton);
+				}
+
+				responsiveView = new GuiResponsiveViewComposition();
+				responsiveView->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				responsiveView->GetViews().Add(responsiveStack);
+
+				containerComposition->AddChild(responsiveView);
 
 				ExpandableChanged.SetAssociatedComposition(boundsComposition);
 				ExpandButtonClicked.SetAssociatedComposition(boundsComposition);
+				LargeImageChanged.SetAssociatedComposition(boundsComposition);
+
+				TextChanged.AttachMethod(this, &GuiRibbonGroup::OnTextChanged);
+				boundsComposition->BoundsChanged.AttachMethod(this, &GuiRibbonGroup::OnBoundsChanged);
+				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonGroup::OnBeforeSwitchingView);
+				dropdownButton->BeforeSubMenuOpening.AttachMethod(this, &GuiRibbonGroup::OnBeforeSubMenuOpening);
 			}
 
 			GuiRibbonGroup::~GuiRibbonGroup()
 			{
+				if (!responsiveView->GetViews().Contains(responsiveFixedButton))
+				{
+					SafeDeleteComposition(responsiveFixedButton);
+				}
+				delete dropdownMenu;
 			}
 
 			bool GuiRibbonGroup::GetExpandable()
@@ -29334,8 +29492,38 @@ GuiRibbonGroup
 				if (expandable != value)
 				{
 					expandable = value;
-					GetControlTemplateObject()->SetExpandable(expandable);
+					GetControlTemplateObject(true)->SetExpandable(expandable);
 					ExpandableChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			Ptr<GuiImageData> GuiRibbonGroup::GetLargeImage()
+			{
+				return largeImage;
+			}
+
+			void GuiRibbonGroup::SetLargeImage(Ptr<GuiImageData> value)
+			{
+				if (largeImage != value)
+				{
+					largeImage = value;
+					dropdownButton->SetLargeImage(value);
+					LargeImageChanged.Execute(GetNotifyEventArguments());
+
+					if (value)
+					{
+						if (!responsiveView->GetViews().Contains(responsiveFixedButton))
+						{
+							responsiveView->GetViews().Add(responsiveFixedButton);
+						}
+					}
+					else
+					{
+						if (responsiveView->GetViews().Contains(responsiveFixedButton))
+						{
+							responsiveView->GetViews().Remove(responsiveFixedButton);
+						}
+					}
 				}
 			}
 
@@ -29472,7 +29660,7 @@ GuiRibbonButtons
 							}
 						}
 
-						if (auto ct = GetControlTemplateObject())
+						if (auto ct = GetControlTemplateObject(false))
 						{
 							if (fixed == views[(vint)RibbonButtonSize::Large])
 							{
@@ -29599,7 +29787,7 @@ GuiRibbonToolstrips
 
 			void GuiRibbonToolstrips::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				for (vint i = 0; i < ARRLEN(toolbars); i++)
 				{
 					toolbars[i]->SetControlTemplate(ct->GetToolbarTemplate());
@@ -29841,7 +30029,7 @@ GuiRibbonGallery
 
 			void GuiRibbonGallery::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -29849,7 +30037,7 @@ GuiRibbonGallery
 
 			void GuiRibbonGallery::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetScrollUpEnabled(scrollUpEnabled);
 				ct->SetScrollDownEnabled(scrollDownEnabled);
@@ -29881,7 +30069,7 @@ GuiRibbonGallery
 				if (scrollUpEnabled != value)
 				{
 					scrollUpEnabled = value;
-					GetControlTemplateObject()->SetScrollUpEnabled(value);
+					GetControlTemplateObject(true)->SetScrollUpEnabled(value);
 				}
 			}
 
@@ -29895,7 +30083,7 @@ GuiRibbonGallery
 				if (scrollDownEnabled != value)
 				{
 					scrollDownEnabled = value;
-					GetControlTemplateObject()->SetScrollDownEnabled(value);
+					GetControlTemplateObject(true)->SetScrollDownEnabled(value);
 				}
 			}
 
@@ -29905,7 +30093,7 @@ GuiRibbonToolstripMenu
 
 			void GuiRibbonToolstripMenu::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(false);
 				if (!ct) return;
 
 				if (auto cc = ct->GetContentComposition())
@@ -29916,7 +30104,7 @@ GuiRibbonToolstripMenu
 
 			void GuiRibbonToolstripMenu::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				if (auto cc = ct->GetContentComposition())
 				{
 					cc->AddChild(contentComposition);
@@ -30291,7 +30479,7 @@ GuiToolstripButton
 					}
 					else
 					{
-						newSubMenu->SetControlTemplate(GetControlTemplateObject()->GetSubMenuTemplate());
+						newSubMenu->SetControlTemplate(GetControlTemplateObject(true)->GetSubMenuTemplate());
 					}
 					SetSubMenu(newSubMenu, true);
 				}
@@ -30825,7 +31013,7 @@ GuiBindableRibbonGalleryList
 
 			void GuiBindableRibbonGalleryList::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject();
+				auto ct = GetControlTemplateObject(true);
 				itemList->SetControlTemplate(ct->GetItemListTemplate());
 				subMenu->SetControlTemplate(ct->GetMenuTemplate());
 				groupContainer->SetControlTemplate(ct->GetGroupContainerTemplate());
@@ -30838,6 +31026,19 @@ GuiBindableRibbonGalleryList
 				auto cSize = itemList->GetContainerComposition()->GetBounds();
 				auto bSize = itemList->GetBoundsComposition()->GetBounds();
 				layout->SetSizeOffset(Size(bSize.Width() - cSize.Width(), bSize.Height() - cSize.Height()));
+
+				if (layout->GetItemWidth() > 0)
+				{
+					vint columns = layout->GetVisibleItemCount();
+					if (columns == 0) columns = 1;
+					vint rows = (visibleItemCount + columns - 1) / columns;
+					vint height = (vint)(layout->GetBounds().Height()*(rows + 0.5));
+					groupContainer->GetBoundsComposition()->SetPreferredMinSize(Size(0, height));
+				}
+				else
+				{
+					groupContainer->GetBoundsComposition()->SetPreferredMinSize(Size(0, 0));
+				}
 			}
 
 			void GuiBindableRibbonGalleryList::OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -30860,7 +31061,7 @@ GuiBindableRibbonGalleryList
 					}
 				}
 				
-				if (skipItemAppliedEvent && itemList->GetSelectedItemIndex() != -1)
+				if (!skipItemAppliedEvent && itemList->GetSelectedItemIndex() != -1)
 				{
 					GuiItemEventArgs itemAppliedArgs(boundsComposition);
 					itemAppliedArgs.itemIndex = itemList->GetSelectedItemIndex();
@@ -30934,7 +31135,7 @@ GuiBindableRibbonGalleryList
 						groupContentStack->AddChild(item);
 
 						auto header = new GuiControl(theme::ThemeName::RibbonToolstripHeader);
-						header->SetControlTemplate(GetControlTemplateObject()->GetHeaderTemplate());
+						header->SetControlTemplate(GetControlTemplateObject(true)->GetHeaderTemplate());
 						header->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						header->SetText(group->GetName());
 						item->AddChild(header->GetBoundsComposition());
@@ -30955,7 +31156,7 @@ GuiBindableRibbonGalleryList
 							groupItemTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 							auto backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
-							if (auto style = GetControlTemplateObject()->GetBackgroundTemplate())
+							if (auto style = GetControlTemplateObject(true)->GetBackgroundTemplate())
 							{
 								backgroundButton->SetControlTemplate(style);
 							}
@@ -31056,6 +31257,11 @@ GuiBindableRibbonGalleryList
 					previewArgs.itemIndex = index;
 					PreviewStopped.Execute(previewArgs);
 				}
+			}
+
+			GuiMenu* GuiBindableRibbonGalleryList::ProvideDropdownMenu()
+			{
+				return GetSubMenu();
 			}
 
 			GuiBindableRibbonGalleryList::GuiBindableRibbonGalleryList(theme::ThemeName themeName)
@@ -31189,6 +31395,15 @@ GuiBindableRibbonGalleryList
 				return itemList->GetSelectedItemIndex();
 			}
 
+			description::Value GuiBindableRibbonGalleryList::GetSelectedItem()
+			{
+				vint index = itemList->GetSelectedItemIndex();
+				if (index == -1) return Value();
+
+				auto pos = IndexToGalleryPos(index);
+				return groupedItemSource[pos.group]->GetItemValues()->Get(pos.item);
+			}
+
 			void GuiBindableRibbonGalleryList::ApplyItem(vint index)
 			{
 				if (index == -1)
@@ -31198,6 +31413,7 @@ GuiBindableRibbonGalleryList
 				else
 				{
 					itemList->SetSelected(index, true);
+					itemList->EnsureItemVisible(index);
 				}
 			}
 
@@ -31208,9 +31424,35 @@ GuiBindableRibbonGalleryList
 				skipItemAppliedEvent = false;
 			}
 
+			vint GuiBindableRibbonGalleryList::GetVisibleItemCount()
+			{
+				return visibleItemCount;
+			}
+
+			void GuiBindableRibbonGalleryList::SetVisibleItemCount(vint value)
+			{
+				if (visibleItemCount != value)
+				{
+					visibleItemCount = value;
+					UpdateLayoutSizeOffset();
+				}
+			}
+
 			GuiToolstripMenu* GuiBindableRibbonGalleryList::GetSubMenu()
 			{
 				return subMenu;
+			}
+
+			IDescriptable* GuiBindableRibbonGalleryList::QueryService(const WString& identifier)
+			{
+				if (identifier == IGuiMenuDropdownProvider::Identifier)
+				{
+					return (IGuiMenuDropdownProvider*)this;
+				}
+				else
+				{
+					return GuiRibbonGallery::QueryService(identifier);
+				}
 			}
 		}
 	}
@@ -31407,7 +31649,11 @@ GalleryItemArranger
 					vint groupCount = viewBounds.Width() / pim_itemWidth;
 					owner->SetScrollUpEnabled(firstIndex > 0);
 					owner->SetScrollDownEnabled(firstIndex + groupCount < count);
-					owner->layout->SetItemWidth(pim_itemWidth);
+					if (owner->layout->GetItemWidth() != pim_itemWidth)
+					{
+						owner->layout->SetItemWidth(pim_itemWidth);
+						owner->UpdateLayoutSizeOffset();
+					}
 				}
 
 /***********************************************************************
@@ -31446,6 +31692,11 @@ GalleryResponsiveLayout
 				Size GalleryResponsiveLayout::GetSizeOffset()
 				{
 					return sizeOffset;
+				}
+
+				vint GalleryResponsiveLayout::GetVisibleItemCount()
+				{
+					return itemCount;
 				}
 
 				void GalleryResponsiveLayout::SetMinCount(vint value)
@@ -36771,13 +37022,14 @@ namespace vl
 	{
 		using namespace collections;
 
+		namespace document_operation_visitors
+		{
+
 /***********************************************************************
 Calculate if all text in the specified range has some common styles
 ***********************************************************************/
 
-		namespace document_operation_visitors
-		{
-			class SummerizeStyleVisitor : public Object, public DocumentRun::IVisitor
+			class SummarizeStyleVisitor : public Object, public DocumentRun::IVisitor
 			{
 			public:
 				RunRangeMap&							runRanges;
@@ -36787,7 +37039,7 @@ Calculate if all text in the specified range has some common styles
 				Ptr<DocumentStyleProperties>			style;
 				List<DocumentModel::ResolvedStyle>		resolvedStyles;
 
-				SummerizeStyleVisitor(RunRangeMap& _runRanges, DocumentModel* _model, vint _start, vint _end)
+				SummarizeStyleVisitor(RunRangeMap& _runRanges, DocumentModel* _model, vint _start, vint _end)
 					:runRanges(_runRanges)
 					, model(_model)
 					, start(_start)
@@ -36947,16 +37199,111 @@ Calculate if all text in the specified range has some common styles
 					VisitContainer(run);
 				}
 			};
+
+/***********************************************************************
+Calculate if all text in the specified range has a common style name
+***********************************************************************/
+
+			class SummarizeStyleNameVisitor : public Object, public DocumentRun::IVisitor
+			{
+			public:
+				RunRangeMap&							runRanges;
+				DocumentModel*							model;
+				vint									start;
+				vint									end;
+				Nullable<WString>						currentStyleName;
+				Nullable<WString>						styleName;
+				bool									assignedStyleName = false;
+
+				SummarizeStyleNameVisitor(RunRangeMap& _runRanges, DocumentModel* _model, vint _start, vint _end)
+					:runRanges(_runRanges)
+					, model(_model)
+					, start(_start)
+					, end(_end)
+				{
+				}
+
+				void VisitContentRun(DocumentContentRun* run)
+				{
+					if (!assignedStyleName)
+					{
+						styleName = currentStyleName;
+						assignedStyleName = true;
+					}
+					else if (styleName && (!currentStyleName || styleName.Value() != currentStyleName.Value()))
+					{
+						styleName = {};
+					}
+				}
+
+				void VisitContainer(DocumentContainerRun* run)
+				{
+					for (vint i = run->runs.Count() - 1; i >= 0; i--)
+					{
+						Ptr<DocumentRun> subRun = run->runs[i];
+						RunRange range = runRanges[subRun.Obj()];
+						if (range.start<end && start<range.end)
+						{
+							subRun->Accept(this);
+						}
+					}
+				}
+
+				void Visit(DocumentTextRun* run)override
+				{
+					VisitContentRun(run);
+				}
+
+				void Visit(DocumentStylePropertiesRun* run)override
+				{
+					VisitContainer(run);
+				}
+
+				void Visit(DocumentStyleApplicationRun* run)override
+				{
+					auto oldStyleName = currentStyleName;
+					currentStyleName = run->styleName;
+					VisitContainer(run);
+					currentStyleName = oldStyleName;
+				}
+
+				void Visit(DocumentHyperlinkRun* run)override
+				{
+					VisitContainer(run);
+				}
+
+				void Visit(DocumentImageRun* run)override
+				{
+					VisitContentRun(run);
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					VisitContentRun(run);
+				}
+
+				void Visit(DocumentParagraphRun* run)override
+				{
+					VisitContainer(run);
+				}
+			};
 		}
 		using namespace document_operation_visitors;
 
 		namespace document_editor
 		{
-			Ptr<DocumentStyleProperties> SummerizeStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end)
+			Ptr<DocumentStyleProperties> SummarizeStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end)
 			{
-				SummerizeStyleVisitor visitor(runRanges, model, start, end);
+				SummarizeStyleVisitor visitor(runRanges, model, start, end);
 				run->Accept(&visitor);
 				return visitor.style;
+			}
+
+			Nullable<WString> SummarizeStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end)
+			{
+				SummarizeStyleNameVisitor visitor(runRanges, model, start, end);
+				run->Accept(&visitor);
+				return visitor.styleName;
 			}
 
 			template<typename T>
@@ -37541,45 +37888,45 @@ DocumentModel::ClearStyle
 			Ptr<DocumentStyleProperties> style;
 			RunRangeMap runRanges;
 
-			if(begin==end) goto END_OF_SUMMERIZING;
+			if (begin == end) goto END_OF_SUMMERIZING;
 
 			// check caret range
-			if(!CheckEditRange(begin, end, runRanges)) return nullptr;
+			if (!CheckEditRange(begin, end, runRanges)) return nullptr;
 
-			// summerize container
-			if(begin.row==end.row)
+			// Summarize container
+			if (begin.row == end.row)
 			{
-				style=SummerizeStyle(paragraphs[begin.row].Obj(), runRanges, this, begin.column, end.column);
+				style = document_editor::SummarizeStyle(paragraphs[begin.row].Obj(), runRanges, this, begin.column, end.column);
 			}
 			else
 			{
-				for(vint i=begin.row;i<=end.row;i++)
+				for (vint i = begin.row; i <= end.row; i++)
 				{
-					Ptr<DocumentParagraphRun> paragraph=paragraphs[i];
-					if(begin.row<i && i<end.row)
+					Ptr<DocumentParagraphRun> paragraph = paragraphs[i];
+					if (begin.row < i && i < end.row)
 					{
 						GetRunRange(paragraph.Obj(), runRanges);
 					}
-					RunRange range=runRanges[paragraph.Obj()];
+					RunRange range = runRanges[paragraph.Obj()];
 					Ptr<DocumentStyleProperties> paragraphStyle;
-					if(i==begin.row)
+					if (i == begin.row)
 					{
-						paragraphStyle=SummerizeStyle(paragraph.Obj(), runRanges, this, begin.column, range.end);
+						paragraphStyle = document_editor::SummarizeStyle(paragraph.Obj(), runRanges, this, begin.column, range.end);
 					}
-					else if(i==end.row)
+					else if (i == end.row)
 					{
-						paragraphStyle=SummerizeStyle(paragraph.Obj(), runRanges, this, range.start, end.column);
+						paragraphStyle = document_editor::SummarizeStyle(paragraph.Obj(), runRanges, this, range.start, end.column);
 					}
 					else
 					{
-						paragraphStyle=SummerizeStyle(paragraph.Obj(), runRanges, this, range.start, range.end);
+						paragraphStyle = document_editor::SummarizeStyle(paragraph.Obj(), runRanges, this, range.start, range.end);
 					}
 
-					if(!style)
+					if (!style)
 					{
-						style=paragraphStyle;
+						style = paragraphStyle;
 					}
-					else if(paragraphStyle)
+					else if (paragraphStyle)
 					{
 						AggregateStyle(style, paragraphStyle);
 					}
@@ -37587,11 +37934,63 @@ DocumentModel::ClearStyle
 			}
 
 		END_OF_SUMMERIZING:
-			if(!style)
+			if (!style)
 			{
-				style=new DocumentStyleProperties;
+				style = new DocumentStyleProperties;
 			}
 			return style;
+		}
+
+		Nullable<WString> DocumentModel::SummarizeStyleName(TextPos begin, TextPos end)
+		{
+			if (begin == end) return {};
+
+			// check caret range
+			RunRangeMap runRanges;
+			if (!CheckEditRange(begin, end, runRanges)) return nullptr;
+
+			// Summarize container
+			Nullable<WString> styleName;
+
+			if (begin.row == end.row)
+			{
+				styleName = document_editor::SummarizeStyleName(paragraphs[begin.row].Obj(), runRanges, this, begin.column, end.column);
+			}
+			else
+			{
+				for (vint i = begin.row; i <= end.row; i++)
+				{
+					Ptr<DocumentParagraphRun> paragraph = paragraphs[i];
+					if (begin.row < i && i < end.row)
+					{
+						GetRunRange(paragraph.Obj(), runRanges);
+					}
+					RunRange range = runRanges[paragraph.Obj()];
+					Nullable<WString> newStyleName;
+					if (i == begin.row)
+					{
+						newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, begin.column, range.end);
+					}
+					else if (i == end.row)
+					{
+						newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, range.start, end.column);
+					}
+					else
+					{
+						newStyleName = document_editor::SummarizeStyleName(paragraph.Obj(), runRanges, this, range.start, end.column);
+					}
+
+					if (i == begin.row)
+					{
+						styleName = newStyleName;
+					}
+					else if (!styleName || !newStyleName || styleName.Value() != newStyleName.Value())
+					{
+						styleName = {};
+					}
+				}
+			}
+			return styleName;
 		}
 
 		Nullable<Alignment> DocumentModel::SummarizeParagraphAlignment(TextPos begin, TextPos end)

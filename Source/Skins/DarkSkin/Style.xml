@@ -381,4 +381,26 @@
       ]]>
     </att.BackgroundColor-bind>
   </Style>
+  <Style ref.Path="//*.ribbonExpandableArrow">
+    <att.BorderColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#A0D0FF" :
+          state == ButtonState::Pressed ? "#004879" :
+          state == ButtonState::Active ? "#A0D0FF" :
+          "#A0D0FF"
+        )
+      ]]>
+    </att.BorderColor-bind>
+    <att.BackgroundColor-bind>
+      <![CDATA[
+        cast Color let state = self.State in (
+          not self.VisuallyEnabled ? "#00000000" :
+          state == ButtonState::Pressed ? "#004879" :
+          state == ButtonState::Active ? "#A0D0FF" :
+          "#00000000"
+        )
+      ]]>
+    </att.BackgroundColor-bind>
+  </Style>
 </Styles>
