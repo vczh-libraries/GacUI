@@ -361,7 +361,7 @@ GuiTemplatePropertyDeserializer
 							for (vint i = 0; i < count; i++)
 							{
 								auto methodInfo = methodGroup->GetMethod(i);
-								if (methodInfo->GetParameterCount() == 0)
+								if (methodInfo->GetParameterCount() == 1)
 								{
 									auto returnType = methodInfo->GetReturn();
 									if (returnType->GetDecorator() == ITypeInfo::RawPtr)
