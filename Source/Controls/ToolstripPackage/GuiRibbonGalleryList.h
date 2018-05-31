@@ -262,7 +262,7 @@ Ribbon Gallery List
 				void													SelectItem(vint index);
 
 				/// <summary>Get the minimum items visible in the drop down menu.</summary>
-				/// <returns>The minimum items visible in the drop down menu.</summary>
+				/// <returns>The minimum items visible in the drop down menu.</returns>
 				vint													GetVisibleItemCount();
 				/// <summary>Set minimum items visible in the drop down menu.</summary>
 				/// <param name="value">The minimum items visible in the drop down menu.</param>

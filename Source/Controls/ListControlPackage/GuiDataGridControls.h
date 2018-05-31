@@ -99,7 +99,7 @@ GuiVirtualDataGrid
 
 			public:
 				/// <summary>Create a data grid control in virtual mode.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
 				GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualDataGrid();

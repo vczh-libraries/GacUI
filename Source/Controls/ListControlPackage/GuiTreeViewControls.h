@@ -119,7 +119,7 @@ NodeItemProvider
 					/// <returns>The binding value of a node.</returns>
 					/// <param name="node">The node.</param>
 					virtual description::Value		GetBindingValue(INodeProvider* node) = 0;
-					/// <summary>Request a view for this node provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier. When the view object is no longer needed, A call to the [M:vl.presentation.controls.tree.INodeRootProvider.ReleaseView] is needed.</summary>
+					/// <summary>Request a view for this node provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier.</summary>
 					/// <returns>The view object.</returns>
 					/// <param name="identifier">The identifier for the requested view.</param>
 					virtual IDescriptable*			RequestView(const WString& identifier)=0;
@@ -132,7 +132,7 @@ NodeItemProvider
 				// Tree to ListControl (IItemProvider)
 				//-----------------------------------------------------------
 
-				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for [T:vl.presentation.controls.tree.NodeItemStyleProvider]. [T:vl.presentation.controls.tree.NodeItemProvider] provides this view. In most of the cases, the NodeItemProvider class and this view is not required users to create, or even to touch. [T:vl.presentation.controls.GuiVirtualTreeListControl] already handled all of this.</summary>
+				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for [T:vl.presentation.controls.tree.GuiVirtualTreeView]. [T:vl.presentation.controls.tree.NodeItemProvider] provides this view. In most of the cases, the NodeItemProvider class and this view is not required users to create, or even to touch. [T:vl.presentation.controls.GuiVirtualTreeListControl] already handled all of this.</summary>
 				class INodeItemView : public virtual IDescriptable, public Description<INodeItemView>
 				{
 				public:
@@ -328,7 +328,7 @@ GuiVirtualTreeListControl
 				void								OnNodeLeftButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiNodeMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a tree list control in virtual mode.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_nodeRootProvider">The node root provider for this control.</param>
 				GuiVirtualTreeListControl(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider);
 				~GuiVirtualTreeListControl();
@@ -376,7 +376,7 @@ TreeViewItemRootProvider
 
 			namespace tree
 			{
-				/// <summary>The required <see cref="INodeRootProvider"/> view for [T:vl.presentation.controls.tree.TreeViewNodeItemStyleProvider].</summary>
+				/// <summary>The required <see cref="INodeRootProvider"/> view for [T:vl.presentation.controls.GuiVirtualTreeView].</summary>
 				class ITreeViewItemView : public virtual IDescriptable, public Description<ITreeViewItemView>
 				{
 				public:
@@ -458,8 +458,8 @@ GuiVirtualTreeView
 				void													OnItemCollapsed(tree::INodeProvider* node)override;
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 			public:
-				/// <summary>Create a tree view control in virtual mode. A [T:vl.presentation.controls.tree.TreeViewNodeItemStyleProvider] is created as a node item style provider by default.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <summary>Create a tree view control in virtual mode.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_nodeRootProvider">The node root provider for this control.</param>
 				GuiVirtualTreeView(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider);
 				~GuiVirtualTreeView();
@@ -476,7 +476,7 @@ GuiTreeView
 				Ptr<tree::TreeViewItemRootProvider>						nodes;
 			public:
 				/// <summary>Create a tree view control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiTreeView(theme::ThemeName themeName);
 				~GuiTreeView();
 

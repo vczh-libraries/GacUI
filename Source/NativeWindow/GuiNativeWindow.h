@@ -955,6 +955,7 @@ Native Window Services
 			/// Test is the current thread the main thread.
 			/// </summary>
 			/// <returns>Returns true if the current thread is the main thread.</returns>
+			/// <param name="window">A window to access the corressponding main thread.</param>
 			virtual bool					IsInMainThread(INativeWindow* window)=0;
 			/// <summary>
 			/// Invoke a specified function with an specified argument asynchronisly.
@@ -964,12 +965,14 @@ Native Window Services
 			/// <summary>
 			/// Invoke a specified function with an specified argument in the main thread.
 			/// </summary>
+			/// <param name="window">A window to access the corressponding main thread.</param>
 			/// <param name="proc">The specified function.</param>
 			virtual void					InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)=0;
 			/// <summary>
 			/// Invoke a specified function with an specified argument in the main thread and wait for the function to complete or timeout.
 			/// </summary>
 			/// <returns>Return true if the function complete. Return false if the function has not completed during a specified period of time.</returns>
+			/// <param name="window">A window to access the corressponding main thread.</param>
 			/// <param name="proc">The specified function.</param>
 			/// <param name="milliseconds">The specified period of time to wait. Set to -1 (default value) to wait forever until the function completed.</param>
 			virtual bool					InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds=-1)=0;

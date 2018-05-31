@@ -245,6 +245,7 @@ Host
 				/// <returns>The main compositoin.</returns>
 				GuiGraphicsComposition*					GetMainComposition();
 				/// <summary>Render the main composition and all content to the associated window.</summary>
+				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
 				void									Render(bool forceUpdate);
 				/// <summary>Request a rendering</summary>
 				void									RequestRender();

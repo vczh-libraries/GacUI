@@ -2071,6 +2071,7 @@ Native Window Services
 			/// Test is the current thread the main thread.
 			/// </summary>
 			/// <returns>Returns true if the current thread is the main thread.</returns>
+			/// <param name="window">A window to access the corressponding main thread.</param>
 			virtual bool					IsInMainThread(INativeWindow* window)=0;
 			/// <summary>
 			/// Invoke a specified function with an specified argument asynchronisly.
@@ -2080,12 +2081,14 @@ Native Window Services
 			/// <summary>
 			/// Invoke a specified function with an specified argument in the main thread.
 			/// </summary>
+			/// <param name="window">A window to access the corressponding main thread.</param>
 			/// <param name="proc">The specified function.</param>
 			virtual void					InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)=0;
 			/// <summary>
 			/// Invoke a specified function with an specified argument in the main thread and wait for the function to complete or timeout.
 			/// </summary>
 			/// <returns>Return true if the function complete. Return false if the function has not completed during a specified period of time.</returns>
+			/// <param name="window">A window to access the corressponding main thread.</param>
 			/// <param name="proc">The specified function.</param>
 			/// <param name="milliseconds">The specified period of time to wait. Set to -1 (default value) to wait forever until the function completed.</param>
 			virtual bool					InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds=-1)=0;
@@ -3900,7 +3903,6 @@ Resource Image
 			/// <summary>Create an image data with a specified image and a frame index.</summary>
 			/// <param name="_image">The specified image.</param>
 			/// <param name="_frameIndex">The specified frame index.</param>
-			/// <param name="_filePath">The file path of the image. This parameter is only for metadata, it will not affect the content of the image.</param>
 			GuiImageData(Ptr<INativeImage> _image, vint _frameIndex);
 			~GuiImageData();
 
@@ -3968,7 +3970,8 @@ Resource Structure
 			/// <returns>The file absolute path of this resource node .</returns>
 			const WString&							GetFileAbsolutePath();
 			/// <summary>Set the file content path of this resource node.</summary>
-			/// <param name="value">The file content path of this resource node .</param>
+			/// <param name="content">The file content path of this resource node .</param>
+			/// <param name="absolute">The file absolute path of this resource node .</param>
 			void									SetFileContentPath(const WString& content, const WString& absolute);
 		};
 
@@ -4182,7 +4185,8 @@ Resource
 			/// <summary>Load a resource from an xml file. If the xml file refers other files, they will be loaded as well.</summary>
 			/// <returns>The loaded resource.</returns>
 			/// <param name="xml">The xml document.</param>
-			/// <param name="workingDirectory">The working directory for loading image files.</param>
+			/// <param name="filePath">The file path of the resource.</param>
+			/// <param name="workingDirectory">The working directory for loading external resources.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			static Ptr<GuiResource>					LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors);
 
@@ -4447,17 +4451,20 @@ Resource Type Resolver
 		public:
 			/// <summary>Serialize a resource to an xml element. This function is called if this type resolver does not have a preload type.</summary>
 			/// <returns>The serialized xml element.</returns>
-			/// <param name="resource">The resource.</param>
+			/// <param name="resource">The resource item containing the resource.</param>
+			/// <param name="content">The object to serialize.</param>
 			virtual Ptr<parsing::xml::XmlElement>				Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content) = 0;
 
 			/// <summary>Load a resource for a type inside an xml element.</summary>
 			/// <returns>The resource.</returns>
+			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="element">The xml element.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors) = 0;
 
 			/// <summary>Load a resource for a type from a file.</summary>
 			/// <returns>The resource.</returns>
+			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="path">The file path.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors) = 0;
@@ -4468,12 +4475,14 @@ Resource Type Resolver
 		{
 		public:
 			/// <summary>Serialize a precompiled resource to a stream.</summary>
-			/// <param name="resource">The resource.</param>
+			/// <param name="resource">The resource item containing the resource.</param>
+			/// <param name="content">The content to serialize.</param>
 			/// <param name="stream">The stream.</param>
 			virtual void										SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream) = 0;
 
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The resource.</returns>
+			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="stream">The stream.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual Ptr<DescriptableObject>						ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors) = 0;
@@ -4492,12 +4501,13 @@ Resource Type Resolver
 
 			/// <summary>Serialize a resource to a resource in preload type.</summary>
 			/// <returns>The serialized resource.</returns>
-			/// <param name="resource">The resource.</param>
+			/// <param name="resource">The resource item containing the resource.</param>
+			/// <param name="content">The object to serialize.</param>
 			virtual Ptr<DescriptableObject>						Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content) = 0;
 
 			/// <summary>Load a resource for a type from a resource loaded by the preload type resolver.</summary>
 			/// <returns>The resource.</returns>
-			/// <param name="resource">The resource.</param>
+			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="resolver">The path resolver. This is only for delay load resource.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors) = 0;
@@ -4930,6 +4940,7 @@ Rich Content Document (model)
 
 			/// <summary>Load a document model from an xml.</summary>
 			/// <returns>The loaded document model.</returns>
+			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="xml">The xml document.</param>
 			/// <param name="resolver">A document resolver to resolve symbols in non-embedded objects like image.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
@@ -8244,7 +8255,7 @@ namespace vl
 				/// <returns>The item source.</returns>
 				Ptr<IValueEnumerable>								GetItemSource();
 				/// <summary>Set the item source.</summary>
-				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				/// <param name="value">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<IValueEnumerable> value);
 			};
 
@@ -8438,13 +8449,19 @@ Animation
 				/// <summary>Play the animation. The animation should calculate the time itself to determine the content of the current state of animating objects.</summary>
 				virtual void							Run() = 0;
 
-				/// <summary>Returns true if the animation has ended.</summary>
+				/// <summary>Test if the animation has ended.</summary>
+				/// <returns>Returns true if the animation has ended.</returns>
 				virtual bool							GetStopped() = 0;
 
 				/// <summary>Create a finite animation.</summary>
+				/// <returns>Returns the created animation.</returns>
+				/// <param name="run">The animation callback for each frame.</param>
+				/// <param name="milliseconds">The length of the animation.</param>
 				static Ptr<IGuiAnimation>				CreateAnimation(const Func<void(vuint64_t)>& run, vuint64_t milliseconds);
 
 				/// <summary>Create an infinite animation.</summary>
+				/// <returns>Returns the created animation.</returns>
+				/// <param name="run">The animation callback for each frame.</param>
 				static Ptr<IGuiAnimation>				CreateAnimation(const Func<void(vuint64_t)>& run);
 			};
 
@@ -9222,12 +9239,13 @@ namespace vl
 #undef GUI_DEFINE_ITEM_PROPERTY
 			};
 
-			/// <summary>Get the current theme style factory object. The default theme is [T:vl.presentation.win7.Win7Theme]. Call [M:vl.presentation.theme.SetCurrentTheme] to change the default theme.</summary>
+			/// <summary>Get the current theme style factory object. Call <see cref="RegisterTheme"/> or <see cref="UnregisterTheme"/> to change the default theme.</summary>
 			/// <returns>The current theme style factory object.</returns>
 			extern ITheme*						GetCurrentTheme();
 			extern void							InitializeTheme();
 			extern void							FinalizeTheme();
 			/// <summary>Register a control template collection object.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="name">The name of the theme.</param>
 			/// <param name="theme">The control template collection object.</param>
 			extern bool							RegisterTheme(const WString& name, Ptr<ThemeTemplates> theme);
@@ -9490,6 +9508,7 @@ Host
 				/// <returns>The main compositoin.</returns>
 				GuiGraphicsComposition*					GetMainComposition();
 				/// <summary>Render the main composition and all content to the associated window.</summary>
+				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
 				void									Render(bool forceUpdate);
 				/// <summary>Request a rendering</summary>
 				void									RequestRender();
@@ -9742,10 +9761,10 @@ Basic Construction
 				/// <summary>Get the associated style controller.</summary>
 				/// <returns>The associated style controller.</returns>
 				templates::GuiControlTemplate*			GetControlTemplateObject();
-				/// <summary>Get the bounds composition for the control. The value is from <see cref="IStyleController::GetBoundsComposition"/>.</summary>
+				/// <summary>Get the bounds composition for the control.</summary>
 				/// <returns>The bounds composition.</returns>
 				compositions::GuiBoundsComposition*		GetBoundsComposition();
-				/// <summary>Get the container composition for the control. The value is from <see cref="IStyleController::GetContainerComposition"/>.</summary>
+				/// <summary>Get the container composition for the control.</summary>
 				/// <returns>The container composition.</returns>
 				compositions::GuiGraphicsComposition*	GetContainerComposition();
 				/// <summary>Get the focusable composition for the control. A focusable composition is the composition to be focused when the control is focused.</summary>
@@ -10743,6 +10762,7 @@ Scroll View
 				/// <returns>The view position.</returns>
 				Point									GetViewPosition();
 				/// <summary>Set the position of the left-top corner of the view bounds.</summary>
+				/// <param name="value">The position.</param>
 				void									SetViewPosition(Point value);
 				
 				/// <summary>Get the horizontal scroll control.</summary>
@@ -11049,6 +11069,7 @@ Window
 				/// <summary>Move the window to the center of the screen. If multiple screens exist, the window move to the screen that contains the biggest part of the window.</summary>
 				void									MoveToScreenCenter();
 				/// <summary>Move the window to the center of the specified screen.</summary>
+				/// <param name="screen">The screen.</param>
 				void									MoveToScreenCenter(INativeScreen* screen);
 				
 				/// <summary>
@@ -11338,15 +11359,18 @@ Application
 
 				/// <summary>Test is the current thread the main thread for GUI.</summary>
 				/// <returns>Returns true if the current thread is the main thread for GUI.</returns>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
 				bool											IsInMainThread(GuiControlHost* controlHost);
 				/// <summary>Invoke a specified function asynchronously.</summary>
 				/// <param name="proc">The specified function.</param>
 				void											InvokeAsync(const Func<void()>& proc);
 				/// <summary>Invoke a specified function in the main thread.</summary>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
 				/// <param name="proc">The specified function.</param>
 				void											InvokeInMainThread(GuiControlHost* controlHost, const Func<void()>& proc);
 				/// <summary>Invoke a specified function in the main thread and wait for the function to complete or timeout.</summary>
 				/// <returns>Return true if the function complete. Return false if the function has not completed during a specified period of time.</returns>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
 				/// <param name="proc">The specified function.</param>
 				/// <param name="milliseconds">The specified period of time to wait. Set to -1 (default value) to wait forever until the function completed.</param>
 				bool											InvokeInMainThreadAndWait(GuiControlHost* controlHost, const Func<void()>& proc, vint milliseconds=-1);
@@ -11361,6 +11385,7 @@ Application
 				/// <param name="milliseconds">Time to delay.</param>
 				Ptr<INativeDelay>								DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds);
 				/// <summary>Run the specified function in the main thread. If the caller is in the main thread, then run the specified function directly.</summary>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
 				/// <param name="proc">The specified function.</param>
 				void											RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc);
 
@@ -11598,7 +11623,7 @@ List Control
 					/// <param name="itemIndex">The index of the item.</param>
 					virtual description::Value					GetBindingValue(vint itemIndex) = 0;
 
-					/// <summary>Request a view for this item provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier. When the view object is no longer needed, Calling to the [M:vl.presentation.controls.GuiListControl.IItemProvider.ReleaseView] is needed.</summary>
+					/// <summary>Request a view for this item provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier.</summary>
 					/// <returns>The view object.</returns>
 					/// <param name="identifier">The identifier for the requested view.</param>
 					virtual IDescriptable*						RequestView(const WString& identifier) = 0;
@@ -11803,14 +11828,12 @@ List Control
 				/// <returns>The item arranger.</returns>
 				virtual IItemArranger*							GetArranger();
 				/// <summary>Set the item arranger</summary>
-				/// <returns>The old item arranger</returns>
 				/// <param name="value">The new item arranger</param>
 				virtual void									SetArranger(Ptr<IItemArranger> value);
 				/// <summary>Get the item coordinate transformer.</summary>
 				/// <returns>The item coordinate transformer.</returns>
 				virtual compositions::IGuiAxis*					GetAxis();
 				/// <summary>Set the item coordinate transformer</summary>
-				/// <returns>The old item coordinate transformer</returns>
 				/// <param name="value">The new item coordinate transformer</param>
 				virtual void									SetAxis(Ptr<compositions::IGuiAxis> value);
 				/// <summary>Adjust the view location to make an item visible.</summary>
@@ -12299,7 +12322,7 @@ GuiVirtualTextList
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
 				GuiVirtualTextList(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
@@ -12326,7 +12349,7 @@ GuiTextList
 				list::TextItemProvider*									items;
 			public:
 				/// <summary>Create a Text list control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiTextList(theme::ThemeName themeName);
 				~GuiTextList();
 
@@ -12467,7 +12490,7 @@ NodeItemProvider
 					/// <returns>The binding value of a node.</returns>
 					/// <param name="node">The node.</param>
 					virtual description::Value		GetBindingValue(INodeProvider* node) = 0;
-					/// <summary>Request a view for this node provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier. When the view object is no longer needed, A call to the [M:vl.presentation.controls.tree.INodeRootProvider.ReleaseView] is needed.</summary>
+					/// <summary>Request a view for this node provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier.</summary>
 					/// <returns>The view object.</returns>
 					/// <param name="identifier">The identifier for the requested view.</param>
 					virtual IDescriptable*			RequestView(const WString& identifier)=0;
@@ -12480,7 +12503,7 @@ NodeItemProvider
 				// Tree to ListControl (IItemProvider)
 				//-----------------------------------------------------------
 
-				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for [T:vl.presentation.controls.tree.NodeItemStyleProvider]. [T:vl.presentation.controls.tree.NodeItemProvider] provides this view. In most of the cases, the NodeItemProvider class and this view is not required users to create, or even to touch. [T:vl.presentation.controls.GuiVirtualTreeListControl] already handled all of this.</summary>
+				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for [T:vl.presentation.controls.tree.GuiVirtualTreeView]. [T:vl.presentation.controls.tree.NodeItemProvider] provides this view. In most of the cases, the NodeItemProvider class and this view is not required users to create, or even to touch. [T:vl.presentation.controls.GuiVirtualTreeListControl] already handled all of this.</summary>
 				class INodeItemView : public virtual IDescriptable, public Description<INodeItemView>
 				{
 				public:
@@ -12676,7 +12699,7 @@ GuiVirtualTreeListControl
 				void								OnNodeLeftButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiNodeMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a tree list control in virtual mode.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_nodeRootProvider">The node root provider for this control.</param>
 				GuiVirtualTreeListControl(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider);
 				~GuiVirtualTreeListControl();
@@ -12724,7 +12747,7 @@ TreeViewItemRootProvider
 
 			namespace tree
 			{
-				/// <summary>The required <see cref="INodeRootProvider"/> view for [T:vl.presentation.controls.tree.TreeViewNodeItemStyleProvider].</summary>
+				/// <summary>The required <see cref="INodeRootProvider"/> view for [T:vl.presentation.controls.GuiVirtualTreeView].</summary>
 				class ITreeViewItemView : public virtual IDescriptable, public Description<ITreeViewItemView>
 				{
 				public:
@@ -12806,8 +12829,8 @@ GuiVirtualTreeView
 				void													OnItemCollapsed(tree::INodeProvider* node)override;
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 			public:
-				/// <summary>Create a tree view control in virtual mode. A [T:vl.presentation.controls.tree.TreeViewNodeItemStyleProvider] is created as a node item style provider by default.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <summary>Create a tree view control in virtual mode.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_nodeRootProvider">The node root provider for this control.</param>
 				GuiVirtualTreeView(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider);
 				~GuiVirtualTreeView();
@@ -12824,7 +12847,7 @@ GuiTreeView
 				Ptr<tree::TreeViewItemRootProvider>						nodes;
 			public:
 				/// <summary>Create a tree view control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiTreeView(theme::ThemeName themeName);
 				~GuiTreeView();
 
@@ -15148,13 +15171,13 @@ namespace vl
 				void											SetColumnSortingState(ColumnSortingState value);
 			};
 
-			/// <summary>List view base control. All list view controls inherit from this class. <see cref="list::ListViewItemStyleProviderBase"/> is suggested to be the base class of item style providers for list view control.</summary>
+			/// <summary>List view base control. All list view controls inherit from this class.</summary>
 			class GuiListViewBase : public GuiSelectableListControl, public Description<GuiListViewBase>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListViewTemplate, GuiSelectableListControl)
 			public:
 				/// <summary>Create a list view base control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
 				GuiListViewBase(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiListViewBase();
@@ -15169,7 +15192,7 @@ ListView ItemStyleProvider
 
 			namespace list
 			{
-				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="ListViewItemStyleProvider"/>.</summary>
+				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="GuiVirtualListView"/>.</summary>
 				class IListViewItemView : public virtual IDescriptable, public Description<IListViewItemView>
 				{
 				public:
@@ -15476,7 +15499,7 @@ ListViewItemProvider
 					~ListViewColumns();
 				};
 				
-				/// <summary>Item provider for <see cref="GuiListViewBase"/> and <see cref="ListViewItemStyleProvider"/>.</summary>
+				/// <summary>Item provider for <see cref="GuiListViewBase"/>.</summary>
 				class ListViewItemProvider
 					: public ListProvider<Ptr<ListViewItem>>
 					, protected virtual IListViewItemProvider
@@ -15557,7 +15580,7 @@ GuiVirtualListView
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a list view control in virtual mode.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
 				GuiVirtualListView(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualListView();
@@ -15581,7 +15604,7 @@ GuiListView
 				list::ListViewItemProvider*								items;
 			public:
 				/// <summary>Create a list view control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiListView(theme::ThemeName themeName);
 				~GuiListView();
 				
@@ -15918,7 +15941,7 @@ Datagrid Interfaces
 				public:
 					/// <summary>Create a data visualizer.</summary>
 					/// <returns>The created data visualizer.</returns>
-					/// <param name="IDataGridContext">Context information of the data grid.</param>
+					/// <param name="dataGridContext">Context information of the data grid.</param>
 					virtual Ptr<IDataVisualizer>						CreateVisualizer(IDataGridContext* dataGridContext) = 0;
 				};
 
@@ -15953,7 +15976,7 @@ Datagrid Interfaces
 				public:
 					/// <summary>Create a data editor.</summary>
 					/// <returns>The created data editor.</returns>
-					/// <param name="callback">The callback for the created editor to send notification.</param>
+					/// <param name="dataGridContext">Context information of the data grid.</param>
 					virtual Ptr<IDataEditor>							CreateEditor(IDataGridContext* dataGridContext) = 0;
 				};
 
@@ -16081,7 +16104,6 @@ Extension Bases
 
 				public:
 					/// <summary>Create the data visualizer.</summary>
-					/// <param name="_decoratedDataVisualizer">The decorated data visualizer inside the current data visualizer.</param>
 					DataVisualizerBase();
 					~DataVisualizerBase();
 
@@ -16443,7 +16465,7 @@ GuiVirtualDataGrid
 
 			public:
 				/// <summary>Create a data grid control in virtual mode.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
 				GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualDataGrid();
@@ -16736,7 +16758,6 @@ DataColumn
 					Ptr<IDataVisualizerFactory>							GetVisualizerFactory();
 					/// <summary>Set the visualizer factory for the column.</summary>
 					/// <param name="value">The visualizer factory.</param>
-					/// <returns>The current column provider itself.</returns>
 					void												SetVisualizerFactory(Ptr<IDataVisualizerFactory> value);
 
 					/// <summary>Get the editor factory for the column.</summary>
@@ -16744,7 +16765,6 @@ DataColumn
 					Ptr<IDataEditorFactory>								GetEditorFactory();
 					/// <summary>Set the editor factory for the column.</summary>
 					/// <param name="value">The editor factory.</param>
-					/// <returns>The current column provider itself.</returns>
 					void												SetEditorFactory(Ptr<IDataEditorFactory> value);
 
 					/// <summary>Get the text value from an item.</summary>
@@ -16836,7 +16856,6 @@ DataProvider
 
 				public:
 					/// <summary>Create a data provider from a <see cref="IDataProvider"/>.</summary>
-					/// <param name="provider">The structured data provider.</param>
 					DataProvider();
 					~DataProvider();
 
@@ -16902,7 +16921,7 @@ GuiBindableDataGrid
 
 			public:
 				/// <summary>Create a bindable Data grid control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiBindableDataGrid(theme::ThemeName themeName);
 				~GuiBindableDataGrid();
 
@@ -17094,8 +17113,7 @@ GuiBindableTextList
 
 			public:
 				/// <summary>Create a bindable Text list control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
-				/// <param name = "_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiBindableTextList(theme::ThemeName themeName);
 				~GuiBindableTextList();
 				
@@ -17207,7 +17225,7 @@ GuiBindableListView
 
 			public:
 				/// <summary>Create a bindable List view control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiBindableListView(theme::ThemeName themeName);
 				~GuiBindableListView();
 
@@ -17336,7 +17354,7 @@ GuiBindableTreeView
 
 			public:
 				/// <summary>Create a bindable Tree view control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiBindableTreeView(theme::ThemeName themeName);
 				~GuiBindableTreeView();
 				
@@ -18232,6 +18250,7 @@ Ribbon Gallery
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="owner">The owner menu item of the parent menu.</param>
 				GuiRibbonToolstripMenu(theme::ThemeName themeName, GuiControl* owner);
 				~GuiRibbonToolstripMenu();
 
@@ -18511,7 +18530,7 @@ Ribbon Gallery List
 				void													SelectItem(vint index);
 
 				/// <summary>Get the minimum items visible in the drop down menu.</summary>
-				/// <returns>The minimum items visible in the drop down menu.</summary>
+				/// <returns>The minimum items visible in the drop down menu.</returns>
 				vint													GetVisibleItemCount();
 				/// <summary>Set minimum items visible in the drop down menu.</summary>
 				/// <param name="value">The minimum items visible in the drop down menu.</param>

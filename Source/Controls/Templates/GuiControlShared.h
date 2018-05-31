@@ -159,13 +159,19 @@ Animation
 				/// <summary>Play the animation. The animation should calculate the time itself to determine the content of the current state of animating objects.</summary>
 				virtual void							Run() = 0;
 
-				/// <summary>Returns true if the animation has ended.</summary>
+				/// <summary>Test if the animation has ended.</summary>
+				/// <returns>Returns true if the animation has ended.</returns>
 				virtual bool							GetStopped() = 0;
 
 				/// <summary>Create a finite animation.</summary>
+				/// <returns>Returns the created animation.</returns>
+				/// <param name="run">The animation callback for each frame.</param>
+				/// <param name="milliseconds">The length of the animation.</param>
 				static Ptr<IGuiAnimation>				CreateAnimation(const Func<void(vuint64_t)>& run, vuint64_t milliseconds);
 
 				/// <summary>Create an infinite animation.</summary>
+				/// <returns>Returns the created animation.</returns>
+				/// <param name="run">The animation callback for each frame.</param>
 				static Ptr<IGuiAnimation>				CreateAnimation(const Func<void(vuint64_t)>& run);
 			};
 

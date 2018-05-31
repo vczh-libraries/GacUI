@@ -110,12 +110,13 @@ namespace vl
 #undef GUI_DEFINE_ITEM_PROPERTY
 			};
 
-			/// <summary>Get the current theme style factory object. The default theme is [T:vl.presentation.win7.Win7Theme]. Call [M:vl.presentation.theme.SetCurrentTheme] to change the default theme.</summary>
+			/// <summary>Get the current theme style factory object. Call <see cref="RegisterTheme"/> or <see cref="UnregisterTheme"/> to change the default theme.</summary>
 			/// <returns>The current theme style factory object.</returns>
 			extern ITheme*						GetCurrentTheme();
 			extern void							InitializeTheme();
 			extern void							FinalizeTheme();
 			/// <summary>Register a control template collection object.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="name">The name of the theme.</param>
 			/// <param name="theme">The control template collection object.</param>
 			extern bool							RegisterTheme(const WString& name, Ptr<ThemeTemplates> theme);

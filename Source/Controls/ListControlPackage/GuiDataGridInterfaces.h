@@ -42,7 +42,7 @@ Datagrid Interfaces
 				public:
 					/// <summary>Create a data visualizer.</summary>
 					/// <returns>The created data visualizer.</returns>
-					/// <param name="IDataGridContext">Context information of the data grid.</param>
+					/// <param name="dataGridContext">Context information of the data grid.</param>
 					virtual Ptr<IDataVisualizer>						CreateVisualizer(IDataGridContext* dataGridContext) = 0;
 				};
 
@@ -77,7 +77,7 @@ Datagrid Interfaces
 				public:
 					/// <summary>Create a data editor.</summary>
 					/// <returns>The created data editor.</returns>
-					/// <param name="callback">The callback for the created editor to send notification.</param>
+					/// <param name="dataGridContext">Context information of the data grid.</param>
 					virtual Ptr<IDataEditor>							CreateEditor(IDataGridContext* dataGridContext) = 0;
 				};
 

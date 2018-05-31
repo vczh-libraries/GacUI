@@ -108,7 +108,6 @@ Resource Image
 			/// <summary>Create an image data with a specified image and a frame index.</summary>
 			/// <param name="_image">The specified image.</param>
 			/// <param name="_frameIndex">The specified frame index.</param>
-			/// <param name="_filePath">The file path of the image. This parameter is only for metadata, it will not affect the content of the image.</param>
 			GuiImageData(Ptr<INativeImage> _image, vint _frameIndex);
 			~GuiImageData();
 
@@ -176,7 +175,8 @@ Resource Structure
 			/// <returns>The file absolute path of this resource node .</returns>
 			const WString&							GetFileAbsolutePath();
 			/// <summary>Set the file content path of this resource node.</summary>
-			/// <param name="value">The file content path of this resource node .</param>
+			/// <param name="content">The file content path of this resource node .</param>
+			/// <param name="absolute">The file absolute path of this resource node .</param>
 			void									SetFileContentPath(const WString& content, const WString& absolute);
 		};
 
@@ -390,7 +390,8 @@ Resource
 			/// <summary>Load a resource from an xml file. If the xml file refers other files, they will be loaded as well.</summary>
 			/// <returns>The loaded resource.</returns>
 			/// <param name="xml">The xml document.</param>
-			/// <param name="workingDirectory">The working directory for loading image files.</param>
+			/// <param name="filePath">The file path of the resource.</param>
+			/// <param name="workingDirectory">The working directory for loading external resources.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			static Ptr<GuiResource>					LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors);
 
@@ -655,17 +656,20 @@ Resource Type Resolver
 		public:
 			/// <summary>Serialize a resource to an xml element. This function is called if this type resolver does not have a preload type.</summary>
 			/// <returns>The serialized xml element.</returns>
-			/// <param name="resource">The resource.</param>
+			/// <param name="resource">The resource item containing the resource.</param>
+			/// <param name="content">The object to serialize.</param>
 			virtual Ptr<parsing::xml::XmlElement>				Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content) = 0;
 
 			/// <summary>Load a resource for a type inside an xml element.</summary>
 			/// <returns>The resource.</returns>
+			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="element">The xml element.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors) = 0;
 
 			/// <summary>Load a resource for a type from a file.</summary>
 			/// <returns>The resource.</returns>
+			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="path">The file path.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors) = 0;
@@ -676,12 +680,14 @@ Resource Type Resolver
 		{
 		public:
 			/// <summary>Serialize a precompiled resource to a stream.</summary>
-			/// <param name="resource">The resource.</param>
+			/// <param name="resource">The resource item containing the resource.</param>
+			/// <param name="content">The content to serialize.</param>
 			/// <param name="stream">The stream.</param>
 			virtual void										SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream) = 0;
 
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The resource.</returns>
+			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="stream">The stream.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual Ptr<DescriptableObject>						ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors) = 0;
@@ -700,12 +706,13 @@ Resource Type Resolver
 
 			/// <summary>Serialize a resource to a resource in preload type.</summary>
 			/// <returns>The serialized resource.</returns>
-			/// <param name="resource">The resource.</param>
+			/// <param name="resource">The resource item containing the resource.</param>
+			/// <param name="content">The object to serialize.</param>
 			virtual Ptr<DescriptableObject>						Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content) = 0;
 
 			/// <summary>Load a resource for a type from a resource loaded by the preload type resolver.</summary>
 			/// <returns>The resource.</returns>
-			/// <param name="resource">The resource.</param>
+			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="resolver">The path resolver. This is only for delay load resource.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors) = 0;

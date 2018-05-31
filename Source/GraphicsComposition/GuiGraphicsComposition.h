@@ -137,7 +137,7 @@ namespace vl
 				/// <returns>The item source.</returns>
 				Ptr<IValueEnumerable>								GetItemSource();
 				/// <summary>Set the item source.</summary>
-				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				/// <param name="value">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<IValueEnumerable> value);
 			};
 

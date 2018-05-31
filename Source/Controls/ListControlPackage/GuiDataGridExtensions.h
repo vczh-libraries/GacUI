@@ -43,7 +43,6 @@ Extension Bases
 
 				public:
 					/// <summary>Create the data visualizer.</summary>
-					/// <param name="_decoratedDataVisualizer">The decorated data visualizer inside the current data visualizer.</param>
 					DataVisualizerBase();
 					~DataVisualizerBase();
 

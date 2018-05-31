@@ -102,15 +102,18 @@ Application
 
 				/// <summary>Test is the current thread the main thread for GUI.</summary>
 				/// <returns>Returns true if the current thread is the main thread for GUI.</returns>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
 				bool											IsInMainThread(GuiControlHost* controlHost);
 				/// <summary>Invoke a specified function asynchronously.</summary>
 				/// <param name="proc">The specified function.</param>
 				void											InvokeAsync(const Func<void()>& proc);
 				/// <summary>Invoke a specified function in the main thread.</summary>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
 				/// <param name="proc">The specified function.</param>
 				void											InvokeInMainThread(GuiControlHost* controlHost, const Func<void()>& proc);
 				/// <summary>Invoke a specified function in the main thread and wait for the function to complete or timeout.</summary>
 				/// <returns>Return true if the function complete. Return false if the function has not completed during a specified period of time.</returns>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
 				/// <param name="proc">The specified function.</param>
 				/// <param name="milliseconds">The specified period of time to wait. Set to -1 (default value) to wait forever until the function completed.</param>
 				bool											InvokeInMainThreadAndWait(GuiControlHost* controlHost, const Func<void()>& proc, vint milliseconds=-1);
@@ -125,6 +128,7 @@ Application
 				/// <param name="milliseconds">Time to delay.</param>
 				Ptr<INativeDelay>								DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds);
 				/// <summary>Run the specified function in the main thread. If the caller is in the main thread, then run the specified function directly.</summary>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
 				/// <param name="proc">The specified function.</param>
 				void											RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc);
 

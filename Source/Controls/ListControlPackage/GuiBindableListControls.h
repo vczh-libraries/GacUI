@@ -131,8 +131,7 @@ GuiBindableTextList
 
 			public:
 				/// <summary>Create a bindable Text list control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
-				/// <param name = "_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiBindableTextList(theme::ThemeName themeName);
 				~GuiBindableTextList();
 				
@@ -244,7 +243,7 @@ GuiBindableListView
 
 			public:
 				/// <summary>Create a bindable List view control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiBindableListView(theme::ThemeName themeName);
 				~GuiBindableListView();
 
@@ -373,7 +372,7 @@ GuiBindableTreeView
 
 			public:
 				/// <summary>Create a bindable Tree view control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiBindableTreeView(theme::ThemeName themeName);
 				~GuiBindableTreeView();
 				

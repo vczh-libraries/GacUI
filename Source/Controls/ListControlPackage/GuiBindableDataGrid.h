@@ -262,7 +262,6 @@ DataColumn
 					Ptr<IDataVisualizerFactory>							GetVisualizerFactory();
 					/// <summary>Set the visualizer factory for the column.</summary>
 					/// <param name="value">The visualizer factory.</param>
-					/// <returns>The current column provider itself.</returns>
 					void												SetVisualizerFactory(Ptr<IDataVisualizerFactory> value);
 
 					/// <summary>Get the editor factory for the column.</summary>
@@ -270,7 +269,6 @@ DataColumn
 					Ptr<IDataEditorFactory>								GetEditorFactory();
 					/// <summary>Set the editor factory for the column.</summary>
 					/// <param name="value">The editor factory.</param>
-					/// <returns>The current column provider itself.</returns>
 					void												SetEditorFactory(Ptr<IDataEditorFactory> value);
 
 					/// <summary>Get the text value from an item.</summary>
@@ -361,8 +359,7 @@ DataProvider
 					ItemProperty<Ptr<GuiImageData>>							smallImageProperty;
 
 				public:
-					/// <summary>Create a data provider from a <see cref="IDataProvider"/>.</summary>
-					/// <param name="provider">The structured data provider.</param>
+					/// <summary>Create a data provider.</summary>
 					DataProvider();
 					~DataProvider();
 
@@ -428,7 +425,7 @@ GuiBindableDataGrid
 
 			public:
 				/// <summary>Create a bindable Data grid control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiBindableDataGrid(theme::ThemeName themeName);
 				~GuiBindableDataGrid();
 

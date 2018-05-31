@@ -352,6 +352,7 @@ Ribbon Gallery
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="owner">The owner menu item of the parent menu.</param>
 				GuiRibbonToolstripMenu(theme::ThemeName themeName, GuiControl* owner);
 				~GuiRibbonToolstripMenu();
 

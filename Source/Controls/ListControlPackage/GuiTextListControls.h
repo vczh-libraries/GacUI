@@ -170,7 +170,7 @@ GuiVirtualTextList
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
 				GuiVirtualTextList(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
@@ -197,7 +197,7 @@ GuiTextList
 				list::TextItemProvider*									items;
 			public:
 				/// <summary>Create a Text list control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiTextList(theme::ThemeName themeName);
 				~GuiTextList();
 

@@ -144,10 +144,10 @@ Basic Construction
 				/// <summary>Get the associated style controller.</summary>
 				/// <returns>The associated style controller.</returns>
 				templates::GuiControlTemplate*			GetControlTemplateObject();
-				/// <summary>Get the bounds composition for the control. The value is from <see cref="IStyleController::GetBoundsComposition"/>.</summary>
+				/// <summary>Get the bounds composition for the control.</summary>
 				/// <returns>The bounds composition.</returns>
 				compositions::GuiBoundsComposition*		GetBoundsComposition();
-				/// <summary>Get the container composition for the control. The value is from <see cref="IStyleController::GetContainerComposition"/>.</summary>
+				/// <summary>Get the container composition for the control.</summary>
 				/// <returns>The container composition.</returns>
 				compositions::GuiGraphicsComposition*	GetContainerComposition();
 				/// <summary>Get the focusable composition for the control. A focusable composition is the composition to be focused when the control is focused.</summary>

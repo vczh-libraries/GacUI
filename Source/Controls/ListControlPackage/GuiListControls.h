@@ -131,7 +131,7 @@ List Control
 					/// <param name="itemIndex">The index of the item.</param>
 					virtual description::Value					GetBindingValue(vint itemIndex) = 0;
 
-					/// <summary>Request a view for this item provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier. When the view object is no longer needed, Calling to the [M:vl.presentation.controls.GuiListControl.IItemProvider.ReleaseView] is needed.</summary>
+					/// <summary>Request a view for this item provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier.</summary>
 					/// <returns>The view object.</returns>
 					/// <param name="identifier">The identifier for the requested view.</param>
 					virtual IDescriptable*						RequestView(const WString& identifier) = 0;
@@ -336,14 +336,12 @@ List Control
 				/// <returns>The item arranger.</returns>
 				virtual IItemArranger*							GetArranger();
 				/// <summary>Set the item arranger</summary>
-				/// <returns>The old item arranger</returns>
 				/// <param name="value">The new item arranger</param>
 				virtual void									SetArranger(Ptr<IItemArranger> value);
 				/// <summary>Get the item coordinate transformer.</summary>
 				/// <returns>The item coordinate transformer.</returns>
 				virtual compositions::IGuiAxis*					GetAxis();
 				/// <summary>Set the item coordinate transformer</summary>
-				/// <returns>The old item coordinate transformer</returns>
 				/// <param name="value">The new item coordinate transformer</param>
 				virtual void									SetAxis(Ptr<compositions::IGuiAxis> value);
 				/// <summary>Adjust the view location to make an item visible.</summary>

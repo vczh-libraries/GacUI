@@ -41,13 +41,13 @@ namespace vl
 				void											SetColumnSortingState(ColumnSortingState value);
 			};
 
-			/// <summary>List view base control. All list view controls inherit from this class. <see cref="list::ListViewItemStyleProviderBase"/> is suggested to be the base class of item style providers for list view control.</summary>
+			/// <summary>List view base control. All list view controls inherit from this class.</summary>
 			class GuiListViewBase : public GuiSelectableListControl, public Description<GuiListViewBase>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListViewTemplate, GuiSelectableListControl)
 			public:
 				/// <summary>Create a list view base control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
 				GuiListViewBase(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiListViewBase();
@@ -62,7 +62,7 @@ ListView ItemStyleProvider
 
 			namespace list
 			{
-				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="ListViewItemStyleProvider"/>.</summary>
+				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="GuiVirtualListView"/>.</summary>
 				class IListViewItemView : public virtual IDescriptable, public Description<IListViewItemView>
 				{
 				public:
@@ -369,7 +369,7 @@ ListViewItemProvider
 					~ListViewColumns();
 				};
 				
-				/// <summary>Item provider for <see cref="GuiListViewBase"/> and <see cref="ListViewItemStyleProvider"/>.</summary>
+				/// <summary>Item provider for <see cref="GuiListViewBase"/>.</summary>
 				class ListViewItemProvider
 					: public ListProvider<Ptr<ListViewItem>>
 					, protected virtual IListViewItemProvider
@@ -450,7 +450,7 @@ GuiVirtualListView
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a list view control in virtual mode.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
 				GuiVirtualListView(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualListView();
@@ -474,7 +474,7 @@ GuiListView
 				list::ListViewItemProvider*								items;
 			public:
 				/// <summary>Create a list view control.</summary>
-				/// <param name="_controlTemplate">The control template for this control.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiListView(theme::ThemeName themeName);
 				~GuiListView();
 				

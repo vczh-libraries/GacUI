@@ -158,6 +158,7 @@ Scroll View
 				/// <returns>The view position.</returns>
 				Point									GetViewPosition();
 				/// <summary>Set the position of the left-top corner of the view bounds.</summary>
+				/// <param name="value">The position.</param>
 				void									SetViewPosition(Point value);
 				
 				/// <summary>Get the horizontal scroll control.</summary>
