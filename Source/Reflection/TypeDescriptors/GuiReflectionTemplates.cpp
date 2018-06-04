@@ -13,14 +13,14 @@ namespace vl
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-/***********************************************************************
-Type Declaration
-***********************************************************************/
-
 #define _ ,
 
 #define GUI_TEMPLATE_PROPERTY_REFLECTION(CLASS, TYPE, NAME, VALUE)\
 	CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(NAME)
+
+/***********************************************************************
+Type Declaration (Extra)
+***********************************************************************/
 
 			BEGIN_ENUM_ITEM(ButtonState)
 				ENUM_CLASS_ITEM(Normal)
@@ -131,6 +131,25 @@ Type Declaration
 				CLASS_MEMBER_METHOD(KillAnimation, { L"animation" })
 			END_CLASS_MEMBER(GuiInstanceRootObject)
 
+			BEGIN_CLASS_MEMBER(GuiCommonScrollBehavior)
+				CLASS_MEMBER_BASE(GuiComponent)
+				CLASS_MEMBER_CONSTRUCTOR(GuiCommonScrollBehavior*(), NO_PARAMETER)
+				
+				CLASS_MEMBER_METHOD(AttachScrollTemplate, { L"value" })
+				CLASS_MEMBER_METHOD(AttachDecreaseButton, { L"button" })
+				CLASS_MEMBER_METHOD(AttachIncreaseButton, { L"button" })
+				CLASS_MEMBER_METHOD(AttachHorizontalScrollHandle, { L"partialView" })
+				CLASS_MEMBER_METHOD(AttachVerticalScrollHandle, { L"partialView" })
+				CLASS_MEMBER_METHOD(AttachHorizontalTrackerHandle, { L"partialView" })
+				CLASS_MEMBER_METHOD(AttachVerticalTrackerHandle, { L"partialView" })
+				CLASS_MEMBER_METHOD(GetHorizontalTrackerHandlerPosition, { L"handle" _ L"totalSize" _ L"pageSize" _ L"position" })
+				CLASS_MEMBER_METHOD(GetVerticalTrackerHandlerPosition, { L"handle" _ L"totalSize" _ L"pageSize" _ L"position" })
+			END_CLASS_MEMBER(GuiCommonScrollBehavior)
+
+/***********************************************************************
+Type Declaration (Class)
+***********************************************************************/
+
 			BEGIN_CLASS_MEMBER(GuiTemplate)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
 				CLASS_MEMBER_BASE(GuiInstanceRootObject)
@@ -174,21 +193,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainerComposition)
 			END_CLASS_MEMBER(GuiCommonScrollViewLook)
 
-			BEGIN_CLASS_MEMBER(GuiCommonScrollBehavior)
-				CLASS_MEMBER_BASE(GuiComponent)
-				CLASS_MEMBER_CONSTRUCTOR(GuiCommonScrollBehavior*(), NO_PARAMETER)
-				
-				CLASS_MEMBER_METHOD(AttachScrollTemplate, { L"value" })
-				CLASS_MEMBER_METHOD(AttachDecreaseButton, { L"button" })
-				CLASS_MEMBER_METHOD(AttachIncreaseButton, { L"button" })
-				CLASS_MEMBER_METHOD(AttachHorizontalScrollHandle, { L"partialView" })
-				CLASS_MEMBER_METHOD(AttachVerticalScrollHandle, { L"partialView" })
-				CLASS_MEMBER_METHOD(AttachHorizontalTrackerHandle, { L"partialView" })
-				CLASS_MEMBER_METHOD(AttachVerticalTrackerHandle, { L"partialView" })
-				CLASS_MEMBER_METHOD(GetHorizontalTrackerHandlerPosition, { L"handle" _ L"totalSize" _ L"pageSize" _ L"position" })
-				CLASS_MEMBER_METHOD(GetVerticalTrackerHandlerPosition, { L"handle" _ L"totalSize" _ L"pageSize" _ L"position" })
-			END_CLASS_MEMBER(GuiCommonScrollBehavior)
-
 #undef GUI_CONTROL_TEMPLATE
 #undef GUI_TEMPLATE_PROPERTY_REFLECTION
 #undef _
@@ -202,12 +206,11 @@ Type Loader
 			public:
 				void Load(ITypeManager* manager)
 				{
-					GUIREFLECTIONTEMPLATES_EXTRA_TYPELIST(ADD_TYPE_INFO)
+#define GUIREFLECTIONTEMPLATES_ADD_TYPE_INFO(NAME, BASE) ADD_TYPE_INFO(presentation::templates::NAME)
 
-#define GUIREFLECTIONTEMPLATE_ADD_TYPE_INFO(CLASS, BASE) ADD_TYPE_INFO(CLASS)
-					GUI_CONTROL_TEMPLATE_DECL(GUIREFLECTIONTEMPLATE_ADD_TYPE_INFO)
-					GUI_ITEM_TEMPLATE_DECL(GUIREFLECTIONTEMPLATE_ADD_TYPE_INFO)
-#undef GUIREFLECTIONTEMPLATE_ADD_TYPE_INFO
+					GUIREFLECTIONTEMPLATES_TYPELIST(ADD_TYPE_INFO)
+
+#undef GUIREFLECTIONTEMPLATES_ADD_TYPE_INFO
 				}
 
 				void Unload(ITypeManager* manager)

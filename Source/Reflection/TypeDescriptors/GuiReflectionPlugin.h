@@ -221,11 +221,19 @@ Type List (Templates)
 			F(presentation::controls::IGuiAnimationCoroutine::IImpl)\
 			F(presentation::controls::IGuiAnimationCoroutine)\
 			F(presentation::controls::GuiInstanceRootObject)\
+			F(presentation::templates::GuiCommonScrollBehavior)\
+
+#define GUIREFLECTIONTEMPLATES_CLASS_TYPELIST(F)\
 			F(presentation::templates::GuiTemplate)\
 			F(presentation::templates::GuiListItemTemplate)\
 			F(presentation::templates::GuiCommonDatePickerLook)\
 			F(presentation::templates::GuiCommonScrollViewLook)\
-			F(presentation::templates::GuiCommonScrollBehavior)\
+			GUI_CONTROL_TEMPLATE_DECL(GUIREFLECTIONTEMPLATES_##F)\
+			GUI_ITEM_TEMPLATE_DECL(GUIREFLECTIONTEMPLATES_##F)\
+
+#define GUIREFLECTIONTEMPLATES_TYPELIST(F)\
+			GUIREFLECTIONTEMPLATES_CLASS_TYPELIST(F)\
+			GUIREFLECTIONTEMPLATES_EXTRA_TYPELIST(F)\
 
 /***********************************************************************
 Type List (Controls)
@@ -380,17 +388,16 @@ Type List (Controls)
 Type List
 ***********************************************************************/
 
+#define GUIREFLECTIONTEMPLATES_DECL_TYPE_INFO(NAME, BASE) DECL_TYPE_INFO(presentation::templates::NAME)
+
 			GUIREFLECTIONBASIC_TYPELIST(DECL_TYPE_INFO)
 			GUIREFLECTIONELEMENT_TYPELIST(DECL_TYPE_INFO)
 			GUIREFLECTIONCOMPOSITION_TYPELIST(DECL_TYPE_INFO)
 			GUIREFLECTIONEVENT_TYPELIST(DECL_TYPE_INFO)
-			GUIREFLECTIONTEMPLATES_EXTRA_TYPELIST(DECL_TYPE_INFO)
+			GUIREFLECTIONTEMPLATES_TYPELIST(DECL_TYPE_INFO)
 			GUIREFLECTIONCONTROLS_TYPELIST(DECL_TYPE_INFO)
 
-#define GUIREFLECTIONTEMPLATE_DECL_TYPE_INFO(CLASS, BASE) DECL_TYPE_INFO(presentation::templates::##CLASS)
-			GUI_CONTROL_TEMPLATE_DECL(GUIREFLECTIONTEMPLATE_DECL_TYPE_INFO)
-			GUI_ITEM_TEMPLATE_DECL(GUIREFLECTIONTEMPLATE_DECL_TYPE_INFO)
-#undef GUIREFLECTIONTEMPLATE_DECL_TYPE_INFO
+#undef GUIREFLECTIONTEMPLATES_DECL_TYPE_INFO
 
 #pragma warning(push)
 #pragma warning(disable:4250)
