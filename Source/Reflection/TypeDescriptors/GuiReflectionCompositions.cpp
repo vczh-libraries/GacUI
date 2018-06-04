@@ -13,14 +13,14 @@ namespace vl
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-/***********************************************************************
-Type Declaration
-***********************************************************************/
-
 #define _ ,
 
 #define INTERFACE_IDENTIFIER(INTERFACE)\
 	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<::INTERFACE>)
+
+/***********************************************************************
+Type Declaration (Extra)
+***********************************************************************/
 
 			BEGIN_ENUM_ITEM(KeyDirection)
 				ENUM_CLASS_ITEM(Up)
@@ -58,6 +58,121 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Direction)
 			END_CLASS_MEMBER(GuiAxis)
+
+			BEGIN_ENUM_ITEM(GuiGraphicsComposition::MinSizeLimitation)
+				ENUM_ITEM_NAMESPACE(GuiGraphicsComposition)
+				ENUM_NAMESPACE_ITEM(NoLimit)
+				ENUM_NAMESPACE_ITEM(LimitToElement)
+				ENUM_NAMESPACE_ITEM(LimitToElementAndChildren)
+			END_ENUM_ITEM(GuiGraphicsComposition::MinSizeLimitation)
+
+			BEGIN_ENUM_ITEM(GuiStackComposition::Direction)
+				ENUM_ITEM_NAMESPACE(GuiStackComposition)
+				ENUM_NAMESPACE_ITEM(Horizontal)
+				ENUM_NAMESPACE_ITEM(Vertical)
+				ENUM_NAMESPACE_ITEM(ReversedHorizontal)
+				ENUM_NAMESPACE_ITEM(ReversedVertical)
+			END_ENUM_ITEM(GuiStackComposition::Direction)
+
+			BEGIN_STRUCT_MEMBER(GuiCellOption)
+				STRUCT_MEMBER(composeType)
+				STRUCT_MEMBER(absolute)
+				STRUCT_MEMBER(percentage)
+			END_STRUCT_MEMBER(GuiCellOption)
+
+			BEGIN_ENUM_ITEM(GuiCellOption::ComposeType)
+				ENUM_ITEM_NAMESPACE(GuiCellOption)
+				ENUM_NAMESPACE_ITEM(Absolute)
+				ENUM_NAMESPACE_ITEM(Percentage)
+				ENUM_NAMESPACE_ITEM(MinSize)
+			END_ENUM_ITEM(GuiCellOption::ComposeType)
+
+			BEGIN_STRUCT_MEMBER(GuiFlowOption)
+				STRUCT_MEMBER(baseline)
+				STRUCT_MEMBER(percentage)
+				STRUCT_MEMBER(distance)
+			END_STRUCT_MEMBER(GuiFlowOption)
+
+			BEGIN_ENUM_ITEM(GuiFlowOption::BaselineType)
+				ENUM_ITEM_NAMESPACE(GuiFlowOption)
+				ENUM_NAMESPACE_ITEM(Percentage)
+				ENUM_NAMESPACE_ITEM(FromTop)
+				ENUM_NAMESPACE_ITEM(FromBottom)
+			END_ENUM_ITEM(GuiFlowOption::BaselineType)
+
+			BEGIN_ENUM_ITEM(FlowAlignment)
+				ENUM_CLASS_ITEM(Left)
+				ENUM_CLASS_ITEM(Center)
+				ENUM_CLASS_ITEM(Extend)
+			END_ENUM_ITEM(FlowAlignment)
+
+			BEGIN_ENUM_ITEM(GuiSideAlignedComposition::Direction)
+				ENUM_ITEM_NAMESPACE(GuiSideAlignedComposition)
+				ENUM_NAMESPACE_ITEM(Left)
+				ENUM_NAMESPACE_ITEM(Top)
+				ENUM_NAMESPACE_ITEM(Right)
+				ENUM_NAMESPACE_ITEM(Bottom)
+			END_ENUM_ITEM(GuiSideAlignedComposition::Direction)
+
+			BEGIN_ENUM_ITEM(ResponsiveDirection)
+				ENUM_CLASS_ITEM(Horizontal)
+				ENUM_CLASS_ITEM(Vertical)
+				ENUM_CLASS_ITEM(Both)
+			END_ENUM_ITEM(ResponsiveDirection)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiShortcutKeyItem)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Manager)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
+			END_INTERFACE_MEMBER(IGuiShortcutKeyItem)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiShortcutKeyManager)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemCount)
+
+				CLASS_MEMBER_METHOD(GetItem, {L"index"})
+			END_INTERFACE_MEMBER(IGuiShortcutKeyManager)
+
+			BEGIN_CLASS_MEMBER(GuiShortcutKeyManager)
+				CLASS_MEMBER_BASE(IGuiShortcutKeyManager)
+				CLASS_MEMBER_CONSTRUCTOR(GuiShortcutKeyManager*(), NO_PARAMETER)
+
+				CLASS_MEMBER_METHOD(CreateShortcut, {L"ctrl" _ L"shift" _ L"alt" _ L"ket"})
+				CLASS_MEMBER_METHOD(DestroyShortcut, {L"ctrl" _ L"shift" _ L"alt" _ L"ket"})
+				CLASS_MEMBER_METHOD(TryGetShortcut, {L"ctrl" _ L"shift" _ L"alt" _ L"ket"})
+			END_CLASS_MEMBER(GuiShortcutKeyManager)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltAction)
+				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiAltAction)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Alt)
+
+				CLASS_MEMBER_METHOD(IsAltEnabled, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(IsAltAvailable, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetAltComposition, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetActivatingAltHost, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(OnActiveAlt, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IGuiAltAction)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltActionContainer)
+				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiAltActionContainer)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AltActionCount)
+				
+				CLASS_MEMBER_METHOD(GetAltAction, { L"index" })
+			END_INTERFACE_MEMBER(IGuiAltActionContainer)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltActionHost)
+				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiAltActionHost)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(PreviousAltHost)
+
+				CLASS_MEMBER_METHOD(OnActivatedAltHost, { L"previousHost" })
+				CLASS_MEMBER_METHOD(OnDeactivatedAltHost, NO_PARAMETER)
+				CLASS_MEMBER_EXTERNALMETHOD(CollectAltActions, {L"actions"}, void(IGuiAltActionHost::*)(List<IGuiAltAction*>&), vl::reflection::description::IGuiAltActionHost_CollectAltActions)
+			END_INTERFACE_MEMBER(IGuiAltActionHost)
+
+/***********************************************************************
+Type Declaration (Class)
+***********************************************************************/
 
 			BEGIN_CLASS_MEMBER(GuiGraphicsComposition)
 
@@ -124,13 +239,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(IsSizeAffectParent, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiGraphicsComposition)
 
-			BEGIN_ENUM_ITEM(GuiGraphicsComposition::MinSizeLimitation)
-				ENUM_ITEM_NAMESPACE(GuiGraphicsComposition)
-				ENUM_NAMESPACE_ITEM(NoLimit)
-				ENUM_NAMESPACE_ITEM(LimitToElement)
-				ENUM_NAMESPACE_ITEM(LimitToElementAndChildren)
-			END_ENUM_ITEM(GuiGraphicsComposition::MinSizeLimitation)
-
 			BEGIN_CLASS_MEMBER(GuiGraphicsSite)
 				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 
@@ -168,14 +276,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(EnsureVisible, {L"index"})
 			END_CLASS_MEMBER(GuiStackComposition)
 
-			BEGIN_ENUM_ITEM(GuiStackComposition::Direction)
-				ENUM_ITEM_NAMESPACE(GuiStackComposition)
-				ENUM_NAMESPACE_ITEM(Horizontal)
-				ENUM_NAMESPACE_ITEM(Vertical)
-				ENUM_NAMESPACE_ITEM(ReversedHorizontal)
-				ENUM_NAMESPACE_ITEM(ReversedVertical)
-			END_ENUM_ITEM(GuiStackComposition::Direction)
-
 			BEGIN_CLASS_MEMBER(GuiStackItemComposition)
 				CLASS_MEMBER_BASE(GuiGraphicsSite)
 				CLASS_MEMBER_CONSTRUCTOR(GuiStackItemComposition*(), NO_PARAMETER)
@@ -183,19 +283,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
 				CLASS_MEMBER_PROPERTY_FAST(ExtraMargin)
 			END_CLASS_MEMBER(GuiStackItemComposition)
-
-			BEGIN_STRUCT_MEMBER(GuiCellOption)
-				STRUCT_MEMBER(composeType)
-				STRUCT_MEMBER(absolute)
-				STRUCT_MEMBER(percentage)
-			END_STRUCT_MEMBER(GuiCellOption)
-
-			BEGIN_ENUM_ITEM(GuiCellOption::ComposeType)
-				ENUM_ITEM_NAMESPACE(GuiCellOption)
-				ENUM_NAMESPACE_ITEM(Absolute)
-				ENUM_NAMESPACE_ITEM(Percentage)
-				ENUM_NAMESPACE_ITEM(MinSize)
-			END_ENUM_ITEM(GuiCellOption::ComposeType)
 
 			BEGIN_CLASS_MEMBER(GuiTableComposition)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
@@ -256,12 +343,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(ColumnsToTheLeft)
 			END_CLASS_MEMBER(GuiColumnSplitterComposition)
 
-			BEGIN_ENUM_ITEM(FlowAlignment)
-				ENUM_CLASS_ITEM(Left)
-				ENUM_CLASS_ITEM(Center)
-				ENUM_CLASS_ITEM(Extend)
-			END_ENUM_ITEM(FlowAlignment)
-
 			BEGIN_CLASS_MEMBER(GuiFlowComposition)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiFlowComposition*(), NO_PARAMETER)
@@ -273,19 +354,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Axis)
 				CLASS_MEMBER_PROPERTY_FAST(Alignment)
 			END_CLASS_MEMBER(GuiFlowComposition)
-
-			BEGIN_STRUCT_MEMBER(GuiFlowOption)
-				STRUCT_MEMBER(baseline)
-				STRUCT_MEMBER(percentage)
-				STRUCT_MEMBER(distance)
-			END_STRUCT_MEMBER(GuiFlowOption)
-
-			BEGIN_ENUM_ITEM(GuiFlowOption::BaselineType)
-				ENUM_ITEM_NAMESPACE(GuiFlowOption)
-				ENUM_NAMESPACE_ITEM(Percentage)
-				ENUM_NAMESPACE_ITEM(FromTop)
-				ENUM_NAMESPACE_ITEM(FromBottom)
-			END_ENUM_ITEM(GuiFlowOption::BaselineType)
 
 			BEGIN_CLASS_MEMBER(GuiFlowItemComposition)
 				CLASS_MEMBER_BASE(GuiGraphicsSite)
@@ -304,14 +372,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(MaxLength)
 				CLASS_MEMBER_PROPERTY_FAST(MaxRatio)
 			END_CLASS_MEMBER(GuiSideAlignedComposition)
-
-			BEGIN_ENUM_ITEM(GuiSideAlignedComposition::Direction)
-				ENUM_ITEM_NAMESPACE(GuiSideAlignedComposition)
-				ENUM_NAMESPACE_ITEM(Left)
-				ENUM_NAMESPACE_ITEM(Top)
-				ENUM_NAMESPACE_ITEM(Right)
-				ENUM_NAMESPACE_ITEM(Bottom)
-			END_ENUM_ITEM(GuiSideAlignedComposition::Direction)
 
 			BEGIN_CLASS_MEMBER(GuiPartialViewComposition)
 				CLASS_MEMBER_BASE(GuiGraphicsSite)
@@ -355,12 +415,6 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiRepeatCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatFlowComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiRepeatFlowComposition)
-
-			BEGIN_ENUM_ITEM(ResponsiveDirection)
-				ENUM_CLASS_ITEM(Horizontal)
-				ENUM_CLASS_ITEM(Vertical)
-				ENUM_CLASS_ITEM(Both)
-			END_ENUM_ITEM(ResponsiveDirection)
 
 			BEGIN_CLASS_MEMBER(GuiResponsiveCompositionBase)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
@@ -411,57 +465,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(ResponsiveTarget)
 			END_CLASS_MEMBER(GuiResponsiveContainerComposition)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiShortcutKeyItem)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Manager)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
-			END_INTERFACE_MEMBER(IGuiShortcutKeyItem)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiShortcutKeyManager)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemCount)
-
-				CLASS_MEMBER_METHOD(GetItem, {L"index"})
-			END_INTERFACE_MEMBER(IGuiShortcutKeyManager)
-
-			BEGIN_CLASS_MEMBER(GuiShortcutKeyManager)
-				CLASS_MEMBER_BASE(IGuiShortcutKeyManager)
-				CLASS_MEMBER_CONSTRUCTOR(GuiShortcutKeyManager*(), NO_PARAMETER)
-
-				CLASS_MEMBER_METHOD(CreateShortcut, {L"ctrl" _ L"shift" _ L"alt" _ L"ket"})
-				CLASS_MEMBER_METHOD(DestroyShortcut, {L"ctrl" _ L"shift" _ L"alt" _ L"ket"})
-				CLASS_MEMBER_METHOD(TryGetShortcut, {L"ctrl" _ L"shift" _ L"alt" _ L"ket"})
-			END_CLASS_MEMBER(GuiShortcutKeyManager)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltAction)
-				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiAltAction)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Alt)
-
-				CLASS_MEMBER_METHOD(IsAltEnabled, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(IsAltAvailable, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetAltComposition, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetActivatingAltHost, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(OnActiveAlt, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IGuiAltAction)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltActionContainer)
-				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiAltActionContainer)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(AltActionCount)
-				
-				CLASS_MEMBER_METHOD(GetAltAction, { L"index" })
-			END_INTERFACE_MEMBER(IGuiAltActionContainer)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltActionHost)
-				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiAltActionHost)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(PreviousAltHost)
-
-				CLASS_MEMBER_METHOD(OnActivatedAltHost, { L"previousHost" })
-				CLASS_MEMBER_METHOD(OnDeactivatedAltHost, NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALMETHOD(CollectAltActions, {L"actions"}, void(IGuiAltActionHost::*)(List<IGuiAltAction*>&), vl::reflection::description::IGuiAltActionHost_CollectAltActions)
-			END_INTERFACE_MEMBER(IGuiAltActionHost)
-
-#undef INTERFACE_EXTERNALCTOR
+#undef INTERFACE_IDENTIFIER
 #undef _
 
 /***********************************************************************

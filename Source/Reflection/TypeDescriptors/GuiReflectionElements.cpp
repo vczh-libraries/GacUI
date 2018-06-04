@@ -11,11 +11,14 @@ namespace vl
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-/***********************************************************************
-Type Declaration
-***********************************************************************/
-
 #define _ ,
+
+#define ELEMENT_CONSTRUCTOR(ELEMENT)\
+			CLASS_MEMBER_EXTERNALCTOR(Ptr<ELEMENT>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::ELEMENT>)
+
+/***********************************************************************
+Type Declaration (Extra)
+***********************************************************************/
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiGraphicsElement)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerComposition)
@@ -49,68 +52,11 @@ Type Declaration
 				STRUCT_MEMBER(radiusY)
 			END_STRUCT_MEMBER(ElementShape)
 
-			BEGIN_CLASS_MEMBER(GuiSolidBorderElement)
-				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>)
-
-				CLASS_MEMBER_PROPERTY_FAST(Color)
-				CLASS_MEMBER_PROPERTY_FAST(Shape)
-			END_CLASS_MEMBER(GuiSolidBorderElement)
-
-			BEGIN_CLASS_MEMBER(Gui3DBorderElement)
-				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<Gui3DBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::Gui3DBorderElement>)
-				
-				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
-
-				CLASS_MEMBER_PROPERTY_FAST(Color1)
-				CLASS_MEMBER_PROPERTY_FAST(Color2)
-			END_CLASS_MEMBER(Gui3DBorderElement)
-
-			BEGIN_CLASS_MEMBER(Gui3DSplitterElement)
-				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<Gui3DSplitterElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::Gui3DSplitterElement>)
-				
-				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
-
-				CLASS_MEMBER_PROPERTY_FAST(Color1)
-				CLASS_MEMBER_PROPERTY_FAST(Color2)
-				CLASS_MEMBER_PROPERTY_FAST(Direction)
-			END_CLASS_MEMBER(Gui3DSplitterElement)
-
 			BEGIN_ENUM_ITEM(Gui3DSplitterElement::Direction)
 				ENUM_ITEM_NAMESPACE(Gui3DSplitterElement)
 				ENUM_NAMESPACE_ITEM(Horizontal)
 				ENUM_NAMESPACE_ITEM(Vertical)
 			END_ENUM_ITEM(Gui3DSplitterElement::Direction)
-
-			BEGIN_CLASS_MEMBER(GuiSolidBackgroundElement)
-				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>)
-				
-				CLASS_MEMBER_PROPERTY_FAST(Color)
-				CLASS_MEMBER_PROPERTY_FAST(Shape)
-			END_CLASS_MEMBER(GuiSolidBackgroundElement)
-
-			BEGIN_CLASS_MEMBER(GuiGradientBackgroundElement)
-				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiGradientBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiGradientBackgroundElement>)
-				
-				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
-
-				CLASS_MEMBER_PROPERTY_FAST(Color1)
-				CLASS_MEMBER_PROPERTY_FAST(Color2)
-				CLASS_MEMBER_PROPERTY_FAST(Direction)
-				CLASS_MEMBER_PROPERTY_FAST(Shape)
-			END_CLASS_MEMBER(GuiGradientBackgroundElement)
-
-			BEGIN_CLASS_MEMBER(GuiInnerShadowElement)
-				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiInnerShadowElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiInnerShadowElement>)
-
-				CLASS_MEMBER_PROPERTY_FAST(Color)
-				CLASS_MEMBER_PROPERTY_FAST(Thickness)
-			END_CLASS_MEMBER(GuiInnerShadowElement)
 
 			BEGIN_ENUM_ITEM(GuiGradientBackgroundElement::Direction)
 				ENUM_ITEM_NAMESPACE(GuiGradientBackgroundElement)
@@ -119,51 +65,6 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(Slash)
 				ENUM_NAMESPACE_ITEM(Backslash)
 			END_ENUM_ITEM(GuiGradientBackgroundElement::Direction)
-
-			BEGIN_CLASS_MEMBER(GuiSolidLabelElement)
-				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidLabelElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>)
-				
-				CLASS_MEMBER_METHOD(SetAlignments, {L"horizontal" _ L"vertical"})
-
-				CLASS_MEMBER_PROPERTY_FAST(Color)
-				CLASS_MEMBER_PROPERTY_FAST(Font)
-				CLASS_MEMBER_PROPERTY_FAST(Text)
-				CLASS_MEMBER_PROPERTY_FAST(HorizontalAlignment)
-				CLASS_MEMBER_PROPERTY_FAST(VerticalAlignment)
-				CLASS_MEMBER_PROPERTY_FAST(WrapLine)
-				CLASS_MEMBER_PROPERTY_FAST(Ellipse)
-				CLASS_MEMBER_PROPERTY_FAST(Multiline)
-				CLASS_MEMBER_PROPERTY_FAST(WrapLineHeightCalculation)
-			END_CLASS_MEMBER(GuiSolidLabelElement)
-
-			BEGIN_CLASS_MEMBER(GuiImageFrameElement)
-				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiImageFrameElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>)
-
-				CLASS_MEMBER_METHOD(GetImage, NO_PARAMETER)
-				CLASS_MEMBER_METHOD_OVERLOAD(SetImage, {L"value"}, void(GuiImageFrameElement::*)(Ptr<INativeImage>))
-				CLASS_MEMBER_METHOD_OVERLOAD(SetImage, {L"image" _  L"frameIndex"}, void(GuiImageFrameElement::*)(Ptr<INativeImage> _ vint))
-				CLASS_MEMBER_PROPERTY(Image, GetImage, SetImage)
-
-				CLASS_MEMBER_PROPERTY_FAST(FrameIndex)
-				CLASS_MEMBER_PROPERTY_FAST(HorizontalAlignment)
-				CLASS_MEMBER_PROPERTY_FAST(VerticalAlignment)
-				CLASS_MEMBER_PROPERTY_FAST(Stretch)
-				CLASS_MEMBER_PROPERTY_FAST(Enabled)
-			END_CLASS_MEMBER(GuiImageFrameElement)
-
-			BEGIN_CLASS_MEMBER(GuiPolygonElement)
-				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiPolygonElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiPolygonElement>)
-
-				CLASS_MEMBER_METHOD_RENAME(GetPoints, GetPointsArray, NO_PARAMETER);
-				CLASS_MEMBER_METHOD_RENAME(SetPoints, SetPointsArray, {L"points"});
-				CLASS_MEMBER_PROPERTY(Points, GetPoints, SetPoints);
-				CLASS_MEMBER_PROPERTY_FAST(Size)
-				CLASS_MEMBER_PROPERTY_FAST(BorderColor)
-				CLASS_MEMBER_PROPERTY_FAST(BackgroundColor)
-			END_CLASS_MEMBER(GuiPolygonElement)
 
 			BEGIN_CLASS_MEMBER(text::TextLines)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Count)
@@ -200,9 +101,115 @@ Type Declaration
 				STRUCT_MEMBER(selectedUnfocused)
 			END_STRUCT_MEMBER(text::ColorEntry)
 
+/***********************************************************************
+Type Declaration (Class)
+***********************************************************************/
+
+			BEGIN_CLASS_MEMBER(GuiSolidBorderElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				ELEMENT_CONSTRUCTOR(GuiSolidBorderElement)
+
+				CLASS_MEMBER_PROPERTY_FAST(Color)
+				CLASS_MEMBER_PROPERTY_FAST(Shape)
+			END_CLASS_MEMBER(GuiSolidBorderElement)
+
+			BEGIN_CLASS_MEMBER(Gui3DBorderElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				ELEMENT_CONSTRUCTOR(Gui3DBorderElement)
+				
+				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
+
+				CLASS_MEMBER_PROPERTY_FAST(Color1)
+				CLASS_MEMBER_PROPERTY_FAST(Color2)
+			END_CLASS_MEMBER(Gui3DBorderElement)
+
+			BEGIN_CLASS_MEMBER(Gui3DSplitterElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				ELEMENT_CONSTRUCTOR(Gui3DSplitterElement)
+				
+				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
+
+				CLASS_MEMBER_PROPERTY_FAST(Color1)
+				CLASS_MEMBER_PROPERTY_FAST(Color2)
+				CLASS_MEMBER_PROPERTY_FAST(Direction)
+			END_CLASS_MEMBER(Gui3DSplitterElement)
+
+			BEGIN_CLASS_MEMBER(GuiSolidBackgroundElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				ELEMENT_CONSTRUCTOR(GuiSolidBackgroundElement)
+				
+				CLASS_MEMBER_PROPERTY_FAST(Color)
+				CLASS_MEMBER_PROPERTY_FAST(Shape)
+			END_CLASS_MEMBER(GuiSolidBackgroundElement)
+
+			BEGIN_CLASS_MEMBER(GuiGradientBackgroundElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				ELEMENT_CONSTRUCTOR(GuiGradientBackgroundElement)
+				
+				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
+
+				CLASS_MEMBER_PROPERTY_FAST(Color1)
+				CLASS_MEMBER_PROPERTY_FAST(Color2)
+				CLASS_MEMBER_PROPERTY_FAST(Direction)
+				CLASS_MEMBER_PROPERTY_FAST(Shape)
+			END_CLASS_MEMBER(GuiGradientBackgroundElement)
+
+			BEGIN_CLASS_MEMBER(GuiInnerShadowElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				ELEMENT_CONSTRUCTOR(GuiInnerShadowElement)
+
+				CLASS_MEMBER_PROPERTY_FAST(Color)
+				CLASS_MEMBER_PROPERTY_FAST(Thickness)
+			END_CLASS_MEMBER(GuiInnerShadowElement)
+
+			BEGIN_CLASS_MEMBER(GuiSolidLabelElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				ELEMENT_CONSTRUCTOR(GuiSolidLabelElement)
+				
+				CLASS_MEMBER_METHOD(SetAlignments, {L"horizontal" _ L"vertical"})
+
+				CLASS_MEMBER_PROPERTY_FAST(Color)
+				CLASS_MEMBER_PROPERTY_FAST(Font)
+				CLASS_MEMBER_PROPERTY_FAST(Text)
+				CLASS_MEMBER_PROPERTY_FAST(HorizontalAlignment)
+				CLASS_MEMBER_PROPERTY_FAST(VerticalAlignment)
+				CLASS_MEMBER_PROPERTY_FAST(WrapLine)
+				CLASS_MEMBER_PROPERTY_FAST(Ellipse)
+				CLASS_MEMBER_PROPERTY_FAST(Multiline)
+				CLASS_MEMBER_PROPERTY_FAST(WrapLineHeightCalculation)
+			END_CLASS_MEMBER(GuiSolidLabelElement)
+
+			BEGIN_CLASS_MEMBER(GuiImageFrameElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				ELEMENT_CONSTRUCTOR(GuiImageFrameElement)
+
+				CLASS_MEMBER_METHOD(GetImage, NO_PARAMETER)
+				CLASS_MEMBER_METHOD_OVERLOAD(SetImage, {L"value"}, void(GuiImageFrameElement::*)(Ptr<INativeImage>))
+				CLASS_MEMBER_METHOD_OVERLOAD(SetImage, {L"image" _  L"frameIndex"}, void(GuiImageFrameElement::*)(Ptr<INativeImage> _ vint))
+				CLASS_MEMBER_PROPERTY(Image, GetImage, SetImage)
+
+				CLASS_MEMBER_PROPERTY_FAST(FrameIndex)
+				CLASS_MEMBER_PROPERTY_FAST(HorizontalAlignment)
+				CLASS_MEMBER_PROPERTY_FAST(VerticalAlignment)
+				CLASS_MEMBER_PROPERTY_FAST(Stretch)
+				CLASS_MEMBER_PROPERTY_FAST(Enabled)
+			END_CLASS_MEMBER(GuiImageFrameElement)
+
+			BEGIN_CLASS_MEMBER(GuiPolygonElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				ELEMENT_CONSTRUCTOR(GuiPolygonElement)
+
+				CLASS_MEMBER_METHOD_RENAME(GetPoints, GetPointsArray, NO_PARAMETER);
+				CLASS_MEMBER_METHOD_RENAME(SetPoints, SetPointsArray, {L"points"});
+				CLASS_MEMBER_PROPERTY(Points, GetPoints, SetPoints);
+				CLASS_MEMBER_PROPERTY_FAST(Size)
+				CLASS_MEMBER_PROPERTY_FAST(BorderColor)
+				CLASS_MEMBER_PROPERTY_FAST(BackgroundColor)
+			END_CLASS_MEMBER(GuiPolygonElement)
+
 			BEGIN_CLASS_MEMBER(GuiColorizedTextElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiColorizedTextElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiColorizedTextElement>)
+				ELEMENT_CONSTRUCTOR(GuiColorizedTextElement)
 
 				CLASS_MEMBER_PROPERTY_FAST(Font)
 				CLASS_MEMBER_PROPERTY_FAST(PasswordChar)
@@ -221,7 +228,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiDocumentElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiDocumentElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiDocumentElement>)
+				ELEMENT_CONSTRUCTOR(GuiDocumentElement)
 
 				CLASS_MEMBER_PROPERTY_FAST(Document)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretBegin)
@@ -251,6 +258,8 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SummarizeParagraphAlignment, { L"begin" _ L"end" })
 				CLASS_MEMBER_METHOD(GetHyperlinkFromPoint, {L"point"})
 			END_CLASS_MEMBER(GuiDocumentElement)
+
+#undef ELEMENT_CONSTRUCTOR
 #undef _
 
 /***********************************************************************
