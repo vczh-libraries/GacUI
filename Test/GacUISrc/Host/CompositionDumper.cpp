@@ -125,43 +125,49 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 			auto prop = currentTd->GetProperty(i);
 			auto propValue = prop->GetValue(Value::From(composition));
 
-			if (IsPrimitive(propValue) || IsStruct(propValue) || IsEnum(propValue))
+			if (!XmlGetAttribute(element, prop->GetName()))
 			{
-				props.Add(prop->GetName(), ValueToString(propValue));
+				if (IsPrimitive(propValue) || IsStruct(propValue) || IsEnum(propValue))
+				{
+					props.Add(prop->GetName(), ValueToString(propValue));
+				}
 			}
 		}
 
 		if (auto table = dynamic_cast<GuiTableComposition*>(composition))
 		{
+			if (currentTd == GetTypeDescriptor<GuiTableComposition>())
 			{
-				WString value;
-				vint count = table->GetRows();
-				for (vint i = 0; i < count; i++)
 				{
-					auto option = table->GetRowOption(i);
-					switch (option.composeType)
+					WString value;
+					vint count = table->GetRows();
+					for (vint i = 0; i < count; i++)
 					{
-					case GuiCellOption::Absolute: value = L"A" + itow(option.absolute); break;
-					case GuiCellOption::Percentage: value = L"P" + ftow(option.percentage); break;
-					case GuiCellOption::MinSize: value = L"M"; break;
+						auto option = table->GetRowOption(i);
+						switch (option.composeType)
+						{
+						case GuiCellOption::Absolute: value = L"A" + itow(option.absolute); break;
+						case GuiCellOption::Percentage: value = L"P" + ftow(option.percentage); break;
+						case GuiCellOption::MinSize: value = L"M"; break;
+						}
 					}
+					props.Add(L"RowOptions", value);
 				}
-				props.Add(L"RowOptions", value);
-			}
-			{
-				WString value;
-				vint count = table->GetColumns();
-				for (vint i = 0; i < count; i++)
 				{
-					auto option = table->GetColumnOption(i);
-					switch (option.composeType)
+					WString value;
+					vint count = table->GetColumns();
+					for (vint i = 0; i < count; i++)
 					{
-					case GuiCellOption::Absolute: value = L"A" + itow(option.absolute); break;
-					case GuiCellOption::Percentage: value = L"P" + ftow(option.percentage); break;
-					case GuiCellOption::MinSize: value = L"M"; break;
+						auto option = table->GetColumnOption(i);
+						switch (option.composeType)
+						{
+						case GuiCellOption::Absolute: value = L"A" + itow(option.absolute); break;
+						case GuiCellOption::Percentage: value = L"P" + ftow(option.percentage); break;
+						case GuiCellOption::MinSize: value = L"M"; break;
+						}
 					}
+					props.Add(L"ColumnOptions", value);
 				}
-				props.Add(L"ColumnOptions", value);
 			}
 		}
 
@@ -170,7 +176,7 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 			auto attr = MakePtr<XmlAttribute>();
 			attr->name.value = props.Keys()[i];
 			attr->value.value = props.Values()[i];
-			element->attributes.Insert(i, attr);
+			element->attributes.Add(attr);
 		}
 
 		vint baseCount = currentTd->GetBaseTypeDescriptorCount();
@@ -263,7 +269,36 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 
 void DumpComposition(GuiGraphicsComposition* composition, TextWriter& writer)
 {
+	auto root = MakePtr<XmlElement>();
+	root->name.value = L"GacUI";
+	{
+		auto attr = MakePtr<XmlAttribute>();
+		attr->name.value = L"xmlns:c";
+		attr->value.value = L"gacui://Control";
+		root->attributes.Add(attr);
+	}
+	{
+		auto attr = MakePtr<XmlAttribute>();
+		attr->name.value = L"xmlns:e";
+		attr->value.value = L"gacui://Element";
+		root->attributes.Add(attr);
+	}
+	{
+		auto attr = MakePtr<XmlAttribute>();
+		attr->name.value = L"xmlns:si";
+		attr->value.value = L"gacui://StackItem";
+		root->attributes.Add(attr);
+	}
+	{
+		auto attr = MakePtr<XmlAttribute>();
+		attr->name.value = L"xmlns:fi";
+		attr->value.value = L"gacui://FlowItem";
+		root->attributes.Add(attr);
+	}
+	root->subNodes.Add(DumpCompositionToXml(composition));
+
 	auto document = MakePtr<XmlDocument>();
-	document->rootElement = DumpCompositionToXml(composition);
+	document->rootElement = root;
+
 	XmlPrint(document, writer);
 }
