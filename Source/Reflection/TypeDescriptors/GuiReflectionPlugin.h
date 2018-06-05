@@ -230,6 +230,10 @@ Type List (Templates)
 			F(presentation::templates::GuiCommonScrollViewLook)\
 			GUI_CONTROL_TEMPLATE_DECL(GUIREFLECTIONTEMPLATES_##F)\
 			GUI_ITEM_TEMPLATE_DECL(GUIREFLECTIONTEMPLATES_##F)\
+			F(presentation::controls::list::MainColumnVisualizerTemplate)\
+			F(presentation::controls::list::SubColumnVisualizerTemplate)\
+			F(presentation::controls::list::HyperlinkVisualizerTemplate)\
+			F(presentation::controls::list::CellBorderVisualizerTemplate)\
 
 #define GUIREFLECTIONTEMPLATES_TYPELIST(F)\
 			GUIREFLECTIONTEMPLATES_CLASS_TYPELIST(F)\
@@ -303,10 +307,6 @@ Type List (Controls)
 			F(presentation::controls::list::DataVisualizerFactory)\
 			F(presentation::controls::list::DataEditorBase)\
 			F(presentation::controls::list::DataEditorFactory)\
-			F(presentation::controls::list::MainColumnVisualizerTemplate)\
-			F(presentation::controls::list::SubColumnVisualizerTemplate)\
-			F(presentation::controls::list::HyperlinkVisualizerTemplate)\
-			F(presentation::controls::list::CellBorderVisualizerTemplate)\
 			F(presentation::controls::list::IDataProcessorCallback)\
 			F(presentation::controls::list::IDataFilter)\
 			F(presentation::controls::list::IDataSorter)\

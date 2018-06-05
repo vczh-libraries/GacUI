@@ -583,26 +583,6 @@ Type Declaration (Extra)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataEditorFactory>(TemplateProperty<templates::GuiGridEditorTemplate>), { L"templateFactory" })
 			END_CLASS_MEMBER(DataEditorFactory)
 
-			BEGIN_CLASS_MEMBER(MainColumnVisualizerTemplate)
-				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(MainColumnVisualizerTemplate*(), NO_PARAMETER)
-			END_CLASS_MEMBER(MainColumnVisualizerTemplate)
-
-			BEGIN_CLASS_MEMBER(SubColumnVisualizerTemplate)
-				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(SubColumnVisualizerTemplate*(), NO_PARAMETER)
-			END_CLASS_MEMBER(SubColumnVisualizerTemplate)
-
-			BEGIN_CLASS_MEMBER(HyperlinkVisualizerTemplate)
-				CLASS_MEMBER_BASE(SubColumnVisualizerTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(HyperlinkVisualizerTemplate*(), NO_PARAMETER)
-			END_CLASS_MEMBER(HyperlinkVisualizerTemplate)
-
-			BEGIN_CLASS_MEMBER(CellBorderVisualizerTemplate)
-				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(CellBorderVisualizerTemplate*(), NO_PARAMETER)
-			END_CLASS_MEMBER(CellBorderVisualizerTemplate)
-
 			BEGIN_INTERFACE_MEMBER(IDataProcessorCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
 

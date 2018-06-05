@@ -159,6 +159,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="TestReflectionTypeList.cpp" />
     <ClCompile Include="TestResource.cpp" />
   </ItemGroup>
   <ItemGroup>

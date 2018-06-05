@@ -9,6 +9,7 @@ namespace vl
 			using namespace presentation;
 			using namespace presentation::compositions;
 			using namespace presentation::controls;
+			using namespace presentation::controls::list;
 			using namespace presentation::templates;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -192,6 +193,26 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(VScroll)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainerComposition)
 			END_CLASS_MEMBER(GuiCommonScrollViewLook)
+
+			BEGIN_CLASS_MEMBER(MainColumnVisualizerTemplate)
+				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(MainColumnVisualizerTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(MainColumnVisualizerTemplate)
+
+			BEGIN_CLASS_MEMBER(SubColumnVisualizerTemplate)
+				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(SubColumnVisualizerTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(SubColumnVisualizerTemplate)
+
+			BEGIN_CLASS_MEMBER(HyperlinkVisualizerTemplate)
+				CLASS_MEMBER_BASE(SubColumnVisualizerTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(HyperlinkVisualizerTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(HyperlinkVisualizerTemplate)
+
+			BEGIN_CLASS_MEMBER(CellBorderVisualizerTemplate)
+				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(CellBorderVisualizerTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(CellBorderVisualizerTemplate)
 
 #undef GUI_CONTROL_TEMPLATE
 #undef GUI_TEMPLATE_PROPERTY_REFLECTION

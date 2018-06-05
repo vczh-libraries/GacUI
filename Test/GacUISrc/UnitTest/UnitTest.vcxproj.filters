@@ -21,6 +21,9 @@
     <ClCompile Include="TestResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestReflectionTypeList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt">
