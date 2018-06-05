@@ -549,16 +549,14 @@ GuiTableComposition
 
 			void GuiTableComposition::UpdateCellBounds()
 			{
-				for (vint i = 0; i < 2; i++)
-				{
-					UpdateCellBoundsInternal();
-					UpdateTableContentMinSize();
-				}
+				UpdateCellBoundsInternal();
+				UpdateTableContentMinSize();
 			}
 
 			void GuiTableComposition::ForceCalculateSizeImmediately()
 			{
 				GuiBoundsComposition::ForceCalculateSizeImmediately();
+				UpdateCellBounds();
 				UpdateCellBounds();
 			}
 
