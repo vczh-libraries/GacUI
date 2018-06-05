@@ -72,14 +72,33 @@ WString ValueToString(Value value)
 	}
 }
 
-Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
+template<typename T>
+WString PointerToHex(T* pointer)
+{
+	WString result;
+	vuint64_t value = (vuint64_t)pointer;
+	while (value)
+	{
+		result = "0123456789ABCDEF"[value % 16] + result;
+		value /= 16;
+	}
+	return result;
+}
+
+WString TypeNameToName(const WString& typeName)
 {
 	List<WString> fragments;
-	auto td = composition->GetTypeDescriptor();
-	auto tdRoot = GetTypeDescriptor<GuiGraphicsComposition>();
-	SplitBySemicolon(td->GetTypeName(), fragments);
+	SplitBySemicolon(typeName, fragments);
 	auto element = MakePtr<XmlElement>();
 	element->name.value = fragments[fragments.Count() - 1];
+}
+
+Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
+{
+	auto td = composition->GetTypeDescriptor();
+	auto tdRoot = GetTypeDescriptor<GuiGraphicsComposition>();
+	auto element = MakePtr<XmlElement>();
+	element->name.value = TypeNameToName(td->GetTypeName());
 
 	auto currentTd = td;
 	while (true)
@@ -150,6 +169,44 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 			}
 		}
 		break;
+	}
+
+	{
+		auto attr = MakePtr<XmlAttribute>();
+		attr->name.value = L"Address";
+		attr->value.value = PointerToHex(composition);
+		element->attributes.Insert(0, attr); 
+	}
+
+	SortedList<GuiGraphicsComposition*> dumped;
+	if (auto stack = dynamic_cast<GuiStackComposition*>(composition))
+	{
+		FOREACH(GuiStackItemComposition*, child, stack->GetStackItems())
+		{
+			dumped.Add(child);
+			auto childXml = DumpCompositionToXml(child);
+			childXml->name.value = L"si:" + childXml->name.value;
+			element->subNodes.Add(childXml);
+		}
+	}
+	if (auto flow = dynamic_cast<GuiFlowComposition*>(composition))
+	{
+		FOREACH(GuiFlowItemComposition*, child, flow->GetFlowItems())
+		{
+			dumped.Add(child);
+			auto childXml = DumpCompositionToXml(child);
+			childXml->name.value = L"fi:" + childXml->name.value;
+			element->subNodes.Add(childXml);
+		}
+	}
+
+	FOREACH(GuiGraphicsComposition*, child, composition->Children())
+	{
+		if (!dumped.Contains(child))
+		{
+			auto childXml = DumpCompositionToXml(child);
+			element->subNodes.Add(childXml);
+		}
 	}
 
 	return element;
