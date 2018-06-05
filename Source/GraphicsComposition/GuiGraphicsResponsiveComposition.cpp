@@ -60,6 +60,10 @@ GuiResponsiveCompositionBase
 				{
 					responsiveParent->OnResponsiveChildLevelUpdated();
 				}
+				else
+				{
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			GuiResponsiveCompositionBase::GuiResponsiveCompositionBase()
@@ -377,7 +381,9 @@ GuiResponsiveViewComposition
 				
 				auto x = CalculateLevelCount();
 				auto y = CalculateCurrentLevel();
-				return x || y;
+				if (!x && !y) return false;
+				InvokeOnCompositionStateChanged();
+				return true;
 			}
 
 			bool GuiResponsiveViewComposition::LevelUp()
@@ -403,7 +409,9 @@ GuiResponsiveViewComposition
 
 				auto x = CalculateLevelCount();
 				auto y = CalculateCurrentLevel();
-				return x || y;
+				if (!x && !y) return false;
+				InvokeOnCompositionStateChanged();
+				return true;
 			}
 
 			GuiResponsiveCompositionBase* GuiResponsiveViewComposition::GetCurrentView()
@@ -585,7 +593,9 @@ GuiResponsiveStackComposition
 					}
 				}
 
-				return CalculateCurrentLevel();
+				if (!CalculateCurrentLevel()) return false;
+				InvokeOnCompositionStateChanged();
+				return true;
 			}
 
 			GuiResponsiveStackComposition::GuiResponsiveStackComposition()
@@ -722,7 +732,9 @@ GuiResponsiveGroupComposition
 					}
 				}
 
-				return CalculateCurrentLevel();
+				if (!CalculateCurrentLevel()) return false;
+				InvokeOnCompositionStateChanged();
+				return true;
 			}
 
 			bool GuiResponsiveGroupComposition::LevelUp()
@@ -740,7 +752,9 @@ GuiResponsiveGroupComposition
 					}
 				}
 
-				return CalculateCurrentLevel();
+				if (!CalculateCurrentLevel()) return false;
+				InvokeOnCompositionStateChanged();
+				return true;
 			}
 
 #undef DEFINE_AVAILABLE
