@@ -79,7 +79,7 @@ WString PointerToHex(T* pointer)
 	vuint64_t value = (vuint64_t)pointer;
 	while (value)
 	{
-		result = "0123456789ABCDEF"[value % 16] + result;
+		result = WString(L"0123456789ABCDEF"[value % 16]) + result;
 		value /= 16;
 	}
 	return result;
@@ -89,8 +89,7 @@ WString TypeNameToName(const WString& typeName)
 {
 	List<WString> fragments;
 	SplitBySemicolon(typeName, fragments);
-	auto element = MakePtr<XmlElement>();
-	element->name.value = fragments[fragments.Count() - 1];
+	return fragments[fragments.Count() - 1];
 }
 
 Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
@@ -176,6 +175,39 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 		attr->name.value = L"Address";
 		attr->value.value = PointerToHex(composition);
 		element->attributes.Insert(0, attr); 
+	}
+
+	if (auto ownedElement = composition->GetOwnedElement())
+	{
+		auto elementOwnedElement = MakePtr<XmlElement>();
+		elementOwnedElement->name.value = L"e:" + TypeNameToName(ownedElement->GetTypeDescriptor()->GetTypeName());
+		if (auto solidLabel = ownedElement.Cast<GuiSolidLabelElement>())
+		{
+			auto attr = MakePtr<XmlAttribute>();
+			attr->name.value = L"Text";
+			attr->value.value = solidLabel->GetText();
+			elementOwnedElement->attributes.Insert(0, attr);
+		}
+		element->subNodes.Add(elementOwnedElement);
+	}
+
+	if (auto control = composition->GetAssociatedControl())
+	{
+		auto elementOwnedElement = MakePtr<XmlElement>();
+		elementOwnedElement->name.value = L"c:" + TypeNameToName(control->GetTypeDescriptor()->GetTypeName());
+		{
+			auto attr = MakePtr<XmlAttribute>();
+			attr->name.value = L"Text";
+			attr->value.value = control->GetText();
+			elementOwnedElement->attributes.Insert(0, attr);
+		}
+		{
+			auto attr = MakePtr<XmlAttribute>();
+			attr->name.value = L"ContainerComposition";
+			attr->value.value = PointerToHex(control->GetContainerComposition());
+			elementOwnedElement->attributes.Insert(0, attr);
+		}
+		element->subNodes.Add(elementOwnedElement);
 	}
 
 	SortedList<GuiGraphicsComposition*> dumped;
