@@ -570,15 +570,8 @@ GuiTableComposition
 
 			Rect GuiTableComposition::GetBounds()
 			{
-				Rect result;
-				if (!IsAlignedToParent() && GetMinSizeLimitation() != GuiGraphicsComposition::NoLimit)
-				{
-					result = Rect(compositionBounds.LeftTop(), compositionBounds.GetSize() - Size(columnExtending, rowExtending));
-				}
-				else
-				{
-					result = GuiBoundsComposition::GetBounds();
-				}
+				Rect cached = previousBounds;
+				Rect result = GuiBoundsComposition::GetBounds();
 
 				bool cellMinSizeModified = false;
 				SortedList<GuiCellComposition*> cells;
@@ -596,9 +589,8 @@ GuiTableComposition
 					}
 				}
 
-				if (previousContentBounds != result || cellMinSizeModified)
+				if (cached != result || cellMinSizeModified)
 				{
-					previousContentBounds = result;
 					UpdateCellBounds();
 					InvokeOnCompositionStateChanged();
 				}
