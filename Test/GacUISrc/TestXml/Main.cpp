@@ -45,32 +45,48 @@ void OpenMainWindow()
 		{
 			auto menu = new GuiToolstripMenu(theme::ThemeName::Menu, window);
 			window->AddControlHostComponent(menu);
-
-			auto menuItem = new GuiToolstripButton(theme::ThemeName::MenuItemButton);
-			menuItem->SetText(L"Dump Composition to " + FilePath(L"TestXml.xml").GetFullPath());
-			menu->GetToolstripItems().Add(menuItem);
-
-			window->GetBoundsComposition()->GetEventReceiver()->rightButtonUp.AttachLambda([=](auto, auto arguments)
 			{
-				menu->ShowPopup(window, Point(arguments.x, arguments.y));
-			});
+				auto menuItem = new GuiToolstripButton(theme::ThemeName::MenuItemButton);
+				menuItem->SetText(L"Dump Composition to " + FilePath(L"TestXml.xml").GetFullPath());
+				menu->GetToolstripItems().Add(menuItem);
 
-			menuItem->Clicked.AttachLambda([=](auto, auto)
-			{
-				FileStream fileStream(L"TestXml.xml", FileStream::WriteOnly);
-				BomEncoder encoder(BomEncoder::Utf8);
-				EncoderStream encoderStream(fileStream, encoder);
-				StreamWriter writer(encoderStream);
-				
-				GuiGraphicsComposition* composition = window->GetBoundsComposition();
-				while (composition->GetParent())
+				window->GetBoundsComposition()->GetEventReceiver()->rightButtonUp.AttachLambda([=](auto, auto arguments)
 				{
-					composition = composition->GetParent();
-				}
+					menu->ShowPopup(window, Point(arguments.x, arguments.y));
+				});
 
-				DumpComposition(composition, writer);
-				GetCurrentController()->DialogService()->ShowMessageBox(window->GetNativeWindow(), L"Finished!", L"Dump Composition");
-			});
+				menuItem->Clicked.AttachLambda([=](auto, auto)
+				{
+					FileStream fileStream(L"TestXml.xml", FileStream::WriteOnly);
+					BomEncoder encoder(BomEncoder::Utf8);
+					EncoderStream encoderStream(fileStream, encoder);
+					StreamWriter writer(encoderStream);
+
+					GuiGraphicsComposition* composition = window->GetBoundsComposition();
+					while (composition->GetParent())
+					{
+						composition = composition->GetParent();
+					}
+
+					DumpComposition(composition, writer);
+					GetCurrentController()->DialogService()->ShowMessageBox(window->GetNativeWindow(), L"Finished!", L"Dump Composition");
+				});
+			}
+			{
+				auto menuItem = new GuiToolstripButton(theme::ThemeName::MenuItemButton);
+				menuItem->SetText(L"Open New Window");
+				menu->GetToolstripItems().Add(menuItem);
+
+				menuItem->Clicked.AttachLambda([=](auto, auto)
+				{
+					auto newWindow = new GuiWindow(theme::ThemeName::Window);
+					newWindow->SetText(L"New Window");
+					newWindow->SetClientSize(Size(640, 480));
+					newWindow->ForceCalculateSizeImmediately();
+					newWindow->MoveToScreenCenter();
+					newWindow->ShowModalAndDelete(window, []() {});
+				});
+			}
 		}
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
