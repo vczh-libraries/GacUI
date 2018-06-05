@@ -202,16 +202,13 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 
 	if (auto ownedElement = composition->GetOwnedElement())
 	{
-		auto elementOwnedElement = MakePtr<XmlElement>();
-		elementOwnedElement->name.value = L"e:" + TypeNameToName(ownedElement->GetTypeDescriptor()->GetTypeName());
+		auto attr = MakePtr<XmlAttribute>();
+		attr->name.value = L"e:" + TypeNameToName(ownedElement->GetTypeDescriptor()->GetTypeName());
 		if (auto solidLabel = ownedElement.Cast<GuiSolidLabelElement>())
 		{
-			auto attr = MakePtr<XmlAttribute>();
-			attr->name.value = L"Text";
 			attr->value.value = solidLabel->GetText();
-			elementOwnedElement->attributes.Insert(0, attr);
 		}
-		element->subNodes.Add(elementOwnedElement);
+		element->attributes.Insert(1, attr);
 	}
 
 	if (auto control = composition->GetAssociatedControl())
