@@ -246,4 +246,7 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 
 void DumpComposition(GuiGraphicsComposition* composition, TextWriter& writer)
 {
+	auto document = MakePtr<XmlDocument>();
+	document->rootElement = DumpCompositionToXml(composition);
+	XmlPrint(document, writer);
 }

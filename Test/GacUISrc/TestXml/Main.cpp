@@ -41,6 +41,35 @@ void OpenMainWindow()
 	}
 	{
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::DocumentEditorRibbonWindow"));
+		{
+			auto menu = new GuiToolstripMenu(theme::ThemeName::Menu, window);
+			window->AddControlHostComponent(menu);
+
+			auto menuItem = new GuiToolstripButton(theme::ThemeName::MenuItemButton);
+			menuItem->SetText(L"Dump Composition");
+			menu->GetToolstripItems().Add(menuItem);
+
+			window->GetBoundsComposition()->GetEventReceiver()->rightButtonUp.AttachLambda([=](auto, auto arguments)
+			{
+				menu->ShowPopup(window, Point(arguments.x, arguments.y));
+			});
+
+			menuItem->Clicked.AttachLambda([=](auto, auto)
+			{
+				FileStream fileStream(L"TestXml.xml", FileStream::WriteOnly);
+				BomEncoder encoder(BomEncoder::Utf8);
+				EncoderStream encoderStream(fileStream, encoder);
+				StreamWriter writer(encoderStream);
+				
+				GuiGraphicsComposition* composition = window->GetBoundsComposition();
+				while (composition->GetParent())
+				{
+					composition = composition->GetParent();
+				}
+
+				DumpComposition(composition, writer);
+			});
+		}
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
 		GetApplication()->Run(window);
