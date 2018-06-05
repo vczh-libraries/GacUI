@@ -7,6 +7,7 @@
 
 using namespace vl;
 using namespace vl::stream;
+using namespace vl::filesystem;
 using namespace vl::reflection::description;
 
 //#define GUI_GRAPHICS_RENDERER_GDI
@@ -46,7 +47,7 @@ void OpenMainWindow()
 			window->AddControlHostComponent(menu);
 
 			auto menuItem = new GuiToolstripButton(theme::ThemeName::MenuItemButton);
-			menuItem->SetText(L"Dump Composition");
+			menuItem->SetText(L"Dump Composition to " + FilePath(L"TestXml.xml").GetFullPath());
 			menu->GetToolstripItems().Add(menuItem);
 
 			window->GetBoundsComposition()->GetEventReceiver()->rightButtonUp.AttachLambda([=](auto, auto arguments)
@@ -68,6 +69,7 @@ void OpenMainWindow()
 				}
 
 				DumpComposition(composition, writer);
+				GetCurrentController()->DialogService()->ShowMessageBox(window->GetNativeWindow(), L"Finished!", L"Dump Composition");
 			});
 		}
 		window->ForceCalculateSizeImmediately();

@@ -46,17 +46,33 @@ WString ValueToString(Value value)
 	}
 	else if (auto enumType = td->GetEnumType())
 	{
-		WString result;
-		auto enumValue = enumType->FromEnum(value);
-		vint count = enumType->GetItemCount();
-		for (vint i = 0; i < count; i++)
+		if (enumType->IsFlagEnum())
 		{
-			if (enumValue & enumType->GetItemValue(i))
+			WString result;
+			auto enumValue = enumType->FromEnum(value);
+			vint count = enumType->GetItemCount();
+			for (vint i = 0; i < count; i++)
 			{
-				result = result == L"" ? enumType->GetItemName(i) : result + L" | " + enumType->GetItemName(i);
+				if (enumValue & enumType->GetItemValue(i))
+				{
+					result = result == L"" ? enumType->GetItemName(i) : result + L" | " + enumType->GetItemName(i);
+				}
 			}
+			return result;
 		}
-		return result;
+		else
+		{
+			auto enumValue = enumType->FromEnum(value);
+			vint count = enumType->GetItemCount();
+			for (vint i = 0; i < count; i++)
+			{
+				if (enumValue == enumType->GetItemValue(i))
+				{
+					return enumType->GetItemName(i);
+				}
+			}
+			return L"";
+		}
 	}
 	else
 	{
@@ -66,7 +82,7 @@ WString ValueToString(Value value)
 		{
 			auto prop = td->GetProperty(i);
 			auto item = prop->GetName() + L":" + ValueToString(prop->GetValue(value));
-			result = result == L"" ? item : result + L" | " + item;
+			result = result == L"" ? item : result + L" " + item;
 		}
 		return L"{" + result + L"}";
 	}
@@ -88,7 +104,7 @@ WString PointerToHex(T* pointer)
 WString TypeNameToName(const WString& typeName)
 {
 	List<WString> fragments;
-	SplitBySemicolon(typeName, fragments);
+	SplitTypeName(typeName, fragments);
 	return fragments[fragments.Count() - 1];
 }
 
@@ -130,7 +146,7 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 					case GuiCellOption::MinSize: value = L"M"; break;
 					}
 				}
-				props.Add(L"Rows", value);
+				props.Add(L"RowOptions", value);
 			}
 			{
 				WString value;
@@ -145,7 +161,7 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 					case GuiCellOption::MinSize: value = L"M"; break;
 					}
 				}
-				props.Add(L"Columns", value);
+				props.Add(L"ColumnOptions", value);
 			}
 		}
 
@@ -164,10 +180,11 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 			if (baseTd->CanConvertTo(tdRoot))
 			{
 				currentTd = baseTd;
-				continue;
+				goto CONTINUE_TO_BASE_CLASS;
 			}
 		}
 		break;
+	CONTINUE_TO_BASE_CLASS:;
 	}
 
 	{
