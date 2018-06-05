@@ -34,11 +34,7 @@ bool IsEnum(Value value)
 WString ValueToString(Value value)
 {
 	auto td = value.GetTypeDescriptor();
-	if (td==GetTypeDescriptor<WString>())
-	{
-		return L"'" + UnboxValue<WString>(value) + L"'";
-	}
-	else if (auto serializableType = td->GetSerializableType())
+	if (auto serializableType = td->GetSerializableType())
 	{
 		WString result;
 		serializableType->Serialize(value, result);
@@ -146,9 +142,9 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 						auto option = table->GetRowOption(i);
 						switch (option.composeType)
 						{
-						case GuiCellOption::Absolute: value = L"A" + itow(option.absolute); break;
-						case GuiCellOption::Percentage: value = L"P" + ftow(option.percentage); break;
-						case GuiCellOption::MinSize: value = L"M"; break;
+						case GuiCellOption::Absolute: value += L"A" + itow(option.absolute); break;
+						case GuiCellOption::Percentage: value += L"P" + ftow(option.percentage); break;
+						case GuiCellOption::MinSize: value += L"M"; break;
 						}
 					}
 					props.Add(L"RowOptions", value);
@@ -161,9 +157,9 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 						auto option = table->GetColumnOption(i);
 						switch (option.composeType)
 						{
-						case GuiCellOption::Absolute: value = L"A" + itow(option.absolute); break;
-						case GuiCellOption::Percentage: value = L"P" + ftow(option.percentage); break;
-						case GuiCellOption::MinSize: value = L"M"; break;
+						case GuiCellOption::Absolute: value += L"A" + itow(option.absolute); break;
+						case GuiCellOption::Percentage: value += L"P" + ftow(option.percentage); break;
+						case GuiCellOption::MinSize: value += L"M"; break;
 						}
 					}
 					props.Add(L"ColumnOptions", value);
