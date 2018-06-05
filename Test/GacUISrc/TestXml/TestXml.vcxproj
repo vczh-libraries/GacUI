@@ -158,6 +158,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Host\CompositionDumper.cpp" />
     <ClCompile Include="..\Host\ResourceCompiler.cpp" />
     <ClCompile Include="..\TestCppCodegen\Source\DarkSkin.cpp" />
     <ClCompile Include="..\TestCppCodegen\Source\DarkSkinReflection.cpp">

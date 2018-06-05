@@ -36,6 +36,9 @@
     <ClCompile Include="..\TestCppCodegen\Source\DarkSkinReflection.cpp">
       <Filter>DarkSkin</Filter>
     </ClCompile>
+    <ClCompile Include="..\Host\CompositionDumper.cpp">
+      <Filter>Host</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Host\ResourceCompiler.h">

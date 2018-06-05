@@ -32,6 +32,7 @@ public:
 };
 
 extern void CompileResources(const WString& name, const WString& resourcePath, const WString& outputBinaryFolder, const WString& outputCppFolder, bool compressResource);
+extern void DumpComposition(presentation::compositions::GuiGraphicsComposition* composition, stream::TextWriter& writer);
 
 #endif
 

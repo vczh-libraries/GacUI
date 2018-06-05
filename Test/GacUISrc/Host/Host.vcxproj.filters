@@ -157,6 +157,9 @@
     <ClCompile Include="ResourceCompiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CompositionDumper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\FullControlTest\Images\Build.bat">
