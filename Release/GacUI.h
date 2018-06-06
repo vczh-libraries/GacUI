@@ -7876,7 +7876,6 @@ Table Compositions
 				collections::Array<vint>					rowSizes;
 				collections::Array<vint>					columnSizes;
 
-				Size										previousContentMinSize;
 				Size										tableContentMinSize;
 
 				vint								GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column);
@@ -7908,8 +7907,6 @@ Table Compositions
 														vint max
 														);
 				
-				void								UpdateCellBoundsInternal();
-				void								UpdateTableContentMinSize();
 				void								OnRenderContextChanged()override;
 			public:
 				GuiTableComposition();
