@@ -3982,6 +3982,7 @@ Scope Manager
 				void										Clear(bool keepTypeDescriptorNames, bool deleteModules);
 				/// <summary>Compile.</summary>
 				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types before compiling.</param>
+				/// <param name="callback">The callback to receive progress information, could be nullptr.</param>
 				void										Rebuild(bool keepTypeDescriptorNames, IWfCompilerCallback* callback = nullptr);
 
 				bool										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::SortedList<ITypeDescriptor*>& searchedTypes, collections::List<ResolveExpressionResult>& results);
@@ -4490,6 +4491,7 @@ Code Generation
 			/// <summary>Generate an assembly from a compiler. [M:vl.workflow.analyzer.WfLexicalScopeManager.Rebuild] should be called before using this function.</summary>
 			/// <returns>The generated assembly.</returns>
 			/// <param name="manager">The Workflow compiler.</param>
+			/// <param name="callback">The callback to receive progress information, could be nullptr.</param>
 			extern Ptr<runtime::WfAssembly>					GenerateAssembly(analyzer::WfLexicalScopeManager* manager, IWfCompilerCallback* callback = nullptr);
 
 			/// <summary>Compile a Workflow program.</summary>

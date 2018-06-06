@@ -7459,8 +7459,6 @@ GuiResponsiveContainerComposition
 			protected:
 				GuiResponsiveCompositionBase*			responsiveTarget = nullptr;
 				Size									upperLevelSize;
-				bool									tryLevelUp = true;
-				bool									tryLevelDown = true;
 
 				void									OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
 
@@ -7878,7 +7876,6 @@ Table Compositions
 				collections::Array<vint>					rowSizes;
 				collections::Array<vint>					columnSizes;
 
-				Rect										previousContentBounds;
 				Size										previousContentMinSize;
 				Size										tableContentMinSize;
 
@@ -8756,7 +8753,7 @@ GuiListItemTemplate
 
 				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 
-					void						BeginEditListItem();
+				void						BeginEditListItem();
 				void						EndEditListItem();
 				void						Initialize(controls::GuiListControl* _listControl);
 			};

@@ -10841,11 +10841,10 @@ namespace vl
 			const FilePath&				GetFilePath()const;
 
 			/// <summary>Get the content of the file as text with encoding testing.</summary>
-			/// <returns>The content of the file.</returns>
 			/// <returns>Returns false if this operation succeeded.</returns>
 			/// <param name="text">The content of the file.</param>
 			/// <param name="encoding">The encoding.</param>
-			/// <param name="bom">True if there is BOM.</param>
+			/// <param name="containsBom">True if there is BOM.</param>
 			bool						ReadAllTextWithEncodingTesting(WString& text, stream::BomEncoder::Encoding& encoding, bool& containsBom);
 			/// <summary>Get the content of the file as text.</summary>
 			/// <returns>The content of the file.</returns>
