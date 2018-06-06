@@ -303,9 +303,11 @@ Control Template
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallButtonTemplate, {})\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallDropdownButtonTemplate, {})\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallSplitButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, SmallIconLabelTemplate, {})\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, IconButtonTemplate, {})\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, IconDropdownButtonTemplate, {})\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, IconSplitButtonTemplate, {})\
+				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, IconLabelTemplate, {})\
 
 #define GuiRibbonToolstripsTemplate_PROPERTIES(F)\
 				F(GuiRibbonToolstripsTemplate, TemplateProperty<GuiControlTemplate>, ToolbarTemplate, {})\

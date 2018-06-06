@@ -560,6 +560,10 @@ GuiRibbonButtons
 					case ThemeName::ToolstripSplitButton:
 						type = 2;
 						break;
+					case ThemeName::RibbonSmallIconLabel:
+					case ThemeName::RibbonIconLabel:
+						type = 3;
+						break;
 					}
 
 					if (type != -1)
@@ -574,6 +578,7 @@ GuiRibbonButtons
 							case 0: themeName = ThemeName::RibbonLargeButton; break;
 							case 1: themeName = ThemeName::RibbonLargeDropdownButton; break;
 							case 2: themeName = ThemeName::RibbonLargeSplitButton; break;
+							case 3: themeName = ThemeName::RibbonSmallIconLabel; break;
 							}
 						}
 						else if (fixed == views[(vint)RibbonButtonSize::Small])
@@ -583,6 +588,7 @@ GuiRibbonButtons
 							case 0: themeName = ThemeName::RibbonSmallButton; break;
 							case 1: themeName = ThemeName::RibbonSmallDropdownButton; break;
 							case 2: themeName = ThemeName::RibbonSmallSplitButton; break;
+							case 3: themeName = ThemeName::RibbonSmallIconLabel; break;
 							}
 						}
 						else if (fixed == views[(vint)RibbonButtonSize::Icon])
@@ -592,6 +598,7 @@ GuiRibbonButtons
 							case 0: themeName = ThemeName::ToolstripButton; break;
 							case 1: themeName = ThemeName::ToolstripDropdownButton; break;
 							case 2: themeName = ThemeName::ToolstripSplitButton; break;
+							case 3: themeName = ThemeName::RibbonIconLabel; break;
 							}
 						}
 
@@ -604,6 +611,7 @@ GuiRibbonButtons
 								case 0: controlTemplate = ct->GetLargeButtonTemplate(); break;
 								case 1: controlTemplate = ct->GetLargeDropdownButtonTemplate(); break;
 								case 2: controlTemplate = ct->GetLargeSplitButtonTemplate(); break;
+								case 3: controlTemplate = ct->GetSmallIconLabelTemplate(); break;
 								}
 							}
 							else if (fixed == views[(vint)RibbonButtonSize::Small])
@@ -613,6 +621,7 @@ GuiRibbonButtons
 								case 0: controlTemplate = ct->GetSmallButtonTemplate(); break;
 								case 1: controlTemplate = ct->GetSmallDropdownButtonTemplate(); break;
 								case 2: controlTemplate = ct->GetSmallSplitButtonTemplate(); break;
+								case 3: controlTemplate = ct->GetSmallIconLabelTemplate(); break;
 								}
 							}
 							else if (fixed == views[(vint)RibbonButtonSize::Icon])
@@ -622,6 +631,7 @@ GuiRibbonButtons
 								case 0: controlTemplate = ct->GetIconButtonTemplate(); break;
 								case 1: controlTemplate = ct->GetIconDropdownButtonTemplate(); break;
 								case 2: controlTemplate = ct->GetIconSplitButtonTemplate(); break;
+								case 3: controlTemplate = ct->GetIconLabelTemplate(); break;
 								}
 							}
 						}
