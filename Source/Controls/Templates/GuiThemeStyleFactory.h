@@ -53,6 +53,7 @@ namespace vl
 			F(RibbonTabTemplate,			RibbonTab)					\
 			F(RibbonGroupTemplate,			RibbonGroup)				\
 			F(RibbonIconLabelTemplate,		RibbonIconLabel)			\
+			F(RibbonIconLabelTemplate,		RibbonSmallIconLabel)		\
 			F(RibbonButtonsTemplate,		RibbonButtons)				\
 			F(RibbonToolstripsTemplate,		RibbonToolstrips)			\
 			F(RibbonGalleryTemplate,		RibbonGallery)				\

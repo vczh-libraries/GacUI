@@ -363,6 +363,7 @@ Type List (Controls)
 			F(presentation::controls::GuiRibbonTab)\
 			F(presentation::controls::GuiRibbonTabPage)\
 			F(presentation::controls::GuiRibbonGroup)\
+			F(presentation::controls::GuiRibbonIconLabel)\
 			F(presentation::controls::GuiRibbonButtons)\
 			F(presentation::controls::GuiRibbonToolstrips)\
 			F(presentation::controls::GuiRibbonGallery)\

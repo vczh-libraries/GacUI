@@ -36,6 +36,8 @@
     <Instance name="DarkSkinThemeResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonTheme" xmlns:x="darkskin::*">
         <ThemeTemplates>
+          <att.RibbonIconLabel>x:RibbonIconLabelTemplate</att.RibbonIconLabel>
+          <att.RibbonSmallIconLabel>x:RibbonIconLabelTemplate</att.RibbonSmallIconLabel>
         </ThemeTemplates>
       </Instance>
     </Instance>

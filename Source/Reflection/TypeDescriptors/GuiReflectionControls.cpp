@@ -1135,6 +1135,13 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
 			END_CLASS_MEMBER(GuiRibbonGroup)
 
+			BEGIN_CLASS_MEMBER(GuiRibbonIconLabel)
+				CLASS_MEMBER_BASE(GuiControl)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiRibbonIconLabel)
+
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Image)
+			END_CLASS_MEMBER(GuiRibbonIconLabel)
+
 			BEGIN_CLASS_MEMBER(GuiRibbonButtons)
 				CLASS_MEMBER_BASE(GuiControl)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_3(GuiRibbonButtons, RibbonButtonSize, maxSize, RibbonButtonSize, minSize)
