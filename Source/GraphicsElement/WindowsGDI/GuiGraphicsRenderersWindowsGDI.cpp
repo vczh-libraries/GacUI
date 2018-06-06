@@ -430,6 +430,34 @@ GuiGradientBackgroundElementRenderer
 GuiSolidLabelElementRenderer
 ***********************************************************************/
 
+			void GuiInnerShadowElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiInnerShadowElementRenderer::FinalizeInternal()
+			{
+			}
+
+			void GuiInnerShadowElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
+			{
+			}
+
+			GuiInnerShadowElementRenderer::GuiInnerShadowElementRenderer()
+			{
+			}
+
+			void GuiInnerShadowElementRenderer::Render(Rect bounds)
+			{
+			}
+
+			void GuiInnerShadowElementRenderer::OnElementStateChanged()
+			{
+			}
+
+/***********************************************************************
+GuiSolidLabelElementRenderer
+***********************************************************************/
+
 			void GuiSolidLabelElementRenderer::UpdateMinSize()
 			{
 				if(renderTarget)
