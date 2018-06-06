@@ -284,6 +284,54 @@
     </Instance>
   </Instance>
 
+  <Instance name="RibbonSmallIconLabelTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonSmallIconLabelTemplate" ref.Styles="res://DarkSkin/Style">
+      <RibbonIconLabelTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:4 top:1 right:4 bottom:1">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0" InternalMargin="left:0 top:3 right:3 bottom:3">
+            <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Cell>
+          <Cell Site="row:0 column:1" InternalMargin="left:0 top:3 right:3 bottom:3">
+            <SharedSizeItem Group="MenuItem-Text" SharedWidth="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" VerticalAlignment="Center"/>
+            </SharedSizeItem>
+          </Cell>
+          <Cell ref.Name="container" Site="row:0 column:2"/>
+        </Table>
+      </RibbonIconLabelTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="RibbonIconLabelTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonIconLabelTemplate" ref.Styles="res://DarkSkin/Style">
+      <RibbonIconLabelTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:4 top:1 right:4 bottom:1">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0" InternalMargin="left:0 top:3 right:3 bottom:3">
+            <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Cell>
+          <Cell ref.Name="container" Site="row:0 column:1"/>
+        </Table>
+      </RibbonIconLabelTemplate>
+    </Instance>
+  </Instance>
+
   <Instance name="RibbonGroupTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGroupTemplate" ref.Styles="res://DarkSkin/Style">
       <RibbonGroupTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">

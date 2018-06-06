@@ -12595,6 +12595,7 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonTab,					RibbonTab											);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonTabPage,				CustomControl										);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonGroup,					RibbonGroup											);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonIconLabel,				RibbonIconLabel										);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonToolstrips,			RibbonToolstrips									);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonGallery,				RibbonGallery										);
 					ADD_TEMPLATE_CONTROL	(							GuiBindableRibbonGalleryList,	RibbonGalleryList									);
@@ -12613,6 +12614,7 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_VIRTUAL_CONTROL		(RibbonLargeButton,			GuiToolstripButton,				RibbonLargeButton									);
 					ADD_VIRTUAL_CONTROL		(RibbonLargeDropdownButton,	GuiToolstripButton,				RibbonLargeDropdownButton							);
 					ADD_VIRTUAL_CONTROL		(RibbonLargeSplitButton,	GuiToolstripButton,				RibbonLargeSplitButton								);
+					ADD_VIRTUAL_CONTROL		(RibbonSmallIconLabel,		GuiRibbonIconLabel,				RibbonSmallIconLabel								);
 					ADD_VIRTUAL_CONTROL		(RibbonSplitter,			GuiControl,						RibbonSplitter										);
 					ADD_VIRTUAL_CONTROL		(RibbonToolstripHeader,		GuiControl,						RibbonToolstripHeader								);
 					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,			CheckBox											);

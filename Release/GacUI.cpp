@@ -6140,6 +6140,12 @@ GuiFlowComposition
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
 					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
+					FOREACH(GuiFlowItemComposition*, item, flowItems)
+					{
+						auto itemSize = item->GetPreferredBounds().GetSize();
+						if (clientSize.x < itemSize.x) clientSize.x = itemSize.x;
+						if (clientSize.y < itemSize.y) clientSize.y = itemSize.y;
+					}
 					if (minSize.x < clientSize.x) minSize.x = clientSize.x;
 					if (minSize.y < clientSize.y) minSize.y = clientSize.y;
 				}
@@ -29494,6 +29500,45 @@ GuiRibbonGroup
 			}
 
 /***********************************************************************
+GuiRibbonIconLabel
+***********************************************************************/
+
+			void GuiRibbonIconLabel::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiRibbonIconLabel::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject(true);
+				ct->SetImage(image);
+			}
+
+			GuiRibbonIconLabel::GuiRibbonIconLabel(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
+				ImageChanged.SetAssociatedComposition(boundsComposition);
+			}
+
+			GuiRibbonIconLabel::~GuiRibbonIconLabel()
+			{
+			}
+
+			Ptr<GuiImageData> GuiRibbonIconLabel::GetImage()
+			{
+				return image;
+			}
+
+			void GuiRibbonIconLabel::SetImage(Ptr<GuiImageData> value)
+			{
+				if (image != value)
+				{
+					image = value;
+					GetControlTemplateObject(true)->SetImage(image);
+					ImageChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+/***********************************************************************
 GuiRibbonButtonsItemCollection
 ***********************************************************************/
 
@@ -29586,6 +29631,10 @@ GuiRibbonButtons
 					case ThemeName::ToolstripSplitButton:
 						type = 2;
 						break;
+					case ThemeName::RibbonSmallIconLabel:
+					case ThemeName::RibbonIconLabel:
+						type = 3;
+						break;
 					}
 
 					if (type != -1)
@@ -29600,6 +29649,7 @@ GuiRibbonButtons
 							case 0: themeName = ThemeName::RibbonLargeButton; break;
 							case 1: themeName = ThemeName::RibbonLargeDropdownButton; break;
 							case 2: themeName = ThemeName::RibbonLargeSplitButton; break;
+							case 3: themeName = ThemeName::RibbonSmallIconLabel; break;
 							}
 						}
 						else if (fixed == views[(vint)RibbonButtonSize::Small])
@@ -29609,6 +29659,7 @@ GuiRibbonButtons
 							case 0: themeName = ThemeName::RibbonSmallButton; break;
 							case 1: themeName = ThemeName::RibbonSmallDropdownButton; break;
 							case 2: themeName = ThemeName::RibbonSmallSplitButton; break;
+							case 3: themeName = ThemeName::RibbonSmallIconLabel; break;
 							}
 						}
 						else if (fixed == views[(vint)RibbonButtonSize::Icon])
@@ -29618,6 +29669,7 @@ GuiRibbonButtons
 							case 0: themeName = ThemeName::ToolstripButton; break;
 							case 1: themeName = ThemeName::ToolstripDropdownButton; break;
 							case 2: themeName = ThemeName::ToolstripSplitButton; break;
+							case 3: themeName = ThemeName::RibbonIconLabel; break;
 							}
 						}
 
@@ -29630,6 +29682,7 @@ GuiRibbonButtons
 								case 0: controlTemplate = ct->GetLargeButtonTemplate(); break;
 								case 1: controlTemplate = ct->GetLargeDropdownButtonTemplate(); break;
 								case 2: controlTemplate = ct->GetLargeSplitButtonTemplate(); break;
+								case 3: controlTemplate = ct->GetSmallIconLabelTemplate(); break;
 								}
 							}
 							else if (fixed == views[(vint)RibbonButtonSize::Small])
@@ -29639,6 +29692,7 @@ GuiRibbonButtons
 								case 0: controlTemplate = ct->GetSmallButtonTemplate(); break;
 								case 1: controlTemplate = ct->GetSmallDropdownButtonTemplate(); break;
 								case 2: controlTemplate = ct->GetSmallSplitButtonTemplate(); break;
+								case 3: controlTemplate = ct->GetSmallIconLabelTemplate(); break;
 								}
 							}
 							else if (fixed == views[(vint)RibbonButtonSize::Icon])
@@ -29648,6 +29702,7 @@ GuiRibbonButtons
 								case 0: controlTemplate = ct->GetIconButtonTemplate(); break;
 								case 1: controlTemplate = ct->GetIconDropdownButtonTemplate(); break;
 								case 2: controlTemplate = ct->GetIconSplitButtonTemplate(); break;
+								case 3: controlTemplate = ct->GetIconLabelTemplate(); break;
 								}
 							}
 						}
@@ -29696,7 +29751,12 @@ GuiRibbonButtons
 					}
 				}
 
-				containerComposition->AddChild(responsiveView);
+				auto sharedSizeRootComposition = new GuiSharedSizeRootComposition();
+				sharedSizeRootComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				sharedSizeRootComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				sharedSizeRootComposition->AddChild(responsiveView);
+
+				containerComposition->AddChild(sharedSizeRootComposition);
 			}
 
 			GuiRibbonButtons::~GuiRibbonButtons()

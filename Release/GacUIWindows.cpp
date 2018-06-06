@@ -9588,6 +9588,34 @@ GuiGradientBackgroundElementRenderer
 GuiSolidLabelElementRenderer
 ***********************************************************************/
 
+			void GuiInnerShadowElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiInnerShadowElementRenderer::FinalizeInternal()
+			{
+			}
+
+			void GuiInnerShadowElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
+			{
+			}
+
+			GuiInnerShadowElementRenderer::GuiInnerShadowElementRenderer()
+			{
+			}
+
+			void GuiInnerShadowElementRenderer::Render(Rect bounds)
+			{
+			}
+
+			void GuiInnerShadowElementRenderer::OnElementStateChanged()
+			{
+			}
+
+/***********************************************************************
+GuiSolidLabelElementRenderer
+***********************************************************************/
+
 			void GuiSolidLabelElementRenderer::UpdateMinSize()
 			{
 				if(renderTarget)
@@ -10661,6 +10689,7 @@ void RendererMainGDI()
 	elements_windows_gdi::Gui3DSplitterElementRenderer::Register();
 	elements_windows_gdi::GuiSolidBackgroundElementRenderer::Register();
 	elements_windows_gdi::GuiGradientBackgroundElementRenderer::Register();
+	elements_windows_gdi::GuiInnerShadowElementRenderer::Register();
 	elements_windows_gdi::GuiSolidLabelElementRenderer::Register();
 	elements_windows_gdi::GuiImageFrameElementRenderer::Register();
 	elements_windows_gdi::GuiPolygonElementRenderer::Register();

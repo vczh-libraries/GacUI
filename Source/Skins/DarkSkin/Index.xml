@@ -45,6 +45,8 @@
     <att.RibbonLargeSplitButton>x:RibbonLargeSplitButtonTemplate</att.RibbonLargeSplitButton>
     <att.RibbonGroup>x:RibbonGroupTemplate</att.RibbonGroup>
     <att.RibbonSplitter>x:ToolstripSplitterTemplate</att.RibbonSplitter>
+    <att.RibbonSmallIconLabel>x:RibbonSmallIconLabelTemplate</att.RibbonSmallIconLabel>
+    <att.RibbonIconLabel>x:RibbonIconLabelTemplate</att.RibbonIconLabel>
     <att.RibbonButtons>x:RibbonButtonsTemplate</att.RibbonButtons>
     <att.RibbonToolstrips>x:RibbonToolstripsTemplate</att.RibbonToolstrips>
     <att.RibbonToolstripHeader>x:RibbonToolstripHeaderTemplate</att.RibbonToolstripHeader>
