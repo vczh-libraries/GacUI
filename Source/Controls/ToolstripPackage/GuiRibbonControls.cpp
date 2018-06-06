@@ -680,7 +680,12 @@ GuiRibbonButtons
 					}
 				}
 
-				containerComposition->AddChild(responsiveView);
+				auto sharedSizeRootComposition = new GuiSharedSizeRootComposition();
+				sharedSizeRootComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				sharedSizeRootComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				sharedSizeRootComposition->AddChild(responsiveView);
+
+				containerComposition->AddChild(sharedSizeRootComposition);
 			}
 
 			GuiRibbonButtons::~GuiRibbonButtons()

@@ -42,7 +42,7 @@
       </Instance>
     </Instance>
     <InstanceStyle name="Style" content="File">../../Host/Resources/DarkSkin/Style.xml</InstanceStyle>
-    
+
     <Instance name="RibbonSmallIconLabelTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonSmallIconLabelTemplate" ref.Styles="res://DarkSkin/Style">
         <RibbonIconLabelTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
@@ -60,7 +60,9 @@
               <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Cell>
             <Cell Site="row:0 column:1" InternalMargin="left:0 top:3 right:3 bottom:3">
-              <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              <SharedSizeItem Group="MenuItem-Text" SharedWidth="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" VerticalAlignment="Center"/>
+              </SharedSizeItem>
             </Cell>
             <Cell ref.Name="container" Site="row:0 column:2"/>
           </Table>
