@@ -240,9 +240,9 @@ GuiRibbonGroupMenu
 					return IGuiMenuService::Horizontal;
 				}
 
-				bool IsSubMenuActivatedByMouseDown()override
+				bool IsActiveState()override
 				{
-					return true;
+					return false;
 				}
 
 			public:
