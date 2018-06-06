@@ -34,7 +34,18 @@ bool IsEnum(Value value)
 WString ValueToString(Value value)
 {
 	auto td = value.GetTypeDescriptor();
-	if (auto serializableType = td->GetSerializableType())
+	if (td == GetTypeDescriptor<FontProperties>())
+	{
+		auto font = UnboxValue<FontProperties>(value);
+		return font.fontFamily
+			+ L"(" + itow(font.size) + L")"
+			+ (font.bold ? L"B" : L"")
+			+ (font.italic ? L"I" : L"")
+			+ (font.underline ? L"U" : L"")
+			+ (font.strikeline ? L"S" : L"")
+			;
+	}
+	else if (auto serializableType = td->GetSerializableType())
 	{
 		WString result;
 		serializableType->Serialize(value, result);
