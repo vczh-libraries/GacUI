@@ -20744,13 +20744,13 @@ Class (::darkskin::ComboBoxTemplateConstructor)
 		}
 		(this->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetEllipse(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetEllipse(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_4));
@@ -21887,13 +21887,13 @@ Class (::darkskin::ListViewColumnHeaderTemplateConstructor)
 		}
 		(this->__vwsn_precompile_12 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetEllipse(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetEllipse(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_12));
@@ -26934,6 +26934,9 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_22)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_23 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_23.Obj())->SetEllipse(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_23.Obj())->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Segoe WP SemiLight", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(14); __vwsn_temp__.antialias = true; return __vwsn_temp__; }());
 		}

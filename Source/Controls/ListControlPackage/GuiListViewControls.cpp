@@ -305,9 +305,9 @@ ListViewColumnItemArranger
 					listView = dynamic_cast<GuiListViewBase*>(value);
 					if (listView)
 					{
-						listView->GetContainerComposition()->AddChild(columnHeaders);
 						listViewItemView = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier));
 						columnItemView = dynamic_cast<IColumnItemView*>(listView->GetItemProvider()->RequestView(IColumnItemView::Identifier));
+						listView->GetContainerComposition()->AddChild(columnHeaders);
 						if (columnItemView)
 						{
 							columnItemView->AttachCallback(columnItemViewCallback.Obj());
