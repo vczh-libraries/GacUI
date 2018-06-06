@@ -329,6 +329,26 @@
                           </RibbonIconLabel>
                         </att.Buttons>
                       </RibbonButtons>
+                      <RibbonSplitter/>
+                      <RibbonButtons MaxSize="Small" MinSize="Icon">
+                        <att.Buttons>
+                          <RibbonIconLabel Text="Left" Image-uri="res://ToolbarImages/TextAlignLeft">
+                            <SinglelineTextBox>
+                              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
+                            </SinglelineTextBox>
+                          </RibbonIconLabel>
+                          <RibbonIconLabel Text="Center" Image-uri="res://ToolbarImages/TextAlignCenter">
+                            <SinglelineTextBox>
+                              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
+                            </SinglelineTextBox>
+                          </RibbonIconLabel>
+                          <RibbonIconLabel Text="Right" Image-uri="res://ToolbarImages/TextAlignRight">
+                            <SinglelineTextBox>
+                              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
+                            </SinglelineTextBox>
+                          </RibbonIconLabel>
+                        </att.Buttons>
+                      </RibbonButtons>
                     </att.Items>
                   </RibbonGroup>
 
