@@ -180,6 +180,30 @@ Ribbon Containers
 Ribbon Buttons
 ***********************************************************************/
 
+			/// <summary>Auto resizable ribbon icon label.</summary>
+			class GuiRibbonIconLabel : public GuiControl, public Description<GuiRibbonIconLabel>
+			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonIconLabelTemplate, GuiControl)
+			protected:
+				Ptr<GuiImageData>						image;
+
+			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiRibbonIconLabel(theme::ThemeName themeName);
+				~GuiRibbonIconLabel();
+
+				/// <summary>Image changed event.</summary>
+				compositions::GuiNotifyEvent			ImageChanged;
+
+				/// <summary>Get the image for the menu button.</summary>
+				/// <returns>The image for the menu button.</returns>
+				Ptr<GuiImageData>						GetImage();
+				/// <summary>Set the image for the menu button.</summary>
+				/// <param name="value">The image for the menu button.</param>
+				void									SetImage(Ptr<GuiImageData> value);
+			};
+
 			/// <summary>Represents the size of a ribbon button in a <see cref="GuiRibbonButtons"/> control.</summary>
 			enum class RibbonButtonSize
 			{

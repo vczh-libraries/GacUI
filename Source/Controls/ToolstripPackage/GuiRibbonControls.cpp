@@ -429,6 +429,45 @@ GuiRibbonGroup
 			}
 
 /***********************************************************************
+GuiRibbonIconLabel
+***********************************************************************/
+
+			void GuiRibbonIconLabel::BeforeControlTemplateUninstalled_()
+			{
+			}
+
+			void GuiRibbonIconLabel::AfterControlTemplateInstalled_(bool initialize)
+			{
+				auto ct = GetControlTemplateObject(true);
+				ct->SetImage(image);
+			}
+
+			GuiRibbonIconLabel::GuiRibbonIconLabel(theme::ThemeName themeName)
+				:GuiControl(themeName)
+			{
+				ImageChanged.SetAssociatedComposition(boundsComposition);
+			}
+
+			GuiRibbonIconLabel::~GuiRibbonIconLabel()
+			{
+			}
+
+			Ptr<GuiImageData> GuiRibbonIconLabel::GetImage()
+			{
+				return image;
+			}
+
+			void GuiRibbonIconLabel::SetImage(Ptr<GuiImageData> value)
+			{
+				if (image != value)
+				{
+					image = value;
+					GetControlTemplateObject(true)->SetImage(image);
+					ImageChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+/***********************************************************************
 GuiRibbonButtonsItemCollection
 ***********************************************************************/
 

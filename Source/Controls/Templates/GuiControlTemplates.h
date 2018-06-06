@@ -99,6 +99,7 @@ namespace vl
 			F(GuiDateComboBoxTemplate,			GuiComboBoxTemplate)		\
 			F(GuiRibbonTabTemplate,				GuiTabTemplate)				\
 			F(GuiRibbonGroupTemplate,			GuiControlTemplate)			\
+			F(GuiRibbonIconLabelTemplate,		GuiControlTemplate)			\
 			F(GuiRibbonButtonsTemplate,			GuiControlTemplate)			\
 			F(GuiRibbonToolstripsTemplate,		GuiControlTemplate)			\
 			F(GuiRibbonToolstripMenuTemplate,	GuiMenuTemplate)			\
@@ -291,6 +292,9 @@ Control Template
 				F(GuiRibbonGroupTemplate, bool, Collapsed, false)\
 				F(GuiRibbonGroupTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeDropdownButtonTemplate, {})\
 				F(GuiRibbonGroupTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate, {})\
+
+#define GuiRibbonIconLabelTemplate_PROPERTIES(F)\
+				F(GuiRibbonIconLabelTemplate, Ptr<GuiImageData>, Image, {})\
 
 #define GuiRibbonButtonsTemplate_PROPERTIES(F)\
 				F(GuiRibbonButtonsTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeButtonTemplate, {})\

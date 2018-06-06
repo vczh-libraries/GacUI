@@ -307,6 +307,7 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonTab,					RibbonTab											);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonTabPage,				CustomControl										);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonGroup,					RibbonGroup											);
+					ADD_TEMPLATE_CONTROL	(							GuiRibbonIconLabel,				RibbonIconLabel										);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonToolstrips,			RibbonToolstrips									);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonGallery,				RibbonGallery										);
 					ADD_TEMPLATE_CONTROL	(							GuiBindableRibbonGalleryList,	RibbonGalleryList									);
