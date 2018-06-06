@@ -36,11 +36,61 @@
     <Instance name="DarkSkinThemeResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonTheme" xmlns:x="darkskin::*">
         <ThemeTemplates>
+          <att.RibbonSmallIconLabel>x:RibbonSmallIconLabelTemplate</att.RibbonSmallIconLabel>
           <att.RibbonIconLabel>x:RibbonIconLabelTemplate</att.RibbonIconLabel>
-          <att.RibbonSmallIconLabel>x:RibbonIconLabelTemplate</att.RibbonSmallIconLabel>
         </ThemeTemplates>
       </Instance>
     </Instance>
     <InstanceStyle name="Style" content="File">../../Host/Resources/DarkSkin/Style.xml</InstanceStyle>
+    
+    <Instance name="RibbonSmallIconLabelTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonSmallIconLabelTemplate" ref.Styles="res://DarkSkin/Style">
+        <RibbonIconLabelTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+          <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:Percentage percentage:1.0</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0">
+                <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+              </Cell>
+              <Cell Site="row:0 column:1">
+                <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Cell>
+              <Cell ref.Name="container" Site="row:0 column:2"/>
+            </Table>
+          </Bounds>
+        </RibbonIconLabelTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="RibbonIconLabelTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonIconLabelTemplate" ref.Styles="res://DarkSkin/Style">
+        <RibbonIconLabelTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+          <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:Percentage percentage:1.0</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0">
+                <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+              </Cell>
+              <Cell ref.Name="container" Site="row:0 column:1"/>
+            </Table>
+          </Bounds>
+        </RibbonIconLabelTemplate>
+      </Instance>
+    </Instance>
   </Folder>
 </Resource>
