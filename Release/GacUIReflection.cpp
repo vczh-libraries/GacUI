@@ -1578,6 +1578,10 @@ Type Declaration (Extra)
 				CLASS_MEMBER_PROPERTY_FAST(Checked)
 			END_CLASS_MEMBER(TextItem)
 
+			BEGIN_CLASS_MEMBER(TextItemProvider)
+				CLASS_MEMBER_BASE(ITextItemView)
+			END_CLASS_MEMBER(TextItemProvider)
+
 			BEGIN_ENUM_ITEM(TextListView)
 				ENUM_CLASS_ITEM(Text)
 				ENUM_CLASS_ITEM(Check)
@@ -1641,6 +1645,11 @@ Type Declaration (Extra)
 				CLASS_MEMBER_PROPERTY_FAST(DropdownPopup)
 				CLASS_MEMBER_PROPERTY_FAST(SortingState)
 			END_CLASS_MEMBER(ListViewColumn)
+
+			BEGIN_CLASS_MEMBER(ListViewItemProvider)
+				CLASS_MEMBER_BASE(IListViewItemView)
+				CLASS_MEMBER_BASE(ListViewColumnItemArranger::IColumnItemView)
+			END_CLASS_MEMBER(ListViewItemProvider)
 
 			BEGIN_ENUM_ITEM(ListViewView)
 				ENUM_CLASS_ITEM(BigIcon)
@@ -1719,6 +1728,11 @@ Type Declaration (Extra)
 				CLASS_MEMBER_METHOD(CalculateNodeVisibilityIndex, {L"node"})
 			END_INTERFACE_MEMBER(INodeItemView)
 
+			BEGIN_CLASS_MEMBER(NodeItemProvider)
+				CLASS_MEMBER_BASE(ItemProviderBase)
+				CLASS_MEMBER_BASE(INodeItemView)
+			END_CLASS_MEMBER(NodeItemProvider)
+
 			BEGIN_CLASS_MEMBER(MemoryNodeProvider)
 				CLASS_MEMBER_BASE(INodeProvider)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<MemoryNodeProvider>(), NO_PARAMETER)
@@ -1761,6 +1775,7 @@ Type Declaration (Extra)
 
 			BEGIN_CLASS_MEMBER(TreeViewItemRootProvider)
 				CLASS_MEMBER_BASE(MemoryNodeRootProvider)
+				CLASS_MEMBER_BASE(ITreeViewItemView)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<TreeViewItemRootProvider>(), NO_PARAMETER)
 
 				CLASS_MEMBER_METHOD(GetTreeViewData, {L"node"})

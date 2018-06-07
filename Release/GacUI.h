@@ -12526,7 +12526,7 @@ NodeItemProvider
 				class NodeItemProvider
 					: public list::ItemProviderBase
 					, protected virtual INodeProviderCallback
-					, protected virtual INodeItemView
+					, public virtual INodeItemView
 					, public Description<NodeItemProvider>
 				{
 					typedef collections::Dictionary<INodeProvider*, vint>			NodeIntMap;
@@ -12784,7 +12784,7 @@ TreeViewItemRootProvider
 				/// <summary>The default implementation of <see cref="INodeRootProvider"/> for [T:vl.presentation.controls.GuiVirtualTreeView].</summary>
 				class TreeViewItemRootProvider
 					: public MemoryNodeRootProvider
-					, protected virtual ITreeViewItemView
+					, public virtual ITreeViewItemView
 					, public Description<TreeViewItemRootProvider>
 				{
 				protected:
@@ -15505,8 +15505,8 @@ ListViewItemProvider
 				class ListViewItemProvider
 					: public ListProvider<Ptr<ListViewItem>>
 					, protected virtual IListViewItemProvider
-					, protected virtual IListViewItemView
-					, protected virtual ListViewColumnItemArranger::IColumnItemView
+					, public virtual IListViewItemView
+					, public virtual ListViewColumnItemArranger::IColumnItemView
 					, public Description<ListViewItemProvider>
 				{
 					friend class ListViewItem;
@@ -15705,6 +15705,7 @@ ComboBox with GuiListControl
 				ItemStyleProperty							itemStyleProperty;
 				templates::GuiTemplate*						itemStyleController = nullptr;
 				Ptr<compositions::IGuiGraphicsEventHandler>	boundsChangedHandler;
+				Ptr<bool>									flagDisposed;
 
 				void										BeforeControlTemplateUninstalled()override;
 				void										AfterControlTemplateInstalled(bool initialize)override;
@@ -17161,8 +17162,8 @@ GuiBindableListView
 				class ItemSource
 					: public list::ItemProviderBase
 					, protected virtual list::IListViewItemProvider
-					, protected virtual list::IListViewItemView
-					, protected virtual list::ListViewColumnItemArranger::IColumnItemView
+					, public virtual list::IListViewItemView
+					, public virtual list::ListViewColumnItemArranger::IColumnItemView
 				{
 					typedef collections::List<list::ListViewColumnItemArranger::IColumnItemViewCallback*>		ColumnItemViewCallbackList;
 				protected:
@@ -17320,7 +17321,7 @@ GuiBindableTreeView
 
 				class ItemSource
 					: public tree::NodeRootProviderBase
-					, protected virtual tree::ITreeViewItemView
+					, public virtual tree::ITreeViewItemView
 				{
 					friend class ItemSourceNode;
 				public:

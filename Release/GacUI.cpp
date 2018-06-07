@@ -17052,9 +17052,13 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
+				auto flag = flagDisposed;
 				GetApplication()->InvokeLambdaInMainThread(GetRelatedControlHost(), [=]()
 				{
-					AdoptSubMenuSize();
+					if (!*flag.Obj())
+					{
+						AdoptSubMenuSize();
+					}
 				});
 			}
 
@@ -17068,6 +17072,7 @@ GuiComboBoxListControl
 			GuiComboBoxListControl::GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl)
 				:GuiComboBoxBase(themeName)
 				, containedListControl(_containedListControl)
+				, flagDisposed(new bool(false))
 			{
 				TextChanged.AttachMethod(this, &GuiComboBoxListControl::OnTextChanged);
 				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
@@ -17092,6 +17097,7 @@ GuiComboBoxListControl
 			{
 				containedListControl->GetBoundsComposition()->BoundsChanged.Detach(boundsChangedHandler);
 				boundsChangedHandler = nullptr;
+				*flagDisposed.Obj() = true;
 			}
 
 			GuiSelectableListControl* GuiComboBoxListControl::GetContainedListControl()
