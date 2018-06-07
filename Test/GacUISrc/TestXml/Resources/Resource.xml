@@ -1,4 +1,6 @@
 <Resource>
+  <Text name="Keep">
+    <![CDATA[
   <Folder name="ToolbarImages" content="Link">ToolbarImages/Images.xml</Folder>
   <Folder name="DocumentComponents" content="Link">../../Host/Resources/FullControlTest/DocumentComponents.xml</Folder>
   <Folder name="DocumentEditorBase" content="Link">../../Host/Resources/FullControlTest/DocumentEditorBase.xml</Folder>
@@ -31,6 +33,125 @@
     <Image name="Paste" content="File">Images/SmallPaste.png</Image>
     <Image name="Save" content="File">Images/SmallSave.png</Image>
   </Folder>
+  ]]>
+  </Text>
+
+  <Script name="ViewModel">
+    <Workflow>
+      <![CDATA[
+        module viewmodel;
+        
+        namespace demo
+        {
+          class Node
+          {
+            prop Text : string = "" {}
+            prop Children : observe Node^[] = {} {const, not observe}
+            
+            new(text : string)
+            {
+              Text = text;
+            }
+          }
+          
+          func CreateNode() : Node^
+          {
+            var root = new Node^("");
+            for (i in range [1, 10])
+            {
+              var header = new Node^("Header " & i);
+              root.Children.Add(header);
+              
+              for (j in range [1, 10])
+              {
+                var item = new Node^("Item " & j);
+                header.Children.Add(item);
+              }
+            }
+            return root;
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
+  <Instance name="TreeItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TreeItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="demo::Node"/>
+      <TreeItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0" PreferredMinSize-bind="{x:(20 * self.Level) y:0}"/>
+
+          <Cell Site="row:0 column:1">
+            <CheckBox AutoSelection="false" Selected-bind="self.Expanding">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    var treeControl = cast (BindableTreeView*) self.RelatedControl.Parent;
+                    var view = treeControl.NodeItemView;
+                    var index = treeControl.Arranger.GetVisibleIndex(self);
+                    if (view is not null)
+                    {
+                      var node = view.RequestNode(index);
+                      if (node is not null)
+                      {
+                        node.Expanding = not node.Expanding;
+                      }
+                    }
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </CheckBox>
+          </Cell>
+
+          <Cell Site="row:0 column:2">
+            <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF"/>
+          </Cell>
+
+          <Cell Site="row:0 column:4">
+            <ComboBox SelectedIndex="0">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80"/>
+              <att.ListControl>
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <TextItem Text="Spring"/>
+                    <TextItem Text="Summer"/>
+                    <TextItem Text="Autumn"/>
+                    <TextItem Text="Winter"/>
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+            </ComboBox>
+          </Cell>
+        </Table>
+      </TreeItemTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
+      <Window Text="Demo" ClientSize="x:640 y:480">
+        <BindableTreeView HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="demo::Node^">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+          <att.TextProperty>Text</att.TextProperty>
+          <att.ChildrenProperty>Children</att.ChildrenProperty>
+          <att.ItemSource-eval>demo::CreateNode()</att.ItemSource-eval>
+          <att.ItemTemplate>demo::TreeItemTemplate</att.ItemTemplate>
+        </BindableTreeView>
+      </Window>
+    </Instance>
+  </Instance>
 
   <Folder name="DarkSkin">
     <Instance name="DarkSkinThemeResource">

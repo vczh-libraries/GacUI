@@ -41,7 +41,7 @@ void OpenMainWindow()
 		RegisterTheme(L"RibbonTheme", theme);
 	}
 	{
-		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::DocumentEditorRibbonWindow"));
+		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 		{
 			auto menu = new GuiToolstripMenu(theme::ThemeName::Menu, window);
 			window->AddControlHostComponent(menu);

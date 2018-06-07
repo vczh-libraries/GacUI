@@ -177,8 +177,8 @@ GuiBindableListView
 				class ItemSource
 					: public list::ItemProviderBase
 					, protected virtual list::IListViewItemProvider
-					, protected virtual list::IListViewItemView
-					, protected virtual list::ListViewColumnItemArranger::IColumnItemView
+					, public virtual list::IListViewItemView
+					, public virtual list::ListViewColumnItemArranger::IColumnItemView
 				{
 					typedef collections::List<list::ListViewColumnItemArranger::IColumnItemViewCallback*>		ColumnItemViewCallbackList;
 				protected:
@@ -336,7 +336,7 @@ GuiBindableTreeView
 
 				class ItemSource
 					: public tree::NodeRootProviderBase
-					, protected virtual tree::ITreeViewItemView
+					, public virtual tree::ITreeViewItemView
 				{
 					friend class ItemSourceNode;
 				public:

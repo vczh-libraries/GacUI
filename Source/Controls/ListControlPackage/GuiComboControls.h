@@ -74,6 +74,7 @@ ComboBox with GuiListControl
 				ItemStyleProperty							itemStyleProperty;
 				templates::GuiTemplate*						itemStyleController = nullptr;
 				Ptr<compositions::IGuiGraphicsEventHandler>	boundsChangedHandler;
+				Ptr<bool>									flagDisposed;
 
 				void										BeforeControlTemplateUninstalled()override;
 				void										AfterControlTemplateInstalled(bool initialize)override;

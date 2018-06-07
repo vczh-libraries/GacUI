@@ -153,7 +153,7 @@ NodeItemProvider
 				class NodeItemProvider
 					: public list::ItemProviderBase
 					, protected virtual INodeProviderCallback
-					, protected virtual INodeItemView
+					, public virtual INodeItemView
 					, public Description<NodeItemProvider>
 				{
 					typedef collections::Dictionary<INodeProvider*, vint>			NodeIntMap;
@@ -411,7 +411,7 @@ TreeViewItemRootProvider
 				/// <summary>The default implementation of <see cref="INodeRootProvider"/> for [T:vl.presentation.controls.GuiVirtualTreeView].</summary>
 				class TreeViewItemRootProvider
 					: public MemoryNodeRootProvider
-					, protected virtual ITreeViewItemView
+					, public virtual ITreeViewItemView
 					, public Description<TreeViewItemRootProvider>
 				{
 				protected:

@@ -373,8 +373,8 @@ ListViewItemProvider
 				class ListViewItemProvider
 					: public ListProvider<Ptr<ListViewItem>>
 					, protected virtual IListViewItemProvider
-					, protected virtual IListViewItemView
-					, protected virtual ListViewColumnItemArranger::IColumnItemView
+					, public virtual IListViewItemView
+					, public virtual ListViewColumnItemArranger::IColumnItemView
 					, public Description<ListViewItemProvider>
 				{
 					friend class ListViewItem;
