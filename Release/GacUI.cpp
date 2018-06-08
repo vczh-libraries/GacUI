@@ -8374,10 +8374,12 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::ForceCalculateSizeImmediately()
 			{
+				isRendering = true;
 				for (vint i = 0; i < children.Count(); i++)
 				{
 					children[i]->ForceCalculateSizeImmediately();
 				}
+				isRendering = false;
 				InvokeOnCompositionStateChanged();
 			}
 
