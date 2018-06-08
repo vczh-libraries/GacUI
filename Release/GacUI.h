@@ -6569,6 +6569,8 @@ Basic Construction
 				Margin										internalMargin;
 				Size										preferredMinSize;
 
+				bool										isRendering = false;
+
 				virtual void								OnControlParentChanged(controls::GuiControl* control);
 				virtual void								OnChildInserted(GuiGraphicsComposition* child);
 				virtual void								OnChildRemoved(GuiGraphicsComposition* child);
@@ -6584,6 +6586,8 @@ Basic Construction
 			public:
 				GuiGraphicsComposition();
 				~GuiGraphicsComposition();
+
+				bool										IsRendering();
 
 				/// <summary>Get the parent composition.</summary>
 				/// <returns>The parent composition.</returns>
@@ -7460,6 +7464,7 @@ GuiResponsiveContainerComposition
 				GuiResponsiveCompositionBase*			responsiveTarget = nullptr;
 				Size									upperLevelSize;
 
+				void									AdjustLevel();
 				void									OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
 
 			public:
@@ -9687,6 +9692,8 @@ Basic Construction
 				GuiControl*								tooltipControl = nullptr;
 				vint									tooltipWidth = 0;
 
+				Ptr<bool>								flagDisposed;
+
 				virtual void							BeforeControlTemplateUninstalled();
 				virtual void							AfterControlTemplateInstalled(bool initialize);
 				virtual void							CheckAndStoreControlTemplate(templates::GuiControlTemplate* value);
@@ -9740,6 +9747,8 @@ Basic Construction
 				compositions::GuiNotifyEvent			FontChanged;
 				/// <summary>Context changed event. This event will be raised when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			ContextChanged;
+
+				void									InvokeOrDelayIfRendering(Func<void()> proc);
 
 				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
 				/// <returns>The created argument.</returns>
@@ -15705,7 +15714,6 @@ ComboBox with GuiListControl
 				ItemStyleProperty							itemStyleProperty;
 				templates::GuiTemplate*						itemStyleController = nullptr;
 				Ptr<compositions::IGuiGraphicsEventHandler>	boundsChangedHandler;
-				Ptr<bool>									flagDisposed;
 
 				void										BeforeControlTemplateUninstalled()override;
 				void										AfterControlTemplateInstalled(bool initialize)override;

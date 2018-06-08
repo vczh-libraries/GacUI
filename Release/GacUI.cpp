@@ -7993,6 +7993,11 @@ GuiGraphicsComposition
 				}
 			}
 
+			bool GuiGraphicsComposition::IsRendering()
+			{
+				return isRendering;
+			}
+
 			GuiGraphicsComposition* GuiGraphicsComposition::GetParent()
 			{
 				return parent;
@@ -8010,6 +8015,7 @@ GuiGraphicsComposition
 
 			bool GuiGraphicsComposition::InsertChild(vint index, GuiGraphicsComposition* child)
 			{
+				CHECK_ERROR(!isRendering, L"GuiGraphicsComposition::InsertChild(vint, GuiGraphicsComposition*)#Cannot modify composition tree during rendering.");
 				if (!child) return false;
 				if (child->GetParent()) return false;
 				children.Insert(index, child);
@@ -8026,6 +8032,7 @@ GuiGraphicsComposition
 
 			bool GuiGraphicsComposition::RemoveChild(GuiGraphicsComposition* child)
 			{
+				CHECK_ERROR(!isRendering, L"GuiGraphicsComposition::InsertChild(vint, GuiGraphicsComposition*)#Cannot modify composition tree during rendering.");
 				if (!child) return false;
 				vint index = children.IndexOf(child);
 				if (index == -1) return false;
@@ -8132,6 +8139,7 @@ GuiGraphicsComposition
 						bounds.y1 += offset.y;
 						bounds.y2 += offset.y;
 
+						isRendering = true;
 						if (ownedElement)
 						{
 							IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
@@ -8160,6 +8168,7 @@ GuiGraphicsComposition
 								renderTarget->PopClipper();
 							}
 						}
+						isRendering = false;
 					}
 				}
 			}
@@ -9330,7 +9339,7 @@ GuiResponsiveContainerComposition
 
 #define RESPONSIVE_INVALID_SIZE Size(-1, -1)
 
-			void GuiResponsiveContainerComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			void GuiResponsiveContainerComposition::AdjustLevel()
 			{
 				if (!responsiveTarget) return;
 				const Size containerSize = GetBounds().GetSize();
@@ -9397,6 +9406,22 @@ GuiResponsiveContainerComposition
 				}
 
 #undef RESPONSIVE_IF_CONTAINER
+			}
+
+			void GuiResponsiveContainerComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			{
+				auto control = GetRelatedControl();
+				if (control)
+				{
+					control->InvokeOrDelayIfRendering([=]()
+					{
+						AdjustLevel();
+					});
+				}
+				else
+				{
+					AdjustLevel();
+				}
 			}
 
 			GuiResponsiveContainerComposition::GuiResponsiveContainerComposition()
@@ -10180,6 +10205,7 @@ GuiControl
 
 			GuiControl::GuiControl(theme::ThemeName themeName)
 				:controlThemeName(themeName)
+				, flagDisposed(new bool(false))
 			{
 				{
 					boundsComposition = new GuiBoundsComposition;
@@ -10211,6 +10237,7 @@ GuiControl
 
 			GuiControl::~GuiControl()
 			{
+				*flagDisposed.Obj() = true;
 				// prevent a root bounds composition from notifying its dead controls
 				if (!parent)
 				{
@@ -10237,6 +10264,26 @@ GuiControl
 				if (!parent)
 				{
 					delete boundsComposition;
+				}
+			}
+
+			void GuiControl::InvokeOrDelayIfRendering(Func<void()> proc)
+			{
+				auto controlHost = GetRelatedControlHost();
+				if (controlHost && boundsComposition->IsRendering())
+				{
+					auto flag = flagDisposed;
+					GetApplication()->InvokeInMainThread(controlHost, [=]()
+					{
+						if (!*flag.Obj())
+						{
+							proc();
+						}
+					});
+				}
+				else
+				{
+					proc();
 				}
 			}
 
@@ -12678,7 +12725,10 @@ GuiScrollView
 
 			void GuiScrollView::OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				CalculateView();
+				InvokeOrDelayIfRendering([=]()
+				{
+					CalculateView();
+				});
 			}
 
 			void GuiScrollView::OnHorizontalScroll(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -13234,7 +13284,10 @@ GuiListControl::ItemCallback
 
 			void GuiListControl::ItemCallback::OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				listControl->CalculateView();
+				listControl->InvokeOrDelayIfRendering([=]()
+				{
+					listControl->CalculateView();
+				});
 			}
 
 			GuiListControl::ItemCallback::ItemCallback(GuiListControl* _listControl)
@@ -17072,7 +17125,6 @@ GuiComboBoxListControl
 			GuiComboBoxListControl::GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl)
 				:GuiComboBoxBase(themeName)
 				, containedListControl(_containedListControl)
-				, flagDisposed(new bool(false))
 			{
 				TextChanged.AttachMethod(this, &GuiComboBoxListControl::OnTextChanged);
 				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
@@ -17097,7 +17149,6 @@ GuiComboBoxListControl
 			{
 				containedListControl->GetBoundsComposition()->BoundsChanged.Detach(boundsChangedHandler);
 				boundsChangedHandler = nullptr;
-				*flagDisposed.Obj() = true;
 			}
 
 			GuiSelectableListControl* GuiComboBoxListControl::GetContainedListControl()
@@ -37974,7 +38025,7 @@ DocumentModel::ClearStyle
 
 			// check caret range
 			RunRangeMap runRanges;
-			if (!CheckEditRange(begin, end, runRanges)) return nullptr;
+			if (!CheckEditRange(begin, end, runRanges)) return {};
 
 			// Summarize container
 			Nullable<WString> styleName;
