@@ -68,6 +68,8 @@ Basic Construction
 				GuiControl*								tooltipControl = nullptr;
 				vint									tooltipWidth = 0;
 
+				Ptr<bool>								flagDisposed;
+
 				virtual void							BeforeControlTemplateUninstalled();
 				virtual void							AfterControlTemplateInstalled(bool initialize);
 				virtual void							CheckAndStoreControlTemplate(templates::GuiControlTemplate* value);
@@ -121,6 +123,8 @@ Basic Construction
 				compositions::GuiNotifyEvent			FontChanged;
 				/// <summary>Context changed event. This event will be raised when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			ContextChanged;
+
+				void									InvokeOrDelayIfRendering(Func<void()> proc);
 
 				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
 				/// <returns>The created argument.</returns>

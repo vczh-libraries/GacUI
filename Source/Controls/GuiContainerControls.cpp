@@ -221,7 +221,10 @@ GuiScrollView
 
 			void GuiScrollView::OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				CalculateView();
+				InvokeOrDelayIfRendering([=]()
+				{
+					CalculateView();
+				});
 			}
 
 			void GuiScrollView::OnHorizontalScroll(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

@@ -150,6 +150,11 @@ GuiGraphicsComposition
 				}
 			}
 
+			bool GuiGraphicsComposition::IsRendering()
+			{
+				return isRendering;
+			}
+
 			GuiGraphicsComposition* GuiGraphicsComposition::GetParent()
 			{
 				return parent;
@@ -167,9 +172,7 @@ GuiGraphicsComposition
 
 			bool GuiGraphicsComposition::InsertChild(vint index, GuiGraphicsComposition* child)
 			{
-#ifdef _DEBUG
 				CHECK_ERROR(!isRendering, L"GuiGraphicsComposition::InsertChild(vint, GuiGraphicsComposition*)#Cannot modify composition tree during rendering.");
-#endif
 				if (!child) return false;
 				if (child->GetParent()) return false;
 				children.Insert(index, child);
@@ -186,9 +189,7 @@ GuiGraphicsComposition
 
 			bool GuiGraphicsComposition::RemoveChild(GuiGraphicsComposition* child)
 			{
-#ifdef _DEBUG
 				CHECK_ERROR(!isRendering, L"GuiGraphicsComposition::InsertChild(vint, GuiGraphicsComposition*)#Cannot modify composition tree during rendering.");
-#endif
 				if (!child) return false;
 				vint index = children.IndexOf(child);
 				if (index == -1) return false;
@@ -295,9 +296,7 @@ GuiGraphicsComposition
 						bounds.y1 += offset.y;
 						bounds.y2 += offset.y;
 
-#ifdef _DEBUG
 						isRendering = true;
-#endif
 						if (ownedElement)
 						{
 							IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
@@ -326,9 +325,7 @@ GuiGraphicsComposition
 								renderTarget->PopClipper();
 							}
 						}
-#ifdef _DEBUG
 						isRendering = false;
-#endif
 					}
 				}
 			}

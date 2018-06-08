@@ -259,6 +259,7 @@ GuiResponsiveContainerComposition
 				GuiResponsiveCompositionBase*			responsiveTarget = nullptr;
 				Size									upperLevelSize;
 
+				void									AdjustLevel();
 				void									OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
 
 			public:

@@ -197,6 +197,7 @@ GuiControl
 
 			GuiControl::GuiControl(theme::ThemeName themeName)
 				:controlThemeName(themeName)
+				, flagDisposed(new bool(false))
 			{
 				{
 					boundsComposition = new GuiBoundsComposition;
@@ -228,6 +229,7 @@ GuiControl
 
 			GuiControl::~GuiControl()
 			{
+				*flagDisposed.Obj() = true;
 				// prevent a root bounds composition from notifying its dead controls
 				if (!parent)
 				{
@@ -254,6 +256,26 @@ GuiControl
 				if (!parent)
 				{
 					delete boundsComposition;
+				}
+			}
+
+			void GuiControl::InvokeOrDelayIfRendering(Func<void()> proc)
+			{
+				auto controlHost = GetRelatedControlHost();
+				if (controlHost && boundsComposition->IsRendering())
+				{
+					auto flag = flagDisposed;
+					GetApplication()->InvokeInMainThread(controlHost, [=]()
+					{
+						if (!*flag.Obj())
+						{
+							proc();
+						}
+					});
+				}
+				else
+				{
+					proc();
 				}
 			}
 

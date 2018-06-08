@@ -233,7 +233,6 @@ GuiComboBoxListControl
 			GuiComboBoxListControl::GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl)
 				:GuiComboBoxBase(themeName)
 				, containedListControl(_containedListControl)
-				, flagDisposed(new bool(false))
 			{
 				TextChanged.AttachMethod(this, &GuiComboBoxListControl::OnTextChanged);
 				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
@@ -258,7 +257,6 @@ GuiComboBoxListControl
 			{
 				containedListControl->GetBoundsComposition()->BoundsChanged.Detach(boundsChangedHandler);
 				boundsChangedHandler = nullptr;
-				*flagDisposed.Obj() = true;
 			}
 
 			GuiSelectableListControl* GuiComboBoxListControl::GetContainedListControl()

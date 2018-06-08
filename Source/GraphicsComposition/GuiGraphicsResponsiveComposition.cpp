@@ -766,7 +766,7 @@ GuiResponsiveContainerComposition
 
 #define RESPONSIVE_INVALID_SIZE Size(-1, -1)
 
-			void GuiResponsiveContainerComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			void GuiResponsiveContainerComposition::AdjustLevel()
 			{
 				if (!responsiveTarget) return;
 				const Size containerSize = GetBounds().GetSize();
@@ -833,6 +833,22 @@ GuiResponsiveContainerComposition
 				}
 
 #undef RESPONSIVE_IF_CONTAINER
+			}
+
+			void GuiResponsiveContainerComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			{
+				auto control = GetRelatedControl();
+				if (control)
+				{
+					control->InvokeOrDelayIfRendering([=]()
+					{
+						AdjustLevel();
+					});
+				}
+				else
+				{
+					AdjustLevel();
+				}
 			}
 
 			GuiResponsiveContainerComposition::GuiResponsiveContainerComposition()
