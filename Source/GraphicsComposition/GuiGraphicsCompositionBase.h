@@ -83,6 +83,9 @@ Basic Construction
 				Margin										margin;
 				Margin										internalMargin;
 				Size										preferredMinSize;
+#ifdef _DEBUG
+				bool										isRendering = false;
+#endif
 
 				virtual void								OnControlParentChanged(controls::GuiControl* control);
 				virtual void								OnChildInserted(GuiGraphicsComposition* child);

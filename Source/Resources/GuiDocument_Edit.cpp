@@ -611,7 +611,7 @@ DocumentModel::ClearStyle
 
 			// check caret range
 			RunRangeMap runRanges;
-			if (!CheckEditRange(begin, end, runRanges)) return nullptr;
+			if (!CheckEditRange(begin, end, runRanges)) return {};
 
 			// Summarize container
 			Nullable<WString> styleName;

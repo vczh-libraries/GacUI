@@ -167,6 +167,9 @@ GuiGraphicsComposition
 
 			bool GuiGraphicsComposition::InsertChild(vint index, GuiGraphicsComposition* child)
 			{
+#ifdef _DEBUG
+				CHECK_ERROR(!isRendering, L"GuiGraphicsComposition::InsertChild(vint, GuiGraphicsComposition*)#Cannot modify composition tree during rendering.");
+#endif
 				if (!child) return false;
 				if (child->GetParent()) return false;
 				children.Insert(index, child);
@@ -183,6 +186,9 @@ GuiGraphicsComposition
 
 			bool GuiGraphicsComposition::RemoveChild(GuiGraphicsComposition* child)
 			{
+#ifdef _DEBUG
+				CHECK_ERROR(!isRendering, L"GuiGraphicsComposition::InsertChild(vint, GuiGraphicsComposition*)#Cannot modify composition tree during rendering.");
+#endif
 				if (!child) return false;
 				vint index = children.IndexOf(child);
 				if (index == -1) return false;
@@ -273,6 +279,9 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::Render(Size offset)
 			{
+#ifdef _DEBUG
+				isRendering = true;
+#endif
 				auto renderTarget = GetRenderTarget();
 				if (visible && renderTarget && !renderTarget->IsClipperCoverWholeTarget())
 				{
@@ -319,6 +328,9 @@ GuiGraphicsComposition
 						}
 					}
 				}
+#ifdef _DEBUG
+				isRendering = false;
+#endif
 			}
 
 			GuiGraphicsEventReceiver* GuiGraphicsComposition::GetEventReceiver()
