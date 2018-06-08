@@ -279,9 +279,6 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::Render(Size offset)
 			{
-#ifdef _DEBUG
-				isRendering = true;
-#endif
 				auto renderTarget = GetRenderTarget();
 				if (visible && renderTarget && !renderTarget->IsClipperCoverWholeTarget())
 				{
@@ -298,6 +295,9 @@ GuiGraphicsComposition
 						bounds.y1 += offset.y;
 						bounds.y2 += offset.y;
 
+#ifdef _DEBUG
+						isRendering = true;
+#endif
 						if (ownedElement)
 						{
 							IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
@@ -326,11 +326,11 @@ GuiGraphicsComposition
 								renderTarget->PopClipper();
 							}
 						}
+#ifdef _DEBUG
+						isRendering = false;
+#endif
 					}
 				}
-#ifdef _DEBUG
-				isRendering = false;
-#endif
 			}
 
 			GuiGraphicsEventReceiver* GuiGraphicsComposition::GetEventReceiver()
