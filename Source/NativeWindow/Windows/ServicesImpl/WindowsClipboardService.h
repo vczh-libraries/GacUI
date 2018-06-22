@@ -25,6 +25,7 @@ namespace vl
 				friend class WindowsClipboardService;
 			protected:
 				WindowsClipboardService*		service;
+				bool							ContainsFormat(UINT format);
 
 			public:
 				WindowsClipboardReader(WindowsClipboardService* _service);

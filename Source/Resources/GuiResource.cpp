@@ -1398,12 +1398,13 @@ GuiResourcePathFileResolver
 
 			Ptr<DescriptableObject> ResolveResource(const WString& path)
 			{
-				WString filename=path;
-				if(filename.Length()>=2 && filename[1]!=L':')
+				if (workingDirectory == L"") return nullptr;
+				WString filename = path;
+				if (filename.Length() >= 2 && filename[1] != L':')
 				{
-					filename=workingDirectory+filename;
+					filename = workingDirectory + filename;
 				}
-				Ptr<INativeImage> image=GetCurrentController()->ImageService()->CreateImageFromFile(filename);
+				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(filename);
 				return new GuiImageData(image, 0);
 			}
 

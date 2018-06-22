@@ -1056,13 +1056,18 @@ GuiDocumentCommonInterface
 				auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
 				if (reader->ContainsDocument())
 				{
-					SetSelectionModel(reader->GetDocument());
+					if (auto document = reader->GetDocument())
+					{
+						SetSelectionModel(document);
+						return true;
+					}
 				}
-				else if (reader->ContainsText())
+				if (reader->ContainsText())
 				{
 					SetSelectionText(reader->GetText());
+					return true;
 				}
-				return true;
+				return false;
 			}
 
 			//================ undo redo control

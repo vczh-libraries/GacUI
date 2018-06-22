@@ -1,5 +1,6 @@
 #include "WindowsClipboardService.h"
 #include "../../../Resources/GuiDocumentClipboard.h"
+#include "../../../Resources/GuiParserManager.h"
 
 namespace vl
 {
@@ -7,10 +8,25 @@ namespace vl
 	{
 		namespace windows
 		{
+			using namespace parsing::xml;
+			using namespace collections;
 
 /***********************************************************************
 WindowsClipboardReader
 ***********************************************************************/
+
+			bool WindowsClipboardReader::ContainsFormat(UINT format)
+			{
+				UINT currentFormat = 0;
+				while (currentFormat = ::EnumClipboardFormats(currentFormat))
+				{
+					if (currentFormat == format)
+					{
+						return true;
+					}
+				}
+				return false;
+			}
 
 			WindowsClipboardReader::WindowsClipboardReader(WindowsClipboardService* _service)
 				:service(_service)
@@ -24,15 +40,7 @@ WindowsClipboardReader
 
 			bool WindowsClipboardReader::ContainsText()
 			{
-				UINT format = 0;
-				while (format = ::EnumClipboardFormats(format))
-				{
-					if (format == CF_UNICODETEXT)
-					{
-						return true;
-					}
-				}
-				return false;
+				return ContainsFormat(CF_UNICODETEXT);
 			}
 
 			WString WindowsClipboardReader::GetText()
@@ -50,11 +58,35 @@ WindowsClipboardReader
 
 			bool WindowsClipboardReader::ContainsDocument()
 			{
-				return false;
+				return ContainsFormat(service->WCF_Document);
 			}
 
 			Ptr<DocumentModel> WindowsClipboardReader::GetDocument()
 			{
+				HANDLE handle = ::GetClipboardData(service->WCF_Document);
+				if (handle != 0)
+				{
+					auto buffer = ::GlobalLock(handle);
+					auto size = ::GlobalSize(handle);
+					Array<wchar_t> textBuffer((vint)size + 1);
+					memcpy(&textBuffer[0], buffer, size);
+					textBuffer[(vint)size] = 0;
+					::GlobalUnlock(handle);
+
+					WString text = &textBuffer[0];
+					auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
+					List<GuiResourceError> errors;
+					auto xml = parser->Parse({}, text, errors);
+					if (errors.Count() > 0) return nullptr;
+
+					auto tempResource = MakePtr<GuiResource>();
+					auto tempResourceItem = MakePtr<GuiResourceItem>();
+					tempResource->AddItem(L"Document", tempResourceItem);
+					auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
+
+					auto document = DocumentModel::LoadFromXml(tempResourceItem, xml, tempResolver, errors);
+					return document;
+				}
 				return nullptr;
 			}
 
@@ -92,6 +124,9 @@ WindowsClipboardWriter
 				{
 					textData = documentData->GetText(true);
 				}
+
+				documentData = value;
+				ModifyDocumentForClipboard(documentData);
 			}
 
 			void WindowsClipboardWriter::Submit()
@@ -116,6 +151,19 @@ WindowsClipboardWriter
 
 				if (documentData)
 				{
+					stream::MemoryStream memoryStream;
+					{
+						stream::StreamWriter streamWriter(memoryStream);
+						auto xml = documentData->SaveToXml();
+						XmlPrint(xml, streamWriter);
+					}
+					memoryStream.SeekFromBegin(0);
+
+					HGLOBAL data = ::GlobalAlloc(GMEM_MOVEABLE, (SIZE_T)memoryStream.Size());
+					auto buffer = (wchar_t*)::GlobalLock(data);
+					memoryStream.Read(buffer, (vint)memoryStream.Size());
+					::GlobalUnlock(data);
+					::SetClipboardData(service->WCF_Document, data);
 				}
 
 				::CloseClipboard();
