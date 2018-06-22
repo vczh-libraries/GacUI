@@ -243,10 +243,19 @@ Type Declaration
 				CLASS_MEMBER_METHOD(DelayExecuteInMainThread, {L"proc" _ L"milliseconds"})
 			END_INTERFACE_MEMBER(INativeAsyncService)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeClipboardService)
-				CLASS_MEMBER_PROPERTY_FAST(Text)
-
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeClipboardReader)
 				CLASS_MEMBER_METHOD(ContainsText, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetText, NO_PARAMETER)
+			END_INTERFACE_MEMBER(INativeClipboardReader)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeClipboardWriter)
+				CLASS_MEMBER_METHOD(SetText, {L"value"})
+				CLASS_MEMBER_METHOD(Submit, NO_PARAMETER)
+			END_INTERFACE_MEMBER(INativeClipboardWriter)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeClipboardService)
+				CLASS_MEMBER_METHOD(ReadClipboard, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(WriteClipboard, NO_PARAMETER)
 			END_INTERFACE_MEMBER(INativeClipboardService)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeScreenService)

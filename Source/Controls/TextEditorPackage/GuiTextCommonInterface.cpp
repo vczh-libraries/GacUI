@@ -641,14 +641,16 @@ GuiTextBoxCommonInterface
 
 			bool GuiTextBoxCommonInterface::CanPaste()
 			{
-				return !readonly && GetCurrentController()->ClipboardService()->ContainsText() && textElement->GetPasswordChar()==L'\0';
+				return !readonly && textElement->GetPasswordChar() == L'\0' && GetCurrentController()->ClipboardService()->ReadClipboard()->ContainsText();
 			}
 
 			bool GuiTextBoxCommonInterface::Cut()
 			{
 				if(CanCut())
 				{
-					GetCurrentController()->ClipboardService()->SetText(GetSelectionText());
+					auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+					writer->SetText(GetSelectionText());
+					writer->Submit();
 					SetSelectionText(L"");
 					return true;
 				}
@@ -662,7 +664,9 @@ GuiTextBoxCommonInterface
 			{
 				if(CanCopy())
 				{
-					GetCurrentController()->ClipboardService()->SetText(GetSelectionText());
+					auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+					writer->SetText(GetSelectionText());
+					writer->Submit();
 					return true;
 				}
 				else
@@ -675,7 +679,8 @@ GuiTextBoxCommonInterface
 			{
 				if(CanPaste())
 				{
-					SetSelectionText(GetCurrentController()->ClipboardService()->GetText());
+					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+					SetSelectionText(reader->GetText());
 					return true;
 				}
 				else

@@ -991,6 +991,35 @@ Native Window Services
 			/// <param name="milliseconds">Time to delay.</param>
 			virtual Ptr<INativeDelay>		DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)=0;
 		};
+
+		/// <summary>
+		/// Clipboard reader.
+		/// </summary>
+		class INativeClipboardReader : public virtual IDescriptable, public Description<INativeClipboardReader>
+		{
+		public:
+			/// <summary>Test is there a text in the clipboard.</summary>
+			/// <returns>Returns true if there is a text in the clipboard.</returns>
+			virtual bool					ContainsText() = 0;
+
+			/// <summary>Get the text from the clipboard.</summary>
+			/// <returns>The text.</returns>
+			virtual WString					GetText() = 0;
+		};
+
+		/// <summary>
+		/// Clipboard writer.
+		/// </summary>
+		class INativeClipboardWriter : public virtual IDescriptable, public Description<INativeClipboardWriter>
+		{
+		public:
+			/// <summary>Prepare a text for the clipboard.</summary>
+			/// <param name="value">The text.</param>
+			virtual void					SetText(const WString& value) = 0;
+
+			/// <summary>Send all data to the clipboard.</summary>
+			virtual void					Submit() = 0;
+		};
 		
 		/// <summary>
 		/// Clipboard service. To access this service, use [M:vl.presentation.INativeController.ClipboardService].
@@ -998,22 +1027,12 @@ Native Window Services
 		class INativeClipboardService : public virtual IDescriptable, public Description<INativeClipboardService>
 		{
 		public:
-			/// <summary>
-			/// Test is there a text in the clipboard.
-			/// </summary>
-			/// <returns>Returns true if there is a text in the clipboard.</returns>
-			virtual bool					ContainsText()=0;
-			/// <summary>
-			/// Get the text in the clipboard.
-			/// </summary>
-			/// <returns>The text in the clipboard.</returns>
-			virtual WString					GetText()=0;
-			/// <summary>
-			/// Copy the text to the clipboard.
-			/// </summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="value">The text to copy to the clipboard.</param>
-			virtual bool					SetText(const WString& value)=0;
+			/// <summary>Read clipboard.</summary>
+			/// <returns>The clipboard reader.</returns>
+			virtual Ptr<INativeClipboardReader>		ReadClipboard() = 0;
+			/// <summary>Write clipboard.</summary>
+			/// <returns>The clipboard writer.</returns>
+			virtual Ptr<INativeClipboardWriter>		WriteClipboard() = 0;
 		};
 		
 		/// <summary>

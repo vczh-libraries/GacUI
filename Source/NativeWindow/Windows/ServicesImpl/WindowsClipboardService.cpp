@@ -8,6 +8,96 @@ namespace vl
 		{
 
 /***********************************************************************
+WindowsClipboardReader
+***********************************************************************/
+
+			WindowsClipboardReader::WindowsClipboardReader(WindowsClipboardService* _service)
+				:service(_service)
+			{
+			}
+
+			WindowsClipboardReader::~WindowsClipboardReader()
+			{
+				CloseClipboard();
+			}
+
+			bool WindowsClipboardReader::ContainsText()
+			{
+				UINT format = 0;
+				while (format = ::EnumClipboardFormats(format))
+				{
+					if (format == CF_UNICODETEXT)
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+
+			WString WindowsClipboardReader::GetText()
+			{
+				WString result;
+				HANDLE handle = ::GetClipboardData(CF_UNICODETEXT);
+				if (handle != 0)
+				{
+					wchar_t* buffer = (wchar_t*)::GlobalLock(handle);
+					result = buffer;
+					::GlobalUnlock(handle);
+				}
+				return result;
+			}
+
+			void WindowsClipboardReader::CloseClipboard()
+			{
+				if (service->reader)
+				{
+					::CloseClipboard();
+					service->reader = nullptr;
+				}
+			}
+
+/***********************************************************************
+WindowsClipboardWriter
+***********************************************************************/
+
+			WindowsClipboardWriter::WindowsClipboardWriter(WindowsClipboardService* _service)
+				:service(_service)
+			{
+			}
+
+			WindowsClipboardWriter::~WindowsClipboardWriter()
+			{
+			}
+
+			void WindowsClipboardWriter::SetText(const WString& value)
+			{
+				textData = value;
+			}
+
+			void WindowsClipboardWriter::Submit()
+			{
+				if (service->reader)
+				{
+					service->reader->CloseClipboard();
+				}
+
+				CHECK_ERROR(::OpenClipboard(service->ownerHandle), L"WindowsClipboardWriter::Submit()#Failed to open the clipboard.");
+				::EmptyClipboard();
+
+				if (textData)
+				{
+					vint size = (textData.Value().Length() + 1) * sizeof(wchar_t);
+					HGLOBAL data = ::GlobalAlloc(GMEM_MOVEABLE, size);
+					auto buffer = (wchar_t*)::GlobalLock(data);
+					memcpy(buffer, textData.Value().Buffer(), size);
+					::GlobalUnlock(data);
+					::SetClipboardData(CF_UNICODETEXT, data);
+				}
+
+				::CloseClipboard();
+			}
+
+/***********************************************************************
 WindowsClipboardService
 ***********************************************************************/
 
@@ -16,73 +106,33 @@ WindowsClipboardService
 			{
 			}
 
+			Ptr<INativeClipboardReader> WindowsClipboardService::ReadClipboard()
+			{
+				if (!reader)
+				{
+					CHECK_ERROR(::OpenClipboard(ownerHandle), L"WindowsClipboardWriter::Submit()#Failed to open the clipboard.");
+					reader = new WindowsClipboardReader(this);
+				}
+				return reader;
+			}
+
+			Ptr<INativeClipboardWriter> WindowsClipboardService::WriteClipboard()
+			{
+				return new WindowsClipboardWriter(this);
+			}
+
 			void WindowsClipboardService::SetOwnerHandle(HWND handle)
 			{
 				HWND oldHandle=ownerHandle;
 				ownerHandle=handle;
 				if(handle==NULL)
 				{
-					RemoveClipboardFormatListener(oldHandle);
+					::RemoveClipboardFormatListener(oldHandle);
 				}
 				else
 				{
-					AddClipboardFormatListener(ownerHandle);
+					::AddClipboardFormatListener(ownerHandle);
 				}
-			}
-
-			bool WindowsClipboardService::ContainsText()
-			{
-				if(OpenClipboard(ownerHandle))
-				{
-					UINT format=0;
-					bool contains=false;
-					while(format=EnumClipboardFormats(format))
-					{
-						if(format==CF_TEXT || format==CF_UNICODETEXT)
-						{
-							contains=true;
-							break;
-						}
-					}
-					CloseClipboard();
-					return contains;
-				}
-				return false;
-			}
-
-			WString WindowsClipboardService::GetText()
-			{
-				if(OpenClipboard(ownerHandle))
-				{
-					WString result;
-					HANDLE handle=GetClipboardData(CF_UNICODETEXT);
-					if(handle!=0)
-					{
-						wchar_t* buffer=(wchar_t*)GlobalLock(handle);
-						result=buffer;
-						GlobalUnlock(handle);
-					}
-					CloseClipboard();
-					return result;
-				}
-				return L"";
-			}
-
-			bool WindowsClipboardService::SetText(const WString& value)
-			{
-				if(OpenClipboard(ownerHandle))
-				{
-					EmptyClipboard();
-					vint size=(value.Length()+1)*sizeof(wchar_t);
-					HGLOBAL data=GlobalAlloc(GMEM_MOVEABLE, size);
-					wchar_t* buffer=(wchar_t*)GlobalLock(data);
-					memcpy(buffer, value.Buffer(), size);
-					GlobalUnlock(data);
-					SetClipboardData(CF_UNICODETEXT, data);
-					CloseClipboard();
-					return true;
-				}
-				return false;
 			}
 		}
 	}

@@ -1023,14 +1023,16 @@ GuiDocumentCommonInterface
 
 			bool GuiDocumentCommonInterface::CanPaste()
 			{
-				return editMode==Editable && GetCurrentController()->ClipboardService()->ContainsText();
+				return editMode==Editable && GetCurrentController()->ClipboardService()->ReadClipboard()->ContainsText();
 			}
 
 			bool GuiDocumentCommonInterface::Cut()
 			{
 				if(CanCut())
 				{
-					GetCurrentController()->ClipboardService()->SetText(GetSelectionText());
+					auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+					writer->SetText(GetSelectionText());
+					writer->Submit();
 					SetSelectionText(L"");
 					return true;
 				}
@@ -1044,7 +1046,9 @@ GuiDocumentCommonInterface
 			{
 				if(CanCopy())
 				{
-					GetCurrentController()->ClipboardService()->SetText(GetSelectionText());
+					auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+					writer->SetText(GetSelectionText());
+					writer->Submit();
 					return true;
 				}
 				else
@@ -1057,7 +1061,8 @@ GuiDocumentCommonInterface
 			{
 				if(CanPaste())
 				{
-					SetSelectionText(GetCurrentController()->ClipboardService()->GetText());
+					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+					SetSelectionText(reader->GetText());
 					return true;
 				}
 				else

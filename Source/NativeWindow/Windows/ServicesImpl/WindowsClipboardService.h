@@ -18,17 +18,54 @@ namespace vl
 	{
 		namespace windows
 		{
+			class WindowsClipboardService;
+
+			class WindowsClipboardReader : public Object, public INativeClipboardReader
+			{
+				friend class WindowsClipboardService;
+			protected:
+				WindowsClipboardService*		service;
+
+			public:
+				WindowsClipboardReader(WindowsClipboardService* _service);
+				~WindowsClipboardReader();
+
+				bool							ContainsText()override;
+				WString							GetText()override;
+
+				void							CloseClipboard();
+			};
+
+			class WindowsClipboardWriter : public Object, public INativeClipboardWriter
+			{
+				friend class WindowsClipboardService;
+			protected:
+				WindowsClipboardService*		service;
+				Nullable<WString>				textData;
+
+			public:
+				WindowsClipboardWriter(WindowsClipboardService* _service);
+				~WindowsClipboardWriter();
+
+				void							SetText(const WString& value)override;
+				void							Submit()override;
+			};
+
 			class WindowsClipboardService : public Object, public INativeClipboardService
 			{
+				friend class WindowsClipboardReader;
+				friend class WindowsClipboardWriter;
 			protected:
-				HWND					ownerHandle;
+				HWND							ownerHandle;
+				WindowsClipboardReader*			reader = nullptr;
+
 			public:
 				WindowsClipboardService();
 
-				void					SetOwnerHandle(HWND handle);
-				bool					ContainsText()override;
-				WString					GetText()override;
-				bool					SetText(const WString& value)override;
+				Ptr<INativeClipboardReader>		ReadClipboard()override;
+				Ptr<INativeClipboardWriter>		WriteClipboard()override;
+
+				void							SetOwnerHandle(HWND handle);
 			};
 		}
 	}
