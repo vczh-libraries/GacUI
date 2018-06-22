@@ -1,9 +1,12 @@
 #include "GuiDocumentClipboard.h"
+#include "GuiParserManager.h"
 
 namespace vl
 {
 	namespace presentation
 	{
+		using namespace collections;
+		using namespace parsing::xml;
 
 		namespace document_clipboard_visitors
 		{
@@ -68,6 +71,32 @@ namespace vl
 			{
 				paragraph->Accept(&visitor);
 			}
+		}
+
+		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& stream)
+		{
+			stream::StreamReader streamReader(stream);
+			auto text = streamReader.ReadToEnd();
+			List<GuiResourceError> errors;
+
+			auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
+			auto xml = parser->Parse({}, text, errors);
+			if (errors.Count() > 0) return nullptr;
+
+			auto tempResource = MakePtr<GuiResource>();
+			auto tempResourceItem = MakePtr<GuiResourceItem>();
+			tempResource->AddItem(L"Document", tempResourceItem);
+			auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
+
+			auto document = DocumentModel::LoadFromXml(tempResourceItem, xml, tempResolver, errors);
+			return document;
+		}
+
+		void SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream)
+		{
+			stream::StreamWriter streamWriter(stream);
+			auto xml = model->SaveToXml();
+			XmlPrint(xml, streamWriter);
 		}
 	}
 }

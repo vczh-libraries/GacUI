@@ -1,6 +1,5 @@
 #include "WindowsClipboardService.h"
 #include "../../../Resources/GuiDocumentClipboard.h"
-#include "../../../Resources/GuiParserManager.h"
 
 namespace vl
 {
@@ -68,28 +67,9 @@ WindowsClipboardReader
 				{
 					auto buffer = ::GlobalLock(handle);
 					auto size = ::GlobalSize(handle);
-					if (size % sizeof(wchar_t) != 0)
-					{
-						::GlobalUnlock(handle);
-						return nullptr;
-					}
-					Array<wchar_t> textBuffer((vint)size / sizeof(wchar_t) + 1);
-					memcpy(&textBuffer[0], buffer, size);
-					textBuffer[textBuffer.Count() - 1] = 0;
+					stream::MemoryWrapperStream memoryStream(buffer, (vint)size);
+					auto document = LoadDocumentFromClipboardStream(memoryStream);
 					::GlobalUnlock(handle);
-
-					WString text = &textBuffer[0];
-					auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
-					List<GuiResourceError> errors;
-					auto xml = parser->Parse({}, text, errors);
-					if (errors.Count() > 0) return nullptr;
-
-					auto tempResource = MakePtr<GuiResource>();
-					auto tempResourceItem = MakePtr<GuiResourceItem>();
-					tempResource->AddItem(L"Document", tempResourceItem);
-					auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
-
-					auto document = DocumentModel::LoadFromXml(tempResourceItem, xml, tempResolver, errors);
 					return document;
 				}
 				return nullptr;
@@ -107,6 +87,16 @@ WindowsClipboardReader
 /***********************************************************************
 WindowsClipboardWriter
 ***********************************************************************/
+
+			void WindowsClipboardWriter::SetClipboardData(UINT format, stream::MemoryStream& memoryStream)
+			{
+				memoryStream.SeekFromBegin(0);
+				HGLOBAL data = ::GlobalAlloc(GMEM_MOVEABLE, (SIZE_T)memoryStream.Size());
+				auto buffer = ::GlobalLock(data);
+				memoryStream.Read(buffer, (vint)memoryStream.Size());
+				::GlobalUnlock(data);
+				::SetClipboardData(format, data);
+			}
 
 			WindowsClipboardWriter::WindowsClipboardWriter(WindowsClipboardService* _service)
 				:service(_service)
@@ -157,18 +147,8 @@ WindowsClipboardWriter
 				if (documentData)
 				{
 					stream::MemoryStream memoryStream;
-					{
-						stream::StreamWriter streamWriter(memoryStream);
-						auto xml = documentData->SaveToXml();
-						XmlPrint(xml, streamWriter);
-					}
-					memoryStream.SeekFromBegin(0);
-
-					HGLOBAL data = ::GlobalAlloc(GMEM_MOVEABLE, (SIZE_T)memoryStream.Size());
-					auto buffer = ::GlobalLock(data);
-					memoryStream.Read(buffer, (vint)memoryStream.Size());
-					::GlobalUnlock(data);
-					::SetClipboardData(service->WCF_Document, data);
+					SaveDocumentToClipboardStream(documentData, memoryStream);
+					SetClipboardData(service->WCF_Document, memoryStream);
 				}
 
 				::CloseClipboard();

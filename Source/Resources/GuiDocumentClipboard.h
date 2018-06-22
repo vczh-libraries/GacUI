@@ -16,6 +16,8 @@ namespace vl
 	namespace presentation
 	{
 		extern void					ModifyDocumentForClipboard(Ptr<DocumentModel> model);
+		extern Ptr<DocumentModel>	LoadDocumentFromClipboardStream(stream::IStream& stream);
+		extern void					SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream);
 	}
 }
 

@@ -48,6 +48,7 @@ namespace vl
 				Nullable<WString>				textData;
 				Ptr<DocumentModel>				documentData;
 
+				void							SetClipboardData(UINT format, stream::MemoryStream& memoryStream);
 			public:
 				WindowsClipboardWriter(WindowsClipboardService* _service);
 				~WindowsClipboardWriter();
