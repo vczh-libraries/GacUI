@@ -1,4 +1,5 @@
 #include "WindowsClipboardService.h"
+#include "../../../Resources/GuiDocument.h"
 
 namespace vl
 {
@@ -47,6 +48,16 @@ WindowsClipboardReader
 				return result;
 			}
 
+			bool WindowsClipboardReader::ContainsDocument()
+			{
+				return false;
+			}
+
+			Ptr<DocumentModel> WindowsClipboardReader::GetDocument()
+			{
+				return nullptr;
+			}
+
 			void WindowsClipboardReader::CloseClipboard()
 			{
 				if (service->reader)
@@ -72,6 +83,15 @@ WindowsClipboardWriter
 			void WindowsClipboardWriter::SetText(const WString& value)
 			{
 				textData = value;
+			}
+
+			void WindowsClipboardWriter::SetDocument(Ptr<DocumentModel> value)
+			{
+				documentData = value;
+				if (!textData)
+				{
+					textData = documentData->GetText(true);
+				}
 			}
 
 			void WindowsClipboardWriter::Submit()

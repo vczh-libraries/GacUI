@@ -1023,52 +1023,46 @@ GuiDocumentCommonInterface
 
 			bool GuiDocumentCommonInterface::CanPaste()
 			{
-				return editMode==Editable && GetCurrentController()->ClipboardService()->ReadClipboard()->ContainsText();
+				if (editMode == Editable)
+				{
+					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+					return reader->ContainsText() || reader->ContainsDocument();
+				}
+				return false;
 			}
 
 			bool GuiDocumentCommonInterface::Cut()
 			{
-				if(CanCut())
-				{
-					auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
-					writer->SetText(GetSelectionText());
-					writer->Submit();
-					SetSelectionText(L"");
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				if (!CanCut())return false;
+				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+				writer->SetDocument(GetSelectionModel());
+				writer->Submit();
+				SetSelectionText(L"");
+				return true;
 			}
 
 			bool GuiDocumentCommonInterface::Copy()
 			{
-				if(CanCopy())
-				{
-					auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
-					writer->SetText(GetSelectionText());
-					writer->Submit();
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				if (!CanCopy()) return false;
+				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+				writer->SetDocument(GetSelectionModel());
+				writer->Submit();
+				return true;
 			}
 
 			bool GuiDocumentCommonInterface::Paste()
 			{
-				if(CanPaste())
+				if (!CanPaste()) return false;
+				auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+				if (reader->ContainsDocument())
 				{
-					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+					SetSelectionModel(reader->GetDocument());
+				}
+				else if (reader->ContainsText())
+				{
 					SetSelectionText(reader->GetText());
-					return true;
 				}
-				else
-				{
-					return false;
-				}
+				return true;
 			}
 
 			//================ undo redo control

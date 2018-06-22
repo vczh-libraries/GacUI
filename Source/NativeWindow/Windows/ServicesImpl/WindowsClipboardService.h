@@ -33,6 +33,9 @@ namespace vl
 				bool							ContainsText()override;
 				WString							GetText()override;
 
+				bool							ContainsDocument()override;
+				Ptr<DocumentModel>				GetDocument()override;
+
 				void							CloseClipboard();
 			};
 
@@ -42,12 +45,14 @@ namespace vl
 			protected:
 				WindowsClipboardService*		service;
 				Nullable<WString>				textData;
+				Ptr<DocumentModel>				documentData;
 
 			public:
 				WindowsClipboardWriter(WindowsClipboardService* _service);
 				~WindowsClipboardWriter();
 
 				void							SetText(const WString& value)override;
+				void							SetDocument(Ptr<DocumentModel> value)override;
 				void							Submit()override;
 			};
 

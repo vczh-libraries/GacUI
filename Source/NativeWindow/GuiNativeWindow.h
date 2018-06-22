@@ -22,6 +22,7 @@ namespace vl
 	{
 		using namespace reflection;
 
+		class DocumentModel;
 		class INativeWindow;
 		class INativeWindowListener;
 		class INativeController;
@@ -1005,6 +1006,14 @@ Native Window Services
 			/// <summary>Get the text from the clipboard.</summary>
 			/// <returns>The text.</returns>
 			virtual WString					GetText() = 0;
+
+			/// <summary>Test is there a document in the clipboard.</summary>
+			/// <returns>Returns true if there is a document in the clipboard.</returns>
+			virtual bool					ContainsDocument() = 0;
+
+			/// <summary>Get the document from the clipboard.</summary>
+			/// <returns>The document.</returns>
+			virtual Ptr<DocumentModel>		GetDocument() = 0;
 		};
 
 		/// <summary>
@@ -1016,6 +1025,10 @@ Native Window Services
 			/// <summary>Prepare a text for the clipboard.</summary>
 			/// <param name="value">The text.</param>
 			virtual void					SetText(const WString& value) = 0;
+
+			/// <summary>Prepare a document for the clipboard.</summary>
+			/// <param name="value">The document.</param>
+			virtual void					SetDocument(Ptr<DocumentModel> value) = 0;
 
 			/// <summary>Send all data to the clipboard.</summary>
 			virtual void					Submit() = 0;

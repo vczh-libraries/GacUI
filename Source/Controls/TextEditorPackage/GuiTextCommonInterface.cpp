@@ -641,52 +641,39 @@ GuiTextBoxCommonInterface
 
 			bool GuiTextBoxCommonInterface::CanPaste()
 			{
-				return !readonly && textElement->GetPasswordChar() == L'\0' && GetCurrentController()->ClipboardService()->ReadClipboard()->ContainsText();
+				if (!readonly && textElement->GetPasswordChar() == L'\0')
+				{
+					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+					return reader->ContainsText();
+				}
+				return false;
 			}
 
 			bool GuiTextBoxCommonInterface::Cut()
 			{
-				if(CanCut())
-				{
-					auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
-					writer->SetText(GetSelectionText());
-					writer->Submit();
-					SetSelectionText(L"");
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				if (!CanCut()) return false;
+				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+				writer->SetText(GetSelectionText());
+				writer->Submit();
+				SetSelectionText(L"");
+				return true;
 			}
 
 			bool GuiTextBoxCommonInterface::Copy()
 			{
-				if(CanCopy())
-				{
-					auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
-					writer->SetText(GetSelectionText());
-					writer->Submit();
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				if (!CanCopy()) return false;
+				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+				writer->SetText(GetSelectionText());
+				writer->Submit();
+				return true;
 			}
 
 			bool GuiTextBoxCommonInterface::Paste()
 			{
-				if(CanPaste())
-				{
-					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
-					SetSelectionText(reader->GetText());
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				if (!CanPaste()) return false;
+				auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+				SetSelectionText(reader->GetText());
+				return true;
 			}
 			
 			//================ editing control
