@@ -68,9 +68,14 @@ WindowsClipboardReader
 				{
 					auto buffer = ::GlobalLock(handle);
 					auto size = ::GlobalSize(handle);
-					Array<wchar_t> textBuffer((vint)size + 1);
+					if (size % sizeof(wchar_t) != 0)
+					{
+						::GlobalUnlock(handle);
+						return nullptr;
+					}
+					Array<wchar_t> textBuffer((vint)size / sizeof(wchar_t) + 1);
 					memcpy(&textBuffer[0], buffer, size);
-					textBuffer[(vint)size] = 0;
+					textBuffer[textBuffer.Count() - 1] = 0;
 					::GlobalUnlock(handle);
 
 					WString text = &textBuffer[0];
@@ -160,7 +165,7 @@ WindowsClipboardWriter
 					memoryStream.SeekFromBegin(0);
 
 					HGLOBAL data = ::GlobalAlloc(GMEM_MOVEABLE, (SIZE_T)memoryStream.Size());
-					auto buffer = (wchar_t*)::GlobalLock(data);
+					auto buffer = ::GlobalLock(data);
 					memoryStream.Read(buffer, (vint)memoryStream.Size());
 					::GlobalUnlock(data);
 					::SetClipboardData(service->WCF_Document, data);
