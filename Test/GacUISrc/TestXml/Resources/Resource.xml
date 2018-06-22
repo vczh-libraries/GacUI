@@ -1,17 +1,15 @@
 <Resource>
-  <Text name="Keep">
-    <![CDATA[
   <Folder name="ToolbarImages" content="Link">ToolbarImages/Images.xml</Folder>
   <Folder name="DocumentComponents" content="Link">../../Host/Resources/FullControlTest/DocumentComponents.xml</Folder>
   <Folder name="DocumentEditorBase" content="Link">../../Host/Resources/FullControlTest/DocumentEditorBase.xml</Folder>
-  <Folder name="DocumentEditorRibbon" content="Link">../../Host/Resources/FullControlTest/DocumentEditorRibbon.xml</Folder>
+  <Folder name="DocumentEditorToolstrip" content="Link">../../Host/Resources/FullControlTest/DocumentEditorToolstrip.xml</Folder>
 
-  <Instance name="DocumentEditorRibbonWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorRibbonWindow" xmlns:demo="demo::*">
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
       <Window Text-bind="editor.Text" ClientSize="x:800 y:600">
-        <demo:DocumentEditorRibbon ref.Name="editor">
+        <demo:DocumentEditorToolstrip ref.Name="editor">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-        </demo:DocumentEditorRibbon>
+        </demo:DocumentEditorToolstrip>
       </Window>
     </Instance>
   </Instance>
@@ -33,134 +31,6 @@
     <Image name="Paste" content="File">Images/SmallPaste.png</Image>
     <Image name="Save" content="File">Images/SmallSave.png</Image>
   </Folder>
-  ]]>
-  </Text>
-
-  <Script name="ViewModel">
-    <Workflow>
-      <![CDATA[
-        module viewmodel;
-        
-        namespace demo
-        {
-          class Node
-          {
-            prop Text : string = "" {}
-            prop FilePath : string = "SUPER-LONG-TEXT====SUPER-LONG-TEXT====SUPER-LONG-TEXT====SUPER-LONG-TEXT====SUPER-LONG-TEXT" {}
-            prop Children : observe Node^[] = {} {const, not observe}
-            
-            new(text : string)
-            {
-              Text = text;
-            }
-          }
-          
-          func CreateNode() : Node^
-          {
-            var root = new Node^("");
-            for (i in range [1, 10])
-            {
-              var header = new Node^("Header " & i);
-              root.Children.Add(header);
-              
-              for (j in range [1, 10])
-              {
-                var item = new Node^("Item " & j);
-                header.Children.Add(item);
-              }
-            }
-            return root;
-          }
-        }
-      ]]>
-    </Workflow>
-  </Script>
-
-  <Instance name="TreeItemTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::TreeItemTemplate">
-      <ref.Parameter Name="ViewModel" Class="demo::Node"/>
-      <TreeItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-          <att.Rows>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-          </att.Rows>
-          <att.Columns>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Absolute absolute:10</CellOption>
-          </att.Columns>
-
-          <Cell Site="row:0 column:0" PreferredMinSize-bind="{x:(self.Level*20+20) y:0}"/>
-
-          <Cell Site="row:0 column:2">
-            <Table CellPadding="2" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-              <att.Rows>
-                <CellOption>composeType:MinSize</CellOption>
-                <CellOption>composeType:MinSize</CellOption>
-              </att.Rows>
-              <att.Columns>
-                <CellOption>composeType:Absolute absolute:16</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-              </att.Columns>
-
-              <Cell Site="row:0 column:0 rowSpan:2" PreferredMinSize="x:20 y:20"/>
-              <Cell Site="row:0 column:1">
-                <Bounds AlignmentToParent="left:15 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                  <SolidLabel  Font-bind="self.Font" Color="#FFFFFF" Text-format="$(ViewModel.Text)" WrapLine="true" WrapLineHeightCalculation="true"/>
-                </Bounds>
-              </Cell>
-              <Cell Site="row:1 column:1">
-                <Bounds AlignmentToParent="left:15 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                  <SolidLabel  Font-bind="self.Font" Color="#D0D0D0" Text-format="$(ViewModel.FilePath)" WrapLine="true" WrapLineHeightCalculation="true"/>
-                </Bounds>
-              </Cell>
-            </Table>
-          </Cell>
-
-          <Cell Site="row:0 column:3" >
-            <Bounds AlignmentToParent="left:0 top:10 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-              <ComboBox ref.Name="comboView"  SelectedIndex="0">
-                <att.BoundsComposition-set PreferredMinSize="x:240" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <att.ListControl>
-                  <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                    <att.Items>
-                      <TextItem Text="THREAT_ACTION::QUARANTINE"/>
-                      <TextItem Text="THREAT_ACTION::REMOVE"/>
-                      <TextItem Text="THREAT_ACTION::TRUST"/>
-                      <TextItem Text="THREAT_ACTION::NONE"/>
-                    </att.Items>
-                  </TextList>
-                </att.ListControl>
-              </ComboBox>
-
-            </Bounds>
-          </Cell>
-          <Cell Site="row:1 column:1 columnSpan:4" >
-            <Bounds AlignmentToParent="left:0 top:-1 right:5 bottom:0" PreferredMinSize="y:1">
-              <SolidBackground  Color="#2D2D30"/>
-            </Bounds>
-          </Cell>
-        </Table>
-      </TreeItemTemplate>
-    </Instance>
-  </Instance>
-
-  <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
-      <Window Text="Demo" ClientSize="x:640 y:480">
-        <BindableTreeView HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="demo::Node^">
-          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-          <att.TextProperty>Text</att.TextProperty>
-          <att.ChildrenProperty>Children</att.ChildrenProperty>
-          <att.ItemSource-eval>demo::CreateNode()</att.ItemSource-eval>
-          <att.ItemTemplate>demo::TreeItemTemplate</att.ItemTemplate>
-        </BindableTreeView>
-      </Window>
-    </Instance>
-  </Instance>
 
   <Folder name="DarkSkin">
     <Instance name="DarkSkinThemeResource">
