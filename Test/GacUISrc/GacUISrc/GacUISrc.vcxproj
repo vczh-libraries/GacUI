@@ -458,6 +458,8 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentClipboard_Document.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentClipboard_HtmlFormat.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiDocument.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_AddContainer.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_ClearUnnecessaryRun.cpp" />
@@ -615,6 +617,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.h" />
+    <ClInclude Include="..\..\..\Source\Resources\GuiDocumentClipboard.h" />
+    <ClInclude Include="..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp" />
     <ClInclude Include="..\..\..\Source\Resources\GuiDocument.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiDocumentEditor.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiParserManager.h" />

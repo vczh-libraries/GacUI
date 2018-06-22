@@ -1,5 +1,5 @@
 #include "WindowsClipboardService.h"
-#include "../../../Resources/GuiDocument.h"
+#include "../../../Resources/GuiDocumentClipboard.h"
 
 namespace vl
 {
@@ -114,6 +114,10 @@ WindowsClipboardWriter
 					::SetClipboardData(CF_UNICODETEXT, data);
 				}
 
+				if (documentData)
+				{
+				}
+
 				::CloseClipboard();
 			}
 
@@ -124,6 +128,9 @@ WindowsClipboardService
 			WindowsClipboardService::WindowsClipboardService()
 				:ownerHandle(NULL)
 			{
+				WCF_Document = ::RegisterClipboardFormat(L"GacUI Document Format");
+				WCF_RTF = ::RegisterClipboardFormat(L"Rich Text Format");
+				WCF_HTML = ::RegisterClipboardFormat(L"HTML Format");
 			}
 
 			Ptr<INativeClipboardReader> WindowsClipboardService::ReadClipboard()

@@ -62,6 +62,9 @@ namespace vl
 				friend class WindowsClipboardWriter;
 			protected:
 				HWND							ownerHandle;
+				UINT							WCF_Document;
+				UINT							WCF_RTF;
+				UINT							WCF_HTML;
 				WindowsClipboardReader*			reader = nullptr;
 
 			public:

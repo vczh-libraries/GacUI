@@ -16,13 +16,11 @@ document_operation_visitors::SerializeRunVisitor
 			class SerializeRunVisitor : public Object, public DocumentRun::IVisitor
 			{
 			protected:
-				DocumentModel*				model;
 				Ptr<XmlElement>				parent;
 
 			public:
-				SerializeRunVisitor(DocumentModel* _model, Ptr<XmlElement> _parent)
-					:model(_model)
-					, parent(_parent)
+				SerializeRunVisitor(Ptr<XmlElement> _parent)
+					:parent(_parent)
 				{
 				}
 
@@ -280,7 +278,7 @@ DocumentModel
 				
 				FOREACH(Ptr<DocumentParagraphRun>, p, paragraphs)
 				{
-					SerializeRunVisitor visitor(this, content);
+					SerializeRunVisitor visitor(content);
 					p->Accept(&visitor);
 				}
 			}

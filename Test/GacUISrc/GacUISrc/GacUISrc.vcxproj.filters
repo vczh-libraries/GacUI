@@ -91,6 +91,9 @@
     <Filter Include="GacUI\Resources\DocumentEditor">
       <UniqueIdentifier>{3ac523cb-7f16-46f2-9eaf-001ca1c8ec48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GacUI\Resources\DocumentClipboard">
+      <UniqueIdentifier>{d604a797-bc1e-4c85-bbc9-bf7efd9bedd5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Import\Vlpp.cpp">
@@ -501,6 +504,12 @@
     <ClCompile Include="..\..\..\Source\Controls\ToolstripPackage\GuiRibbonImpl.cpp">
       <Filter>GacUI\Controls\ToolstripPackage</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentClipboard_Document.cpp">
+      <Filter>GacUI\Resources\DocumentClipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentClipboard_HtmlFormat.cpp">
+      <Filter>GacUI\Resources\DocumentClipboard</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
@@ -817,6 +826,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiRibbonImpl.h">
       <Filter>GacUI\Controls\ToolstripPackage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Resources\GuiDocumentClipboard.h">
+      <Filter>GacUI\Resources\DocumentClipboard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp">
+      <Filter>GacUI\Resources\DocumentClipboard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
