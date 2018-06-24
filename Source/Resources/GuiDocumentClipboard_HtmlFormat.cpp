@@ -101,11 +101,28 @@ namespace vl
 
 				void Visit(DocumentHyperlinkRun* run)override
 				{
+					writer.WriteString(L"<a href=\"");
+					for (vint i = 0; i < run->reference.Length(); i++)
+					{
+						switch (wchar_t c = run->reference[i])
+						{
+						case L'&': writer.WriteString(L"&amp;"); break;
+						case L'<': writer.WriteString(L"&lt;"); break;
+						case L'>': writer.WriteString(L"&gt;"); break;
+						case L'"': writer.WriteString(L"&quot;"); break;
+						case L'\'': writer.WriteString(L"&#39;"); break;
+						default: writer.WriteChar(c); break;
+						}
+					}
+					writer.WriteString(L"\">");
+
 					ResolvedStyle style = styles[styles.Count() - 1];
-					style = model->GetStyle(DocumentModel::NormalLinkStyleName, style);
+					style = model->GetStyle((run->normalStyleName == L"" ? DocumentModel::NormalLinkStyleName : run->normalStyleName), style);
 					styles.Add(style);
 					VisitContainer(run);
 					styles.RemoveAt(styles.Count() - 1);
+
+					writer.WriteString(L"</a>");
 				}
 
 				void Visit(DocumentImageRun* run)override
