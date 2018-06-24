@@ -49,21 +49,18 @@ namespace vl
 					if (text.Length() > 0)
 					{
 						ResolvedStyle style = styles[styles.Count() - 1];
-						if (style.style.bold) writer.WriteString(L"<b>");
-						if (style.style.italic) writer.WriteString(L"<i>");
-						if (style.style.underline) writer.WriteString(L"<ins>");
-						if (style.style.strikeline) writer.WriteString(L"<del>");
 
-						bool span = style.style.fontFamily != L"" || style.style.size != 0 || style.color.a != 0 || style.backgroundColor.a != 0;
-						if (span)
-						{
-							writer.WriteString(L"<span style=\"");
-							if (style.style.fontFamily != L"") writer.WriteString(L"font-family:" + style.style.fontFamily + L"; ");
-							if (style.style.size != 0) writer.WriteString(L"font-size:" + itow(style.style.size) + L"px; ");
-							if (style.color.a != 0) writer.WriteString(L"color:" + ColorToString(style.color) + L"; ");
-							if (style.backgroundColor.a != 0)writer.WriteString(L"background-color:" + ColorToString(style.backgroundColor) + L"; ");
-							writer.WriteString(L"\">");
-						}
+						writer.WriteString(L"<span style=\"");
+						if (style.style.bold) writer.WriteString(L"font-weight:bold; ");
+						if (style.style.italic) writer.WriteString(L"font-style:italic; ");
+						if (style.style.underline && style.style.strikeline) writer.WriteString(L"text-decoration:underline line-through; ");
+						else if (style.style.underline) writer.WriteString(L"text-decoration:underline; ");
+						else if (style.style.strikeline) writer.WriteString(L"text-decoration:line-through; ");
+						if (style.style.fontFamily != L"") writer.WriteString(L"font-family:" + style.style.fontFamily + L"; ");
+						if (style.style.size != 0) writer.WriteString(L"font-size:" + itow(style.style.size) + L"px; ");
+						if (style.color.a != 0) writer.WriteString(L"color:" + ColorToString(style.color) + L"; ");
+						if (style.backgroundColor.a != 0)writer.WriteString(L"background-color:" + ColorToString(style.backgroundColor) + L"; ");
+						writer.WriteString(L"\">");
 
 						for (vint i = 0; i < text.Length(); i++)
 						{
@@ -80,11 +77,7 @@ namespace vl
 							}
 						}
 
-						if (span) writer.WriteString(L"</span>");
-						if (style.style.strikeline) writer.WriteString(L"</del>");
-						if (style.style.underline) writer.WriteString(L"</ins>");
-						if (style.style.italic) writer.WriteString(L"</i>");
-						if (style.style.bold) writer.WriteString(L"</b>");
+						writer.WriteString(L"</span>");
 					}
 				}
 
