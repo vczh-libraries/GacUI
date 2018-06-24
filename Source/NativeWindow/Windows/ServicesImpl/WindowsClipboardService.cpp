@@ -146,9 +146,16 @@ WindowsClipboardWriter
 
 				if (documentData)
 				{
-					stream::MemoryStream memoryStream;
-					SaveDocumentToClipboardStream(documentData, memoryStream);
-					SetClipboardData(service->WCF_Document, memoryStream);
+					{
+						stream::MemoryStream memoryStream;
+						SaveDocumentToClipboardStream(documentData, memoryStream);
+						SetClipboardData(service->WCF_Document, memoryStream);
+					}
+					{
+						stream::MemoryStream memoryStream;
+						SaveDocumentToHtmlClipboardStream(documentData, memoryStream);
+						SetClipboardData(service->WCF_HTML, memoryStream);
+					}
 				}
 
 				::CloseClipboard();

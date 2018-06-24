@@ -7,6 +7,7 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace parsing::xml;
+		using namespace stream;
 
 		namespace document_clipboard_visitors
 		{
@@ -75,7 +76,7 @@ namespace vl
 
 		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& stream)
 		{
-			stream::StreamReader streamReader(stream);
+			StreamReader streamReader(stream);
 			auto text = streamReader.ReadToEnd();
 			List<GuiResourceError> errors;
 
@@ -94,7 +95,7 @@ namespace vl
 
 		void SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream)
 		{
-			stream::StreamWriter streamWriter(stream);
+			StreamWriter streamWriter(stream);
 			auto xml = model->SaveToXml();
 			XmlPrint(xml, streamWriter);
 		}
