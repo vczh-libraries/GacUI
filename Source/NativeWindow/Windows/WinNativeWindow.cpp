@@ -1084,7 +1084,7 @@ WindowsForm
 
 				void Hide()
 				{
-					SendMessage(handle, WM_CLOSE, NULL, NULL);
+					PostMessage(handle, WM_CLOSE, NULL, NULL);
 				}
 
 				bool IsVisible()
