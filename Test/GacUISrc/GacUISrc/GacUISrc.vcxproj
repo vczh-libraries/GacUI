@@ -618,7 +618,7 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiDocumentClipboard.h" />
-    <ClInclude Include="..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp" />
     <ClInclude Include="..\..\..\Source\Resources\GuiDocument.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiDocumentEditor.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiParserManager.h" />

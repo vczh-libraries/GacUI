@@ -153,6 +153,11 @@ WindowsClipboardWriter
 					}
 					{
 						stream::MemoryStream memoryStream;
+						SaveDocumentToRtfStream(documentData, memoryStream);
+						SetClipboardData(service->WCF_RTF, memoryStream);
+					}
+					{
+						stream::MemoryStream memoryStream;
 						SaveDocumentToHtmlClipboardStream(documentData, memoryStream);
 						SetClipboardData(service->WCF_HTML, memoryStream);
 					}
