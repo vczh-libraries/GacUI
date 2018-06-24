@@ -147,7 +147,21 @@ namespace vl
 
 				FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
 				{
-					writer.WriteString(L"<p>");
+					writer.WriteString(L"<p style=\"text-align:");
+					if (paragraph->alignment)
+					{
+						switch (paragraph->alignment.Value())
+						{
+						case Alignment::Left: writer.WriteString(L"left;"); break;
+						case Alignment::Center: writer.WriteString(L"center;"); break;
+						case Alignment::Right: writer.WriteString(L"right;"); break;
+						}
+					}
+					else
+					{
+						writer.WriteString(L"left;");
+					}
+					writer.WriteString(L"\">");
 					paragraph->Accept(&visitor);
 					writer.WriteString(L"</p>\r\n");
 				}
