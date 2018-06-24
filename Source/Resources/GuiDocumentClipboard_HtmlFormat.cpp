@@ -58,10 +58,10 @@ namespace vl
 						if (span)
 						{
 							writer.WriteString(L"<span style=\"");
-							if (style.style.fontFamily != L"") writer.WriteString(L"font-family:" + style.style.fontFamily + L" ");
-							if (style.style.size != 0) writer.WriteString(L"font-size:" + itow(style.style.size) + L"px ");
-							if (style.color.a != 0) writer.WriteString(L"color:" + ColorToString(style.color) + L" ");
-							if (style.backgroundColor.a != 0)writer.WriteString(L"background-color:" + ColorToString(style.backgroundColor) + L" ");
+							if (style.style.fontFamily != L"") writer.WriteString(L"font-family:" + style.style.fontFamily + L"; ");
+							if (style.style.size != 0) writer.WriteString(L"font-size:" + itow(style.style.size) + L"px; ");
+							if (style.color.a != 0) writer.WriteString(L"color:" + ColorToString(style.color) + L"; ");
+							if (style.backgroundColor.a != 0)writer.WriteString(L"background-color:" + ColorToString(style.backgroundColor) + L"; ");
 							writer.WriteString(L"\">");
 						}
 
@@ -137,6 +137,7 @@ namespace vl
 		{
 			header =
 				HTML_LINE("<!DOCTYPE html>")
+				HTML_LINE("<html>")
 				HTML_LINE("<header>")
 				HTML_LINE("<title>GacUI Document 1.0</title>")
 				HTML_LINE("<meta charset=\"utf-8\"/>")
