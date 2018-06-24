@@ -19,7 +19,7 @@ namespace vl
 		extern Ptr<DocumentModel>	LoadDocumentFromClipboardStream(stream::IStream& stream);
 		extern void					SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream);
 
-		extern void					SaveDocumentToHtml(Ptr<DocumentModel> model, WString& header, WString& content, WString& footer);
+		extern void					SaveDocumentToHtmlUtf8(Ptr<DocumentModel> model, AString& header, AString& content, AString& footer);
 		extern void					SaveDocumentToHtmlClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream);
 	}
 }
