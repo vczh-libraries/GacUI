@@ -67,12 +67,16 @@ namespace vl
 
 						for (vint i = 0; i < text.Length(); i++)
 						{
-							switch (char c = text[i])
+							switch (wchar_t c = text[i])
 							{
 							case L'&': writer.WriteString(L"&amp;"); break;
 							case L'<': writer.WriteString(L"&lt;"); break;
 							case L'>': writer.WriteString(L"&gt;"); break;
-							default: writer.WriteChar(c);
+							case L'\r': break;
+							case L'\n': writer.WriteString(L"<br>"); break;
+							case L' ': writer.WriteString(L"&nbsp;"); break;
+							case L'\t': writer.WriteString(L"<pre>\t</pre>"); break;
+							default: writer.WriteChar(c); break;
 							}
 						}
 
@@ -149,7 +153,9 @@ namespace vl
 
 				FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
 				{
+					writer.WriteString(L"<p>");
 					paragraph->Accept(&visitor);
+					writer.WriteString(L"</p>\r\n");
 				}
 			}
 			char zero = 0;

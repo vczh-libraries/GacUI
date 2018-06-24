@@ -1035,7 +1035,8 @@ GuiDocumentCommonInterface
 			{
 				if (!CanCut())return false;
 				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
-				writer->SetDocument(GetSelectionModel());
+				auto model = GetSelectionModel();
+				writer->SetDocument(model);
 				writer->Submit();
 				SetSelectionText(L"");
 				return true;
@@ -1045,7 +1046,8 @@ GuiDocumentCommonInterface
 			{
 				if (!CanCopy()) return false;
 				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
-				writer->SetDocument(GetSelectionModel());
+				auto model = GetSelectionModel();
+				writer->SetDocument(model);
 				writer->Submit();
 				return true;
 			}
