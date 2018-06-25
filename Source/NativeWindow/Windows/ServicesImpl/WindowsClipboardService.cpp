@@ -136,7 +136,24 @@ WindowsClipboardWriter
 					textData = documentData->GetText(true);
 				}
 
-				documentData = value;
+				if (!imageData && documentData->paragraphs.Count() == 1)
+				{
+					Ptr<DocumentContainerRun> container = documentData->paragraphs[0];
+					while (container)
+					{
+						if (container->runs.Count() != 1) goto FAILED;
+						if (auto imageRun = container->runs[0].Cast<DocumentImageRun>())
+						{
+							imageData = imageRun->image;
+						}
+						else
+						{
+							container = container->runs[0].Cast<DocumentContainerRun>();
+						}
+					}
+				FAILED:;
+				}
+
 				ModifyDocumentForClipboard(documentData);
 			}
 
@@ -182,6 +199,10 @@ WindowsClipboardWriter
 						SaveDocumentToHtmlClipboardStream(documentData, memoryStream);
 						SetClipboardData(service->WCF_HTML, memoryStream);
 					}
+				}
+
+				if (imageData)
+				{
 				}
 
 				::CloseClipboard();
