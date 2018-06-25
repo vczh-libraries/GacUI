@@ -229,7 +229,115 @@ WindowsImage
 
 			void WindowsImage::SaveToStream(stream::IStream& stream)
 			{
-				throw 0;
+				{
+					auto factory = GetWICImagingFactory();
+					GUID formatGUID;
+					HRESULT hr = bitmapDecoder->GetContainerFormat(&formatGUID);
+					if (hr != S_OK) goto FAILED;
+
+					IWICBitmapEncoder* bitmapEncoder = nullptr;
+					hr = factory->CreateEncoder(formatGUID, NULL, &bitmapEncoder);
+					if (!bitmapEncoder) goto FAILED;
+
+					{
+						UINT actualCount = 0;
+						Array<IWICColorContext*> colorContexts(16);
+						hr = bitmapDecoder->GetColorContexts((UINT)colorContexts.Count(), &colorContexts[0], &actualCount);
+						if (hr == S_OK)
+						{
+							if ((vint)actualCount > colorContexts.Count())
+							{
+								for (vint i = 0; i < colorContexts.Count(); i++) colorContexts[i]->Release();
+								colorContexts.Resize((vint)actualCount);
+								bitmapDecoder->GetColorContexts(actualCount, &colorContexts[0], &actualCount);
+							}
+							if (actualCount > 0)
+							{
+								bitmapEncoder->SetColorContexts(actualCount, &colorContexts[0]);
+								for (vint i = 0; i < (vint)actualCount; i++) colorContexts[i]->Release();
+							}
+						}
+					}
+					{
+						IWICPalette* palette = nullptr;
+						factory->CreatePalette(&palette);
+						if (palette)
+						{
+							hr = bitmapDecoder->CopyPalette(palette);
+							if (hr == S_OK)
+							{
+								bitmapEncoder->SetPalette(palette);
+							}
+							palette->Release();
+						}
+					}
+					{
+						IWICBitmapSource* source = nullptr;
+						hr = bitmapDecoder->GetPreview(&source);
+						if (source)
+						{
+							bitmapEncoder->SetPreview(source);
+							source->Release();
+						}
+					}
+					{
+						IWICBitmapSource* source = nullptr;
+						hr = bitmapDecoder->GetThumbnail(&source);
+						if (source)
+						{
+							bitmapEncoder->SetThumbnail(source);
+							source->Release();
+						}
+					}
+					{
+						IWICMetadataQueryReader* reader = nullptr;
+						IWICMetadataQueryWriter* writer = nullptr;
+						hr = bitmapDecoder->GetMetadataQueryReader(&reader);
+						hr = bitmapEncoder->GetMetadataQueryWriter(&writer);
+						if (reader && writer)
+						{
+							IEnumString* enumString = nullptr;
+							hr = reader->GetEnumerator(&enumString);
+							if (enumString)
+							{
+								while (true)
+								{
+									LPOLESTR metadataName = nullptr;
+									hr = enumString->Next(0, &metadataName, NULL);
+									if (hr != S_OK) break;
+
+									PROPVARIANT metadataValue;
+									hr = reader->GetMetadataByName(metadataName, &metadataValue);
+									if (hr == S_OK)
+									{
+										hr = writer->SetMetadataByName(metadataName, &metadataValue);
+										hr = PropVariantClear(&metadataValue);
+									}
+
+									CoTaskMemFree(metadataName);
+								}
+								enumString->Release();
+							}
+						}
+						if (reader) reader->Release();
+						if (writer) writer->Release();
+					}
+
+					UINT frameCount = 0;
+					bitmapDecoder->GetFrameCount(&frameCount);
+					for (UINT i = 0; i < frameCount; i++)
+					{
+						IWICBitmapFrameDecode* sourceFrame = nullptr;
+						hr = bitmapDecoder->GetFrame(i, &sourceFrame);
+						if (sourceFrame)
+						{
+							IWICBitmapFrameEncode* destFrame = nullptr;
+							sourceFrame->Release();
+						}
+					}
+				}
+			FAILED:
+				return frames[0]->SaveBitmapToStream(stream);
 			}
 
 /***********************************************************************
