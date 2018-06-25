@@ -270,10 +270,10 @@ WindowsImage
 				switch (formatType)
 				{
 				case INativeImage::Bmp: return GUID_ContainerFormatBmp;
-				case INativeImage::Gif: return GUID_ContainerFormatPng;
-				case INativeImage::Icon: return GUID_ContainerFormatGif;
+				case INativeImage::Gif: return GUID_ContainerFormatGif;
+				case INativeImage::Icon: return GUID_ContainerFormatIco;
 				case INativeImage::Jpeg: return GUID_ContainerFormatJpeg;
-				case INativeImage::Png: return GUID_ContainerFormatIco;
+				case INativeImage::Png: return GUID_ContainerFormatPng;
 				case INativeImage::Tiff: return GUID_ContainerFormatTiff;
 				case INativeImage::Wmp: return GUID_ContainerFormatWmp;
 				default: CHECK_FAIL(L"GetGuidFromFormat(INativeImage::FormatType)#Unexpected format type.");
