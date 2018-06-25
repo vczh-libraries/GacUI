@@ -265,133 +265,154 @@ WindowsImage
 				if (writer) writer->Release();
 			}
 
-			void WindowsImage::SaveToStream(stream::IStream& stream)
+			GUID GetGuidFromFormat(INativeImage::FormatType formatType)
 			{
+				switch (formatType)
 				{
-					auto factory = GetWICImagingFactory();
-					GUID formatGUID;
-					HRESULT hr = bitmapDecoder->GetContainerFormat(&formatGUID);
+				case INativeImage::Bmp: return GUID_ContainerFormatBmp;
+				case INativeImage::Gif: return GUID_ContainerFormatPng;
+				case INativeImage::Icon: return GUID_ContainerFormatGif;
+				case INativeImage::Jpeg: return GUID_ContainerFormatJpeg;
+				case INativeImage::Png: return GUID_ContainerFormatIco;
+				case INativeImage::Tiff: return GUID_ContainerFormatTiff;
+				case INativeImage::Wmp: return GUID_ContainerFormatWmp;
+				default: CHECK_FAIL(L"GetGuidFromFormat(INativeImage::FormatType)#Unexpected format type.");
+				}
+			}
+
+			void MoveIStreamToStream(IStream* pIStream, stream::IStream& stream)
+			{
+				LARGE_INTEGER dlibMove;
+				dlibMove.QuadPart = 0;
+				HRESULT hr = pIStream->Seek(dlibMove, STREAM_SEEK_SET, NULL);
+				Array<char> buffer(65536);
+				while (true)
+				{
+					ULONG count = (ULONG)buffer.Count();
+					ULONG read = 0;
+					hr = pIStream->Read(&buffer[0], count, &read);
+					if (read > 0)
+					{
+						stream.Write(&buffer[0], (vint)read);
+					}
+					if (read != count)
+					{
+						break;
+					}
+				}
+			}
+
+			void WindowsImage::SaveToStream(stream::IStream& stream, FormatType formatType)
+			{
+				auto factory = GetWICImagingFactory();
+				GUID formatGUID;
+				HRESULT hr;
+				if (formatType == INativeImage::Unknown)
+				{
+					hr = bitmapDecoder->GetContainerFormat(&formatGUID);
 					if (hr != S_OK) goto FAILED;
+				}
+				else
+				{
+					formatGUID = GetGuidFromFormat(formatType);
+				}
 
-					IWICBitmapEncoder* bitmapEncoder = nullptr;
-					hr = factory->CreateEncoder(formatGUID, NULL, &bitmapEncoder);
-					if (!bitmapEncoder) goto FAILED;
+				IWICBitmapEncoder* bitmapEncoder = nullptr;
+				hr = factory->CreateEncoder(formatGUID, NULL, &bitmapEncoder);
+				if (!bitmapEncoder) goto FAILED;
 
-					IStream* pIStream = nullptr;
-					hr = CreateStreamOnHGlobal(NULL, TRUE, &pIStream);
-					if (!pIStream)
+				IStream* pIStream = nullptr;
+				hr = CreateStreamOnHGlobal(NULL, TRUE, &pIStream);
+				if (!pIStream)
+				{
+					bitmapEncoder->Release();
+					goto FAILED;
+				}
+
+				hr = bitmapEncoder->Initialize(pIStream, WICBitmapEncoderNoCache);
+				if (hr != S_OK)
+				{
+					pIStream->Release();
+					bitmapEncoder->Release();
+					goto FAILED;
+				}
+
+				{
+					UINT actualCount = 0;
+					Array<IWICColorContext*> colorContexts(16);
+					hr = bitmapDecoder->GetColorContexts((UINT)colorContexts.Count(), &colorContexts[0], &actualCount);
+					if (hr == S_OK)
 					{
-						bitmapEncoder->Release();
-						goto FAILED;
+						if ((vint)actualCount > colorContexts.Count())
+						{
+							for (vint i = 0; i < colorContexts.Count(); i++) colorContexts[i]->Release();
+							colorContexts.Resize((vint)actualCount);
+							bitmapDecoder->GetColorContexts(actualCount, &colorContexts[0], &actualCount);
+						}
+						if (actualCount > 0)
+						{
+							bitmapEncoder->SetColorContexts(actualCount, &colorContexts[0]);
+							for (vint i = 0; i < (vint)actualCount; i++) colorContexts[i]->Release();
+						}
 					}
-
-					hr = bitmapEncoder->Initialize(pIStream, WICBitmapEncoderNoCache);
-					if (hr != S_OK)
+				}
+				{
+					IWICPalette* palette = nullptr;
+					hr = factory->CreatePalette(&palette);
+					if (palette)
 					{
-						pIStream->Release();
-						bitmapEncoder->Release();
-						goto FAILED;
-					}
-
-					{
-						UINT actualCount = 0;
-						Array<IWICColorContext*> colorContexts(16);
-						hr = bitmapDecoder->GetColorContexts((UINT)colorContexts.Count(), &colorContexts[0], &actualCount);
+						hr = bitmapDecoder->CopyPalette(palette);
 						if (hr == S_OK)
 						{
-							if ((vint)actualCount > colorContexts.Count())
-							{
-								for (vint i = 0; i < colorContexts.Count(); i++) colorContexts[i]->Release();
-								colorContexts.Resize((vint)actualCount);
-								bitmapDecoder->GetColorContexts(actualCount, &colorContexts[0], &actualCount);
-							}
-							if (actualCount > 0)
-							{
-								bitmapEncoder->SetColorContexts(actualCount, &colorContexts[0]);
-								for (vint i = 0; i < (vint)actualCount; i++) colorContexts[i]->Release();
-							}
+							bitmapEncoder->SetPalette(palette);
 						}
+						palette->Release();
 					}
-					{
-						IWICPalette* palette = nullptr;
-						hr = factory->CreatePalette(&palette);
-						if (palette)
-						{
-							hr = bitmapDecoder->CopyPalette(palette);
-							if (hr == S_OK)
-							{
-								bitmapEncoder->SetPalette(palette);
-							}
-							palette->Release();
-						}
-					}
-					{
-						IWICBitmapSource* source = nullptr;
-						hr = bitmapDecoder->GetPreview(&source);
-						if (source)
-						{
-							bitmapEncoder->SetPreview(source);
-							source->Release();
-						}
-					}
-					{
-						IWICBitmapSource* source = nullptr;
-						hr = bitmapDecoder->GetThumbnail(&source);
-						if (source)
-						{
-							bitmapEncoder->SetThumbnail(source);
-							source->Release();
-						}
-					}
-					CopyMetadata(bitmapDecoder.Obj(), bitmapEncoder);
-
-					UINT frameCount = 0;
-					bitmapDecoder->GetFrameCount(&frameCount);
-					for (UINT i = 0; i < frameCount; i++)
-					{
-						IWICBitmapFrameDecode* frameDecode = nullptr;
-						IWICBitmapFrameEncode* frameEncode = nullptr;
-						hr = bitmapDecoder->GetFrame(i, &frameDecode);
-						hr = bitmapEncoder->CreateNewFrame(&frameEncode, NULL);
-						if (frameDecode && frameEncode)
-						{
-							hr = frameEncode->Initialize(NULL);
-							CopyMetadata(frameDecode, frameEncode);
-							hr = frameEncode->WriteSource(frameDecode, NULL);
-							hr = frameEncode->Commit();
-						}
-						if (frameDecode) frameDecode->Release();
-						if (frameEncode) frameEncode->Release();
-					}
-
-					hr = bitmapEncoder->Commit();
-					bitmapEncoder->Release();
-
-					{
-						LARGE_INTEGER dlibMove;
-						dlibMove.QuadPart = 0;
-						hr = pIStream->Seek(dlibMove, STREAM_SEEK_SET, NULL);
-						Array<char> buffer(65536);
-						while (true)
-						{
-							ULONG count = (ULONG)buffer.Count();
-							ULONG read = 0;
-							hr = pIStream->Read(&buffer[0], count, &read);
-							if (read > 0)
-							{
-								stream.Write(&buffer[0], (vint)read);
-							}
-							if (read != count)
-							{
-								break;
-							}
-						}
-					}
-					pIStream->Release();
-					return;
 				}
-			FAILED:
-				frames[0]->SaveBitmapToStream(stream);
+				{
+					IWICBitmapSource* source = nullptr;
+					hr = bitmapDecoder->GetPreview(&source);
+					if (source)
+					{
+						bitmapEncoder->SetPreview(source);
+						source->Release();
+					}
+				}
+				{
+					IWICBitmapSource* source = nullptr;
+					hr = bitmapDecoder->GetThumbnail(&source);
+					if (source)
+					{
+						bitmapEncoder->SetThumbnail(source);
+						source->Release();
+					}
+				}
+				CopyMetadata(bitmapDecoder.Obj(), bitmapEncoder);
+
+				UINT frameCount = 0;
+				bitmapDecoder->GetFrameCount(&frameCount);
+				for (UINT i = 0; i < frameCount; i++)
+				{
+					IWICBitmapFrameDecode* frameDecode = nullptr;
+					IWICBitmapFrameEncode* frameEncode = nullptr;
+					hr = bitmapDecoder->GetFrame(i, &frameDecode);
+					hr = bitmapEncoder->CreateNewFrame(&frameEncode, NULL);
+					if (frameDecode && frameEncode)
+					{
+						hr = frameEncode->Initialize(NULL);
+						CopyMetadata(frameDecode, frameEncode);
+						hr = frameEncode->WriteSource(frameDecode, NULL);
+						hr = frameEncode->Commit();
+					}
+					if (frameDecode) frameDecode->Release();
+					if (frameEncode) frameEncode->Release();
+				}
+
+				hr = bitmapEncoder->Commit();
+				bitmapEncoder->Release();
+				MoveIStreamToStream(pIStream, stream);
+				pIStream->Release();
+			FAILED:;
 			}
 
 /***********************************************************************
@@ -429,9 +450,52 @@ WindowsBitmapImage
 				return index==0?frame.Obj():0;
 			}
 
-			void WindowsBitmapImage::SaveToStream(stream::IStream& stream)
+			void WindowsBitmapImage::SaveToStream(stream::IStream& stream, FormatType formatType)
 			{
-				frame->SaveBitmapToStream(stream);
+				auto factory = GetWICImagingFactory();
+				if (formatType == INativeImage::Unknown)
+				{
+					formatType = INativeImage::Bmp;
+				}
+				GUID formatGUID = GetGuidFromFormat(formatType);
+
+				IWICBitmapEncoder* bitmapEncoder = nullptr;
+				HRESULT hr = factory->CreateEncoder(formatGUID, NULL, &bitmapEncoder);
+				if (!bitmapEncoder) goto FAILED;
+
+				IStream* pIStream = nullptr;
+				hr = CreateStreamOnHGlobal(NULL, TRUE, &pIStream);
+				if (!pIStream)
+				{
+					bitmapEncoder->Release();
+					goto FAILED;
+				}
+
+				hr = bitmapEncoder->Initialize(pIStream, WICBitmapEncoderNoCache);
+				if (hr != S_OK)
+				{
+					pIStream->Release();
+					bitmapEncoder->Release();
+					goto FAILED;
+				}
+
+				{
+					IWICBitmapFrameEncode* frameEncode = nullptr;
+					hr = bitmapEncoder->CreateNewFrame(&frameEncode, NULL);
+					if (frameEncode)
+					{
+						hr = frameEncode->Initialize(NULL);
+						hr = frameEncode->WriteSource(frame->GetFrameBitmap(), NULL);
+						hr = frameEncode->Commit();
+						frameEncode->Release();
+					}
+				}
+
+				hr = bitmapEncoder->Commit();
+				bitmapEncoder->Release();
+				MoveIStreamToStream(pIStream, stream);
+				pIStream->Release();
+			FAILED:;
 			}
 
 /***********************************************************************

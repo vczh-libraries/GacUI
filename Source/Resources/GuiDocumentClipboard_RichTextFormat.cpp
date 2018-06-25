@@ -127,20 +127,12 @@ namespace vl
 				{
 					if (run->image)
 					{
-						vint rasterLine = run->size.x * 3;
-						if (rasterLine % 2 == 1) rasterLine += 1;
-						switch (run->image->GetFormat())
-						{
-						case INativeImage::Bmp: writer.WriteString(L"{\\pict\\wbitmap0\\wbmbitspixel24\\wbmplanes1\\wbmwidthbytes" + itow(rasterLine)); break;
-						case INativeImage::Jpeg: writer.WriteString(L"{\\pict\\jpegblip"); break;
-						case INativeImage::Png: writer.WriteString(L"{\\pict\\pngblip"); break;
-						default: return;
-						}
+						writer.WriteString(L"{\\pict\\pngblip");
 						writer.WriteString(L"\\picw" + itow(run->size.x) + L"\\pich" + itow(run->size.y));
 						writer.WriteString(L"\\picwgoal" + itow(run->size.x * 15) + L"\\pichgoal" + itow(run->size.y * 15) + L" ");
 
 						MemoryStream memoryStream;
-						run->image->SaveToStream(memoryStream);
+						run->image->SaveToStream(memoryStream, INativeImage::Png);
 						vint count = (vint)memoryStream.Size();
 						vuint8_t* buffer = (vuint8_t*)memoryStream.GetInternalBuffer();
 						for (vint i = 0; i < count; i++)
