@@ -37,6 +37,9 @@ namespace vl
 				bool							ContainsDocument()override;
 				Ptr<DocumentModel>				GetDocument()override;
 
+				bool							ContainsImage()override;
+				Ptr<INativeImage>				GetImage()override;
+
 				void							CloseClipboard();
 			};
 
@@ -47,6 +50,7 @@ namespace vl
 				WindowsClipboardService*		service;
 				Nullable<WString>				textData;
 				Ptr<DocumentModel>				documentData;
+				Ptr<INativeImage>				imageData;
 
 				void							SetClipboardData(UINT format, stream::MemoryStream& memoryStream);
 			public:
@@ -55,6 +59,7 @@ namespace vl
 
 				void							SetText(const WString& value)override;
 				void							SetDocument(Ptr<DocumentModel> value)override;
+				void							SetImage(Ptr<INativeImage> value)override;
 				void							Submit()override;
 			};
 

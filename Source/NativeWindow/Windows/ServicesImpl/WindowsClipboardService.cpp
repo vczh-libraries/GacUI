@@ -75,6 +75,16 @@ WindowsClipboardReader
 				return nullptr;
 			}
 
+			bool WindowsClipboardReader::ContainsImage()
+			{
+				return false;
+			}
+
+			Ptr<INativeImage> WindowsClipboardReader::GetImage()
+			{
+				return nullptr;
+			}
+
 			void WindowsClipboardReader::CloseClipboard()
 			{
 				if (service->reader)
@@ -122,6 +132,11 @@ WindowsClipboardWriter
 
 				documentData = value;
 				ModifyDocumentForClipboard(documentData);
+			}
+
+			void WindowsClipboardWriter::SetImage(Ptr<INativeImage> value)
+			{
+				imageData = value;
 			}
 
 			void WindowsClipboardWriter::Submit()

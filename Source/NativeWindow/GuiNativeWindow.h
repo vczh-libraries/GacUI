@@ -1014,6 +1014,14 @@ Native Window Services
 			/// <summary>Get the document from the clipboard.</summary>
 			/// <returns>The document.</returns>
 			virtual Ptr<DocumentModel>		GetDocument() = 0;
+
+			/// <summary>Test is there an image in the clipboard.</summary>
+			/// <returns>Returns true if there is an image in the clipboard.</returns>
+			virtual bool					ContainsImage() = 0;
+
+			/// <summary>Get the image from the clipboard.</summary>
+			/// <returns>The image.</returns>
+			virtual Ptr<INativeImage>		GetImage() = 0;
 		};
 
 		/// <summary>
@@ -1029,6 +1037,10 @@ Native Window Services
 			/// <summary>Prepare a document for the clipboard.</summary>
 			/// <param name="value">The document.</param>
 			virtual void					SetDocument(Ptr<DocumentModel> value) = 0;
+
+			/// <summary>Prepare an image for the clipboard.</summary>
+			/// <param name="value">The image.</param>
+			virtual void					SetImage(Ptr<INativeImage> value) = 0;
 
 			/// <summary>Send all data to the clipboard.</summary>
 			virtual void					Submit() = 0;

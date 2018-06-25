@@ -1026,7 +1026,7 @@ GuiDocumentCommonInterface
 				if (editMode == Editable)
 				{
 					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
-					return reader->ContainsText() || reader->ContainsDocument();
+					return reader->ContainsText() || reader->ContainsDocument() || reader->ContainsImage();
 				}
 				return false;
 			}
@@ -1068,6 +1068,15 @@ GuiDocumentCommonInterface
 				{
 					SetSelectionText(reader->GetText());
 					return true;
+				}
+				if (reader->ContainsImage())
+				{
+					if (auto image = reader->GetImage())
+					{
+						auto imageData = MakePtr<GuiImageData>(image, 0);
+						EditImage(GetCaretBegin(), GetCaretEnd(), imageData);
+						return true;
+					}
 				}
 				return false;
 			}
