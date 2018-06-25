@@ -227,6 +227,42 @@ WindowsImage
 				}
 			}
 
+			template<typename TDecoder, typename TEncoder>
+			void CopyMetadata(TDecoder* decoder, TEncoder* encoder)
+			{
+				IWICMetadataQueryReader* reader = nullptr;
+				IWICMetadataQueryWriter* writer = nullptr;
+				HRESULT hr = decoder->GetMetadataQueryReader(&reader);
+				hr = encoder->GetMetadataQueryWriter(&writer);
+				if (reader && writer)
+				{
+					IEnumString* enumString = nullptr;
+					hr = reader->GetEnumerator(&enumString);
+					if (enumString)
+					{
+						while (true)
+						{
+							LPOLESTR metadataName = nullptr;
+							hr = enumString->Next(0, &metadataName, NULL);
+							if (hr != S_OK) break;
+
+							PROPVARIANT metadataValue;
+							hr = reader->GetMetadataByName(metadataName, &metadataValue);
+							if (hr == S_OK)
+							{
+								hr = writer->SetMetadataByName(metadataName, &metadataValue);
+								hr = PropVariantClear(&metadataValue);
+							}
+
+							CoTaskMemFree(metadataName);
+						}
+						enumString->Release();
+					}
+				}
+				if (reader) reader->Release();
+				if (writer) writer->Release();
+			}
+
 			void WindowsImage::SaveToStream(stream::IStream& stream)
 			{
 				{
@@ -238,6 +274,22 @@ WindowsImage
 					IWICBitmapEncoder* bitmapEncoder = nullptr;
 					hr = factory->CreateEncoder(formatGUID, NULL, &bitmapEncoder);
 					if (!bitmapEncoder) goto FAILED;
+
+					IStream* pIStream = nullptr;
+					hr = CreateStreamOnHGlobal(NULL, TRUE, &pIStream);
+					if (!pIStream)
+					{
+						bitmapEncoder->Release();
+						goto FAILED;
+					}
+
+					hr = bitmapEncoder->Initialize(pIStream, WICBitmapEncoderNoCache);
+					if (hr != S_OK)
+					{
+						pIStream->Release();
+						bitmapEncoder->Release();
+						goto FAILED;
+					}
 
 					{
 						UINT actualCount = 0;
@@ -289,55 +341,54 @@ WindowsImage
 							source->Release();
 						}
 					}
-					{
-						IWICMetadataQueryReader* reader = nullptr;
-						IWICMetadataQueryWriter* writer = nullptr;
-						hr = bitmapDecoder->GetMetadataQueryReader(&reader);
-						hr = bitmapEncoder->GetMetadataQueryWriter(&writer);
-						if (reader && writer)
-						{
-							IEnumString* enumString = nullptr;
-							hr = reader->GetEnumerator(&enumString);
-							if (enumString)
-							{
-								while (true)
-								{
-									LPOLESTR metadataName = nullptr;
-									hr = enumString->Next(0, &metadataName, NULL);
-									if (hr != S_OK) break;
-
-									PROPVARIANT metadataValue;
-									hr = reader->GetMetadataByName(metadataName, &metadataValue);
-									if (hr == S_OK)
-									{
-										hr = writer->SetMetadataByName(metadataName, &metadataValue);
-										hr = PropVariantClear(&metadataValue);
-									}
-
-									CoTaskMemFree(metadataName);
-								}
-								enumString->Release();
-							}
-						}
-						if (reader) reader->Release();
-						if (writer) writer->Release();
-					}
+					CopyMetadata(bitmapDecoder.Obj(), bitmapEncoder);
 
 					UINT frameCount = 0;
 					bitmapDecoder->GetFrameCount(&frameCount);
 					for (UINT i = 0; i < frameCount; i++)
 					{
-						IWICBitmapFrameDecode* sourceFrame = nullptr;
-						hr = bitmapDecoder->GetFrame(i, &sourceFrame);
-						if (sourceFrame)
+						IWICBitmapFrameDecode* frameDecode = nullptr;
+						IWICBitmapFrameEncode* frameEncode = nullptr;
+						hr = bitmapDecoder->GetFrame(i, &frameDecode);
+						hr = bitmapEncoder->CreateNewFrame(&frameEncode, NULL);
+						if (frameDecode && frameEncode)
 						{
-							IWICBitmapFrameEncode* destFrame = nullptr;
-							sourceFrame->Release();
+							CopyMetadata(frameDecode, frameEncode);
+							hr = frameEncode->WriteSource(frameDecode, NULL);
+							hr = frameEncode->Commit();
+						}
+						if (frameDecode) frameDecode->Release();
+						if (frameEncode) frameEncode->Release();
+					}
+
+					hr = bitmapEncoder->Commit();
+					bitmapEncoder->Release();
+
+					{
+						LARGE_INTEGER dlibMove;
+						dlibMove.QuadPart = 0;
+						hr = pIStream->Seek(dlibMove, STREAM_SEEK_SET, NULL);
+						Array<char> buffer(65536);
+						while (true)
+						{
+							ULONG count = (ULONG)buffer.Count();
+							ULONG read = 0;
+							hr = pIStream->Read(&buffer[0], count, &read);
+							if (read > 0)
+							{
+								stream.Write(&buffer[0], (vint)read);
+							}
+							if (read != count)
+							{
+								break;
+							}
 						}
 					}
+					pIStream->Release();
+					return;
 				}
 			FAILED:
-				return frames[0]->SaveBitmapToStream(stream);
+				frames[0]->SaveBitmapToStream(stream);
 			}
 
 /***********************************************************************
