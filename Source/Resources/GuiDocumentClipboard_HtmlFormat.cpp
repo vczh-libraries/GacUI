@@ -127,6 +127,70 @@ namespace vl
 
 				void Visit(DocumentImageRun* run)override
 				{
+					if (run->image)
+					{
+						writer.WriteString(L"<img width=\"" + itow(run->size.x) + L"\" height=\"" + itow(run->size.y) + L"\" src=\"data:image/");
+						switch (run->image->GetFormat())
+						{
+						case INativeImage::Bmp: writer.WriteString(L"bmp;base64,"); break;
+						case INativeImage::Gif: writer.WriteString(L"gif;base64,"); break;
+						case INativeImage::Jpeg: writer.WriteString(L"jpeg;base64,"); break;
+						case INativeImage::Png: writer.WriteString(L"png;base64,"); break;
+						default: writer.WriteString(L"*;base64,"); break;
+						}
+
+						MemoryStream memoryStream;
+						run->image->SaveToStream(memoryStream);
+						memoryStream.SeekFromBegin(0);
+						while (true)
+						{
+							vuint8_t bytes[3] = { 0,0,0 };
+							vint read = memoryStream.Read(&bytes, sizeof(bytes));
+							if (read == 0) break;
+
+							vuint8_t b1 = bytes[0] / (1 << 2);
+							vuint8_t b2 = ((bytes[0] % (1 << 2)) << 4) + bytes[1] / (1 << 4);
+							vuint8_t b3 = ((bytes[1] % (1 << 4)) << 2) + bytes[2] / (1 << 6);
+							vuint8_t b4 = bytes[2] % (1 << 6);
+
+							const wchar_t* BASE64 =
+								L"ABCDEFG"
+								L"HIJKLMN"
+								L"OPQRST"
+								L"UVWXYZ"
+								L"abcdefg"
+								L"hijklmn"
+								L"opqrst"
+								L"uvwxyz"
+								L"0123456789"
+								L"+/";
+#define BASE64_CHAR(b)		BASE64[b]
+							switch (read)
+							{
+							case 1:
+								writer.WriteChar(BASE64_CHAR(b1));
+								writer.WriteChar(BASE64_CHAR(b2));
+								writer.WriteChar(L'=');
+								writer.WriteChar(L'=');
+								break;
+							case 2:
+								writer.WriteChar(BASE64_CHAR(b1));
+								writer.WriteChar(BASE64_CHAR(b2));
+								writer.WriteChar(BASE64_CHAR(b3));
+								writer.WriteChar(L'=');
+								break;
+							case 3:
+								writer.WriteChar(BASE64_CHAR(b1));
+								writer.WriteChar(BASE64_CHAR(b2));
+								writer.WriteChar(BASE64_CHAR(b3));
+								writer.WriteChar(BASE64_CHAR(b4));
+								break;
+							}
+#undef BASE64_CHAR
+						}
+
+						writer.WriteString(L"\"/>");
+					}
 				}
 
 				void Visit(DocumentEmbeddedObjectRun* run)override
