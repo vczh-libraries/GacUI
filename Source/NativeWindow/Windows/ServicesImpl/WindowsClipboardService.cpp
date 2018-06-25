@@ -1,5 +1,6 @@
 #include "WindowsClipboardService.h"
 #include "WindowsImageService.h"
+#include "../GDI/WinGDI.h"
 #include "../../../Resources/GuiDocumentClipboard.h"
 
 namespace vl
@@ -201,8 +202,26 @@ WindowsClipboardWriter
 					}
 				}
 
-				if (imageData)
+				if (imageData && imageData->GetFrameCount()>0)
 				{
+					if (auto wicBitmap = GetWICBitmap(imageData->GetFrame(0)))
+					{
+						UINT width = 0;
+						UINT height = 0;
+						wicBitmap->GetSize(&width, &height);
+						auto bitmap = MakePtr<WinBitmap>((vint)width, (vint)height, WinBitmap::vbb32Bits, true);
+
+						WICRect rect;
+						rect.X = 0;
+						rect.Y = 0;
+						rect.Width = (INT)width;
+						rect.Height = (INT)height;
+						wicBitmap->CopyPixels(&rect, (UINT)bitmap->GetLineBytes(), (UINT)(bitmap->GetLineBytes()*height), (BYTE*)bitmap->GetScanLines()[0]);
+
+						stream::MemoryStream memoryStream;
+						bitmap->SaveToStream(memoryStream, true);
+						SetClipboardData(CF_DIBV5, memoryStream);
+					}
 				}
 
 				::CloseClipboard();

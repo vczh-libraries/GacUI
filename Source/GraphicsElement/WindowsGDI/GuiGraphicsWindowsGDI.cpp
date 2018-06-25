@@ -267,9 +267,9 @@ WindowsGDIResourceManager
 					WICRect rect;
 					rect.X=0;
 					rect.Y=0;
-					rect.Width=(int)size.x;
-					rect.Height=(int)size.y;
-					wicBitmap->CopyPixels(&rect, (int)bitmap->GetLineBytes(), (int)(bitmap->GetLineBytes()*size.y), (BYTE*)bitmap->GetScanLines()[0]);
+					rect.Width=(INT)size.x;
+					rect.Height=(INT)size.y;
+					wicBitmap->CopyPixels(&rect, (UINT)bitmap->GetLineBytes(), (UINT)(bitmap->GetLineBytes()*size.y), (BYTE*)bitmap->GetScanLines()[0]);
 
 					bitmap->BuildAlphaChannel(false);
 				}
