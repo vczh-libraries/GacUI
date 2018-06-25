@@ -146,6 +146,7 @@ WindowsClipboardWriter
 						if (auto imageRun = container->runs[0].Cast<DocumentImageRun>())
 						{
 							imageData = imageRun->image;
+							break;
 						}
 						else
 						{

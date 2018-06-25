@@ -36,7 +36,9 @@ If a run decides that itself should be removed, then replacedRuns contains all r
 						Ptr<DocumentRun> subRun = run->runs[i];
 						RunRange range = runRanges[subRun.Obj()];
 
-						if (range.start <= end && start <= range.end)
+						vint maxStart = range.start > start ? range.start : start;
+						vint minEnd = range.end < end ? range.end : end;
+						if (maxStart < minEnd)
 						{
 							subRun->Accept(this);
 							if (replacedRuns.Count() == 0 || subRun != replacedRuns[0])
