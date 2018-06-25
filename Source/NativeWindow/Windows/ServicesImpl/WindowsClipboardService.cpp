@@ -1,4 +1,5 @@
 #include "WindowsClipboardService.h"
+#include "WindowsImageService.h"
 #include "../../../Resources/GuiDocumentClipboard.h"
 
 namespace vl
@@ -77,11 +78,16 @@ WindowsClipboardReader
 
 			bool WindowsClipboardReader::ContainsImage()
 			{
-				return false;
+				return ContainsFormat(CF_BITMAP);
 			}
 
 			Ptr<INativeImage> WindowsClipboardReader::GetImage()
 			{
+				HBITMAP handle = (HBITMAP)::GetClipboardData(CF_BITMAP);
+				if (handle != 0)
+				{
+					return CreateImageFromHBITMAP(handle);
+				}
 				return nullptr;
 			}
 
