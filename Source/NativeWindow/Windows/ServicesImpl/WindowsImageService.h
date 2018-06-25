@@ -38,6 +38,7 @@ namespace vl
 				Ptr<INativeImageFrameCache>					GetCache(void* key)override;
 				Ptr<INativeImageFrameCache>					RemoveCache(void* key)override;
 				IWICBitmap*									GetFrameBitmap();
+				void										SaveBitmapToStream(stream::IStream& stream);
 			};
 
 			class WindowsImage : public Object, public INativeImage
@@ -54,6 +55,7 @@ namespace vl
 				FormatType									GetFormat()override;
 				vint										GetFrameCount()override;
 				INativeImageFrame*							GetFrame(vint index)override;
+				void										SaveToStream(stream::IStream& stream)override;
 			};
 
 			class WindowsBitmapImage : public Object, public INativeImage
@@ -70,6 +72,7 @@ namespace vl
 				FormatType									GetFormat()override;
 				vint										GetFrameCount()override;
 				INativeImageFrame*							GetFrame(vint index)override;
+				void										SaveToStream(stream::IStream& stream)override;
 			};
 
 			class WindowsImageService : public Object, public INativeImageService

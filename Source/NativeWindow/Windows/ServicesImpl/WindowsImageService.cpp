@@ -1,5 +1,5 @@
 #include "WindowsImageService.h"
-
+#include "../GDI/WinGDI.h"
 #include <Shlwapi.h>
 
 #pragma comment(lib, "WindowsCodecs.lib")
@@ -122,6 +122,23 @@ WindowsImageFrame
 				return frameBitmap.Obj();
 			}
 
+			void WindowsImageFrame::SaveBitmapToStream(stream::IStream& stream)
+			{
+				UINT width = 0;
+				UINT height = 0;
+				frameBitmap->GetSize(&width, &height);
+				auto bitmap = MakePtr<WinBitmap>((vint)width, (vint)height, WinBitmap::vbb32Bits, true);
+
+				WICRect rect;
+				rect.X = 0;
+				rect.Y = 0;
+				rect.Width = (INT)width;
+				rect.Height = (INT)height;
+				frameBitmap->CopyPixels(&rect, (UINT)bitmap->GetLineBytes(), (UINT)(bitmap->GetLineBytes()*height), (BYTE*)bitmap->GetScanLines()[0]);
+
+				bitmap->SaveToStream(stream, false);
+			}
+
 /***********************************************************************
 WindowsImage
 ***********************************************************************/
@@ -210,6 +227,11 @@ WindowsImage
 				}
 			}
 
+			void WindowsImage::SaveToStream(stream::IStream& stream)
+			{
+				throw 0;
+			}
+
 /***********************************************************************
 WindowsBitmapImage
 ***********************************************************************/
@@ -243,6 +265,11 @@ WindowsBitmapImage
 			INativeImageFrame* WindowsBitmapImage::GetFrame(vint index)
 			{
 				return index==0?frame.Obj():0;
+			}
+
+			void WindowsBitmapImage::SaveToStream(stream::IStream& stream)
+			{
+				frame->SaveBitmapToStream(stream);
 			}
 
 /***********************************************************************
