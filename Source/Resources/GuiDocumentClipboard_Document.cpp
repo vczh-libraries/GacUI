@@ -11,22 +11,18 @@ namespace vl
 
 		namespace document_clipboard_visitors
 		{
-			class ModifyDocumentForClipboardVisitor : public Object, public DocumentRun::IVisitor
+			class TraverseDocumentVisitor : public Object, public DocumentRun::IVisitor
 			{
 			public:
-				ModifyDocumentForClipboardVisitor()
+				TraverseDocumentVisitor()
 				{
 				}
 
-				void VisitContainer(DocumentContainerRun* run)
+				virtual void VisitContainer(DocumentContainerRun* run)
 				{
-					for (vint i = run->runs.Count() - 1; i >= 0; i--)
+					FOREACH(Ptr<DocumentRun>, childRun, run->runs)
 					{
-						auto childRun = run->runs[i];
-						if (childRun.Cast<DocumentImageRun>() || childRun.Cast<DocumentEmbeddedObjectRun>())
-						{
-							run->runs.RemoveAt(i);
-						}
+						childRun->Accept(this);
 					}
 				}
 
@@ -60,6 +56,43 @@ namespace vl
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
+				}
+			};
+
+			class ModifyDocumentForClipboardVisitor : public TraverseDocumentVisitor
+			{
+			public:
+				ModifyDocumentForClipboardVisitor()
+				{
+				}
+
+				void VisitContainer(DocumentContainerRun* run)override
+				{
+					for (vint i = run->runs.Count() - 1; i >= 0; i--)
+					{
+						auto childRun = run->runs[i];
+						if (childRun.Cast<DocumentEmbeddedObjectRun>())
+						{
+							run->runs.RemoveAt(i);
+						}
+					}
+					TraverseDocumentVisitor::VisitContainer(run);
+				}
+			};
+
+			class CollectImageRunsVisitor : public TraverseDocumentVisitor
+			{
+			public:
+				List<Ptr<DocumentImageRun>> imageRuns;
+
+				CollectImageRunsVisitor()
+				{
+				}
+
+				void Visit(DocumentImageRun* run)override
+				{
+					run->source = L"clipboard://" + itow(imageRuns.Count());
+					imageRuns.Add(run);
 				}
 			};
 		}
@@ -96,6 +129,13 @@ namespace vl
 		void SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream)
 		{
 			StreamWriter streamWriter(stream);
+
+			CollectImageRunsVisitor visitor;
+			FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+			{
+				paragraph->Accept(&visitor);
+			}
+
 			auto xml = model->SaveToXml();
 			XmlPrint(xml, streamWriter);
 		}
