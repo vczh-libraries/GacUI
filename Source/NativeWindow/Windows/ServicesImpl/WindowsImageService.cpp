@@ -312,7 +312,7 @@ WindowsImage
 					}
 					{
 						IWICPalette* palette = nullptr;
-						factory->CreatePalette(&palette);
+						hr = factory->CreatePalette(&palette);
 						if (palette)
 						{
 							hr = bitmapDecoder->CopyPalette(palette);
