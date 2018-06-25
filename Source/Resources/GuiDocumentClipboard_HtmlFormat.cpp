@@ -134,9 +134,12 @@ namespace vl
 						{
 						case INativeImage::Bmp: writer.WriteString(L"bmp;base64,"); break;
 						case INativeImage::Gif: writer.WriteString(L"gif;base64,"); break;
+						case INativeImage::Icon: writer.WriteString(L"icon;base64,"); break;
 						case INativeImage::Jpeg: writer.WriteString(L"jpeg;base64,"); break;
 						case INativeImage::Png: writer.WriteString(L"png;base64,"); break;
-						default: writer.WriteString(L"*;base64,"); break;
+						case INativeImage::Tiff: writer.WriteString(L"tiff;base64,"); break;
+						case INativeImage::Wmp: writer.WriteString(L"wmp;base64,"); break;
+						default: writer.WriteString(L"unsupported;base64,\"/>"); return;
 						}
 
 						MemoryStream memoryStream;
