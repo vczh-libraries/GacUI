@@ -243,8 +243,10 @@ WindowsImage
 						while (true)
 						{
 							LPOLESTR metadataName = nullptr;
-							hr = enumString->Next(0, &metadataName, NULL);
+							ULONG fetched = 0;
+							hr = enumString->Next(0, &metadataName, &fetched);
 							if (hr != S_OK) break;
+							if (fetched == 0) break;
 
 							PROPVARIANT metadataValue;
 							hr = reader->GetMetadataByName(metadataName, &metadataValue);
@@ -353,6 +355,7 @@ WindowsImage
 						hr = bitmapEncoder->CreateNewFrame(&frameEncode, NULL);
 						if (frameDecode && frameEncode)
 						{
+							hr = frameEncode->Initialize(NULL);
 							CopyMetadata(frameDecode, frameEncode);
 							hr = frameEncode->WriteSource(frameDecode, NULL);
 							hr = frameEncode->Commit();
