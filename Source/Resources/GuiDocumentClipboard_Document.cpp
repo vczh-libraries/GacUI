@@ -91,7 +91,7 @@ namespace vl
 
 				void Visit(DocumentImageRun* run)override
 				{
-					run->source = L"clipboard://" + itow(imageRuns.Count());
+					run->source = L"res://Image_" + itow(imageRuns.Count());
 					imageRuns.Add(run);
 				}
 			};
@@ -109,6 +109,11 @@ namespace vl
 
 		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& stream)
 		{
+			auto tempResource = MakePtr<GuiResource>();
+			auto tempResourceItem = MakePtr<GuiResourceItem>();
+			tempResource->AddItem(L"Document", tempResourceItem);
+			auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
+
 			{
 				vint32_t count = 0;
 				if (stream.Read(&count, sizeof(count)) != sizeof(count)) return nullptr;
@@ -120,7 +125,12 @@ namespace vl
 					{
 						Array<char> buffer(size);
 						if (stream.Read(&buffer[0], size) != size) return nullptr;
-						auto image = GetCurrentController()->ImageService()->CreateImageFromMemory(&buffer[0], buffer.Count());
+						if (auto image = GetCurrentController()->ImageService()->CreateImageFromMemory(&buffer[0], buffer.Count()))
+						{
+							auto imageItem = MakePtr<GuiResourceItem>();
+							imageItem->SetContent(L"Image", MakePtr<GuiImageData>(image, 0));
+							tempResource->AddItem(L"Image_" + itow(i), imageItem);
+						}
 					}
 				}
 			}
@@ -132,11 +142,6 @@ namespace vl
 			auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
 			auto xml = parser->Parse({}, text, errors);
 			if (errors.Count() > 0) return nullptr;
-
-			auto tempResource = MakePtr<GuiResource>();
-			auto tempResourceItem = MakePtr<GuiResourceItem>();
-			tempResource->AddItem(L"Document", tempResourceItem);
-			auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
 
 			auto document = DocumentModel::LoadFromXml(tempResourceItem, xml, tempResolver, errors);
 			return document;
