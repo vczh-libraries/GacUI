@@ -109,6 +109,22 @@ namespace vl
 
 		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& stream)
 		{
+			{
+				vint32_t count = 0;
+				if (stream.Read(&count, sizeof(count)) != sizeof(count)) return nullptr;
+				for (vint i = 0; i < count; i++)
+				{
+					vint32_t size = 0;
+					if (stream.Read(&size, sizeof(size)) != sizeof(size)) return nullptr;
+					if (size > 0)
+					{
+						Array<char> buffer(size);
+						if (stream.Read(&buffer[0], size) != size) return nullptr;
+						auto image = GetCurrentController()->ImageService()->CreateImageFromMemory(&buffer[0], buffer.Count());
+					}
+				}
+			}
+
 			StreamReader streamReader(stream);
 			auto text = streamReader.ReadToEnd();
 			List<GuiResourceError> errors;
@@ -128,14 +144,32 @@ namespace vl
 
 		void SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream)
 		{
-			StreamWriter streamWriter(stream);
-
 			CollectImageRunsVisitor visitor;
 			FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
 			{
 				paragraph->Accept(&visitor);
 			}
+			{
+				vint32_t count = visitor.imageRuns.Count();
+				stream.Write(&count, sizeof(count));
+				FOREACH(Ptr<DocumentImageRun>, imageRun, visitor.imageRuns)
+				{
+					stream::MemoryStream memoryStream;
+					if (imageRun->image)
+					{
+						imageRun->image->SaveToStream(memoryStream);
+					}
+					
+					count = (vint32_t)memoryStream.Size();
+					stream.Write(&count, sizeof(count));
+					if (count > 0)
+					{
+						stream.Write(memoryStream.GetInternalBuffer(), count);
+					}
+				}
+			}
 
+			StreamWriter streamWriter(stream);
 			auto xml = model->SaveToXml();
 			XmlPrint(xml, streamWriter);
 		}
