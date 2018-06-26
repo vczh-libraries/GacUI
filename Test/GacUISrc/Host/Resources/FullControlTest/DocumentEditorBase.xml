@@ -75,25 +75,43 @@
           @cpp:UserImpl
           func LoadAsPrivateFormat(fileName: string): void
           {
+            dialogNotImpl.Text = $"You want to load from \"$(fileName)\" as private format, but this function is not implemented in Workflow script.";
             dialogNotImpl.ShowDialog();
           }
           
           @cpp:UserImpl
           func SaveAsPrivateFormat(fileName: string): void
           {
+            dialogNotImpl.Text = $"You want to save to \"$(fileName)\" as private format, but this function is not implemented in Workflow script.";
             dialogNotImpl.ShowDialog();
           }
           
           @cpp:UserImpl
           func SaveAsRTF(fileName: string): void
           {
+            dialogNotImpl.Text = $"You want to save to \"$(fileName)\" as RTF, but this function is not implemented in Workflow script.";
             dialogNotImpl.ShowDialog();
           }
           
           @cpp:UserImpl
           func SaveAsHTML(fileName: string): void
           {
+            dialogNotImpl.Text = $"You want to save to \"$(fileName)\" as HTML, but this function is not implemented in Workflow script.";
             dialogNotImpl.ShowDialog();
+          }
+          
+          @cpp:Private
+          func SaveDocument(): void
+          {
+            if (dialogSaveDoc.ShowDialog())
+            {
+              switch (dialogSaveDoc.FilterIndex)
+              {
+              case 0: { self.SaveAsPrivateFormat(dialogSaveDoc.FileName); }
+              case 1: { self.SaveAsRTF(dialogSaveDoc.FileName); }
+              case 2: { self.SaveAsHTML(dialogSaveDoc.FileName); }
+              }
+            }
           }
       
           prop MenuContainer : GraphicsComposition* {GetMenuContainer}
@@ -110,8 +128,10 @@
       <CustomControl ref.Name="self" Text="Document Editor">
         <att.HasEditableSelection-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.HasEditableSelection-bind>
         <MessageDialog ref.Name="dialogMessage" Title="You Clicked a Hyperlink!"/>
-        <MessageDialog ref.Name="dialogNotImpl" Title-bind="self.Text" Text="This function is not implemented in Workflow script."/>
+        <MessageDialog ref.Name="dialogNotImpl" Title-bind="self.Text"/>
         <OpenFileDialog ref.Name="dialogOpen" Title="Select an Image" Filter="Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp" EnabledPreview="true" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
+        <OpenFileDialog ref.Name="dialogOpenDoc" Title="Load a GacUI Document" Filter="Private Format (*.bin)|*.bin" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
+        <SaveFileDialog ref.Name="dialogSaveDoc" Title="Save a GacUI Document" Filter="Private Format (*.bin)|*.bin|RTF Document (*.rtf)|*.rtf|HTML Document (*.html)|*.html" Options="FileDialogPromptOverwriteFile"/>
 
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
@@ -145,6 +165,10 @@
           <ev.Executed-eval>
             <![CDATA[
               {
+                if (dialogOpenDoc.ShowDialog())
+                {
+                  self.LoadAsPrivateFormat(dialogOpenDoc.FileName);
+                }
               }
             ]]>
           </ev.Executed-eval>
@@ -154,6 +178,8 @@
           <ev.Executed-eval>
             <![CDATA[
               {
+                dialogSaveDoc.FilterIndex = 0;
+                self.SaveDocument();
               }
             ]]>
           </ev.Executed-eval>
@@ -163,6 +189,8 @@
           <ev.Executed-eval>
             <![CDATA[
               {
+                dialogSaveDoc.FilterIndex = 1;
+                self.SaveDocument();
               }
             ]]>
           </ev.Executed-eval>
@@ -172,6 +200,8 @@
           <ev.Executed-eval>
             <![CDATA[
               {
+                dialogSaveDoc.FilterIndex = 2;
+                self.SaveDocument();
               }
             ]]>
           </ev.Executed-eval>
