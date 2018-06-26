@@ -11,6 +11,13 @@
   <Image name="CopyLarge" content="File">L_Copy.png</Image>
   <Image name="CutLarge" content="File">L_Cut.png</Image>
   <Image name="PasteLarge" content="File">L_Paste.png</Image>
+
+  <Image name="FormatPrivate" content="File">_FormatPrivate.png</Image>
+  <Image name="FormatRtf" content="File">_FormatRtf.png</Image>
+  <Image name="FormatHtml" content="File">_FormatHtml.png</Image>
+  <Image name="FormatPrivateLarge" content="File">L_FormatPrivate.png</Image>
+  <Image name="FormatRtfLarge" content="File">L_FormatRtf.png</Image>
+  <Image name="FormatHtmlLarge" content="File">L_FormatHtml.png</Image>
   
   <Image name="Bold" content="File">s_Bold.png</Image>
   <Image name="Italic" content="File">s_Italic.png</Image>

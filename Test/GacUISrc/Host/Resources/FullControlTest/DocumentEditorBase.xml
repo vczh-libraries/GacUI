@@ -71,6 +71,30 @@
           {
             return toolstripContainer;
           }
+          
+          @cpp:UserImpl
+          func LoadAsPrivateFormat(fileName: string): void
+          {
+            dialogNotImpl.ShowDialog();
+          }
+          
+          @cpp:UserImpl
+          func SaveAsPrivateFormat(fileName: string): void
+          {
+            dialogNotImpl.ShowDialog();
+          }
+          
+          @cpp:UserImpl
+          func SaveAsRTF(fileName: string): void
+          {
+            dialogNotImpl.ShowDialog();
+          }
+          
+          @cpp:UserImpl
+          func SaveAsHTML(fileName: string): void
+          {
+            dialogNotImpl.ShowDialog();
+          }
       
           prop MenuContainer : GraphicsComposition* {GetMenuContainer}
           prop ToolstripContainer : GraphicsComposition* {GetToolstripContainer}
@@ -86,6 +110,7 @@
       <CustomControl ref.Name="self" Text="Document Editor">
         <att.HasEditableSelection-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.HasEditableSelection-bind>
         <MessageDialog ref.Name="dialogMessage" Title="You Clicked a Hyperlink!"/>
+        <MessageDialog ref.Name="dialogNotImpl" Title-bind="self.Text" Text="This function is not implemented in Workflow script."/>
         <OpenFileDialog ref.Name="dialogOpen" Title="Select an Image" Filter="Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp" EnabledPreview="true" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
 
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">

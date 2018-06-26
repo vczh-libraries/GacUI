@@ -2,14 +2,14 @@
   <Folder name="ToolbarImages" content="Link">ToolbarImages/Images.xml</Folder>
   <Folder name="DocumentComponents" content="Link">../../Host/Resources/FullControlTest/DocumentComponents.xml</Folder>
   <Folder name="DocumentEditorBase" content="Link">../../Host/Resources/FullControlTest/DocumentEditorBase.xml</Folder>
-  <Folder name="DocumentEditorRibbon" content="Link">../../Host/Resources/FullControlTest/DocumentEditorRibbon.xml</Folder>
+  <Folder name="DocumentEditorToolstrip" content="Link">../../Host/Resources/FullControlTest/DocumentEditorToolstrip.xml</Folder>
 
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
       <Window Text-bind="editor.Text" ClientSize="x:800 y:600">
-        <demo:DocumentEditorRibbon ref.Name="editor">
+        <demo:DocumentEditorToolstrip ref.Name="editor">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-        </demo:DocumentEditorRibbon>
+        </demo:DocumentEditorToolstrip>
       </Window>
     </Instance>
   </Instance>
