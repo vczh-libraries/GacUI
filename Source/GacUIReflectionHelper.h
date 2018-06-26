@@ -9,6 +9,7 @@ GacUI Reflection Helper
 #define VCZH_PRESENTATION_GACUIREFLECTIONHELPER
 
 #include "Resources/GuiResourceManager.h"
+#include "Resources/GuiDocumentClipboard.h"
 #include "Controls/Templates/GuiThemeStyleFactory.h"
 #include "Controls/Templates/GuiAnimation.h"
 #include "Controls/GuiApplication.h"
