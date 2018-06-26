@@ -1,6 +1,6 @@
 <Folder>
   <Instance name="DocumentEditorToolstripResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorToolstrip" xmlns:demo="demo::*">
+    <Instance ref.Class="demo::DocumentEditorToolstrip" xmlns:demo="demo::*">
       <demo:DocumentEditorBase ref.Name="self" Text="Document Editor (Toolstrip)">
         <att.MenuContainer-set>
           <ToolstripMenuBar>

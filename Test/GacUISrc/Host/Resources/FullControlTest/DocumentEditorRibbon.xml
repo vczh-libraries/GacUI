@@ -124,7 +124,7 @@
   </Instance>
 
   <Instance name="DocumentEditorRibbonResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorRibbon" xmlns:demo="demo::*">
+    <Instance ref.Class="demo::DocumentEditorRibbon" xmlns:demo="demo::*">
       <ref.Members>
         <![CDATA[
           @cpp:Private

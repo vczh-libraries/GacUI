@@ -39,6 +39,15 @@
     <ClCompile Include="Source\DarkSkin.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DocumentEditorBase.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DocumentEditorToolstrip.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DocumentEditorRibbon.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Helpers.h">
@@ -63,6 +72,15 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\DarkSkin.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DocumentEditorBase.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DocumentEditorToolstrip.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DocumentEditorRibbon.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>

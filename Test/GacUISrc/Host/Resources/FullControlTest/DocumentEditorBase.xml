@@ -1,6 +1,6 @@
 <Folder>
   <Instance name="DocumentEditorBaseResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentEditorBase">
+    <Instance ref.Class="demo::DocumentEditorBase">
       <ref.Members>
         <![CDATA[
           @cpp:Protected
