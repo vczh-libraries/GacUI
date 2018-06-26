@@ -5,6 +5,18 @@
         <att.MenuContainer-set>
           <ToolstripMenuBar>
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <MenuBarButton Text="File" Alt="F">
+              <att.SubMenu-set>
+                <MenuItemButton Command-eval="self.commandLoadPrivate" Alt="O"/>
+                <MenuItemButton Text="Save as" Alt="S" Image-uri="res://ToolbarImages/FormatPrivate">
+                  <att.SubMenu-set>
+                    <MenuItemButton Command-eval="self.commandSavePrivate" Alt="P"/>
+                    <MenuItemButton Command-eval="self.commandSaveRtf" Alt="R"/>
+                    <MenuItemButton Command-eval="self.commandSaveHtml" Alt="H"/>
+                  </att.SubMenu-set>
+                </MenuItemButton>
+              </att.SubMenu-set>
+            </MenuBarButton>
             <MenuBarButton Text="Edit" Alt="E">
               <att.SubMenu-set>
                 <ToolstripGroupContainer>

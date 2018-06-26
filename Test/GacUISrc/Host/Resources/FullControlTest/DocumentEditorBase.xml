@@ -141,6 +141,42 @@
           </Cell>
         </Table>
 
+        <ToolstripCommand ref.Name="commandLoadPrivate" Text="Load as Private Format" Image-uri="res://ToolbarImages/FormatPrivate" LargeImage-uri="res://ToolbarImages/FormatPrivateLarge">
+          <ev.Executed-eval>
+            <![CDATA[
+              {
+              }
+            ]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
+
+        <ToolstripCommand ref.Name="commandSavePrivate" Text="Save as Private Format" Image-uri="res://ToolbarImages/FormatPrivate" LargeImage-uri="res://ToolbarImages/FormatPrivateLarge">
+          <ev.Executed-eval>
+            <![CDATA[
+              {
+              }
+            ]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
+
+        <ToolstripCommand ref.Name="commandSaveRtf" Text="Save as RTF" Image-uri="res://ToolbarImages/FormatRtf" LargeImage-uri="res://ToolbarImages/FormatRtfLarge">
+          <ev.Executed-eval>
+            <![CDATA[
+              {
+              }
+            ]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
+
+        <ToolstripCommand ref.Name="commandSaveHtml" Text="Save as HTML" Image-uri="res://ToolbarImages/FormatHtml" LargeImage-uri="res://ToolbarImages/FormatHtmlLarge">
+          <ev.Executed-eval>
+            <![CDATA[
+              {
+              }
+            ]]>
+          </ev.Executed-eval>
+        </ToolstripCommand>
+
         <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolbarImages/Undo" LargeImage-uri="res://ToolbarImages/UndoLarge" ShortcutBuilder="Ctrl+Z">
           <att.Enabled-bind>document.observe as _(_.CanUndo() on _.UndoRedoChanged)</att.Enabled-bind>
           <ev.Executed-eval>
