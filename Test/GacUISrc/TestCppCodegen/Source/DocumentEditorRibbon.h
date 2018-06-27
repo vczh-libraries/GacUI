@@ -28,7 +28,7 @@ namespace demo
 {
 	class DocumentEditorRibbon : public ::demo::DocumentEditorBase, public ::demo::DocumentEditorRibbonConstructor, public ::vl::reflection::Description<DocumentEditorRibbon>
 	{
-		friend struct ::vl_workflow_global::__vwsnf171_Demo_demo_DocumentEditorRibbon___vwsn_instance_ctor__;
+		friend struct ::vl_workflow_global::__vwsnf172_Demo_demo_DocumentEditorRibbon___vwsn_instance_ctor__;
 		friend class ::demo::DocumentEditorRibbonConstructor;
 		friend class ::vl_workflow_global::__vwsnc64_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc65_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription;
@@ -53,6 +53,7 @@ namespace demo
 		friend struct ::vl_workflow_global::__vwsnf168_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf169_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf170_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf171_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentEditorRibbon>;
 #endif
