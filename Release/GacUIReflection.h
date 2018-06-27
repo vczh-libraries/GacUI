@@ -121,6 +121,8 @@ Type List (Basic)
 			F(presentation::INativeImageService)\
 			F(presentation::INativeResourceService)\
 			F(presentation::INativeAsyncService)\
+			F(presentation::INativeClipboardReader)\
+			F(presentation::INativeClipboardWriter)\
 			F(presentation::INativeClipboardService)\
 			F(presentation::INativeScreenService)\
 			F(presentation::INativeInputService)\

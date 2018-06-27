@@ -1138,6 +1138,7 @@ namespace vl
 	{
 		using namespace reflection;
 
+		class DocumentModel;
 		class INativeWindow;
 		class INativeWindowListener;
 		class INativeController;
@@ -1381,6 +1382,11 @@ Image Object
 			/// <returns>The frame in this image by a specified frame index.</returns>
 			/// <param name="index">The specified frame index.</param>
 			virtual INativeImageFrame*			GetFrame(vint index)=0;
+			/// <summary>
+			/// Save the image to a stream.
+			/// </summary>
+			/// <param name="stream"/>The stream</param>
+			virtual void						SaveToStream(stream::IStream& stream, FormatType formatType = FormatType::Unknown) = 0;
 		};
 		
 		/// <summary>
@@ -2107,6 +2113,59 @@ Native Window Services
 			/// <param name="milliseconds">Time to delay.</param>
 			virtual Ptr<INativeDelay>		DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)=0;
 		};
+
+		/// <summary>
+		/// Clipboard reader.
+		/// </summary>
+		class INativeClipboardReader : public virtual IDescriptable, public Description<INativeClipboardReader>
+		{
+		public:
+			/// <summary>Test is there a text in the clipboard.</summary>
+			/// <returns>Returns true if there is a text in the clipboard.</returns>
+			virtual bool					ContainsText() = 0;
+
+			/// <summary>Get the text from the clipboard.</summary>
+			/// <returns>The text.</returns>
+			virtual WString					GetText() = 0;
+
+			/// <summary>Test is there a document in the clipboard.</summary>
+			/// <returns>Returns true if there is a document in the clipboard.</returns>
+			virtual bool					ContainsDocument() = 0;
+
+			/// <summary>Get the document from the clipboard.</summary>
+			/// <returns>The document.</returns>
+			virtual Ptr<DocumentModel>		GetDocument() = 0;
+
+			/// <summary>Test is there an image in the clipboard.</summary>
+			/// <returns>Returns true if there is an image in the clipboard.</returns>
+			virtual bool					ContainsImage() = 0;
+
+			/// <summary>Get the image from the clipboard.</summary>
+			/// <returns>The image.</returns>
+			virtual Ptr<INativeImage>		GetImage() = 0;
+		};
+
+		/// <summary>
+		/// Clipboard writer.
+		/// </summary>
+		class INativeClipboardWriter : public virtual IDescriptable, public Description<INativeClipboardWriter>
+		{
+		public:
+			/// <summary>Prepare a text for the clipboard.</summary>
+			/// <param name="value">The text.</param>
+			virtual void					SetText(const WString& value) = 0;
+
+			/// <summary>Prepare a document for the clipboard.</summary>
+			/// <param name="value">The document.</param>
+			virtual void					SetDocument(Ptr<DocumentModel> value) = 0;
+
+			/// <summary>Prepare an image for the clipboard.</summary>
+			/// <param name="value">The image.</param>
+			virtual void					SetImage(Ptr<INativeImage> value) = 0;
+
+			/// <summary>Send all data to the clipboard.</summary>
+			virtual void					Submit() = 0;
+		};
 		
 		/// <summary>
 		/// Clipboard service. To access this service, use [M:vl.presentation.INativeController.ClipboardService].
@@ -2114,22 +2173,12 @@ Native Window Services
 		class INativeClipboardService : public virtual IDescriptable, public Description<INativeClipboardService>
 		{
 		public:
-			/// <summary>
-			/// Test is there a text in the clipboard.
-			/// </summary>
-			/// <returns>Returns true if there is a text in the clipboard.</returns>
-			virtual bool					ContainsText()=0;
-			/// <summary>
-			/// Get the text in the clipboard.
-			/// </summary>
-			/// <returns>The text in the clipboard.</returns>
-			virtual WString					GetText()=0;
-			/// <summary>
-			/// Copy the text to the clipboard.
-			/// </summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="value">The text to copy to the clipboard.</param>
-			virtual bool					SetText(const WString& value)=0;
+			/// <summary>Read clipboard.</summary>
+			/// <returns>The clipboard reader.</returns>
+			virtual Ptr<INativeClipboardReader>		ReadClipboard() = 0;
+			/// <summary>Write clipboard.</summary>
+			/// <returns>The clipboard writer.</returns>
+			virtual Ptr<INativeClipboardWriter>		WriteClipboard() = 0;
 		};
 		
 		/// <summary>
@@ -18583,6 +18632,39 @@ Ribbon Gallery List
 
 #endif
 
+
+/***********************************************************************
+.\RESOURCES\GUIDOCUMENTCLIPBOARD.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Resource
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_RESOURCES_GUIDOCUMENTCLIPBOARD
+#define VCZH_PRESENTATION_RESOURCES_GUIDOCUMENTCLIPBOARD
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		extern void					ModifyDocumentForClipboard(Ptr<DocumentModel> model);
+		extern Ptr<DocumentModel>	LoadDocumentFromClipboardStream(stream::IStream& stream);
+		extern void					SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream);
+
+		extern void					SaveDocumentToRtf(Ptr<DocumentModel> model, AString& rtf);
+		extern void					SaveDocumentToRtfStream(Ptr<DocumentModel> model, stream::IStream& stream);
+
+		extern void					SaveDocumentToHtmlUtf8(Ptr<DocumentModel> model, AString& header, AString& content, AString& footer);
+		extern void					SaveDocumentToHtmlClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream);
+	}
+}
+
+#endif
 
 /***********************************************************************
 .\RESOURCES\GUIDOCUMENTEDITOR.H

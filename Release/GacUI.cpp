@@ -4998,13 +4998,11 @@ document_operation_visitors::SerializeRunVisitor
 			class SerializeRunVisitor : public Object, public DocumentRun::IVisitor
 			{
 			protected:
-				DocumentModel*				model;
 				Ptr<XmlElement>				parent;
 
 			public:
-				SerializeRunVisitor(DocumentModel* _model, Ptr<XmlElement> _parent)
-					:model(_model)
-					, parent(_parent)
+				SerializeRunVisitor(Ptr<XmlElement> _parent)
+					:parent(_parent)
 				{
 				}
 
@@ -5262,7 +5260,7 @@ DocumentModel
 				
 				FOREACH(Ptr<DocumentParagraphRun>, p, paragraphs)
 				{
-					SerializeRunVisitor visitor(this, content);
+					SerializeRunVisitor visitor(content);
 					p->Accept(&visitor);
 				}
 			}
@@ -24800,47 +24798,39 @@ GuiTextBoxCommonInterface
 
 			bool GuiTextBoxCommonInterface::CanPaste()
 			{
-				return !readonly && GetCurrentController()->ClipboardService()->ContainsText() && textElement->GetPasswordChar()==L'\0';
+				if (!readonly && textElement->GetPasswordChar() == L'\0')
+				{
+					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+					return reader->ContainsText();
+				}
+				return false;
 			}
 
 			bool GuiTextBoxCommonInterface::Cut()
 			{
-				if(CanCut())
-				{
-					GetCurrentController()->ClipboardService()->SetText(GetSelectionText());
-					SetSelectionText(L"");
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				if (!CanCut()) return false;
+				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+				writer->SetText(GetSelectionText());
+				writer->Submit();
+				SetSelectionText(L"");
+				return true;
 			}
 
 			bool GuiTextBoxCommonInterface::Copy()
 			{
-				if(CanCopy())
-				{
-					GetCurrentController()->ClipboardService()->SetText(GetSelectionText());
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				if (!CanCopy()) return false;
+				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+				writer->SetText(GetSelectionText());
+				writer->Submit();
+				return true;
 			}
 
 			bool GuiTextBoxCommonInterface::Paste()
 			{
-				if(CanPaste())
-				{
-					SetSelectionText(GetCurrentController()->ClipboardService()->GetText());
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				if (!CanPaste()) return false;
+				auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+				SetSelectionText(reader->GetText());
+				return true;
 			}
 			
 			//================ editing control
@@ -27118,47 +27108,62 @@ GuiDocumentCommonInterface
 
 			bool GuiDocumentCommonInterface::CanPaste()
 			{
-				return editMode==Editable && GetCurrentController()->ClipboardService()->ContainsText();
+				if (editMode == Editable)
+				{
+					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+					return reader->ContainsText() || reader->ContainsDocument() || reader->ContainsImage();
+				}
+				return false;
 			}
 
 			bool GuiDocumentCommonInterface::Cut()
 			{
-				if(CanCut())
-				{
-					GetCurrentController()->ClipboardService()->SetText(GetSelectionText());
-					SetSelectionText(L"");
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				if (!CanCut())return false;
+				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+				auto model = GetSelectionModel();
+				writer->SetDocument(model);
+				writer->Submit();
+				SetSelectionText(L"");
+				return true;
 			}
 
 			bool GuiDocumentCommonInterface::Copy()
 			{
-				if(CanCopy())
-				{
-					GetCurrentController()->ClipboardService()->SetText(GetSelectionText());
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				if (!CanCopy()) return false;
+				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+				auto model = GetSelectionModel();
+				writer->SetDocument(model);
+				writer->Submit();
+				return true;
 			}
 
 			bool GuiDocumentCommonInterface::Paste()
 			{
-				if(CanPaste())
+				if (!CanPaste()) return false;
+				auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+				if (reader->ContainsDocument())
 				{
-					SetSelectionText(GetCurrentController()->ClipboardService()->GetText());
+					if (auto document = reader->GetDocument())
+					{
+						SetSelectionModel(document);
+						return true;
+					}
+				}
+				if (reader->ContainsText())
+				{
+					SetSelectionText(reader->GetText());
 					return true;
 				}
-				else
+				if (reader->ContainsImage())
 				{
-					return false;
+					if (auto image = reader->GetImage())
+					{
+						auto imageData = MakePtr<GuiImageData>(image, 0);
+						EditImage(GetCaretBegin(), GetCaretEnd(), imageData);
+						return true;
+					}
 				}
+				return false;
 			}
 
 			//================ undo redo control
@@ -29694,6 +29699,7 @@ GuiRibbonButtons
 					case ThemeName::RibbonIconLabel:
 						type = 3;
 						break;
+					default:;
 					}
 
 					if (type != -1)
@@ -30214,6 +30220,7 @@ GuiRibbonToolstripMenu
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\TOOLSTRIPPACKAGE\GUITOOLSTRIPMENU.CPP
@@ -34204,12 +34211,13 @@ GuiResourcePathFileResolver
 
 			Ptr<DescriptableObject> ResolveResource(const WString& path)
 			{
-				WString filename=path;
-				if(filename.Length()>=2 && filename[1]!=L':')
+				if (workingDirectory == L"") return nullptr;
+				WString filename = path;
+				if (filename.Length() >= 2 && filename[1] != L':')
 				{
-					filename=workingDirectory+filename;
+					filename = workingDirectory + filename;
 				}
-				Ptr<INativeImage> image=GetCurrentController()->ImageService()->CreateImageFromFile(filename);
+				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(filename);
 				return new GuiImageData(image, 0);
 			}
 
@@ -34919,6 +34927,140 @@ Type Resolver Plugin
 
 
 /***********************************************************************
+.\RESOURCES\GUIRESOURCEMANAGER.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+		using namespace stream;
+		using namespace reflection::description;
+		using namespace controls;
+
+/***********************************************************************
+Class Name Record (ClassNameRecord)
+***********************************************************************/
+
+		class GuiResourceClassNameRecordTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_DirectLoadStream
+		{
+		public:
+			WString GetType()override
+			{
+				return L"ClassNameRecord";
+			}
+
+			bool XmlSerializable()override
+			{
+				return false;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
+			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
+			{
+				return this;
+			}
+
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			{
+				if (auto obj = content.Cast<GuiResourceClassNameRecord>())
+				{
+					internal::ContextFreeWriter writer(stream);
+					writer << obj->classNames;
+				}
+			}
+
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			{
+				internal::ContextFreeReader reader(stream);
+
+				auto obj = MakePtr<GuiResourceClassNameRecord>();
+				reader << obj->classNames;
+				return obj;
+			}
+		};
+
+/***********************************************************************
+IGuiInstanceResourceManager
+***********************************************************************/
+
+		IGuiResourceManager* resourceManager = nullptr;
+
+		IGuiResourceManager* GetResourceManager()
+		{
+			return resourceManager;
+		}
+
+		class GuiResourceManager : public Object, public IGuiResourceManager, public IGuiPlugin
+		{
+		protected:
+			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
+
+			ResourceMap								resources;
+			ResourceMap								instanceResources;
+
+		public:
+
+			GUI_PLUGIN_NAME(GacUI_Res_Resource)
+			{
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
+			}
+
+			void Load()override
+			{
+				resourceManager = this;
+				IGuiResourceResolverManager* manager = GetResourceResolverManager();
+				manager->SetTypeResolver(new GuiResourceClassNameRecordTypeResolver);
+			}
+
+			void Unload()override
+			{
+				resourceManager = nullptr;
+			}
+
+			bool SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage)override
+			{
+				vint index = resources.Keys().IndexOf(name);
+				if (index != -1) return false;
+				
+				resource->Initialize(usage);
+				resources.Add(name, resource);
+				
+				auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>();
+				FOREACH(WString, className, record->classNames)
+				{
+					instanceResources.Add(className, resource);
+				}
+				return true;
+			}
+
+			Ptr<GuiResource> GetResource(const WString& name)override
+			{
+				vint index = resources.Keys().IndexOf(name);
+				return index == -1 ? nullptr : resources.Values()[index];
+			}
+
+			Ptr<GuiResource> GetResourceFromClassName(const WString& classFullName)override
+			{
+				vint index = instanceResources.Keys().IndexOf(classFullName);
+				if (index == -1) return nullptr;
+				return instanceResources.Values()[index];
+			}
+		};
+		GUI_REGISTER_PLUGIN(GuiResourceManager)
+	}
+}
+
+
+/***********************************************************************
 .\GACUIREFLECTIONHELPER.CPP
 ***********************************************************************/
 
@@ -35078,7 +35220,191 @@ External Functions (Compositions)
 }
 
 /***********************************************************************
-.\RESOURCES\GUIRESOURCEMANAGER.CPP
+.\RESOURCES\GUIDOCUMENTCLIPBOARD_DOCUMENT.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+		using namespace parsing::xml;
+		using namespace stream;
+
+		namespace document_clipboard_visitors
+		{
+			class TraverseDocumentVisitor : public Object, public DocumentRun::IVisitor
+			{
+			public:
+				TraverseDocumentVisitor()
+				{
+				}
+
+				virtual void VisitContainer(DocumentContainerRun* run)
+				{
+					FOREACH(Ptr<DocumentRun>, childRun, run->runs)
+					{
+						childRun->Accept(this);
+					}
+				}
+
+				void Visit(DocumentTextRun* run)override
+				{
+				}
+
+				void Visit(DocumentStylePropertiesRun* run)override
+				{
+					VisitContainer(run);
+				}
+
+				void Visit(DocumentStyleApplicationRun* run)override
+				{
+					VisitContainer(run);
+				}
+
+				void Visit(DocumentHyperlinkRun* run)override
+				{
+					VisitContainer(run);
+				}
+
+				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+
+				void Visit(DocumentParagraphRun* run)override
+				{
+					VisitContainer(run);
+				}
+			};
+
+			class ModifyDocumentForClipboardVisitor : public TraverseDocumentVisitor
+			{
+			public:
+				ModifyDocumentForClipboardVisitor()
+				{
+				}
+
+				void VisitContainer(DocumentContainerRun* run)override
+				{
+					for (vint i = run->runs.Count() - 1; i >= 0; i--)
+					{
+						auto childRun = run->runs[i];
+						if (childRun.Cast<DocumentEmbeddedObjectRun>())
+						{
+							run->runs.RemoveAt(i);
+						}
+					}
+					TraverseDocumentVisitor::VisitContainer(run);
+				}
+			};
+
+			class CollectImageRunsVisitor : public TraverseDocumentVisitor
+			{
+			public:
+				List<Ptr<DocumentImageRun>> imageRuns;
+
+				CollectImageRunsVisitor()
+				{
+				}
+
+				void Visit(DocumentImageRun* run)override
+				{
+					run->source = L"res://Image_" + itow(imageRuns.Count());
+					imageRuns.Add(run);
+				}
+			};
+		}
+		using namespace document_clipboard_visitors;
+
+		void ModifyDocumentForClipboard(Ptr<DocumentModel> model)
+		{
+			ModifyDocumentForClipboardVisitor visitor;
+			FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+			{
+				paragraph->Accept(&visitor);
+			}
+		}
+
+		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& stream)
+		{
+			auto tempResource = MakePtr<GuiResource>();
+			auto tempResourceItem = MakePtr<GuiResourceItem>();
+			tempResource->AddItem(L"Document", tempResourceItem);
+			auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
+
+			{
+				vint32_t count = 0;
+				if (stream.Read(&count, sizeof(count)) != sizeof(count)) return nullptr;
+				for (vint i = 0; i < count; i++)
+				{
+					vint32_t size = 0;
+					if (stream.Read(&size, sizeof(size)) != sizeof(size)) return nullptr;
+					if (size > 0)
+					{
+						Array<char> buffer(size);
+						if (stream.Read(&buffer[0], size) != size) return nullptr;
+						if (auto image = GetCurrentController()->ImageService()->CreateImageFromMemory(&buffer[0], buffer.Count()))
+						{
+							auto imageItem = MakePtr<GuiResourceItem>();
+							imageItem->SetContent(L"Image", MakePtr<GuiImageData>(image, 0));
+							tempResource->AddItem(L"Image_" + itow(i), imageItem);
+						}
+					}
+				}
+			}
+
+			StreamReader streamReader(stream);
+			auto text = streamReader.ReadToEnd();
+			List<GuiResourceError> errors;
+
+			auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
+			auto xml = parser->Parse({}, text, errors);
+			if (errors.Count() > 0) return nullptr;
+
+			auto document = DocumentModel::LoadFromXml(tempResourceItem, xml, tempResolver, errors);
+			return document;
+		}
+
+		void SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream)
+		{
+			CollectImageRunsVisitor visitor;
+			FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+			{
+				paragraph->Accept(&visitor);
+			}
+			{
+				vint32_t count = visitor.imageRuns.Count();
+				stream.Write(&count, sizeof(count));
+				FOREACH(Ptr<DocumentImageRun>, imageRun, visitor.imageRuns)
+				{
+					stream::MemoryStream memoryStream;
+					if (imageRun->image)
+					{
+						imageRun->image->SaveToStream(memoryStream);
+					}
+					
+					count = (vint32_t)memoryStream.Size();
+					stream.Write(&count, sizeof(count));
+					if (count > 0)
+					{
+						stream.Write(memoryStream.GetInternalBuffer(), count);
+					}
+				}
+			}
+
+			StreamWriter streamWriter(stream);
+			auto xml = model->SaveToXml();
+			XmlPrint(xml, streamWriter);
+		}
+	}
+}
+
+/***********************************************************************
+.\RESOURCES\GUIDOCUMENTCLIPBOARD_HTMLFORMAT.CPP
 ***********************************************************************/
 
 namespace vl
@@ -35087,129 +35413,531 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace stream;
-		using namespace reflection::description;
-		using namespace controls;
 
-/***********************************************************************
-Class Name Record (ClassNameRecord)
-***********************************************************************/
-
-		class GuiResourceClassNameRecordTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_DirectLoadStream
+		namespace document_clipboard_visitors
 		{
-		public:
-			WString GetType()override
+			class GenerateHtmlVisitor : public Object, public DocumentRun::IVisitor
 			{
-				return L"ClassNameRecord";
-			}
+				typedef DocumentModel::ResolvedStyle					ResolvedStyle;
+			public:
+				List<ResolvedStyle>				styles;
+				DocumentModel*					model;
+				StreamWriter&					writer;
 
-			bool XmlSerializable()override
-			{
-				return false;
-			}
-
-			bool StreamSerializable()override
-			{
-				return true;
-			}
-
-			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
-			{
-				return this;
-			}
-
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
-			{
-				if (auto obj = content.Cast<GuiResourceClassNameRecord>())
+				GenerateHtmlVisitor(DocumentModel* _model, StreamWriter& _writer)
+					:model(_model)
+					, writer(_writer)
 				{
-					internal::ContextFreeWriter writer(stream);
-					writer << obj->classNames;
+					ResolvedStyle style;
+					style.color = Color(0, 0, 0, 0);
+					style.backgroundColor = Color(0, 0, 0, 0);
+					style = model->GetStyle(DocumentModel::DefaultStyleName, style);
+					styles.Add(style);
+				}
+
+				void VisitContainer(DocumentContainerRun* run)
+				{
+					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					{
+						subRun->Accept(this);
+					}
+				}
+
+				WString ColorToString(Color c)
+				{
+					auto result = c.ToString();
+					if (result.Length() == 9) result = result.Left(7);
+					return result;
+				}
+
+				void Visit(DocumentTextRun* run)override
+				{
+					WString text = run->GetRepresentationText();
+					if (text.Length() > 0)
+					{
+						ResolvedStyle style = styles[styles.Count() - 1];
+
+						writer.WriteString(L"<span style=\"");
+						if (style.style.bold) writer.WriteString(L"font-weight:bold; ");
+						if (style.style.italic) writer.WriteString(L"font-style:italic; ");
+						if (style.style.underline && style.style.strikeline) writer.WriteString(L"text-decoration:underline line-through; ");
+						else if (style.style.underline) writer.WriteString(L"text-decoration:underline; ");
+						else if (style.style.strikeline) writer.WriteString(L"text-decoration:line-through; ");
+						if (style.style.fontFamily != L"") writer.WriteString(L"font-family:" + style.style.fontFamily + L"; ");
+						if (style.style.size != 0) writer.WriteString(L"font-size:" + itow(style.style.size) + L"px; ");
+						if (style.color.a != 0) writer.WriteString(L"color:" + ColorToString(style.color) + L"; ");
+						if (style.backgroundColor.a != 0)writer.WriteString(L"background-color:" + ColorToString(style.backgroundColor) + L"; ");
+						writer.WriteString(L"\">");
+
+						for (vint i = 0; i < text.Length(); i++)
+						{
+							switch (wchar_t c = text[i])
+							{
+							case L'&': writer.WriteString(L"&amp;"); break;
+							case L'<': writer.WriteString(L"&lt;"); break;
+							case L'>': writer.WriteString(L"&gt;"); break;
+							case L'\r': break;
+							case L'\n': writer.WriteString(L"<br>"); break;
+							case L' ': writer.WriteString(L"&nbsp;"); break;
+							case L'\t': writer.WriteString(L"<pre>\t</pre>"); break;
+							default: writer.WriteChar(c); break;
+							}
+						}
+
+						writer.WriteString(L"</span>");
+					}
+				}
+
+				void Visit(DocumentStylePropertiesRun* run)override
+				{
+					ResolvedStyle style = styles[styles.Count() - 1];
+					style = model->GetStyle(run->style, style);
+					styles.Add(style);
+					VisitContainer(run);
+					styles.RemoveAt(styles.Count() - 1);
+				}
+
+				void Visit(DocumentStyleApplicationRun* run)override
+				{
+					ResolvedStyle style = styles[styles.Count() - 1];
+					style = model->GetStyle(run->styleName, style);
+					styles.Add(style);
+					VisitContainer(run);
+					styles.RemoveAt(styles.Count() - 1);
+				}
+
+				void Visit(DocumentHyperlinkRun* run)override
+				{
+					writer.WriteString(L"<a href=\"");
+					for (vint i = 0; i < run->reference.Length(); i++)
+					{
+						switch (wchar_t c = run->reference[i])
+						{
+						case L'&': writer.WriteString(L"&amp;"); break;
+						case L'<': writer.WriteString(L"&lt;"); break;
+						case L'>': writer.WriteString(L"&gt;"); break;
+						case L'"': writer.WriteString(L"&quot;"); break;
+						case L'\'': writer.WriteString(L"&#39;"); break;
+						default: writer.WriteChar(c); break;
+						}
+					}
+					writer.WriteString(L"\">");
+
+					ResolvedStyle style = styles[styles.Count() - 1];
+					style = model->GetStyle((run->normalStyleName == L"" ? DocumentModel::NormalLinkStyleName : run->normalStyleName), style);
+					styles.Add(style);
+					VisitContainer(run);
+					styles.RemoveAt(styles.Count() - 1);
+
+					writer.WriteString(L"</a>");
+				}
+
+				void Visit(DocumentImageRun* run)override
+				{
+					if (run->image)
+					{
+						writer.WriteString(L"<img width=\"" + itow(run->size.x) + L"\" height=\"" + itow(run->size.y) + L"\" src=\"data:image/");
+						switch (run->image->GetFormat())
+						{
+						case INativeImage::Bmp: writer.WriteString(L"bmp;base64,"); break;
+						case INativeImage::Gif: writer.WriteString(L"gif;base64,"); break;
+						case INativeImage::Icon: writer.WriteString(L"icon;base64,"); break;
+						case INativeImage::Jpeg: writer.WriteString(L"jpeg;base64,"); break;
+						case INativeImage::Png: writer.WriteString(L"png;base64,"); break;
+						case INativeImage::Tiff: writer.WriteString(L"tiff;base64,"); break;
+						case INativeImage::Wmp: writer.WriteString(L"wmp;base64,"); break;
+						default: writer.WriteString(L"unsupported;base64,\"/>"); return;
+						}
+
+						MemoryStream memoryStream;
+						run->image->SaveToStream(memoryStream);
+						memoryStream.SeekFromBegin(0);
+						while (true)
+						{
+							vuint8_t bytes[3] = { 0,0,0 };
+							vint read = memoryStream.Read(&bytes, sizeof(bytes));
+							if (read == 0) break;
+
+							vuint8_t b1 = bytes[0] / (1 << 2);
+							vuint8_t b2 = ((bytes[0] % (1 << 2)) << 4) + bytes[1] / (1 << 4);
+							vuint8_t b3 = ((bytes[1] % (1 << 4)) << 2) + bytes[2] / (1 << 6);
+							vuint8_t b4 = bytes[2] % (1 << 6);
+
+							const wchar_t* BASE64 =
+								L"ABCDEFG"
+								L"HIJKLMN"
+								L"OPQRST"
+								L"UVWXYZ"
+								L"abcdefg"
+								L"hijklmn"
+								L"opqrst"
+								L"uvwxyz"
+								L"0123456789"
+								L"+/";
+#define BASE64_CHAR(b)		BASE64[b]
+							switch (read)
+							{
+							case 1:
+								writer.WriteChar(BASE64_CHAR(b1));
+								writer.WriteChar(BASE64_CHAR(b2));
+								writer.WriteChar(L'=');
+								writer.WriteChar(L'=');
+								break;
+							case 2:
+								writer.WriteChar(BASE64_CHAR(b1));
+								writer.WriteChar(BASE64_CHAR(b2));
+								writer.WriteChar(BASE64_CHAR(b3));
+								writer.WriteChar(L'=');
+								break;
+							case 3:
+								writer.WriteChar(BASE64_CHAR(b1));
+								writer.WriteChar(BASE64_CHAR(b2));
+								writer.WriteChar(BASE64_CHAR(b3));
+								writer.WriteChar(BASE64_CHAR(b4));
+								break;
+							}
+#undef BASE64_CHAR
+						}
+
+						writer.WriteString(L"\"/>");
+					}
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+
+				void Visit(DocumentParagraphRun* run)override
+				{
+					VisitContainer(run);
+				}
+			};
+		}
+		using namespace document_clipboard_visitors;
+
+#define HTML_LINE(LINE) LINE "\r\n"
+
+		void SaveDocumentToHtmlUtf8(Ptr<DocumentModel> model, AString& header, AString& content, AString& footer)
+		{
+			header =
+				HTML_LINE("<!DOCTYPE html>")
+				HTML_LINE("<html>")
+				HTML_LINE("<header>")
+				HTML_LINE("<title>GacUI Document 1.0</title>")
+				HTML_LINE("<meta charset=\"utf-8\"/>")
+				HTML_LINE("</header>")
+				HTML_LINE("<body>")
+				;
+
+			MemoryStream memoryStream;
+			{
+				Utf8Encoder encoder;
+				EncoderStream encoderStream(memoryStream, encoder);
+				StreamWriter writer(encoderStream);
+				GenerateHtmlVisitor visitor(model.Obj(), writer);
+
+				FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+				{
+					writer.WriteString(L"<p style=\"text-align:");
+					if (paragraph->alignment)
+					{
+						switch (paragraph->alignment.Value())
+						{
+						case Alignment::Left: writer.WriteString(L"left;"); break;
+						case Alignment::Center: writer.WriteString(L"center;"); break;
+						case Alignment::Right: writer.WriteString(L"right;"); break;
+						}
+					}
+					else
+					{
+						writer.WriteString(L"left;");
+					}
+					writer.WriteString(L"\">");
+					paragraph->Accept(&visitor);
+					writer.WriteString(L"</p>\r\n");
 				}
 			}
+			char zero = 0;
+			memoryStream.Write(&zero, sizeof(zero));
+			content = (const char*)memoryStream.GetInternalBuffer();
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
-			{
-				internal::ContextFreeReader reader(stream);
-
-				auto obj = MakePtr<GuiResourceClassNameRecord>();
-				reader << obj->classNames;
-				return obj;
-			}
-		};
-
-/***********************************************************************
-IGuiInstanceResourceManager
-***********************************************************************/
-
-		IGuiResourceManager* resourceManager = nullptr;
-
-		IGuiResourceManager* GetResourceManager()
-		{
-			return resourceManager;
+			footer =
+				HTML_LINE("</body>")
+				HTML_LINE("</html>")
+				;
 		}
 
-		class GuiResourceManager : public Object, public IGuiResourceManager, public IGuiPlugin
+		void SaveDocumentToHtmlClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream)
 		{
-		protected:
-			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
+			AString header, content, footer;
+			SaveDocumentToHtmlUtf8(model, header, content, footer);
 
-			ResourceMap								resources;
-			ResourceMap								instanceResources;
+			char clipboardHeader[] =
+				HTML_LINE("StartHTML:-1")
+				HTML_LINE("EndHTML:-1")
+				HTML_LINE("StartFragment:0000000000")
+				HTML_LINE("EndFragment:0000000000")
+				;
+			char commentStart[] = "<!--StartFragment-->";
+			char commentEnd[] = "<!--EndFragment-->";
+			vint offsetStart = sizeof(clipboardHeader) - 1 + header.Length() + sizeof(commentStart) - 1;
+			vint offsetEnd = offsetStart + content.Length();
 
-		public:
+			AString offsetStartString = itoa(offsetStart);
+			AString offsetEndString = itoa(offsetEnd);
+			memcpy(strstr(clipboardHeader, "EndFragment:") - offsetStartString.Length() - 2, offsetStartString.Buffer(), offsetStartString.Length());
+			memcpy(clipboardHeader + sizeof(clipboardHeader) - 1 - offsetEndString.Length() - 2, offsetEndString.Buffer(), offsetEndString.Length());
 
-			GUI_PLUGIN_NAME(GacUI_Res_Resource)
-			{
-				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
-			}
+			stream.Write(clipboardHeader, sizeof(clipboardHeader) - 1);
+			if (header.Length() > 0) stream.Write((void*)header.Buffer(), header.Length());
+			stream.Write(commentStart, sizeof(commentStart) - 1);
+			if (content.Length() > 0) stream.Write((void*)content.Buffer(), content.Length());
+			stream.Write(commentEnd, sizeof(commentEnd) - 1);
+			if (footer.Length() > 0) stream.Write((void*)footer.Buffer(), footer.Length());
+		}
 
-			void Load()override
-			{
-				resourceManager = this;
-				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceClassNameRecordTypeResolver);
-			}
-
-			void Unload()override
-			{
-				resourceManager = nullptr;
-			}
-
-			bool SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage)override
-			{
-				vint index = resources.Keys().IndexOf(name);
-				if (index != -1) return false;
-				
-				resource->Initialize(usage);
-				resources.Add(name, resource);
-				
-				auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>();
-				FOREACH(WString, className, record->classNames)
-				{
-					instanceResources.Add(className, resource);
-				}
-				return true;
-			}
-
-			Ptr<GuiResource> GetResource(const WString& name)override
-			{
-				vint index = resources.Keys().IndexOf(name);
-				return index == -1 ? nullptr : resources.Values()[index];
-			}
-
-			Ptr<GuiResource> GetResourceFromClassName(const WString& classFullName)override
-			{
-				vint index = instanceResources.Keys().IndexOf(classFullName);
-				if (index == -1) return nullptr;
-				return instanceResources.Values()[index];
-			}
-		};
-		GUI_REGISTER_PLUGIN(GuiResourceManager)
+#undef HTML_LINE
 	}
 }
 
+/***********************************************************************
+.\RESOURCES\GUIDOCUMENTCLIPBOARD_RICHTEXTFORMAT.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+		using namespace stream;
+
+		namespace document_clipboard_visitors
+		{
+			class GenerateRtfVisitor : public Object, public DocumentRun::IVisitor
+			{
+				typedef DocumentModel::ResolvedStyle					ResolvedStyle;
+			public:
+				List<ResolvedStyle>				styles;
+				DocumentModel*					model;
+				StreamWriter&					writer;
+
+				List<WString>&					fontTable;
+				List<Color>&					colorTable;
+				Dictionary<WString, vint>		fontIndex;
+				Dictionary<Color, vint>			colorIndex;
+
+				vint GetFont(const WString& fontName)
+				{
+					vint index = fontIndex.Keys().IndexOf(fontName);
+					if (index == -1)
+					{
+						index = fontTable.Add(fontName);
+						fontIndex.Add(fontName, index);
+						return index;
+					}
+					return fontIndex.Values()[index];
+				}
+
+				vint GetColor(Color color)
+				{
+					if (color.a == 0) return 0;
+					vint index = colorIndex.Keys().IndexOf(color);
+					if (index == -1)
+					{
+						index = colorTable.Add(color) + 1;
+						colorIndex.Add(color, index);
+						return index;
+					}
+					return colorIndex.Values()[index];
+				}
+
+				GenerateRtfVisitor(DocumentModel* _model, List<WString>& _fontTable, List<Color>& _colorTable, StreamWriter& _writer)
+					:model(_model)
+					, writer(_writer)
+					, fontTable(_fontTable)
+					, colorTable(_colorTable)
+				{
+					ResolvedStyle style;
+					style.color = Color(0, 0, 0, 0);
+					style.backgroundColor = Color(0, 0, 0, 0);
+					style = model->GetStyle(DocumentModel::DefaultStyleName, style);
+					styles.Add(style);
+				}
+
+				void VisitContainer(DocumentContainerRun* run)
+				{
+					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					{
+						subRun->Accept(this);
+					}
+				}
+
+				void Visit(DocumentTextRun* run)override
+				{
+					WString text = run->GetRepresentationText();
+					if (text.Length() > 0)
+					{
+						ResolvedStyle style = styles[styles.Count() - 1];
+
+						writer.WriteString(L"{\\f" + itow(GetFont(style.style.fontFamily)));
+						writer.WriteString(L"{\\fs" + itow((vint)(style.style.size * 1.5)));
+						writer.WriteString(L"\\cf" + itow(GetColor(style.color)));
+						writer.WriteString(L"\\cb" + itow(GetColor(style.backgroundColor)));
+						writer.WriteString(L"\\chshdng" + itow(GetColor(style.backgroundColor)));
+						writer.WriteString(L"\\chcbpat" + itow(GetColor(style.backgroundColor)));
+
+						if (style.style.bold) writer.WriteString(L"\\b");
+						if (style.style.italic) writer.WriteString(L"\\i");
+						if (style.style.underline) writer.WriteString(L"\\ul");
+						if (style.style.strikeline) writer.WriteString(L"\\strike");
+
+						for (vint i = 0; i < text.Length(); i++)
+						{
+							writer.WriteString(L"\\u" + itow(text[i]));
+						}
+
+						writer.WriteString(L"}");
+					}
+				}
+
+				void Visit(DocumentStylePropertiesRun* run)override
+				{
+					ResolvedStyle style = styles[styles.Count() - 1];
+					style = model->GetStyle(run->style, style);
+					styles.Add(style);
+					VisitContainer(run);
+					styles.RemoveAt(styles.Count() - 1);
+				}
+
+				void Visit(DocumentStyleApplicationRun* run)override
+				{
+					ResolvedStyle style = styles[styles.Count() - 1];
+					style = model->GetStyle(run->styleName, style);
+					styles.Add(style);
+					VisitContainer(run);
+					styles.RemoveAt(styles.Count() - 1);
+				}
+
+				void Visit(DocumentHyperlinkRun* run)override
+				{
+					ResolvedStyle style = styles[styles.Count() - 1];
+					style = model->GetStyle((run->normalStyleName == L"" ? DocumentModel::NormalLinkStyleName : run->normalStyleName), style);
+					styles.Add(style);
+					VisitContainer(run);
+					styles.RemoveAt(styles.Count() - 1);
+				}
+
+				void Visit(DocumentImageRun* run)override
+				{
+					if (run->image)
+					{
+						writer.WriteString(L"{\\pict\\pngblip");
+						writer.WriteString(L"\\picw" + itow(run->size.x) + L"\\pich" + itow(run->size.y));
+						writer.WriteString(L"\\picwgoal" + itow(run->size.x * 15) + L"\\pichgoal" + itow(run->size.y * 15) + L" ");
+
+						MemoryStream memoryStream;
+						run->image->SaveToStream(memoryStream, INativeImage::Png);
+						vint count = (vint)memoryStream.Size();
+						vuint8_t* buffer = (vuint8_t*)memoryStream.GetInternalBuffer();
+						for (vint i = 0; i < count; i++)
+						{
+							writer.WriteChar(L"0123456789abcdef"[buffer[i] / 16]);
+							writer.WriteChar(L"0123456789abcdef"[buffer[i] % 16]);
+						}
+
+						writer.WriteString(L"}");
+					}
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+
+				void Visit(DocumentParagraphRun* run)override
+				{
+					VisitContainer(run);
+				}
+			};
+		}
+		using namespace document_clipboard_visitors;
+
+		void SaveDocumentToRtf(Ptr<DocumentModel> model, AString& rtf)
+		{
+			List<WString> fontTable;
+			List<Color> colorTable;
+			MemoryStream bodyStream;
+			{
+				StreamWriter writer(bodyStream);
+				GenerateRtfVisitor visitor(model.Obj(), fontTable, colorTable, writer);
+
+				FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+				{
+					if (paragraph->alignment)
+					{
+						switch (paragraph->alignment.Value())
+						{
+						case Alignment::Left: writer.WriteString(L"\\ql{"); break;
+						case Alignment::Center: writer.WriteString(L"\\qc{"); break;
+						case Alignment::Right: writer.WriteString(L"\\qr{"); break;
+						}
+					}
+					else
+					{
+						writer.WriteString(L"\\ql{");
+					}
+					paragraph->Accept(&visitor);
+					writer.WriteString(L"}\\par");
+				}
+			}
+
+			MemoryStream rtfStream;
+			{
+				Utf8Encoder encoder;
+				EncoderStream encoderStream(rtfStream, encoder);
+				StreamWriter writer(encoderStream);
+
+				writer.WriteString(L"{\\rtf1\\ansi\\deff0{\\fonttbl");
+				FOREACH_INDEXER(WString, fontName, index, fontTable)
+				{
+					writer.WriteString(L"{\\f");
+					writer.WriteString(itow(index));
+					writer.WriteString(L" ");
+					writer.WriteString(fontName);
+					writer.WriteString(L";}");
+				}
+
+				writer.WriteString(L"}{\\colortbl");
+				FOREACH_INDEXER(Color, color, index, colorTable)
+				{
+					writer.WriteString(L";\\red");
+					writer.WriteString(itow(color.r));
+					writer.WriteString(L"\\green");
+					writer.WriteString(itow(color.g));
+					writer.WriteString(L"\\blue");
+					writer.WriteString(itow(color.b));
+				}
+
+				writer.WriteString(L";}{\\*\\generator GacUI Document 1.0}\\uc0");
+				{
+					bodyStream.SeekFromBegin(0);
+					StreamReader reader(bodyStream);
+					writer.WriteString(reader.ReadToEnd());
+				}
+				writer.WriteString(L"}");
+			}
+			char zero = 0;
+			rtfStream.Write(&zero, sizeof(zero));
+			rtf = (const char*)rtfStream.GetInternalBuffer();
+		}
+
+		void SaveDocumentToRtfStream(Ptr<DocumentModel> model, stream::IStream& stream)
+		{
+			AString rtf;
+			SaveDocumentToRtf(model, rtf);
+			stream.Write((void*)rtf.Buffer(), rtf.Length());
+		}
+	}
+}
 
 /***********************************************************************
 .\RESOURCES\GUIDOCUMENTEDITOR_ADDCONTAINER.CPP
@@ -36911,7 +37639,9 @@ If a run decides that itself should be removed, then replacedRuns contains all r
 						Ptr<DocumentRun> subRun = run->runs[i];
 						RunRange range = runRanges[subRun.Obj()];
 
-						if (range.start <= end && start <= range.end)
+						vint maxStart = range.start > start ? range.start : start;
+						vint minEnd = range.end < end ? range.end : end;
+						if (maxStart < minEnd)
 						{
 							subRun->Accept(this);
 							if (replacedRuns.Count() == 0 || subRun != replacedRuns[0])
@@ -37312,7 +38042,7 @@ Calculate if all text in the specified range has a common style name
 					}
 					else if (styleName && (!currentStyleName || styleName.Value() != currentStyleName.Value()))
 					{
-						styleName = {};
+						styleName = Nullable<WString>();
 					}
 				}
 
@@ -37411,6 +38141,7 @@ Calculate if all text in the specified range has a common style name
 		}
 	}
 }
+
 
 /***********************************************************************
 .\RESOURCES\GUIDOCUMENT_EDIT.CPP
@@ -38066,7 +38797,7 @@ DocumentModel::ClearStyle
 					}
 					else if (!styleName || !newStyleName || styleName.Value() != newStyleName.Value())
 					{
-						styleName = {};
+						styleName = Nullable<WString>();
 					}
 				}
 			}
@@ -38113,3 +38844,4 @@ DocumentModel::ClearStyle
 		}
 	}
 }
+
