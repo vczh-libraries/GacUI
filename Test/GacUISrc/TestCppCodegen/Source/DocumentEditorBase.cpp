@@ -124,25 +124,46 @@ namespace demo
 	USERIMPL(/* ::demo::DocumentEditorBase */)
 	void DocumentEditorBase::LoadAsPrivateFormat(const ::vl::WString& fileName)
 	{
-		throw ::vl::Exception(L"You should implement this function.");
+		stream::FileStream fileStream(fileName, stream::FileStream::ReadOnly);
+		auto model = presentation::LoadDocumentFromClipboardStream(fileStream);
+		document->SetDocument(model);
 	}
 
 	USERIMPL(/* ::demo::DocumentEditorBase */)
 	void DocumentEditorBase::SaveAsPrivateFormat(const ::vl::WString& fileName)
 	{
-		throw ::vl::Exception(L"You should implement this function.");
+		document->SelectAll();
+		auto model = document->GetSelectionModel();
+
+		presentation::ModifyDocumentForClipboard(model);
+		stream::FileStream fileStream(fileName, stream::FileStream::WriteOnly);
+		presentation::SaveDocumentToClipboardStream(model, fileStream);
 	}
 
 	USERIMPL(/* ::demo::DocumentEditorBase */)
 	void DocumentEditorBase::SaveAsRTF(const ::vl::WString& fileName)
 	{
-		throw ::vl::Exception(L"You should implement this function.");
+		document->SelectAll();
+		auto model = document->GetSelectionModel();
+
+		AString rtf;
+		presentation::SaveDocumentToRtf(model, rtf);
+		stream::FileStream fileStream(fileName, stream::FileStream::WriteOnly);
+		fileStream.Write((void*)rtf.Buffer(), rtf.Length());
 	}
 
 	USERIMPL(/* ::demo::DocumentEditorBase */)
 	void DocumentEditorBase::SaveAsHTML(const ::vl::WString& fileName)
 	{
-		throw ::vl::Exception(L"You should implement this function.");
+		document->SelectAll();
+		auto model = document->GetSelectionModel();
+
+		AString header, content, footer;
+		presentation::SaveDocumentToHtmlUtf8(model, header, content, footer);
+		stream::FileStream fileStream(fileName, stream::FileStream::WriteOnly);
+		fileStream.Write((void*)header.Buffer(), header.Length());
+		fileStream.Write((void*)content.Buffer(), content.Length());
+		fileStream.Write((void*)footer.Buffer(), footer.Length());
 	}
 
 	void DocumentEditorBase::SaveDocument()
