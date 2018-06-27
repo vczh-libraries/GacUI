@@ -412,11 +412,14 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetText, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(ContainsDocument, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetDocument, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(ContainsImage, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetImage, NO_PARAMETER)
 			END_INTERFACE_MEMBER(INativeClipboardReader)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeClipboardWriter)
 				CLASS_MEMBER_METHOD(SetText, { L"value" })
 				CLASS_MEMBER_METHOD(SetDocument, { L"value" })
+				CLASS_MEMBER_METHOD(SetImage, { L"value" })
 				CLASS_MEMBER_METHOD(Submit, NO_PARAMETER)
 			END_INTERFACE_MEMBER(INativeClipboardWriter)
 
