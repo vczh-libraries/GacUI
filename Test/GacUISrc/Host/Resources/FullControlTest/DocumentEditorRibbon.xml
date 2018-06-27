@@ -203,16 +203,35 @@
         <att.AlignLeftSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignLeft on _.SelectionChanged)</att.AlignLeftSelected-bind>
         <att.AlignCenterSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignCenter on _.SelectionChanged)</att.AlignCenterSelected-bind>
         <att.AlignRightSelected-bind>self.document.observe as _(self.SelectAlignmentCommand() == self.commandAlignRight on _.SelectionChanged)</att.AlignRightSelected-bind>
-
         <MessageDialog ref.Name="dialogMessage" Title="You Expanded a Group!" Text="GuiRibbonGroup::ExpandButtonClicked is executed!"/>
+
+        <ToolstripMenu ref.Name="toolstripHome">
+          <ToolstripGroupContainer>
+            <ToolstripGroup>
+              <MenuItemButton Command-eval="self.commandLoadPrivate" Alt="O"/>
+            </ToolstripGroup>
+            <ToolstripGroup>
+              <MenuItemButton Command-eval="self.commandSavePrivate" Alt="P"/>
+              <MenuItemButton Command-eval="self.commandSaveRtf" Alt="R"/>
+              <MenuItemButton Command-eval="self.commandSaveHtml" Alt="H"/>
+            </ToolstripGroup>
+          </ToolstripGroupContainer>
+        </ToolstripMenu>
 
         <att.MenuContainer-set>
           <RibbonTab>
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
 
             <att.BeforeHeaders-set>
-              <Button Text="  HOME  ">
+              <Button ref.Name="buttonHome" Text="  HOME  ">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      toolstripHome.ShowPopup(buttonHome, true);
+                    }
+                  ]]>
+                </ev.Clicked-eval>
               </Button>
             </att.BeforeHeaders-set>
 
