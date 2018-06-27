@@ -564,6 +564,7 @@ GuiRibbonButtons
 					case ThemeName::RibbonIconLabel:
 						type = 3;
 						break;
+					default:;
 					}
 
 					if (type != -1)

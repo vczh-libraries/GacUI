@@ -139,7 +139,14 @@ ExecuteQuery
 
 		void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& output)
 		{
+#if defined(VCZH_GCC) && defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnull-dereference"
+#endif
 			ExecuteQuery(query, context, *(List<Ptr<GuiConstructorRepr>>*)0, output);
+#if defined(VCZH_GCC) && defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 		}
 
 /***********************************************************************

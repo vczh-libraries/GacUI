@@ -216,7 +216,7 @@ Calculate if all text in the specified range has a common style name
 					}
 					else if (styleName && (!currentStyleName || styleName.Value() != currentStyleName.Value()))
 					{
-						styleName = {};
+						styleName = Nullable<WString>();
 					}
 				}
 

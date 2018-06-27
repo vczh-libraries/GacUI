@@ -650,7 +650,7 @@ DocumentModel::ClearStyle
 					}
 					else if (!styleName || !newStyleName || styleName.Value() != newStyleName.Value())
 					{
-						styleName = {};
+						styleName = Nullable<WString>();
 					}
 				}
 			}
