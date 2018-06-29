@@ -9,6 +9,8 @@ Tools/*.exe
 Tools/*.dll
 Test/GacUISrc/*/*.UI.error.txt
 Test/GacUISrc/*/*.UI.bin
+Test/GacUISrc/*/*.UI.x86.bin
+Test/GacUISrc/*/*.UI.x64.bin
 Test/GacUISrc/*/*.UI.txt
 Test/GacUISrc/*/Reflection.txt
 Test/GacUISrc/TestXml/TestXml.xml

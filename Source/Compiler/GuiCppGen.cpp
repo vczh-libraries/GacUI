@@ -118,20 +118,19 @@ namespace vl
 		bool WriteBinaryResource(
 			Ptr<GuiResource> resource,
 			bool compress,
-			bool workflow,
-			const filesystem::FilePath& filePath)
+			bool includeAssemblyInResource,
+			Nullable<filesystem::FilePath> resourceOutput,
+			Nullable<filesystem::FilePath> assemblyOutput)
 		{
 			auto precompiled = resource->GetFolder(L"Precompiled");
 			auto folder = precompiled->GetFolder(L"Workflow");
-			if (!workflow)
-			{
-				precompiled->RemoveFolder(L"Workflow");
-			}
 
-			FileStream fileStream(filePath.GetFullPath(), FileStream::WriteOnly);
-
-			if (fileStream.IsAvailable())
+			if (resourceOutput)
 			{
+				FileStream fileStream(resourceOutput.Value().GetFullPath(), FileStream::WriteOnly);
+				if (!fileStream.IsAvailable()) return false;
+
+				if (!includeAssemblyInResource) precompiled->RemoveFolder(L"Workflow");
 				if (compress)
 				{
 					LzwEncoder encoder;
@@ -142,14 +141,26 @@ namespace vl
 				{
 					resource->SavePrecompiledBinary(fileStream);
 				}
+				if (!includeAssemblyInResource) precompiled->AddFolder(L"Workflow", folder);
 			}
 
-			if (folder && !workflow)
+			if (assemblyOutput)
 			{
-				precompiled->AddFolder(L"Workflow", folder);
+				if (auto item = folder->GetItem(L"InstanceClass"))
+				{
+					if (auto compiled = item->GetContent().Cast<GuiInstanceCompiledWorkflow>())
+					{
+						if (compiled->assembly)
+						{
+							FileStream fileStream(assemblyOutput.Value().GetFullPath(), FileStream::WriteOnly);
+							if (!fileStream.IsAvailable()) return false;
+							compiled->assembly->Serialize(fileStream);
+						}
+					}
+				}
 			}
 
-			return fileStream.IsAvailable();
+			return true;
 		}
 
 		void WriteEmbeddedBinaryClass(MemoryStream& binaryStream, bool compress, const WString& className, const WString& prefix, StreamWriter& writer)

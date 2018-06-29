@@ -36,8 +36,9 @@ namespace vl
 		extern bool										WriteBinaryResource(
 															Ptr<GuiResource> resource,
 															bool compress,
-															bool workflow,
-															const filesystem::FilePath& filePath);
+															bool includeAssemblyInResource,
+															Nullable<filesystem::FilePath> resourceOutput,
+															Nullable<filesystem::FilePath> assemblyOutput);
 
 		extern bool										WriteEmbeddedResource(Ptr<GuiResource> resource,
 															Ptr<workflow::cppcodegen::WfCppInput> cppInput,

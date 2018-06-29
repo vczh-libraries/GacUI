@@ -106,6 +106,13 @@ void CompileResources(const WString& name, const WString& resourcePath, const WS
 	FilePath workflowPath2 = outputBinaryFolder + name + L".TemporaryClass.UI.txt";
 	FilePath workflowPath3 = outputBinaryFolder + name + L".InstanceClass.UI.txt";
 	FilePath binaryPath = outputBinaryFolder + name + L".UI.bin";
+	FilePath assemblyPath32 = outputBinaryFolder + name + L".UI.x86.bin";
+	FilePath assemblyPath64 = outputBinaryFolder + name + L".UI.x64.bin";
+#ifdef VCZH_64
+	FilePath assemblyPath = assemblyPath64;
+#else
+	FilePath assemblyPath = assemblyPath32;
+#endif
 
 	List<GuiResourceError> errors;
 	auto resource = GuiResource::LoadFromXml(resourcePath, errors);
@@ -114,7 +121,9 @@ void CompileResources(const WString& name, const WString& resourcePath, const WS
 	File(workflowPath1).Delete();
 	File(workflowPath2).Delete();
 	File(workflowPath3).Delete();
-	File(errorPath).Delete();
+	File(binaryPath).Delete();
+	File(assemblyPath32).Delete();
+	File(assemblyPath64).Delete();
 
 	auto precompiledFolder = PrecompileAndWriteErrors(resource, &debugCallback, errors, errorPath);
 	WriteWorkflowScript(precompiledFolder, L"Workflow/Shared", workflowPath1);
@@ -137,7 +146,7 @@ void CompileResources(const WString& name, const WString& resourcePath, const WS
 		WriteEmbeddedResource(resource, input, output, compressResource, cppFolder / (name + L"Resource.cpp"));
 	}
 
-	WriteBinaryResource(resource, false, true, binaryPath);
+	WriteBinaryResource(resource, false, true, binaryPath, assemblyPath);
 	{
 		FileStream fileStream(binaryPath.GetFullPath(), FileStream::ReadOnly);
 		resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
