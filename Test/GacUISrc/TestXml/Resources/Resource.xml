@@ -1,4 +1,6 @@
 <Resource>
+  <Text name="Temp">
+    <![CDATA[
   <Folder name="ToolbarImages" content="Link">ToolbarImages/Images.xml</Folder>
   <Folder name="DocumentComponents" content="Link">../../Host/Resources/FullControlTest/DocumentComponents.xml</Folder>
   <Folder name="DocumentEditorBase" content="Link">../../Host/Resources/FullControlTest/DocumentEditorBase.xml</Folder>
@@ -31,13 +33,51 @@
     <Image name="Paste" content="File">Images/SmallPaste.png</Image>
     <Image name="Save" content="File">Images/SmallSave.png</Image>
   </Folder>
+    ]]>
+  </Text>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+      <Window Text="Demo" ClientSize="x:640 y:480">
+        <Stack AlignmentToParent="left:5 top:5 right:-1 bottom:-1" Padding="5" Direction="Vertical" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <ComboBox SelectedIndex-eval="0">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:120"/>
+              <att.ListControl>
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <_ Text-bind="textBox1.Text"/>
+                    <_ Text-bind="textBox2.Text"/>
+                    <_ Text-bind="textBox3.Text"/>
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+            </ComboBox>
+          </StackItem>
+          <StackItem>
+            <SinglelineTextBox ref.Name="textBox1" Text="Item 1">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </StackItem>
+          <StackItem>
+            <SinglelineTextBox ref.Name="textBox2" Text="Item 2">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </StackItem>
+          <StackItem>
+            <SinglelineTextBox ref.Name="textBox3" Text="Item 3">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </StackItem>
+        </Stack>
+      </Window>
+    </Instance>
+  </Instance>
 
   <Folder name="DarkSkin">
     <Instance name="DarkSkinThemeResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonTheme" xmlns:x="darkskin::*">
         <ThemeTemplates>
-          <att.RibbonSmallIconLabel>x:RibbonSmallIconLabelTemplate</att.RibbonSmallIconLabel>
-          <att.RibbonIconLabel>x:RibbonIconLabelTemplate</att.RibbonIconLabel>
         </ThemeTemplates>
       </Instance>
     </Instance>
