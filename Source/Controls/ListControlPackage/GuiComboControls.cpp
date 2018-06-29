@@ -230,6 +230,19 @@ GuiComboBoxListControl
 				SelectedIndexChanged.Execute(GetNotifyEventArguments());
 			}
 
+			void GuiComboBoxListControl::OnAttached(GuiListControl::IItemProvider* provider)
+			{
+			}
+
+			void GuiComboBoxListControl::OnItemModified(vint start, vint count, vint newCount)
+			{
+				vint index = GetSelectedIndex();
+				if (start <= index && index < start + count)
+				{
+					DisplaySelectedContent(index);
+				}
+			}
+
 			GuiComboBoxListControl::GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl)
 				:GuiComboBoxBase(themeName)
 				, containedListControl(_containedListControl)
@@ -239,6 +252,7 @@ GuiComboBoxListControl
 				ContextChanged.AttachMethod(this, &GuiComboBoxListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiComboBoxListControl::OnVisuallyEnabledChanged);
 
+				containedListControl->GetItemProvider()->AttachCallback(this);
 				containedListControl->SetMultiSelect(false);
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
 				containedListControl->SelectionChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
@@ -255,6 +269,7 @@ GuiComboBoxListControl
 
 			GuiComboBoxListControl::~GuiComboBoxListControl()
 			{
+				containedListControl->GetItemProvider()->DetachCallback(this);
 				containedListControl->GetBoundsComposition()->BoundsChanged.Detach(boundsChangedHandler);
 				boundsChangedHandler = nullptr;
 			}

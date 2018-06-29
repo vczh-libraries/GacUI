@@ -17122,6 +17122,19 @@ GuiComboBoxListControl
 				SelectedIndexChanged.Execute(GetNotifyEventArguments());
 			}
 
+			void GuiComboBoxListControl::OnAttached(GuiListControl::IItemProvider* provider)
+			{
+			}
+
+			void GuiComboBoxListControl::OnItemModified(vint start, vint count, vint newCount)
+			{
+				vint index = GetSelectedIndex();
+				if (start <= index && index < start + count)
+				{
+					DisplaySelectedContent(index);
+				}
+			}
+
 			GuiComboBoxListControl::GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl)
 				:GuiComboBoxBase(themeName)
 				, containedListControl(_containedListControl)
@@ -17131,6 +17144,7 @@ GuiComboBoxListControl
 				ContextChanged.AttachMethod(this, &GuiComboBoxListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiComboBoxListControl::OnVisuallyEnabledChanged);
 
+				containedListControl->GetItemProvider()->AttachCallback(this);
 				containedListControl->SetMultiSelect(false);
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
 				containedListControl->SelectionChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
@@ -17147,6 +17161,7 @@ GuiComboBoxListControl
 
 			GuiComboBoxListControl::~GuiComboBoxListControl()
 			{
+				containedListControl->GetItemProvider()->DetachCallback(this);
 				containedListControl->GetBoundsComposition()->BoundsChanged.Detach(boundsChangedHandler);
 				boundsChangedHandler = nullptr;
 			}
@@ -35780,7 +35795,7 @@ namespace vl
 						ResolvedStyle style = styles[styles.Count() - 1];
 
 						writer.WriteString(L"{\\f" + itow(GetFont(style.style.fontFamily)));
-						writer.WriteString(L"{\\fs" + itow((vint)(style.style.size * 1.5)));
+						writer.WriteString(L"\\fs" + itow((vint)(style.style.size * 1.5)));
 						writer.WriteString(L"\\cf" + itow(GetColor(style.color)));
 						writer.WriteString(L"\\cb" + itow(GetColor(style.backgroundColor)));
 						writer.WriteString(L"\\chshdng" + itow(GetColor(style.backgroundColor)));

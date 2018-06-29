@@ -64,7 +64,10 @@ ComboBox with GuiListControl
 ***********************************************************************/
 
 			/// <summary>Combo box list control. This control is a combo box with a list control in its popup.</summary>
-			class GuiComboBoxListControl : public GuiComboBoxBase, public Description<GuiComboBoxListControl>
+			class GuiComboBoxListControl
+				: public GuiComboBoxBase
+				, private GuiListControl::IItemProviderCallback
+				, public Description<GuiComboBoxListControl>
 			{
 			public:
 				using ItemStyleProperty = TemplateProperty<templates::GuiTemplate>;
@@ -90,6 +93,12 @@ ComboBox with GuiListControl
 				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+			private:
+				// ===================== GuiListControl::IItemProviderCallback =====================
+
+				void										OnAttached(GuiListControl::IItemProvider* provider)override;
+				void										OnItemModified(vint start, vint count, vint newCount)override;
 			public:
 				/// <summary>Create a control with a specified default theme and a list control that will be put in the popup control to show all items.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
