@@ -11,52 +11,56 @@ namespace vl
 		using namespace workflow::analyzer;
 
 /***********************************************************************
-Workflow_GetPropertyTypes
+Workflow_AdjustPropertySearchType
 ***********************************************************************/
 
-		bool Workflow_GetPropertyTypes(WString& errorPrefix, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop, Ptr<GuiAttSetterRepr::SetterValue> setter, collections::List<types::PropertyResolving>& possibleInfos, GuiResourceError::List& errors)
+		IGuiInstanceLoader::TypeInfo Workflow_AdjustPropertySearchType(types::ResolvingResult& resolvingResult, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop)
 		{
 			if (resolvedTypeInfo.typeName.ToString() == resolvingResult.context->className)
 			{
-				auto propTd = resolvedTypeInfo.typeInfo->GetTypeDescriptor();
-				if (!propTd) goto FINISHED_CHECKING_CTOR_ARGUMENT;
-
-				vint baseCount = propTd->GetBaseTypeDescriptorCount();
-				for (vint i = 0; i < baseCount; i++)
+				if (auto propTd = resolvedTypeInfo.typeInfo->GetTypeDescriptor())
 				{
-					auto baseTd = propTd->GetBaseTypeDescriptor(i);
-					if (auto ctorGroup = baseTd->GetConstructorGroup())
+					vint baseCount = propTd->GetBaseTypeDescriptorCount();
+					for (vint i = 0; i < baseCount; i++)
 					{
-						if (ctorGroup->GetMethodCount() == 1)
+						auto baseTd = propTd->GetBaseTypeDescriptor(i);
+						if (auto ctorGroup = baseTd->GetConstructorGroup())
 						{
-							auto ctor = ctorGroup->GetMethod(0);
-							auto propertyName = prop.ToString();
-							auto ctorArgumentName = L"<ctor-parameter>" + propertyName;
-							vint paramCount = ctor->GetParameterCount();
-							for (vint j = 0; j < paramCount; j++)
+							if (ctorGroup->GetMethodCount() == 1)
 							{
-								auto parameterInfo = ctor->GetParameter(j);
-								if (parameterInfo->GetName() == ctorArgumentName)
+								auto ctor = ctorGroup->GetMethod(0);
+								auto propertyName = prop.ToString();
+								auto ctorArgumentName = L"<ctor-parameter>" + propertyName;
+								vint paramCount = ctor->GetParameterCount();
+								for (vint j = 0; j < paramCount; j++)
 								{
-									if (baseTd->GetPropertyByName(propertyName, false))
+									auto parameterInfo = ctor->GetParameter(j);
+									if (parameterInfo->GetName() == ctorArgumentName)
 									{
-										resolvedTypeInfo.typeInfo = CopyTypeInfo(ctor->GetReturn());
-										resolvedTypeInfo.typeName = GlobalStringKey::Get(baseTd->GetTypeName());
-										goto FINISHED_CHECKING_CTOR_ARGUMENT;
-									}
-									else
-									{
-										goto FINISHED_CHECKING_CTOR_ARGUMENT_FOR_TYPE;
+										if (baseTd->GetPropertyByName(propertyName, false))
+										{
+											resolvedTypeInfo.typeInfo = CopyTypeInfo(ctor->GetReturn());
+											resolvedTypeInfo.typeName = GlobalStringKey::Get(baseTd->GetTypeName());
+											return resolvedTypeInfo;
+										}
+										break;
 									}
 								}
 							}
 						}
 					}
-				FINISHED_CHECKING_CTOR_ARGUMENT_FOR_TYPE:;
 				}
 			}
-			FINISHED_CHECKING_CTOR_ARGUMENT:
+			return resolvedTypeInfo;
+		}
 
+/***********************************************************************
+Workflow_GetPropertyTypes
+***********************************************************************/
+
+		bool Workflow_GetPropertyTypes(WString& errorPrefix, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop, Ptr<GuiAttSetterRepr::SetterValue> setter, collections::List<types::PropertyResolving>& possibleInfos, GuiResourceError::List& errors)
+		{
+			resolvedTypeInfo = Workflow_AdjustPropertySearchType(resolvingResult, resolvedTypeInfo, prop);
 			bool reportedNotSupported = false;
 			IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
 

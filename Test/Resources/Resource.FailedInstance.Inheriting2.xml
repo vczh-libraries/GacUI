@@ -20,7 +20,7 @@
 
   <Instance name="i2">
     <Instance ref.Class="demo::T2" xmlns:demo="demo::*">
-      <demo:T1 ViewModel-eval="0"/>
+      <demo:T1 ViewModel-eval="wrong"/>
     </Instance>
   </Instance>
 </Resource>
