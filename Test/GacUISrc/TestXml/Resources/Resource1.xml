@@ -1,0 +1,10 @@
+<Resource>
+  <Instance name="BaseWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::BaseWindow" xmlns:demo="demo::*">
+      <ref.Parameter Name="ViewModel" Class="IViewModel"/>
+      <Window ref.Name="self">
+        <Label TextColor="#FFFFFF" Font="fontFamily:'SegoeUI' size:36" Text-eval="ViewModel.GetString()"/>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

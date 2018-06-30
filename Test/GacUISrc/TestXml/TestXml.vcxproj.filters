@@ -58,5 +58,14 @@
     <Xml Include="Resources\Resource.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="Resources\Resource1.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="Resources\Resource2.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="Resources\Resource3.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

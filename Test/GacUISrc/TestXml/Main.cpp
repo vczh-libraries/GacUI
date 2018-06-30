@@ -104,7 +104,9 @@ void GuiMain()
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	LoadDarkSkinTypes();
-	CompileResources(L"Demo", LR"(Resources/Resource.xml)",	L"./", L"", false);
+	CompileResources(L"Resource1", LR"(Resources/Resource1.xml)", L"./", L"", false);
+	CompileResources(L"Resource2", LR"(Resources/Resource2.xml)", L"./", L"", false);
+	CompileResources(L"Resource3", LR"(Resources/Resource3.xml)", L"./", L"", false);
 	OpenMainWindow();
 #endif
 }

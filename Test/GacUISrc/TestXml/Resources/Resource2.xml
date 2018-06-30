@@ -1,0 +1,37 @@
+<Resource>
+  <Script name="ViewModelScript">
+    <Workflow>
+      <![CDATA[
+        module viewmodel;
+        
+        using system::*;
+        
+        interface IViewModel
+        {
+          func GetString(): string;
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
+  <Instance name="DerivedWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DerivedWindow" xmlns:demo="demo::*">
+      <ref.Members>
+        <![CDATA[
+          static func CreateViewModel(): IViewModel^
+          {
+            return new IViewModel^
+            {
+              override func GetString(): string
+              {
+                return "String from demo::DerivedWindow";
+              }
+            };
+          }
+        ]]>
+      </ref.Members>
+      <demo:BaseWindow ViewModel-eval="CreateViewModel()" Text="Derived Window" ClientSize="x:640 y:480">
+      </demo:BaseWindow>
+    </Instance>
+  </Instance>
+</Resource>
