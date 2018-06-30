@@ -1,5 +1,5 @@
 <Resource>
-  <Folder name="ToolbarImages" content="Link">ToolbarImages/Images.xml</Folder>
+  <Folder name="ToolbarImages" content="Link">../../Host/Resources/FullControlTest/ToolbarImages/Images.xml</Folder>
   <Folder name="DocumentComponents" content="Link">../../Host/Resources/FullControlTest/DocumentComponents.xml</Folder>
   <Folder name="DocumentEditorBase" content="Link">../../Host/Resources/FullControlTest/DocumentEditorBase.xml</Folder>
   <Folder name="DocumentEditorRibbon" content="Link">../../Host/Resources/FullControlTest/DocumentEditorRibbon.xml</Folder>
@@ -13,24 +13,6 @@
       </Window>
     </Instance>
   </Instance>
-
-  <Folder name="LargeImages">
-    <Image name="Accounts" content="File">Images/LargeAccounts.png</Image>
-    <Image name="Chart" content="File">Images/LargeChart.png</Image>
-    <Image name="Copy" content="File">Images/LargeCopy.png</Image>
-    <Image name="Flags" content="File">Images/LargeFlags.png</Image>
-    <Image name="Paste" content="File">Images/LargePaste.png</Image>
-    <Image name="Save" content="File">Images/LargeSave.png</Image>
-  </Folder>
-
-  <Folder name="SmallImages">
-    <Image name="Accounts" content="File">Images/SmallAccounts.png</Image>
-    <Image name="Chart" content="File">Images/SmallChart.png</Image>
-    <Image name="Copy" content="File">Images/SmallCopy.png</Image>
-    <Image name="Flags" content="File">Images/SmallFlags.png</Image>
-    <Image name="Paste" content="File">Images/SmallPaste.png</Image>
-    <Image name="Save" content="File">Images/SmallSave.png</Image>
-  </Folder>
 
   <Folder name="DarkSkin">
     <Instance name="DarkSkinThemeResource">
