@@ -129,9 +129,9 @@ TEST_CASE(TestResource_FailedInstance_Control)
 	LoadResource(L"Resource.FailedInstance.Control.xml", true);
 }
 
-TEST_CASE(TestResource_FailedInstance_Inheriting)
+TEST_CASE(TestResource_FailedInstance_Inheriting1)
 {
-	LoadResource(L"Resource.FailedInstance.Inheriting.xml", true);
+	LoadResource(L"Resource.FailedInstance.Inheriting1.xml", true);
 }
 
 TEST_CASE(Resource_FailedScript_Workflow)

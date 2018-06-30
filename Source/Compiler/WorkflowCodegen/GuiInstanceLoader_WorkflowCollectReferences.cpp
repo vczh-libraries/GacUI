@@ -29,26 +29,24 @@ Workflow_GetPropertyTypes
 					{
 						if (ctorGroup->GetMethodCount() == 1)
 						{
-							if (auto ctor = ctorGroup->GetMethod(0))
+							auto ctor = ctorGroup->GetMethod(0);
+							auto propertyName = prop.ToString();
+							auto ctorArgumentName = L"<ctor-parameter>" + propertyName;
+							vint paramCount = ctor->GetParameterCount();
+							for (vint j = 0; j < paramCount; j++)
 							{
-								auto propertyName = prop.ToString();
-								auto ctorArgumentName = L"<ctor-parameter>" + propertyName;
-								vint paramCount = ctor->GetParameterCount();
-								for (vint j = 0; j < paramCount; j++)
+								auto parameterInfo = ctor->GetParameter(j);
+								if (parameterInfo->GetName() == ctorArgumentName)
 								{
-									auto parameterInfo = ctor->GetParameter(j);
-									if (parameterInfo->GetName() == ctorArgumentName)
+									if (baseTd->GetPropertyByName(propertyName, false))
 									{
-										if (baseTd->GetPropertyByName(propertyName, false))
-										{
-											resolvedTypeInfo.typeInfo = CopyTypeInfo(ctor->GetReturn());
-											resolvedTypeInfo.typeName = GlobalStringKey::Get(baseTd->GetTypeName());
-											goto FINISHED_CHECKING_CTOR_ARGUMENT;
-										}
-										else
-										{
-											goto FINISHED_CHECKING_CTOR_ARGUMENT_FOR_TYPE;
-										}
+										resolvedTypeInfo.typeInfo = CopyTypeInfo(ctor->GetReturn());
+										resolvedTypeInfo.typeName = GlobalStringKey::Get(baseTd->GetTypeName());
+										goto FINISHED_CHECKING_CTOR_ARGUMENT;
+									}
+									else
+									{
+										goto FINISHED_CHECKING_CTOR_ARGUMENT_FOR_TYPE;
 									}
 								}
 							}
@@ -389,7 +387,7 @@ WorkflowReferenceNamesVisitor
 
 							errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
 								L"Precompile: Missing required " +
-								WString(info->usage == GuiInstancePropertyInfo::ConstructorArgument ? L"constructor argument" : L"required property") +
+								WString(info->usage == GuiInstancePropertyInfo::ConstructorArgument ? L"constructor argument" : L"property") +
 								L" \"" +
 								prop.ToString() +
 								L"\" of type \"" +
@@ -498,6 +496,48 @@ WorkflowReferenceNamesVisitor
 						auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
 						resolvedTypeInfo.typeName = source.typeName;
 						resolvedTypeInfo.typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
+					}
+				}
+
+				if (resolvingResult.context->instance == repr)
+				{
+					static const wchar_t Prefix[] = L"<ctor-parameter>";
+					static const vint PrefixLength = (vint)sizeof(Prefix) / sizeof(*Prefix) - 1;
+
+					auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
+					if (auto baseTd = description::GetTypeDescriptor(source.typeName.ToString()))
+					{
+						if (auto ctorGroup = baseTd->GetConstructorGroup())
+						{
+							if (ctorGroup->GetMethodCount() == 1)
+							{
+								auto ctor = ctorGroup->GetMethod(0);
+								vint paramCount = ctor->GetParameterCount();
+								for (vint i = 0; i < paramCount; i++)
+								{
+									auto parameterInfo = ctor->GetParameter(i);
+									auto ctorArg = parameterInfo->GetName();
+									if (ctorArg.Length() > PrefixLength && ctorArg.Left(PrefixLength) == Prefix)
+									{
+										auto propName = ctorArg.Right(ctorArg.Length() - PrefixLength);
+										if (baseTd->GetPropertyByName(propName, false))
+										{
+											if (!repr->setters.Keys().Contains(GlobalStringKey::Get(propName)))
+											{
+												errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
+													L"Precompile: Missing required property \"" +
+													propName +
+													L"\" of type \"" +
+													resolvedTypeInfo.typeName.ToString() +
+													L"\" for its base type \"" +
+													baseTd->GetTypeName() +
+													L"\"."));
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 
