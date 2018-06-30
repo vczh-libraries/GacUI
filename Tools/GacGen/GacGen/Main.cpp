@@ -164,6 +164,7 @@ void GuiMain()
 	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
 	FilePath errorFilePath = logFolderPath / L"Errors.txt";
 	FilePath workingDir = inputPath.GetFolder();
+
 	{
 		Folder logFolder(logFolderPath);
 		if (logFolder.Exists())
@@ -197,13 +198,54 @@ void GuiMain()
 		}
 	}
 
-	Ptr<CodegenConfig> config;
+	List<FilePath> cppResourcePaths;
+	List<FilePath> cppCompressedPaths;
+	List<FilePath> resResourcePaths;
+	List<FilePath> resCompressedPaths;
+	List<FilePath> resAssemblyPaths;
+	Ptr<CodegenConfig::CppOutput> cppOutput;
+	Ptr<CodegenConfig::ResOutput> resOutput;
 	{
-		config = CodegenConfig::LoadConfig(resource);
-		if (!config)
+		Ptr<CodegenConfig> config;
 		{
-			PrintErrorMessage(L"error> Failed to load config.");
-			return;
+			config = CodegenConfig::LoadConfig(resource);
+			if (!config)
+			{
+				PrintErrorMessage(L"error> Failed to load config.");
+				return;
+			}
+		}
+		{
+			cppResourcePaths.Add(logFolderPath / L"Resource.bin");
+			cppCompressedPaths.Add(logFolderPath / L"Compressed.bin");
+			resResourcePaths.Add(logFolderPath / L"ScriptedResource.bin");
+			resCompressedPaths.Add(logFolderPath / L"ScriptedCompressed.bin");
+			resAssemblyPaths.Add(logFolderPath / L"Assembly.bin");
+		}
+
+		cppOutput = config->cppOutput;
+#ifdef VCZH_64
+		resOutput = config->resOutputx64;
+#else
+		resOutput = config->resOutputx32;
+#endif
+		if (!partialMode)
+		{
+			if (cppOutput)
+			{
+				if (config->cppOutput->resource != L"") cppResourcePaths.Add(workingDir / config->cppOutput->resource);
+				if (config->cppOutput->compressed != L"") resAssemblyPaths.Add(workingDir / config->cppOutput->compressed);
+			}
+#ifdef VCZH_64
+			if (resOutput)
+#else
+			if (resOutput)
+#endif
+			{
+				if (resOutput->resource != L"") resResourcePaths.Add(workingDir / resOutput->resource);
+				if (resOutput->compressed != L"") resCompressedPaths.Add(workingDir / resOutput->compressed);
+				if (resOutput->assembly != L"") resAssemblyPaths.Add(workingDir / resOutput->assembly);
+			}
 		}
 	}
 
@@ -216,19 +258,19 @@ void GuiMain()
 		{
 			if (auto compiled = WriteWorkflowScript(precompiledFolder, L"Workflow/InstanceClass", scriptFilePath))
 			{
-				if (config->cppOutput)
+				if (cppOutput)
 				{
 					PrintSuccessMessage(L"gacgen> Generating C++ source code ...");
-					auto input = MakePtr<WfCppInput>(config->cppOutput->name);
+					auto input = MakePtr<WfCppInput>(cppOutput->name);
 					input->multiFile = WfCppFileSwitch::Enabled;
 					input->reflection = WfCppFileSwitch::Enabled;
 					input->comment = L"GacGen.exe " + FilePath(inputPath).GetName();
-					input->defaultFileName = config->cppOutput->name + L"PartialClasses";
-					input->includeFileName = config->cppOutput->name;
-					CopyFrom(input->normalIncludes, config->cppOutput->normalIncludes);
-					CopyFrom(input->reflectionIncludes, config->cppOutput->reflectionIncludes);
+					input->defaultFileName = cppOutput->name + L"PartialClasses";
+					input->includeFileName = cppOutput->name;
+					CopyFrom(input->normalIncludes, cppOutput->normalIncludes);
+					CopyFrom(input->reflectionIncludes, cppOutput->reflectionIncludes);
 
-					FilePath cppFolder = workingDir / config->cppOutput->sourceFolder;
+					FilePath cppFolder = workingDir / cppOutput->sourceFolder;
 					if (partialMode)
 					{
 						File(logFolderPath / L"CppOutput.txt").WriteAllText(cppFolder.GetFullPath(), false, BomEncoder::Mbcs);
@@ -241,66 +283,64 @@ void GuiMain()
 					}
 
 					auto output = WriteCppCodesToFile(compiled, input, cppFolder);
-					if (config->cppOutput->cppResource != L"")
+					if (cppOutput->cppResource != L"")
 					{
-						WriteEmbeddedResource(resource, input, output, false, cppFolder / config->cppOutput->cppResource);
+						WriteEmbeddedResource(resource, input, output, false, cppFolder / cppOutput->cppResource);
 					}
-					if (config->cppOutput->cppCompressed != L"")
+					if (cppOutput->cppCompressed != L"")
 					{
-						WriteEmbeddedResource(resource, input, output, true, cppFolder / config->cppOutput->cppCompressed);
+						WriteEmbeddedResource(resource, input, output, true, cppFolder / cppOutput->cppCompressed);
 					}
 
-					if (config->cppOutput->resource != L"")
+					FOREACH(FilePath, filePath, cppResourcePaths)
 					{
-						PrintSuccessMessage(L"Generating binary resource file (no script): " + config->cppOutput->resource);
-						WriteBinaryResource(resource, false, false, (partialMode ? logFolderPath / L"Resource.bin" : workingDir / config->cppOutput->resource));
+						PrintSuccessMessage(L"Generating binary resource file (no script): " + filePath.GetFullPath());
+						WriteBinaryResource(resource, false, false, filePath, {});
 					}
-					if (config->cppOutput->compressed != L"")
+					FOREACH(FilePath, filePath, cppCompressedPaths)
 					{
-						PrintSuccessMessage(L"Generating compressed resource file (no script): " + config->cppOutput->compressed);
-						WriteBinaryResource(resource, true, false, (partialMode ? logFolderPath / L"Compressed.bin" : workingDir / config->cppOutput->compressed));
+						PrintSuccessMessage(L"Generating compressed resource file (no script): " + filePath.GetFullPath());
+						WriteBinaryResource(resource, true, false, filePath, {});
 					}
 				}
 
-				if (config->resOutput)
+				if (resOutput)
 				{
-					if (config->resOutput->resource != L"")
+					FOREACH(FilePath, filePath, resResourcePaths)
 					{
-						PrintSuccessMessage(L"Generating binary resource files : " + config->resOutput->resource);
-						WriteBinaryResource(resource, false, true, (partialMode ? logFolderPath / L"ScriptedResource.bin" : workingDir / config->resOutput->resource));
+						PrintSuccessMessage(L"Generating binary resource files : " + filePath.GetFullPath());
+						WriteBinaryResource(resource, false, true, filePath, {});
 					}
-					if (config->resOutput->compressed != L"")
+					FOREACH(FilePath, filePath, resCompressedPaths)
 					{
-						PrintSuccessMessage(L"Generating compressed resource files : " + config->resOutput->compressed);
-						WriteBinaryResource(resource, true, true, (partialMode ? logFolderPath / L"ScriptedCompressed.bin" : workingDir / config->resOutput->compressed));
+						PrintSuccessMessage(L"Generating compressed resource files : " + filePath.GetFullPath());
+						WriteBinaryResource(resource, true, true, filePath, {});
+					}
+					FOREACH(FilePath, filePath, resAssemblyPaths)
+					{
+						PrintSuccessMessage(L"Generating compressed resource files : " + filePath.GetFullPath());
+						WriteBinaryResource(resource, false, false, {}, filePath);
 					}
 				}
 
 				if (partialMode)
 				{
 					List<WString> lines;
-
-					if (config->cppOutput)
+					List<FilePath>* outputPaths[] =
 					{
-						if (config->cppOutput->resource != L"")
-						{
-							lines.Add(L"copy \"" + (logFolderPath / L"Resource.bin").GetFullPath() + L"\" \"" + (workingDir / config->cppOutput->resource).GetFullPath() + L"\"");
-						}
-						if (config->cppOutput->compressed != L"")
-						{
-							lines.Add(L"copy \"" + (logFolderPath / L"Compressed.bin").GetFullPath() + L"\" \"" + (workingDir / config->cppOutput->compressed).GetFullPath() + L"\"");
-						}
-					}
+						&cppResourcePaths,
+						&cppCompressedPaths,
+						&resResourcePaths,
+						&resCompressedPaths,
+						&resAssemblyPaths,
+					};
 
-					if (config->resOutput)
+					for (vint i = 0; i < sizeof(outputPaths) / sizeof(*outputPaths); i++)
 					{
-						if (config->resOutput->resource != L"")
+						auto& paths = *outputPaths[i];
+						if (paths.Count() == 2)
 						{
-							lines.Add(L"copy \"" + (logFolderPath / L"ScriptedResource.bin").GetFullPath() + L"\" \"" + (workingDir / config->resOutput->resource).GetFullPath() + L"\"");
-						}
-						if (config->resOutput->compressed != L"")
-						{
-							lines.Add(L"copy \"" + (logFolderPath / L"ScriptedCompressed.bin").GetFullPath() + L"\" \"" + (workingDir / config->resOutput->compressed).GetFullPath() + L"\"");
+							lines.Add(L"copy \"" + paths[0].GetFullPath() + L"\" \"" + paths[1].GetFullPath() + L"\"");
 						}
 					}
 

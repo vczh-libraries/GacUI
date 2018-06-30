@@ -155,7 +155,7 @@ namespace vl
 				paragraph->Accept(&visitor);
 			}
 			{
-				vint32_t count = visitor.imageRuns.Count();
+				vint32_t count = (vint32_t)visitor.imageRuns.Count();
 				stream.Write(&count, sizeof(count));
 				FOREACH(Ptr<DocumentImageRun>, imageRun, visitor.imageRuns)
 				{

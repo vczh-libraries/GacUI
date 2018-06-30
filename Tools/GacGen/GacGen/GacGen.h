@@ -39,25 +39,27 @@ public:
 	public:
 		WString									resource;
 		WString									compressed;
+		WString									assembly;
 	};
 
-	class CppOutput : public ResOutput
+	class CppOutput : public Object
 	{
 	public:
 		WString									sourceFolder;
 		List<WString>							normalIncludes;
 		List<WString>							reflectionIncludes;
 		WString									name;
+
+		WString									resource;
+		WString									compressed;
 		WString									cppResource;
 		WString									cppCompressed;
 	};
 
 	Ptr<GuiResource>							resource;
-	Ptr<ParsingTable>							workflowTable;
-	Ptr<WfLexicalScopeManager>					workflowManager;
-
 	Ptr<CppOutput>								cppOutput;
-	Ptr<ResOutput>								resOutput;
+	Ptr<ResOutput>								resOutputx32;
+	Ptr<ResOutput>								resOutputx64;
 
 	static WString								NormalizeFolder(const WString& folder);
 	static bool									LoadConfigString(Ptr<GuiResourceFolder> folder, const WString& path, WString& value, bool optional = true);

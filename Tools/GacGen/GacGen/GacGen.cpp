@@ -95,13 +95,24 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
 		config->cppOutput = out;
 	}
 
-	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/Res/"))
+	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/ResX86/"))
 	{
 		auto out = MakePtr<CodegenConfig::ResOutput>();
 		LoadConfigString(folder, L"Resource", out->resource);
 		LoadConfigString(folder, L"Compressed", out->compressed);
+		LoadConfigString(folder, L"Assembly", out->assembly);
 
-		config->resOutput = out;
+		config->resOutputx32 = out;
+	}
+
+	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/ResX64/"))
+	{
+		auto out = MakePtr<CodegenConfig::ResOutput>();
+		LoadConfigString(folder, L"Resource", out->resource);
+		LoadConfigString(folder, L"Compressed", out->compressed);
+		LoadConfigString(folder, L"Assembly", out->assembly);
+
+		config->resOutputx64 = out;
 	}
 
 	return config;
