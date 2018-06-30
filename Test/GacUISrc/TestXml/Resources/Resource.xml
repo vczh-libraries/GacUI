@@ -1,4 +1,6 @@
 <Resource>
+  <Text name="Keep">
+    <![CDATA[
   <Folder name="ToolbarImages" content="Link">../../Host/Resources/FullControlTest/ToolbarImages/Images.xml</Folder>
   <Folder name="DocumentComponents" content="Link">../../Host/Resources/FullControlTest/DocumentComponents.xml</Folder>
   <Folder name="DocumentEditorBase" content="Link">../../Host/Resources/FullControlTest/DocumentEditorBase.xml</Folder>
@@ -23,4 +25,51 @@
     </Instance>
     <InstanceStyle name="Style" content="File">../../Host/Resources/DarkSkin/Style.xml</InstanceStyle>
   </Folder>
+    ]]>
+  </Text>
+
+  <Script name="ViewModelScript">
+    <Workflow>
+      <![CDATA[
+        module viewmodel;
+        
+        using system::*;
+        
+        interface IViewModel
+        {
+          func GetString(): string;
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
+  <Instance name="BaseWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::BaseWindow" xmlns:demo="demo::*">
+      <ref.Parameter Name="ViewModel" Class="IViewModel"/>
+      <Window ref.Name="self">
+        <Label TextColor="#FFFFFF" Font="fontFamily:'SegoeUI' size:36" Text-eval="ViewModel.GetString()"/>
+      </Window>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+      <ref.Members>
+        <![CDATA[
+          static func CreateViewModel(): IViewModel^
+          {
+            return new IViewModel^
+            {
+              override func GetString(): string
+              {
+                return "String from demo::MainWindow";
+              }
+            };
+          }
+        ]]>
+      </ref.Members>
+      <demo:BaseWindow ViewModel-eval="CreateViewModel()" Text="Derived Window" ClientSize="x:640 y:480">
+      </demo:BaseWindow>
+    </Instance>
+  </Instance>
 </Resource>
