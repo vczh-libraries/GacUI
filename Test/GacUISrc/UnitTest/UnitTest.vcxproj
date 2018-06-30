@@ -196,6 +196,7 @@
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor5.xml" />
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Inheriting.xml" />
     <Xml Include="..\..\Resources\Resource.FailedScript.Animations.xml" />
     <Xml Include="..\..\Resources\Resource.FailedScript.Animations2.xml" />
     <Xml Include="..\..\Resources\Resource.FailedScript.Properties.xml" />

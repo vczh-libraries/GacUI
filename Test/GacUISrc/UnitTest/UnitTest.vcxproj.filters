@@ -139,5 +139,8 @@
     <Xml Include="..\..\Resources\Resource.FailedScript.Strings2.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Inheriting.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
