@@ -534,6 +534,31 @@ Workflow_GenerateInstanceClass
 				return block;
 			};
 
+			auto getDefaultType = [&](const WString& className)->Tuple<Ptr<ITypeInfo>, WString>
+			{
+				auto paramTd = GetTypeDescriptor(className);
+				if (!paramTd)
+				{
+					auto source = FindInstanceLoadingSource(resolvingResult.context, {}, className);
+					if (auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName))
+					{
+						paramTd = typeInfo->GetTypeDescriptor();
+					}
+				}
+
+				if (paramTd)
+				{
+					auto typeInfo = Workflow_GetSuggestedParameterType(paramTd);
+					switch (typeInfo->GetDecorator())
+					{
+					case ITypeInfo::RawPtr: return { typeInfo,className + L"*" };
+					case ITypeInfo::SharedPtr: return { typeInfo,className + L"^" };
+					default:;
+					}
+				}
+				return { nullptr,className };
+			};
+
 			///////////////////////////////////////////////////////////////
 			// ref.Members
 			///////////////////////////////////////////////////////////////
@@ -569,7 +594,30 @@ Workflow_GenerateInstanceClass
 
 			if (baseWfType)
 			{
-				// Fill later
+				auto call = MakePtr<WfBaseConstructorCall>();
+				ctor->baseConstructorCalls.Add(call);
+				call->type = CopyType(instanceClass->baseTypes[0]);
+				baseTypeContext = baseTypeResourceItem->GetContent().Cast<GuiInstanceContext>();
+
+				FOREACH(Ptr<GuiInstanceParameter>, parameter, baseTypeContext->parameters)
+				{
+					auto parameterTypeInfoTuple = getDefaultType(parameter->className.ToString());
+					auto expression = Workflow_ParseExpression(
+						precompileContext,
+						parameter->classPosition.originalLocation,
+						L"cast("+parameterTypeInfoTuple.f1+L") (null of object)",
+						parameter->classPosition,
+						errors,
+						{ 0,5 }
+						);
+					if (!expression)
+					{
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+						expression = nullExpr;
+					}
+					call->arguments.Add(expression);
+				}
 			}
 			else if (auto group = baseType->GetTypeDescriptor()->GetConstructorGroup())
 			{
@@ -626,34 +674,11 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
 			{
-				WString classNameTail;
-				Ptr<ITypeInfo> parameterTypeInfo;
-				{
-					auto paramTd = GetTypeDescriptor(parameter->className.ToString());
-					if (!paramTd)
-					{
-						auto source = FindInstanceLoadingSource(resolvingResult.context, {}, parameter->className.ToString());
-						if (auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName))
-						{
-							paramTd = typeInfo->GetTypeDescriptor();
-						}
-					}
-
-					if (paramTd)
-					{
-						parameterTypeInfo = Workflow_GetSuggestedParameterType(paramTd);
-						switch (parameterTypeInfo->GetDecorator())
-						{
-						case ITypeInfo::RawPtr: classNameTail = L"*"; break;
-						case ITypeInfo::SharedPtr: classNameTail = L"^"; break;
-						default:;
-						}
-					}
-				}
-
+				auto parameterTypeInfoTuple = getDefaultType(parameter->className.ToString());
 				vint errorCount = errors.Count();
-				auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + classNameTail, parameter->classPosition, errors);
-				if (!needFunctionBody && !parameterTypeInfo && errorCount == errors.Count())
+				auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameterTypeInfoTuple.f1, parameter->classPosition, errors);
+
+				if (!needFunctionBody && !parameterTypeInfoTuple.f0 && errorCount == errors.Count())
 				{
 					if (!type || type.Cast<WfReferenceType>() || type.Cast<WfChildType>() || type.Cast<WfTopQualifiedType>())
 					{
@@ -669,7 +694,7 @@ Workflow_GenerateInstanceClass
 
 						decl->name.value = L"<parameter>" + parameter->name.ToString();
 						decl->type = CopyType(type);
-						decl->expression = CreateDefaultValue(parameterTypeInfo.Obj());
+						decl->expression = CreateDefaultValue(parameterTypeInfoTuple.f0.Obj());
 
 						Workflow_RecordScriptPosition(precompileContext, parameter->tagPosition, (Ptr<WfDeclaration>)decl);
 					}
