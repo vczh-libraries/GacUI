@@ -52,8 +52,8 @@
     </Instance>
   </Instance>
 
-  <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+  <Instance name="DerivedWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DerivedWindow" xmlns:demo="demo::*">
       <ref.Members>
         <![CDATA[
           static func CreateViewModel(): IViewModel^
@@ -70,6 +70,13 @@
       </ref.Members>
       <demo:BaseWindow ViewModel-eval="CreateViewModel()" Text="Derived Window" ClientSize="x:640 y:480">
       </demo:BaseWindow>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+      <demo:DerivedWindow>
+      </demo:DerivedWindow>
     </Instance>
   </Instance>
 </Resource>
