@@ -62,7 +62,7 @@
             {
               override func GetString(): string
               {
-                return "String from demo::MainWindow";
+                return "String from demo::DerivedWindow";
               }
             };
           }
@@ -75,7 +75,7 @@
 
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <demo:DerivedWindow>
+      <demo:DerivedWindow Text="Main -&gt; Derived -&gt; Base">
       </demo:DerivedWindow>
     </Instance>
   </Instance>
