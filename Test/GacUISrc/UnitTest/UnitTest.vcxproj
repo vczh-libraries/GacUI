@@ -176,6 +176,7 @@
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor5.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Inheriting1.xml.txt" />
+    <Text Include="..\..\Resources\Resource.FailedInstance.Inheriting2.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedScript.Animations.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedScript.Animations2.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedScript.Properties.xml.txt" />

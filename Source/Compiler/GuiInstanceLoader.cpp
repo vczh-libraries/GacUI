@@ -500,6 +500,34 @@ GuiDefaultInstanceLoader
 
 			Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)
 			{
+				CTOR_PARAM_PREFIX
+
+				if (arguments.Count() > 0)
+				{
+					auto call = MakePtr<WfBaseConstructorCall>();
+
+					auto baseTd = typeInfo.typeInfo->GetTypeDescriptor()->GetBaseTypeDescriptor(0);
+					auto baseTypeInfo = MakePtr<TypeDescriptorTypeInfo>(baseTd, TypeInfoHint::Normal);
+					call->type = GetTypeFromTypeInfo(baseTypeInfo.Obj());
+
+					auto ctor = baseTd->GetConstructorGroup()->GetMethod(0);
+					vint count = ctor->GetParameterCount();
+					for (vint i = 0; i < count; i++)
+					{
+						auto key = GlobalStringKey::Get(CTOR_PARAM_NAME(ctor->GetParameter(0)->GetName()));
+
+						vint index = arguments.Keys().IndexOf(key);
+						if (index == -1)
+						{
+							return nullptr;
+						}
+						else
+						{
+							call->arguments.Add(arguments.GetByIndex(index)[0].expression);
+						}
+					}
+					return call;
+				}
 				return nullptr;
 			}
 
