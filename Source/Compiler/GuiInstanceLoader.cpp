@@ -500,7 +500,10 @@ GuiDefaultInstanceLoader
 
 			Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)
 			{
-				CHECK_FAIL(L"GuiDefaultInstanceLoader::CreateRootInstance(GuiResourcePrecompileContext&, types::ResolvingResult&, const TypeInfo&, Ptr<workflow::WfExpression>, ArgumentMap&, GuiResourceError::List&)#This function is not implemented.");
+				if (auto ctor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor()))
+				{
+				}
+				return nullptr;
 			}
 
 			Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
