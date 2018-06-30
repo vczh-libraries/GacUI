@@ -301,20 +301,14 @@ WorkflowGenerateCreatingVisitor
 
 			void FillCtorArguments(GuiConstructorRepr* repr, IGuiInstanceLoader* loader, const IGuiInstanceLoader::TypeInfo& typeInfo, IGuiInstanceLoader::ArgumentMap& arguments)
 			{
-				List<GlobalStringKey> ctorProps;
-				loader->GetPropertyNames(typeInfo, ctorProps);
-
 				WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
-				FOREACH(GlobalStringKey, prop, ctorProps)
+				FOREACH_INDEXER(GlobalStringKey, prop, index, repr->setters.Keys())
 				{
-					auto propInfo = loader->GetPropertyType({ typeInfo,prop });
-					if (propInfo->usage != GuiInstancePropertyInfo::ConstructorArgument) continue;
-
-					auto index = repr->setters.Keys().IndexOf(prop);
-					if (index == -1) continue;
-
 					auto setter = repr->setters.Values()[index];
+					auto propertyResolving = resolvingResult.propertyResolvings[setter->values[0].Obj()];
+					if (propertyResolving.info->usage != GuiInstancePropertyInfo::ConstructorArgument) continue;
+
 					if (setter->binding == GlobalStringKey::Empty)
 					{
 						FOREACH(Ptr<GuiValueRepr>, value, setter->values)
@@ -328,16 +322,14 @@ WorkflowGenerateCreatingVisitor
 					}
 					else if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))
 					{
-						auto propInfo = IGuiInstanceLoader::PropertyInfo(typeInfo, prop);
-						auto resolvedPropInfo = loader->GetPropertyType(propInfo);
 						auto value = setter->values[0].Cast<GuiTextRepr>();
-						if (auto expression = binder->GenerateConstructorArgument(precompileContext, resolvingResult, loader, propInfo, resolvedPropInfo, value->text, value->tagPosition, errors))
+						if (auto expression = binder->GenerateConstructorArgument(precompileContext, resolvingResult, loader, propertyResolving.propertyInfo, propertyResolving.info, value->text, value->tagPosition, errors))
 						{
 							Workflow_RecordScriptPosition(precompileContext, value->tagPosition, expression);
 
 							IGuiInstanceLoader::ArgumentInfo argument;
 							argument.expression = expression;
-							argument.typeInfo = resolvedPropInfo->acceptableTypes[0];
+							argument.typeInfo = propertyResolving.info->acceptableTypes[0];
 							argument.attPosition = setter->attPosition;
 							arguments.Add(prop, argument);
 						}
