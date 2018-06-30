@@ -229,23 +229,20 @@ void GuiMain()
 #else
 		resOutput = config->resOutputx32;
 #endif
-		if (!partialMode)
+		if (cppOutput)
 		{
-			if (cppOutput)
-			{
-				if (config->cppOutput->resource != L"") cppResourcePaths.Add(workingDir / config->cppOutput->resource);
-				if (config->cppOutput->compressed != L"") resAssemblyPaths.Add(workingDir / config->cppOutput->compressed);
-			}
+			if (config->cppOutput->resource != L"") cppResourcePaths.Add(workingDir / config->cppOutput->resource);
+			if (config->cppOutput->compressed != L"") resAssemblyPaths.Add(workingDir / config->cppOutput->compressed);
+		}
 #ifdef VCZH_64
-			if (resOutput)
+		if (resOutput)
 #else
-			if (resOutput)
+		if (resOutput)
 #endif
-			{
-				if (resOutput->resource != L"") resResourcePaths.Add(workingDir / resOutput->resource);
-				if (resOutput->compressed != L"") resCompressedPaths.Add(workingDir / resOutput->compressed);
-				if (resOutput->assembly != L"") resAssemblyPaths.Add(workingDir / resOutput->assembly);
-			}
+		{
+			if (resOutput->resource != L"") resResourcePaths.Add(workingDir / resOutput->resource);
+			if (resOutput->compressed != L"") resCompressedPaths.Add(workingDir / resOutput->compressed);
+			if (resOutput->assembly != L"") resAssemblyPaths.Add(workingDir / resOutput->assembly);
 		}
 	}
 
