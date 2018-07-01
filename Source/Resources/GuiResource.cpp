@@ -1222,7 +1222,7 @@ GuiResource
 		GuiResource::GuiResource()
 		{
 			metadata = MakePtr<GuiResourceMetadata>();
-			metadata->version == L"1.0";
+			metadata->version = CurrentVersionString;
 		}
 
 		GuiResource::~GuiResource()
