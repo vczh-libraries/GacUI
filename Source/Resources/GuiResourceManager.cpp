@@ -144,6 +144,16 @@ IGuiInstanceResourceManager
 				resources.Clear();
 				instanceResources.Clear();
 			}
+
+			void LoadResourceOrPending(stream::IStream& stream, GuiResourceUsage usage = GuiResourceUsage::DataOnly)override
+			{
+				throw 0;
+			}
+
+			void GetPendingResourceNames(collections::List<WString>& names)override
+			{
+				throw 0;
+			}
 		};
 		GUI_REGISTER_PLUGIN(GuiResourceManager)
 	}

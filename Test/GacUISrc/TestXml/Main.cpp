@@ -133,6 +133,10 @@ void GuiMain()
 		LoadResource(paths[name]);
 	}
 
+	names.Clear();
+	GetResourceManager()->GetPendingResourceNames(names);
+	CHECK_ERROR(names.Count() == 0, L"Error");
+
 	OpenMainWindow();
 #endif
 }
