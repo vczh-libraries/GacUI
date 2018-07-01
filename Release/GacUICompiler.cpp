@@ -3911,7 +3911,7 @@ WorkflowGenerateCreatingVisitor
 							arguments.Add(prop, argument);
 						}
 					}
-					else
+					else if (setter->binding != GlobalStringKey::_Set)
 					{
 						errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
 							L"[INTERNAL-ERROR] Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
