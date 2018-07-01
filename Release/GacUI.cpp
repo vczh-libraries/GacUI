@@ -11032,10 +11032,10 @@ namespace vl
 				currentTheme = nullptr;
 			}
 
-			bool RegisterTheme(const WString& name, Ptr<ThemeTemplates> theme)
+			bool RegisterTheme(Ptr<ThemeTemplates> theme)
 			{
 				CHECK_ERROR(currentTheme != nullptr, L"vl::presentation::theme::RegisterTheme(const WString&, Ptr<ThemeTemplates>)#Theme has already been initialized");
-				return currentTheme->RegisterTheme(name, theme);
+				return currentTheme->RegisterTheme(theme->Name, theme);
 			}
 
 			Ptr<ThemeTemplates> UnregisterTheme(const WString& name)
@@ -33937,8 +33937,81 @@ GuiResourceFolder
 		}
 
 /***********************************************************************
+GuiResourceMetadata
+***********************************************************************/
+
+		void GuiResourceMetadata::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, GuiResourceLocation location, GuiResourceError::List& errors)
+		{
+			auto attrName = XmlGetAttribute(xml->rootElement, L"Name");
+			auto attrVersion = XmlGetAttribute(xml->rootElement, L"Version");
+			if (!attrName || !attrVersion)
+			{
+				errors.Add(GuiResourceError(location, L"[INTERNAL-ERROR] Resource metadata lacks of Name or Version attribute."));
+				return;
+			}
+			name = attrName->value.value;
+			version = attrVersion->value.value;
+			dependencies.Clear();
+
+			if (auto xmlDeps = XmlGetElement(xml->rootElement, L"Dependencies"))
+			{
+				FOREACH(Ptr<XmlElement>, xmlDep, XmlGetElements(xmlDeps, L"Resource"))
+				{
+					auto attrDep = XmlGetAttribute(xmlDep, L"Name");
+					if (!attrDep)
+					{
+						errors.Add(GuiResourceError(location, L"[INTERNAL-ERROR] Resource dependency lacks of Name attribute."));
+					}
+					dependencies.Add(attrDep->value.value);
+				}
+			}
+		}
+
+		Ptr<parsing::xml::XmlDocument> GuiResourceMetadata::SaveToXml()
+		{
+			auto root = MakePtr<XmlElement>();
+			root->name.value = L"ResourceMetadata";
+			{
+				auto attr = MakePtr<XmlAttribute>();
+				attr->name.value = L"Name";
+				attr->value.value = name;
+				root->attributes.Add(attr);
+			}
+			{
+				auto attr = MakePtr<XmlAttribute>();
+				attr->name.value = L"Version";
+				attr->value.value = version;
+				root->attributes.Add(attr);
+			}
+			{
+				auto xmlDeps = MakePtr<XmlElement>();
+				xmlDeps->name.value = L"Dependencies";
+				root->subNodes.Add(xmlDeps);
+
+				FOREACH(WString, dep, dependencies)
+				{
+					auto xmlDep = MakePtr<XmlElement>();
+					xmlDep->name.value = L"Resource";
+					xmlDeps->subNodes.Add(xmlDep);
+					{
+						auto attr = MakePtr<XmlAttribute>();
+						attr->name.value = L"Name";
+						attr->value.value = dep;
+						xmlDep->attributes.Add(attr);
+					}
+				}
+			}
+
+			auto doc = MakePtr<XmlDocument>();
+			doc->rootElement = root;
+			return doc;
+		}
+
+/***********************************************************************
 GuiResource
 ***********************************************************************/
+
+		const wchar_t* GuiResource::CurrentVersionString = L"1.0";
 
 		void GuiResource::ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, GuiResourceError::List& errors)
 		{
@@ -33976,10 +34049,17 @@ GuiResource
 
 		GuiResource::GuiResource()
 		{
+			metadata = MakePtr<GuiResourceMetadata>();
+			metadata->version = CurrentVersionString;
 		}
 
 		GuiResource::~GuiResource()
 		{
+		}
+
+		Ptr<GuiResourceMetadata> GuiResource::GetMetadata()
+		{
+			return metadata;
 		}
 
 		WString GuiResource::GetWorkingDirectory()
@@ -34036,6 +34116,23 @@ GuiResource
 		{
 			stream::internal::ContextFreeReader reader(stream);
 			auto resource = MakePtr<GuiResource>();
+			{
+				WString metadata;
+				reader << metadata;
+				
+				auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
+				auto xmlMetadata = parser->Parse({ resource }, metadata, errors);
+				if (!xmlMetadata) return nullptr;
+
+				resource->metadata->LoadFromXml(xmlMetadata, { resource }, errors);
+				if (errors.Count() != 0) return nullptr;
+
+				if (resource->metadata->version != CurrentVersionString)
+				{
+					errors.Add(GuiResourceError({ resource }, L"Only resource binary of version \"" + WString(CurrentVersionString) + L"\" is accepted. Please recompile the resource before loading it."));
+					return nullptr;
+				}
+			}
 
 			List<WString> typeNames;
 			reader << typeNames;
@@ -34058,7 +34155,19 @@ GuiResource
 		void GuiResource::SavePrecompiledBinary(stream::IStream& stream)
 		{
 			stream::internal::ContextFreeWriter writer(stream);
-
+			{
+				auto xmlMetadata = metadata->SaveToXml();
+				stream::MemoryStream memoryStream;
+				{
+					stream::StreamWriter writer(memoryStream);
+					XmlPrint(xmlMetadata, writer);
+				}
+				memoryStream.SeekFromBegin(0);
+				{
+					stream::StreamReader reader(memoryStream);
+					writer << reader.ReadToEnd();
+				}
+			}
 			List<WString> typeNames;
 			CollectTypeNames(typeNames);
 			writer << typeNames;
@@ -34951,6 +35060,7 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace stream;
+		using namespace parsing::xml;
 		using namespace reflection::description;
 		using namespace controls;
 
@@ -35019,8 +35129,29 @@ IGuiInstanceResourceManager
 		protected:
 			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
 
+			List<Ptr<GuiResource>>					anonymousResources;
 			ResourceMap								resources;
 			ResourceMap								instanceResources;
+
+			class PendingResource : public Object
+			{
+			public:
+				Ptr<GuiResourceMetadata>			metadata;
+				GuiResourceUsage					usage;
+				MemoryStream						memoryStream;
+				SortedList<WString>					dependencies;
+
+				Ptr<GuiResource> LoadResource()
+				{
+					memoryStream.SeekFromBegin(0);
+					List<GuiResourceError> errors;
+					auto resource = GuiResource::LoadPrecompiledBinary(memoryStream, errors);
+					CHECK_ERROR(errors.Count() == 0, L"PendingResource::LoadResource()#Failed to load the resource.");
+					return resource;
+				}
+			};
+			Group<WString, Ptr<PendingResource>>	depToPendings;
+			SortedList<Ptr<PendingResource>>		pendingResources;
 
 		public:
 
@@ -35041,18 +35172,50 @@ IGuiInstanceResourceManager
 				resourceManager = nullptr;
 			}
 
-			bool SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage)override
+			bool SetResource(Ptr<GuiResource> resource, GuiResourceUsage usage)override
 			{
-				vint index = resources.Keys().IndexOf(name);
-				if (index != -1) return false;
-				
-				resource->Initialize(usage);
-				resources.Add(name, resource);
-				
-				auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>();
-				FOREACH(WString, className, record->classNames)
+				auto metadata = resource->GetMetadata();
+				if (metadata->name == L"")
 				{
-					instanceResources.Add(className, resource);
+					if (anonymousResources.Contains(resource.Obj())) return false;
+					resource->Initialize(usage);
+					anonymousResources.Add(resource);
+				}
+				else
+				{
+					CHECK_ERROR(!resources.Keys().Contains(metadata->name), L"GuiResourceManager::SetResource(Ptr<GuiResource>, GuiResourceUsage)#A resource with the same name has been loaded.");
+
+					resource->Initialize(usage);
+					resources.Add(metadata->name, resource);
+				}
+				
+				if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
+				{
+					FOREACH(WString, className, record->classNames)
+					{
+						instanceResources.Add(className, resource);
+					}
+				}
+
+				if (metadata->name != L"")
+				{
+					vint index = depToPendings.Keys().IndexOf(metadata->name);
+					if (index != -1)
+					{
+						List<Ptr<PendingResource>> prs;
+						CopyFrom(prs, depToPendings.GetByIndex(index));
+						depToPendings.Remove(metadata->name);
+
+						FOREACH(Ptr<PendingResource>, pr, prs)
+						{
+							pr->dependencies.Remove(metadata->name);
+							if (pr->dependencies.Count() == 0)
+							{
+								pendingResources.Remove(pr.Obj());
+								SetResource(pr->LoadResource(), pr->usage);
+							}
+						}
+					}
 				}
 				return true;
 			}
@@ -35068,6 +35231,70 @@ IGuiInstanceResourceManager
 				vint index = instanceResources.Keys().IndexOf(classFullName);
 				if (index == -1) return nullptr;
 				return instanceResources.Values()[index];
+			}
+
+			void UnloadResource(const WString& name)
+			{
+				vint index = resources.Keys().IndexOf(name);
+				if (index != -1)
+				{
+					auto resource = resources.Values()[index];
+					resources.Remove(name);
+
+					if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
+					{
+						FOREACH(WString, className, record->classNames)
+						{
+							instanceResources.Remove(className);
+						}
+					}
+				}
+			}
+
+			void LoadResourceOrPending(stream::IStream& stream, GuiResourceUsage usage = GuiResourceUsage::DataOnly)override
+			{
+				auto pr = MakePtr<PendingResource>();
+				pr->usage = usage;
+				CopyStream(stream, pr->memoryStream);
+
+				pr->metadata = MakePtr<GuiResourceMetadata>();
+				{
+					pr->memoryStream.SeekFromBegin(0);
+					stream::internal::ContextFreeReader reader(pr->memoryStream);
+					WString metadata;
+					reader << metadata;
+
+					List<GuiResourceError> errors;
+					auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
+					auto xmlMetadata = parser->Parse({}, metadata, errors);
+					CHECK_ERROR(xmlMetadata, L"GuiResourceManager::LoadResourceOrPending(stream::IStream&, GuiResourceUsage)#This resource does not contain a valid metadata.");
+					pr->metadata->LoadFromXml(xmlMetadata, {}, errors);
+					CHECK_ERROR(errors.Count() == 0, L"GuiResourceManager::LoadResourceOrPending(stream::IStream&, GuiResourceUsage)#This resource does not contain a valid metadata.");
+				}
+
+				CHECK_ERROR(
+					pr->metadata->name != L"" || pr->dependencies.Count() == 0,
+					L"GuiResourceManager::LoadResourceOrPending(stream::IStream&, GuiResourceUsage)#The name of this resource cannot be empty because it has dependencies."
+				);
+				CopyFrom(pr->dependencies, From(pr->metadata->dependencies).Except(resources.Keys()));
+
+				if (pr->dependencies.Count() == 0)
+				{
+					SetResource(pr->LoadResource(), pr->usage);
+				}
+				else
+				{
+					pendingResources.Add(pr);
+					FOREACH(WString, dep, pr->dependencies)
+					{
+						depToPendings.Add(dep, pr);
+					}
+				}
+			}
+
+			void GetPendingResourceNames(collections::List<WString>& names)override
+			{
+				CopyFrom(names, From(pendingResources).Select([](Ptr<PendingResource> pr) {return pr->metadata->name; }));
 			}
 		};
 		GUI_REGISTER_PLUGIN(GuiResourceManager)
