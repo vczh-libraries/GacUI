@@ -168,19 +168,20 @@ void GuiMain()
 		Folder logFolder(logFolderPath);
 		if (logFolder.Exists())
 		{
-			List<File> files;
-			logFolder.GetFiles(files);
-			FOREACH(File, file, files)
+			if (!logFolder.Delete(true))
 			{
-				if (!file.Delete())
-				{
-					PrintSuccessMessage(L"gacgen> Unable to delete file in the log folder : " + file.GetFilePath().GetFullPath());
-				}
+				PrintErrorMessage(L"gacgen> Unable to delete file in the log folder : " + logFolderPath.GetFullPath());
+				return;
 			}
 		}
-		else if (!logFolder.Create(true))
+		if (!logFolder.Create(true))
 		{
-			PrintSuccessMessage(L"gacgen> Unable to create log folder : " + logFolderPath.GetFullPath());
+			Thread::Sleep(500);
+			if (!logFolder.Create(true))
+			{
+				PrintErrorMessage(L"gacgen> Unable to create log folder : " + logFolderPath.GetFullPath());
+				return;
+			}
 		}
 	}
 
