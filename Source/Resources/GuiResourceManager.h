@@ -34,6 +34,7 @@ IGuiResourceManager
 			virtual bool								SetResource(Ptr<GuiResource> resource, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
 			virtual Ptr<GuiResource>					GetResourceFromClassName(const WString& classFullName) = 0;
+			virtual void								UnloadAllResources() = 0;
 		};
 
 		extern IGuiResourceManager*						GetResourceManager();

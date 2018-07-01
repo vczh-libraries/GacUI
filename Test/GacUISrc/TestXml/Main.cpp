@@ -126,6 +126,13 @@ void GuiMain()
 		paths.Add(name, CompileResources(name, dependencies, L"Resources/" + name + L".xml", L"./", L"", false));
 		LoadResource(paths[name]);
 	}
+
+	GetResourceManager()->UnloadAllResources();
+	FOREACH(WString, name, From(names).Reverse())
+	{
+		LoadResource(paths[name]);
+	}
+
 	OpenMainWindow();
 #endif
 }

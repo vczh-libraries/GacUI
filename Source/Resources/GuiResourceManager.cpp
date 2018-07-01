@@ -137,6 +137,13 @@ IGuiInstanceResourceManager
 				if (index == -1) return nullptr;
 				return instanceResources.Values()[index];
 			}
+
+			void UnloadAllResources()
+			{
+				anonymousResources.Clear();
+				resources.Clear();
+				instanceResources.Clear();
+			}
 		};
 		GUI_REGISTER_PLUGIN(GuiResourceManager)
 	}
