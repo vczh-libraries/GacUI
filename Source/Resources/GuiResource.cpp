@@ -1129,7 +1129,7 @@ GuiResourceMetadata
 			{
 				FOREACH(Ptr<XmlElement>, xmlDep, XmlGetElements(xmlDeps, L"Resource"))
 				{
-					auto attrDep = XmlGetAttribute(xmlDep, L"Resource");
+					auto attrDep = XmlGetAttribute(xmlDep, L"Name");
 					if (!attrDep)
 					{
 						errors.Add(GuiResourceError(location, L"[INTERNAL-ERROR] Resource dependency lacks of Name attribute."));

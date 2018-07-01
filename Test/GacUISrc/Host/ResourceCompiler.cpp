@@ -2,7 +2,6 @@
 #include <Windows.h>
 
 using namespace vl::collections;
-using namespace vl::filesystem;
 using namespace vl::stream;
 using namespace vl::workflow::cppcodegen;
 
@@ -99,7 +98,15 @@ void DebugCallback::OnPerResource(vint passIndex, Ptr<GuiResourceItem> resource)
 CompileResources
 ***********************************************************************/
 
-void CompileResources(const WString& name, const WString& resourcePath, const WString& outputBinaryFolder, const WString& outputCppFolder, bool compressResource)
+FilePath CompileResources(
+	const WString& name,
+	collections::List<WString>& dependencies,
+	const WString& resourcePath,
+	const WString& outputBinaryFolder,
+	const WString& outputCppFolder,
+	bool compressResource,
+	bool loadResource
+)
 {
 	FilePath errorPath = outputBinaryFolder + name + L".UI.error.txt";
 	FilePath workflowPath1 = outputBinaryFolder + name + L".Shared.UI.txt";
@@ -116,6 +123,11 @@ void CompileResources(const WString& name, const WString& resourcePath, const WS
 
 	List<GuiResourceError> errors;
 	auto resource = GuiResource::LoadFromXml(resourcePath, errors);
+	{
+		auto metadata = resource->GetMetadata();
+		metadata->name = name;
+		CopyFrom(metadata->dependencies, dependencies);
+	}
 	DebugCallback debugCallback;
 	File(errorPath).Delete();
 	File(workflowPath1).Delete();
@@ -152,5 +164,10 @@ void CompileResources(const WString& name, const WString& resourcePath, const WS
 		resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 		CHECK_ERROR(errors.Count() == 0, L"Error");
 	}
-	GetResourceManager()->SetResource(name, resource, GuiResourceUsage::InstanceClass);
+
+	if (loadResource)
+	{
+		GetResourceManager()->SetResource(name, resource, GuiResourceUsage::InstanceClass);
+	}
+	return binaryPath;
 }

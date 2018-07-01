@@ -4,6 +4,7 @@
 #include <Windows.h>
 
 using namespace vl;
+using namespace vl::collections;
 using namespace vl::stream;
 using namespace vl::reflection::description;
 
@@ -81,8 +82,9 @@ void GuiMain()
 #define BINARY_FOLDER L"../TestCppCodegen/"
 #define SOURCE_FOLDER L"../TestCppCodegen/Source/"
 
-	CompileResources(L"DarkSkin",	LR"(Resources/DarkSkin/Resource.xml)",			BINARY_FOLDER, SOURCE_FOLDER, true);
-	CompileResources(L"Demo",		LR"(Resources/FullControlTest/Resource.xml)",	BINARY_FOLDER, SOURCE_FOLDER, false);
+	List<WString> dependencies;
+	CompileResources(L"DarkSkin",	dependencies,	LR"(Resources/DarkSkin/Resource.xml)",			BINARY_FOLDER, SOURCE_FOLDER, true,		true);
+	CompileResources(L"Demo",		dependencies,	LR"(Resources/FullControlTest/Resource.xml)",	BINARY_FOLDER, SOURCE_FOLDER, false,	true);
 
 #undef BINARY_FOLDER
 #undef SOURCE_FOLDER

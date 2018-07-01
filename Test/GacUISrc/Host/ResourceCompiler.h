@@ -12,6 +12,7 @@
 
 using namespace vl;
 using namespace vl::workflow;
+using namespace vl::filesystem;
 
 class DebugCallback : public Object, public IGuiResourcePrecompileCallback, public IWfCompilerCallback
 {
@@ -31,7 +32,16 @@ public:
 	void OnPerResource(vint passIndex, Ptr<GuiResourceItem> resource)override;
 };
 
-extern void CompileResources(const WString& name, const WString& resourcePath, const WString& outputBinaryFolder, const WString& outputCppFolder, bool compressResource);
+extern FilePath CompileResources(
+	const WString& name,
+	collections::List<WString>& dependencies,
+	const WString& resourcePath,
+	const WString& outputBinaryFolder,
+	const WString& outputCppFolder,
+	bool compressResource,
+	bool loadResource
+	);
+
 extern void DumpComposition(presentation::compositions::GuiGraphicsComposition* composition, stream::TextWriter& writer);
 
 #endif

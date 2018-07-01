@@ -6,6 +6,7 @@
 #include <Windows.h>
 
 using namespace vl;
+using namespace vl::collections;
 using namespace vl::stream;
 using namespace vl::filesystem;
 using namespace vl::reflection::description;
@@ -104,9 +105,20 @@ void GuiMain()
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	LoadDarkSkinTypes();
-	CompileResources(L"Resource1", LR"(Resources/Resource1.xml)", L"./", L"", false);
-	CompileResources(L"Resource2", LR"(Resources/Resource2.xml)", L"./", L"", false);
-	CompileResources(L"Resource3", LR"(Resources/Resource3.xml)", L"./", L"", false);
+	{
+		List<WString> dependencies;
+		CompileResources(L"Resource1", dependencies, LR"(Resources/Resource1.xml)", L"./", L"", false, true);
+	}
+	{
+		List<WString> dependencies;
+		dependencies.Add(L"Resource1");
+		CompileResources(L"Resource2", dependencies, LR"(Resources/Resource2.xml)", L"./", L"", false, true);
+	}
+	{
+		List<WString> dependencies;
+		dependencies.Add(L"Resource2");
+		CompileResources(L"Resource3", dependencies, LR"(Resources/Resource3.xml)", L"./", L"", false, true);
+	}
 	OpenMainWindow();
 #endif
 }
