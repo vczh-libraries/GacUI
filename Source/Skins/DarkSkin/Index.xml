@@ -1,5 +1,5 @@
 <Instance ref.CodeBehind="false" ref.Class="darkskin::Theme" xmlns:x="darkskin::*">
-  <ThemeTemplates>
+  <ThemeTemplates Name="DarkSkin">
     <att.Window>x:WindowTemplate</att.Window>
     <att.CustomControl>x:CustomControlTemplate</att.CustomControl>
     <att.Tooltip>x:TooltipTemplate</att.Tooltip>
