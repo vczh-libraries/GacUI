@@ -46,7 +46,7 @@ void SaveErrors(FilePath errorFilePath, List<GuiResourceError>& errors)
 	}
 	else
 	{
-		PrintErrorMessage(L"gacgen> Unable to write : " + errorFilePath.GetFullPath());
+		PrintErrorMessage(L"error> Unable to write : " + errorFilePath.GetFullPath());
 	}
 }
 
@@ -137,14 +137,51 @@ public:
 	}
 };
 
-void CompileResource(bool partialMode, FilePath inputPath)
+void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> mappingPath)
 {
 	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath.GetFullPath());
 #if defined VCZH_64
-	FilePath logFolderPath = inputPath.GetFullPath() + L".log/x64";
+	WString logFolderPostfix = L".log/x64";
 #else
-	FilePath logFolderPath = inputPath.GetFullPath() + L".log/x32";
+	WString logFolderPostfix = L".log/x32";
 #endif
+	FilePath logFolderPath = inputPath.GetFullPath() + logFolderPostfix;
+
+	Dictionary<WString, FilePath> resourceMappings;
+	if (mappingPath)
+	{
+		FileStream fileStream(mappingPath.Value().GetFullPath(), FileStream::ReadOnly);
+		if (!fileStream.IsAvailable())
+		{
+			PrintErrorMessage(L"error> Failed to load mapping file: " + mappingPath.Value().GetFullPath());
+			return;
+		}
+		BomDecoder decoder;
+		DecoderStream decoderStream(fileStream, decoder);
+		StreamReader reader(decoderStream);
+		while (!reader.IsEnd())
+		{
+			auto line = reader.ReadLine();
+			if (line != L"")
+			{
+				auto arrow = INVLOC.FindFirst(line, L"=>", Locale::None);
+				if (arrow.key == -1)
+				{
+					PrintErrorMessage(L"warning> Unable to parse mapping information: " + line);
+					return;
+				}
+				auto name = line.Left(arrow.key);
+				auto value = line.Right(line.Length() - arrow.key - arrow.value);
+				if (resourceMappings.Keys().Contains(name))
+				{
+					PrintErrorMessage(L"warning> Find duplicate mapping information: " + line);
+					return;
+				}
+				resourceMappings.Add(name, value);
+			}
+		}
+	}
+
 	if (partialMode)
 	{
 		PrintInformationMessage(L"gacgen> Partial mode activated, all output files will be put under " + logFolderPath.GetFullPath());
@@ -340,6 +377,10 @@ void CompileResource(bool partialMode, FilePath inputPath)
 				}
 			}
 		}
+		else
+		{
+			PrintErrorMessage(L"error> Failed to compile resource, error information is saved at : " + errorFilePath.GetFullPath());
+		}
 	}
 }
 
@@ -467,27 +508,42 @@ void GuiMain()
 {
 	Console::SetTitle(L"Vczh GacUI Resource Code Generator for C++");
 
-	switch (arguments->Count())
+	if (arguments->Count() > 0)
 	{
-	case 1:
-		CompileResource(false, arguments->Get(0));
-		break;
-	case 2:
 		if (arguments->Get(0) == L"/P")
 		{
-			CompileResource(true, arguments->Get(1));
-			break;
+			switch (arguments->Count())
+			{
+			case 2:
+				CompileResource(true, arguments->Get(1), {});
+				return;
+			case 3:
+				CompileResource(true, arguments->Get(1), { arguments->Get(2) });
+				return;
+			}
 		}
-	case 3:
-		if (arguments->Get(0) == L"/D")
+		else if (arguments->Get(0) == L"/D")
 		{
-			DumpResource(arguments->Get(1), arguments->Get(2));
-			break;
+			switch (arguments->Count())
+			{
+			case 3:
+				DumpResource(arguments->Get(1), arguments->Get(2));
+				return;
+			}
 		}
-	default:
-		PrintErrorMessage(L"Usage: GacGen.exe <input-resource-xml-file>");
-		PrintErrorMessage(L"Usage: GacGen.exe /P <input-resource-xml-file>");
-		PrintErrorMessage(L"Usage: GacGen.exe /D <input-resource-xml-file> <output-xml>");
-		return;
+		else
+		{
+			switch (arguments->Count())
+			{
+			case 0:
+				CompileResource(false, arguments->Get(0), {});
+				return;
+			}
+		}
 	}
+
+	PrintErrorMessage(L"Usage");
+	PrintErrorMessage(L"    GacGen.exe <input-xml>");
+	PrintErrorMessage(L"    GacGen.exe /P <input-xml> [<mapping-file>]");
+	PrintErrorMessage(L"    GacGen.exe /D <input-xml> <output-xml>");
 }
