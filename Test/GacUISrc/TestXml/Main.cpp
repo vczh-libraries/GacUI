@@ -86,10 +86,6 @@ void OpenMainWindow()
 		RegisterTheme(L"DarkSkin", theme);
 	}
 	{
-		//auto theme = UnboxValue<Ptr<ThemeTemplates>>(Value::Create(L"darkskin::RibbonTheme"));
-		//RegisterTheme(L"RibbonTheme", theme);
-	}
-	{
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 		AttachDumpCompositionMenu(window);
 		window->ForceCalculateSizeImmediately();

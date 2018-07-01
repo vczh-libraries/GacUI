@@ -128,10 +128,10 @@ namespace vl
 				currentTheme = nullptr;
 			}
 
-			bool RegisterTheme(const WString& name, Ptr<ThemeTemplates> theme)
+			bool RegisterTheme(Ptr<ThemeTemplates> theme)
 			{
 				CHECK_ERROR(currentTheme != nullptr, L"vl::presentation::theme::RegisterTheme(const WString&, Ptr<ThemeTemplates>)#Theme has already been initialized");
-				return currentTheme->RegisterTheme(name, theme);
+				return currentTheme->RegisterTheme(theme->Name, theme);
 			}
 
 			Ptr<ThemeTemplates> UnregisterTheme(const WString& name)

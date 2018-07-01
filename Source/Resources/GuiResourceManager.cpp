@@ -74,6 +74,7 @@ IGuiInstanceResourceManager
 		protected:
 			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
 
+			List<Ptr<GuiResource>>					anonymousResources;
 			ResourceMap								resources;
 			ResourceMap								instanceResources;
 
@@ -96,13 +97,23 @@ IGuiInstanceResourceManager
 				resourceManager = nullptr;
 			}
 
-			bool SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage)override
+			bool SetResource(Ptr<GuiResource> resource, GuiResourceUsage usage)override
 			{
-				vint index = resources.Keys().IndexOf(name);
-				if (index != -1) return false;
-				
-				resource->Initialize(usage);
-				resources.Add(name, resource);
+				auto metadata = resource->GetMetadata();
+				if (metadata->name == L"")
+				{
+					if (anonymousResources.Contains(resource.Obj())) return false;
+					resource->Initialize(usage);
+					anonymousResources.Add(resource);
+				}
+				else
+				{
+					vint index = resources.Keys().IndexOf(metadata->name);
+					if (index != -1) return false;
+
+					resource->Initialize(usage);
+					resources.Add(metadata->name, resource);
+				}
 				
 				auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>();
 				FOREACH(WString, className, record->classNames)

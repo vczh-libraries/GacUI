@@ -20,7 +20,7 @@ void GuiMain()
 	LoadDemoTypes();
 #endif
 
-	theme::RegisterTheme(L"DarkSkin", MakePtr<darkskin::Theme>());
+	theme::RegisterTheme(MakePtr<darkskin::Theme>());
 	{
 		demo::MainWindow window;
 		window.ForceCalculateSizeImmediately();

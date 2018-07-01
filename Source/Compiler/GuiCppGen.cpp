@@ -284,7 +284,7 @@ namespace vl
 					writer.WriteLine(L"\t\t\t\t\t" + cppInput->assemblyName + L"ResourceReader::ReadToStream(resourceStream);");
 					writer.WriteLine(L"\t\t\t\t\tresourceStream.SeekFromBegin(0);");
 					writer.WriteLine(L"\t\t\t\t\tauto resource = GuiResource::LoadPrecompiledBinary(resourceStream, errors);");
-					writer.WriteLine(L"\t\t\t\t\tGetResourceManager()->SetResource(L\"" + cppInput->assemblyName + L"\", resource, GuiResourceUsage::InstanceClass);");
+					writer.WriteLine(L"\t\t\t\t\tGetResourceManager()->SetResource(resource, GuiResourceUsage::InstanceClass);");
 					writer.WriteLine(L"\t\t\t\t}");
 					writer.WriteLine(L"");
 					writer.WriteLine(L"\t\t\t\tvoid Unload()override");

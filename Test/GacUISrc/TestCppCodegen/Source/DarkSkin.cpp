@@ -26532,6 +26532,9 @@ Class (::darkskin::ThemeConstructor)
 		{
 			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Window = LAMBDA(::vl_workflow_global::__vwsnf54_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));
 		}
+		{
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Name = ::vl::WString(L"DarkSkin", false));
+		}
 	}
 
 	ThemeConstructor::ThemeConstructor()

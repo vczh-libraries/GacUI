@@ -54,7 +54,7 @@ void OpenMainWindow()
 {
 	{
 		auto theme = UnboxValue<Ptr<ThemeTemplates>>(Value::Create(L"darkskin::Theme"));
-		RegisterTheme(L"DarkSkin", theme);
+		RegisterTheme(theme);
 	}
 	{
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));

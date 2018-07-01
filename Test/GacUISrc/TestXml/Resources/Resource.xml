@@ -13,14 +13,4 @@
       </Window>
     </Instance>
   </Instance>
-
-  <Folder name="DarkSkin">
-    <Instance name="DarkSkinThemeResource">
-      <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonTheme" xmlns:x="darkskin::*">
-        <ThemeTemplates>
-        </ThemeTemplates>
-      </Instance>
-    </Instance>
-    <InstanceStyle name="Style" content="File">../../Host/Resources/DarkSkin/Style.xml</InstanceStyle>
-  </Folder>
 </Resource>

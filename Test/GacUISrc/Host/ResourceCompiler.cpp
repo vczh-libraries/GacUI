@@ -159,15 +159,13 @@ FilePath CompileResources(
 	}
 
 	WriteBinaryResource(resource, false, true, binaryPath, assemblyPath);
+
+	if (loadResource)
 	{
 		FileStream fileStream(binaryPath.GetFullPath(), FileStream::ReadOnly);
 		resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 		CHECK_ERROR(errors.Count() == 0, L"Error");
-	}
-
-	if (loadResource)
-	{
-		GetResourceManager()->SetResource(name, resource, GuiResourceUsage::InstanceClass);
+		GetResourceManager()->SetResource(resource, GuiResourceUsage::InstanceClass);
 	}
 	return binaryPath;
 }
