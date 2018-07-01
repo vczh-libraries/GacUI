@@ -164,8 +164,5 @@ FilePath CompileResources(
 void LoadResource(FilePath binaryPath)
 {
 	FileStream fileStream(binaryPath.GetFullPath(), FileStream::ReadOnly);
-	List<GuiResourceError> errors;
-	auto resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
-	CHECK_ERROR(errors.Count() == 0, L"Error");
-	GetResourceManager()->SetResource(resource, GuiResourceUsage::InstanceClass);
+	GetResourceManager()->LoadResourceOrPending(fileStream, GuiResourceUsage::InstanceClass);
 }
