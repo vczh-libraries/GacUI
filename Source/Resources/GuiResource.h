@@ -370,18 +370,37 @@ Resource
 			DataOnly,
 			InstanceClass,
 		};
+
+		/// <summary>Resource metadata.</summary>
+		class GuiResourceMetadata : public Object
+		{
+		public:
+			WString									name;
+			WString									version;
+			collections::List<WString>				dependencies;
+
+			void									LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, GuiResourceLocation location, GuiResourceError::List& errors);
+			Ptr<parsing::xml::XmlDocument>			SaveToXml();
+		};
 		
 		/// <summary>Resource. A resource is a root resource folder that does not have a name.</summary>
 		class GuiResource : public GuiResourceFolder, public Description<GuiResource>
 		{
 		protected:
 			WString									workingDirectory;
+			Ptr<GuiResourceMetadata>				metadata;
 
 			static void								ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, GuiResourceError::List& errors);
 		public:
+			static const wchar_t*					CurrentVersionString;
+
 			/// <summary>Create a resource.</summary>
 			GuiResource();
 			~GuiResource();
+
+			/// <summary>Get the metadata of the resource.</summary>
+			/// <returns>The metadata.</returns>
+			Ptr<GuiResourceMetadata>				GetMetadata();
 
 			/// <summary>Get the directory where the resource is load.</summary>
 			/// <returns>The directory.</returns>

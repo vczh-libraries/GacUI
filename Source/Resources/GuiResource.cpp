@@ -1109,8 +1109,81 @@ GuiResourceFolder
 		}
 
 /***********************************************************************
+GuiResourceMetadata
+***********************************************************************/
+
+		void GuiResourceMetadata::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, GuiResourceLocation location, GuiResourceError::List& errors)
+		{
+			auto attrName = XmlGetAttribute(xml->rootElement, L"Name");
+			auto attrVersion = XmlGetAttribute(xml->rootElement, L"Version");
+			if (!attrName || !attrVersion)
+			{
+				errors.Add(GuiResourceError(location, L"[INTERNAL-ERROR] Resource metadata lacks of Name or Version attribute."));
+				return;
+			}
+			name = attrName->value.value;
+			version = attrVersion->value.value;
+			dependencies.Clear();
+
+			if (auto xmlDeps = XmlGetElement(xml->rootElement, L"Dependencies"))
+			{
+				FOREACH(Ptr<XmlElement>, xmlDep, XmlGetElements(xmlDeps, L"Resource"))
+				{
+					auto attrDep = XmlGetAttribute(xmlDep, L"Resource");
+					if (!attrDep)
+					{
+						errors.Add(GuiResourceError(location, L"[INTERNAL-ERROR] Resource dependency lacks of Name attribute."));
+					}
+					dependencies.Add(attrDep->value.value);
+				}
+			}
+		}
+
+		Ptr<parsing::xml::XmlDocument> GuiResourceMetadata::SaveToXml()
+		{
+			auto root = MakePtr<XmlElement>();
+			root->name.value = L"ResourceMetadata";
+			{
+				auto attr = MakePtr<XmlAttribute>();
+				attr->name.value = L"Name";
+				attr->value.value = name;
+				root->attributes.Add(attr);
+			}
+			{
+				auto attr = MakePtr<XmlAttribute>();
+				attr->name.value = L"Version";
+				attr->value.value = version;
+				root->attributes.Add(attr);
+			}
+			{
+				auto xmlDeps = MakePtr<XmlElement>();
+				xmlDeps->name.value = L"Dependencies";
+				root->subNodes.Add(xmlDeps);
+
+				FOREACH(WString, dep, dependencies)
+				{
+					auto xmlDep = MakePtr<XmlElement>();
+					xmlDep->name.value = L"Resource";
+					xmlDeps->subNodes.Add(xmlDep);
+					{
+						auto attr = MakePtr<XmlAttribute>();
+						attr->name.value = L"Name";
+						attr->value.value = dep;
+						xmlDep->attributes.Add(attr);
+					}
+				}
+			}
+
+			auto doc = MakePtr<XmlDocument>();
+			doc->rootElement = root;
+			return doc;
+		}
+
+/***********************************************************************
 GuiResource
 ***********************************************************************/
+
+		const wchar_t* GuiResource::CurrentVersionString = L"1.0";
 
 		void GuiResource::ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, GuiResourceError::List& errors)
 		{
@@ -1148,10 +1221,17 @@ GuiResource
 
 		GuiResource::GuiResource()
 		{
+			metadata = MakePtr<GuiResourceMetadata>();
+			metadata->version == L"1.0";
 		}
 
 		GuiResource::~GuiResource()
 		{
+		}
+
+		Ptr<GuiResourceMetadata> GuiResource::GetMetadata()
+		{
+			return metadata;
 		}
 
 		WString GuiResource::GetWorkingDirectory()
@@ -1208,6 +1288,23 @@ GuiResource
 		{
 			stream::internal::ContextFreeReader reader(stream);
 			auto resource = MakePtr<GuiResource>();
+			{
+				WString metadata;
+				reader << metadata;
+				
+				auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
+				auto xmlMetadata = parser->Parse({ resource }, metadata, errors);
+				if (!xmlMetadata) return nullptr;
+
+				resource->metadata->LoadFromXml(xmlMetadata, { resource }, errors);
+				if (errors.Count() != 0) return nullptr;
+
+				if (resource->metadata->version != CurrentVersionString)
+				{
+					errors.Add(GuiResourceError({ resource }, L"Only resource binary of version \"" + WString(CurrentVersionString) + L"\" is accepted. Please recompile the resource before loading it."));
+					return nullptr;
+				}
+			}
 
 			List<WString> typeNames;
 			reader << typeNames;
@@ -1230,7 +1327,19 @@ GuiResource
 		void GuiResource::SavePrecompiledBinary(stream::IStream& stream)
 		{
 			stream::internal::ContextFreeWriter writer(stream);
-
+			{
+				auto xmlMetadata = metadata->SaveToXml();
+				stream::MemoryStream memoryStream;
+				{
+					stream::StreamWriter writer(memoryStream);
+					XmlPrint(xmlMetadata, writer);
+				}
+				memoryStream.SeekFromBegin(0);
+				{
+					stream::StreamReader reader(memoryStream);
+					writer << reader.ReadToEnd();
+				}
+			}
 			List<WString> typeNames;
 			CollectTypeNames(typeNames);
 			writer << typeNames;
