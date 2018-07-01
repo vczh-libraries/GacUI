@@ -58,13 +58,16 @@
     <Xml Include="Resources\Resource.xml">
       <Filter>Resource Files</Filter>
     </Xml>
-    <Xml Include="Resources\Resource1.xml">
+    <Xml Include="Resources\ResBase.xml">
       <Filter>Resource Files</Filter>
     </Xml>
-    <Xml Include="Resources\Resource2.xml">
+    <Xml Include="Resources\ResDerived.xml">
       <Filter>Resource Files</Filter>
     </Xml>
-    <Xml Include="Resources\Resource3.xml">
+    <Xml Include="Resources\ResMain.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="Resources\ResVM.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>

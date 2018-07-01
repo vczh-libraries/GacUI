@@ -104,8 +104,7 @@ FilePath CompileResources(
 	const WString& resourcePath,
 	const WString& outputBinaryFolder,
 	const WString& outputCppFolder,
-	bool compressResource,
-	bool loadResource
+	bool compressResource
 )
 {
 	FilePath errorPath = outputBinaryFolder + name + L".UI.error.txt";
@@ -159,13 +158,14 @@ FilePath CompileResources(
 	}
 
 	WriteBinaryResource(resource, false, true, binaryPath, assemblyPath);
-
-	if (loadResource)
-	{
-		FileStream fileStream(binaryPath.GetFullPath(), FileStream::ReadOnly);
-		resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
-		CHECK_ERROR(errors.Count() == 0, L"Error");
-		GetResourceManager()->SetResource(resource, GuiResourceUsage::InstanceClass);
-	}
 	return binaryPath;
+}
+
+void LoadResource(FilePath binaryPath)
+{
+	FileStream fileStream(binaryPath.GetFullPath(), FileStream::ReadOnly);
+	List<GuiResourceError> errors;
+	auto resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
+	CHECK_ERROR(errors.Count() == 0, L"Error");
+	GetResourceManager()->SetResource(resource, GuiResourceUsage::InstanceClass);
 }

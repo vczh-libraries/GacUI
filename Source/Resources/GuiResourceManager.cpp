@@ -115,10 +115,12 @@ IGuiInstanceResourceManager
 					resources.Add(metadata->name, resource);
 				}
 				
-				auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>();
-				FOREACH(WString, className, record->classNames)
+				if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
 				{
-					instanceResources.Add(className, resource);
+					FOREACH(WString, className, record->classNames)
+					{
+						instanceResources.Add(className, resource);
+					}
 				}
 				return true;
 			}

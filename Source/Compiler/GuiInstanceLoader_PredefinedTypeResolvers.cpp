@@ -572,7 +572,10 @@ Instance Type Resolver (Instance)
 				{
 				case Instance_CompileInstanceTypes:
 					Workflow_GenerateAssembly(context, path, errors, false, context.compilerCallback);
-					compiled->modules.Clear();
+					if (compiled)
+					{
+						compiled->modules.Clear();
+					}
 					break;
 				case Instance_CompileEventHandlers:
 					Workflow_GenerateAssembly(context, path, errors, false, context.compilerCallback);

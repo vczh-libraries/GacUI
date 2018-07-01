@@ -38,10 +38,10 @@ extern FilePath CompileResources(
 	const WString& resourcePath,
 	const WString& outputBinaryFolder,
 	const WString& outputCppFolder,
-	bool compressResource,
-	bool loadResource
+	bool compressResource
 	);
 
+extern void LoadResource(FilePath binaryPath);
 extern void DumpComposition(presentation::compositions::GuiGraphicsComposition* composition, stream::TextWriter& writer);
 
 #endif

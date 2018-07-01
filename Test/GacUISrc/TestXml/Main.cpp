@@ -83,7 +83,7 @@ void OpenMainWindow()
 {
 	{
 		auto theme = MakePtr<darkskin::Theme>();
-		RegisterTheme(L"DarkSkin", theme);
+		RegisterTheme(theme);
 	}
 	{
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
@@ -101,19 +101,30 @@ void GuiMain()
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	LoadDarkSkinTypes();
+
+	List<WString> names;
+	names.Add(L"ResVM");
+	names.Add(L"ResBase");
+	names.Add(L"ResDerived");
+	names.Add(L"ResMain");
+
+	Group<WString, WString> deps;
+	deps.Add(L"ResBase", L"ResVM");
+	deps.Add(L"ResDerived", L"ResVM");
+	deps.Add(L"ResDerived", L"ResBase");
+	deps.Add(L"ResMain", L"ResDerived");
+
+	Dictionary<WString, FilePath> paths;
+	FOREACH(WString, name, names)
 	{
 		List<WString> dependencies;
-		CompileResources(L"Resource1", dependencies, LR"(Resources/Resource1.xml)", L"./", L"", false, true);
-	}
-	{
-		List<WString> dependencies;
-		dependencies.Add(L"Resource1");
-		CompileResources(L"Resource2", dependencies, LR"(Resources/Resource2.xml)", L"./", L"", false, true);
-	}
-	{
-		List<WString> dependencies;
-		dependencies.Add(L"Resource2");
-		CompileResources(L"Resource3", dependencies, LR"(Resources/Resource3.xml)", L"./", L"", false, true);
+		vint index = deps.Keys().IndexOf(name);
+		if (index != -1)
+		{
+			CopyFrom(dependencies, deps.GetByIndex(index));
+		}
+		paths.Add(name, CompileResources(name, dependencies, L"Resources/" + name + L".xml", L"./", L"", false));
+		LoadResource(paths[name]);
 	}
 	OpenMainWindow();
 #endif
