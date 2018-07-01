@@ -1120,6 +1120,7 @@ WorkflowCompiler (Compile)
 			}
 		};
 
+		extern IGuiInstanceLoader::TypeInfo						Workflow_AdjustPropertySearchType(types::ResolvingResult& resolvingResult, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop);
 		extern bool												Workflow_GetPropertyTypes(WString& errorPrefix, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop, Ptr<GuiAttSetterRepr::SetterValue> setter, collections::List<types::PropertyResolving>& possibleInfos, GuiResourceError::List& errors);
 		extern Ptr<reflection::description::ITypeInfo>			Workflow_GetSuggestedParameterType(reflection::description::ITypeDescriptor* typeDescriptor);
 		extern IGuiInstanceLoader::TypeInfo						Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
