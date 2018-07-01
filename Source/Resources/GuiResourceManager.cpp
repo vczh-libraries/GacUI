@@ -87,6 +87,15 @@ IGuiInstanceResourceManager
 				GuiResourceUsage					usage;
 				MemoryStream						memoryStream;
 				SortedList<WString>					dependencies;
+
+				Ptr<GuiResource> LoadResource()
+				{
+					memoryStream.SeekFromBegin(0);
+					List<GuiResourceError> errors;
+					auto resource = GuiResource::LoadPrecompiledBinary(memoryStream, errors);
+					CHECK_ERROR(errors.Count() == 0, L"PendingResource::LoadResource()#Failed to load the resource.");
+					return resource;
+				}
 			};
 			Group<WString, Ptr<PendingResource>>	depToPendings;
 			SortedList<Ptr<PendingResource>>		pendingResources;
@@ -134,6 +143,27 @@ IGuiInstanceResourceManager
 						instanceResources.Add(className, resource);
 					}
 				}
+
+				if (metadata->name != L"")
+				{
+					vint index = depToPendings.Keys().IndexOf(metadata->name);
+					if (index != -1)
+					{
+						List<Ptr<PendingResource>> prs;
+						CopyFrom(prs, depToPendings.GetByIndex(index));
+						depToPendings.Remove(metadata->name);
+
+						FOREACH(Ptr<PendingResource>, pr, prs)
+						{
+							pr->dependencies.Remove(metadata->name);
+							if (pr->dependencies.Count() == 0)
+							{
+								pendingResources.Remove(pr.Obj());
+								SetResource(pr->LoadResource(), pr->usage);
+							}
+						}
+					}
+				}
 				return true;
 			}
 
@@ -150,11 +180,22 @@ IGuiInstanceResourceManager
 				return instanceResources.Values()[index];
 			}
 
-			void UnloadAllResources()
+			void UnloadResource(const WString& name)
 			{
-				anonymousResources.Clear();
-				resources.Clear();
-				instanceResources.Clear();
+				vint index = resources.Keys().IndexOf(name);
+				if (index != -1)
+				{
+					auto resource = resources.Values()[index];
+					resources.Remove(name);
+
+					if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
+					{
+						FOREACH(WString, className, record->classNames)
+						{
+							instanceResources.Remove(className);
+						}
+					}
+				}
 			}
 
 			void LoadResourceOrPending(stream::IStream& stream, GuiResourceUsage usage = GuiResourceUsage::DataOnly)override
@@ -186,11 +227,7 @@ IGuiInstanceResourceManager
 
 				if (pr->dependencies.Count() == 0)
 				{
-					pr->memoryStream.SeekFromBegin(0);
-					List<GuiResourceError> errors;
-					auto resource = GuiResource::LoadPrecompiledBinary(pr->memoryStream, errors);
-					CHECK_ERROR(errors.Count() == 0, L"GuiResourceManager::LoadResourceOrPending(stream::IStream&, GuiResourceUsage)#Failed to load the resource.");
-					SetResource(resource, pr->usage);
+					SetResource(pr->LoadResource(), pr->usage);
 				}
 				else
 				{

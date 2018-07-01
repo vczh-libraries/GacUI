@@ -127,7 +127,10 @@ void GuiMain()
 		LoadResource(paths[name]);
 	}
 
-	GetResourceManager()->UnloadAllResources();
+	FOREACH(WString, name, names)
+	{
+		GetResourceManager()->UnloadResource(name);
+	}
 	FOREACH(WString, name, From(names).Reverse())
 	{
 		LoadResource(paths[name]);
