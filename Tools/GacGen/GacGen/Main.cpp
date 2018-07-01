@@ -151,14 +151,13 @@ void GuiMain()
 	}
 
 	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath.GetFullPath());
-	FilePath logFolderPath = inputPath.GetFullPath() + L".log";
+#if defined VCZH_64
+	FilePath logFolderPath = inputPath.GetFullPath() + L".log/x64";
+#else
+	FilePath logFolderPath = inputPath.GetFullPath() + L".log/x32";
+#endif
 	if (partialMode)
 	{
-#if defined VCZH_64
-		logFolderPath = logFolderPath / L"x64";
-#else
-		logFolderPath = logFolderPath / L"x32";
-#endif
 		PrintInformationMessage(L"gacgen> Partial mode activated, all output files will be put under " + logFolderPath.GetFullPath());
 	}
 	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
