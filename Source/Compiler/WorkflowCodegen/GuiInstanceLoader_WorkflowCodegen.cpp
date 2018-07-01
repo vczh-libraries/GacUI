@@ -553,7 +553,7 @@ Workflow_GenerateInstanceClass
 					{
 					case ITypeInfo::RawPtr: return { typeInfo,className + L"*" };
 					case ITypeInfo::SharedPtr: return { typeInfo,className + L"^" };
-					default:;
+					default: return { typeInfo,className };
 					}
 				}
 				return { nullptr,className };

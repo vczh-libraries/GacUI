@@ -12876,6 +12876,9 @@ Class (::demo::DocumentEditorRibbonConstructor)
 			(this->__vwsn_precompile_12 = new ::vl::presentation::controls::GuiRibbonGroup(::vl::presentation::theme::ThemeName::RibbonGroup));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetExpandable(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+		}
+		{
 			(this->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiToolstripButton(::vl::presentation::theme::ThemeName::RibbonLargeDropdownButton));
 		}
 		{
@@ -12947,9 +12950,6 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_12)->GetItems());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_19));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetExpandable(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetText(::vl::WString(L"Alignment", false));
@@ -13584,9 +13584,6 @@ Class (::demo::DocumentEditorRibbonConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/EditableLarge", false), true).Obj())));
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetCommand(::vl::__vwsn::This(this->self)->commandViewOnly);
 		}
 		{
@@ -13625,11 +13622,11 @@ Class (::demo::DocumentEditorRibbonConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_22)->SetCommand(::vl::__vwsn::This(this->self)->commandAlignRight);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf167_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_12)->ExpandButtonClicked, __vwsn_event_handler_);
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/EditableLarge", false), true).Obj())));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_23)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/PasteLarge", false), true).Obj())));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf167_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_12)->ExpandButtonClicked, __vwsn_event_handler_);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_25)->SetCommand(::vl::__vwsn::This(this->self)->commandUndo);
@@ -13648,6 +13645,9 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_33)->SetCommand(::vl::__vwsn::This(this->self)->commandDelete);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_23)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/PasteLarge", false), true).Obj())));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_37)->SetCommand(::vl::__vwsn::This(this->self)->commandBold);
@@ -13695,9 +13695,6 @@ Class (::demo::DocumentEditorRibbonConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_68)->SetImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/TextAlignRight", false), true).Obj())));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_71)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/EditableLarge", false), true).Obj())));
-		}
-		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc71_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf168_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
@@ -13705,6 +13702,9 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		{
 			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf169_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->styleGallery)->ItemApplied, __vwsn_event_handler_);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_71)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/EditableLarge", false), true).Obj())));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_84)->SetCommand(::vl::__vwsn::This(this->self)->commandInsertImage);
@@ -15318,16 +15318,16 @@ Class (::demo::HyperlinkWindowConstructor)
 			::vl::__vwsn::This(this->self)->SetShowInTaskBar(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(320); __vwsn_temp__.y = static_cast<::vl::vint32_t>(80); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetSizeBox(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->self)->SetMaximizedBox(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinimizedBox(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetMaximizedBox(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->self)->SetSizeBox(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(320); __vwsn_temp__.y = static_cast<::vl::vint32_t>(80); return __vwsn_temp__; }());
 		}
 		(this->__vwsn_precompile_13 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
 		{
@@ -16637,10 +16637,10 @@ Class (::demo::RepeatTabPageConstructor)
 		}
 		(this->repeatFlow = new ::vl::presentation::compositions::GuiRepeatFlowComposition());
 		{
-			::vl::__vwsn::This(this->repeatFlow)->SetRowPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+			::vl::__vwsn::This(this->repeatFlow)->SetColumnPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
 		}
 		{
-			::vl::__vwsn::This(this->repeatFlow)->SetColumnPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+			::vl::__vwsn::This(this->repeatFlow)->SetRowPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
 		}
 		{
 			::vl::__vwsn::This(this->repeatFlow)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf42_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
