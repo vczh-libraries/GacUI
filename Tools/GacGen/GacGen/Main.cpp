@@ -284,36 +284,32 @@ void CompileResource(bool partialMode, FilePath inputPath)
 					{
 						WriteEmbeddedResource(resource, input, output, true, cppFolder / cppOutput->cppCompressed);
 					}
-
-					FOREACH(FilePath, filePath, cppResourcePaths)
-					{
-						PrintSuccessMessage(L"Generating binary resource file (no script): " + filePath.GetFullPath());
-						WriteBinaryResource(resource, false, false, filePath, {});
-					}
-					FOREACH(FilePath, filePath, cppCompressedPaths)
-					{
-						PrintSuccessMessage(L"Generating compressed resource file (no script): " + filePath.GetFullPath());
-						WriteBinaryResource(resource, true, false, filePath, {});
-					}
 				}
 
-				if (resOutput)
+				FOREACH(FilePath, filePath, cppResourcePaths)
 				{
-					FOREACH(FilePath, filePath, resResourcePaths)
-					{
-						PrintSuccessMessage(L"Generating binary resource files : " + filePath.GetFullPath());
-						WriteBinaryResource(resource, false, true, filePath, {});
-					}
-					FOREACH(FilePath, filePath, resCompressedPaths)
-					{
-						PrintSuccessMessage(L"Generating compressed resource files : " + filePath.GetFullPath());
-						WriteBinaryResource(resource, true, true, filePath, {});
-					}
-					FOREACH(FilePath, filePath, resAssemblyPaths)
-					{
-						PrintSuccessMessage(L"Generating compressed resource files : " + filePath.GetFullPath());
-						WriteBinaryResource(resource, false, false, {}, filePath);
-					}
+					PrintSuccessMessage(L"Generating binary resource file (no script): " + filePath.GetFullPath());
+					WriteBinaryResource(resource, false, false, filePath, {});
+				}
+				FOREACH(FilePath, filePath, cppCompressedPaths)
+				{
+					PrintSuccessMessage(L"Generating compressed resource file (no script): " + filePath.GetFullPath());
+					WriteBinaryResource(resource, true, false, filePath, {});
+				}
+				FOREACH(FilePath, filePath, resResourcePaths)
+				{
+					PrintSuccessMessage(L"Generating binary resource files : " + filePath.GetFullPath());
+					WriteBinaryResource(resource, false, true, filePath, {});
+				}
+				FOREACH(FilePath, filePath, resCompressedPaths)
+				{
+					PrintSuccessMessage(L"Generating compressed resource files : " + filePath.GetFullPath());
+					WriteBinaryResource(resource, true, true, filePath, {});
+				}
+				FOREACH(FilePath, filePath, resAssemblyPaths)
+				{
+					PrintSuccessMessage(L"Generating assembly files : " + filePath.GetFullPath());
+					WriteBinaryResource(resource, false, false, {}, filePath);
 				}
 
 				if (partialMode)
@@ -378,6 +374,79 @@ void DumpResource(FilePath inputPath, FilePath outputPath)
 	doc->rootElement = xmlRoot;
 	
 	xmlRoot->subNodes.Add(resource->GetMetadata()->SaveToXml());
+	{
+		SortedList<WString> paths;
+		List<Ptr<GuiResourceFolder>> folders;
+		folders.Add(resource);
+		for (vint i = 0; i < folders.Count(); i++)
+		{
+			auto currentFolder = folders[i];
+			if (currentFolder->GetFileAbsolutePath() != L"" && !paths.Contains(currentFolder->GetFileAbsolutePath()))
+			{
+				paths.Add(currentFolder->GetFileAbsolutePath());
+			}
+
+			FOREACH(Ptr<GuiResourceItem>, item, currentFolder->GetItems())
+			{
+				if (item->GetFileAbsolutePath() != L"" && !paths.Contains(item->GetFileAbsolutePath()))
+				{
+					paths.Add(item->GetFileAbsolutePath());
+				}
+			}
+
+			FOREACH(Ptr<GuiResourceFolder>, folder, currentFolder->GetFolders())
+			{
+				folders.Add(folder);
+			}
+		}
+
+		auto xmlInputs = MakePtr<XmlElement>();
+		xmlInputs->name.value = L"Inputs";
+		xmlRoot->subNodes.Add(xmlInputs);
+
+		FOREACH(WString, path, paths)
+		{
+			auto xmlInput = MakePtr<XmlElement>();
+			xmlInput->name.value = L"Input";
+			xmlInputs->subNodes.Add(xmlInput);
+			{
+				auto attr = MakePtr<XmlAttribute>();
+				attr->name.value = L"Path";
+				attr->value.value = path;
+				xmlInput->attributes.Add(attr);
+			}
+		}
+	}
+	{
+		SortedList<WString> paths;
+		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x32" / L"Resource.bin").GetFullPath());
+		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x32" / L"Compressed.bin").GetFullPath());
+		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x32" / L"ScriptedResource.bin").GetFullPath());
+		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x32" / L"ScriptedCompressed.bin").GetFullPath());
+		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x32" / L"Assembly.bin").GetFullPath());
+		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x64" / L"Resource.bin").GetFullPath());
+		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x64" / L"Compressed.bin").GetFullPath());
+		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x64" / L"ScriptedResource.bin").GetFullPath());
+		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x64" / L"ScriptedCompressed.bin").GetFullPath());
+		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x64" / L"Assembly.bin").GetFullPath());
+
+		auto xmlOutputs = MakePtr<XmlElement>();
+		xmlOutputs->name.value = L"Outputs";
+		xmlRoot->subNodes.Add(xmlOutputs);
+
+		FOREACH(WString, path, paths)
+		{
+			auto xmlOutput = MakePtr<XmlElement>();
+			xmlOutput->name.value = L"Output";
+			xmlOutputs->subNodes.Add(xmlOutput);
+			{
+				auto attr = MakePtr<XmlAttribute>();
+				attr->name.value = L"Path";
+				attr->value.value = path;
+				xmlOutput->attributes.Add(attr);
+			}
+		}
+	}
 
 	{
 		FileStream fileStream(outputPath.GetFullPath(), FileStream::WriteOnly);
