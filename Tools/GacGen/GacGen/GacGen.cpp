@@ -70,7 +70,7 @@ bool CodegenConfig::LoadConfigString(Ptr<GuiResourceFolder> folder, const WStrin
 	return false;
 }
 
-Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
+Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource, GuiResourceError::List& errors)
 {
 	Ptr<CodegenConfig> config = new CodegenConfig;
 	config->resource = resource;
@@ -113,6 +113,14 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
 		LoadConfigString(folder, L"Assembly", out->assembly);
 
 		config->resOutputx64 = out;
+	}
+
+	if (auto item = resource->GetValueByPath(L"GacGenConfig/Metadata"))
+	{
+		if (auto xml = item.Cast<XmlDocument>())
+		{
+			resource->GetMetadata()->LoadFromXml(xml, { resource }, errors);
+		}
 	}
 
 	return config;

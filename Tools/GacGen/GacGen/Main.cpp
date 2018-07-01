@@ -15,6 +15,16 @@ int wmain(int argc, wchar_t* argv[])
 	SetupWindowsDirect2DRenderer();
 }
 
+void PrintErrors(List<GuiResourceError>& errors)
+{
+	List<WString> output;
+	GuiResourceError::SortAndLog(errors, output);
+	FOREACH(WString, line, output)
+	{
+		PrintErrorMessage(line);
+	}
+}
+
 void SaveErrors(FilePath errorFilePath, List<GuiResourceError>& errors)
 {
 	FileStream fileStream(errorFilePath.GetFullPath(), FileStream::WriteOnly);
@@ -39,6 +49,7 @@ void SaveErrors(FilePath errorFilePath, List<GuiResourceError>& errors)
 		PrintErrorMessage(L"gacgen> Unable to write : " + errorFilePath.GetFullPath());
 	}
 }
+
 class Callback : public Object, public IGuiResourcePrecompileCallback, public IWfCompilerCallback
 {
 public:
@@ -126,30 +137,8 @@ public:
 	}
 };
 
-void GuiMain()
+void CompileResource(bool partialMode, FilePath inputPath)
 {
-	Console::SetTitle(L"Vczh GacUI Resource Code Generator for C++");
-
-	bool partialMode = false;
-	FilePath inputPath;
-	switch(arguments->Count())
-	{
-	case 1:
-		inputPath = arguments->Get(0);
-		break;
-	case 2:
-		if (arguments->Get(0) == L"/P")
-		{
-			partialMode = true;
-			inputPath = arguments->Get(1);
-			break;
-		}
-	default:
-		PrintErrorMessage(L"Usage: GacGen32.exe [/P] <input-resource-xml-file>");
-		PrintErrorMessage(L"Usage: GacGen64.exe [/P] <input-resource-xml-file>");
-		return;
-	}
-
 	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath.GetFullPath());
 #if defined VCZH_64
 	FilePath logFolderPath = inputPath.GetFullPath() + L".log/x64";
@@ -208,10 +197,17 @@ void GuiMain()
 	{
 		Ptr<CodegenConfig> config;
 		{
-			config = CodegenConfig::LoadConfig(resource);
+			List<GuiResourceError> errors;
+			config = CodegenConfig::LoadConfig(resource, errors);
 			if (!config)
 			{
 				PrintErrorMessage(L"error> Failed to load config.");
+				return;
+			}
+			if (errors.Count() > 0)
+			{
+				PrintErrorMessage(L"error> Failed to load resource metadata.");
+				SaveErrors(errorFilePath, errors);
 				return;
 			}
 		}
@@ -348,5 +344,81 @@ void GuiMain()
 				}
 			}
 		}
+	}
+}
+
+void DumpResource(FilePath inputPath, FilePath outputPath)
+{
+	PrintSuccessMessage(L"gacgen> Dumping : " + inputPath.GetFullPath());
+	List<GuiResourceError> errors;
+	auto resource = GuiResource::LoadFromXml(inputPath.GetFullPath(), errors);
+	if (errors.Count() > 0)
+	{
+		PrintErrorMessage(L"error> Failed to load resource.");
+		PrintErrors(errors);
+		return;
+	}
+
+	auto config = CodegenConfig::LoadConfig(resource, errors);
+	if (!config)
+	{
+		PrintErrorMessage(L"error> Failed to load config.");
+		return;
+	}
+	if (errors.Count() > 0)
+	{
+		PrintErrorMessage(L"error> Failed to load resource metadata.");
+		PrintErrors(errors);
+		return;
+	}
+
+	auto doc = MakePtr<XmlDocument>();
+	auto xmlRoot = MakePtr<XmlElement>();
+	xmlRoot->name.value = L"ResourceMetadata";
+	doc->rootElement = xmlRoot;
+	
+	xmlRoot->subNodes.Add(resource->GetMetadata()->SaveToXml());
+
+	{
+		FileStream fileStream(outputPath.GetFullPath(), FileStream::WriteOnly);
+		if (!fileStream.IsAvailable())
+		{
+			PrintErrorMessage(L"error> Failed to write file: " + outputPath.GetFullPath());
+			return;
+		}
+
+		BomEncoder encoder(BomEncoder::Utf8);
+		EncoderStream encoderStream(fileStream, encoder);
+		StreamWriter writer(encoderStream);
+		XmlPrint(doc, writer);
+	}
+}
+
+void GuiMain()
+{
+	Console::SetTitle(L"Vczh GacUI Resource Code Generator for C++");
+
+	switch (arguments->Count())
+	{
+	case 1:
+		CompileResource(false, arguments->Get(0));
+		break;
+	case 2:
+		if (arguments->Get(0) == L"/P")
+		{
+			CompileResource(true, arguments->Get(1));
+			break;
+		}
+	case 3:
+		if (arguments->Get(0) == L"/D")
+		{
+			DumpResource(arguments->Get(1), arguments->Get(2));
+			break;
+		}
+	default:
+		PrintErrorMessage(L"Usage: GacGen.exe <input-resource-xml-file>");
+		PrintErrorMessage(L"Usage: GacGen.exe /P <input-resource-xml-file>");
+		PrintErrorMessage(L"Usage: GacGen.exe /D <input-resource-xml-file> <output-xml>");
+		return;
 	}
 }

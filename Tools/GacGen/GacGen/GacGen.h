@@ -57,6 +57,7 @@ public:
 	};
 
 	Ptr<GuiResource>							resource;
+	Ptr<GuiResourceMetadata>					metadata;
 	Ptr<CppOutput>								cppOutput;
 	Ptr<ResOutput>								resOutputx32;
 	Ptr<ResOutput>								resOutputx64;
@@ -64,7 +65,7 @@ public:
 	static WString								NormalizeFolder(const WString& folder);
 	static bool									LoadConfigString(Ptr<GuiResourceFolder> folder, const WString& path, WString& value, bool optional = true);
 	static bool									LoadConfigString(Ptr<GuiResourceFolder> folder, const WString& path, List<WString>& value, bool optional = true);
-	static Ptr<CodegenConfig>					LoadConfig(Ptr<GuiResource> resource);
+	static Ptr<CodegenConfig>					LoadConfig(Ptr<GuiResource> resource, GuiResourceError::List& errors);
 };
 
 #endif
