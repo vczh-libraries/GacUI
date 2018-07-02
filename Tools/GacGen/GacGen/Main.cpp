@@ -137,6 +137,98 @@ public:
 	}
 };
 
+bool LoadDependencies(Ptr<CodegenConfig> config, Dictionary<WString, FilePath>& resourceMappings, const WString& logFolderPostfix)
+{
+	if (config->metadata->version == L"")
+	{
+		config->metadata->version = GuiResource::CurrentVersionString;
+	}
+
+	if (config->metadata->version != GuiResource::CurrentVersionString)
+	{
+		PrintErrorMessage(L"error> Version of the resource should be \"" + WString(GuiResource::CurrentVersionString) + L"\"");
+		return false;
+	}
+
+	if (config->metadata->dependencies.Count() > 0 && config->metadata->name == L"")
+	{
+		PrintErrorMessage(L"error> Name of the resource should not be empty if it has dependencies.");
+		return false;
+	}
+
+	SortedList<WString> requireds, loaded;
+	CopyFrom(requireds, config->metadata->dependencies);
+
+	while (requireds.Count() > 0)
+	{
+		auto required = requireds[requireds.Count() - 1];
+		requireds.RemoveAt(requireds.Count() - 1);
+		if (loaded.Contains(required)) continue;
+
+		vint index = resourceMappings.Keys().IndexOf(required);
+		if (index == -1)
+		{
+			PrintErrorMessage(L"error> Cannot find the resource file of name: " + required);
+			return false;
+		}
+
+		FilePath resourceBinary = FilePath(resourceMappings.Values()[index].GetFullPath() + logFolderPostfix) / L"ScriptedResource.bin";
+		MemoryStream resourceStream;
+		{
+			FileStream fileStream(resourceBinary.GetFullPath(), FileStream::ReadOnly);
+			if (!fileStream.IsAvailable())
+			{
+				PrintErrorMessage(L"error> Cannot find binary resource file, please make sure the required resource \"" + required + L"\" has been properly compiled: " + required);
+				return false;
+			}
+			CopyStream(fileStream, resourceStream);
+		}
+
+		loaded.Add(required);
+		{
+			resourceStream.SeekFromBegin(0);
+			stream::internal::ContextFreeReader reader(resourceStream);
+
+			WString metadataText;
+			reader << metadataText;
+
+			GuiResourceError::List errors;
+			auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
+			auto xmlMetadata = parser->Parse({}, metadataText, errors);
+			if (!xmlMetadata || errors.Count() > 0)
+			{
+				PrintErrorMessage(L"error> The binary resource file has an invalid metadata, please make sure the required resource \"" + required + L"\" has been properly compiled: " + required);
+				return false;
+			}
+
+			auto metadata = MakePtr<GuiResourceMetadata>();
+			metadata->LoadFromXml(xmlMetadata, {}, errors);
+			if (errors.Count() > 0)
+			{
+				PrintErrorMessage(L"error> The binary resource file has an invalid metadata, please make sure the required resource \"" + required + L"\" has been properly compiled: " + required);
+				return false;
+			}
+
+			CopyFrom(requireds, metadata->dependencies, true);
+		}
+
+		resourceStream.SeekFromBegin(0);
+		GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+	}
+
+	List<WString> pendings;
+	GetResourceManager()->GetPendingResourceNames(pendings);
+	if (pendings.Count() > 0)
+	{
+		PrintErrorMessage(L"error> Unable to find dependencies: "
+			+ From(pendings)
+				.Aggregate(WString::Empty, [](const WString& a, const WString& b) {return a == L"" ? b : a + L", " + b; })
+			);
+		return false;
+	}
+	return true;
+}
+
 void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> mappingPath)
 {
 	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath.GetFullPath());
@@ -245,6 +337,10 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 			{
 				PrintErrorMessage(L"error> Failed to load resource metadata.");
 				SaveErrors(errorFilePath, errors);
+				return;
+			}
+			if (!LoadDependencies(config, resourceMappings, logFolderPostfix))
+			{
 				return;
 			}
 		}

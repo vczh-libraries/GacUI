@@ -74,6 +74,7 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource, GuiResou
 {
 	Ptr<CodegenConfig> config = new CodegenConfig;
 	config->resource = resource;
+	config->metadata = resource->GetMetadata();
 
 	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/Cpp/"))
 	{
