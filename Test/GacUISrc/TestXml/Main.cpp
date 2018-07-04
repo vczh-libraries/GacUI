@@ -103,10 +103,11 @@ void GuiMain()
 	LoadDarkSkinTypes();
 
 	List<WString> names;
-	names.Add(L"ResVM");
-	names.Add(L"ResBase");
-	names.Add(L"ResDerived");
-	names.Add(L"ResMain");
+	//names.Add(L"ResVM");
+	//names.Add(L"ResBase");
+	//names.Add(L"ResDerived");
+	//names.Add(L"ResMain");
+	names.Add(L"Resource");
 
 	Group<WString, WString> deps;
 	deps.Add(L"ResBase", L"ResVM");

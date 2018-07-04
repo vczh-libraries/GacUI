@@ -1,4 +1,6 @@
 <Resource>
+  <Text name="Keep">
+    <![CDATA[
   <Folder name="ToolbarImages" content="Link">../../Host/Resources/FullControlTest/ToolbarImages/Images.xml</Folder>
   <Folder name="DocumentComponents" content="Link">../../Host/Resources/FullControlTest/DocumentComponents.xml</Folder>
   <Folder name="DocumentEditorBase" content="Link">../../Host/Resources/FullControlTest/DocumentEditorBase.xml</Folder>
@@ -10,6 +12,23 @@
         <demo:DocumentEditorRibbon ref.Name="editor">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </demo:DocumentEditorRibbon>
+      </Window>
+    </Instance>
+  </Instance>
+    ]]>
+  </Text>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+      <Window ref.Name="self" Text="Hide" ClientSize="x:800 y:600">
+        <Stack MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <Button Text="Hide" ev.Clicked-eval="self.Hide();"/>
+          </StackItem>
+          <StackItem>
+            <Button Text="Close" ev.Clicked-eval="self.Close();"/>
+          </StackItem>
+        </Stack>
       </Window>
     </Instance>
   </Instance>
