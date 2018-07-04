@@ -778,7 +778,7 @@ WindowsForm
 										}
 										return false;
 									case INativeWindowListener::ButtonClose:
-										Hide();
+										Hide(true);
 										return false;
 									}
 								}
@@ -1082,9 +1082,16 @@ WindowsForm
 					ShowWindow(handle, SW_SHOWMINIMIZED);
 				}
 
-				void Hide()
+				void Hide(bool closeWindow)
 				{
-					PostMessage(handle, WM_CLOSE, NULL, NULL);
+					if (closeWindow)
+					{
+						PostMessage(handle, WM_CLOSE, NULL, NULL);
+					}
+					else
+					{
+						ShowWindow(handle, SW_HIDE);
+					}
 				}
 
 				bool IsVisible()
@@ -1380,7 +1387,7 @@ WindowsController
 						{
 							if(windows.Values().Get(i)->IsVisible())
 							{
-								windows.Values().Get(i)->Hide();
+								windows.Values().Get(i)->Hide(true);
 							}
 						}
 						while(windows.Count())
