@@ -6864,7 +6864,7 @@ GuiControlHost
 			{
 				if(host->GetNativeWindow())
 				{
-					host->GetNativeWindow()->Hide();
+					host->GetNativeWindow()->Hide(false);
 				}
 			}
 
@@ -6875,7 +6875,7 @@ GuiControlHost
 				{
 					if(GetCurrentController()->WindowService()->GetMainWindow()!=window)
 					{
-						window->Hide();
+						window->Hide(false);
 					}
 					else
 					{

@@ -1559,7 +1559,8 @@ Native Window
 			/// <summary>
 			/// Hide the window.
 			/// </summary>
-			virtual void				Hide()=0;
+			/// <param name="closeWindow">Set to true to really close the window. Or the window will just be hidden. This parameter only affect the main window.</param>
+			virtual void				Hide(bool closeWindow)=0;
 			/// <summary>
 			/// Test is the window visible.
 			/// </summary>
