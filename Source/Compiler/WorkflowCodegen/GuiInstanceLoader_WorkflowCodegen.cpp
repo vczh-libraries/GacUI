@@ -652,19 +652,59 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, context->localizeds)
 			{
-				if (auto type = GetTypeDescriptor(localized->interfaceName))
+				if (auto lsTd = GetTypeDescriptor(localized->className.ToString()))
 				{
-					auto prop = MakePtr<WfAutoPropertyDeclaration>();
-					addDecl(prop);
+					ITypeDescriptor* lsiTd = nullptr;
+					if (auto group = lsTd->GetMethodGroupByName(L"Get", false))
+					{
+						vint count = group->GetMethodCount();
+						for (vint i = 0; i < count; i++)
+						{
+							auto method = group->GetMethod(i);
+							if (method->GetParameterCount() == 1)
+							{
+								auto paramTd = method->GetParameter(0)->GetType()->GetTypeDescriptor();
+								if (paramTd == description::GetTypeDescriptor<Locale>())
+								{
+									lsiTd = method->GetReturn()->GetTypeDescriptor();
+									break;
+								}
+							}
+						}
+					}
 
-					prop->name.value = localized->name.ToString();
-					prop->type = GetTypeFromTypeInfo(Workflow_GetSuggestedParameterType(type).Obj());
-					prop->configConst = WfAPConst::Writable;
-					prop->configObserve = WfAPObserve::Observable;
+					if (lsiTd)
+					{
+						auto prop = MakePtr<WfAutoPropertyDeclaration>();
+						addDecl(prop);
 
-					auto nullExpr = MakePtr<WfLiteralExpression>();
-					nullExpr->value = WfLiteralValue::Null;
-					prop->expression = nullExpr;
+						prop->name.value = localized->name.ToString();
+						prop->type = GetTypeFromTypeInfo(Workflow_GetSuggestedParameterType(lsiTd).Obj());
+						prop->configConst = WfAPConst::Writable;
+						prop->configObserve = WfAPObserve::Observable;
+
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+						prop->expression = nullExpr;
+					}
+					else
+					{
+						errors.Add(GuiResourceError({ resolvingResult.resource }, localized->classPosition,
+							L"Precompile: Class \"" +
+							localized->className.ToString() +
+							L"\" of localized strings \"" +
+							localized->name.ToString() +
+							L"\" is not a correct localized strings class."));
+					}
+				}
+				else
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, localized->classPosition,
+						L"Precompile: Class \"" +
+						localized->className.ToString() +
+						L"\" of localized strings \"" +
+						localized->name.ToString() +
+						L"\" cannot be found."));
 				}
 			}
 
