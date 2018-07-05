@@ -926,7 +926,6 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
-				CLASS_MEMBER_FIELD(Strings)
 				CLASS_MEMBER_FIELD(comboLocales)
 				CLASS_MEMBER_FIELD(listLocales)
 				CLASS_MEMBER_FIELD(self)

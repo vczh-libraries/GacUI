@@ -1405,7 +1405,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_19;
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_20;
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_21;
-		::vl::Ptr<::demo::IStringResourceStrings> Strings;
 		::vl::presentation::controls::GuiComboBoxListControl* comboLocales;
 		::vl::presentation::controls::GuiTextList* listLocales;
 		void __vwsn_demo_LocalizedStringsTabPage_Initialize(::demo::LocalizedStringsTabPage* __vwsn_this_);

@@ -139,8 +139,7 @@ namespace vl
 					MemoryStream resourceStream;
 					DemoResourceReader::ReadToStream(resourceStream);
 					resourceStream.SeekFromBegin(0);
-					auto resource = GuiResource::LoadPrecompiledBinary(resourceStream, errors);
-					GetResourceManager()->SetResource(resource, GuiResourceUsage::InstanceClass);
+					GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
 				}
 
 				void Unload()override
