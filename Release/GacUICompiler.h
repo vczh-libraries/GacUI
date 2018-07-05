@@ -415,12 +415,10 @@ Instance Namespace
 		{
 		public:
 			GlobalStringKey							name;
-			GlobalStringKey							uri;
+			GlobalStringKey							className;
 			GuiResourceTextPos						tagPosition;
-			GuiResourceTextPos						uriPosition;
+			GuiResourceTextPos						classPosition;
 			bool									defaultStrings = false;
-			WString									className;
-			WString									interfaceName;
 		};
 
 /***********************************************************************

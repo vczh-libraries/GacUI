@@ -3558,7 +3558,7 @@ WorkflowGenerateBindingVisitor
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, resolvingResult.context->localizeds)
 			{
-				auto code = L"bind(" + localized->className + L"::Get(presentation::controls::GuiApplication::GetApplication().Locale) of (" + localized->interfaceName + L"^))";
+				auto code = L"bind(" + localized->className.ToString() + L"::Get(presentation::controls::GuiApplication::GetApplication().Locale))";
 				if (auto bindExpr = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, localized->tagPosition, errors))
 				{
 					auto instancePropertyInfo = resolvingResult.rootTypeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(localized->name.ToString(), true);
@@ -5764,16 +5764,16 @@ GuiInstanceContext
 					else if (element->name.value == L"ref.LocalizedStrings")
 					{
 						auto attName = XmlGetAttribute(element, L"Name");
-						auto attUri = XmlGetAttribute(element, L"Uri");
+						auto attClass = XmlGetAttribute(element, L"Class");
 						auto attDefault = XmlGetAttribute(element, L"Default");
-						if (attName && attUri)
+						if (attName && attClass)
 						{
 							auto localized = MakePtr<GuiInstanceLocalized>();
 							localized->name = GlobalStringKey::Get(attName->value.value);
-							localized->uri = GlobalStringKey::Get(attUri->value.value);
+							localized->className = GlobalStringKey::Get(attClass->value.value);
 							localized->tagPosition = { { resource },element->codeRange.start };
-							localized->uriPosition = { { resource },attUri->value.codeRange.start };
-							localized->uriPosition.column += 1;
+							localized->classPosition = { { resource },attClass->value.codeRange.start };
+							localized->classPosition.column += 1;
 
 							if (attDefault)
 							{
@@ -5783,7 +5783,7 @@ GuiInstanceContext
 						}
 						else
 						{
-							errors.Add(GuiResourceError({ { resource },element->codeRange.start }, L"ref.LocalizedStrings requires the following attributes existing at the same time: Name, Uri."));
+							errors.Add(GuiResourceError({ { resource },element->codeRange.start }, L"ref.LocalizedStrings requires the following attributes existing at the same time: Name, Class."));
 						}
 					}
 
@@ -5892,9 +5892,9 @@ GuiInstanceContext
 				attName->value.value = localized->name.ToString();
 				xmlParameter->attributes.Add(attName);
 
-				auto attUri = MakePtr<XmlAttribute>();
-				attUri->name.value = L"Class";
-				attUri->value.value = localized->uri.ToString();
+				auto attClass = MakePtr<XmlAttribute>();
+				attClass->name.value = L"Class";
+				attClass->value.value = localized->className.ToString();
 				xmlParameter->attributes.Add(attClass);
 
 				auto attDefault = MakePtr<XmlAttribute>();
@@ -7989,31 +7989,6 @@ Instance Type Resolver (Instance)
 								}
 							}
 
-							FOREACH(Ptr<GuiInstanceLocalized>, localized, obj->localizeds)
-							{
-								WString protocol, path;
-								if (IsResourceUrl(localized->uri.ToString(), protocol, path))
-								{
-									if (auto ls = context.resolver->ResolveResource(protocol, path).Cast<GuiInstanceLocalizedStrings>())
-									{
-										localized->className = ls->className;
-										localized->interfaceName = ls->GetInterfaceTypeName(true);
-									}
-									else
-									{
-										errors.Add(GuiResourceError({ resource }, localized->tagPosition,
-											L"Failed to find the localized string referred in attribute \"Uri\": \"" + localized->uri.ToString() + L"\".")
-										);
-									}
-								}
-								else
-								{
-									errors.Add(GuiResourceError({ resource }, localized->tagPosition,
-										L"Invalid path in attribute \"Uri\": \"" + localized->uri.ToString() + L"\".")
-									);
-								}
-							}
-
 							obj->ApplyStyles(resource, context.resolver, errors);
 
 							types::ResolvingResult resolvingResult;
@@ -9942,19 +9917,59 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceLocalized>, localized, context->localizeds)
 			{
-				if (auto type = GetTypeDescriptor(localized->interfaceName))
+				if (auto lsTd = GetTypeDescriptor(localized->className.ToString()))
 				{
-					auto prop = MakePtr<WfAutoPropertyDeclaration>();
-					addDecl(prop);
+					ITypeDescriptor* lsiTd = nullptr;
+					if (auto group = lsTd->GetMethodGroupByName(L"Get", false))
+					{
+						vint count = group->GetMethodCount();
+						for (vint i = 0; i < count; i++)
+						{
+							auto method = group->GetMethod(i);
+							if (method->GetParameterCount() == 1)
+							{
+								auto paramTd = method->GetParameter(0)->GetType()->GetTypeDescriptor();
+								if (paramTd == description::GetTypeDescriptor<Locale>())
+								{
+									lsiTd = method->GetReturn()->GetTypeDescriptor();
+									break;
+								}
+							}
+						}
+					}
 
-					prop->name.value = localized->name.ToString();
-					prop->type = GetTypeFromTypeInfo(Workflow_GetSuggestedParameterType(type).Obj());
-					prop->configConst = WfAPConst::Writable;
-					prop->configObserve = WfAPObserve::Observable;
+					if (lsiTd)
+					{
+						auto prop = MakePtr<WfAutoPropertyDeclaration>();
+						addDecl(prop);
 
-					auto nullExpr = MakePtr<WfLiteralExpression>();
-					nullExpr->value = WfLiteralValue::Null;
-					prop->expression = nullExpr;
+						prop->name.value = localized->name.ToString();
+						prop->type = GetTypeFromTypeInfo(Workflow_GetSuggestedParameterType(lsiTd).Obj());
+						prop->configConst = WfAPConst::Writable;
+						prop->configObserve = WfAPObserve::Observable;
+
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+						prop->expression = nullExpr;
+					}
+					else
+					{
+						errors.Add(GuiResourceError({ resolvingResult.resource }, localized->classPosition,
+							L"Precompile: Class \"" +
+							localized->className.ToString() +
+							L"\" of localized strings \"" +
+							localized->name.ToString() +
+							L"\" is not a correct localized strings class."));
+					}
+				}
+				else
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, localized->classPosition,
+						L"Precompile: Class \"" +
+						localized->className.ToString() +
+						L"\" of localized strings \"" +
+						localized->name.ToString() +
+						L"\" cannot be found."));
 				}
 			}
 
@@ -11129,30 +11144,6 @@ WorkflowReferenceNamesVisitor
 				{
 					auto referenceType = Workflow_GetSuggestedParameterType(type);
 					resolvingResult.typeInfos.Add(parameter->name, { GlobalStringKey::Get(type->GetTypeName()),referenceType });
-				}
-			}
-
-			FOREACH(Ptr<GuiInstanceLocalized>, localized, resolvingResult.context->localizeds)
-			{
-				auto type = GetTypeDescriptor(localized->interfaceName);
-				if (!type)
-				{
-					errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
-						L"Precompile: Cannot find type \"" +
-						localized->interfaceName +
-						L"\"."));
-				}
-				else if (resolvingResult.typeInfos.Keys().Contains(localized->name))
-				{
-					errors.Add(GuiResourceError({ resolvingResult.resource }, localized->tagPosition,
-						L"[INTERNAL-ERROR] Precompile: Parameter \"" +
-						localized->name.ToString() +
-						L"\" conflict with an existing named object."));
-				}
-				else
-				{
-					auto referenceType = Workflow_GetSuggestedParameterType(type);
-					resolvingResult.typeInfos.Add(localized->name, { GlobalStringKey::Get(type->GetTypeName()),referenceType });
 				}
 			}
 			
