@@ -701,7 +701,7 @@ GuiInstanceContext
 						}
 						else
 						{
-							errors.Add(GuiResourceError({ { resource },element->codeRange.start }, L"ref.LocalizedStrings requires the following attributes existing at the same time: Name, Uri."));
+							errors.Add(GuiResourceError({ { resource },element->codeRange.start }, L"ref.LocalizedStrings requires the following attributes existing at the same time: Name, Class."));
 						}
 					}
 

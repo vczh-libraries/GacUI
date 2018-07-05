@@ -86,6 +86,9 @@
     <Text Include="..\..\Resources\Resource.FailedInstance.Inheriting2.xml.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="..\..\Resources\Resource.FailedScript.Strings2.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml">
