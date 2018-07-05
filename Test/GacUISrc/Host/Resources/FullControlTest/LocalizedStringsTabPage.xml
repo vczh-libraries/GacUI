@@ -33,7 +33,7 @@
     </LocalizedStrings>
   </LocalizedStrings>
   
-  <Instance name="MainWindowResource">
+  <Instance name="LocalizedStringsTabPageResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedStringsTabPage">
       <ref.Members>
         <![CDATA[

@@ -17,28 +17,18 @@
   </Instance>
     ]]>
   </Text>
+  
+  <Folder name="LocalizedStringsTabPage" content="Link">../../Host/Resources/FullControlTest/LocalizedStringsTabPage.xml</Folder>
 
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <Window ref.Name="self" Text="Hide" ClientSize="x:800 y:600">
-        <Stack MinSizeLimitation="LimitToElementAndChildren">
-          <StackItem>
-            <Button Text="Hide">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  $Async{
-                    self.Hide();
-                    $Await Async::Delay(1000);
-                    self.Show();
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </StackItem>
-          <StackItem>
-            <Button Text="Close" ev.Clicked-eval="self.Close();"/>
-          </StackItem>
-        </Stack>
+      <Window ref.Name="self" Text="Hide" ClientSize="x:640 y:480">
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+          <att.Pages>
+            <demo:LocalizedStringsTabPage/>
+          </att.Pages>
+        </Tab>
       </Window>
     </Instance>
   </Instance>
