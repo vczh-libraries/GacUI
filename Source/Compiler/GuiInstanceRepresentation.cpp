@@ -682,16 +682,16 @@ GuiInstanceContext
 					else if (element->name.value == L"ref.LocalizedStrings")
 					{
 						auto attName = XmlGetAttribute(element, L"Name");
-						auto attUri = XmlGetAttribute(element, L"Uri");
+						auto attClass = XmlGetAttribute(element, L"Class");
 						auto attDefault = XmlGetAttribute(element, L"Default");
-						if (attName && attUri)
+						if (attName && attClass)
 						{
 							auto localized = MakePtr<GuiInstanceLocalized>();
 							localized->name = GlobalStringKey::Get(attName->value.value);
-							localized->uri = GlobalStringKey::Get(attUri->value.value);
+							localized->className = GlobalStringKey::Get(attClass->value.value);
 							localized->tagPosition = { { resource },element->codeRange.start };
-							localized->uriPosition = { { resource },attUri->value.codeRange.start };
-							localized->uriPosition.column += 1;
+							localized->classPosition = { { resource },attClass->value.codeRange.start };
+							localized->classPosition.column += 1;
 
 							if (attDefault)
 							{
@@ -810,9 +810,9 @@ GuiInstanceContext
 				attName->value.value = localized->name.ToString();
 				xmlParameter->attributes.Add(attName);
 
-				auto attUri = MakePtr<XmlAttribute>();
-				attUri->name.value = L"Class";
-				attUri->value.value = localized->uri.ToString();
+				auto attClass = MakePtr<XmlAttribute>();
+				attClass->name.value = L"Class";
+				attClass->value.value = localized->className.ToString();
 				xmlParameter->attributes.Add(attClass);
 
 				auto attDefault = MakePtr<XmlAttribute>();

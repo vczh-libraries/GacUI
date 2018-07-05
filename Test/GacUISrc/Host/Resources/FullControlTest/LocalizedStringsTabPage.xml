@@ -54,7 +54,7 @@
           var currency: double = 1342177.28;
         ]]>
       </ref.Members>
-      <ref.LocalizedStrings Name="Strings" Uri="res://LocalizedStringsTabPage/StringResource" Default="true"/>
+      <ref.LocalizedStrings Name="Strings" Class="demo::StringResource" Default="true"/>
       <TabPage ref.Name="self" Text-str="Title()">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
