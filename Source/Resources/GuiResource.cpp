@@ -1337,7 +1337,8 @@ GuiResource
 				memoryStream.SeekFromBegin(0);
 				{
 					stream::StreamReader reader(memoryStream);
-					writer << reader.ReadToEnd();
+					WString xml = reader.ReadToEnd();
+					writer << xml;
 				}
 			}
 			List<WString> typeNames;

@@ -2138,6 +2138,11 @@ GuiResourceInstanceBinder (uri)
 					errors.Add(GuiResourceError({ resolvingResult.resource }, position, L"Precompile: \"" + code + L"\" is not a valid resource uri."));
 					return nullptr;
 				}
+				else if (!precompileContext.resolver->ResolveResource(protocol, path))
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, position, L"Precompile: Resource \"" + code + L"\" does not exist."));
+					return nullptr;
+				}
 				else
 				{
 					return Workflow_GetUriProperty(precompileContext, resolvingResult, loader, prop, propInfo, protocol, path, position, errors);
@@ -2150,6 +2155,11 @@ GuiResourceInstanceBinder (uri)
 				if (!IsResourceUrl(code, protocol, path))
 				{
 					errors.Add(GuiResourceError({ resolvingResult.resource }, position, L"Precompile: \"" + code + L"\" is not a valid resource uri."));
+					return nullptr;
+				}
+				else if (!precompileContext.resolver->ResolveResource(protocol, path))
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, position, L"Precompile: Resource \"" + code + L"\" does not exist."));
 					return nullptr;
 				}
 				else

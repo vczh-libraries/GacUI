@@ -510,6 +510,9 @@
     <ClCompile Include="..\..\..\Source\Resources\GuiDocumentClipboard_HtmlFormat.cpp">
       <Filter>GacUI\Resources\DocumentClipboard</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
@@ -828,9 +831,6 @@
       <Filter>GacUI\Controls\ToolstripPackage</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Resources\GuiDocumentClipboard.h">
-      <Filter>GacUI\Resources\DocumentClipboard</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp">
       <Filter>GacUI\Resources\DocumentClipboard</Filter>
     </ClInclude>
   </ItemGroup>

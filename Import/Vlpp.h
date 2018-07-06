@@ -16783,11 +16783,7 @@ CustomConstructorInfoImpl<R(TArgs...)>
 					Func<R(TArgs...)> proxy(
 						LAMBDA([](TArgs ...args)->R
 						{
-#if defined VCZH_MSVC
-							R result = new TypeInfoRetriver<R>::Type(args...);
-#elif defined VCZH_GCC
 							R result = new typename TypeInfoRetriver<R>::Type(args...);
-#endif
 							return result;
 						})
 					);
