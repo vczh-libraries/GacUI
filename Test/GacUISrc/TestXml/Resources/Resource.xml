@@ -24,25 +24,6 @@
 
   <Instance name="TriplePhaseImageButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TriplePhaseImageButtonTemplate">
-      <ref.Members>
-        <![CDATA[
-          @cpp:Private
-          func GetState(context: TriplePhaseButton*): TripleState
-          {
-          }
-
-          @cpp:Private
-          func GetImage(context: TriplePhaseButton*): GuiImageData^
-          {
-            switch (context.State)
-            {
-            case TripleState::Checked: { return context.CheckedImage; }
-            case TripleState::Partial: { return context.PartialImage; }
-            default: { return null; }
-            }
-          }
-        ]]>
-      </ref.Members>
       <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="2" BorderVisible="true" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
@@ -56,10 +37,22 @@
           </att.Columns>
 
           <Cell Site="row:1 column:0">
-            <ImageFrame Image-bind="self.GetImage(cast (TriplePhaseButton*) self.Context).Image ?? null" Stretch="true"/>
+            <ImageFrame Stretch="true">
+              <att.Image-bind>
+                <![CDATA[
+                  (
+                    let control = cast (TriplePhaseButton*) self.Context in (
+                      control.State == TripleState::Checked ? control.CheckedImage.Image:
+                      control.State == TripleState::Partial ? control.PartialImage.Image:
+                      null
+                    )
+                  ) ?? null
+                ]]>
+              </att.Image-bind>
+            </ImageFrame>
           </Cell>
           <Cell Site="row:1 column:1">
-            <SolidLabel Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center"/>
+            <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF" VerticalAlignment="Center"/>
           </Cell>
         </Table>
       </ButtonTemplate>
@@ -84,9 +77,9 @@
               {
                 switch (self.State)
                 {
-                case TripleState::None: { self.State = TripleState::Checked; }
+                case TripleState::None:    { self.State = TripleState::Checked; }
                 case TripleState::Checked: { self.State = TripleState::Partial; }
-                case TripleState::Partial: { self.State = TripleState::None; }
+                case TripleState::Partial: { self.State = TripleState::None;    }
                 }
               }
             ]]>
