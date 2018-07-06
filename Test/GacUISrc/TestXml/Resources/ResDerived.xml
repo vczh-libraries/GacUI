@@ -1,5 +1,9 @@
 <Resource>
+  <Text name="Keep">
+    <![CDATA[
   <Folder name="Images" content="Import">global-res://ResBase/Images</Folder>
+    ]]>
+  </Text>
   
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
@@ -14,11 +18,11 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <ImageFrame Image-uri="res://Images/Logo" FrameIndex="0" Stretch="true"/>
+            <ImageFrame Image-uri="import-res://ResBase/Images/Logo" FrameIndex="0" Stretch="true"/>
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <ImageFrame Image-uri="global-res://ResBase/Images/Logo" FrameIndex="0" Stretch="true"/>
+            <ImageFrame Image-uri="import-res://ResBase/Images/Logo" FrameIndex="0" Stretch="true"/>
           </Cell>
         </Table>
       </Window>

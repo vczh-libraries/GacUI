@@ -536,6 +536,10 @@ GuiResourceFolder
 										errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Failed to load file \"" + fileAbsolutePath + L"\"."));
 									}
 								}
+								else
+								{
+									errors.Add(GuiResourceError({ { this },element->codeRange.start }, L"Folder's content attributes can only be \"Link\"."));
+								}
 							}
 							folder->LoadResourceFolderFromXml(delayLoadings, newContainingFolder, newFolderXml, errors);
 						}
@@ -559,6 +563,10 @@ GuiResourceFolder
 							{
 								name = GetFileName(fileAbsolutePath);
 							}
+						}
+						else
+						{
+							errors.Add(GuiResourceError({ { this },element->codeRange.start }, L"File's content attributes can only be \"File\"."));
 						}
 					}
 
