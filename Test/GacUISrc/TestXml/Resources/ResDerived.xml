@@ -1,2 +1,27 @@
 <Resource>
+  <Folder name="Images" content="Import">global-res://ResBase/Images</Folder>
+  
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+      <Window ref.Name="self" ClientSize="x:640 y:480">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <ImageFrame Image-uri="res://Images/Logo" FrameIndex="0" Stretch="true"/>
+          </Cell>
+
+          <Cell Site="row:0 column:1">
+            <ImageFrame Image-uri="global-res://ResBase/Images/Logo" FrameIndex="0" Stretch="true"/>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
 </Resource>
