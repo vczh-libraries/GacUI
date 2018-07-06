@@ -1868,11 +1868,7 @@ Helpers
 			if (decompress)
 			{
 				MemoryStream compressedStream;
-				for (vint i = 0; i < rows; i++)
-				{
-					vint size = i == rows - 1 ? remain : block;
-					compressedStream.Write((void*)buffer[i], size);
-				}
+				DecompressStream(buffer, false, rows, block, remain, compressedStream);
 				compressedStream.SeekFromBegin(0);
 				DecompressStream(compressedStream, outputStream);
 			}
