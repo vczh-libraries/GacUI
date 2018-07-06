@@ -485,6 +485,16 @@ void DumpResource(FilePath inputPath, FilePath outputPath)
 	PrintSuccessMessage(L"gacgen> Dumping : " + inputPath.GetFullPath());
 	List<GuiResourceError> errors;
 	auto resource = GuiResource::LoadFromXml(inputPath.GetFullPath(), errors);
+
+	for (vint i = errors.Count() - 1; i >= 0; i--)
+	{
+		auto error = errors[i];
+		if (INVLOC.FindFirst(error.message, L"Path of imported folder does not exist:", Locale::None).key == 0)
+		{
+			errors.RemoveAt(i);
+		}
+	}
+
 	if (errors.Count() > 0)
 	{
 		PrintErrorMessage(L"error> Failed to load resource.");
