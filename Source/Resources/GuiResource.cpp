@@ -543,7 +543,10 @@ GuiResourceFolder
 									errors.Add(GuiResourceError({ { this },element->codeRange.start }, L"Folder's content attributes can only be \"Link\"."));
 								}
 							}
-							folder->LoadResourceFolderFromXml(delayLoadings, newContainingFolder, newFolderXml, errors);
+							if (folder->GetImportUri() == L"")
+							{
+								folder->LoadResourceFolderFromXml(delayLoadings, newContainingFolder, newFolderXml, errors);
+							}
 						}
 						else
 						{
