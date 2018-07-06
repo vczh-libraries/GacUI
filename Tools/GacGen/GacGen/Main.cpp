@@ -137,6 +137,52 @@ public:
 	}
 };
 
+struct LoadConfigResult
+{
+	Ptr<GuiResource>			resource;
+	Ptr<CodegenConfig>			config;
+};
+
+LoadConfigResult LoadConfig(FilePath inputPath)
+{
+	List<GuiResourceError> errors;
+	auto resource = GuiResource::LoadFromXml(inputPath.GetFullPath(), errors);
+
+	for (vint i = errors.Count() - 1; i >= 0; i--)
+	{
+		auto error = errors[i];
+		if (INVLOC.FindFirst(error.message, L"Path of imported folder does not exist:", Locale::None).key == 0)
+		{
+			errors.RemoveAt(i);
+		}
+	}
+
+	if (errors.Count() > 0)
+	{
+		PrintErrorMessage(L"error> Failed to load resource.");
+		PrintErrors(errors);
+		return {};
+	}
+
+	auto config = CodegenConfig::LoadConfig(resource, errors);
+	if (!config)
+	{
+		PrintErrorMessage(L"error> Failed to load config.");
+		return {};
+	}
+	if (errors.Count() > 0)
+	{
+		PrintErrorMessage(L"error> Failed to load resource metadata.");
+		PrintErrors(errors);
+		return {};
+	}
+
+	LoadConfigResult result;
+	result.resource = resource;
+	result.config = config;
+	return result;
+}
+
 bool LoadDependencies(Ptr<CodegenConfig> config, Dictionary<WString, FilePath>& resourceMappings, const WString& logFolderPostfix)
 {
 	if (config->metadata->version == L"")
@@ -237,50 +283,60 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 #else
 	WString logFolderPostfix = L".log/x32";
 #endif
-	FilePath logFolderPath = inputPath.GetFullPath() + logFolderPostfix;
 
-	Dictionary<WString, FilePath> resourceMappings;
-	if (mappingPath)
 	{
-		FileStream fileStream(mappingPath.Value().GetFullPath(), FileStream::ReadOnly);
-		if (!fileStream.IsAvailable())
+		auto loadConfigResult = LoadConfig(inputPath);
+		if (!loadConfigResult.resource) return;
+
+		Dictionary<WString, FilePath> resourceMappings;
+		if (mappingPath)
 		{
-			PrintErrorMessage(L"error> Failed to load mapping file: " + mappingPath.Value().GetFullPath());
-			return;
-		}
-		BomDecoder decoder;
-		DecoderStream decoderStream(fileStream, decoder);
-		StreamReader reader(decoderStream);
-		while (!reader.IsEnd())
-		{
-			auto line = reader.ReadLine();
-			if (line != L"")
+			FileStream fileStream(mappingPath.Value().GetFullPath(), FileStream::ReadOnly);
+			if (!fileStream.IsAvailable())
 			{
-				auto arrow = INVLOC.FindFirst(line, L"=>", Locale::None);
-				if (arrow.key == -1)
-				{
-					PrintErrorMessage(L"warning> Unable to parse mapping information: " + line);
-					return;
-				}
-				auto name = line.Left(arrow.key);
-				auto value = line.Right(line.Length() - arrow.key - arrow.value);
-				if (resourceMappings.Keys().Contains(name))
-				{
-					PrintErrorMessage(L"warning> Find duplicate mapping information: " + line);
-					return;
-				}
-				resourceMappings.Add(name, value);
+				PrintErrorMessage(L"error> Failed to load mapping file: " + mappingPath.Value().GetFullPath());
+				return;
 			}
+			BomDecoder decoder;
+			DecoderStream decoderStream(fileStream, decoder);
+			StreamReader reader(decoderStream);
+			while (!reader.IsEnd())
+			{
+				auto line = reader.ReadLine();
+				if (line != L"")
+				{
+					auto arrow = INVLOC.FindFirst(line, L"=>", Locale::None);
+					if (arrow.key == -1)
+					{
+						PrintErrorMessage(L"warning> Unable to parse mapping information: " + line);
+						return;
+					}
+					auto name = line.Left(arrow.key);
+					auto value = line.Right(line.Length() - arrow.key - arrow.value);
+					if (resourceMappings.Keys().Contains(name))
+					{
+						PrintErrorMessage(L"warning> Find duplicate mapping information: " + line);
+						return;
+					}
+					resourceMappings.Add(name, value);
+				}
+			}
+		}
+
+		if (!LoadDependencies(loadConfigResult.config, resourceMappings, logFolderPostfix))
+		{
+			return;
 		}
 	}
 
+	FilePath logFolderPath = inputPath.GetFullPath() + logFolderPostfix;
+	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
+	FilePath errorFilePath = logFolderPath / L"Errors.txt";
+	FilePath workingDir = inputPath.GetFolder();
 	if (partialMode)
 	{
 		PrintInformationMessage(L"gacgen> Partial mode activated, all output files will be put under " + logFolderPath.GetFullPath());
 	}
-	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
-	FilePath errorFilePath = logFolderPath / L"Errors.txt";
-	FilePath workingDir = inputPath.GetFolder();
 
 	{
 		Folder logFolder(logFolderPath);
@@ -337,10 +393,6 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 			{
 				PrintErrorMessage(L"error> Failed to load resource metadata.");
 				SaveErrors(errorFilePath, errors);
-				return;
-			}
-			if (!LoadDependencies(config, resourceMappings, logFolderPostfix))
-			{
 				return;
 			}
 		}
@@ -483,48 +535,19 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 void DumpResource(FilePath inputPath, FilePath outputPath)
 {
 	PrintSuccessMessage(L"gacgen> Dumping : " + inputPath.GetFullPath());
-	List<GuiResourceError> errors;
-	auto resource = GuiResource::LoadFromXml(inputPath.GetFullPath(), errors);
-
-	for (vint i = errors.Count() - 1; i >= 0; i--)
-	{
-		auto error = errors[i];
-		if (INVLOC.FindFirst(error.message, L"Path of imported folder does not exist:", Locale::None).key == 0)
-		{
-			errors.RemoveAt(i);
-		}
-	}
-
-	if (errors.Count() > 0)
-	{
-		PrintErrorMessage(L"error> Failed to load resource.");
-		PrintErrors(errors);
-		return;
-	}
-
-	auto config = CodegenConfig::LoadConfig(resource, errors);
-	if (!config)
-	{
-		PrintErrorMessage(L"error> Failed to load config.");
-		return;
-	}
-	if (errors.Count() > 0)
-	{
-		PrintErrorMessage(L"error> Failed to load resource metadata.");
-		PrintErrors(errors);
-		return;
-	}
+	auto loadConfigResult = LoadConfig(inputPath);
+	if (!loadConfigResult.resource) return;
 
 	auto doc = MakePtr<XmlDocument>();
 	auto xmlRoot = MakePtr<XmlElement>();
 	xmlRoot->name.value = L"ResourceMetadata";
 	doc->rootElement = xmlRoot;
 	
-	xmlRoot->subNodes.Add(resource->GetMetadata()->SaveToXml());
+	xmlRoot->subNodes.Add(loadConfigResult.resource->GetMetadata()->SaveToXml());
 	{
 		SortedList<WString> paths;
 		List<Ptr<GuiResourceFolder>> folders;
-		folders.Add(resource);
+		folders.Add(loadConfigResult.resource);
 		for (vint i = 0; i < folders.Count(); i++)
 		{
 			auto currentFolder = folders[i];
