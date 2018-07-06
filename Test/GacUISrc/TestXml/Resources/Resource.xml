@@ -14,7 +14,7 @@
 
         enum TripleState
         {
-          None = 0,
+          Normal = 0,
           Checked = 1,
           Partial = 2,
         }
@@ -22,22 +22,69 @@
     </Workflow>
   </Script>
 
+  <InstanceStyle name="Styles">
+    <Styles>
+      <Style ref.Path="//*.buttonBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#252526" :
+              state == ButtonState::Active ? "#54545C" :
+              state == ButtonState::Pressed ? "#007ACC" :
+              "#3F3F46"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.buttonBorder">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#434346" :
+              state == ButtonState::Active ? "#6A6A75" :
+              state == ButtonState::Pressed ? "#1C97EA" :
+              "#54545C"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.buttonText">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#6D6D6D" :
+              state == ButtonState::Active ? "#F1F1F1" :
+              state == ButtonState::Pressed ? "#FFFFFF" :
+              "#F1F1F1"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+    </Styles>
+  </InstanceStyle>
+
   <Instance name="TriplePhaseImageButtonTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::TriplePhaseImageButtonTemplate">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TriplePhaseImageButtonTemplate" ref.Styles="res://Styles">
       <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="2" BorderVisible="true" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="buttonBackground"/>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="true" MinSizeLimitation="LimitToElementAndChildren">
+          <SolidBorder ref.Style="buttonBorder"/>
+
           <att.Rows>
             <_>composeType:Percentage percentage:0.5</_>
             <_>composeType:Absolute absolute:32</_>
             <_>composeType:Percentage percentage:0.5</_>
           </att.Rows>
           <att.Columns>
+            <_>composeType:Absolute absolute:4</_>
             <_>composeType:Absolute absolute:32</_>
+            <_>composeType:Absolute absolute:4</_>
             <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:Absolute absolute:4</_>
           </att.Columns>
 
-          <Cell Site="row:1 column:0">
-            <ImageFrame Stretch="true">
+          <Cell Site="row:1 column:1">
+            <ImageFrame Stretch="true" Enabled-bind="self.VisuallyEnabled">
               <att.Image-bind>
                 <![CDATA[
                   (
@@ -51,8 +98,8 @@
               </att.Image-bind>
             </ImageFrame>
           </Cell>
-          <Cell Site="row:1 column:1">
-            <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF" VerticalAlignment="Center"/>
+          <Cell Site="row:1 column:3">
+            <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" VerticalAlignment="Center"/>
           </Cell>
         </Table>
       </ButtonTemplate>
@@ -77,9 +124,9 @@
               {
                 switch (self.State)
                 {
-                case TripleState::None:    { self.State = TripleState::Checked; }
+                case TripleState::Normal:  { self.State = TripleState::Checked; }
                 case TripleState::Checked: { self.State = TripleState::Partial; }
-                case TripleState::Partial: { self.State = TripleState::None;    }
+                case TripleState::Partial: { self.State = TripleState::Normal;  }
                 }
               }
             ]]>
@@ -92,9 +139,25 @@
   <Instance name="MainWindowInstance">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
       <Window Text="TriplePhaseImageButton" ClientSize="x:640 y:480">
-        <demo:TriplePhaseButton Text="Button" CheckedImage-uri="res://Images/Checked" PartialImage-uri="res://Images/Partial">
-          <att.BoundsComposition-set AlignmentToParent="left:10 top:20 right:-1 bottom:-1" PreferredMinSize="x:120 y:40"/>
-        </demo:TriplePhaseButton>
+        <Stack AlignmentToParent="left:10 top:10 right:-1 bottom:-1" Padding="10" Direction="Vertical" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <demo:TriplePhaseButton ref.Name="button" CheckedImage-uri="res://Images/Checked" PartialImage-uri="res://Images/Partial">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:120 y:40"/>
+              <att.Text-bind>
+                <![CDATA[
+                  button.State == TripleState::Checked ? "Checked":
+                  button.State == TripleState::Partial ? "Partial":
+                  "Normal"
+                ]]>
+              </att.Text-bind>
+            </demo:TriplePhaseButton>
+          </StackItem>
+          <StackItem>
+            <Button Text-bind="button.Enabled ? 'Disable' : 'Enable'" ev.Clicked-eval="button.Enabled = not button.Enabled;">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:120 y:40"/>
+            </Button>
+          </StackItem>
+        </Stack>
       </Window>
     </Instance>
   </Instance>
