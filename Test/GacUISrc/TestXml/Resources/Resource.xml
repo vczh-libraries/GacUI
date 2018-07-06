@@ -1,15 +1,47 @@
 <Resource>
-  <Folder name="ToolbarImages" content="Link">../../Host/Resources/FullControlTest/ToolbarImages/Images.xml</Folder>
-  <Folder name="DocumentComponents" content="Link">../../Host/Resources/FullControlTest/DocumentComponents.xml</Folder>
-  <Folder name="DocumentEditorBase" content="Link">../../Host/Resources/FullControlTest/DocumentEditorBase.xml</Folder>
-  <Folder name="DocumentEditorRibbon" content="Link">../../Host/Resources/FullControlTest/DocumentEditorRibbon.xml</Folder>
+  <Folder name="Images">
+    <Image name="Checked" content="File">../../Host/Resources/FullControlTest/Images/005_Task_32x32_72.png</Image>
+    <Image name="Partial" content="File">../../Host/Resources/FullControlTest/Images/112_Plus_Blue_32x32_72.png</Image>
+  </Folder>
 
-  <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <Window Text-bind="editor.Text" ClientSize="x:800 y:600">
-        <demo:DocumentEditorRibbon ref.Name="editor">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-        </demo:DocumentEditorRibbon>
+  <Script>
+    <Workflow>
+      <![CDATA[
+        module triplephasebutton;
+        
+        using system::*;
+        using presentation::*;
+        
+        enum TripleState
+        {
+          None = 0,
+          Checked = 1,
+          Partial = 2,
+        }
+        
+        class TripleImage
+        {
+          var checkedImage: GuiImageData^ = null;
+          var partialImage: GuiImageData^ = null;
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
+  <Instance name="TriplePhaseImageButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TriplePhaseImageButtonTemplate">
+      <ButtonTemplate MinSizeLimitation="LimitToElementAndChildren">
+        
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowInstance">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
+      <Window Text="TriplePhaseImageButton" ClientSize="x:640 y:480">
+        <Button Text="Button">
+          <att.BoundsComposition-set AlignmentToParent="left:10 top:20 right:-1 bottom:-1" PreferredMinSize="x:120 y:40"/>
+        </Button>
       </Window>
     </Instance>
   </Instance>
