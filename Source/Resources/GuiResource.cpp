@@ -1,6 +1,6 @@
 #include "GuiDocument.h"
 #include "GuiParserManager.h"
-#include "../Controls/GuiApplication.h"
+#include "GuiResourceManager.h"
 
 namespace vl
 {
@@ -1500,48 +1500,6 @@ GuiResourcePathResolver
 		}
 
 /***********************************************************************
-GuiResourcePathFileResolver
-***********************************************************************/
-
-		class GuiResourcePathFileResolver : public Object, public IGuiResourcePathResolver
-		{
-		protected:
-			WString					workingDirectory;
-
-		public:
-			GuiResourcePathFileResolver(const WString& _workingDirectory)
-				:workingDirectory(_workingDirectory)
-			{
-			}
-
-			Ptr<DescriptableObject> ResolveResource(const WString& path)
-			{
-				if (workingDirectory == L"") return nullptr;
-				WString filename = path;
-				if (filename.Length() >= 2 && filename[1] != L':')
-				{
-					filename = workingDirectory + filename;
-				}
-				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(filename);
-				return new GuiImageData(image, 0);
-			}
-
-			class Factory : public Object, public IGuiResourcePathResolverFactory
-			{
-			public:
-				WString GetProtocol()override
-				{
-					return L"file";
-				}
-
-				Ptr<IGuiResourcePathResolver> CreateResolver(Ptr<GuiResource> resource, const WString& workingDirectory)override
-				{
-					return new GuiResourcePathFileResolver(workingDirectory);
-				}
-			};
-		};
-
-/***********************************************************************
 GuiResourcePathResResolver
 ***********************************************************************/
 
@@ -1558,11 +1516,11 @@ GuiResourcePathResResolver
 
 			Ptr<DescriptableObject> ResolveResource(const WString& path)
 			{
-				if(resource)
+				if (resource)
 				{
-					if(path.Length()>0)
+					if (path.Length() > 0)
 					{
-						switch(path[path.Length()-1])
+						switch (path[path.Length() - 1])
 						{
 						case L'\\':case L'/':
 							return resource->GetFolderByPath(path);
@@ -1571,7 +1529,7 @@ GuiResourcePathResResolver
 						}
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			class Factory : public Object, public IGuiResourcePathResolverFactory
@@ -1585,6 +1543,59 @@ GuiResourcePathResResolver
 				Ptr<IGuiResourcePathResolver> CreateResolver(Ptr<GuiResource> resource, const WString& workingDirectory)override
 				{
 					return new GuiResourcePathResResolver(resource);
+				}
+			};
+		};
+
+/***********************************************************************
+GuiImportResourcePathResResolver
+***********************************************************************/
+
+		class GuiImportResourcePathResResolver : public Object, public IGuiResourcePathResolver
+		{
+		public:
+			GuiImportResourcePathResResolver()
+			{
+			}
+
+			Ptr<DescriptableObject> ResolveResource(const WString& path)
+			{
+				const wchar_t* buffer = path.Buffer();
+				const wchar_t* d1 = wcschr(buffer, L'\\');
+				const wchar_t* d2 = wcschr(buffer, L'/');
+				const wchar_t* d =
+					d1 == nullptr&&d2 == nullptr ? nullptr :
+					d1 == nullptr ? d2 :
+					d2 == nullptr ? d1 :
+					d1 < d2 ? d1 : d2;
+
+				if (!d) return nullptr;
+				WString resourceName(buffer, d - buffer);
+				WString resourcePath(path.Right(path.Length() - resourceName.Length() - 1));
+				if (auto resource = GetResourceManager()->GetResource(resourceName))
+				{
+					switch (path[path.Length() - 1])
+					{
+					case L'\\':case L'/':
+						return resource->GetFolderByPath(resourcePath);
+					default:
+						return resource->GetValueByPath(resourcePath);
+					}
+				}
+				return nullptr;
+			}
+
+			class Factory : public Object, public IGuiResourcePathResolverFactory
+			{
+			public:
+				WString GetProtocol()override
+				{
+					return L"import-res";
+				}
+
+				Ptr<IGuiResourcePathResolver> CreateResolver(Ptr<GuiResource> resource, const WString& workingDirectory)override
+				{
+					return new GuiImportResourcePathResResolver;
 				}
 			};
 		};
@@ -1623,8 +1634,8 @@ IGuiResourceResolverManager
 				globalStringKeyManager->InitializeConstants();
 
 				resourceResolverManager = this;
-				SetPathResolverFactory(new GuiResourcePathFileResolver::Factory);
 				SetPathResolverFactory(new GuiResourcePathResResolver::Factory);
+				SetPathResolverFactory(new GuiImportResourcePathResResolver::Factory);
 			}
 
 			void Unload()override
