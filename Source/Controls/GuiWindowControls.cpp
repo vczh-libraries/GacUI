@@ -244,8 +244,9 @@ GuiControlHost
 
 			void GuiControlHost::ForceCalculateSizeImmediately()
 			{
+				auto bounds = GetBounds();
 				boundsComposition->ForceCalculateSizeImmediately();
-				SetBounds(GetBounds());
+				SetBounds(bounds);
 			}
 
 			bool GuiControlHost::GetEnabled()

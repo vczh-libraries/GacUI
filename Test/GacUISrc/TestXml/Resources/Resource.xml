@@ -26,11 +26,11 @@
             textBoxName.Text = "Mr. New Contact";
             textBoxPhone.Text = "(123)-456-7890";
             textBoxAddress.Text = "110 st, New York, NY 10118";
+            self.ForceCalculateSizeImmediately();
           }
         ]]>
       </ref.Ctor>
       <Window ref.Name="self" Text="New Contact" ClientSize="x:480 y:400" MaximizedBox="false" MinimizedBox="false" SizeBox="false">
-        <att.BoundsComposition-set PreferredMinSize="x:480 y:400"/>
         <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>

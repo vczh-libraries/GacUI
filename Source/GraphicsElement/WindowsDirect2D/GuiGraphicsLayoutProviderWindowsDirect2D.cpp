@@ -477,6 +477,7 @@ WindowsDirect2DParagraph (Initialization)
 					if(!FAILED(hr))
 					{
 						textLayout=rawTextLayout;
+						textLayout->SetMaxWidth(65536);
 						textLayout->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
 					}
 					graphicsElements.Add(TextRange(0, _text.Length()), 0);
