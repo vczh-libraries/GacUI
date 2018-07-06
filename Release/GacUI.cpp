@@ -6580,8 +6580,9 @@ GuiControlHost
 
 			void GuiControlHost::ForceCalculateSizeImmediately()
 			{
+				auto bounds = GetBounds();
 				boundsComposition->ForceCalculateSizeImmediately();
-				SetBounds(GetBounds());
+				SetBounds(bounds);
 			}
 
 			bool GuiControlHost::GetEnabled()
@@ -32827,6 +32828,397 @@ IGuiParserManager
 }
 
 /***********************************************************************
+.\RESOURCES\GUIRESOURCETYPERESOLVERS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+		using namespace controls;
+		using namespace parsing;
+		using namespace parsing::tabling;
+		using namespace parsing::xml;
+		using namespace stream;
+
+/***********************************************************************
+Image Type Resolver (Image)
+***********************************************************************/
+
+		class GuiResourceImageTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_DirectLoadXml
+			, private IGuiResourceTypeResolver_DirectLoadStream
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Image";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
+			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
+			{
+				return this;
+			}
+
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			{
+				return nullptr;
+			}
+
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			{
+				auto obj = content.Cast<GuiImageData>();
+				stream::internal::ContextFreeWriter writer(stream);
+				FileStream fileStream(resource->GetFileAbsolutePath(), FileStream::ReadOnly);
+				writer << (stream::IStream&)fileStream;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
+			{
+				errors.Add(GuiResourceError({ resource }, L"Image should load from file."));
+				return nullptr;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
+			{
+				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(path);
+				if(image)
+				{
+					return new GuiImageData(image, 0);
+				}
+				else
+				{
+					errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
+					return nullptr;
+				}
+			}
+
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			{
+				stream::internal::ContextFreeReader reader(stream);
+				MemoryStream memoryStream;
+				reader << (stream::IStream&)memoryStream;
+
+				auto image = GetCurrentController()->ImageService()->CreateImageFromStream(memoryStream);
+				if (image)
+				{
+					return new GuiImageData(image, 0);
+				}
+				else
+				{
+					errors.Add(GuiResourceError({ resource }, L"[BINARY] Failed to load an image from binary data in a stream."));
+					return nullptr;
+				}
+			}
+		};
+
+/***********************************************************************
+Text Type Resolver (Text)
+***********************************************************************/
+
+		class GuiResourceTextTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_DirectLoadXml
+			, private IGuiResourceTypeResolver_DirectLoadStream
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Text";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
+			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
+			{
+				return this;
+			}
+
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			{
+				if (auto obj = content.Cast<GuiTextData>())
+				{
+					auto xmlContent = MakePtr<XmlText>();
+					xmlContent->content.value = obj->GetText();
+
+					auto xmlText = MakePtr<XmlElement>();
+					xmlText->name.value = L"Text";
+					xmlText->subNodes.Add(xmlContent);
+
+					return xmlText;
+				}
+				return 0;
+			}
+
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			{
+				auto obj = content.Cast<GuiTextData>();
+				stream::internal::ContextFreeWriter writer(stream);
+				WString text = obj->GetText();
+				writer << text;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
+			{
+				return new GuiTextData(XmlGetValue(element));
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
+			{
+				WString text;
+				if(LoadTextFile(path, text))
+				{
+					return new GuiTextData(text);
+				}
+				else
+				{
+					errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
+					return 0;
+				}
+			}
+
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			{
+				stream::internal::ContextFreeReader reader(stream);
+				WString text;
+				reader << text;
+				return new GuiTextData(text);
+			}
+		};
+
+/***********************************************************************
+Xml Type Resolver (Xml)
+***********************************************************************/
+
+		class GuiResourceXmlTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_DirectLoadXml
+			, private IGuiResourceTypeResolver_DirectLoadStream
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Xml";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
+			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
+			{
+				return this;
+			}
+
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			{
+				if (auto obj = content.Cast<XmlDocument>())
+				{
+					auto xmlXml = MakePtr<XmlElement>();
+					xmlXml->name.value = L"Xml";
+					xmlXml->subNodes.Add(obj->rootElement);
+					return xmlXml;
+				}
+				return nullptr;
+			}
+
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			{
+				auto obj = content.Cast<XmlDocument>();
+				MemoryStream buffer;
+				{
+					StreamWriter writer(buffer);
+					XmlPrint(obj, writer);
+				}
+				{
+					buffer.SeekFromBegin(0);
+					StreamReader reader(buffer);
+					WString text = reader.ReadToEnd();
+
+					stream::internal::ContextFreeWriter writer(stream);
+					writer << text;
+				}
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
+			{
+				Ptr<XmlElement> root = XmlGetElements(element).First(0);
+				if(root)
+				{
+					Ptr<XmlDocument> xml=new XmlDocument;
+					xml->rootElement=root;
+					return xml;
+				}
+				return nullptr;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
+			{
+				if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
+				{
+					WString text;
+					if (LoadTextFile(path, text))
+					{
+						return parser->Parse({ resource }, text, errors);
+					}
+					else
+					{
+						errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
+					}
+				}
+				return nullptr;
+			}
+
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			{
+				if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
+				{
+					stream::internal::ContextFreeReader reader(stream);
+					WString text;
+					reader << text;
+
+					return parser->Parse({ resource }, text, errors);
+				}
+				return nullptr;
+			}
+		};
+
+/***********************************************************************
+Doc Type Resolver (Doc)
+***********************************************************************/
+
+		class GuiResourceDocTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Doc";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return true;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			{
+				if (auto obj = content.Cast<DocumentModel>())
+				{
+					return obj->SaveToXml();
+				}
+				return nullptr;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
+			{
+				if(auto xml = resource->GetContent().Cast<XmlDocument>())
+				{
+					Ptr<DocumentModel> model = DocumentModel::LoadFromXml(resource, xml, resolver, errors);
+					return model;
+				}
+				return nullptr;
+			}
+		};
+
+/***********************************************************************
+Type Resolver Plugin
+***********************************************************************/
+
+		class GuiResourceTypeResolversPlugin : public Object, public IGuiPlugin
+		{
+		public:
+
+			GUI_PLUGIN_NAME(GacUI_Res_TypeResolvers)
+			{
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
+			}
+
+			void Load()override
+			{
+				IGuiResourceResolverManager* manager=GetResourceResolverManager();
+				manager->SetTypeResolver(new GuiResourceImageTypeResolver);
+				manager->SetTypeResolver(new GuiResourceTextTypeResolver);
+				manager->SetTypeResolver(new GuiResourceXmlTypeResolver);
+				manager->SetTypeResolver(new GuiResourceDocTypeResolver);
+			}
+
+			void Unload()override
+			{
+			}
+		};
+		GUI_REGISTER_PLUGIN(GuiResourceTypeResolversPlugin)
+	}
+}
+
+
+/***********************************************************************
 .\RESOURCES\GUIRESOURCE.CPP
 ***********************************************************************/
 
@@ -32837,10 +33229,7 @@ namespace vl
 		using namespace controls;
 		using namespace collections;
 		using namespace parsing;
-		using namespace parsing::tabling;
 		using namespace parsing::xml;
-		using namespace parsing::json;
-		using namespace regex;
 		using namespace stream;
 		using namespace filesystem;
 
@@ -33364,8 +33753,20 @@ GuiResourceFolder
 										errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Failed to load file \"" + fileAbsolutePath + L"\"."));
 									}
 								}
+								else if (contentAtt->value.value == L"Import")
+								{
+									auto importUri = XmlGetValue(element);
+									folder->ImportFromUri(importUri, { { this },element->codeRange.start }, errors);
+								}
+								else
+								{
+									errors.Add(GuiResourceError({ { this },element->codeRange.start }, L"Folder's content attributes can only be \"Link\"."));
+								}
 							}
-							folder->LoadResourceFolderFromXml(delayLoadings, newContainingFolder, newFolderXml, errors);
+							if (folder->GetImportUri() == L"")
+							{
+								folder->LoadResourceFolderFromXml(delayLoadings, newContainingFolder, newFolderXml, errors);
+							}
 						}
 						else
 						{
@@ -33387,6 +33788,10 @@ GuiResourceFolder
 							{
 								name = GetFileName(fileAbsolutePath);
 							}
+						}
+						else
+						{
+							errors.Add(GuiResourceError({ { this },element->codeRange.start }, L"File's content attributes can only be \"File\"."));
 						}
 					}
 
@@ -33544,12 +33949,18 @@ GuiResourceFolder
 				xmlFolder->attributes.Add(attName);
 				xmlParent->subNodes.Add(xmlFolder);
 				
-
-				if (folder->GetFileContentPath() == L"")
+				if (folder->GetImportUri() != L"")
 				{
-					folder->SaveResourceFolderToXml(xmlFolder);
+					auto attContent = MakePtr<XmlAttribute>();
+					attContent->name.value = L"content";
+					attContent->value.value = L"Import";
+					xmlFolder->attributes.Add(attContent);
+
+					auto xmlText = MakePtr<XmlText>();
+					xmlText->content.value = folder->GetImportUri();
+					xmlFolder->subNodes.Add(xmlText);
 				}
-				else
+				else if (folder->GetFileContentPath() != L"")
 				{
 					auto attContent = MakePtr<XmlAttribute>();
 					attContent->name.value = L"content";
@@ -33560,11 +33971,16 @@ GuiResourceFolder
 					xmlText->content.value = folder->GetFileContentPath();
 					xmlFolder->subNodes.Add(xmlText);
 				}
+				else
+				{
+					folder->SaveResourceFolderToXml(xmlFolder);
+				}
 			}
 		}
 
 		void GuiResourceFolder::CollectTypeNames(collections::List<WString>& typeNames)
 		{
+			if (importUri != L"") return;
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
 				if (!typeNames.Contains(item->GetTypeName()))
@@ -33669,11 +34085,18 @@ GuiResourceFolder
 			reader << count;
 			for (vint i = 0; i < count; i++)
 			{
-				WString name;
-				reader << name;
+				WString name, importUri;
+				reader << name << importUri;
 
 				auto folder = MakePtr<GuiResourceFolder>();
-				folder->LoadResourceFolderFromBinary(delayLoadings, reader, typeNames, errors);
+				if (importUri == L"")
+				{
+					folder->LoadResourceFolderFromBinary(delayLoadings, reader, typeNames, errors);
+				}
+				else
+				{
+					folder->ImportFromUri(importUri, { { this },{0,0} }, errors);
+				}
 				AddFolder(name, folder);
 			}
 		}
@@ -33730,13 +34153,18 @@ GuiResourceFolder
 			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
 			{
 				WString name = folder->GetName();
-				writer << name;
-				folder->SaveResourceFolderToBinary(writer, typeNames);
+				WString importUri = folder->GetImportUri();
+				writer << name << importUri;
+				if (importUri == L"")
+				{
+					folder->SaveResourceFolderToBinary(writer, typeNames);
+				}
 			}
 		}
 
 		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
 		{
+			if (importUri != L"") return;
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
@@ -33761,6 +34189,7 @@ GuiResourceFolder
 
 		void GuiResourceFolder::InitializeResourceFolder(GuiResourceInitializeContext& context)
 		{
+			if (importUri != L"") return;
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
@@ -33776,12 +34205,60 @@ GuiResourceFolder
 			}
 		}
 
+		void GuiResourceFolder::ImportFromUri(const WString& uri, GuiResourceTextPos position, GuiResourceError::List& errors)
+		{
+			SetImportUri(uri);
+			if (importUri.Length() == 0 || importUri[importUri.Length() - 1] != L'/')
+			{
+				errors.Add(GuiResourceError(position, L"Path of imported folder should ends with L\"/\"."));
+			}
+			else
+			{
+				WString protocol, path;
+				if (IsResourceUrl(importUri, protocol, path))
+				{
+					if (protocol == L"import-res")
+					{
+						auto factory = GetResourceResolverManager()->GetPathResolverFactory(protocol);
+						auto resolver = factory->CreateResolver(nullptr, L"");
+						if (auto sourceFolder = resolver->ResolveResource(path).Cast<GuiResourceFolder>())
+						{
+							CopyFrom(items, sourceFolder->items);
+							CopyFrom(folders, sourceFolder->folders);
+						}
+						else
+						{
+							errors.Add(GuiResourceError(position, L"Path of imported folder does not exist: \"" + importUri + L"\"."));
+						}
+					}
+					else
+					{
+						errors.Add(GuiResourceError(position, L"Path of imported folder should begin with \"import-res://\"."));
+					}
+				}
+				else
+				{
+					errors.Add(GuiResourceError(position, L"Invalid path of imported folder : \"" + importUri + L"\"."));
+				}
+			}
+		}
+
 		GuiResourceFolder::GuiResourceFolder()
 		{
 		}
 
 		GuiResourceFolder::~GuiResourceFolder()
 		{
+		}
+
+		const WString& GuiResourceFolder::GetImportUri()
+		{
+			return importUri;
+		}
+
+		void GuiResourceFolder::SetImportUri(const WString& uri)
+		{
+			importUri = uri;
 		}
 
 		const GuiResourceFolder::ItemList& GuiResourceFolder::GetItems()
@@ -34320,48 +34797,6 @@ GuiResourcePathResolver
 		}
 
 /***********************************************************************
-GuiResourcePathFileResolver
-***********************************************************************/
-
-		class GuiResourcePathFileResolver : public Object, public IGuiResourcePathResolver
-		{
-		protected:
-			WString					workingDirectory;
-
-		public:
-			GuiResourcePathFileResolver(const WString& _workingDirectory)
-				:workingDirectory(_workingDirectory)
-			{
-			}
-
-			Ptr<DescriptableObject> ResolveResource(const WString& path)
-			{
-				if (workingDirectory == L"") return nullptr;
-				WString filename = path;
-				if (filename.Length() >= 2 && filename[1] != L':')
-				{
-					filename = workingDirectory + filename;
-				}
-				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(filename);
-				return new GuiImageData(image, 0);
-			}
-
-			class Factory : public Object, public IGuiResourcePathResolverFactory
-			{
-			public:
-				WString GetProtocol()override
-				{
-					return L"file";
-				}
-
-				Ptr<IGuiResourcePathResolver> CreateResolver(Ptr<GuiResource> resource, const WString& workingDirectory)override
-				{
-					return new GuiResourcePathFileResolver(workingDirectory);
-				}
-			};
-		};
-
-/***********************************************************************
 GuiResourcePathResResolver
 ***********************************************************************/
 
@@ -34378,11 +34813,11 @@ GuiResourcePathResResolver
 
 			Ptr<DescriptableObject> ResolveResource(const WString& path)
 			{
-				if(resource)
+				if (resource)
 				{
-					if(path.Length()>0)
+					if (path.Length() > 0)
 					{
-						switch(path[path.Length()-1])
+						switch (path[path.Length() - 1])
 						{
 						case L'\\':case L'/':
 							return resource->GetFolderByPath(path);
@@ -34391,7 +34826,7 @@ GuiResourcePathResResolver
 						}
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			class Factory : public Object, public IGuiResourcePathResolverFactory
@@ -34405,6 +34840,59 @@ GuiResourcePathResResolver
 				Ptr<IGuiResourcePathResolver> CreateResolver(Ptr<GuiResource> resource, const WString& workingDirectory)override
 				{
 					return new GuiResourcePathResResolver(resource);
+				}
+			};
+		};
+
+/***********************************************************************
+GuiImportResourcePathResResolver
+***********************************************************************/
+
+		class GuiImportResourcePathResResolver : public Object, public IGuiResourcePathResolver
+		{
+		public:
+			GuiImportResourcePathResResolver()
+			{
+			}
+
+			Ptr<DescriptableObject> ResolveResource(const WString& path)
+			{
+				const wchar_t* buffer = path.Buffer();
+				const wchar_t* d1 = wcschr(buffer, L'\\');
+				const wchar_t* d2 = wcschr(buffer, L'/');
+				const wchar_t* d =
+					d1 == nullptr&&d2 == nullptr ? nullptr :
+					d1 == nullptr ? d2 :
+					d2 == nullptr ? d1 :
+					d1 < d2 ? d1 : d2;
+
+				if (!d) return nullptr;
+				WString resourceName(buffer, d - buffer);
+				WString resourcePath(path.Right(path.Length() - resourceName.Length() - 1));
+				if (auto resource = GetResourceManager()->GetResource(resourceName))
+				{
+					switch (path[path.Length() - 1])
+					{
+					case L'\\':case L'/':
+						return resource->GetFolderByPath(resourcePath);
+					default:
+						return resource->GetValueByPath(resourcePath);
+					}
+				}
+				return nullptr;
+			}
+
+			class Factory : public Object, public IGuiResourcePathResolverFactory
+			{
+			public:
+				WString GetProtocol()override
+				{
+					return L"import-res";
+				}
+
+				Ptr<IGuiResourcePathResolver> CreateResolver(Ptr<GuiResource> resource, const WString& workingDirectory)override
+				{
+					return new GuiImportResourcePathResResolver;
 				}
 			};
 		};
@@ -34443,8 +34931,8 @@ IGuiResourceResolverManager
 				globalStringKeyManager->InitializeConstants();
 
 				resourceResolverManager = this;
-				SetPathResolverFactory(new GuiResourcePathFileResolver::Factory);
 				SetPathResolverFactory(new GuiResourcePathResResolver::Factory);
+				SetPathResolverFactory(new GuiImportResourcePathResResolver::Factory);
 			}
 
 			void Unload()override
@@ -34639,11 +35127,7 @@ Helpers
 			if (decompress)
 			{
 				MemoryStream compressedStream;
-				for (vint i = 0; i < rows; i++)
-				{
-					vint size = i == rows - 1 ? remain : block;
-					compressedStream.Write((void*)buffer[i], size);
-				}
+				DecompressStream(buffer, false, rows, block, remain, compressedStream);
 				compressedStream.SeekFromBegin(0);
 				DecompressStream(compressedStream, outputStream);
 			}
@@ -34656,397 +35140,6 @@ Helpers
 				}
 			}
 		}
-	}
-}
-
-
-/***********************************************************************
-.\RESOURCES\GUIRESOURCETYPERESOLVERS.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		using namespace collections;
-		using namespace controls;
-		using namespace parsing;
-		using namespace parsing::tabling;
-		using namespace parsing::xml;
-		using namespace stream;
-
-/***********************************************************************
-Image Type Resolver (Image)
-***********************************************************************/
-
-		class GuiResourceImageTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_DirectLoadXml
-			, private IGuiResourceTypeResolver_DirectLoadStream
-		{
-		public:
-			WString GetType()override
-			{
-				return L"Image";
-			}
-
-			bool XmlSerializable()override
-			{
-				return true;
-			}
-
-			bool StreamSerializable()override
-			{
-				return true;
-			}
-
-			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
-			{
-				return this;
-			}
-
-			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
-			{
-				return this;
-			}
-
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
-			{
-				return nullptr;
-			}
-
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
-			{
-				auto obj = content.Cast<GuiImageData>();
-				stream::internal::ContextFreeWriter writer(stream);
-				FileStream fileStream(resource->GetFileAbsolutePath(), FileStream::ReadOnly);
-				writer << (stream::IStream&)fileStream;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
-			{
-				errors.Add(GuiResourceError({ resource }, L"Image should load from file."));
-				return nullptr;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
-			{
-				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(path);
-				if(image)
-				{
-					return new GuiImageData(image, 0);
-				}
-				else
-				{
-					errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
-					return nullptr;
-				}
-			}
-
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
-			{
-				stream::internal::ContextFreeReader reader(stream);
-				MemoryStream memoryStream;
-				reader << (stream::IStream&)memoryStream;
-
-				auto image = GetCurrentController()->ImageService()->CreateImageFromStream(memoryStream);
-				if (image)
-				{
-					return new GuiImageData(image, 0);
-				}
-				else
-				{
-					errors.Add(GuiResourceError({ resource }, L"[BINARY] Failed to load an image from binary data in a stream."));
-					return nullptr;
-				}
-			}
-		};
-
-/***********************************************************************
-Text Type Resolver (Text)
-***********************************************************************/
-
-		class GuiResourceTextTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_DirectLoadXml
-			, private IGuiResourceTypeResolver_DirectLoadStream
-		{
-		public:
-			WString GetType()override
-			{
-				return L"Text";
-			}
-
-			bool XmlSerializable()override
-			{
-				return true;
-			}
-
-			bool StreamSerializable()override
-			{
-				return true;
-			}
-
-			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
-			{
-				return this;
-			}
-
-			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
-			{
-				return this;
-			}
-
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
-			{
-				if (auto obj = content.Cast<GuiTextData>())
-				{
-					auto xmlContent = MakePtr<XmlText>();
-					xmlContent->content.value = obj->GetText();
-
-					auto xmlText = MakePtr<XmlElement>();
-					xmlText->name.value = L"Text";
-					xmlText->subNodes.Add(xmlContent);
-
-					return xmlText;
-				}
-				return 0;
-			}
-
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
-			{
-				auto obj = content.Cast<GuiTextData>();
-				stream::internal::ContextFreeWriter writer(stream);
-				WString text = obj->GetText();
-				writer << text;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
-			{
-				return new GuiTextData(XmlGetValue(element));
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
-			{
-				WString text;
-				if(LoadTextFile(path, text))
-				{
-					return new GuiTextData(text);
-				}
-				else
-				{
-					errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
-					return 0;
-				}
-			}
-
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
-			{
-				stream::internal::ContextFreeReader reader(stream);
-				WString text;
-				reader << text;
-				return new GuiTextData(text);
-			}
-		};
-
-/***********************************************************************
-Xml Type Resolver (Xml)
-***********************************************************************/
-
-		class GuiResourceXmlTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_DirectLoadXml
-			, private IGuiResourceTypeResolver_DirectLoadStream
-		{
-		public:
-			WString GetType()override
-			{
-				return L"Xml";
-			}
-
-			bool XmlSerializable()override
-			{
-				return true;
-			}
-
-			bool StreamSerializable()override
-			{
-				return true;
-			}
-
-			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
-			{
-				return this;
-			}
-
-			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
-			{
-				return this;
-			}
-
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
-			{
-				if (auto obj = content.Cast<XmlDocument>())
-				{
-					auto xmlXml = MakePtr<XmlElement>();
-					xmlXml->name.value = L"Xml";
-					xmlXml->subNodes.Add(obj->rootElement);
-					return xmlXml;
-				}
-				return nullptr;
-			}
-
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
-			{
-				auto obj = content.Cast<XmlDocument>();
-				MemoryStream buffer;
-				{
-					StreamWriter writer(buffer);
-					XmlPrint(obj, writer);
-				}
-				{
-					buffer.SeekFromBegin(0);
-					StreamReader reader(buffer);
-					WString text = reader.ReadToEnd();
-
-					stream::internal::ContextFreeWriter writer(stream);
-					writer << text;
-				}
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
-			{
-				Ptr<XmlElement> root = XmlGetElements(element).First(0);
-				if(root)
-				{
-					Ptr<XmlDocument> xml=new XmlDocument;
-					xml->rootElement=root;
-					return xml;
-				}
-				return nullptr;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
-			{
-				if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
-				{
-					WString text;
-					if (LoadTextFile(path, text))
-					{
-						return parser->Parse({ resource }, text, errors);
-					}
-					else
-					{
-						errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
-					}
-				}
-				return nullptr;
-			}
-
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
-			{
-				if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
-				{
-					stream::internal::ContextFreeReader reader(stream);
-					WString text;
-					reader << text;
-
-					return parser->Parse({ resource }, text, errors);
-				}
-				return nullptr;
-			}
-		};
-
-/***********************************************************************
-Doc Type Resolver (Doc)
-***********************************************************************/
-
-		class GuiResourceDocTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_IndirectLoad
-		{
-		public:
-			WString GetType()override
-			{
-				return L"Doc";
-			}
-
-			bool XmlSerializable()override
-			{
-				return true;
-			}
-
-			bool StreamSerializable()override
-			{
-				return true;
-			}
-
-			WString GetPreloadType()override
-			{
-				return L"Xml";
-			}
-
-			bool IsDelayLoad()override
-			{
-				return true;
-			}
-
-			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
-			{
-				return this;
-			}
-
-			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
-			{
-				if (auto obj = content.Cast<DocumentModel>())
-				{
-					return obj->SaveToXml();
-				}
-				return nullptr;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
-			{
-				if(auto xml = resource->GetContent().Cast<XmlDocument>())
-				{
-					Ptr<DocumentModel> model = DocumentModel::LoadFromXml(resource, xml, resolver, errors);
-					return model;
-				}
-				return nullptr;
-			}
-		};
-
-/***********************************************************************
-Type Resolver Plugin
-***********************************************************************/
-
-		class GuiResourceTypeResolversPlugin : public Object, public IGuiPlugin
-		{
-		public:
-
-			GUI_PLUGIN_NAME(GacUI_Res_TypeResolvers)
-			{
-				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
-			}
-
-			void Load()override
-			{
-				IGuiResourceResolverManager* manager=GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceImageTypeResolver);
-				manager->SetTypeResolver(new GuiResourceTextTypeResolver);
-				manager->SetTypeResolver(new GuiResourceXmlTypeResolver);
-				manager->SetTypeResolver(new GuiResourceDocTypeResolver);
-			}
-
-			void Unload()override
-			{
-			}
-		};
-		GUI_REGISTER_PLUGIN(GuiResourceTypeResolversPlugin)
 	}
 }
 

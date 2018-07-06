@@ -15683,7 +15683,7 @@ Collection Wrappers
 				}
 			};
 
-#define WRAPPER_POINTER ValueEnumerableWrapper<T>::wrapperPointer
+#define WRAPPER_POINTER this->wrapperPointer
 
 			template<typename T>
 			class ValueReadonlyListWrapper : public ValueEnumerableWrapper<T>, public virtual IValueReadonlyList
@@ -15757,6 +15757,99 @@ Collection Wrappers
 				bool Remove(const Value& value)override
 				{
 					ElementKeyType item=UnboxValue<ElementKeyType>(value);
+					return WRAPPER_POINTER->Remove(item);
+				}
+
+				bool RemoveAt(vint index)override
+				{
+					return WRAPPER_POINTER->RemoveAt(index);
+				}
+
+				void Clear()override
+				{
+					WRAPPER_POINTER->Clear();
+				}
+			};
+
+			template<typename T, typename K>
+			class ValueListWrapper<collections::Array<T, K>*> : public ValueReadonlyListWrapper<collections::Array<T, K>*>, public virtual IValueList
+			{
+			protected:
+				typedef collections::Array<T, K>				ContainerType;
+				typedef T										ElementType;
+				typedef K										ElementKeyType;
+
+			public:
+				ValueListWrapper(collections::Array<T, K>* _wrapperPointer)
+					:ValueReadonlyListWrapper<collections::Array<T, K>*>(_wrapperPointer)
+				{
+				}
+
+				void Set(vint index, const Value& value)override
+				{
+					ElementType item = UnboxValue<ElementType>(value);
+					WRAPPER_POINTER->Set(index, item);
+				}
+
+				vint Add(const Value& value)override
+				{
+					throw Exception(L"Array doesn't have Add method.");
+				}
+
+				vint Insert(vint index, const Value& value)override
+				{
+					throw Exception(L"Array doesn't have Insert method.");
+				}
+
+				bool Remove(const Value& value)override
+				{
+					throw Exception(L"Array doesn't have Remove method.");
+				}
+
+				bool RemoveAt(vint index)override
+				{
+					throw Exception(L"Array doesn't have RemoveAt method.");
+				}
+
+				void Clear()override
+				{
+					throw Exception(L"Array doesn't have Clear method.");
+				}
+			};
+
+			template<typename T, typename K>
+			class ValueListWrapper<collections::SortedList<T, K>*> : public ValueReadonlyListWrapper<collections::SortedList<T, K>*>, public virtual IValueList
+			{
+			protected:
+				typedef collections::SortedList<T, K>			ContainerType;
+				typedef T										ElementType;
+				typedef K										ElementKeyType;
+
+			public:
+				ValueListWrapper(collections::SortedList<T, K>* _wrapperPointer)
+					:ValueReadonlyListWrapper<collections::SortedList<T, K>*>(_wrapperPointer)
+				{
+				}
+
+				void Set(vint index, const Value& value)override
+				{
+					throw Exception(L"SortedList doesn't have Set method.");
+				}
+
+				vint Add(const Value& value)override
+				{
+					ElementType item = UnboxValue<ElementType>(value);
+					return WRAPPER_POINTER->Add(item);
+				}
+
+				vint Insert(vint index, const Value& value)override
+				{
+					throw Exception(L"SortedList doesn't have Insert method.");
+				}
+
+				bool Remove(const Value& value)override
+				{
+					ElementKeyType item = UnboxValue<ElementKeyType>(value);
 					return WRAPPER_POINTER->Remove(item);
 				}
 

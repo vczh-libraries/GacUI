@@ -484,6 +484,7 @@ WindowsDirect2DParagraph (Initialization)
 					if(!FAILED(hr))
 					{
 						textLayout=rawTextLayout;
+						textLayout->SetMaxWidth(65536);
 						textLayout->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
 					}
 					graphicsElements.Add(TextRange(0, _text.Length()), 0);
@@ -4277,7 +4278,7 @@ WindowsGDIParagraph
 						Rect caretBounds=GetCaretBounds(caret, caretFrontSide);
 						vint x=caretBounds.x1+bounds.x1;
 						vint y1=caretBounds.y1+bounds.y1;
-						vint y2=y1+caretBounds.Height();
+						vint y2=y1+(vint)(caretBounds.Height()*1.5);
 
 						WinDC* dc=renderTarget->GetDC();
 						dc->SetPen(caretPen);
