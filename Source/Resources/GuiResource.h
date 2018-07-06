@@ -292,6 +292,7 @@ Resource Structure
 
 			typedef collections::List<DelayLoading>								DelayLoadingList;
 
+			WString									importUri;
 			ItemMap									items;
 			FolderMap								folders;
 
@@ -306,6 +307,13 @@ Resource Structure
 			/// <summary>Create a resource folder.</summary>
 			GuiResourceFolder();
 			~GuiResourceFolder();
+
+			///<summary>Get the import uri for this folder.</summary>
+			///<returns>The import uri for this folder. Returns an empty string for non-import folders</returns>
+			const WString&							GetImportUri();
+			///<summary>Set the import uri for this folder.</summary>
+			///<param name="uri">The import uri for this folder. Set an empty string for non-import folders</param>
+			void									SetImportUri(const WString& uri);
 
 			/// <summary>Get all sub items.</summary>
 			/// <returns>All sub items.</returns>

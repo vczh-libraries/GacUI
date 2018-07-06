@@ -536,6 +536,10 @@ GuiResourceFolder
 										errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Failed to load file \"" + fileAbsolutePath + L"\"."));
 									}
 								}
+								else if (contentAtt->value.value == L"Import")
+								{
+									throw 0;
+								}
 								else
 								{
 									errors.Add(GuiResourceError({ { this },element->codeRange.start }, L"Folder's content attributes can only be \"Link\"."));
@@ -724,12 +728,18 @@ GuiResourceFolder
 				xmlFolder->attributes.Add(attName);
 				xmlParent->subNodes.Add(xmlFolder);
 				
-
-				if (folder->GetFileContentPath() == L"")
+				if (folder->GetImportUri() != L"")
 				{
-					folder->SaveResourceFolderToXml(xmlFolder);
+					auto attContent = MakePtr<XmlAttribute>();
+					attContent->name.value = L"content";
+					attContent->value.value = L"Import";
+					xmlFolder->attributes.Add(attContent);
+
+					auto xmlText = MakePtr<XmlText>();
+					xmlText->content.value = folder->GetImportUri();
+					xmlFolder->subNodes.Add(xmlText);
 				}
-				else
+				else if (folder->GetFileContentPath() != L"")
 				{
 					auto attContent = MakePtr<XmlAttribute>();
 					attContent->name.value = L"content";
@@ -740,11 +750,16 @@ GuiResourceFolder
 					xmlText->content.value = folder->GetFileContentPath();
 					xmlFolder->subNodes.Add(xmlText);
 				}
+				else
+				{
+					folder->SaveResourceFolderToXml(xmlFolder);
+				}
 			}
 		}
 
 		void GuiResourceFolder::CollectTypeNames(collections::List<WString>& typeNames)
 		{
+			if (importUri != L"") return;
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
 				if (!typeNames.Contains(item->GetTypeName()))
@@ -849,11 +864,18 @@ GuiResourceFolder
 			reader << count;
 			for (vint i = 0; i < count; i++)
 			{
-				WString name;
-				reader << name;
+				WString name, importUri;
+				reader << name << importUri;
 
 				auto folder = MakePtr<GuiResourceFolder>();
-				folder->LoadResourceFolderFromBinary(delayLoadings, reader, typeNames, errors);
+				if (importUri == L"")
+				{
+					folder->LoadResourceFolderFromBinary(delayLoadings, reader, typeNames, errors);
+				}
+				else
+				{
+					throw 0;
+				}
 				AddFolder(name, folder);
 			}
 		}
@@ -910,13 +932,18 @@ GuiResourceFolder
 			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
 			{
 				WString name = folder->GetName();
-				writer << name;
-				folder->SaveResourceFolderToBinary(writer, typeNames);
+				WString importUri = folder->GetImportUri();
+				writer << name << importUri;
+				if (importUri == L"")
+				{
+					folder->SaveResourceFolderToBinary(writer, typeNames);
+				}
 			}
 		}
 
 		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
 		{
+			if (importUri != L"") return;
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
@@ -941,6 +968,7 @@ GuiResourceFolder
 
 		void GuiResourceFolder::InitializeResourceFolder(GuiResourceInitializeContext& context)
 		{
+			if (importUri != L"") return;
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
@@ -962,6 +990,16 @@ GuiResourceFolder
 
 		GuiResourceFolder::~GuiResourceFolder()
 		{
+		}
+
+		const WString& GuiResourceFolder::GetImportUri()
+		{
+			return importUri;
+		}
+
+		void GuiResourceFolder::SetImportUri(const WString& uri)
+		{
+			importUri = uri;
 		}
 
 		const GuiResourceFolder::ItemList& GuiResourceFolder::GetItems()
