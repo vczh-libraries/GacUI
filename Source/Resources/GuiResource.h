@@ -303,6 +303,7 @@ Resource Structure
 			void									SaveResourceFolderToBinary(stream::internal::ContextFreeWriter& writer, collections::List<WString>& typeNames);
 			void									PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors);
 			void									InitializeResourceFolder(GuiResourceInitializeContext& context);
+			void									ImportFromUri(const WString& uri, GuiResourceTextPos position, GuiResourceError::List& errors);
 		public:
 			/// <summary>Create a resource folder.</summary>
 			GuiResourceFolder();

@@ -1,5 +1,5 @@
 <Resource>
-  <Folder name="Images" content="Import">global-res://ResBase/Images</Folder>
+  <Folder name="Images" content="Import">global-res://ResBase/Images/</Folder>
   
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">

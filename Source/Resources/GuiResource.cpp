@@ -9,10 +9,7 @@ namespace vl
 		using namespace controls;
 		using namespace collections;
 		using namespace parsing;
-		using namespace parsing::tabling;
 		using namespace parsing::xml;
-		using namespace parsing::json;
-		using namespace regex;
 		using namespace stream;
 		using namespace filesystem;
 
@@ -538,7 +535,8 @@ GuiResourceFolder
 								}
 								else if (contentAtt->value.value == L"Import")
 								{
-									throw 0;
+									auto importUri = XmlGetValue(element);
+									folder->ImportFromUri(importUri, { { this },element->codeRange.start }, errors);
 								}
 								else
 								{
@@ -874,7 +872,7 @@ GuiResourceFolder
 				}
 				else
 				{
-					throw 0;
+					folder->ImportFromUri(importUri, { { this },{0,0} }, errors);
 				}
 				AddFolder(name, folder);
 			}
@@ -981,6 +979,44 @@ GuiResourceFolder
 			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
 			{
 				folder->InitializeResourceFolder(context);
+			}
+		}
+
+		void GuiResourceFolder::ImportFromUri(const WString& uri, GuiResourceTextPos position, GuiResourceError::List& errors)
+		{
+			SetImportUri(uri);
+			if (importUri.Length() == 0 || importUri[importUri.Length() - 1] != L'/')
+			{
+				errors.Add(GuiResourceError(position, L"Path of imported folder should ends with L\"/\"."));
+			}
+			else
+			{
+				WString protocol, path;
+				if (IsResourceUrl(importUri, protocol, path))
+				{
+					if (protocol == L"import-res")
+					{
+						auto factory = GetResourceResolverManager()->GetPathResolverFactory(protocol);
+						auto resolver = factory->CreateResolver(nullptr, L"");
+						if (auto sourceFolder = resolver->ResolveResource(path).Cast<GuiResourceFolder>())
+						{
+							CopyFrom(items, sourceFolder->items);
+							CopyFrom(folders, sourceFolder->folders);
+						}
+						else
+						{
+							errors.Add(GuiResourceError(position, L"Path of imported folder does not exist: \"" + importUri + L"\"."));
+						}
+					}
+					else
+					{
+						errors.Add(GuiResourceError(position, L"Path of imported folder should begin with \"import-res://\"."));
+					}
+				}
+				else
+				{
+					errors.Add(GuiResourceError(position, L"Invalid path of imported folder : \"" + importUri + L"\"."));
+				}
 			}
 		}
 
