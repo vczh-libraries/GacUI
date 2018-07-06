@@ -19,10 +19,11 @@
           Partial = 2,
         }
         
-        class TripleImage
+        class TripleProp
         {
-          var checkedImage: GuiImageData^ = null;
-          var partialImage: GuiImageData^ = null;
+          prop State: TripleState = TripleState::None {}
+          prop CheckedImage: GuiImageData^ = null {}
+          prop PartialImage: GuiImageData^ = null {}
         }
       ]]>
     </Workflow>
@@ -30,18 +31,46 @@
 
   <Instance name="TriplePhaseImageButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TriplePhaseImageButtonTemplate">
-      <ButtonTemplate MinSizeLimitation="LimitToElementAndChildren">
-        
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="2" BorderVisible="true" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:Percentage percentage:0.5</_>
+            <_>composeType:Absolute absolute:32</_>
+            <_>composeType:Percentage percentage:0.5</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Absolute absolute:32</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:1 column:0">
+            
+          </Cell>
+          <Cell Site="row:1 column:1">
+            <SolidLabel Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center"/>
+          </Cell>
+        </Table>
       </ButtonTemplate>
     </Instance>
   </Instance>
 
-  <Instance name="MainWindowInstance">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
-      <Window Text="TriplePhaseImageButton" ClientSize="x:640 y:480">
-        <Button Text="Button">
-          <att.BoundsComposition-set AlignmentToParent="left:10 top:20 right:-1 bottom:-1" PreferredMinSize="x:120 y:40"/>
+  <Instance name="TriplePhaseButtonTemplate">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TriplePhaseButton">
+      <CustomControl ref.Name="self">
+        <Button Text-bind="self.Text" Font-bind="self.Font" Context-eval="new TripleProp^()">
+          <att.ControlTemplate>demo::TriplePhaseImageButtonTemplate</att.ControlTemplate>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </Button>
+      </CustomControl>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowInstance">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+      <Window Text="TriplePhaseImageButton" ClientSize="x:640 y:480">
+        <demo:TriplePhaseButton Text="Button">
+          <att.BoundsComposition-set AlignmentToParent="left:10 top:20 right:-1 bottom:-1" PreferredMinSize="x:120 y:40"/>
+        </demo:TriplePhaseButton>
       </Window>
     </Instance>
   </Instance>
