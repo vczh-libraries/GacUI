@@ -1,6 +1,4 @@
 <Resource>
-  <Text name="Keep">
-    <![CDATA[
   <Folder name="ToolbarImages" content="Link">../../Host/Resources/FullControlTest/ToolbarImages/Images.xml</Folder>
   <Folder name="DocumentComponents" content="Link">../../Host/Resources/FullControlTest/DocumentComponents.xml</Folder>
   <Folder name="DocumentEditorBase" content="Link">../../Host/Resources/FullControlTest/DocumentEditorBase.xml</Folder>
@@ -12,88 +10,6 @@
         <demo:DocumentEditorRibbon ref.Name="editor">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </demo:DocumentEditorRibbon>
-      </Window>
-    </Instance>
-  </Instance>
-    ]]>
-  </Text>
-
-  <Instance name="NewContactWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
-      <ref.Ctor>
-        <![CDATA[
-          {
-            textBoxName.Text = "Mr. New Contact";
-            textBoxPhone.Text = "(123)-456-7890";
-            textBoxAddress.Text = "110 st, New York, NY 10118";
-            self.ForceCalculateSizeImmediately();
-          }
-        ]]>
-      </ref.Ctor>
-      <Window ref.Name="self" Text="New Contact" ClientSize="x:480 y:400" MaximizedBox="false" MinimizedBox="false" SizeBox="false">
-        <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <att.Rows>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-          </att.Rows>
-          <att.Columns>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-          </att.Columns>
-
-          <Cell Site="row:0 column:0" InternalMargin="top:6">
-            <Label Text="Name:"/>
-          </Cell>
-          <Cell Site="row:0 column:1 columnSpan:3">
-            <DocumentTextBox ref.Name="textBoxName" EditMode="Editable">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </DocumentTextBox>
-          </Cell>
-
-          <Cell Site="row:1 column:0" InternalMargin="top:6">
-            <Label Text="Phone:"/>
-          </Cell>
-          <Cell Site="row:1 column:1 columnSpan:3">
-            <DocumentTextBox ref.Name="textBoxPhone" EditMode="Editable">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </DocumentTextBox>
-          </Cell>
-
-          <Cell Site="row:2 column:0" InternalMargin="top:6">
-            <Label Text="Address:"/>
-          </Cell>
-          <Cell Site="row:2 column:1 columnSpan:3">
-            <DocumentTextBox ref.Name="textBoxAddress" EditMode="Editable">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </DocumentTextBox>
-          </Cell>
-
-          <Cell Site="row:3 column:0" InternalMargin="top:6">
-            <Label Text="Birthday:"/>
-          </Cell>
-          <Cell Site="row:3 column:1 columnSpan:3">
-            <DatePicker ref.Name="datePickerBirthday">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 bottom:0"/>
-            </DatePicker>
-          </Cell>
-
-          <Cell Site="row:5 column:2">
-            <Button Text="OK">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:60"/>
-            </Button>
-          </Cell>
-          <Cell Site="row:5 column:3">
-            <Button Text="Cancel">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:60"/>
-            </Button>
-          </Cell>
-        </Table>
       </Window>
     </Instance>
   </Instance>
