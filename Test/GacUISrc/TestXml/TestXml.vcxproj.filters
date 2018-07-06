@@ -64,11 +64,5 @@
     <Xml Include="Resources\ResDerived.xml">
       <Filter>Resource Files</Filter>
     </Xml>
-    <Xml Include="Resources\ResMain.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\ResVM.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
   </ItemGroup>
 </Project>

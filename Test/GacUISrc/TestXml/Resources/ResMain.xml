@@ -1,8 +1,0 @@
-<Resource>
-  <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <demo:DerivedWindow Text="Main -&gt; Derived -&gt; Base">
-      </demo:DerivedWindow>
-    </Instance>
-  </Instance>
-</Resource>

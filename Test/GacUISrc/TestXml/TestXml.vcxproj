@@ -194,8 +194,6 @@
     </Xml>
     <Xml Include="Resources\ResBase.xml" />
     <Xml Include="Resources\ResDerived.xml" />
-    <Xml Include="Resources\ResMain.xml" />
-    <Xml Include="Resources\ResVM.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GacUISrc\GacUISrc.vcxproj">

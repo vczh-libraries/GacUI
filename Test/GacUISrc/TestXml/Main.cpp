@@ -103,17 +103,11 @@ void GuiMain()
 	LoadDarkSkinTypes();
 
 	List<WString> names;
-	//names.Add(L"ResVM");
-	//names.Add(L"ResBase");
-	//names.Add(L"ResDerived");
-	//names.Add(L"ResMain");
-	names.Add(L"Resource");
+	names.Add(L"ResBase");
+	names.Add(L"ResDerived");
 
 	Group<WString, WString> deps;
-	deps.Add(L"ResBase", L"ResVM");
-	deps.Add(L"ResDerived", L"ResVM");
 	deps.Add(L"ResDerived", L"ResBase");
-	deps.Add(L"ResMain", L"ResDerived");
 
 	Dictionary<WString, FilePath> paths;
 	FOREACH(WString, name, names)
