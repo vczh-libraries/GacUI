@@ -226,9 +226,9 @@ namespace vl
 		}
 
 		template<typename T, typename U>
-		Ptr<T> UnboxCollection(U& value)
+		Ptr<T> UnboxCollection(const U& value)
 		{
-			auto boxedValue = reflection::description::BoxParameter<U>(value);
+			auto boxedValue = reflection::description::BoxParameter<U>(const_cast<U&>(value));
 			Ptr<T> result;
 			reflection::description::UnboxParameter<Ptr<T>>(boxedValue, result);
 			return result;
