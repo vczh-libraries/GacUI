@@ -7482,7 +7482,7 @@ GuiSharedSizeItemComposition
 				if (parentRoot)
 				{
 					parentRoot->childItems.Remove(this);
-					parentRoot = 0;
+					parentRoot = nullptr;
 				}
 
 				auto current = GetParent();
@@ -7503,13 +7503,28 @@ GuiSharedSizeItemComposition
 				if (parentRoot)
 				{
 					parentRoot->childItems.Add(this);
+					Size minSize;
+					if (sharedWidth)
+					{
+						vint index = parentRoot->itemWidths.Keys().IndexOf(group);
+						if (index != -1)
+						{
+							minSize.x = parentRoot->itemWidths.Values()[index];
+						}
+					}
+					if (sharedHeight)
+					{
+						vint index = parentRoot->itemHeights.Keys().IndexOf(group);
+						if (index != -1)
+						{
+							minSize.y = parentRoot->itemHeights.Values()[index];
+						}
+					}
+					SetPreferredMinSize(minSize);
 				}
 			}
 
 			GuiSharedSizeItemComposition::GuiSharedSizeItemComposition()
-				:parentRoot(0)
-				, sharedWidth(false)
-				, sharedHeight(false)
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
@@ -7617,11 +7632,6 @@ GuiSharedSizeRootComposition
 
 					item->SetPreferredMinSize(size);
 				}
-			}
-
-			void GuiSharedSizeRootComposition::UpdateBounds()
-			{
-
 			}
 
 			GuiSharedSizeRootComposition::GuiSharedSizeRootComposition()
