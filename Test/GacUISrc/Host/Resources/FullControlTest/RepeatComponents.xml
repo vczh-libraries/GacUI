@@ -23,6 +23,17 @@
     </Instance>
   </Instance>
 
+  <Instance name="SharedSizeTextItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::SharedSizeTextItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="demo::MyTextItem"/>
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SharedSizeItem Group="EnglishNumber" SharedWidth="true" AlignmentToParent="left:-1 top:5 right:5 bottom:5">
+          <SolidLabel Text-bind="ViewModel.Name" Font-bind="self.Font" Color-bind="self.TextColor"/>
+        </SharedSizeItem>
+      </TextListItemTemplate>
+    </Instance>
+  </Instance>
+
   <Instance name="EnglishNumbersControllerResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::EnglishNumbersController">
       <ref.Members>

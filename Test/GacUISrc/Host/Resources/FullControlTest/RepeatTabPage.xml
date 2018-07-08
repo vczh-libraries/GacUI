@@ -64,6 +64,14 @@
 
             <demo:EnglishNumbersControllerTabPage ref.Name="sharedSizeListTabPage" Text="SharedSize (TextList)" Alt="L">
               <att.ContentComposition-set>
+                <SharedSizeRoot AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="demo::MyTextItem^">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                    <att.ItemTemplate>demo::SharedSizeTextItemTemplate</att.ItemTemplate>
+                    <att.TextProperty>Name</att.TextProperty>
+                    <att.ItemSource-eval>sharedSizeListTabPage.ItemsToBind</att.ItemSource-eval>
+                  </BindableTextList>
+                </SharedSizeRoot>
               </att.ContentComposition-set>
             </demo:EnglishNumbersControllerTabPage>
           </att.Pages>
