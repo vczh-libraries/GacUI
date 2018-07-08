@@ -29,22 +29,20 @@
                 </ScrollContainer>
               </att.ContentComposition-set>
             </demo:EnglishNumbersControllerTabPage>
-            
+
             <demo:EnglishNumbersControllerTabPage ref.Name="repeatFlowTabPage" Text="RepeatFlow" Alt="F">
-              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                <att.ContentComposition-set>
-                  <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
-                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                    <RepeatFlow ref.Name="repeatFlow" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                      <att.RowPadding>5</att.RowPadding>
-                      <att.ColumnPadding>5</att.ColumnPadding>
-                      <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
-                      <att.ItemTemplate>demo::RepeatItemTemplate</att.ItemTemplate>
-                      <att.ItemSource-eval>repeatFlowTabPage.ItemsToBind</att.ItemSource-eval>
-                    </RepeatFlow>
-                  </ScrollContainer>
-                </att.ContentComposition-set>
-              </Table>
+              <att.ContentComposition-set>
+                <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <RepeatFlow ref.Name="repeatFlow" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                    <att.RowPadding>5</att.RowPadding>
+                    <att.ColumnPadding>5</att.ColumnPadding>
+                    <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
+                    <att.ItemTemplate>demo::RepeatItemTemplate</att.ItemTemplate>
+                    <att.ItemSource-eval>repeatFlowTabPage.ItemsToBind</att.ItemSource-eval>
+                  </RepeatFlow>
+                </ScrollContainer>
+              </att.ContentComposition-set>
             </demo:EnglishNumbersControllerTabPage>
           </att.Pages>
         </Tab>

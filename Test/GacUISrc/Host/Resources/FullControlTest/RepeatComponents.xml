@@ -17,7 +17,7 @@
           @cpp:Private
           var counter : int = 0;
           
-          prop ItemsToBind : observe MyTextItem^[] = {} {const, not observe};
+          prop ItemsToBind : observe MyTextItem^[] = {} {const, not observe}
           
           @cpp:Private
           func ToText_1to9(i : int) : string
@@ -170,7 +170,7 @@
     <Instance ref.CodeBehind="false" ref.Class="demo::EnglishNumbersControllerTabPage" xmlns:demo="demo::*">
       <ref.Members>
         <![CDATA[
-          prop ItemsToBind : observe MyTextItem^[] = {} {const, not observe};
+          prop ItemsToBind : observe MyTextItem^[] = {} {const, not observe}
           prop ContentComposition: GuiGraphicsComposition* = null {const, not observe}
         ]]>
       </ref.Members>
@@ -187,9 +187,9 @@
           <Cell ref.Name="content" Site="row:0 column:0">
           </Cell>
           <Cell Site="row:0 column:1">
-            <demo:EnglishNumberController ref.Name="controller" Text="Operations">
+            <demo:EnglishNumbersController ref.Name="controller" Text="Operations">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </demo:EnglishNumberController>
+            </demo:EnglishNumbersController>
           </Cell>
         </Table>
       </TabPage>
