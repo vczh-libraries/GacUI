@@ -171,16 +171,16 @@ namespace demo
 		if (::vl::__vwsn::This(this->dialogSaveDoc)->ShowDialog())
 		{
 			{
-				auto __vwsn_switch_6 = ::vl::__vwsn::This(this->dialogSaveDoc)->GetFilterIndex();
-				if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(0)))
+				auto __vwsn_switch_3 = ::vl::__vwsn::This(this->dialogSaveDoc)->GetFilterIndex();
+				if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(0)))
 				{
 					::vl::__vwsn::This(this->self)->SaveAsPrivateFormat(::vl::__vwsn::This(this->dialogSaveDoc)->GetFileName());
 				}
-				else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(1)))
+				else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(1)))
 				{
 					::vl::__vwsn::This(this->self)->SaveAsRTF(::vl::__vwsn::This(this->dialogSaveDoc)->GetFileName());
 				}
-				else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(2)))
+				else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(2)))
 				{
 					::vl::__vwsn::This(this->self)->SaveAsHTML(::vl::__vwsn::This(this->dialogSaveDoc)->GetFileName());
 				}
