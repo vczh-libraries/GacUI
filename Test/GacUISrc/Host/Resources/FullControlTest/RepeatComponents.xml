@@ -10,6 +10,19 @@
     </Instance>
   </Instance>
 
+  <Instance name="SharedSizeItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::SharedSizeItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="demo::MyTextItem"/>
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <SharedSizeItem Group="EnglishNumber" SharedWidth="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <Button Text-bind="ViewModel.Name">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </Button>
+        </SharedSizeItem>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
   <Instance name="EnglishNumbersControllerResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::EnglishNumbersController">
       <ref.Members>
