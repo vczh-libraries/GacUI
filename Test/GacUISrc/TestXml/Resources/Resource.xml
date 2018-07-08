@@ -1,7 +1,6 @@
 <Resource>
   <Folder name="RepeatComponents" content="Link">../../Host/Resources/FullControlTest/RepeatComponents.xml</Folder>
 
-
   <Script name="ViewModelResource">
     <Workflow>
       <![CDATA[
