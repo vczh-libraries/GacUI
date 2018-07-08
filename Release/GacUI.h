@@ -1385,7 +1385,8 @@ Image Object
 			/// <summary>
 			/// Save the image to a stream.
 			/// </summary>
-			/// <param name="stream">The stream</param>
+			/// <param name="stream">The stream.</param>
+			/// <param name="formatType">The format of the image.</param>
 			virtual void						SaveToStream(stream::IStream& stream, FormatType formatType = FormatType::Unknown) = 0;
 		};
 		
@@ -9332,7 +9333,6 @@ namespace vl
 			extern void							FinalizeTheme();
 			/// <summary>Register a control template collection object.</summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="name">The name of the theme.</param>
 			/// <param name="theme">The control template collection object.</param>
 			extern bool							RegisterTheme(Ptr<ThemeTemplates> theme);
 			/// <summary>Unregister a control template collection object.</summary>

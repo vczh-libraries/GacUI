@@ -269,7 +269,8 @@ Image Object
 			/// <summary>
 			/// Save the image to a stream.
 			/// </summary>
-			/// <param name="stream">The stream</param>
+			/// <param name="stream">The stream.</param>
+			/// <param name="formatType">The format of the image.</param>
 			virtual void						SaveToStream(stream::IStream& stream, FormatType formatType = FormatType::Unknown) = 0;
 		};
 		
