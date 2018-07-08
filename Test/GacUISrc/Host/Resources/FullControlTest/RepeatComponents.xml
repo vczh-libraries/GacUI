@@ -105,7 +105,7 @@
                       {
                         var textItem = new demo::MyTextItem^();
                         textItem.Name = self.NumberToText(self.counter + i);
-                        self.itemsToBind.Add(textItem);
+                        self.ItemsToBind.Add(textItem);
                       }
                     
                       self.counter = self.counter + 10;
@@ -121,9 +121,9 @@
                   <![CDATA[
                     {
                       var i = 0;
-                      while (i < self.itemsToBind.Count)
+                      while (i < self.ItemsToBind.Count)
                       {
-                        self.itemsToBind.RemoveAt(i);
+                        self.ItemsToBind.RemoveAt(i);
                         i = i + 1;
                       }
                     }
@@ -138,9 +138,9 @@
                   <![CDATA[
                     {
                       var i = 1;
-                      while (i < self.itemsToBind.Count)
+                      while (i < self.ItemsToBind.Count)
                       {
-                        self.itemsToBind.RemoveAt(i);
+                        self.ItemsToBind.RemoveAt(i);
                         i = i + 1;
                       }
                     }
@@ -154,7 +154,7 @@
                 <ev.Clicked-eval>
                   <![CDATA[
                     {
-                      self.itemsToBind.Clear();
+                      self.ItemsToBind.Clear();
                     }
                   ]]>
                 </ev.Clicked-eval>
@@ -174,7 +174,15 @@
           prop ContentComposition: GuiGraphicsComposition* = null {const, not observe}
         ]]>
       </ref.Members>
-      <TabPage ItemsToBind-eval="controller.ItemsToBind" ContentComposition-eval="content">
+      <ref.Ctor>
+        <![CDATA[
+          {
+            SetItemsToBind(controller.ItemsToBind);
+            SetContentComposition(content);
+          }
+        ]]>
+      </ref.Ctor>
+      <TabPage>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:Percentage percentage:1.0</_>
