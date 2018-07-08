@@ -19,7 +19,7 @@
               <att.ContentComposition-set>
                 <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                  <RepeatStack ref.Name="repeatStack" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <RepeatStack AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                     <att.Direction>Vertical</att.Direction>
                     <att.Padding>5</att.Padding>
                     <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
@@ -34,7 +34,7 @@
               <att.ContentComposition-set>
                 <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                  <RepeatFlow ref.Name="repeatFlow" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <RepeatFlow AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                     <att.RowPadding>5</att.RowPadding>
                     <att.ColumnPadding>5</att.ColumnPadding>
                     <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
@@ -45,12 +45,12 @@
               </att.ContentComposition-set>
             </demo:EnglishNumbersControllerTabPage>
             
-            <demo:EnglishNumbersControllerTabPage ref.Name="sharedSizeFlowTabPage" Text="SharedSizeFlow" Alt="F">
+            <demo:EnglishNumbersControllerTabPage ref.Name="sharedSizeFlowTabPage" Text="SharedSize (RepeatFlow)" Alt="F">
               <att.ContentComposition-set>
                 <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <SharedSizeRoot AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                    <RepeatFlow ref.Name="repeatFlow" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                    <RepeatFlow AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                       <att.RowPadding>5</att.RowPadding>
                       <att.ColumnPadding>5</att.ColumnPadding>
                       <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
@@ -62,7 +62,7 @@
               </att.ContentComposition-set>
             </demo:EnglishNumbersControllerTabPage>
 
-            <demo:EnglishNumbersControllerTabPage ref.Name="sharedSizeListTabPage" Text="SharedSizeList" Alt="L">
+            <demo:EnglishNumbersControllerTabPage ref.Name="sharedSizeListTabPage" Text="SharedSize (TextList)" Alt="L">
               <att.ContentComposition-set>
               </att.ContentComposition-set>
             </demo:EnglishNumbersControllerTabPage>
