@@ -1,7 +1,7 @@
 <Resource>
   <Instance name="MainWindowInstance">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <Window Text="SharedSize" ClientSize="x:640 y:480">
+      <Window Text="𩰪㦲𦰗𠀼 𣂕𣴑𣱳𦁚" ClientSize="x:640 y:480">
         <MultilineTextBox HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
           <att.Text>
