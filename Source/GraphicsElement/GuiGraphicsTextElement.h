@@ -120,28 +120,57 @@ Colorized Plain Text (model)
 				};
 
 				/// <summary>
+				/// A unicode code point.
+				/// In Windows, when the first character is not the leading character of a surrogate pair, the second character is ignored.
+				/// In other platforms which treat wchar_t as a UTF-32 character, the second character is ignored.
+				/// </summary>
+				struct UnicodeCodePoint
+				{
+#if defined VCZH_MSVC
+					wchar_t							characters[2];
+#elif defined VCZH_GCC
+					wchar_t							character;
+#endif
+
+					vuint32_t GetCodePoint()const
+					{
+#if defined VCZH_MSVC
+						throw 0;
+#elif defined VCZH_GCC
+						return (vuint32_t)character;
+#endif
+					}
+				};
+
+				/// <summary>
 				/// An abstract class for character size measuring in differect rendering technology.
 				/// </summary>
 				class CharMeasurer : public virtual IDescriptable
 				{
 				protected:
-					IGuiGraphicsRenderTarget*		oldRenderTarget;
-					vint								rowHeight;
-					vint								widths[65536];
+#if defined VCZH_MSVC
+					static const vint	SupportedCharCount = 0x10000;		// UTF-16
+#elif defined VCZH_GCC
+					static const vint	SupportedCharCount = 0x110000;		// UTF-32
+#endif
+
+					IGuiGraphicsRenderTarget*		oldRenderTarget = nullptr;
+					vint							rowHeight;
+					vint							widths[SupportedCharCount];
 					
 					/// <summary>
 					/// Measure the width of a character.
 					/// </summary>
 					/// <returns>The width in pixel.</returns>
-					/// <param name="character">The character to measure. This is a pure virtual member function to be overrided.</param>
+					/// <param name="codePoint">The unicode code point to measure.</param>
 					/// <param name="renderTarget">The render target which the character is going to be rendered. This is a pure virtual member function to be overrided.</param>
-					virtual vint						MeasureWidthInternal(wchar_t character, IGuiGraphicsRenderTarget* renderTarget)=0;
+					virtual vint					MeasureWidthInternal(UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)=0;
 					/// <summary>
 					/// Measure the height of a character.
 					/// </summary>
 					/// <returns>The height in pixel.</returns>
 					/// <param name="renderTarget">The render target which the character is going to be rendered.</param>
-					virtual vint						GetRowHeightInternal(IGuiGraphicsRenderTarget* renderTarget)=0;
+					virtual vint					GetRowHeightInternal(IGuiGraphicsRenderTarget* renderTarget)=0;
 				public:
 
 					/// <summary>
@@ -155,18 +184,18 @@ Colorized Plain Text (model)
 					/// Bind a render target to this character measurer.
 					/// </summary>
 					/// <param name="value">The render target to bind.</param>
-					void								SetRenderTarget(IGuiGraphicsRenderTarget* value);
+					void							SetRenderTarget(IGuiGraphicsRenderTarget* value);
 					/// <summary>
 					/// Measure the width of a character using the binded render target.
 					/// </summary>
 					/// <returns>The width of a character, in pixel.</returns>
-					/// <param name="character">The character to measure.</param>
-					vint								MeasureWidth(wchar_t character);
+					/// <param name="codePoint">The unicode code point to measure.</param>
+					vint							MeasureWidth(UnicodeCodePoint codePoint);
 					/// <summary>
 					/// Measure the height of a character.
 					/// </summary>
 					/// <returns>The height of a character, in pixel.</returns>
-					vint								GetRowHeight();
+					vint							GetRowHeight();
 				};
 
 				/// <summary>

@@ -139,8 +139,7 @@ text::CharMeasurer
 ***********************************************************************/
 
 				CharMeasurer::CharMeasurer(vint _rowHeight)
-					:oldRenderTarget(0)
-					,rowHeight(_rowHeight)
+					:rowHeight(_rowHeight)
 				{
 					memset(widths, 0, sizeof(widths));
 				}
@@ -159,12 +158,14 @@ text::CharMeasurer
 					}
 				}
 
-				vint CharMeasurer::MeasureWidth(wchar_t character)
+				vint CharMeasurer::MeasureWidth(UnicodeCodePoint codePoint)
 				{
-					vint w=widths[character];
-					if(w==0)
+					vuint32_t index = codePoint.GetCodePoint();
+					if (index >= SupportedCharCount) return 0;
+					vint w = widths[index];
+					if (w == 0)
 					{
-						widths[character]=w=MeasureWidthInternal(character, oldRenderTarget);
+						widths[index] = w = MeasureWidthInternal(codePoint, oldRenderTarget);
 					}
 					return w;
 				}
