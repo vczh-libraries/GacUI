@@ -173,6 +173,18 @@
                 </ev.Clicked-eval>
               </Button>
             </StackItem>
+            <StackItem>
+              <Button Alt="R" Text="Reset Counter">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      self.counter = 0;
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </StackItem>
           </Stack>
         </GroupBox>
       </CustomControl>

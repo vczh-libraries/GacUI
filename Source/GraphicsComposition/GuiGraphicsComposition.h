@@ -44,10 +44,10 @@ namespace vl
 			class GuiSharedSizeItemComposition : public GuiBoundsComposition, public Description<GuiSharedSizeItemComposition>
 			{
 			protected:
-				GuiSharedSizeRootComposition*						parentRoot;
+				GuiSharedSizeRootComposition*						parentRoot = nullptr;
 				WString												group;
-				bool												sharedWidth;
-				bool												sharedHeight;
+				bool												sharedWidth = false;
+				bool												sharedHeight = false;
 
 				void												Update();
 				void												OnParentLineChanged()override;
@@ -87,7 +87,6 @@ namespace vl
 				void												AddSizeComponent(collections::Dictionary<WString, vint>& sizes, const WString& group, vint sizeComponent);
 				void												CollectSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights);
 				void												AlignSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights);
-				void												UpdateBounds();
 			public:
 				GuiSharedSizeRootComposition();
 				~GuiSharedSizeRootComposition();
