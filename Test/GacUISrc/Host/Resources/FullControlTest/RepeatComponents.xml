@@ -9,4 +9,190 @@
       </ControlTemplate>
     </Instance>
   </Instance>
+
+  <Instance name="EnglishNumbersControllerResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::EnglishNumbersController">
+      <ref.Members>
+        <![CDATA[
+          @cpp:Private
+          var counter : int = 0;
+          
+          prop ItemsToBind : observe MyTextItem^[] = {} {const, not observe};
+          
+          @cpp:Private
+          func ToText_1to9(i : int) : string
+          {
+            switch (i)
+            {
+              case 1: { return "one"; }
+              case 2: { return "two"; }
+              case 3: { return "three"; }
+              case 4: { return "four"; }
+              case 5: { return "five"; }
+              case 6: { return "six"; }
+              case 7: { return "seven"; }
+              case 8: { return "eight"; }
+              case 9: { return "nine"; }
+            }
+            raise "ToText_1to9: Number out of range.";
+          }
+          
+          @cpp:Private
+          func ToText_11to19(i : int) : string
+          {
+            switch (i)
+            {
+              case 1: { return "eleven"; }
+              case 2: { return "twelve"; }
+              case 3: { return "thirteen"; }
+              case 4: { return "fourteen"; }
+              case 5: { return "fifteen"; }
+              case 6: { return "sixteen"; }
+              case 7: { return "seventeen"; }
+              case 8: { return "eightteen"; }
+              case 9: { return "nineteen"; }
+            }
+            raise "ToText_11to19: Number out of range.";
+          }
+          
+          @cpp:Private
+          func NumberToText_1To99(i : int) : string
+          {
+            switch (i / 10)
+            {
+              case 0: { return ToText_1to9(i % 10); }
+              case 1: { return i == 10 ? "ten" : ToText_11to19(i % 10); }
+              case 2: { return i % 10 == 0 ? "twenty" : "twenty-" & ToText_1to9(i % 10); }
+              case 3: { return i % 10 == 0 ? "thirty" : "thirty-" & ToText_1to9(i % 10); }
+              case 4: { return i % 10 == 0 ? "fourty" : "fourty-" & ToText_1to9(i % 10); }
+              case 5: { return i % 10 == 0 ? "fifty" : "fifty-" & ToText_1to9(i % 10); }
+              case 6: { return i % 10 == 0 ? "sixty" : "sixty-" & ToText_1to9(i % 10); }
+              case 7: { return i % 10 == 0 ? "seventy" : "seventy-" & ToText_1to9(i % 10); }
+              case 8: { return i % 10 == 0 ? "eighty" : "eighty-" & ToText_1to9(i % 10); }
+              case 9: { return i % 10 == 0 ? "ninety" : "ninety-" & ToText_1to9(i % 10); }
+            }
+            raise "NumberToText_1To99: Number out of range.";
+          }
+          
+          @cpp:Private
+          func NumberToText_0to999(i : int) : string
+          {
+             if (i < 100) { return NumberToText_1To99(i); }
+             return ToText_1to9(i / 100) & " hundred" & (i % 100 == 0 ? "" : " and " & NumberToText_1To99(i % 100));
+          }
+          
+          @cpp:Private
+          func NumberToText(i : int) : string
+          {
+            if (i == 0) { return "zero"; }
+            if (i < 1000) { return NumberToText_0to999(i); }
+            return "Number too large: " & i;
+          }
+        ]]>
+      </ref.Members>
+      <CustomControl ref.Name="self">
+        <GroupBox Text-bind="self.Text">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
+          <att.ContainerComposition-set InternalMargin="left:5 top:0 right:5 bottom:5"/>
+          <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+            <StackItem>
+              <Button Alt="A" Text="Add 10 items">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      for (i in range [0, 9])
+                      {
+                        var textItem = new demo::MyTextItem^();
+                        textItem.Name = self.NumberToText(self.counter + i);
+                        self.itemsToBind.Add(textItem);
+                      }
+                    
+                      self.counter = self.counter + 10;
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
+              <Button Alt="O" Text="Remove odd items">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      var i = 0;
+                      while (i < self.itemsToBind.Count)
+                      {
+                        self.itemsToBind.RemoveAt(i);
+                        i = i + 1;
+                      }
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
+              <Button Alt="E" Text="Remove even items">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      var i = 1;
+                      while (i < self.itemsToBind.Count)
+                      {
+                        self.itemsToBind.RemoveAt(i);
+                        i = i + 1;
+                      }
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
+              <Button Alt="C" Text="Clear">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      self.itemsToBind.Clear();
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </StackItem>
+          </Stack>
+        </GroupBox>
+      </CustomControl>
+    </Instance>
+  </Instance>
+
+  <Instance name="EnglishNumbersControllerTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::EnglishNumbersControllerTabPage" xmlns:demo="demo::*">
+      <ref.Members>
+        <![CDATA[
+          prop ItemsToBind : observe MyTextItem^[] = {} {const, not observe};
+          prop ContentComposition: GuiGraphicsComposition* = null {const, not observe}
+        ]]>
+      </ref.Members>
+      <TabPage ItemsToBind-eval="controller.ItemsToBind" ContentComposition-eval="content">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Columns>
+
+          <Cell ref.Name="content" Site="row:0 column:0">
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <demo:EnglishNumberController ref.Name="controller" Text="Operations">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </demo:EnglishNumberController>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
 </Folder>

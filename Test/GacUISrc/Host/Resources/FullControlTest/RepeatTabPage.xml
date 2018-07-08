@@ -1,75 +1,4 @@
-<Instance ref.CodeBehind="false" ref.Class="demo::RepeatTabPage">
-  <ref.Members>
-    <![CDATA[
-      var counter : int = 0;
-      var itemsToBind : observe MyTextItem^[] = {};
-      
-      func ToText_1to9(i : int) : string
-      {
-        switch (i)
-        {
-          case 1: { return "one"; }
-          case 2: { return "two"; }
-          case 3: { return "three"; }
-          case 4: { return "four"; }
-          case 5: { return "five"; }
-          case 6: { return "six"; }
-          case 7: { return "seven"; }
-          case 8: { return "eight"; }
-          case 9: { return "nine"; }
-        }
-        raise "ToText_1to9: Number out of range.";
-      }
-      
-      func ToText_11to19(i : int) : string
-      {
-        switch (i)
-        {
-          case 1: { return "eleven"; }
-          case 2: { return "twelve"; }
-          case 3: { return "thirteen"; }
-          case 4: { return "fourteen"; }
-          case 5: { return "fifteen"; }
-          case 6: { return "sixteen"; }
-          case 7: { return "seventeen"; }
-          case 8: { return "eightteen"; }
-          case 9: { return "nineteen"; }
-        }
-        raise "ToText_11to19: Number out of range.";
-      }
-      
-      func NumberToText_1To99(i : int) : string
-      {
-        switch (i / 10)
-        {
-          case 0: { return ToText_1to9(i % 10); }
-          case 1: { return i == 10 ? "ten" : ToText_11to19(i % 10); }
-          case 2: { return i % 10 == 0 ? "twenty" : "twenty-" & ToText_1to9(i % 10); }
-          case 3: { return i % 10 == 0 ? "thirty" : "thirty-" & ToText_1to9(i % 10); }
-          case 4: { return i % 10 == 0 ? "fourty" : "fourty-" & ToText_1to9(i % 10); }
-          case 5: { return i % 10 == 0 ? "fifty" : "fifty-" & ToText_1to9(i % 10); }
-          case 6: { return i % 10 == 0 ? "sixty" : "sixty-" & ToText_1to9(i % 10); }
-          case 7: { return i % 10 == 0 ? "seventy" : "seventy-" & ToText_1to9(i % 10); }
-          case 8: { return i % 10 == 0 ? "eighty" : "eighty-" & ToText_1to9(i % 10); }
-          case 9: { return i % 10 == 0 ? "ninety" : "ninety-" & ToText_1to9(i % 10); }
-        }
-        raise "NumberToText_1To99: Number out of range.";
-      }
-      
-      func NumberToText_0to999(i : int) : string
-      {
-         if (i < 100) { return NumberToText_1To99(i); }
-         return ToText_1to9(i / 100) & " hundred" & (i % 100 == 0 ? "" : " and " & NumberToText_1To99(i % 100));
-      }
-      
-      func NumberToText(i : int) : string
-      {
-        if (i == 0) { return "zero"; }
-        if (i < 1000) { return NumberToText_0to999(i); }
-        return "Number too large: " & i;
-      }
-    ]]>
-  </ref.Members>
+<Instance ref.CodeBehind="false" ref.Class="demo::RepeatTabPage" xmlns:demo="demo::*">
   <TabPage ref.Name="self" Text="Repeat">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
       <att.Rows>
@@ -78,8 +7,7 @@
         <_>composeType:Absolute absolute:20</_>
       </att.Rows>
       <att.Columns>
-        <_>composeType:Percentage percentage:0.5</_>
-        <_>composeType:MinSize</_>
+        <_>composeType:Percentage percentage:1.0</_>
         <_>composeType:Absolute absolute:20</_>
       </att.Columns>
 
@@ -87,121 +15,54 @@
         <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.Pages>
-            <TabPage Text="RepeatStack" Alt="S">
-              <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
-                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <RepeatStack ref.Name="repeatStack" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                  <att.Direction>Vertical</att.Direction>
-                  <att.Padding>5</att.Padding>
-                  <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
-                  <att.ItemTemplate>demo::RepeatItemTemplate</att.ItemTemplate>
-                  <att.ItemSource-eval>self.itemsToBind</att.ItemSource-eval>
-                </RepeatStack>
-              </ScrollContainer>
-            </TabPage>
-            <TabPage Text="RepeatFlow" Alt="F">
-              <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
-                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <RepeatFlow ref.Name="repeatFlow" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                  <att.RowPadding>5</att.RowPadding>
-                  <att.ColumnPadding>5</att.ColumnPadding>
-                  <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
-                  <att.ItemTemplate>demo::RepeatItemTemplate</att.ItemTemplate>
-                  <att.ItemSource-eval>self.itemsToBind</att.ItemSource-eval>
-                </RepeatFlow>
-              </ScrollContainer>
-            </TabPage>
+            <demo:EnglishNumbersControllerTabPage ref.Name="repeatStackTabPage" Text="RepeatStack" Alt="S">
+              <att.ContentComposition-set>
+                <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <RepeatStack ref.Name="repeatStack" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                    <att.Direction>Vertical</att.Direction>
+                    <att.Padding>5</att.Padding>
+                    <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
+                    <att.ItemTemplate>demo::RepeatItemTemplate</att.ItemTemplate>
+                    <att.ItemSource-eval>repeatStackTabPage.ItemsToBind</att.ItemSource-eval>
+                  </RepeatStack>
+                </ScrollContainer>
+              </att.ContentComposition-set>
+            </demo:EnglishNumbersControllerTabPage>
+            
+            <demo:EnglishNumbersControllerTabPage ref.Name="repeatFlowTabPage" Text="RepeatFlow" Alt="F">
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                <att.ContentComposition-set>
+                  <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                    <RepeatFlow ref.Name="repeatFlow" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                      <att.RowPadding>5</att.RowPadding>
+                      <att.ColumnPadding>5</att.ColumnPadding>
+                      <att.ExtraMargin>left:5 top:5 right:5 bottom:5</att.ExtraMargin>
+                      <att.ItemTemplate>demo::RepeatItemTemplate</att.ItemTemplate>
+                      <att.ItemSource-eval>repeatFlowTabPage.ItemsToBind</att.ItemSource-eval>
+                    </RepeatFlow>
+                  </ScrollContainer>
+                </att.ContentComposition-set>
+              </Table>
+            </demo:EnglishNumbersControllerTabPage>
           </att.Pages>
         </Tab>
       </Cell>
 
-      <Cell Site="row:0 column:1">
-        <GroupBox Text="Operations">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
-          <att.ContainerComposition-set InternalMargin="left:5 top:0 right:5 bottom:5"/>
-          <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-            <StackItem>
-              <Button Alt="A" Text="Add 10 items">
-                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <ev.Clicked-eval>
-                  <![CDATA[
-                    {
-                      for (i in range [0, 9])
-                      {
-                        var textItem = new demo::MyTextItem^();
-                        textItem.Name = self.NumberToText(self.counter + i);
-                        self.itemsToBind.Add(textItem);
-                      }
-                    
-                      self.counter = self.counter + 10;
-                    }
-                  ]]>
-                </ev.Clicked-eval>
-              </Button>
-            </StackItem>
-            <StackItem>
-              <Button Alt="O" Text="Remove odd items">
-                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <ev.Clicked-eval>
-                  <![CDATA[
-                    {
-                      var i = 0;
-                      while (i < self.itemsToBind.Count)
-                      {
-                        self.itemsToBind.RemoveAt(i);
-                        i = i + 1;
-                      }
-                    }
-                  ]]>
-                </ev.Clicked-eval>
-              </Button>
-            </StackItem>
-            <StackItem>
-              <Button Alt="E" Text="Remove even items">
-                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <ev.Clicked-eval>
-                  <![CDATA[
-                    {
-                      var i = 1;
-                      while (i < self.itemsToBind.Count)
-                      {
-                        self.itemsToBind.RemoveAt(i);
-                        i = i + 1;
-                      }
-                    }
-                  ]]>
-                </ev.Clicked-eval>
-              </Button>
-            </StackItem>
-            <StackItem>
-              <Button Alt="C" Text="Clear">
-                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <ev.Clicked-eval>
-                  <![CDATA[
-                    {
-                      self.itemsToBind.Clear();
-                    }
-                  ]]>
-                </ev.Clicked-eval>
-              </Button>
-            </StackItem>
-          </Stack>
-        </GroupBox>
-      </Cell>
-
-      <Cell Site="row:1 column:0 columnSpan:2">
+      <Cell Site="row:1 column:0">
         <HTracker ref.Name="hTracker" TotalSize="10">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </HTracker>
       </Cell>
 
-      <Cell Site="row:2 column:0 columnSpan:2">
+      <Cell Site="row:2 column:0">
         <ProgressBar TotalSize="10" Position-bind="hTracker.Position">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </ProgressBar>
       </Cell>
 
-      <Cell Site="row:0 column:2">
+      <Cell Site="row:0 column:1">
         <VTracker TotalSize="5">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </VTracker>
