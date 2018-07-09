@@ -851,16 +851,16 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::FontChanged()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
-				if(font)
+				IWindowsGDIResourceManager* resourceManager = GetWindowsGDIResourceManager();
+				if (font)
 				{
-					element->GetLines().SetCharMeasurer(0);
+					element->GetLines().SetCharMeasurer(nullptr);
 					resourceManager->DestroyGdiFont(oldFont);
 					resourceManager->DestroyCharMeasurer(oldFont);
-					font=0;
+					font = nullptr;
 				}
-				oldFont=element->GetFont();
-				font=resourceManager->CreateGdiFont(oldFont);
+				oldFont = element->GetFont();
+				font = resourceManager->CreateGdiFont(oldFont);
 				element->GetLines().SetCharMeasurer(resourceManager->CreateCharMeasurer(oldFont).Obj());
 			}
 
