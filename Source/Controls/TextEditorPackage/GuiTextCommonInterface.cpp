@@ -80,65 +80,83 @@ GuiTextBoxCommonInterface
 
 			void GuiTextBoxCommonInterface::Move(TextPos pos, bool shift)
 			{
-				TextPos oldBegin=textElement->GetCaretBegin();
-				TextPos oldEnd=textElement->GetCaretEnd();
+				TextPos oldBegin = textElement->GetCaretBegin();
+				TextPos oldEnd = textElement->GetCaretEnd();
 
-				pos=textElement->GetLines().Normalize(pos);
-				if(!shift)
+#if defined VCZH_MSVC
+				if (0 <= pos.row && pos.row < textElement->GetLines().GetCount())
+				{
+					TextLine& line = textElement->GetLines().GetLine(pos.row);
+					if (pos.column > 0 && UTF16SPFirst(line.text[pos.column - 1]) && UTF16SPSecond(line.text[pos.column]))
+					{
+						if (pos < oldBegin)
+						{
+							pos.column--;
+						}
+						else if (pos > oldBegin)
+						{
+							pos.column++;
+						}
+					}
+				}
+#endif
+
+				pos = textElement->GetLines().Normalize(pos);
+				if (!shift)
 				{
 					textElement->SetCaretBegin(pos);
 				}
 				textElement->SetCaretEnd(pos);
-				if(textControl)
+				if (textControl)
 				{
-					GuiGraphicsHost* host=textComposition->GetRelatedGraphicsHost();
-					if(host)
+					GuiGraphicsHost* host = textComposition->GetRelatedGraphicsHost();
+					if (host)
 					{
-						if(host->GetFocusedComposition()==textControl->GetFocusableComposition())
+						if (host->GetFocusedComposition() == textControl->GetFocusableComposition())
 						{
 							textElement->SetCaretVisible(true);
 						}
 					}
 				}
 
-				Rect bounds=textElement->GetLines().GetRectFromTextPos(pos);
-				Rect view=Rect(textElement->GetViewPosition(), textComposition->GetBounds().GetSize());
-				Point viewPoint=view.LeftTop();
+				Rect bounds = textElement->GetLines().GetRectFromTextPos(pos);
+				Rect view = Rect(textElement->GetViewPosition(), textComposition->GetBounds().GetSize());
+				Point viewPoint = view.LeftTop();
 
-				if(view.x2>view.x1 && view.y2>view.y1)
+				if (view.x2 > view.x1 && view.y2 > view.y1)
 				{
-					if(bounds.x1<view.x1)
+					if (bounds.x1 < view.x1)
 					{
-						viewPoint.x=bounds.x1;
+						viewPoint.x = bounds.x1;
 					}
-					else if(bounds.x2>view.x2)
+					else if (bounds.x2 > view.x2)
 					{
-						viewPoint.x=bounds.x2-view.Width();
+						viewPoint.x = bounds.x2 - view.Width();
 					}
-					if(bounds.y1<view.y1)
+					if (bounds.y1 < view.y1)
 					{
-						viewPoint.y=bounds.y1;
+						viewPoint.y = bounds.y1;
 					}
-					else if(bounds.y2>view.y2)
+					else if (bounds.y2 > view.y2)
 					{
-						viewPoint.y=bounds.y2-view.Height();
+						viewPoint.y = bounds.y2 - view.Height();
 					}
 				}
 
 				callback->ScrollToView(viewPoint);
 				UpdateCaretPoint();
 
-				TextPos newBegin=textElement->GetCaretBegin();
-				TextPos newEnd=textElement->GetCaretEnd();
-				if(oldBegin!=newBegin || oldEnd!=newEnd)
+				TextPos newBegin = textElement->GetCaretBegin();
+				TextPos newEnd = textElement->GetCaretEnd();
+				if (oldBegin != newBegin || oldEnd != newEnd)
 				{
 					ICommonTextEditCallback::TextCaretChangedStruct arguments;
-					arguments.oldBegin=oldBegin;
-					arguments.oldEnd=oldEnd;
-					arguments.newBegin=newBegin;
-					arguments.newEnd=newEnd;
-					arguments.editVersion=editVersion;
-					for(vint i=0;i<textEditCallbacks.Count();i++)
+					arguments.oldBegin = oldBegin;
+					arguments.oldEnd = oldEnd;
+					arguments.newBegin = newBegin;
+					arguments.newEnd = newEnd;
+					arguments.editVersion = editVersion;
+					for (vint i = 0; i < textEditCallbacks.Count(); i++)
 					{
 						textEditCallbacks[i]->TextCaretChanged(arguments);
 					}
