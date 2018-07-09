@@ -170,7 +170,7 @@ text::CharMeasurer
 						}
 						return w;
 					}
-					else if (index < SupportedCharCount)
+					else if (index < 0x110000)
 					{
 						return MeasureWidthInternal(codePoint, oldRenderTarget);
 					}
@@ -178,7 +178,6 @@ text::CharMeasurer
 					{
 						return 0;
 					}
-					if (index >= SupportedCharCount) return 0;
 				}
 
 				vint CharMeasurer::GetRowHeight()
@@ -513,18 +512,20 @@ text::TextLines
 						CharAtt& att = line.att[i];
 						wchar_t c = line.text[i];
 						vint width = 0;
+						vint passwordWidth = 0;
 						if (passwordChar)
 						{
-							width = charMeasurer ? charMeasurer->MeasureWidth({ passwordChar }) : 1;
+							passwordWidth = charMeasurer ? charMeasurer->MeasureWidth({ passwordChar }) : 1;
 						}
-						else if (c == L'\t')
+
+						if (c == L'\t')
 						{
 							width = tabWidth - offset % tabWidth;
 						}
 #if defined VCZH_MSVC
 						else if (UTF16SPFirst(c) && (i + 1 < line.dataLength) && UTF16SPSecond(line.text[i + 1]))
 						{
-							width = charMeasurer ? charMeasurer->MeasureWidth({ c, line.text[i + 1] }) : 1;
+							width = passwordChar ? passwordWidth : (charMeasurer ? charMeasurer->MeasureWidth({ c, line.text[i + 1] }) : 1);
 							offset += width;
 							att.rightOffset = (int)offset;
 							line.att[i + 1].rightOffset = (int)offset;
@@ -534,7 +535,7 @@ text::TextLines
 #endif
 						else
 						{
-							width = charMeasurer ? charMeasurer->MeasureWidth({ c }) : 1;
+							width = passwordChar ? passwordWidth : (charMeasurer ? charMeasurer->MeasureWidth({ c }) : 1);
 						}
 						offset += width;
 						att.rightOffset = (int)offset;
