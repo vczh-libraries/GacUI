@@ -2440,17 +2440,18 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::FontChanged()
 			{
-				IWindowsDirect2DResourceManager* resourceManager=GetWindowsDirect2DResourceManager();
-				if(textFormat)
+				IWindowsDirect2DResourceManager* resourceManager = GetWindowsDirect2DResourceManager();
+				if (textFormat)
 				{
+					element->GetLines().SetCharMeasurer(nullptr);
 					resourceManager->DestroyDirect2DTextFormat(oldFont);
 					resourceManager->DestroyDirect2DCharMeasurer(oldFont);
 				}
-				oldFont=element->GetFont();
+				oldFont = element->GetFont();
 				if (oldFont.fontFamily == L"") oldFont.fontFamily = GetCurrentController()->ResourceService()->GetDefaultFont().fontFamily;
 				if (oldFont.size == 0) oldFont.size = 12;
 
-				textFormat=resourceManager->CreateDirect2DTextFormat(oldFont);
+				textFormat = resourceManager->CreateDirect2DTextFormat(oldFont);
 				element->GetLines().SetCharMeasurer(resourceManager->CreateDirect2DCharMeasurer(oldFont).Obj());
 			}
 
@@ -2490,99 +2491,106 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::Render(Rect bounds)
 			{
-				if(renderTarget)
+				if (renderTarget)
 				{
-					ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
-					wchar_t passwordChar=element->GetPasswordChar();
-					Point viewPosition=element->GetViewPosition();
+					ID2D1RenderTarget* d2dRenderTarget = renderTarget->GetDirect2DRenderTarget();
+					wchar_t passwordChar = element->GetPasswordChar();
+					Point viewPosition = element->GetViewPosition();
 					Rect viewBounds(viewPosition, bounds.GetSize());
-					vint startRow=element->GetLines().GetTextPosFromPoint(Point(viewBounds.x1, viewBounds.y1)).row;
-					vint endRow=element->GetLines().GetTextPosFromPoint(Point(viewBounds.x2, viewBounds.y2)).row;
-					TextPos selectionBegin=element->GetCaretBegin()<element->GetCaretEnd()?element->GetCaretBegin():element->GetCaretEnd();
-					TextPos selectionEnd=element->GetCaretBegin()>element->GetCaretEnd()?element->GetCaretBegin():element->GetCaretEnd();
-					bool focused=element->GetFocused();
-					
+					vint startRow = element->GetLines().GetTextPosFromPoint(Point(viewBounds.x1, viewBounds.y1)).row;
+					vint endRow = element->GetLines().GetTextPosFromPoint(Point(viewBounds.x2, viewBounds.y2)).row;
+					TextPos selectionBegin = element->GetCaretBegin() < element->GetCaretEnd() ? element->GetCaretBegin() : element->GetCaretEnd();
+					TextPos selectionEnd = element->GetCaretBegin() > element->GetCaretEnd() ? element->GetCaretBegin() : element->GetCaretEnd();
+					bool focused = element->GetFocused();
+
 					renderTarget->SetTextAntialias(oldFont.antialias, oldFont.verticalAntialias);
 
-					for(vint row=startRow;row<=endRow;row++)
+					for (vint row = startRow; row <= endRow; row++)
 					{
-						Rect startRect=element->GetLines().GetRectFromTextPos(TextPos(row, 0));
-						Point startPoint=startRect.LeftTop();
-						vint startColumn=element->GetLines().GetTextPosFromPoint(Point(viewBounds.x1, startPoint.y)).column;
-						vint endColumn=element->GetLines().GetTextPosFromPoint(Point(viewBounds.x2, startPoint.y)).column;
-						text::TextLine& line=element->GetLines().GetLine(row);
+						Rect startRect = element->GetLines().GetRectFromTextPos(TextPos(row, 0));
+						Point startPoint = startRect.LeftTop();
+						vint startColumn = element->GetLines().GetTextPosFromPoint(Point(viewBounds.x1, startPoint.y)).column;
+						vint endColumn = element->GetLines().GetTextPosFromPoint(Point(viewBounds.x2, startPoint.y)).column;
 
-						vint x=startColumn==0?0:line.att[startColumn-1].rightOffset;
-						for(vint column=startColumn; column<=endColumn; column++)
+						text::TextLine& line = element->GetLines().GetLine(row);
+						if (endColumn + 1 < line.dataLength && text::UTF16SPFirst(line.text[endColumn]) && text::UTF16SPSecond(line.text[startColumn + 1]))
 						{
-							bool inSelection=false;
-							if(selectionBegin.row==selectionEnd.row)
+							endColumn++;
+						}
+
+						vint x = startColumn == 0 ? 0 : line.att[startColumn - 1].rightOffset;
+						for (vint column = startColumn; column <= endColumn; column++)
+						{
+							bool inSelection = false;
+							if (selectionBegin.row == selectionEnd.row)
 							{
-								inSelection=(row==selectionBegin.row && selectionBegin.column<=column && column<selectionEnd.column);
+								inSelection = (row == selectionBegin.row && selectionBegin.column <= column && column < selectionEnd.column);
 							}
-							else if(row==selectionBegin.row)
+							else if (row == selectionBegin.row)
 							{
-								inSelection=selectionBegin.column<=column;
+								inSelection = selectionBegin.column <= column;
 							}
-							else if(row==selectionEnd.row)
+							else if (row == selectionEnd.row)
 							{
-								inSelection=column<selectionEnd.column;
+								inSelection = column < selectionEnd.column;
 							}
 							else
 							{
-								inSelection=selectionBegin.row<row && row<selectionEnd.row;
+								inSelection = selectionBegin.row < row && row < selectionEnd.row;
 							}
-							
-							bool crlf=column==line.dataLength;
-							vint colorIndex=crlf?0:line.att[column].colorIndex;
-							if(colorIndex>=colors.Count())
+
+							bool crlf = column == line.dataLength;
+							vint colorIndex = crlf ? 0 : line.att[column].colorIndex;
+							if (colorIndex >= colors.Count())
 							{
-								colorIndex=0;
+								colorIndex = 0;
 							}
-							ColorItemResource& color=
-								!inSelection?colors[colorIndex].normal:
-								focused?colors[colorIndex].selectedFocused:
+							ColorItemResource& color =
+								!inSelection ? colors[colorIndex].normal :
+								focused ? colors[colorIndex].selectedFocused :
 								colors[colorIndex].selectedUnfocused;
-							vint x2=crlf?x+startRect.Height()/2:line.att[column].rightOffset;
-							vint tx=x-viewPosition.x+bounds.x1;
-							vint ty=startPoint.y-viewPosition.y+bounds.y1;
-							
-							if(color.background.a>0)
+							vint x2 = crlf ? x + startRect.Height() / 2 : line.att[column].rightOffset;
+							vint tx = x - viewPosition.x + bounds.x1;
+							vint ty = startPoint.y - viewPosition.y + bounds.y1;
+
+							if (color.background.a > 0)
 							{
-								d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)tx, (FLOAT)ty, (FLOAT)(tx+(x2-x)), (FLOAT)(ty+startRect.Height())), color.backgroundBrush);
+								d2dRenderTarget->FillRectangle(D2D1::RectF((FLOAT)tx, (FLOAT)ty, (FLOAT)(tx + (x2 - x)), (FLOAT)(ty + startRect.Height())), color.backgroundBrush);
 							}
-							if(!crlf)
+							if (!crlf)
 							{
+								UINT32 count = text::UTF16SPFirst(line.text[column]) && column + 1 < line.dataLength && text::UTF16SPSecond(line.text[column + 1]) ? 2 : 1;
 								d2dRenderTarget->DrawText(
-									(passwordChar?&passwordChar:&line.text[column]),
-									1,
+									(passwordChar ? &passwordChar : &line.text[column]),
+									count,
 									textFormat->textFormat.Obj(),
-									D2D1::RectF((FLOAT)tx, (FLOAT)ty, (FLOAT)tx+1, (FLOAT)ty+1),
+									D2D1::RectF((FLOAT)tx, (FLOAT)ty, (FLOAT)tx + 1, (FLOAT)ty + 1),
 									color.textBrush,
 									D2D1_DRAW_TEXT_OPTIONS_NO_SNAP,
 									DWRITE_MEASURING_MODE_GDI_NATURAL
-									);
+								);
+								if (count == 2) column++;
 							}
-							x=x2;
+							x = x2;
 						}
 					}
 
-					if(element->GetCaretVisible() && element->GetLines().IsAvailable(element->GetCaretEnd()))
+					if (element->GetCaretVisible() && element->GetLines().IsAvailable(element->GetCaretEnd()))
 					{
-						Point caretPoint=element->GetLines().GetPointFromTextPos(element->GetCaretEnd());
-						vint height=element->GetLines().GetRowHeight();
-						Point p1(caretPoint.x-viewPosition.x+bounds.x1, caretPoint.y-viewPosition.y+bounds.y1+1);
-						Point p2(caretPoint.x-viewPosition.x+bounds.x1, caretPoint.y+height-viewPosition.y+bounds.y1-1);
+						Point caretPoint = element->GetLines().GetPointFromTextPos(element->GetCaretEnd());
+						vint height = element->GetLines().GetRowHeight();
+						Point p1(caretPoint.x - viewPosition.x + bounds.x1, caretPoint.y - viewPosition.y + bounds.y1 + 1);
+						Point p2(caretPoint.x - viewPosition.x + bounds.x1, caretPoint.y + height - viewPosition.y + bounds.y1 - 1);
 						d2dRenderTarget->DrawLine(
-							D2D1::Point2F((FLOAT)p1.x+0.5f, (FLOAT)p1.y),
-							D2D1::Point2F((FLOAT)p2.x+0.5f, (FLOAT)p2.y),
+							D2D1::Point2F((FLOAT)p1.x + 0.5f, (FLOAT)p1.y),
+							D2D1::Point2F((FLOAT)p2.x + 0.5f, (FLOAT)p2.y),
 							caretBrush
-							);
+						);
 						d2dRenderTarget->DrawLine(
-							D2D1::Point2F((FLOAT)p1.x-0.5f, (FLOAT)p1.y),
-							D2D1::Point2F((FLOAT)p2.x-0.5f, (FLOAT)p2.y),
+							D2D1::Point2F((FLOAT)p1.x - 0.5f, (FLOAT)p1.y),
+							D2D1::Point2F((FLOAT)p2.x - 0.5f, (FLOAT)p2.y),
 							caretBrush
-							);
+						);
 					}
 				}
 			}
@@ -3493,13 +3501,15 @@ CachedResourceAllocator
 					ComPtr<IDWriteTextFormat>		font;
 					vint								size;
 
-					Size MeasureInternal(wchar_t character, IGuiGraphicsRenderTarget* renderTarget)
+					Size MeasureInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
 						Size charSize(0, 0);
 						IDWriteTextLayout* textLayout = 0;
+
+						UINT32 count = text::UTF16SPFirst(codePoint.characters[0]) && text::UTF16SPSecond(codePoint.characters[1]) ? 2 : 1;
 						HRESULT hr = GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory()->CreateTextLayout(
-							&character,
-							1,
+							codePoint.characters,
+							count,
 							font.Obj(),
 							0,
 							0,
@@ -3516,14 +3526,14 @@ CachedResourceAllocator
 						return charSize;
 					}
 
-					vint MeasureWidthInternal(wchar_t character, IGuiGraphicsRenderTarget* renderTarget)
+					vint MeasureWidthInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
-						return MeasureInternal(character, renderTarget).x;
+						return MeasureInternal(codePoint, renderTarget).x;
 					}
 
 					vint GetRowHeightInternal(IGuiGraphicsRenderTarget* renderTarget)
 					{
-						return MeasureInternal(L' ', renderTarget).y;
+						return MeasureInternal({ L' ' }, renderTarget).y;
 					}
 				public:
 					Direct2DCharMeasurer(ComPtr<IDWriteTextFormat> _font, vint _size)
@@ -10275,16 +10285,16 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::FontChanged()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
-				if(font)
+				IWindowsGDIResourceManager* resourceManager = GetWindowsGDIResourceManager();
+				if (font)
 				{
-					element->GetLines().SetCharMeasurer(0);
+					element->GetLines().SetCharMeasurer(nullptr);
 					resourceManager->DestroyGdiFont(oldFont);
 					resourceManager->DestroyCharMeasurer(oldFont);
-					font=0;
+					font = nullptr;
 				}
-				oldFont=element->GetFont();
-				font=resourceManager->CreateGdiFont(oldFont);
+				oldFont = element->GetFont();
+				font = resourceManager->CreateGdiFont(oldFont);
 				element->GetLines().SetCharMeasurer(resourceManager->CreateCharMeasurer(oldFont).Obj());
 			}
 
@@ -10315,94 +10325,101 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::Render(Rect bounds)
 			{
-				if(renderTarget)
+				if (renderTarget)
 				{
-					WinDC* dc=renderTarget->GetDC();
+					WinDC* dc = renderTarget->GetDC();
 					dc->SetFont(font);
-					
-					wchar_t passwordChar=element->GetPasswordChar();
-					Point viewPosition=element->GetViewPosition();
+
+					wchar_t passwordChar = element->GetPasswordChar();
+					Point viewPosition = element->GetViewPosition();
 					Rect viewBounds(viewPosition, bounds.GetSize());
-					vint startRow=element->GetLines().GetTextPosFromPoint(Point(viewBounds.x1, viewBounds.y1)).row;
-					vint endRow=element->GetLines().GetTextPosFromPoint(Point(viewBounds.x2, viewBounds.y2)).row;
-					TextPos selectionBegin=element->GetCaretBegin()<element->GetCaretEnd()?element->GetCaretBegin():element->GetCaretEnd();
-					TextPos selectionEnd=element->GetCaretBegin()>element->GetCaretEnd()?element->GetCaretBegin():element->GetCaretEnd();
-					bool focused=element->GetFocused();
-					Ptr<windows::WinBrush> lastBrush=0;
+					vint startRow = element->GetLines().GetTextPosFromPoint(Point(viewBounds.x1, viewBounds.y1)).row;
+					vint endRow = element->GetLines().GetTextPosFromPoint(Point(viewBounds.x2, viewBounds.y2)).row;
+					TextPos selectionBegin = element->GetCaretBegin() < element->GetCaretEnd() ? element->GetCaretBegin() : element->GetCaretEnd();
+					TextPos selectionEnd = element->GetCaretBegin() > element->GetCaretEnd() ? element->GetCaretBegin() : element->GetCaretEnd();
+					bool focused = element->GetFocused();
+					Ptr<windows::WinBrush> lastBrush = 0;
 
-					for(vint row=startRow;row<=endRow;row++)
+					for (vint row = startRow; row <= endRow; row++)
 					{
-						Rect startRect=element->GetLines().GetRectFromTextPos(TextPos(row, 0));
-						Point startPoint=startRect.LeftTop();
-						vint startColumn=element->GetLines().GetTextPosFromPoint(Point(viewBounds.x1, startPoint.y)).column;
-						vint endColumn=element->GetLines().GetTextPosFromPoint(Point(viewBounds.x2, startPoint.y)).column;
-						text::TextLine& line=element->GetLines().GetLine(row);
+						Rect startRect = element->GetLines().GetRectFromTextPos(TextPos(row, 0));
+						Point startPoint = startRect.LeftTop();
+						vint startColumn = element->GetLines().GetTextPosFromPoint(Point(viewBounds.x1, startPoint.y)).column;
+						vint endColumn = element->GetLines().GetTextPosFromPoint(Point(viewBounds.x2, startPoint.y)).column;
 
-						vint x=startColumn==0?0:line.att[startColumn-1].rightOffset;
-						for(vint column=startColumn; column<=endColumn; column++)
+						text::TextLine& line = element->GetLines().GetLine(row);
+						if (text::UTF16SPFirst(line.text[endColumn]) && endColumn + 1 < line.dataLength && text::UTF16SPSecond(line.text[startColumn + 1]))
 						{
-							bool inSelection=false;
-							if(selectionBegin.row==selectionEnd.row)
+							endColumn++;
+						}
+
+						vint x = startColumn == 0 ? 0 : line.att[startColumn - 1].rightOffset;
+						for (vint column = startColumn; column <= endColumn; column++)
+						{
+							bool inSelection = false;
+							if (selectionBegin.row == selectionEnd.row)
 							{
-								inSelection=(row==selectionBegin.row && selectionBegin.column<=column && column<selectionEnd.column);
+								inSelection = (row == selectionBegin.row && selectionBegin.column <= column && column < selectionEnd.column);
 							}
-							else if(row==selectionBegin.row)
+							else if (row == selectionBegin.row)
 							{
-								inSelection=selectionBegin.column<=column;
+								inSelection = selectionBegin.column <= column;
 							}
-							else if(row==selectionEnd.row)
+							else if (row == selectionEnd.row)
 							{
-								inSelection=column<selectionEnd.column;
+								inSelection = column < selectionEnd.column;
 							}
 							else
 							{
-								inSelection=selectionBegin.row<row && row<selectionEnd.row;
+								inSelection = selectionBegin.row < row && row < selectionEnd.row;
 							}
-							
-							bool crlf=column==line.dataLength;
-							vint colorIndex=crlf?0:line.att[column].colorIndex;
-							if(colorIndex>=colors.Count())
+
+							bool crlf = column == line.dataLength;
+							vint colorIndex = crlf ? 0 : line.att[column].colorIndex;
+							if (colorIndex >= colors.Count())
 							{
-								colorIndex=0;
+								colorIndex = 0;
 							}
-							ColorItemResource& color=
-								!inSelection?colors[colorIndex].normal:
-								focused?colors[colorIndex].selectedFocused:
+							ColorItemResource& color =
+								!inSelection ? colors[colorIndex].normal :
+								focused ? colors[colorIndex].selectedFocused :
 								colors[colorIndex].selectedUnfocused;
-							vint x2=crlf?x+startRect.Height()/2:line.att[column].rightOffset;
-							vint tx=x-viewPosition.x+bounds.x1;
-							vint ty=startPoint.y-viewPosition.y+bounds.y1;
-							
-							if(color.background.a)
+							vint x2 = crlf ? x + startRect.Height() / 2 : line.att[column].rightOffset;
+							vint tx = x - viewPosition.x + bounds.x1;
+							vint ty = startPoint.y - viewPosition.y + bounds.y1;
+
+							if (color.background.a)
 							{
-								if(lastBrush!=color.backgroundBrush)
+								if (lastBrush != color.backgroundBrush)
 								{
-									lastBrush=color.backgroundBrush;
+									lastBrush = color.backgroundBrush;
 									dc->SetBrush(lastBrush);
 								}
-								dc->FillRect(tx, ty, tx+(x2-x), ty+startRect.Height());
+								dc->FillRect(tx, ty, tx + (x2 - x), ty + startRect.Height());
 							}
-							if(!crlf)
+							if (!crlf)
 							{
-								if(color.text.a)
+								vint count = text::UTF16SPFirst(line.text[column]) && column + 1 < line.dataLength && text::UTF16SPSecond(line.text[column + 1]) ? 2 : 1;
+								if (color.text.a)
 								{
 									dc->SetTextColor(RGB(color.text.r, color.text.g, color.text.b));
-									dc->DrawBuffer(tx, ty, (passwordChar?&passwordChar:&line.text[column]), 1);
+									dc->DrawBuffer(tx, ty, (passwordChar ? &passwordChar : &line.text[column]), count);
 								}
+								if (count == 2) column++;
 							}
-							x=x2;
+							x = x2;
 						}
 					}
 
-					if(element->GetCaretVisible() && element->GetLines().IsAvailable(element->GetCaretEnd()))
+					if (element->GetCaretVisible() && element->GetLines().IsAvailable(element->GetCaretEnd()))
 					{
-						Point caretPoint=element->GetLines().GetPointFromTextPos(element->GetCaretEnd());
-						vint height=element->GetLines().GetRowHeight();
+						Point caretPoint = element->GetLines().GetPointFromTextPos(element->GetCaretEnd());
+						vint height = element->GetLines().GetRowHeight();
 						dc->SetPen(caretPen);
-						dc->MoveTo(caretPoint.x-viewPosition.x+bounds.x1, caretPoint.y-viewPosition.y+bounds.y1+1);
-						dc->LineTo(caretPoint.x-viewPosition.x+bounds.x1, caretPoint.y+height-viewPosition.y+bounds.y1-1);
-						dc->MoveTo(caretPoint.x-1-viewPosition.x+bounds.x1, caretPoint.y-viewPosition.y+bounds.y1+1);
-						dc->LineTo(caretPoint.x-1-viewPosition.x+bounds.x1, caretPoint.y+height-viewPosition.y+bounds.y1-1);
+						dc->MoveTo(caretPoint.x - viewPosition.x + bounds.x1, caretPoint.y - viewPosition.y + bounds.y1 + 1);
+						dc->LineTo(caretPoint.x - viewPosition.x + bounds.x1, caretPoint.y + height - viewPosition.y + bounds.y1 - 1);
+						dc->MoveTo(caretPoint.x - 1 - viewPosition.x + bounds.x1, caretPoint.y - viewPosition.y + bounds.y1 + 1);
+						dc->LineTo(caretPoint.x - 1 - viewPosition.x + bounds.x1, caretPoint.y + height - viewPosition.y + bounds.y1 - 1);
 					}
 				}
 			}
@@ -10655,14 +10672,16 @@ CachedResourceAllocator
 					Ptr<WinFont>			font;
 					vint						size;
 
-					Size MeasureInternal(wchar_t character, IGuiGraphicsRenderTarget* renderTarget)
+					Size MeasureInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
-						if(renderTarget)
+						if (renderTarget)
 						{
-							WindowsGDIRenderTarget* gdiRenderTarget=dynamic_cast<WindowsGDIRenderTarget*>(renderTarget);
-							WinDC* dc=gdiRenderTarget->GetDC();
+							WindowsGDIRenderTarget* gdiRenderTarget = dynamic_cast<WindowsGDIRenderTarget*>(renderTarget);
+							WinDC* dc = gdiRenderTarget->GetDC();
 							dc->SetFont(font);
-							SIZE size=dc->MeasureBuffer(&character, 1, -1);
+
+							vint count = text::UTF16SPFirst(codePoint.characters[0]) && text::UTF16SPSecond(codePoint.characters[1]) ? 2 : 1;
+							SIZE size = dc->MeasureBuffer(codePoint.characters, count, -1);
 							return Size(size.cx, size.cy);
 						}
 						else
@@ -10671,16 +10690,16 @@ CachedResourceAllocator
 						}
 					}
 
-					vint MeasureWidthInternal(wchar_t character, IGuiGraphicsRenderTarget* renderTarget)
+					vint MeasureWidthInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
-						return MeasureInternal(character, renderTarget).x;
+						return MeasureInternal(codePoint, renderTarget).x;
 					}
 
 					vint GetRowHeightInternal(IGuiGraphicsRenderTarget* renderTarget)
 					{
 						if(renderTarget)
 						{
-							return MeasureInternal(L' ', renderTarget).y;
+							return MeasureInternal({ L' ' }, renderTarget).y;
 						}
 						else
 						{
