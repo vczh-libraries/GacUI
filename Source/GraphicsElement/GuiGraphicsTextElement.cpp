@@ -529,7 +529,7 @@ text::TextLines
 							offset += width;
 							att.rightOffset = (int)offset;
 							line.att[i + 1].rightOffset = (int)offset;
-							i += 2;
+							i++;
 							continue;
 						}
 #endif
@@ -621,6 +621,11 @@ text::TextLines
 							i1=i;
 							p1=p;
 						}
+					}
+
+					if (UTF16SPSecond(line.text[i1]) && i1 > 0 && UTF16SPFirst(line.text[i1 - 1]))
+					{
+						i1--;
 					}
 					return TextPos(row, i1);
 				}
