@@ -191,13 +191,13 @@ CachedResourceAllocator
 
 					Size MeasureInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
-						if(renderTarget)
+						if (renderTarget)
 						{
-							WindowsGDIRenderTarget* gdiRenderTarget=dynamic_cast<WindowsGDIRenderTarget*>(renderTarget);
-							WinDC* dc=gdiRenderTarget->GetDC();
+							WindowsGDIRenderTarget* gdiRenderTarget = dynamic_cast<WindowsGDIRenderTarget*>(renderTarget);
+							WinDC* dc = gdiRenderTarget->GetDC();
 							dc->SetFont(font);
 
-							vint count = text::UTF16SPFirst(codePoint.characters[0] && text::UTF16SPSecond(codePoint.characters[1])) ? 2 : 1;
+							vint count = text::UTF16SPFirst(codePoint.characters[0]) && text::UTF16SPSecond(codePoint.characters[1]) ? 2 : 1;
 							SIZE size = dc->MeasureBuffer(codePoint.characters, count, -1);
 							return Size(size.cx, size.cy);
 						}

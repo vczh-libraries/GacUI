@@ -217,7 +217,7 @@ CachedResourceAllocator
 						Size charSize(0, 0);
 						IDWriteTextLayout* textLayout = 0;
 
-						UINT32 count = text::UTF16SPFirst(codePoint.characters[0] && text::UTF16SPSecond(codePoint.characters[1])) ? 2 : 1;
+						UINT32 count = text::UTF16SPFirst(codePoint.characters[0]) && text::UTF16SPSecond(codePoint.characters[1]) ? 2 : 1;
 						HRESULT hr = GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory()->CreateTextLayout(
 							codePoint.characters,
 							count,
