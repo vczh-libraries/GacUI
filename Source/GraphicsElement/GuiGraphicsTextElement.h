@@ -121,12 +121,16 @@ Colorized Plain Text (model)
 
 #if defined VCZH_MSVC
 				/// <summary>Test if a wchar_t is the first character of a surrogate pair.</summary>
+				/// <param name="c">The character to test.</param>
+				/// <returns>Returns true if it is the first character of a surrogate pair.</returns>
 				inline bool UTF16SPFirst(wchar_t c)
 				{
 					return 0xD800 <= c && c < 0xDC00;
 				}
 
 				/// <summary>Test if a wchar_t is the second character of a surrogate pair.</summary>
+				/// <param name="c">The character to test.</param>
+				/// <returns>Returns true if it is the second character of a surrogate pair.</returns>
 				inline bool UTF16SPSecond(wchar_t c)
 				{
 					return 0xDC00 <= c && c < 0xDFFF;
