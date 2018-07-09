@@ -180,7 +180,7 @@ IGuiInstanceResourceManager
 				return instanceResources.Values()[index];
 			}
 
-			void UnloadResource(const WString& name)
+			void UnloadResource(const WString& name)override
 			{
 				vint index = resources.Keys().IndexOf(name);
 				if (index != -1)

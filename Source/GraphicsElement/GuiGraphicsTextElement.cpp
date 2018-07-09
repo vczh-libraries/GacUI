@@ -622,11 +622,12 @@ text::TextLines
 							p1=p;
 						}
 					}
-
+#if defined VCZH_MSVC
 					if (UTF16SPSecond(line.text[i1]) && i1 > 0 && UTF16SPFirst(line.text[i1 - 1]))
 					{
 						i1--;
 					}
+#endif
 					return TextPos(row, i1);
 				}
 

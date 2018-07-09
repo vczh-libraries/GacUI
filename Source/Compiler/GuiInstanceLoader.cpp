@@ -498,7 +498,7 @@ GuiDefaultInstanceLoader
 					GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor()) != nullptr;
 			}
 
-			Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)
+			Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)override
 			{
 				CTOR_PARAM_PREFIX
 
