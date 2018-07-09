@@ -212,13 +212,15 @@ CachedResourceAllocator
 					ComPtr<IDWriteTextFormat>		font;
 					vint								size;
 
-					Size MeasureInternal(wchar_t character, IGuiGraphicsRenderTarget* renderTarget)
+					Size MeasureInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
 						Size charSize(0, 0);
 						IDWriteTextLayout* textLayout = 0;
+
+						UINT32 count = text::UTF16SPFirst(codePoint.characters[0] && text::UTF16SPSecond(codePoint.characters[1])) ? 2 : 1;
 						HRESULT hr = GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory()->CreateTextLayout(
-							&character,
-							1,
+							codePoint.characters,
+							count,
 							font.Obj(),
 							0,
 							0,
@@ -235,14 +237,14 @@ CachedResourceAllocator
 						return charSize;
 					}
 
-					vint MeasureWidthInternal(wchar_t character, IGuiGraphicsRenderTarget* renderTarget)
+					vint MeasureWidthInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
-						return MeasureInternal(character, renderTarget).x;
+						return MeasureInternal(codePoint, renderTarget).x;
 					}
 
 					vint GetRowHeightInternal(IGuiGraphicsRenderTarget* renderTarget)
 					{
-						return MeasureInternal(L' ', renderTarget).y;
+						return MeasureInternal({ L' ' }, renderTarget).y;
 					}
 				public:
 					Direct2DCharMeasurer(ComPtr<IDWriteTextFormat> _font, vint _size)

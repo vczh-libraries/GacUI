@@ -189,14 +189,16 @@ CachedResourceAllocator
 					Ptr<WinFont>			font;
 					vint						size;
 
-					Size MeasureInternal(wchar_t character, IGuiGraphicsRenderTarget* renderTarget)
+					Size MeasureInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
 						if(renderTarget)
 						{
 							WindowsGDIRenderTarget* gdiRenderTarget=dynamic_cast<WindowsGDIRenderTarget*>(renderTarget);
 							WinDC* dc=gdiRenderTarget->GetDC();
 							dc->SetFont(font);
-							SIZE size=dc->MeasureBuffer(&character, 1, -1);
+
+							vint count = text::UTF16SPFirst(codePoint.characters[0] && text::UTF16SPSecond(codePoint.characters[1])) ? 2 : 1;
+							SIZE size = dc->MeasureBuffer(codePoint.characters, count, -1);
 							return Size(size.cx, size.cy);
 						}
 						else
@@ -205,16 +207,16 @@ CachedResourceAllocator
 						}
 					}
 
-					vint MeasureWidthInternal(wchar_t character, IGuiGraphicsRenderTarget* renderTarget)
+					vint MeasureWidthInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
-						return MeasureInternal(character, renderTarget).x;
+						return MeasureInternal(codePoint, renderTarget).x;
 					}
 
 					vint GetRowHeightInternal(IGuiGraphicsRenderTarget* renderTarget)
 					{
 						if(renderTarget)
 						{
-							return MeasureInternal(L' ', renderTarget).y;
+							return MeasureInternal({ L' ' }, renderTarget).y;
 						}
 						else
 						{
