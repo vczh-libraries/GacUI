@@ -161,13 +161,24 @@ text::CharMeasurer
 				vint CharMeasurer::MeasureWidth(UnicodeCodePoint codePoint)
 				{
 					vuint32_t index = codePoint.GetCodePoint();
-					if (index >= SupportedCharCount) return 0;
-					vint w = widths[index];
-					if (w == 0)
+					if (0 <= index && index < 65536)
 					{
-						widths[index] = w = MeasureWidthInternal(codePoint, oldRenderTarget);
+						vint w = widths[index];
+						if (w == 0)
+						{
+							widths[index] = w = MeasureWidthInternal(codePoint, oldRenderTarget);
+						}
+						return w;
 					}
-					return w;
+					else if (index < SupportedCharCount)
+					{
+						return MeasureWidthInternal(codePoint, oldRenderTarget);
+					}
+					else
+					{
+						return 0;
+					}
+					if (index >= SupportedCharCount) return 0;
 				}
 
 				vint CharMeasurer::GetRowHeight()
@@ -462,7 +473,7 @@ text::TextLines
 						lines[i].availableOffsetCount = 0;
 					}
 
-					tabWidth = tabSpaceCount * (charMeasurer ? charMeasurer->MeasureWidth(L' ') : 1);
+					tabWidth = tabSpaceCount * (charMeasurer ? charMeasurer->MeasureWidth({ L' ' }) : 1);
 					if (tabWidth == 0)
 					{
 						tabWidth = 1;
@@ -491,33 +502,44 @@ text::TextLines
 
 				void TextLines::MeasureRow(vint row)
 				{
-					TextLine& line=lines[row];
-					vint offset=0;
-					if(line.availableOffsetCount)
+					TextLine& line = lines[row];
+					vint offset = 0;
+					if (line.availableOffsetCount)
 					{
-						offset=line.att[line.availableOffsetCount-1].rightOffset;
+						offset = line.att[line.availableOffsetCount - 1].rightOffset;
 					}
-					for(vint i=line.availableOffsetCount;i<line.dataLength;i++)
+					for (vint i = line.availableOffsetCount; i < line.dataLength; i++)
 					{
-						CharAtt& att=line.att[i];
-						wchar_t c=line.text[i];
-						vint width=0;
-						if(passwordChar)
+						CharAtt& att = line.att[i];
+						wchar_t c = line.text[i];
+						vint width = 0;
+						if (passwordChar)
 						{
-							width = charMeasurer ? charMeasurer->MeasureWidth(passwordChar) : 1;
+							width = charMeasurer ? charMeasurer->MeasureWidth({ passwordChar }) : 1;
 						}
-						else if(c==L'\t')
+						else if (c == L'\t')
 						{
-							width=tabWidth-offset%tabWidth;
+							width = tabWidth - offset % tabWidth;
 						}
+#if defined VCZH_MSVC
+						else if (UTF16SPFirst(c) && (i + 1 < line.dataLength) && UTF16SPSecond(line.text[i + 1]))
+						{
+							width = charMeasurer ? charMeasurer->MeasureWidth({ c, line.text[i + 1] }) : 1;
+							offset += width;
+							att.rightOffset = (int)offset;
+							line.att[i + 1].rightOffset = (int)offset;
+							i += 2;
+							continue;
+						}
+#endif
 						else
 						{
-							width = charMeasurer ? charMeasurer->MeasureWidth(line.text[i]) : 1;
+							width = charMeasurer ? charMeasurer->MeasureWidth({ c }) : 1;
 						}
-						offset+=width;
-						att.rightOffset=(int)offset;
+						offset += width;
+						att.rightOffset = (int)offset;
 					}
-					line.availableOffsetCount=line.dataLength;
+					line.availableOffsetCount = line.dataLength;
 				}
 
 				vint TextLines::GetRowWidth(vint row)

@@ -119,6 +119,20 @@ Colorized Plain Text (model)
 					void							AppendAndFinalize(TextLine& line);
 				};
 
+#if defined VCZH_MSVC
+				/// <summary>Test if a wchar_t is the first character of a surrogate pair.</summary>
+				inline bool UTF16SPFirst(wchar_t c)
+				{
+					return 0xD800 <= c && c < 0xDC00;
+				}
+
+				/// <summary>Test if a wchar_t is the second character of a surrogate pair.</summary>
+				inline bool UTF16SPSecond(wchar_t c)
+				{
+					return 0xDC00 <= c && c < 0xDFFF;
+				}
+#endif
+
 				/// <summary>
 				/// A unicode code point.
 				/// In Windows, when the first character is not the leading character of a surrogate pair, the second character is ignored.
@@ -128,14 +142,26 @@ Colorized Plain Text (model)
 				{
 #if defined VCZH_MSVC
 					wchar_t							characters[2];
+
+					UnicodeCodePoint(wchar_t c) :characters{ c,0 } {}
+					UnicodeCodePoint(wchar_t c1, wchar_t c2) :characters{ c1,c2 } {}
 #elif defined VCZH_GCC
 					wchar_t							character;
+
+					UnicodeCodePoint(wchar_t c) :character(c) {}
 #endif
 
 					vuint32_t GetCodePoint()const
 					{
 #if defined VCZH_MSVC
-						throw 0;
+						if (UTF16SPFirst(characters[0]) && UTF16SPSecond(characters[1]))
+						{
+							return (wchar_t)(characters[0] - 0xD800) * 0x400 + (wchar_t)(characters[1] - 0xDC00) + 0x10000;
+						}
+						else
+						{
+							return (vuint32_t)characters[0];
+						}
 #elif defined VCZH_GCC
 						return (vuint32_t)character;
 #endif
@@ -156,7 +182,7 @@ Colorized Plain Text (model)
 
 					IGuiGraphicsRenderTarget*		oldRenderTarget = nullptr;
 					vint							rowHeight;
-					vint							widths[SupportedCharCount];
+					vint							widths[65536];
 					
 					/// <summary>
 					/// Measure the width of a character.
