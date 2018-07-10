@@ -6411,7 +6411,7 @@ GuiControlHost
 						control=control->GetParent();
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			void GuiControlHost::MoveIntoTooltipControl(GuiControl* tooltipControl, Point location)
@@ -6547,7 +6547,15 @@ GuiControlHost
 			void GuiControlHost::Destroying()
 			{
 				WindowDestroying.Execute(GetNotifyEventArguments());
-				SetNativeWindow(0);
+				calledDestroyed = true;
+				if (deleteWhenDestroyed)
+				{
+					GetApplication()->InvokeInMainThread(this, [=]()
+					{
+						delete this;
+					});
+				}
+				SetNativeWindow(nullptr);
 			}
 
 			void GuiControlHost::UpdateClientSizeAfterRendering(Size clientSize)
@@ -6578,6 +6586,20 @@ GuiControlHost
 				FinalizeInstanceRecursively(this);
 				OnBeforeReleaseGraphicsHost();
 				delete host;
+			}
+
+			void GuiControlHost::DeleteAfterProcessingAllEvents()
+			{
+				auto window = host->GetNativeWindow();
+				if (calledDestroyed || !window)
+				{
+					delete this;
+				}
+				else
+				{
+					deleteWhenDestroyed = true;
+					GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+				}
 			}
 
 			compositions::GuiGraphicsHost* GuiControlHost::GetGraphicsHost()
@@ -6902,17 +6924,17 @@ GuiControlHost
 
 			void GuiControlHost::Close()
 			{
-				INativeWindow* window=host->GetNativeWindow();
-				if(window)
+				if (auto window = host->GetNativeWindow())
 				{
-					if(GetCurrentController()->WindowService()->GetMainWindow()!=window)
+					auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+					if (mainWindow == window)
 					{
-						window->Hide(false);
+						SetNativeWindow(nullptr);
+						GetCurrentController()->WindowService()->DestroyNativeWindow(window);
 					}
 					else
 					{
-						SetNativeWindow(0);
-						GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+						window->Hide(false);
 					}
 				}
 			}
@@ -7054,7 +7076,7 @@ GuiWindow
 				INativeWindow* window=host->GetNativeWindow();
 				if(window)
 				{
-					SetNativeWindow(0);
+					SetNativeWindow(nullptr);
 					GetCurrentController()->WindowService()->DestroyNativeWindow(window);
 				}
 			}
@@ -7153,7 +7175,7 @@ GuiWindow
 				ShowModal(owner, [=]()
 				{
 					callback();
-					delete this;
+					DeleteAfterProcessingAllEvents();
 				});
 			}
 
@@ -8599,8 +8621,15 @@ Helper Functions
 
 			void SafeDeleteControl(controls::GuiControl* value)
 			{
-				NotifyFinalizeInstance(value);
-				SafeDeleteControlInternal(value);
+				if (auto controlHost = dynamic_cast<controls::GuiControlHost*>(value))
+				{
+					controlHost->DeleteAfterProcessingAllEvents();
+				}
+				else
+				{
+					NotifyFinalizeInstance(value);
+					SafeDeleteControlInternal(value);
+				}
 			}
 
 			void SafeDeleteComposition(GuiGraphicsComposition* value)

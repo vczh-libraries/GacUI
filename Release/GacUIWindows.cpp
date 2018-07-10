@@ -13301,30 +13301,22 @@ WindowsForm
 			protected:
 				HWND								handle;
 				WString								title;
-				WindowsCursor*						cursor;
+				WindowsCursor*						cursor = nullptr;
 				Point								caretPoint;
-				WindowsForm*						parentWindow;
-				bool								alwaysPassFocusToParent;
+				WindowsForm*						parentWindow = nullptr;
+				bool								alwaysPassFocusToParent = false;
 				List<INativeWindowListener*>		listeners;
-				vint								mouseLastX;
-				vint								mouseLastY;
-				vint								mouseHoving;
-				Interface*							graphicsHandler;
-				bool								customFrameMode;
+				vint								mouseLastX = -1;
+				vint								mouseLastY = -1;
+				bool								mouseHoving = false;
+				Interface*							graphicsHandler = nullptr;
+				bool								customFrameMode = false;
 				List<Ptr<INativeMessageHandler>>	messageHandlers;
-				bool								supressingAlt;
+				bool								supressingAlt = false;
+				Ptr<bool>							flagDisposed = new bool(false);
 
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
-					:cursor(0)
-					,parentWindow(0)
-					,alwaysPassFocusToParent(false)
-					,mouseLastX(-1)
-					,mouseLastY(-1)
-					,mouseHoving(false)
-					,graphicsHandler(0)
-					,customFrameMode(false)
-					,supressingAlt(false)
 				{
 					DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
 					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
@@ -13333,12 +13325,13 @@ WindowsForm
 
 				~WindowsForm()
 				{
+					*flagDisposed.Obj() = true;
 					List<INativeWindowListener*> copiedListeners;
 					CopyFrom(copiedListeners, listeners);
-					for(vint i=0;i<copiedListeners.Count();i++)
+					for (vint i = 0; i < copiedListeners.Count(); i++)
 					{
-						INativeWindowListener* listener=copiedListeners[i];
-						if(listeners.Contains(listener))
+						INativeWindowListener* listener = copiedListeners[i];
+						if (listeners.Contains(listener))
 						{
 							listener->Destroyed();
 						}
@@ -13356,11 +13349,14 @@ WindowsForm
 
 				bool HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
+#define CHECK_DISPOSED if (*flag.Obj()) return skip
+					auto flag = flagDisposed;
 					bool skip = false;
 					{
 						FOREACH(Ptr<INativeMessageHandler>, handler, messageHandlers)
 						{
 							handler->BeforeHandle(hwnd, uMsg, wParam, lParam, skip);
+							CHECK_DISPOSED;
 						}
 						if (skip)
 						{
@@ -13368,14 +13364,17 @@ WindowsForm
 						}
 					}
 					skip = HandleMessageInternal(hwnd, uMsg, wParam, lParam, result);
+					CHECK_DISPOSED;
 					if (GetWindowsFormFromHandle(hwnd))
 					{
 						FOREACH(Ptr<INativeMessageHandler>, handler, messageHandlers)
 						{
 							handler->AfterHandle(hwnd, uMsg, wParam, lParam, skip, result);
+							CHECK_DISPOSED;
 						}
 					}
 					return skip;
+#undef CHECK_DISPOSED
 				}
 
 				HWND GetWindowHandle()override
@@ -13824,6 +13823,7 @@ WindowsController
 				Dictionary<HWND, WindowsForm*>		windows;
 				INativeWindow*						mainWindow;
 				HWND								mainWindowHandle;
+				vint								handleMessageLevelCounter = 0;
 
 				WindowsCallbackService				callbackService;
 				WindowsResourceService				resourceService;
@@ -13868,51 +13868,59 @@ WindowsController
 				bool HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
 					bool skipDefaultProcedure=false;
-					vint index=windows.Keys().IndexOf(hwnd);
-					if(index!=-1)
+					handleMessageLevelCounter++;
 					{
-						WindowsForm* window=windows.Values().Get(index);
-						skipDefaultProcedure=window->HandleMessage(hwnd, uMsg, wParam, lParam, result);
-						switch(uMsg)
+						vint index = windows.Keys().IndexOf(hwnd);
+						if (index != -1)
 						{
-						case WM_CLOSE:
-							if(!skipDefaultProcedure)
+							WindowsForm* window = windows.Values().Get(index);
+							skipDefaultProcedure = window->HandleMessage(hwnd, uMsg, wParam, lParam, result);
+							switch (uMsg)
 							{
-								ShowWindow(window->GetWindowHandle(), SW_HIDE);
-								if(window!=mainWindow)
+							case WM_CLOSE:
+								if (!skipDefaultProcedure)
 								{
-									skipDefaultProcedure=true;
+									ShowWindow(window->GetWindowHandle(), SW_HIDE);
+									if (window != mainWindow)
+									{
+										skipDefaultProcedure = true;
+									}
+								}
+								break;
+							case WM_DESTROY:
+								DestroyNativeWindow(window);
+								break;
+							}
+						}
+					}
+					{
+						if (hwnd == mainWindowHandle && uMsg == WM_DESTROY)
+						{
+							for (vint i = 0; i < windows.Count(); i++)
+							{
+								if (windows.Values().Get(i)->IsVisible())
+								{
+									windows.Values().Get(i)->Hide(true);
 								}
 							}
-							break;
-						case WM_DESTROY:
-							DestroyNativeWindow(window);
-							break;
-						}
-					}
-
-					if(hwnd==mainWindowHandle && uMsg==WM_DESTROY)
-					{
-						for(vint i=0;i<windows.Count();i++)
-						{
-							if(windows.Values().Get(i)->IsVisible())
+							while (windows.Count())
 							{
-								windows.Values().Get(i)->Hide(true);
+								DestroyNativeWindow(windows.Values().Get(0));
 							}
+							PostQuitMessage(0);
 						}
-						while(windows.Count())
-						{
-							DestroyNativeWindow(windows.Values().Get(0));
-						}
-						PostQuitMessage(0);
 					}
-					asyncService.ExecuteAsyncTasks();
+					handleMessageLevelCounter--;
+					if (handleMessageLevelCounter == 0)
+					{
+						asyncService.ExecuteAsyncTasks();
+					}
 					return skipDefaultProcedure;
 				}
 
 				//=======================================================================
 
-				INativeWindow* CreateNativeWindow()
+				INativeWindow* CreateNativeWindow()override
 				{
 					WindowsForm* window=new WindowsForm(godWindow, windowClass.GetName(), hInstance);
 					windows.Add(window->GetWindowHandle(), window);
@@ -13921,7 +13929,7 @@ WindowsController
 					return window;
 				}
 
-				void DestroyNativeWindow(INativeWindow* window)
+				void DestroyNativeWindow(INativeWindow* window)override
 				{
 					WindowsForm* windowsForm=dynamic_cast<WindowsForm*>(window);
 					windowsForm->InvokeDestroying();
@@ -13933,12 +13941,12 @@ WindowsController
 					}
 				}
 
-				INativeWindow* GetMainWindow()
+				INativeWindow* GetMainWindow()override
 				{
 					return mainWindow;
 				}
 
-				void Run(INativeWindow* window)
+				void Run(INativeWindow* window)override
 				{
 					mainWindow=window;
 					mainWindowHandle=GetWindowsForm(window)->GetWindowHandle();
@@ -13952,7 +13960,7 @@ WindowsController
 					}
 				}
 
-				INativeWindow* GetWindow(Point location)
+				INativeWindow* GetWindow(Point location)override
 				{
 					POINT p;
 					p.x=(int)location.x;
