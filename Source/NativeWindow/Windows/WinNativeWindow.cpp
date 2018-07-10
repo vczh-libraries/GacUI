@@ -1313,6 +1313,7 @@ WindowsController
 				Dictionary<HWND, WindowsForm*>		windows;
 				INativeWindow*						mainWindow;
 				HWND								mainWindowHandle;
+				vint								handleMessageLevelCounter = 0;
 
 				WindowsCallbackService				callbackService;
 				WindowsResourceService				resourceService;
@@ -1357,51 +1358,59 @@ WindowsController
 				bool HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
 					bool skipDefaultProcedure=false;
-					vint index=windows.Keys().IndexOf(hwnd);
-					if(index!=-1)
+					handleMessageLevelCounter++;
 					{
-						WindowsForm* window=windows.Values().Get(index);
-						skipDefaultProcedure=window->HandleMessage(hwnd, uMsg, wParam, lParam, result);
-						switch(uMsg)
+						vint index = windows.Keys().IndexOf(hwnd);
+						if (index != -1)
 						{
-						case WM_CLOSE:
-							if(!skipDefaultProcedure)
+							WindowsForm* window = windows.Values().Get(index);
+							skipDefaultProcedure = window->HandleMessage(hwnd, uMsg, wParam, lParam, result);
+							switch (uMsg)
 							{
-								ShowWindow(window->GetWindowHandle(), SW_HIDE);
-								if(window!=mainWindow)
+							case WM_CLOSE:
+								if (!skipDefaultProcedure)
 								{
-									skipDefaultProcedure=true;
+									ShowWindow(window->GetWindowHandle(), SW_HIDE);
+									if (window != mainWindow)
+									{
+										skipDefaultProcedure = true;
+									}
+								}
+								break;
+							case WM_DESTROY:
+								DestroyNativeWindow(window);
+								break;
+							}
+						}
+					}
+					{
+						if (hwnd == mainWindowHandle && uMsg == WM_DESTROY)
+						{
+							for (vint i = 0; i < windows.Count(); i++)
+							{
+								if (windows.Values().Get(i)->IsVisible())
+								{
+									windows.Values().Get(i)->Hide(true);
 								}
 							}
-							break;
-						case WM_DESTROY:
-							DestroyNativeWindow(window);
-							break;
-						}
-					}
-
-					if(hwnd==mainWindowHandle && uMsg==WM_DESTROY)
-					{
-						for(vint i=0;i<windows.Count();i++)
-						{
-							if(windows.Values().Get(i)->IsVisible())
+							while (windows.Count())
 							{
-								windows.Values().Get(i)->Hide(true);
+								DestroyNativeWindow(windows.Values().Get(0));
 							}
+							PostQuitMessage(0);
 						}
-						while(windows.Count())
-						{
-							DestroyNativeWindow(windows.Values().Get(0));
-						}
-						PostQuitMessage(0);
 					}
-					asyncService.ExecuteAsyncTasks();
+					handleMessageLevelCounter--;
+					if (handleMessageLevelCounter == 0)
+					{
+						asyncService.ExecuteAsyncTasks();
+					}
 					return skipDefaultProcedure;
 				}
 
 				//=======================================================================
 
-				INativeWindow* CreateNativeWindow()
+				INativeWindow* CreateNativeWindow()override
 				{
 					WindowsForm* window=new WindowsForm(godWindow, windowClass.GetName(), hInstance);
 					windows.Add(window->GetWindowHandle(), window);
@@ -1410,7 +1419,7 @@ WindowsController
 					return window;
 				}
 
-				void DestroyNativeWindow(INativeWindow* window)
+				void DestroyNativeWindow(INativeWindow* window)override
 				{
 					WindowsForm* windowsForm=dynamic_cast<WindowsForm*>(window);
 					windowsForm->InvokeDestroying();
@@ -1422,12 +1431,12 @@ WindowsController
 					}
 				}
 
-				INativeWindow* GetMainWindow()
+				INativeWindow* GetMainWindow()override
 				{
 					return mainWindow;
 				}
 
-				void Run(INativeWindow* window)
+				void Run(INativeWindow* window)override
 				{
 					mainWindow=window;
 					mainWindowHandle=GetWindowsForm(window)->GetWindowHandle();
@@ -1441,7 +1450,7 @@ WindowsController
 					}
 				}
 
-				INativeWindow* GetWindow(Point location)
+				INativeWindow* GetWindow(Point location)override
 				{
 					POINT p;
 					p.x=(int)location.x;

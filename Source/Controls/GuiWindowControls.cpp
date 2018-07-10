@@ -44,7 +44,7 @@ GuiControlHost
 						control=control->GetParent();
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			void GuiControlHost::MoveIntoTooltipControl(GuiControl* tooltipControl, Point location)
@@ -183,17 +183,10 @@ GuiControlHost
 				calledDestroyed = true;
 				if (deleteWhenDestroyed)
 				{
-					if (auto window = host->GetNativeWindow())
-					{
-						GetCurrentController()->WindowService()->InvokeAfterDestroyingNativeWindow(window, [=]()
-						{
-							delete this;
-						});
-					}
-					else
+					GetApplication()->InvokeInMainThread(this, [=]()
 					{
 						delete this;
-					}
+					});
 				}
 				SetNativeWindow(nullptr);
 			}

@@ -1124,12 +1124,6 @@ Native Window Services
 			/// </summary>
 			/// <param name="window">The specified window.</param>
 			virtual void					Run(INativeWindow* window) = 0;
-			/// <summary>
-			/// Execute the callback after the native window is destroyed.
-			/// </summary>
-			/// <param name="window">The window to destroy.</param>
-			/// <param name="proc">The callback.</param>
-			virtual void					InvokeAfterDestroyingNativeWindow(INativeWindow* window, const Func<void()>& proc) = 0;
 		};
 		
 		/// <summary>
