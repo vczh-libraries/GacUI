@@ -1102,28 +1102,34 @@ Native Window Services
 			/// Create a window.
 			/// </summary>
 			/// <returns>The created window.</returns>
-			virtual INativeWindow*			CreateNativeWindow()=0;
+			virtual INativeWindow*			CreateNativeWindow() = 0;
 			/// <summary>
 			/// Destroy a window.
 			/// </summary>
 			/// <param name="window">The window to destroy.</param>
-			virtual void					DestroyNativeWindow(INativeWindow* window)=0;
+			virtual void					DestroyNativeWindow(INativeWindow* window) = 0;
 			/// <summary>
 			/// Get the main window.
 			/// </summary>
 			/// <returns>The main window.</returns>
-			virtual INativeWindow*			GetMainWindow()=0;
+			virtual INativeWindow*			GetMainWindow() = 0;
 			/// <summary>
 			/// Get the window that under a specified position in screen space.
 			/// </summary>
 			/// <returns>The window that under a specified position in screen space.</returns>
 			/// <param name="location">The specified position in screen space.</param>
-			virtual INativeWindow*			GetWindow(Point location)=0;
+			virtual INativeWindow*			GetWindow(Point location) = 0;
 			/// <summary>
 			/// Make the specified window a main window, show that window, and wait until the windows is closed.
 			/// </summary>
 			/// <param name="window">The specified window.</param>
-			virtual void					Run(INativeWindow* window)=0;
+			virtual void					Run(INativeWindow* window) = 0;
+			/// <summary>
+			/// Execute the callback after the native window is destroyed.
+			/// </summary>
+			/// <param name="window">The window to destroy.</param>
+			/// <param name="proc">The callback.</param>
+			virtual void					InvokeAfterDestroyingNativeWindow(INativeWindow* window, const Func<void()>& proc) = 0;
 		};
 		
 		/// <summary>

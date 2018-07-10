@@ -180,20 +180,22 @@ GuiControlHost
 			void GuiControlHost::Destroying()
 			{
 				WindowDestroying.Execute(GetNotifyEventArguments());
-				SetNativeWindow(nullptr);
 				calledDestroyed = true;
 				if (deleteWhenDestroyed)
 				{
-					DelayDeleteThis();
+					if (auto window = host->GetNativeWindow())
+					{
+						GetCurrentController()->WindowService()->InvokeAfterDestroyingNativeWindow(window, [=]()
+						{
+							delete this;
+						});
+					}
+					else
+					{
+						delete this;
+					}
 				}
-			}
-
-			void GuiControlHost::DelayDeleteThis()
-			{
-				GetApplication()->InvokeInMainThread([=]()
-				{
-					delete this;
-				});
+				SetNativeWindow(nullptr);
 			}
 
 			void GuiControlHost::UpdateClientSizeAfterRendering(Size clientSize)
@@ -231,7 +233,7 @@ GuiControlHost
 				auto window = host->GetNativeWindow();
 				if (calledDestroyed || !window)
 				{
-					DelayDeleteThis();
+					delete this;
 				}
 				else
 				{

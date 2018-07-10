@@ -1,7 +1,7 @@
 <Resource>
   <Instance name="MainWindowInstance">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <Window ref.Name="self" Text="𩰪㦲𦰗𠀼 𣂕𣴑𣱳𦁚" ClientSize="x:640 y:480">
+      <Window ref.Name="self" Text="𩰪㦲𦰗𠀼 𣂕𣴑𣱳𦁚" ClientSize="x:480 y:240">
         <Stack MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical" Padding="10">
           <StackItem>
             <Button Text="ShowModalAndDelete">
@@ -9,6 +9,7 @@
                 <![CDATA[
                   {
                     var window = new MainWindow*();
+                    window.MoveToScreenCenter();
                     window.ShowModalAndDelete(self, func():void{});
                   }
                 ]]>
@@ -21,6 +22,7 @@
                 <![CDATA[
                   $Async{
                     var window = new MainWindow*();
+                    window.MoveToScreenCenter();
                     $Await window.ShowModalAsync(self);
                     delete window;
                   }
