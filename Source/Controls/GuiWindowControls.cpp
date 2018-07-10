@@ -183,6 +183,15 @@ GuiControlHost
 				SetNativeWindow(0);
 			}
 
+			void GuiControlHost::Destroyed()
+			{
+				calledDestroyed = true;
+				if (deleteWhenDestroyed)
+				{
+					delete this;
+				}
+			}
+
 			void GuiControlHost::UpdateClientSizeAfterRendering(Size clientSize)
 			{
 				SetClientSize(clientSize);
@@ -211,6 +220,20 @@ GuiControlHost
 				FinalizeInstanceRecursively(this);
 				OnBeforeReleaseGraphicsHost();
 				delete host;
+			}
+
+			void GuiControlHost::DeleteAfterProcessingAllEvents()
+			{
+				auto window = host->GetNativeWindow();
+				if (calledDestroyed || !window)
+				{
+					delete this;
+				}
+				else
+				{
+					deleteWhenDestroyed = true;
+					GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+				}
 			}
 
 			compositions::GuiGraphicsHost* GuiControlHost::GetGraphicsHost()

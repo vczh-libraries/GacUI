@@ -1,15 +1,45 @@
 <Resource>
   <Instance name="MainWindowInstance">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <Window Text="𩰪㦲𦰗𠀼 𣂕𣴑𣱳𦁚" ClientSize="x:640 y:480">
-        <MultilineTextBox HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-          <att.Text>
-            <![CDATA[𩰪㦲𦰗𠀼 𣂕𣴑𣱳𦁚
-ABCDEFG
-我是一个好学生]]>
-          </att.Text>
-        </MultilineTextBox>
+      <Window ref.Name="self" Text="𩰪㦲𦰗𠀼 𣂕𣴑𣱳𦁚" ClientSize="x:640 y:480">
+        <Stack MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical" Padding="10">
+          <StackItem>
+            <Button Text="ShowModalAndDelete">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    var window = new MainWindow*();
+                    window.ShowModalAndDelete(self, func():void{});
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Button Text="$Await ShowModalAsync">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  $Async{
+                    var window = new MainWindow*();
+                    $Await window.ShowModalAsync(self);
+                    delete window;
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Button Text="Close">
+              <ev.Clicked-eval>
+                <![CDATA[
+                 {
+                    self.Close();
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+        </Stack>
       </Window>
     </Instance>
   </Instance>

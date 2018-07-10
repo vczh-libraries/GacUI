@@ -791,30 +791,22 @@ WindowsForm
 			protected:
 				HWND								handle;
 				WString								title;
-				WindowsCursor*						cursor;
+				WindowsCursor*						cursor = nullptr;
 				Point								caretPoint;
-				WindowsForm*						parentWindow;
-				bool								alwaysPassFocusToParent;
+				WindowsForm*						parentWindow = nullptr;
+				bool								alwaysPassFocusToParent = false;
 				List<INativeWindowListener*>		listeners;
-				vint								mouseLastX;
-				vint								mouseLastY;
-				vint								mouseHoving;
-				Interface*							graphicsHandler;
-				bool								customFrameMode;
+				vint								mouseLastX = -1;
+				vint								mouseLastY = -1;
+				bool								mouseHoving = false;
+				Interface*							graphicsHandler = nullptr;
+				bool								customFrameMode = false;
 				List<Ptr<INativeMessageHandler>>	messageHandlers;
-				bool								supressingAlt;
+				bool								supressingAlt = false;
+				Ptr<bool>							flagDisposed = new bool(false);
 
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
-					:cursor(0)
-					,parentWindow(0)
-					,alwaysPassFocusToParent(false)
-					,mouseLastX(-1)
-					,mouseLastY(-1)
-					,mouseHoving(false)
-					,graphicsHandler(0)
-					,customFrameMode(false)
-					,supressingAlt(false)
 				{
 					DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
 					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
@@ -823,6 +815,7 @@ WindowsForm
 
 				~WindowsForm()
 				{
+					*flagDisposed.Obj() = true;
 					List<INativeWindowListener*> copiedListeners;
 					CopyFrom(copiedListeners, listeners);
 					for(vint i=0;i<copiedListeners.Count();i++)
@@ -846,11 +839,14 @@ WindowsForm
 
 				bool HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
+#define CHECK_DISPOSED if (*flag.Obj()) return skip
+					auto flag = flagDisposed;
 					bool skip = false;
 					{
 						FOREACH(Ptr<INativeMessageHandler>, handler, messageHandlers)
 						{
 							handler->BeforeHandle(hwnd, uMsg, wParam, lParam, skip);
+							CHECK_DISPOSED;
 						}
 						if (skip)
 						{
@@ -858,14 +854,17 @@ WindowsForm
 						}
 					}
 					skip = HandleMessageInternal(hwnd, uMsg, wParam, lParam, result);
+					CHECK_DISPOSED;
 					if (GetWindowsFormFromHandle(hwnd))
 					{
 						FOREACH(Ptr<INativeMessageHandler>, handler, messageHandlers)
 						{
 							handler->AfterHandle(hwnd, uMsg, wParam, lParam, skip, result);
+							CHECK_DISPOSED;
 						}
 					}
 					return skip;
+#undef CHECK_DISPOSED
 				}
 
 				HWND GetWindowHandle()override

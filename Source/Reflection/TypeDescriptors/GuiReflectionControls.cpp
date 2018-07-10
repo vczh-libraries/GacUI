@@ -839,6 +839,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_FAST(ShortcutKeyManager)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedScreen)
 
+				CLASS_MEMBER_METHOD(DeleteAfterProcessingAllEvents, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(ForceCalculateSizeImmediately, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetFocused, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetFocused, NO_PARAMETER)

@@ -34,13 +34,16 @@ Control Host
 				virtual void									OnNativeWindowChanged();
 				virtual void									OnVisualStatusChanged();
 			protected:
-				static const vint								TooltipDelayOpenTime=500;
-				static const vint								TooltipDelayCloseTime=500;
-				static const vint								TooltipDelayLifeTime=5000;
+				static const vint								TooltipDelayOpenTime = 500;
+				static const vint								TooltipDelayCloseTime = 500;
+				static const vint								TooltipDelayLifeTime = 5000;
 
 				Ptr<INativeDelay>								tooltipOpenDelay;
 				Ptr<INativeDelay>								tooltipCloseDelay;
 				Point											tooltipLocation;
+
+				bool											calledDestroyed = false;
+				bool											deleteWhenDestroyed = false;
 
 				controls::GuiControlHost*						GetControlHostForInstance()override;
 				GuiControl*										GetTooltipOwner(Point location);
@@ -58,6 +61,7 @@ Control Host
 				void											Closing(bool& cancel)override;
 				void											Closed()override;
 				void											Destroying()override;
+				void											Destroyed()override;
 
 				virtual void									UpdateClientSizeAfterRendering(Size clientSize);
 			public:
@@ -82,6 +86,9 @@ Control Host
 				compositions::GuiNotifyEvent					WindowClosed;
 				/// <summary>Window destroying event.</summary>
 				compositions::GuiNotifyEvent					WindowDestroying;
+
+				/// <summary>Delete this control host after processing all events.</summary>
+				void											DeleteAfterProcessingAllEvents();
 
 				/// <summary>Get the internal <see cref="compositions::GuiGraphicsHost"/> object to host the window content.</summary>
 				/// <returns>The internal <see cref="compositions::GuiGraphicsHost"/> object to host the window content.</returns>
