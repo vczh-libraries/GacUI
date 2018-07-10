@@ -61,8 +61,8 @@ Control Host
 				void											Closing(bool& cancel)override;
 				void											Closed()override;
 				void											Destroying()override;
-				void											Destroyed()override;
 
+				void											DelayDeleteThis();
 				virtual void									UpdateClientSizeAfterRendering(Size clientSize);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>

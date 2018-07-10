@@ -818,10 +818,10 @@ WindowsForm
 					*flagDisposed.Obj() = true;
 					List<INativeWindowListener*> copiedListeners;
 					CopyFrom(copiedListeners, listeners);
-					for(vint i=0;i<copiedListeners.Count();i++)
+					for (vint i = 0; i < copiedListeners.Count(); i++)
 					{
-						INativeWindowListener* listener=copiedListeners[i];
-						if(listeners.Contains(listener))
+						INativeWindowListener* listener = copiedListeners[i];
+						if (listeners.Contains(listener))
 						{
 							listener->Destroyed();
 						}

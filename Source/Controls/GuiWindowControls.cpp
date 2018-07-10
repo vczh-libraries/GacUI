@@ -180,16 +180,20 @@ GuiControlHost
 			void GuiControlHost::Destroying()
 			{
 				WindowDestroying.Execute(GetNotifyEventArguments());
-				SetNativeWindow(0);
-			}
-
-			void GuiControlHost::Destroyed()
-			{
+				SetNativeWindow(nullptr);
 				calledDestroyed = true;
 				if (deleteWhenDestroyed)
 				{
-					delete this;
+					DelayDeleteThis();
 				}
+			}
+
+			void GuiControlHost::DelayDeleteThis()
+			{
+				GetApplication()->InvokeInMainThread([=]()
+				{
+					delete this;
+				});
 			}
 
 			void GuiControlHost::UpdateClientSizeAfterRendering(Size clientSize)
@@ -227,7 +231,7 @@ GuiControlHost
 				auto window = host->GetNativeWindow();
 				if (calledDestroyed || !window)
 				{
-					delete this;
+					DelayDeleteThis();
 				}
 				else
 				{
@@ -558,17 +562,17 @@ GuiControlHost
 
 			void GuiControlHost::Close()
 			{
-				INativeWindow* window=host->GetNativeWindow();
-				if(window)
+				if (auto window = host->GetNativeWindow())
 				{
-					if(GetCurrentController()->WindowService()->GetMainWindow()!=window)
+					auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+					if (mainWindow == window)
 					{
-						window->Hide(false);
+						SetNativeWindow(nullptr);
+						GetCurrentController()->WindowService()->DestroyNativeWindow(window);
 					}
 					else
 					{
-						SetNativeWindow(0);
-						GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+						window->Hide(false);
 					}
 				}
 			}
@@ -710,7 +714,7 @@ GuiWindow
 				INativeWindow* window=host->GetNativeWindow();
 				if(window)
 				{
-					SetNativeWindow(0);
+					SetNativeWindow(nullptr);
 					GetCurrentController()->WindowService()->DestroyNativeWindow(window);
 				}
 			}
@@ -809,7 +813,7 @@ GuiWindow
 				ShowModal(owner, [=]()
 				{
 					callback();
-					delete this;
+					DeleteAfterProcessingAllEvents();
 				});
 			}
 
