@@ -5,553 +5,3227 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppWorkflowRuntime.h"
 
 /***********************************************************************
-.\WFRUNTIME.CPP
+.\WFRUNTIMETYPEDESCRIPTOR.CPP
 ***********************************************************************/
 
 namespace vl
 {
-	using namespace reflection;
-	using namespace reflection::description;
-	using namespace workflow::runtime;
-	using namespace collections;
+	namespace workflow
+	{
+		namespace typeimpl
+		{
+			using namespace reflection;
+			using namespace reflection::description;
+			using namespace collections;
+			using namespace runtime;
 
+/***********************************************************************
+WfMethodProxy
+***********************************************************************/
+
+			WfMethodProxy::WfMethodProxy(const Value& _thisObject, IMethodInfo* _methodInfo)
+				:thisObject(_thisObject)
+				, methodInfo(_methodInfo)
+			{
+
+			}
+
+			WfMethodProxy::~WfMethodProxy()
+			{
+			}
+				
+			Value WfMethodProxy::Invoke(Ptr<IValueList> arguments)
+			{
+				Array<Value> values;
+				UnboxParameter(Value::From(arguments), values);
+				return methodInfo->Invoke(thisObject, values);
+			}
+
+/***********************************************************************
+WfMethodBase
+***********************************************************************/
+
+			Value WfMethodBase::CreateFunctionProxyInternal(const Value& thisObject)
+			{
+				return Value::From(MakePtr<WfMethodProxy>(thisObject, this));
+			}
+
+			void WfMethodBase::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
+			{
+				globalContext = _globalContext;
+			}
+
+			WfMethodBase::WfMethodBase(bool isStatic)
+				:MethodInfoImpl(nullptr, nullptr, isStatic)
+			{
+			}
+
+			WfMethodBase::~WfMethodBase()
+			{
+			}
+
+			IMethodInfo::ICpp* WfMethodBase::GetCpp()
+			{
+				return nullptr;
+			}
+			
+			runtime::WfRuntimeGlobalContext* WfMethodBase::GetGlobalContext()
+			{
+				return globalContext;
+			}
+
+			void WfMethodBase::SetReturn(Ptr<ITypeInfo> type)
+			{
+				returnInfo = type;
+			}
+
+/***********************************************************************
+WfStaticMethod
+***********************************************************************/
+
+			Value WfStaticMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
+			{
+				auto argumentArray = IValueList::Create(arguments);
+				return WfRuntimeLambda::Invoke(globalContext, nullptr, functionIndex, argumentArray);
+			}
+
+			WfStaticMethod::WfStaticMethod()
+				:WfMethodBase(true)
+			{
+			}
+
+/***********************************************************************
+WfClassConstructor
+***********************************************************************/
+
+			Value WfClassConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
+			{
+				auto instance = MakePtr<WfClassInstance>(GetOwnerTypeDescriptor());
+				{
+					InvokeBaseCtor(Value::From(instance.Obj()), arguments);
+				}
+
+				if (returnInfo->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					return Value::From(instance);
+				}
+				else
+				{
+					return Value::From(instance.Detach());
+				}
+			}
+
+			WfClassConstructor::WfClassConstructor(Ptr<ITypeInfo> type)
+				:WfMethodBase(true)
+			{
+				SetReturn(type);
+			}
+
+			void WfClassConstructor::InvokeBaseCtor(const Value& thisObject, collections::Array<Value>& arguments)
+			{
+				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
+				capturedVariables->variables.Resize(1);
+				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
+					
+				auto argumentArray = IValueList::Create(arguments);
+				WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
+			}
+
+/***********************************************************************
+WfClassMethod
+***********************************************************************/
+
+			Value WfClassMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
+			{
+				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
+				capturedVariables->variables.Resize(1);
+				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
+
+				auto argumentArray = IValueList::Create(arguments);
+				return WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
+			}
+
+			WfClassMethod::WfClassMethod()
+				:WfMethodBase(false)
+			{
+			}
+
+/***********************************************************************
+WfInterfaceConstructor
+***********************************************************************/
+
+			Value WfInterfaceConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
+			{
+				if (arguments.Count() != 1)
+				{
+					throw ArgumentCountMismtatchException(GetOwnerMethodGroup());
+				}
+				auto proxy = UnboxValue<Ptr<IValueInterfaceProxy>>(arguments[0]);
+
+				List<IMethodInfo*> baseCtors;
+				{
+					const auto& baseTypes = dynamic_cast<WfCustomType*>(GetOwnerTypeDescriptor())->GetExpandedBaseTypes();
+
+					for (vint i = 0; i < baseTypes.Count(); i++)
+					{
+						auto td = baseTypes[i];
+						if (td != description::GetTypeDescriptor<IDescriptable>())
+						{
+							if (auto group = td->GetConstructorGroup())
+							{
+								vint count = group->GetMethodCount();
+								IMethodInfo* selectedCtor = nullptr;
+
+								for (vint j = 0; j < count; j++)
+								{
+									auto ctor = group->GetMethod(j);
+									if (ctor->GetParameterCount() == 1)
+									{
+										auto type = ctor->GetParameter(0)->GetType();
+										if (type->GetDecorator() == ITypeInfo::SharedPtr && type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueInterfaceProxy>())
+										{
+											selectedCtor = ctor;
+											break;
+										}
+									}
+								}
+
+								if (selectedCtor)
+								{
+									baseCtors.Add(selectedCtor);
+								}
+								else
+								{
+									throw ArgumentCountMismtatchException(group);
+								}
+							}
+							else
+							{
+								throw ConstructorNotExistsException(td);
+							}
+						}
+					}
+				}
+
+				Ptr<WfInterfaceInstance> instance = new WfInterfaceInstance(GetOwnerTypeDescriptor(), proxy, baseCtors);
+
+				if (returnInfo->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					return Value::From(instance);
+				}
+				else
+				{
+					return Value::From(instance.Detach());
+				}
+			}
+
+			WfInterfaceConstructor::WfInterfaceConstructor(Ptr<ITypeInfo> type)
+				:WfMethodBase(true)
+			{
+				auto argumentType = TypeInfoRetriver<Ptr<IValueInterfaceProxy>>::CreateTypeInfo();
+				auto parameter = MakePtr<ParameterInfoImpl>(this, L"proxy", argumentType);
+				AddParameter(parameter);
+				SetReturn(type);
+			}
+
+/***********************************************************************
+WfInterfaceMethod
+***********************************************************************/
+
+			Value WfInterfaceMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
+			{
+				auto instance = thisObject.GetRawPtr()->SafeAggregationCast<WfInterfaceInstance>();
+				return instance->GetProxy()->Invoke(this, IValueList::Create(From(arguments)));
+			}
+
+			WfInterfaceMethod::WfInterfaceMethod()
+				:WfMethodBase(false)
+			{
+			}
+
+/***********************************************************************
+GetInfoRecord
+***********************************************************************/
+
+			template<typename TRecord, typename TInfo>
+			Ptr<TRecord> GetInfoRecord(TInfo* target, DescriptableObject* thisObject, const WString& key, bool createIfNotExist)
+			{
+				if (!thisObject)
+				{
+					throw ArgumentNullException(L"thisObject", target);
+				}
+				auto untypedValue = thisObject->GetInternalProperty(key);
+				auto typedValue = untypedValue.Cast<TRecord>();
+				if (untypedValue)
+				{
+					if (!typedValue)
+					{
+						throw ArgumentException(L"Key mismatches with the record type.", L"vl::workflow::typeimpl::GetFieldRecord", L"key");
+					}
+				}
+				else if(createIfNotExist)
+				{
+					typedValue = new TRecord;
+					thisObject->SetInternalProperty(key, typedValue);
+				}
+				return typedValue;
+			}
+
+/***********************************************************************
+WfEvent
+***********************************************************************/
+
+			const wchar_t* WfEvent::EventRecordInternalPropertyName = L"WfEvent::EventRecord";
+
+			Ptr<WfEvent::EventRecord> WfEvent::GetEventRecord(DescriptableObject* thisObject, bool createIfNotExist)
+			{
+				return GetInfoRecord<EventRecord>(this, thisObject, EventRecordInternalPropertyName, createIfNotExist);
+			}
+
+			Ptr<IEventHandler> WfEvent::AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)
+			{
+				auto record = GetEventRecord(thisObject, true);
+				auto result = MakePtr<EventHandlerImpl>(handler);
+				record->handlers.Add(this, result);
+				return result;
+			}
+
+			bool WfEvent::DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)
+			{
+				auto impl = handler.Cast<EventHandlerImpl>();
+				if (!impl)return false;
+				auto record = GetEventRecord(thisObject, true);
+				if (record->handlers.Remove(this, impl.Obj()))
+				{
+					impl->isAttached = false;
+					return true;
+				}
+				return false;
+			}
+
+			void WfEvent::InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)
+			{
+				auto record = GetEventRecord(thisObject, false);
+				if (record)
+				{
+					vint index = record->handlers.Keys().IndexOf(this);
+					if (index != -1)
+					{
+						auto& values = record->handlers.GetByIndex(index);
+						FOREACH(Ptr<EventHandlerImpl>, handler, values)
+						{
+							handler->proxy->Invoke(arguments);
+						}
+					}
+				}
+			}
+
+			Ptr<ITypeInfo> WfEvent::GetHandlerTypeInternal()
+			{
+				return handlerType;
+			}
+
+			WfEvent::WfEvent(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
+				:EventInfoImpl(ownerTypeDescriptor, name)
+			{
+			}
+
+			WfEvent::~WfEvent()
+			{
+			}
+
+			IEventInfo::ICpp* WfEvent::GetCpp()
+			{
+				return nullptr;
+			}
+
+			void WfEvent::SetHandlerType(Ptr<ITypeInfo> typeInfo)
+			{
+				handlerType = typeInfo;
+			}
+
+/***********************************************************************
+WfField
+***********************************************************************/
+
+			const wchar_t* WfField::FieldRecordInternalPropertyName = L"WfField::FieldRecord";
+
+			Ptr<WfField::FieldRecord> WfField::GetFieldRecord(DescriptableObject* thisObject, bool createIfNotExist)
+			{
+				return GetInfoRecord<FieldRecord>(this, thisObject, FieldRecordInternalPropertyName, createIfNotExist);
+			}
+
+			Value WfField::GetValueInternal(const Value& thisObject)
+			{
+				auto record = GetFieldRecord(thisObject.GetRawPtr(), true);
+				return record->values.Get(this);
+			}
+
+			void WfField::SetValueInternal(Value& thisObject, const Value& newValue)
+			{
+				auto record = GetFieldRecord(thisObject.GetRawPtr(), true);
+				record->values.Set(this, newValue);
+			}
+
+			WfField::WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
+				:FieldInfoImpl(ownerTypeDescriptor, name, nullptr)
+			{
+			}
+
+			WfField::~WfField()
+			{
+			}
+
+			IPropertyInfo::ICpp* WfField::GetCpp()
+			{
+				return nullptr;
+			}
+
+			void WfField::SetReturn(Ptr<ITypeInfo> typeInfo)
+			{
+				returnInfo = typeInfo;
+			}
+
+/***********************************************************************
+WfStructField
+***********************************************************************/
+
+			Value WfStructField::GetValueInternal(const Value& thisObject)
+			{
+				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
+				if (!structValue)
+				{
+					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
+				}
+				vint index = structValue->value.fieldValues.Keys().IndexOf(this);
+				if (index == -1)
+				{
+					return returnInfo->GetTypeDescriptor()->GetValueType()->CreateDefault();
+				}
+				else
+				{
+					return structValue->value.fieldValues.Values()[index];
+				}
+			}
+
+			void WfStructField::SetValueInternal(Value& thisObject, const Value& newValue)
+			{
+				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
+				if (!structValue)
+				{
+					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
+				}
+				structValue->value.fieldValues.Set(this, newValue);
+			}
+
+			WfStructField::WfStructField(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
+				:FieldInfoImpl(ownerTypeDescriptor, name, nullptr)
+			{
+			}
+
+			WfStructField::~WfStructField()
+			{
+			}
+
+			IPropertyInfo::ICpp* WfStructField::GetCpp()
+			{
+				return nullptr;
+			}
+
+			void WfStructField::SetReturn(Ptr<ITypeInfo> typeInfo)
+			{
+				returnInfo = typeInfo;
+			}
+
+/***********************************************************************
+WfProperty
+***********************************************************************/
+
+			WfProperty::WfProperty(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
+				:PropertyInfoImpl(ownerTypeDescriptor, name, nullptr, nullptr, nullptr)
+			{
+			}
+
+			WfProperty::~WfProperty()
+			{
+			}
+
+			void WfProperty::SetGetter(MethodInfoImpl* value)
+			{
+				getter = value;
+			}
+
+			void WfProperty::SetSetter(MethodInfoImpl* value)
+			{
+				setter = value;
+			}
+
+			void WfProperty::SetValueChangedEvent(EventInfoImpl* value)
+			{
+				valueChangedEvent = value;
+			}
+
+/***********************************************************************
+WfTypeInfoContent
+***********************************************************************/
+
+			WfTypeInfoContent::WfTypeInfoContent(const WString& _workflowTypeName)
+				:workflowTypeName(_workflowTypeName)
+			{
+				typeName = workflowTypeName.Buffer();
+				cppFullTypeName = nullptr;
+				cppName = TypeInfoContent::CppType;
+			}
+
+/***********************************************************************
+WfCustomType
+***********************************************************************/
+
+			void WfCustomType::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext, IMethodGroupInfo* group)
+			{
+				vint methodCount = group->GetMethodCount();
+				for (vint j = 0; j < methodCount; j++)
+				{
+					auto method = group->GetMethod(j);
+					if (auto methodInfo = dynamic_cast<WfMethodBase*>(method))
+					{
+						methodInfo->SetGlobalContext(globalContext);
+					}
+				}
+			}
+
+			void WfCustomType::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
+			{
+				globalContext = _globalContext;
+				
+				if (auto group = GetConstructorGroup())
+				{
+					SetGlobalContext(globalContext, group);
+				}
+
+				vint methodGroupCount = GetMethodGroupCount();
+				for (vint i = 0; i < methodGroupCount; i++)
+				{
+					auto group = GetMethodGroup(i);
+					SetGlobalContext(globalContext, group);
+				}
+			}
+
+			void WfCustomType::LoadInternal()
+			{
+			}
+
+			WfCustomType::WfCustomType(reflection::description::TypeDescriptorFlags typeDescriptorFlags, const WString& typeName)
+				:WfCustomTypeBase<reflection::description::TypeDescriptorImpl>(typeDescriptorFlags, typeName)
+			{
+			}
+
+			WfCustomType::~WfCustomType()
+			{
+			}
+			
+			runtime::WfRuntimeGlobalContext* WfCustomType::GetGlobalContext()
+			{
+				return globalContext;
+			}
+
+			const WfCustomType::TypeDescriptorList& WfCustomType::GetExpandedBaseTypes()
+			{
+				if (!baseTypeExpanded)
+				{
+					baseTypeExpanded = true;
+					TypeDescriptorList customTypes;
+					customTypes.Add(this);
+
+					for (vint i = 0; i < customTypes.Count(); i++)
+					{
+						auto td = customTypes[i];
+						vint count = td->GetBaseTypeDescriptorCount();
+						for (vint j = 0; j < count; j++)
+						{
+							auto baseTd = td->GetBaseTypeDescriptor(j);
+							if (dynamic_cast<WfCustomType*>(baseTd))
+							{
+								customTypes.Add(baseTd);
+							}
+							else
+							{
+								expandedBaseTypes.Add(baseTd);
+							}
+						}
+					}
+				}
+				return expandedBaseTypes;
+			}
+
+			void WfCustomType::AddBaseType(ITypeDescriptor* type)
+			{
+				TypeDescriptorImpl::AddBaseType(type);
+			}
+
+			void WfCustomType::AddMember(const WString& name, Ptr<WfMethodBase> value)
+			{
+				AddMethod(name, value);
+			}
+
+			void WfCustomType::AddMember(Ptr<WfClassConstructor> value)
+			{
+				AddConstructor(value);
+			}
+
+			void WfCustomType::AddMember(Ptr<WfInterfaceConstructor> value)
+			{
+				AddConstructor(value);
+			}
+
+			void WfCustomType::AddMember(Ptr<WfField> value)
+			{
+				AddProperty(value);
+			}
+
+			void WfCustomType::AddMember(Ptr<WfProperty> value)
+			{
+				AddProperty(value);
+			}
+
+			void WfCustomType::AddMember(Ptr<WfEvent> value)
+			{
+				AddEvent(value);
+			}
+
+/***********************************************************************
+WfClass
+***********************************************************************/
+
+			WfClass::WfClass(const WString& typeName)
+				:WfCustomType(TypeDescriptorFlags::Class, typeName)
+			{
+			}
+
+			WfClass::~WfClass()
+			{
+			}
+
+/***********************************************************************
+WfInterface
+***********************************************************************/
+
+			WfInterface::WfInterface(const WString& typeName)
+				:WfCustomType(TypeDescriptorFlags::Interface, typeName)
+			{
+			}
+
+			WfInterface::~WfInterface()
+			{
+			}
+
+/***********************************************************************
+WfStruct
+***********************************************************************/
+
+			WfStruct::WfValueType::WfValueType(WfStruct* _owner)
+				:owner(_owner)
+			{
+			}
+
+			Value WfStruct::WfValueType::CreateDefault()
+			{
+				return Value::From(new IValueType::TypedBox<WfStructInstance>, owner);
+			}
+
+			IBoxedValue::CompareResult WfStruct::WfValueType::Compare(const Value& a, const Value& b)
+			{
+				return IBoxedValue::NotComparable;
+			}
+
+			WfStruct::WfStruct(const WString& typeName)
+				:WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>(TypeDescriptorFlags::Struct, typeName)
+			{
+				this->valueType = new WfValueType(this);
+			}
+
+			WfStruct::~WfStruct()
+			{
+			}
+
+			vint WfStruct::GetPropertyCount()
+			{
+				this->Load();
+				return fields.Count();
+			}
+
+			IPropertyInfo* WfStruct::GetProperty(vint index)
+			{
+				this->Load();
+				if (index < 0 || index >= fields.Count())
+				{
+					return nullptr;
+				}
+				return fields.Values()[index].Obj();
+			}
+
+			bool WfStruct::IsPropertyExists(const WString& name, bool inheritable)
+			{
+				this->Load();
+				return fields.Keys().Contains(name);
+			}
+
+			IPropertyInfo* WfStruct::GetPropertyByName(const WString& name, bool inheritable)
+			{
+				this->Load();
+				vint index = fields.Keys().IndexOf(name);
+				if (index == -1) return nullptr;
+				return fields.Values()[index].Obj();
+			}
+
+			void WfStruct::AddMember(Ptr<WfStructField> value)
+			{
+				fields.Add(value->GetName(), value);
+			}
+
+/***********************************************************************
+WfEnum::WfEnumType
+***********************************************************************/
+
+			WfEnum::WfEnumType::WfEnumType(WfEnum* _owner)
+				:owner(_owner)
+			{
+			}
+
+			bool WfEnum::WfEnumType::IsFlagEnum()
+			{
+				return owner->GetTypeDescriptorFlags() == TypeDescriptorFlags::FlagEnum;
+			}
+
+			vint WfEnum::WfEnumType::GetItemCount()
+			{
+				return owner->enumItems.Count();
+			}
+
+			WString WfEnum::WfEnumType::GetItemName(vint index)
+			{
+				if (index < 0 || index >= owner->enumItems.Count())
+				{
+					return L"";
+				}
+				return owner->enumItems.Keys()[index];
+			}
+
+			vuint64_t WfEnum::WfEnumType::GetItemValue(vint index)
+			{
+				if (index < 0 || index >= owner->enumItems.Count())
+				{
+					return 0;
+				}
+				return owner->enumItems.Values()[index];
+			}
+
+			vint WfEnum::WfEnumType::IndexOfItem(WString name)
+			{
+				return owner->enumItems.Keys().IndexOf(name);
+			}
+
+			Value WfEnum::WfEnumType::ToEnum(vuint64_t value)
+			{
+				auto boxedValue = MakePtr<IValueType::TypedBox<WfEnumInstance>>();
+				boxedValue->value.value = value;
+				return Value::From(boxedValue, owner);
+			}
+
+			vuint64_t WfEnum::WfEnumType::FromEnum(const Value& value)
+			{
+				auto enumValue = value.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
+				if (!enumValue)
+				{
+					throw ArgumentTypeMismtatchException(L"enumValue", owner, Value::BoxedValue, value);
+				}
+				return enumValue->value.value;
+			}
+
+/***********************************************************************
+WfEnum
+***********************************************************************/
+
+			WfEnum::WfValueType::WfValueType(WfEnum* _owner)
+				:owner(_owner)
+			{
+			}
+
+			Value WfEnum::WfValueType::CreateDefault()
+			{
+				return Value::From(new IValueType::TypedBox<WfEnumInstance>, owner);
+			}
+
+			IBoxedValue::CompareResult WfEnum::WfValueType::Compare(const Value& a, const Value& b)
+			{
+				auto ea = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
+				if (!ea)
+				{
+					throw ArgumentTypeMismtatchException(L"ea", owner, Value::BoxedValue, a);
+				}
+
+				auto eb = b.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
+				if (!eb)
+				{
+					throw ArgumentTypeMismtatchException(L"eb", owner, Value::BoxedValue, b);
+				}
+
+				if (ea->value.value < eb->value.value) return IBoxedValue::Smaller;
+				if (ea->value.value > eb->value.value)return IBoxedValue::Greater;
+				return IBoxedValue::Equal;
+			}
+
+			WfEnum::WfEnum(bool isFlags, const WString& typeName)
+				:WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>((isFlags ? TypeDescriptorFlags::FlagEnum : TypeDescriptorFlags::NormalEnum), typeName)
+			{
+				this->valueType = new WfValueType(this);
+				this->enumType = new WfEnumType(this);
+			}
+
+			WfEnum::~WfEnum()
+			{
+			}
+
+			void WfEnum::AddEnumItem(const WString& name, vuint64_t value)
+			{
+				enumItems.Add(name, value);
+			}
+
+/***********************************************************************
+WfClassInstance
+***********************************************************************/
+
+			WfClassInstance::WfClassInstance(ITypeDescriptor* _typeDescriptor)
+				:Description<WfClassInstance>(_typeDescriptor)
+			{
+				classType = dynamic_cast<WfClass*>(_typeDescriptor);
+				InitializeAggregation(classType->GetExpandedBaseTypes().Count());
+			}
+
+			WfClassInstance::~WfClassInstance()
+			{
+				if (classType->destructorFunctionIndex != -1)
+				{
+					auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
+					capturedVariables->variables.Resize(1);
+					capturedVariables->variables[0] = Value::From(this);
+
+					auto argumentArray = IValueList::Create();
+					WfRuntimeLambda::Invoke(classType->GetGlobalContext(), capturedVariables, classType->destructorFunctionIndex, argumentArray);
+				}
+			}
+
+			void WfClassInstance::InstallBaseObject(ITypeDescriptor* td, Value& value)
+			{
+				Ptr<DescriptableObject> ptr;
+				{
+					if (!(ptr = value.GetSharedPtr()))
+					{
+						ptr = value.GetRawPtr();
+					}
+					value = Value();
+				}
+				
+				vint index = classType->GetExpandedBaseTypes().IndexOf(td);
+				SetAggregationParent(index, ptr);
+			}
+
+/***********************************************************************
+WfInterfaceInstance
+***********************************************************************/
+
+			WfInterfaceInstance::WfInterfaceInstance(ITypeDescriptor* _typeDescriptor, Ptr<IValueInterfaceProxy> _proxy, collections::List<IMethodInfo*>& baseCtors)
+				:Description<WfInterfaceInstance>(_typeDescriptor)
+				, proxy(_proxy)
+			{
+				Array<Value> arguments(1);
+				arguments[0] = Value::From(_proxy);
+
+				InitializeAggregation(baseCtors.Count());
+				FOREACH_INDEXER(IMethodInfo*, ctor, index, baseCtors)
+				{
+					Ptr<DescriptableObject> ptr;
+					{
+						auto value = ctor->Invoke(Value(), arguments);
+						if (!(ptr = value.GetSharedPtr()))
+						{
+							ptr = value.GetRawPtr();
+						}
+					}
+
+					SetAggregationParent(index, ptr);
+				}
+			}
+
+			WfInterfaceInstance::~WfInterfaceInstance()
+			{
+			}
+
+			Ptr<IValueInterfaceProxy> WfInterfaceInstance::GetProxy()
+			{
+				return proxy;
+			}
+
+/***********************************************************************
+WfTypeImpl
+***********************************************************************/
+			
+			runtime::WfRuntimeGlobalContext* WfTypeImpl::GetGlobalContext()
+			{
+				return globalContext;
+			}
+
+			void WfTypeImpl::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
+			{
+				if (globalContext)
+				{
+					CHECK_ERROR(!_globalContext, L"vl::workflow::typeimpl::WfTypeImpl::SetGlobalContext(WfRuntimeGlobalContext*)#Only one global context is allowed to create from an assembly at the same time.");
+				}
+				else
+				{
+					CHECK_ERROR(_globalContext, L"vl::workflow::typeimpl::WfTypeImpl::SetGlobalContext(WfRuntimeGlobalContext*)#Only one global context is allowed to create from an assembly at the same time.");
+				}
+
+				globalContext = _globalContext;
+				FOREACH(Ptr<WfClass>, td, classes)
+				{
+					td->SetGlobalContext(globalContext);
+				}
+				FOREACH(Ptr<WfInterface>, td, interfaces)
+				{
+					td->SetGlobalContext(globalContext);
+				}
+
+				if (globalContext)
+				{
+					GetGlobalTypeManager()->AddTypeLoader(Ptr<WfTypeImpl>(this));
+				}
+				else
+				{
+					GetGlobalTypeManager()->RemoveTypeLoader(Ptr<WfTypeImpl>(this));
+				}
+			}
+
+			void WfTypeImpl::Load(reflection::description::ITypeManager* manager)
+			{
+				FOREACH(Ptr<WfClass>, td, classes)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), td);
+				}
+				FOREACH(Ptr<WfInterface>, td, interfaces)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), td);
+				}
+				FOREACH(Ptr<WfStruct>, td, structs)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), td);
+				}
+				FOREACH(Ptr<WfEnum>, td, enums)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), td);
+				}
+			}
+
+			void WfTypeImpl::Unload(reflection::description::ITypeManager* manager)
+			{
+				FOREACH(Ptr<WfClass>, td, classes)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
+				}
+				FOREACH(Ptr<WfInterface>, td, interfaces)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
+				}
+				FOREACH(Ptr<WfStruct>, td, structs)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
+				}
+				FOREACH(Ptr<WfEnum>, td, enums)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\WFRUNTIMEINSTRUCTION.CPP
+***********************************************************************/
+
+namespace vl
+{
 	namespace workflow
 	{
 		namespace runtime
 		{
+			using namespace reflection::description;
 
 /***********************************************************************
-WfRuntimeGlobalContext
+WfInstruction
 ***********************************************************************/
 
-			WfRuntimeGlobalContext::WfRuntimeGlobalContext(Ptr<WfAssembly> _assembly)
-				:assembly(_assembly)
+			WfInstruction::WfInstruction()
+				:flagParameter(Value::Null)
+				, typeDescriptorParameter(0)
 			{
-				globalVariables = new WfRuntimeVariableContext;
-				globalVariables->variables.Resize(assembly->variableNames.Count());
-				if (assembly->typeImpl)
-				{
-					assembly->typeImpl->SetGlobalContext(this);
-				}
+
 			}
 
-			WfRuntimeGlobalContext::~WfRuntimeGlobalContext()
-			{
-				if (assembly->typeImpl)
-				{
-					assembly->typeImpl->SetGlobalContext(nullptr);
-				}
-			}
+#define CTOR(NAME)\
+			WfInstruction WfInstruction::NAME()\
+			{\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				return ins; \
+			}\
+
+#define CTOR_VALUE(NAME)\
+			WfInstruction WfInstruction::NAME(const reflection::description::Value& value)\
+			{\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.valueParameter = value; \
+				return ins; \
+			}\
+
+#define CTOR_FUNCTION(NAME)\
+			WfInstruction WfInstruction::NAME(vint function)\
+			{\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.indexParameter = function; \
+				return ins; \
+			}\
+
+#define CTOR_FUNCTION_COUNT(NAME)\
+			WfInstruction WfInstruction::NAME(vint function, vint count)\
+			{\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.indexParameter = function; \
+				ins.countParameter = count; \
+				return ins; \
+			}\
+
+#define CTOR_VARIABLE(NAME)\
+			WfInstruction WfInstruction::NAME(vint variable)\
+			{\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.indexParameter = variable; \
+				return ins; \
+			}\
+
+#define CTOR_COUNT(NAME)\
+			WfInstruction WfInstruction::NAME(vint count)\
+			{\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.countParameter = count; \
+				return ins; \
+			}\
+
+#define CTOR_FLAG_TYPEDESCRIPTOR(NAME)\
+			WfInstruction WfInstruction::NAME(reflection::description::Value::ValueType flag, reflection::description::ITypeDescriptor* typeDescriptor)\
+			{\
+				CHECK_ERROR(typeDescriptor != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(Value::ValueType, ITypeDescriptor*)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.flagParameter = flag; \
+				ins.typeDescriptorParameter = typeDescriptor; \
+				return ins; \
+			}\
+
+#define CTOR_PROPERTY(NAME)\
+			WfInstruction WfInstruction::NAME(reflection::description::IPropertyInfo* propertyInfo)\
+			{\
+				CHECK_ERROR(propertyInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(propertyInfo*)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.propertyParameter = propertyInfo; \
+				return ins; \
+			}\
+
+#define CTOR_METHOD(NAME)\
+			WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo)\
+			{\
+				CHECK_ERROR(methodInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(methodInfo*)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.methodParameter = methodInfo; \
+				return ins; \
+			}\
+
+#define CTOR_METHOD_COUNT(NAME)\
+			WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo, vint count)\
+			{\
+				CHECK_ERROR(methodInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(methodInfo*, vint)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.methodParameter = methodInfo; \
+				ins.countParameter = count; \
+				return ins; \
+			}\
+
+#define CTOR_EVENT(NAME)\
+			WfInstruction WfInstruction::NAME(reflection::description::IEventInfo* eventInfo)\
+			{\
+				CHECK_ERROR(eventInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(IEventInfo*)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.eventParameter = eventInfo; \
+				return ins; \
+			}\
+
+#define CTOR_EVENT_COUNT(NAME)\
+			WfInstruction WfInstruction::NAME(reflection::description::IEventInfo* eventInfo, vint count)\
+			{\
+				CHECK_ERROR(eventInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(IEventInfo*, vint)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.eventParameter = eventInfo; \
+				ins.countParameter = count; \
+				return ins; \
+			}\
+
+#define CTOR_LABEL(NAME)\
+			WfInstruction WfInstruction::NAME(vint label)\
+			{\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.indexParameter = label; \
+				return ins; \
+			}\
+
+#define CTOR_TYPE(NAME)\
+			WfInstruction WfInstruction::NAME(WfInsType type)\
+			{\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.typeParameter = type; \
+				return ins; \
+			}\
+
+			INSTRUCTION_CASES(
+				CTOR,
+				CTOR_VALUE,
+				CTOR_FUNCTION,
+				CTOR_FUNCTION_COUNT,
+				CTOR_VARIABLE,
+				CTOR_COUNT,
+				CTOR_FLAG_TYPEDESCRIPTOR,
+				CTOR_PROPERTY,
+				CTOR_METHOD,
+				CTOR_METHOD_COUNT,
+				CTOR_EVENT,
+				CTOR_EVENT_COUNT,
+				CTOR_LABEL,
+				CTOR_TYPE)
+
+#undef CTOR
+#undef CTOR_VALUE
+#undef CTOR_FUNCTION
+#undef CTOR_FUNCTION_COUNT
+#undef CTOR_VARIABLE
+#undef CTOR_COUNT
+#undef CTOR_FLAG_TYPEDESCRIPTOR
+#undef CTOR_PROPERTY
+#undef CTOR_METHOD
+#undef CTOR_METHOD_COUNT
+#undef CTOR_EVENT
+#undef CTOR_EVENT_COUNT
+#undef CTOR_LABEL
+#undef CTOR_TYPE
+		}
+	}
+}
+
 
 /***********************************************************************
-WfRuntimeCallStackInfo
+.\WFRUNTIMEEXECUTION.CPP
+***********************************************************************/
+#include <math.h>
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace runtime
+		{
+			using namespace collections;
+			using namespace reflection;
+			using namespace reflection::description;
+			using namespace typeimpl;
+
+/***********************************************************************
+WfRuntimeThreadContext (Operators)
 ***********************************************************************/
 
-			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetVariables(collections::List<WString>& names, Ptr<WfRuntimeVariableContext> context, Ptr<IValueReadonlyDictionary>& cache)
+#define INTERNAL_ERROR(MESSAGE)\
+				do{\
+					context.RaiseException(WString(L"Internal error: " MESSAGE), true);\
+					return WfRuntimeExecutionAction::Nop; \
+				} while (0)\
+
+#define CONTEXT_ACTION(ACTION, MESSAGE)\
+				do{\
+					if ((context.ACTION) != WfRuntimeThreadContextError::Success)\
+					{\
+						INTERNAL_ERROR(MESSAGE);\
+					}\
+				} while (0)\
+
+			//-------------------------------------------------------------------------------
+
+#define UNARY_OPERATOR(NAME, OPERATOR)\
+			template<typename T>\
+			WfRuntimeExecutionAction OPERATOR_##NAME(WfRuntimeThreadContext& context)\
+			{\
+				Value operand;\
+				CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");\
+				T value = OPERATOR UnboxValue<T>(operand);\
+				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");\
+				return WfRuntimeExecutionAction::ExecuteInstruction;\
+			}\
+
+#define BINARY_OPERATOR(NAME, OPERATOR)\
+			template<typename T>\
+			WfRuntimeExecutionAction OPERATOR_##NAME(WfRuntimeThreadContext& context)\
+			{\
+				Value first, second;\
+				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");\
+				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");\
+				T value = UnboxValue<T>(first) OPERATOR UnboxValue<T>(second);\
+				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");\
+				return WfRuntimeExecutionAction::ExecuteInstruction;\
+			}\
+
+			//-------------------------------------------------------------------------------
+
+			UNARY_OPERATOR(OpNot, ~)
+			UNARY_OPERATOR(OpNot_Bool, !)
+			UNARY_OPERATOR(OpPositive, +)
+			UNARY_OPERATOR(OpNegative, -)
+
+			BINARY_OPERATOR(OpAdd, +)
+			BINARY_OPERATOR(OpSub, -)
+			BINARY_OPERATOR(OpMul, *)
+			BINARY_OPERATOR(OpDiv, /)
+			BINARY_OPERATOR(OpMod, %)
+			BINARY_OPERATOR(OpShl, <<)
+			BINARY_OPERATOR(OpShr, >>)
+			BINARY_OPERATOR(OpAnd, &)
+			BINARY_OPERATOR(OpAnd_Bool, &&)
+			BINARY_OPERATOR(OpOr, |)
+			BINARY_OPERATOR(OpOr_Bool, ||)
+			BINARY_OPERATOR(OpXor, ^)
+
+			template<typename T>
+			WfRuntimeExecutionAction OPERATOR_OpExp(WfRuntimeThreadContext& context)
 			{
-				if (!cache)
+				Value first, second;
+				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
+				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
+				T firstValue = UnboxValue<T>(first);
+				T secondValue = UnboxValue<T>(second);
+				T value = (T)exp(secondValue * log(firstValue));
+				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");
+				return WfRuntimeExecutionAction::ExecuteInstruction;
+			}
+			
+			template<typename T>
+			WfRuntimeExecutionAction OPERATOR_OpCompare(WfRuntimeThreadContext& context)
+			{
+				Value first, second;
+				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
+				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
+
+				bool firstNull = first.GetValueType() == Value::Null;
+				bool secondNull = second.GetValueType() == Value::Null;
+				if (firstNull)
 				{
-					if (!context)
+					if (secondNull)
 					{
-						Dictionary<WString, Value> map;
-						FOREACH_INDEXER(WString, name, index, names)
-						{
-							map.Add(name, context->variables[index]);
-						}
-						cache = IValueDictionary::Create(
-							From(map)
-								.Select([](Pair<WString, Value> pair)
-								{
-									return Pair<Value, Value>(BoxValue(pair.key), pair.value);
-								})
-							);
+						CONTEXT_ACTION(PushValue(BoxValue((vint)0)), L"failed to push a value to the stack.");
 					}
 					else
 					{
-						cache = IValueDictionary::Create();
+						CONTEXT_ACTION(PushValue(BoxValue((vint)-1)), L"failed to push a value to the stack.");
 					}
 				}
-				return cache;
-			}
-
-			WfRuntimeCallStackInfo::WfRuntimeCallStackInfo()
-			{
-			}
-
-			WfRuntimeCallStackInfo::WfRuntimeCallStackInfo(WfRuntimeThreadContext* context, const WfRuntimeStackFrame& stackFrame)
-			{
-				assembly = context->globalContext->assembly;
-				functionIndex = stackFrame.functionIndex;
-				instruction = stackFrame.nextInstructionIndex - 1;
-
-				auto function = assembly->functions[functionIndex];
-
-				if (context->globalContext->globalVariables->variables.Count() > 0)
+				else
 				{
-					global = context->globalContext->globalVariables;
-				}
-
-				captured = stackFrame.capturedVariables;
-
-				if (function->argumentNames.Count() > 0)
-				{
-					arguments = new WfRuntimeVariableContext;
-					arguments->variables.Resize(function->argumentNames.Count());
-					for (vint i = 0; i < arguments->variables.Count(); i++)
+					if (secondNull)
 					{
-						arguments->variables[i] = context->stack[stackFrame.stackBase + i];
+						CONTEXT_ACTION(PushValue(BoxValue((vint)1)), L"failed to push a value to the stack.");
 					}
-				}
-
-				if (function->localVariableNames.Count()>0)
-				{
-					localVariables = new WfRuntimeVariableContext;
-					localVariables->variables.Resize(function->localVariableNames.Count());
-					for (vint i = 0; i < localVariables->variables.Count(); i++)
+					else
 					{
-						localVariables->variables[i] = context->stack[stackFrame.stackBase + function->argumentNames.Count() + i];
+						T firstValue = UnboxValue<T>(first);
+						T secondValue = UnboxValue<T>(second);
+						if (firstValue < secondValue)
+						{
+							CONTEXT_ACTION(PushValue(BoxValue((vint)-1)), L"failed to push a value to the stack.");
+						}
+						else if (firstValue > secondValue)
+						{
+							CONTEXT_ACTION(PushValue(BoxValue((vint)1)), L"failed to push a value to the stack.");
+						}
+						else
+						{
+							CONTEXT_ACTION(PushValue(BoxValue((vint)0)), L"failed to push a value to the stack.");
+						}
 					}
 				}
+				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
-
-			WfRuntimeCallStackInfo::~WfRuntimeCallStackInfo()
-			{
-			}
-
-			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetLocalVariables()
-			{
-				return GetVariables(assembly->functions[functionIndex]->localVariableNames, localVariables, cachedLocalVariables);
-			}
-
-			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetLocalArguments()
-			{
-				return GetVariables(assembly->functions[functionIndex]->argumentNames, arguments, cachedLocalArguments);
-			}
-
-			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetCapturedVariables()
-			{
-				return GetVariables(assembly->functions[functionIndex]->capturedVariableNames, captured, cachedCapturedVariables);
-			}
-
-			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetGlobalVariables()
-			{
-				return GetVariables(assembly->variableNames, global, cachedGlobalVariables);
-			}
-
-			WString WfRuntimeCallStackInfo::GetFunctionName()
-			{
-				if (!assembly)
-				{
-					return L"<EXTERNAL CODE>";
-				}
-				return assembly->functions[functionIndex]->name;
-			}
-
-			WString WfRuntimeCallStackInfo::GetSourceCodeBeforeCodegen()
-			{
-				if (!assembly)
-				{
-					return L"";
-				}
-				const auto& range = assembly->insBeforeCodegen->instructionCodeMapping[instruction];
-				if (range.codeIndex == -1)
-				{
-					return L"";
-				}
-				return assembly->insBeforeCodegen->moduleCodes[range.codeIndex];
-			}
-
-			WString WfRuntimeCallStackInfo::GetSourceCodeAfterCodegen()
-			{
-				if (!assembly)
-				{
-					return L"";
-				}
-				const auto& range = assembly->insAfterCodegen->instructionCodeMapping[instruction];
-				if (range.codeIndex == -1)
-				{
-					return L"";
-				}
-				return assembly->insAfterCodegen->moduleCodes[range.codeIndex];
-			}
-
-			vint WfRuntimeCallStackInfo::GetRowBeforeCodegen()
-			{
-				if (!assembly)
-				{
-					return -1;
-				}
-				const auto& range = assembly->insBeforeCodegen->instructionCodeMapping[instruction];
-				return range.start.row;
-			}
-
-			vint WfRuntimeCallStackInfo::GetRowAfterCodegen()
-			{
-				if (!assembly)
-				{
-					return -1;
-				}
-				const auto& range = assembly->insAfterCodegen->instructionCodeMapping[instruction];
-				return range.start.row;
-			}
-
+			
 /***********************************************************************
-WfRuntimeExceptionInfo
+WfRuntimeThreadContext (TypeConversion)
 ***********************************************************************/
 
-			WfRuntimeExceptionInfo::WfRuntimeExceptionInfo(const WString& _message, bool _fatal)
-				:message(_message)
-				, fatal(_fatal)
+			bool OPERATOR_OpConvertToType(const Value& result, Value& converted, const WfInstruction& ins)
 			{
-			}
-
-			WfRuntimeExceptionInfo::~WfRuntimeExceptionInfo()
-			{
-			}
-				
-#pragma push_macro("GetMessage")
-#if defined GetMessage
-#undef GetMessage
-#endif
-			WString WfRuntimeExceptionInfo::GetMessage()
-			{
-				return message;
-			}
-#pragma pop_macro("GetMessage")
-
-			bool WfRuntimeExceptionInfo::GetFatal()
-			{
-				return fatal;
-			}
-
-			Ptr<IValueReadonlyList> WfRuntimeExceptionInfo::GetCallStack()
-			{
-				if (!cachedCallStack)
+				switch (ins.flagParameter)
 				{
-					cachedCallStack = IValueList::Create(
-						From(callStack)
-							.Cast<IValueCallStack>()
-							.Select([](Ptr<IValueCallStack> callStack)
+				case Value::Null:
+					return false;
+				case Value::RawPtr:
+					if (result.GetValueType() == Value::BoxedValue)
+					{
+						return false;
+					}
+					else if (result.GetRawPtr())
+					{
+						if (result.GetTypeDescriptor()->CanConvertTo(ins.typeDescriptorParameter))
+						{
+							converted = Value::From(result.GetRawPtr());
+						}
+						else
+						{
+							return false;
+						}
+					}
+					break;
+				case Value::SharedPtr:
+					if (result.GetValueType() == Value::BoxedValue)
+					{
+						return false;
+					}
+					else if (result.GetRawPtr())
+					{
+						if (result.GetTypeDescriptor()->CanConvertTo(ins.typeDescriptorParameter))
+						{
+							converted = Value::From(Ptr<DescriptableObject>(result.GetRawPtr()));
+						}
+						else
+						{
+							return false;
+						}
+					}
+					break;
+				case Value::BoxedValue:
+					if (result.GetValueType() != Value::BoxedValue)
+					{
+						return false;
+					}
+					if (result.GetTypeDescriptor() == ins.typeDescriptorParameter)
+					{
+						converted = result;
+						return true;
+					}
+
+					if (auto stFrom = result.GetTypeDescriptor()->GetSerializableType())
+					{
+						if (auto stTo = ins.typeDescriptorParameter->GetSerializableType())
+						{
+							WString text;
+							return stFrom->Serialize(result, text) && stTo->Deserialize(text, converted);
+						}
+						else
+						{
+							switch (ins.typeDescriptorParameter->GetTypeDescriptorFlags())
 							{
-								return BoxValue(callStack);
-							})
-						);
+							case TypeDescriptorFlags::FlagEnum:
+							case TypeDescriptorFlags::NormalEnum:
+								if (result.GetTypeDescriptor() != GetTypeDescriptor<vuint64_t>())
+								{
+									return false;
+								}
+								else
+								{
+									auto intValue = result.GetBoxedValue().Cast<IValueType::TypedBox<vuint64_t>>()->value;
+									converted = ins.typeDescriptorParameter->GetEnumType()->ToEnum(intValue);
+								}
+								break;
+							default:
+								return false;
+							}
+						}
+					}
+					else
+					{
+						switch (result.GetTypeDescriptor()->GetTypeDescriptorFlags())
+						{
+						case TypeDescriptorFlags::FlagEnum:
+						case TypeDescriptorFlags::NormalEnum:
+							if (ins.typeDescriptorParameter != GetTypeDescriptor<vuint64_t>())
+							{
+								return false;
+							}
+							else
+							{
+								auto intValue = result.GetTypeDescriptor()->GetEnumType()->FromEnum(result);
+								converted = BoxValue<vuint64_t>(intValue);
+							}
+							break;
+						default:
+							return false;
+						}
+					}
 				}
-				return cachedCallStack;
+
+				return true;
+			}
+			
+/***********************************************************************
+WfRuntimeThreadContext (Range)
+***********************************************************************/
+			
+			template<typename T>
+			WfRuntimeExecutionAction OPERATOR_OpCreateRange(WfRuntimeThreadContext& context)
+			{
+				Value first, second;
+				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
+				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
+				T firstValue = UnboxValue<T>(first);
+				T secondValue = UnboxValue<T>(second);
+				auto enumerable = MakePtr<WfRuntimeRange<T>>(firstValue, secondValue);
+				CONTEXT_ACTION(PushValue(Value::From(enumerable)), L"failed to push a value to the stack.");
+				return WfRuntimeExecutionAction::ExecuteInstruction;
+			}
+
+#undef INTERNAL_ERROR
+#undef CONTEXT_ACTION
+#undef UNARY_OPERATOR
+#undef BINARY_OPERATOR
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+			Ptr<reflection::description::IValueFunctionProxy> LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name)
+			{
+				const auto& names = context->assembly->functionByName[name];
+				CHECK_ERROR(names.Count() == 1, L"vl::workflow::runtime::LoadFunction(Ptr<WfRUntimeGlobalContext>, const WString&)#Multiple functions are found.");
+				vint functionIndex = names[0];
+				auto lambda = MakePtr<WfRuntimeLambda>(context, nullptr, functionIndex);
+				return lambda;
 			}
 
 /***********************************************************************
 WfRuntimeThreadContext
 ***********************************************************************/
+			
+#define INTERNAL_ERROR(MESSAGE)\
+				do{\
+					RaiseException(WString(L"Internal error: " MESSAGE), true);\
+					return WfRuntimeExecutionAction::Nop; \
+				} while (0)\
 
-			WfRuntimeThreadContext::WfRuntimeThreadContext(Ptr<WfRuntimeGlobalContext> _context)
-				:globalContext(_context)
-			{
-				stack.SetLessMemoryMode(false);
-				stackFrames.SetLessMemoryMode(false);
-			}
+#define CONTEXT_ACTION(ACTION, MESSAGE)\
+				do{\
+					if ((ACTION) != WfRuntimeThreadContextError::Success)\
+					{\
+						INTERNAL_ERROR(MESSAGE);\
+					}\
+				} while (0)\
 
-			WfRuntimeThreadContext::WfRuntimeThreadContext(Ptr<WfAssembly> _assembly)
-				:globalContext(new WfRuntimeGlobalContext(_assembly))
-			{
-				stack.SetLessMemoryMode(false);
-				stackFrames.SetLessMemoryMode(false);
-			}
+#define CALL_DEBUGGER(ACTION)\
+				do {\
+					if (callback)\
+					{\
+						if (ACTION)\
+						{\
+							if (!callback->WaitForContinue())\
+							{\
+								INTERNAL_ERROR(L"Debugger stopped the program.");\
+							}\
+						}\
+					}\
+				} while (0)\
 
-			WfRuntimeStackFrame& WfRuntimeThreadContext::GetCurrentStackFrame()
-			{
-				return stackFrames[stackFrames.Count() - 1];
-			}
+#define TYPE_OF_Bool							bool
+#define TYPE_OF_I1								vint8_t
+#define TYPE_OF_I2								vint16_t
+#define TYPE_OF_I4								vint32_t
+#define TYPE_OF_I8								vint64_t
+#define TYPE_OF_U1								vuint8_t
+#define TYPE_OF_U2								vuint16_t
+#define TYPE_OF_U4								vuint32_t
+#define TYPE_OF_U8								vuint64_t
+#define TYPE_OF_F4								float
+#define TYPE_OF_F8								double
+#define TYPE_OF_String							WString
+#define EXECUTE(OPERATION, TYPE)				case WfInsType::TYPE: return OPERATOR_##OPERATION<TYPE_OF_##TYPE>(*this);
+#define BEGIN_TYPE								switch(ins.typeParameter) {
+#define END_TYPE								default: INTERNAL_ERROR(L"unexpected type argument."); }
 
-			WfRuntimeThreadContextError WfRuntimeThreadContext::PushStackFrame(vint functionIndex, vint argumentCount, Ptr<WfRuntimeVariableContext> capturedVariables)
+			WfRuntimeExecutionAction WfRuntimeThreadContext::ExecuteInternal(WfInstruction& ins, WfRuntimeStackFrame& stackFrame, IWfDebuggerCallback* callback)
 			{
-				if (stackFrames.Count() == 0)
+				switch (ins.code)
 				{
-					if (stack.Count() < argumentCount)
+				case WfInsCode::LoadValue:
+					CONTEXT_ACTION(PushValue(ins.valueParameter), L"failed to push a value to the stack.");
+					return WfRuntimeExecutionAction::ExecuteInstruction;
+				case WfInsCode::LoadFunction:
 					{
-						return WfRuntimeThreadContextError::StackCorrupted;
+						CONTEXT_ACTION(PushValue(BoxValue(ins.indexParameter)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
-				}
-				else
-				{
-					auto& frame = GetCurrentStackFrame();
-					if (stack.Count() - frame.freeStackBase < argumentCount)
+				case WfInsCode::LoadException:
 					{
-						return WfRuntimeThreadContextError::StackCorrupted;
+						CONTEXT_ACTION(PushValue(BoxValue(exceptionInfo)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
-				}
-				if (functionIndex < 0 || functionIndex >= globalContext->assembly->functions.Count())
-				{
-					return WfRuntimeThreadContextError::WrongFunctionIndex;
-				}
-				auto meta = globalContext->assembly->functions[functionIndex];
-				if (meta->argumentNames.Count() != argumentCount)
-				{
-					return WfRuntimeThreadContextError::WrongArgumentCount;
-				}
-				if (meta->capturedVariableNames.Count() == 0)
-				{
-					if (capturedVariables)
+				case WfInsCode::LoadLocalVar:
 					{
-						return WfRuntimeThreadContextError::WrongCapturedVariableCount;
+						Value operand;
+						CONTEXT_ACTION(LoadLocalVariable(ins.indexParameter, operand), L"illegal local variable index.");
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
-				}
-				else
-				{
-					if (!capturedVariables || capturedVariables->variables.Count() != meta->capturedVariableNames.Count())
+				case WfInsCode::LoadCapturedVar:
 					{
-						return WfRuntimeThreadContextError::WrongCapturedVariableCount;
+						Value operand;
+						CONTEXT_ACTION(LoadCapturedVariable(ins.indexParameter, operand), L"illegal captured variable index.");
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
-				}
-
-				WfRuntimeStackFrame frame;
-				frame.capturedVariables = capturedVariables;
-				frame.functionIndex = functionIndex;
-				frame.nextInstructionIndex = globalContext->assembly->functions[functionIndex]->firstInstruction;
-				frame.stackBase = stack.Count() - argumentCount;
-
-				frame.fixedVariableCount = meta->argumentNames.Count() + meta->localVariableNames.Count();
-				frame.freeStackBase = frame.stackBase + frame.fixedVariableCount;
-				stackFrames.Add(frame);
-
-				for (vint i = 0; i < meta->localVariableNames.Count(); i++)
-				{
-					stack.Add(Value());
-				}
-				if (status == WfRuntimeExecutionStatus::Finished || status == WfRuntimeExecutionStatus::FatalError)
-				{
-					status = WfRuntimeExecutionStatus::Ready;
-				}
-				return WfRuntimeThreadContextError::Success;
-			}
-
-			WfRuntimeThreadContextError WfRuntimeThreadContext::PopStackFrame()
-			{
-				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
-				WfRuntimeStackFrame frame = GetCurrentStackFrame();
-				if (trapFrames.Count() > 0)
-				{
-					WfRuntimeTrapFrame& trapFrame = GetCurrentTrapFrame();
-					if (trapFrame.stackFrameIndex == stackFrames.Count() - 1)
+				case WfInsCode::LoadGlobalVar:
 					{
-						return WfRuntimeThreadContextError::TrapFrameCorrupted;
+						CALL_DEBUGGER(callback->BreakRead(globalContext->assembly.Obj(), ins.indexParameter));
+						Value operand;
+						CONTEXT_ACTION(LoadGlobalVariable(ins.indexParameter, operand), L"illegal global variable index.");
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
-				}
-				stackFrames.RemoveAt(stackFrames.Count() - 1);
-
-				if (stack.Count() > frame.stackBase)
-				{
-					stack.RemoveRange(frame.stackBase, stack.Count() - frame.stackBase);
-				}
-				return WfRuntimeThreadContextError::Success;
-			}
-
-			WfRuntimeTrapFrame& WfRuntimeThreadContext::GetCurrentTrapFrame()
-			{
-				return trapFrames[trapFrames.Count() - 1];
-			}
-
-			WfRuntimeThreadContextError WfRuntimeThreadContext::PushTrapFrame(vint instructionIndex)
-			{
-				WfRuntimeTrapFrame frame;
-				frame.stackFrameIndex = stackFrames.Count() - 1;
-				frame.instructionIndex = instructionIndex;
-				frame.stackPatternCount = stack.Count();
-				trapFrames.Add(frame);
-				return WfRuntimeThreadContextError::Success;
-			}
-
-			WfRuntimeThreadContextError WfRuntimeThreadContext::PopTrapFrame(vint saveStackPatternCount)
-			{
-				if (trapFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyTrapFrame;
-				WfRuntimeTrapFrame& frame = trapFrames[trapFrames.Count() - 1];
-				if (frame.stackFrameIndex != stackFrames.Count() - 1) return WfRuntimeThreadContextError::TrapFrameCorrupted;
-
-				vint stackPopCount = stack.Count() - frame.stackPatternCount - saveStackPatternCount;
-				if (stackPopCount < 0)
-				{
-					return WfRuntimeThreadContextError::StackCorrupted;
-				}
-				else if (stackPopCount>0)
-				{
-					stack.RemoveRange(stack.Count() - stackPopCount, stackPopCount);
-				}
-
-				trapFrames.RemoveAt(trapFrames.Count() - 1);
-				return WfRuntimeThreadContextError::Success;
-			}
-
-			WfRuntimeThreadContextError WfRuntimeThreadContext::PushValue(const reflection::description::Value& value)
-			{
-				stack.Add(value);
-				return WfRuntimeThreadContextError::Success;
-			}
-
-			WfRuntimeThreadContextError WfRuntimeThreadContext::PopValue(reflection::description::Value& value)
-			{
-				if (stackFrames.Count() == 0)
-				{
-					if (stack.Count() == 0) return WfRuntimeThreadContextError::EmptyStack;
-				}
-				else
-				{
-					WfRuntimeStackFrame& frame = GetCurrentStackFrame();
-					if (stack.Count() <= frame.freeStackBase) return WfRuntimeThreadContextError::StackCorrupted;
-				}
-				value = stack[stack.Count() - 1];
-				stack.RemoveAt(stack.Count() - 1);
-				return WfRuntimeThreadContextError::Success;
-			}
-
-			WfRuntimeThreadContextError WfRuntimeThreadContext::RaiseException(const WString& exception, bool fatalError, bool skipDebugger)
-			{
-				auto info = MakePtr<WfRuntimeExceptionInfo>(exception, fatalError);
-				return RaiseException(info, skipDebugger);
-			}
-
-			WfRuntimeThreadContextError WfRuntimeThreadContext::RaiseException(Ptr<WfRuntimeExceptionInfo> info, bool skipDebugger)
-			{
-				exceptionInfo = info;
-				status = info->fatal ? WfRuntimeExecutionStatus::FatalError : WfRuntimeExecutionStatus::RaisedException;
-
-				if (info->callStack.Count() == 0)
-				{
-					if (auto debugger = GetDebuggerForCurrentThread())
+				case WfInsCode::LoadMethodInfo:
 					{
-						vint contextCount = debugger->GetThreadContexts().Count();
-						for (vint i = contextCount - 1; i >= 0; i--)
+						CONTEXT_ACTION(PushValue(Value::From(ins.methodParameter)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::LoadMethodClosure:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						auto closure = ins.methodParameter->CreateFunctionProxy(operand);
+						CONTEXT_ACTION(PushValue(closure), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::LoadClosureContext:
+					{
+						auto capturedVariables = GetCurrentStackFrame().capturedVariables;
+						CONTEXT_ACTION(PushValue(Value::From(capturedVariables)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::StoreLocalVar:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(StoreLocalVariable(ins.indexParameter, operand), L"illegal local variable index.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::StoreCapturedVar:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(StoreCapturedVariable(ins.indexParameter, operand), L"illegal global variable index.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::StoreGlobalVar:
+					{
+						CALL_DEBUGGER(callback->BreakWrite(globalContext->assembly.Obj(), ins.indexParameter));
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(StoreGlobalVariable(ins.indexParameter, operand), L"illegal global variable index.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::Duplicate:
+					{
+						vint index = stack.Count() - 1 - ins.countParameter;
+						Value operand;
+						CONTEXT_ACTION(LoadStackValue(index, operand), L"failed to duplicate a value from the stack.");
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::Pop:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::Return:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop the function result.");
+						CONTEXT_ACTION(PopStackFrame(), L"failed to pop the stack frame.");
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
+						if (stackFrames.Count() == 0)
 						{
-							auto context = debugger->GetThreadContexts()[i];
-							vint stackCount = context->stackFrames.Count();
-							for (vint j = stackCount - 1; j >= 0; j--)
+							status = WfRuntimeExecutionStatus::Finished;
+						}
+						return WfRuntimeExecutionAction::ExitStackFrame;
+					}
+				case WfInsCode::CreateArray:
+					{
+						auto list = IValueList::Create();
+						Value operand;
+						for (vint i = 0; i < ins.countParameter; i++)
+						{
+							CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+							list->Add(operand);
+						}
+						CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::CreateObservableList:
+				{
+					auto list = IValueObservableList::Create();
+					Value operand;
+					for (vint i = 0; i < ins.countParameter; i++)
+					{
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						list->Add(operand);
+					}
+					CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
+					return WfRuntimeExecutionAction::ExecuteInstruction;
+				}
+				case WfInsCode::CreateMap:
+					{
+						auto map = IValueDictionary::Create();
+						Value key, value;
+						for (vint i = 0; i < ins.countParameter; i+=2)
+						{
+							CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
+							CONTEXT_ACTION(PopValue(key), L"failed to pop a value from the stack.");
+							map->Set(key, value);
+						}
+						CONTEXT_ACTION(PushValue(Value::From(map)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::CreateClosureContext:
+					{
+						Ptr<WfRuntimeVariableContext> capturedVariables;
+						if (ins.countParameter > 0)
+						{
+							capturedVariables = new WfRuntimeVariableContext;
+							capturedVariables->variables.Resize(ins.countParameter);
+							Value operand;
+							for (vint i = 0; i < ins.countParameter; i++)
 							{
-								const auto& stackFrame = context->stackFrames[j];
-								info->callStack.Add(new WfRuntimeCallStackInfo(context, stackFrame));
-							}
-
-							if (i > 0)
-							{
-								info->callStack.Add(new WfRuntimeCallStackInfo);
+								CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+								capturedVariables->variables[ins.countParameter - 1 - i] = operand;
 							}
 						}
 
-						if (!skipDebugger)
+						CONTEXT_ACTION(PushValue(Value::From(capturedVariables)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::CreateClosure:
+					{
+						Value context, function;
+						CONTEXT_ACTION(PopValue(function), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(context), L"failed to pop a value from the stack.");
+						auto capturedVariables = context.GetSharedPtr().Cast<WfRuntimeVariableContext>();
+						auto functionIndex = UnboxValue<vint>(function);
+
+						auto lambda = MakePtr<WfRuntimeLambda>(globalContext, capturedVariables, functionIndex);
+						CONTEXT_ACTION(PushValue(Value::From(lambda)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::CreateInterface:
+					{
+						auto proxy = MakePtr<WfRuntimeInterfaceInstance>();
+						Value key, value, operand;
+						for (vint i = 0; i < ins.countParameter; i+=2)
 						{
-							if (auto callback = GetDebuggerCallback(debugger.Obj()))
+							CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
+							CONTEXT_ACTION(PopValue(key), L"failed to pop a value from the stack.");
+							auto name = UnboxValue<IMethodInfo*>(key);
+							auto func = UnboxValue<vint>(value);
+							proxy->functions.Add(name, func);
+						}
+
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						auto capturedVariables = operand.GetSharedPtr().Cast<WfRuntimeVariableContext>();
+						proxy->capturedVariables = capturedVariables;
+						proxy->globalContext = globalContext;
+
+						Array<Value> arguments(1);
+						arguments[0] = Value::From(proxy);
+						auto obj = ins.methodParameter->Invoke(Value(), arguments);
+						capturedVariables->variables[capturedVariables->variables.Count() - 1] = Value::From(obj.GetRawPtr());
+
+						CONTEXT_ACTION(PushValue(obj), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::CreateRange:
+					BEGIN_TYPE
+						EXECUTE(OpCreateRange, I1)
+						EXECUTE(OpCreateRange, I2)
+						EXECUTE(OpCreateRange, I4)
+						EXECUTE(OpCreateRange, I8)
+						EXECUTE(OpCreateRange, U1)
+						EXECUTE(OpCreateRange, U2)
+						EXECUTE(OpCreateRange, U4)
+						EXECUTE(OpCreateRange, U8)
+					END_TYPE
+				case WfInsCode::CreateStruct:
+					{
+						if (ins.typeDescriptorParameter->GetTypeDescriptorFlags() != TypeDescriptorFlags::Struct)
+						{
+							INTERNAL_ERROR(L"Type \"" + ins.typeDescriptorParameter->GetTypeName() + L"\" is not a struct.");
+						}
+						Value result = ins.typeDescriptorParameter->GetValueType()->CreateDefault();
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::DeleteRawPtr:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						operand.DeleteRawPtr();
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::ConvertToType:
+					{
+						Value result, converted;
+						CONTEXT_ACTION(PopValue(result), L"failed to pop a value from the stack.");
+						if (OPERATOR_OpConvertToType(result, converted, ins))
+						{
+							CONTEXT_ACTION(PushValue(converted), L"failed to push a value to the stack.");
+						}
+						else
+						{
+							WString from;
+							if (result.IsNull())
 							{
-								if (callback->BreakException(info))
+								from = L"<null>";
+							}
+							else
+							{
+								if (auto st = result.GetTypeDescriptor()->GetSerializableType())
 								{
-									if (!callback->WaitForContinue())
-									{
-										RaiseException(L"Internal error: Debugger stopped the program.", true, true);
-									}
+									WString text;
+									st->Serialize(result, text);
+									from = L"<" + text + L"> of " + result.GetTypeDescriptor()->GetTypeName();
+								}
+								else
+								{
+									from = result.GetTypeDescriptor()->GetTypeName();
 								}
 							}
+							WString to = ins.typeDescriptorParameter->GetTypeName();
+							RaiseException(L"Failed to convert from \"" + from + L"\" to \"" + to + L"\".", false);
 						}
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::TryConvertToType:
+					{
+						Value result, converted;
+						CONTEXT_ACTION(PopValue(result), L"failed to pop a value from the stack.");
+						if (OPERATOR_OpConvertToType(result, converted, ins))
+						{
+							CONTEXT_ACTION(PushValue(converted), L"failed to push a value to the stack.");
+						}
+						else
+						{
+							CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
+						}
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::TestType:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						if (operand.GetTypeDescriptor() && operand.GetValueType() == ins.flagParameter && operand.GetTypeDescriptor()->CanConvertTo(ins.typeDescriptorParameter))
+						{
+							CONTEXT_ACTION(PushValue(BoxValue(true)), L"failed to push a value to the stack.");
+						}
+						else
+						{
+							CONTEXT_ACTION(PushValue(BoxValue(false)), L"failed to push a value to the stack.");
+						}
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::GetType:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PushValue(Value::From(operand.GetTypeDescriptor())), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::Jump:
+					{
+						stackFrame.nextInstructionIndex = ins.indexParameter;
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::JumpIf:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						if (UnboxValue<bool>(operand))
+						{
+							stackFrame.nextInstructionIndex = ins.indexParameter;
+						}
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::Invoke:
+					{
+						CONTEXT_ACTION(PushStackFrame(ins.indexParameter, ins.countParameter), L"failed to invoke a function.");
+						return WfRuntimeExecutionAction::EnterStackFrame;
+					}
+				case WfInsCode::InvokeWithContext:
+					{
+						CONTEXT_ACTION(PushStackFrame(ins.indexParameter, ins.countParameter, GetCurrentStackFrame().capturedVariables), L"failed to invoke a function.");
+						return WfRuntimeExecutionAction::EnterStackFrame;
+					}
+				case WfInsCode::GetProperty:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakGet(operand.GetRawPtr(), ins.propertyParameter));
+						Value result = ins.propertyParameter->GetValue(operand);
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::SetProperty:
+					{
+						Value operand, value;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakSet(operand.GetRawPtr(), ins.propertyParameter));
+						ins.propertyParameter->SetValue(operand, value);
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::UpdateProperty:
+					{
+						Value operand, value;
+						CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakSet(operand.GetRawPtr(), ins.propertyParameter));
+						ins.propertyParameter->SetValue(operand, value);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::InvokeProxy:
+					{
+						Value thisValue;
+						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
+						auto proxy = UnboxValue<Ptr<IValueFunctionProxy>>(thisValue);
+						if (!proxy)
+						{
+							INTERNAL_ERROR(L"failed to invoke a null function proxy.");
+							return WfRuntimeExecutionAction::Nop;
+						}
+
+						if (auto lambda = proxy.Cast<WfRuntimeLambda>())
+						{
+							if (lambda->globalContext == globalContext)
+							{
+								CONTEXT_ACTION(PushStackFrame(lambda->functionIndex, ins.countParameter, lambda->capturedVariables), L"failed to invoke a function.");
+								return WfRuntimeExecutionAction::EnterStackFrame;
+							}
+						}
+
+						List<Value> arguments;
+						for (vint i = 0; i < ins.countParameter; i++)
+						{
+							Value argument;
+							CONTEXT_ACTION(PopValue(argument), L"failed to pop a value from the stack.");
+							arguments.Insert(0, argument);
+						}
+
+						Ptr<IValueList> list = new ValueListWrapper<List<Value>*>(&arguments);
+						Value result = proxy->Invoke(list);
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::InvokeMethod:
+					{
+						Value thisValue;
+						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakInvoke(thisValue.GetRawPtr(), ins.methodParameter));
+
+						if (auto staticMethod = dynamic_cast<WfStaticMethod*>(ins.methodParameter))
+						{
+							if (staticMethod->GetGlobalContext() == globalContext.Obj())
+							{
+								CONTEXT_ACTION(PushStackFrame(staticMethod->functionIndex, ins.countParameter, nullptr), L"failed to invoke a function.");
+								return WfRuntimeExecutionAction::EnterStackFrame;
+							}
+						}
+
+						if (auto classMethod = dynamic_cast<WfClassMethod*>(ins.methodParameter))
+						{
+							if (classMethod->GetGlobalContext() == globalContext.Obj())
+							{
+								auto capturedVariable = MakePtr<WfRuntimeVariableContext>();
+								capturedVariable->variables.Resize(1);
+								capturedVariable->variables[0] = Value::From(thisValue.GetRawPtr());
+
+								CONTEXT_ACTION(PushStackFrame(classMethod->functionIndex, ins.countParameter, capturedVariable), L"failed to invoke a function.");
+								return WfRuntimeExecutionAction::EnterStackFrame;
+							}
+						}
+
+						Array<Value> arguments(ins.countParameter);
+						for (vint i = 0; i < ins.countParameter; i++)
+						{
+							Value argument;
+							CONTEXT_ACTION(PopValue(argument), L"failed to pop a value from the stack.");
+							arguments[ins.countParameter - i - 1] = argument;
+						}
+
+						Value result = ins.methodParameter->Invoke(thisValue, arguments);
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::InvokeEvent:
+					{
+						Value thisValue;
+						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakInvoke(thisValue.GetRawPtr(), ins.eventParameter));
+
+						auto arguments = IValueList::Create();
+						for (vint i = 0; i < ins.countParameter; i++)
+						{
+							Value argument;
+							CONTEXT_ACTION(PopValue(argument), L"failed to pop a value from the stack.");
+							arguments->Insert(0, argument);
+						}
+
+						ins.eventParameter->Invoke(thisValue, arguments);
+						CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::InvokeBaseCtor:
+					{
+						Value thisValue;
+						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakInvoke(thisValue.GetRawPtr(), ins.eventParameter));
+						
+						if (auto ctor = dynamic_cast<WfClassConstructor*>(ins.methodParameter))
+						{
+							if (ctor->GetGlobalContext() == globalContext.Obj())
+							{
+								auto capturedVariable = MakePtr<WfRuntimeVariableContext>();
+								capturedVariable->variables.Resize(1);
+								capturedVariable->variables[0] = Value::From(thisValue.GetRawPtr());
+
+								CONTEXT_ACTION(PushStackFrame(ctor->functionIndex, ins.countParameter, capturedVariable), L"failed to invoke a function.");
+								return WfRuntimeExecutionAction::EnterStackFrame;
+							}
+						}
+
+						Array<Value> arguments(ins.countParameter);
+						for (vint i = 0; i < ins.countParameter; i++)
+						{
+							Value argument;
+							CONTEXT_ACTION(PopValue(argument), L"failed to pop a value from the stack.");
+							arguments[ins.countParameter - i - 1] = argument;
+						}
+						
+						if (auto ctor = dynamic_cast<WfClassConstructor*>(ins.methodParameter))
+						{
+							ctor->InvokeBaseCtor(thisValue, arguments);
+						}
+						else
+						{
+							auto instance = dynamic_cast<WfClassInstance*>(thisValue.GetRawPtr());
+							if (!instance)
+							{
+								INTERNAL_ERROR(L"Wrong class instance for invoking base constructor.");
+							}
+
+							Value baseValue = ins.methodParameter->Invoke(Value(), arguments);
+							instance->InstallBaseObject(ins.methodParameter->GetOwnerTypeDescriptor(), baseValue);
+						}
+						CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::AttachEvent:
+					{
+						Value thisValue, function;
+						CONTEXT_ACTION(PopValue(function), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakAttach(thisValue.GetRawPtr(), ins.eventParameter));
+						auto proxy = UnboxValue<Ptr<IValueFunctionProxy>>(function);
+						auto handler = ins.eventParameter->Attach(thisValue, proxy);
+						CONTEXT_ACTION(PushValue(Value::From(handler)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::DetachEvent:
+					{
+						Value thisValue, operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakDetach(thisValue.GetRawPtr(), ins.eventParameter));
+						auto handler = UnboxValue<Ptr<IEventHandler>>(operand);
+						auto result = ins.eventParameter->Detach(thisValue, handler);
+						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::InstallTry:
+					CONTEXT_ACTION(PushTrapFrame(ins.indexParameter), L"failed to push a trap frame");
+					return WfRuntimeExecutionAction::ExecuteInstruction;
+				case WfInsCode::UninstallTry:
+					{
+						if (trapFrames.Count() == 0)
+						{
+							INTERNAL_ERROR(L"failed to pop the trap frame.");
+						}
+						auto frame = GetCurrentTrapFrame();
+						CONTEXT_ACTION(PopTrapFrame(ins.countParameter), L"failed to pop the trap frame.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::RaiseException:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						if (operand.GetValueType() == Value::BoxedValue)
+						{
+							WString text;
+							operand.GetTypeDescriptor()->GetSerializableType()->Serialize(operand, text);
+							RaiseException(text, false);
+						}
+						else if (auto info = operand.GetSharedPtr().Cast<WfRuntimeExceptionInfo>())
+						{
+							RaiseException(info);
+						}
+						else if (auto ex = operand.GetSharedPtr().Cast<IValueException>())
+						{
+							RaiseException(ex->GetMessage(), false);
+						}
+						else
+						{
+							INTERNAL_ERROR(L"failed to raise an exception which is neither a string nor a WfRuntimeExceptionInfo.");
+						}
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::TestElementInSet:
+					{
+						Value element, set;
+						CONTEXT_ACTION(PopValue(set), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(element), L"failed to pop a value from the stack.");
+
+						auto enumerable = UnboxValue<Ptr<IValueEnumerable>>(set);
+						auto enumerator = enumerable->CreateEnumerator();
+						while (enumerator->Next())
+						{
+							if (enumerator->GetCurrent() == element)
+							{
+								CONTEXT_ACTION(PushValue(BoxValue(true)), L"failed to push a value to the stack.");
+								return WfRuntimeExecutionAction::ExecuteInstruction;
+							}
+						}
+						CONTEXT_ACTION(PushValue(BoxValue(false)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::CompareLiteral:
+					BEGIN_TYPE
+						EXECUTE(OpCompare, Bool)
+						EXECUTE(OpCompare, I1)
+						EXECUTE(OpCompare, I2)
+						EXECUTE(OpCompare, I4)
+						EXECUTE(OpCompare, I8)
+						EXECUTE(OpCompare, U1)
+						EXECUTE(OpCompare, U2)
+						EXECUTE(OpCompare, U4)
+						EXECUTE(OpCompare, U8)
+						EXECUTE(OpCompare, F4)
+						EXECUTE(OpCompare, F8)
+						EXECUTE(OpCompare, String)
+					END_TYPE
+				case WfInsCode::CompareReference:
+					{
+						Value first, second;
+						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
+						bool result = first.GetValueType() != Value::BoxedValue && second.GetValueType() != Value::BoxedValue && first.GetRawPtr() == second.GetRawPtr();
+						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::CompareValue:
+					{
+						Value first, second;
+						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
+						bool result = first == second;
+						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::OpNot:
+					BEGIN_TYPE
+						EXECUTE(OpNot_Bool, Bool)
+						EXECUTE(OpNot, I1)
+						EXECUTE(OpNot, I2)
+						EXECUTE(OpNot, I4)
+						EXECUTE(OpNot, I8)
+						EXECUTE(OpNot, U1)
+						EXECUTE(OpNot, U2)
+						EXECUTE(OpNot, U4)
+						EXECUTE(OpNot, U8)
+					END_TYPE
+				case WfInsCode::OpPositive:
+					BEGIN_TYPE
+						EXECUTE(OpPositive, I1)
+						EXECUTE(OpPositive, I2)
+						EXECUTE(OpPositive, I4)
+						EXECUTE(OpPositive, I8)
+						EXECUTE(OpPositive, U1)
+						EXECUTE(OpPositive, U2)
+						EXECUTE(OpPositive, U4)
+						EXECUTE(OpPositive, U8)
+						EXECUTE(OpPositive, F4)
+						EXECUTE(OpPositive, F8)
+					END_TYPE
+				case WfInsCode::OpNegative:
+					BEGIN_TYPE
+						EXECUTE(OpNegative, I1)
+						EXECUTE(OpNegative, I2)
+						EXECUTE(OpNegative, I4)
+						EXECUTE(OpNegative, I8)
+						EXECUTE(OpNegative, F4)
+						EXECUTE(OpNegative, F8)
+					END_TYPE
+				case WfInsCode::OpConcat:
+					{
+						Value first, second;
+						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
+
+						WString firstText, secondText;
+						first.GetTypeDescriptor()->GetSerializableType()->Serialize(first, firstText);
+						first.GetTypeDescriptor()->GetSerializableType()->Serialize(second, secondText);
+
+						CONTEXT_ACTION(PushValue(BoxValue(firstText + secondText)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::OpExp:
+					BEGIN_TYPE
+						EXECUTE(OpExp, F4)
+						EXECUTE(OpExp, F8)
+					END_TYPE
+				case WfInsCode::OpAdd:
+					BEGIN_TYPE
+						EXECUTE(OpAdd, I1)
+						EXECUTE(OpAdd, I2)
+						EXECUTE(OpAdd, I4)
+						EXECUTE(OpAdd, I8)
+						EXECUTE(OpAdd, U1)
+						EXECUTE(OpAdd, U2)
+						EXECUTE(OpAdd, U4)
+						EXECUTE(OpAdd, U8)
+						EXECUTE(OpAdd, F4)
+						EXECUTE(OpAdd, F8)
+					END_TYPE
+				case WfInsCode::OpSub:
+					BEGIN_TYPE
+						EXECUTE(OpSub, I1)
+						EXECUTE(OpSub, I2)
+						EXECUTE(OpSub, I4)
+						EXECUTE(OpSub, I8)
+						EXECUTE(OpSub, U1)
+						EXECUTE(OpSub, U2)
+						EXECUTE(OpSub, U4)
+						EXECUTE(OpSub, U8)
+						EXECUTE(OpSub, F4)
+						EXECUTE(OpSub, F8)
+					END_TYPE
+				case WfInsCode::OpMul:
+					BEGIN_TYPE
+						EXECUTE(OpMul, I1)
+						EXECUTE(OpMul, I2)
+						EXECUTE(OpMul, I4)
+						EXECUTE(OpMul, I8)
+						EXECUTE(OpMul, U1)
+						EXECUTE(OpMul, U2)
+						EXECUTE(OpMul, U4)
+						EXECUTE(OpMul, U8)
+						EXECUTE(OpMul, F4)
+						EXECUTE(OpMul, F8)
+					END_TYPE
+				case WfInsCode::OpDiv:
+					BEGIN_TYPE
+						EXECUTE(OpDiv, I1)
+						EXECUTE(OpDiv, I2)
+						EXECUTE(OpDiv, I4)
+						EXECUTE(OpDiv, I8)
+						EXECUTE(OpDiv, U1)
+						EXECUTE(OpDiv, U2)
+						EXECUTE(OpDiv, U4)
+						EXECUTE(OpDiv, U8)
+						EXECUTE(OpDiv, F4)
+						EXECUTE(OpDiv, F8)
+					END_TYPE
+				case WfInsCode::OpMod:
+					BEGIN_TYPE
+						EXECUTE(OpMod, I1)
+						EXECUTE(OpMod, I2)
+						EXECUTE(OpMod, I4)
+						EXECUTE(OpMod, I8)
+						EXECUTE(OpMod, U1)
+						EXECUTE(OpMod, U2)
+						EXECUTE(OpMod, U4)
+						EXECUTE(OpMod, U8)
+					END_TYPE
+				case WfInsCode::OpShl:
+					BEGIN_TYPE
+						EXECUTE(OpShl, I1)
+						EXECUTE(OpShl, I2)
+						EXECUTE(OpShl, I4)
+						EXECUTE(OpShl, I8)
+						EXECUTE(OpShl, U1)
+						EXECUTE(OpShl, U2)
+						EXECUTE(OpShl, U4)
+						EXECUTE(OpShl, U8)
+					END_TYPE
+				case WfInsCode::OpShr:
+					BEGIN_TYPE
+						EXECUTE(OpShr, I1)
+						EXECUTE(OpShr, I2)
+						EXECUTE(OpShr, I4)
+						EXECUTE(OpShr, I8)
+						EXECUTE(OpShr, U1)
+						EXECUTE(OpShr, U2)
+						EXECUTE(OpShr, U4)
+						EXECUTE(OpShr, U8)
+					END_TYPE
+				case WfInsCode::OpXor:
+					BEGIN_TYPE
+						EXECUTE(OpXor, Bool)
+						EXECUTE(OpXor, I1)
+						EXECUTE(OpXor, I2)
+						EXECUTE(OpXor, I4)
+						EXECUTE(OpXor, I8)
+						EXECUTE(OpXor, U1)
+						EXECUTE(OpXor, U2)
+						EXECUTE(OpXor, U4)
+						EXECUTE(OpXor, U8)
+					END_TYPE
+				case WfInsCode::OpAnd:
+					BEGIN_TYPE
+						EXECUTE(OpAnd_Bool, Bool)
+						EXECUTE(OpAnd, I1)
+						EXECUTE(OpAnd, I2)
+						EXECUTE(OpAnd, I4)
+						EXECUTE(OpAnd, I8)
+						EXECUTE(OpAnd, U1)
+						EXECUTE(OpAnd, U2)
+						EXECUTE(OpAnd, U4)
+						EXECUTE(OpAnd, U8)
+					END_TYPE
+				case WfInsCode::OpOr:
+					BEGIN_TYPE
+						EXECUTE(OpOr_Bool, Bool)
+						EXECUTE(OpOr, I1)
+						EXECUTE(OpOr, I2)
+						EXECUTE(OpOr, I4)
+						EXECUTE(OpOr, I8)
+						EXECUTE(OpOr, U1)
+						EXECUTE(OpOr, U2)
+						EXECUTE(OpOr, U4)
+						EXECUTE(OpOr, U8)
+					END_TYPE
+				case WfInsCode::OpLT:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						vint value = UnboxValue<vint>(operand);
+						CONTEXT_ACTION(PushValue(BoxValue(value < 0)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+					break;
+				case WfInsCode::OpGT:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						vint value = UnboxValue<vint>(operand);
+						CONTEXT_ACTION(PushValue(BoxValue(value > 0)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+					break;
+				case WfInsCode::OpLE:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						vint value = UnboxValue<vint>(operand);
+						CONTEXT_ACTION(PushValue(BoxValue(value <= 0)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+					break;
+				case WfInsCode::OpGE:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						vint value = UnboxValue<vint>(operand);
+						CONTEXT_ACTION(PushValue(BoxValue(value >= 0)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+					break;
+				case WfInsCode::OpEQ:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						vint value = UnboxValue<vint>(operand);
+						CONTEXT_ACTION(PushValue(BoxValue(value == 0)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+					break;
+				case WfInsCode::OpNE:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						vint value = UnboxValue<vint>(operand);
+						CONTEXT_ACTION(PushValue(BoxValue(value != 0)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+					break;
+				default:
+					return WfRuntimeExecutionAction::Nop;
+				}
+			}
+
+			WfRuntimeExecutionAction WfRuntimeThreadContext::Execute(IWfDebuggerCallback* callback)
+			{
+				try
+				{
+					switch (status)
+					{
+					case WfRuntimeExecutionStatus::Ready:
+					case WfRuntimeExecutionStatus::Executing:
+						{
+							if (stackFrames.Count() == 0)
+							{
+								INTERNAL_ERROR(L"empty stack frame.");
+							}
+							auto& stackFrame = GetCurrentStackFrame();
+							if (stackFrame.nextInstructionIndex < 0 || stackFrame.nextInstructionIndex >= globalContext->assembly->instructions.Count())
+							{
+								INTERNAL_ERROR(L"illegal instruction index.");
+							}
+
+							auto insIndex = stackFrame.nextInstructionIndex;
+							CALL_DEBUGGER(callback->BreakIns(globalContext->assembly.Obj(), insIndex));
+
+							stackFrame.nextInstructionIndex++;
+							auto& ins = globalContext->assembly->instructions[insIndex];
+							return ExecuteInternal(ins, stackFrame, callback);
+						}
+						break;
+					case WfRuntimeExecutionStatus::RaisedException:
+						if (trapFrames.Count() > 0)
+						{
+							auto trapFrame = GetCurrentTrapFrame();
+							if (trapFrame.stackFrameIndex == stackFrames.Count() - 1)
+							{
+								CONTEXT_ACTION(PopTrapFrame(0), L"failed to pop the trap frame");
+								GetCurrentStackFrame().nextInstructionIndex = trapFrame.instructionIndex;
+								status = WfRuntimeExecutionStatus::Executing;
+								return WfRuntimeExecutionAction::UnwrapStack;
+							}
+							else if (stackFrames.Count() > 0)
+							{
+								CONTEXT_ACTION(PopStackFrame(), L"failed to pop the stack frame.");
+								return WfRuntimeExecutionAction::UnwrapStack;
+							}
+						}
+						break;
+					default:;
+					}
+					return WfRuntimeExecutionAction::Nop;
+				}
+				catch (const WfRuntimeException& ex)
+				{
+					if (ex.GetInfo())
+					{
+						RaiseException(ex.GetInfo());
+					}
+					else
+					{
+						RaiseException(ex.Message(), ex.IsFatal());
+					}
+					return WfRuntimeExecutionAction::ExecuteInstruction;
+				}
+				catch (const Exception& ex)
+				{
+					RaiseException(ex.Message(), false);
+					return WfRuntimeExecutionAction::ExecuteInstruction;
+				}
+			}
+
+#undef INTERNAL_ERROR
+#undef CONTEXT_ACTION
+#undef CALL_DEBUGGER
+#undef TYPE_OF_Bool
+#undef TYPE_OF_I1
+#undef TYPE_OF_I2
+#undef TYPE_OF_I4
+#undef TYPE_OF_I8
+#undef TYPE_OF_U1
+#undef TYPE_OF_U2
+#undef TYPE_OF_U4
+#undef TYPE_OF_U8
+#undef TYPE_OF_F4
+#undef TYPE_OF_F8
+#undef TYPE_OF_String
+#undef EXECUTE
+#undef BEGIN_TYPE
+#undef END_TYPE
+		}
+	}
+}
+
+/***********************************************************************
+.\WFRUNTIMEDEBUGGER.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace runtime
+		{
+			using namespace collections;
+			using namespace reflection;
+			using namespace reflection::description;
+
+/***********************************************************************
+IWfDebuggerCallback
+***********************************************************************/
+
+			WfBreakPoint WfBreakPoint::Ins(WfAssembly* assembly, vint instruction)
+			{
+				WfBreakPoint breakPoint;
+				breakPoint.type = Instruction;
+				breakPoint.assembly = assembly;
+				breakPoint.instruction = instruction;
+				return breakPoint;
+			}
+
+			WfBreakPoint WfBreakPoint::Read(WfAssembly* assembly, vint variable)
+			{
+				WfBreakPoint breakPoint;
+				breakPoint.type = ReadGlobalVar;
+				breakPoint.assembly = assembly;
+				breakPoint.variable = variable;
+				return breakPoint;
+			}
+
+			WfBreakPoint WfBreakPoint::Write(WfAssembly* assembly, vint variable)
+			{
+				WfBreakPoint breakPoint;
+				breakPoint.type = WriteGlobalVar;
+				breakPoint.assembly = assembly;
+				breakPoint.variable = variable;
+				return breakPoint;
+			}
+
+			WfBreakPoint WfBreakPoint::Get(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo)
+			{
+				WfBreakPoint breakPoint;
+				breakPoint.type = GetProperty;
+				breakPoint.thisObject = thisObject;
+				breakPoint.propertyInfo = propertyInfo;
+				return breakPoint;
+			}
+
+			WfBreakPoint WfBreakPoint::Set(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo)
+			{
+				WfBreakPoint breakPoint;
+				breakPoint.type = SetProperty;
+				breakPoint.thisObject = thisObject;
+				breakPoint.propertyInfo = propertyInfo;
+				return breakPoint;
+			}
+
+			WfBreakPoint WfBreakPoint::Attach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
+			{
+				WfBreakPoint breakPoint;
+				breakPoint.type = AttachEvent;
+				breakPoint.thisObject = thisObject;
+				breakPoint.eventInfo = eventInfo;
+				return breakPoint;
+			}
+
+			WfBreakPoint WfBreakPoint::Detach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
+			{
+				WfBreakPoint breakPoint;
+				breakPoint.type = DetachEvent;
+				breakPoint.thisObject = thisObject;
+				breakPoint.eventInfo = eventInfo;
+				return breakPoint;
+			}
+
+			WfBreakPoint WfBreakPoint::Invoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
+			{
+				WfBreakPoint breakPoint;
+				breakPoint.type = InvokeEvent;
+				breakPoint.thisObject = thisObject;
+				breakPoint.eventInfo = eventInfo;
+				return breakPoint;
+			}
+
+			WfBreakPoint WfBreakPoint::Invoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo)
+			{
+				WfBreakPoint breakPoint;
+				breakPoint.type = InvokeMethod;
+				breakPoint.thisObject = thisObject;
+				breakPoint.methodInfo = methodInfo;
+				return breakPoint;
+			}
+
+			WfBreakPoint WfBreakPoint::Create(reflection::description::ITypeDescriptor* typeDescriptor)
+			{
+				WfBreakPoint breakPoint;
+				breakPoint.type = CreateObject;
+				breakPoint.typeDescriptor = typeDescriptor;
+				return breakPoint;
+			}
+
+/***********************************************************************
+InstructionLocation
+***********************************************************************/
+
+			bool WfDebugger::InstructionLocation::BreakStepOver(const InstructionLocation& il, bool beforeCodegen)
+			{
+				if (contextIndex != il.contextIndex) return contextIndex > il.contextIndex;
+				if (assembly != il.assembly) return true;
+				if (stackFrameIndex != il.stackFrameIndex) return stackFrameIndex > il.stackFrameIndex;
+
+				auto debugInfo = (beforeCodegen ? assembly->insBeforeCodegen : assembly->insAfterCodegen);
+				auto& range1 = debugInfo->instructionCodeMapping[instruction];
+				auto& range2 = debugInfo->instructionCodeMapping[il.instruction];
+
+				if (range1.codeIndex != range2.codeIndex) return true;
+				if (range1.start.row != range2.start.row) return true;
+
+				return false;
+			}
+
+			bool WfDebugger::InstructionLocation::BreakStepInto(const InstructionLocation& il, bool beforeCodegen)
+			{
+				if (contextIndex != il.contextIndex) return true;
+				if (assembly != il.assembly) return true;
+				if (stackFrameIndex != il.stackFrameIndex) return true;
+
+				auto debugInfo = (beforeCodegen ? assembly->insBeforeCodegen : assembly->insAfterCodegen);
+				auto& range1 = debugInfo->instructionCodeMapping[instruction];
+				auto& range2 = debugInfo->instructionCodeMapping[il.instruction];
+
+				if (range1.codeIndex != range2.codeIndex) return true;
+				if (range1.start.row != range2.start.row) return true;
+
+				return false;
+			}
+
+/***********************************************************************
+WfDebugger
+***********************************************************************/
+
+			void WfDebugger::OnBlockExecution()
+			{
+			}
+
+			void WfDebugger::OnStartExecution()
+			{
+			}
+
+			void WfDebugger::OnStopExecution()
+			{
+			}
+
+			WfDebugger::InstructionLocation WfDebugger::MakeCurrentInstructionLocation()
+			{
+				auto context = threadContexts[threadContexts.Count() - 1];
+				InstructionLocation il;
+				il.contextIndex = threadContexts.Count() - 1;
+				il.assembly = context->globalContext->assembly.Obj();
+				il.stackFrameIndex = context->stackFrames.Count() - 1;
+				il.instruction = context->stackFrames[context->stackFrames.Count() - 1].nextInstructionIndex;
+				return il;
+			}
+				
+			template<typename TKey>
+			bool WfDebugger::HandleBreakPoint(const TKey& key, collections::Dictionary<TKey, vint>& breakPointMap)
+			{
+				if (evaluatingBreakPoint)
+				{
+					return false;
+				}
+
+				evaluatingBreakPoint = true;
+				bool activated = false;
+				vint index = breakPointMap.Keys().IndexOf(key);
+				if (index != -1)
+				{
+					index = breakPointMap.Values()[index];
+					const auto& breakPoint = breakPoints[index];
+					if (breakPoint.available && breakPoint.enabled)
+					{
+						if (breakPoint.action)
+						{
+							activated = breakPoint.action->EvaluateCondition(this);
+							breakPoint.action->PostAction(this);
+						}
+						else
+						{
+							activated = true;
+						}
+					}
+
+					if (activated)
+					{
+						lastActivatedBreakPoint = index;
+					}
+				}
+				evaluatingBreakPoint = false;
+				return activated;
+			}
+
+			void WfDebugger::EnterThreadContext(WfRuntimeThreadContext* context)
+			{
+				if (threadContexts.Count() == 0)
+				{
+					lastActivatedBreakPoint = InvalidBreakPoint;
+					instructionLocation = InstructionLocation();
+					OnStartExecution();
+					if (state == Stopped)
+					{
+						state = Running;
+					}
+				}
+				threadContexts.Add(context);
+			}
+
+			void WfDebugger::LeaveThreadContext(WfRuntimeThreadContext* context)
+			{
+				auto oldContext = threadContexts[threadContexts.Count() - 1];
+				threadContexts.RemoveAt(threadContexts.Count() - 1);
+				CHECK_ERROR(context == oldContext, L"vl::workflow::runtime::WfDebugger::LeaveThreadContext(WfRuntimeThreadContext*)#EnterThreadContext and LeaveThreadContext should be called in pairs.");
+
+				if (threadContexts.Count() == 0)
+				{
+					state = Stopped;
+					OnStopExecution();
+				}
+			}
+
+			bool WfDebugger::BreakIns(WfAssembly* assembly, vint instruction)
+			{
+				if (runningType != RunUntilBreakPoint)
+				{
+					auto il = MakeCurrentInstructionLocation();
+					bool needToBreak = false;
+					switch (runningType)
+					{
+					case RunStepOver:
+						needToBreak = instructionLocation.BreakStepOver(il, stepBeforeCodegen);
+						break;
+					case RunStepInto:
+						needToBreak = instructionLocation.BreakStepInto(il, stepBeforeCodegen);
+						break;
+					default:;
+					}
+					if (needToBreak)
+					{
+						instructionLocation = il;
+						lastActivatedBreakPoint = WfDebugger::PauseBreakPoint;
+						return true;
 					}
 				}
 
-				return WfRuntimeThreadContextError::Success;
-			}
-
-			WfRuntimeThreadContextError WfRuntimeThreadContext::LoadStackValue(vint stackItemIndex, reflection::description::Value& value)
-			{
-				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
-				auto frame = GetCurrentStackFrame();
-				if (stackItemIndex < frame.freeStackBase || stackItemIndex >= stack.Count())
+				switch (state)
 				{
-					return WfRuntimeThreadContextError::WrongVariableIndex;
+				case RequiredToPause:
+				case RequiredToStop:
+					lastActivatedBreakPoint = WfDebugger::PauseBreakPoint;
+					return true;
+				default:;
 				}
 
-				value = stack[stackItemIndex];
-				return WfRuntimeThreadContextError::Success;
+				AssemblyKey key(assembly, instruction);
+				return HandleBreakPoint(key, insBreakPoints);
 			}
 
-			WfRuntimeThreadContextError WfRuntimeThreadContext::LoadGlobalVariable(vint variableIndex, reflection::description::Value& value)
+			bool WfDebugger::BreakRead(WfAssembly* assembly, vint variable)
 			{
-				if (variableIndex < 0 || variableIndex >= globalContext->globalVariables->variables.Count())
-				{
-					return WfRuntimeThreadContextError::WrongVariableIndex;
-				}
-
-				value = globalContext->globalVariables->variables[variableIndex];
-				return WfRuntimeThreadContextError::Success;
+				AssemblyKey key(assembly, variable);
+				return HandleBreakPoint(key, getGlobalVarBreakPoints);
 			}
 
-			WfRuntimeThreadContextError WfRuntimeThreadContext::StoreGlobalVariable(vint variableIndex, const reflection::description::Value& value)
+			bool WfDebugger::BreakWrite(WfAssembly* assembly, vint variable)
 			{
-				if (variableIndex < 0 || variableIndex >= globalContext->globalVariables->variables.Count())
-				{
-					return WfRuntimeThreadContextError::WrongVariableIndex;
-				}
-
-				globalContext->globalVariables->variables[variableIndex] = value;
-				return WfRuntimeThreadContextError::Success;
+				AssemblyKey key(assembly, variable);
+				return HandleBreakPoint(key, setGlobalVarBreakPoints);
 			}
 
-			WfRuntimeThreadContextError WfRuntimeThreadContext::LoadCapturedVariable(vint variableIndex, reflection::description::Value& value)
+			bool WfDebugger::BreakGet(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo)
 			{
-				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
-				auto frame = GetCurrentStackFrame();
-				if (variableIndex < 0 || variableIndex >= frame.capturedVariables->variables.Count())
-				{
-					return WfRuntimeThreadContextError::WrongVariableIndex;
-				}
-
-				value = frame.capturedVariables->variables[variableIndex];
-				return WfRuntimeThreadContextError::Success;
+				PropertyKey key1(thisObject, propertyInfo);
+				PropertyKey key2(nullptr, propertyInfo);
+				return HandleBreakPoint(key1, getPropertyBreakPoints) || HandleBreakPoint(key2, getPropertyBreakPoints);
 			}
 
-			WfRuntimeThreadContextError WfRuntimeThreadContext::StoreCapturedVariable(vint variableIndex, const reflection::description::Value& value)
+			bool WfDebugger::BreakSet(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo)
 			{
-				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
-				auto frame = GetCurrentStackFrame();
-				if (variableIndex < 0 || variableIndex >= frame.capturedVariables->variables.Count())
-				{
-					return WfRuntimeThreadContextError::WrongVariableIndex;
-				}
-
-				frame.capturedVariables->variables[variableIndex] = value;
-				return WfRuntimeThreadContextError::Success;
+				PropertyKey key1(thisObject, propertyInfo);
+				PropertyKey key2(nullptr, propertyInfo);
+				return HandleBreakPoint(key1, setPropertyBreakPoints) || HandleBreakPoint(key2, setPropertyBreakPoints);
 			}
 
-			WfRuntimeThreadContextError WfRuntimeThreadContext::LoadLocalVariable(vint variableIndex, reflection::description::Value& value)
+			bool WfDebugger::BreakAttach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
 			{
-				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
-				auto frame = GetCurrentStackFrame();
-				if (variableIndex < 0 || variableIndex >= frame.fixedVariableCount)
-				{
-					return WfRuntimeThreadContextError::WrongVariableIndex;
-				}
-
-				value = stack[frame.stackBase + variableIndex];
-				return WfRuntimeThreadContextError::Success;
+				EventKey key1(thisObject, eventInfo);
+				EventKey key2(nullptr, eventInfo);
+				return HandleBreakPoint(key1, attachEventBreakPoints) || HandleBreakPoint(key2, attachEventBreakPoints);
 			}
 
-			WfRuntimeThreadContextError WfRuntimeThreadContext::StoreLocalVariable(vint variableIndex, const reflection::description::Value& value)
+			bool WfDebugger::BreakDetach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
 			{
-				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
-				auto frame = GetCurrentStackFrame();
-				if (variableIndex < 0 || variableIndex >= frame.fixedVariableCount)
-				{
-					return WfRuntimeThreadContextError::WrongVariableIndex;
-				}
-
-				stack[frame.stackBase + variableIndex] = value;
-				return WfRuntimeThreadContextError::Success;
+				EventKey key1(thisObject, eventInfo);
+				EventKey key2(nullptr, eventInfo);
+				return HandleBreakPoint(key1, detachEventBreakPoints) || HandleBreakPoint(key2, detachEventBreakPoints);
 			}
 
-			void WfRuntimeThreadContext::ExecuteToEnd()
+			bool WfDebugger::BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
 			{
-				auto callback = GetDebuggerCallback();
-				if (callback)
+				EventKey key1(thisObject, eventInfo);
+				EventKey key2(nullptr, eventInfo);
+				return HandleBreakPoint(key1, invokeEventBreakPoints) || HandleBreakPoint(key2, invokeEventBreakPoints);
+			}
+
+			bool WfDebugger::BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo)
+			{
+				MethodKey key1(thisObject, methodInfo);
+				MethodKey key2(nullptr, methodInfo);
+				return HandleBreakPoint(key1, invokeMethodBreakPoints) || HandleBreakPoint(key2, invokeMethodBreakPoints);
+			}
+
+			bool WfDebugger::BreakCreate(reflection::description::ITypeDescriptor* typeDescriptor)
+			{
+				return HandleBreakPoint(typeDescriptor, createObjectBreakPoints);
+			}
+
+			bool WfDebugger::BreakException(Ptr<WfRuntimeExceptionInfo> info)
+			{
+				if (breakException)
 				{
-					callback->EnterThreadContext(this);
+					lastActivatedBreakPoint = PauseBreakPoint;
+					return true;
 				}
-				while (Execute(callback) != WfRuntimeExecutionAction::Nop);
-				if (callback)
+				else
 				{
-					callback->LeaveThreadContext(this);
+					return false;
+				}
+			}
+
+			bool WfDebugger::WaitForContinue()
+			{
+				if (state == RequiredToStop)
+				{
+					return false;
+				}
+
+				state = lastActivatedBreakPoint >= 0 ? PauseByBreakPoint : PauseByOperation;
+				while (state == PauseByBreakPoint || state == PauseByOperation)
+				{
+					OnBlockExecution();
+				}
+				
+				if (state == Continue)
+				{
+					state = Running;
+				}
+				return true;
+			}
+
+/***********************************************************************
+WfDebugger
+***********************************************************************/
+
+#define TEST(AVAILABLE, KEY, MAP) if (AVAILABLE && available == MAP.Keys().Contains(KEY)) return false;
+#define SET(KEY, MAP) if (available) MAP.Add(KEY, index); else MAP.Remove(KEY);
+#define SETC(AVAILABLE, KEY, MAP) if (AVAILABLE) {if (available) MAP.Add(KEY, index); else MAP.Remove(KEY);}
+
+			bool WfDebugger::SetBreakPoint(const WfBreakPoint& breakPoint, bool available, vint index)
+			{
+				switch (breakPoint.type)
+				{
+				case WfBreakPoint::Instruction:
+					{
+						AssemblyKey key(breakPoint.assembly, breakPoint.instruction);
+						TEST(true, key, insBreakPoints);
+						SET(key, insBreakPoints);
+					}
+					break;
+				case WfBreakPoint::ReadGlobalVar:
+					{
+						AssemblyKey key(breakPoint.assembly, breakPoint.variable);
+						TEST(true, key, getGlobalVarBreakPoints);
+						SET(key, getGlobalVarBreakPoints);
+					}
+					break;
+				case WfBreakPoint::WriteGlobalVar:
+					{
+						AssemblyKey key(breakPoint.assembly, breakPoint.instruction);
+						TEST(true, key, setGlobalVarBreakPoints);
+						SET(key, setGlobalVarBreakPoints);
+					}
+					break;
+				case WfBreakPoint::GetProperty:
+					{
+						PropertyKey key1(breakPoint.thisObject, breakPoint.propertyInfo);
+						MethodKey key2(breakPoint.thisObject, breakPoint.propertyInfo->GetGetter());
+						TEST(true, key1, getPropertyBreakPoints);
+						TEST(key2.f1, key2, invokeMethodBreakPoints);
+						SET(key1, getPropertyBreakPoints);
+						SETC(key2.f1, key2, invokeMethodBreakPoints);
+					}
+					break;
+				case WfBreakPoint::SetProperty:
+					{
+						PropertyKey key1(breakPoint.thisObject, breakPoint.propertyInfo);
+						MethodKey key2(breakPoint.thisObject, breakPoint.propertyInfo->GetSetter());
+						TEST(true, key1, setPropertyBreakPoints);
+						TEST(key2.f1, key2, invokeMethodBreakPoints);
+						SET(key1, setPropertyBreakPoints);
+						SETC(key2.f1, key2, invokeMethodBreakPoints);
+					}
+					break;
+				case WfBreakPoint::AttachEvent:
+					{
+						EventKey key(breakPoint.thisObject, breakPoint.eventInfo);
+						TEST(true, key, attachEventBreakPoints);
+						SET(key, attachEventBreakPoints);
+					}
+					break;
+				case WfBreakPoint::DetachEvent:
+					{
+						EventKey key(breakPoint.thisObject, breakPoint.eventInfo);
+						TEST(true, key, detachEventBreakPoints);
+						SET(key, detachEventBreakPoints);
+					}
+					break;
+				case WfBreakPoint::InvokeEvent:
+					{
+						EventKey key(breakPoint.thisObject, breakPoint.eventInfo);
+						TEST(true, key, invokeEventBreakPoints);
+						SET(key, invokeEventBreakPoints);
+					}
+					break;
+				case WfBreakPoint::InvokeMethod:
+					{
+						// get property, set property and new object are all compiled to invoke method
+						// so here it is not noecessary to generate other keys
+						MethodKey key(breakPoint.thisObject, breakPoint.methodInfo);
+						TEST(true, key, invokeMethodBreakPoints);
+						SET(key, invokeMethodBreakPoints);
+					}
+					break;
+				case WfBreakPoint::CreateObject:
+					{
+						auto group = breakPoint.typeDescriptor->GetConstructorGroup();
+						vint count = group ? group->GetMethodCount() : 0;
+
+						TEST(true, breakPoint.typeDescriptor, createObjectBreakPoints);
+						for (vint i = 0; i < count; i++)
+						{
+							MethodKey key(nullptr, group->GetMethod(i));
+							TEST(true, key, invokeMethodBreakPoints);
+						}
+						SET(breakPoint.typeDescriptor, createObjectBreakPoints);
+						for (vint i = 0; i < count; i++)
+						{
+							MethodKey key(nullptr, group->GetMethod(i));
+							SET(key, invokeMethodBreakPoints);
+						}
+					}
+					break;
+				default:
+					return false;
+				}
+				return true;
+			}
+
+#undef TEST
+#undef SET
+#undef SETC
+
+			WfDebugger::WfDebugger()
+			{
+			}
+
+			WfDebugger::~WfDebugger()
+			{
+			}
+
+			vint WfDebugger::AddBreakPoint(const WfBreakPoint& breakPoint)
+			{
+				vint index = breakPoints.Count();
+				if (freeBreakPointIndices.Count() > 0)
+				{
+					index = freeBreakPointIndices[freeBreakPointIndices.Count() - 1];
+				}
+
+				if (!SetBreakPoint(breakPoint, true, index))
+				{
+					return -1;
+				}
+				
+				if (index == breakPoints.Count())
+				{
+					breakPoints.Add(breakPoint);
+				}
+				else
+				{
+					freeBreakPointIndices.RemoveAt(freeBreakPointIndices.Count() - 1);
+					breakPoints[index] = breakPoint;
+				}
+
+				breakPoints[index].id = index;
+				breakPoints[index].available = true;
+				breakPoints[index].enabled = true;
+				return index;
+			}
+
+			vint WfDebugger::AddCodeLineBreakPoint(WfAssembly* assembly, vint codeIndex, vint row, bool beforeCodegen)
+			{
+				auto& codeInsMap = (beforeCodegen ? assembly->insBeforeCodegen : assembly->insAfterCodegen)->codeInstructionMapping;
+				Tuple<vint, vint> key(codeIndex, row);
+				vint index = codeInsMap.Keys().IndexOf(key);
+				if (index == -1)
+				{
+					return -1;
+				}
+
+				vint ins = codeInsMap.GetByIndex(index)[0];
+				return AddBreakPoint(WfBreakPoint::Ins(assembly, ins));
+			}
+
+			vint WfDebugger::GetBreakPointCount()
+			{
+				return breakPoints.Count();
+			}
+
+			const WfBreakPoint& WfDebugger::GetBreakPoint(vint index)
+			{
+				return breakPoints[index];
+			}
+
+			bool WfDebugger::RemoveBreakPoint(vint index)
+			{
+				if (index < 0 || index >= breakPoints.Count())
+				{
+					return false;
+				}
+
+				auto& breakPoint = breakPoints[index];
+				if (!breakPoint.available || !SetBreakPoint(breakPoint, false, -1))
+				{
+					return false;
+				}
+
+				breakPoint.available = false;
+				freeBreakPointIndices.Add(index);
+				return true;
+			}
+
+			bool WfDebugger::EnableBreakPoint(vint index, bool enabled)
+			{
+				if (0 <= index && index <= breakPoints.Count())
+				{
+					auto& breakPoint = breakPoints[index];
+					if (breakPoint.available)
+					{
+						breakPoint.enabled = enabled;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			bool WfDebugger::GetBreakException()
+			{
+				return breakException;
+			}
+
+			void WfDebugger::SetBreakException(bool value)
+			{
+				breakException = value;
+			}
+
+			bool WfDebugger::Run()
+			{
+				if (state != PauseByOperation && state != PauseByBreakPoint)
+				{
+					return false;
+				}
+				state = Continue;
+				runningType = RunUntilBreakPoint;
+				return true;
+			}
+
+			bool WfDebugger::Pause()
+			{
+				if (state != Running && state != Stopped)
+				{
+					return false;
+				}
+				state = RequiredToPause;
+				return true;
+			}
+
+			bool WfDebugger::Stop()
+			{
+				if (state != PauseByOperation && state != PauseByBreakPoint && state != Running)
+				{
+					return false;
+				}
+				state = RequiredToStop;
+				return true;
+			}
+
+			bool WfDebugger::StepOver(bool beforeCodegen)
+			{
+				if (state != PauseByOperation && state != PauseByBreakPoint && state != Stopped)
+				{
+					return false;
+				}
+				if (state != Stopped)
+				{
+					state = Continue;
+					instructionLocation = MakeCurrentInstructionLocation();
+				}
+				runningType = RunStepOver;
+				stepBeforeCodegen = beforeCodegen;
+				return true;
+			}
+
+			bool WfDebugger::StepInto(bool beforeCodegen)
+			{
+				if (state != PauseByOperation && state != PauseByBreakPoint && state != Stopped)
+				{
+					return false;
+				}
+				if (state != Stopped)
+				{
+					state = Continue;
+					instructionLocation = MakeCurrentInstructionLocation();
+				}
+				state = Continue;
+				runningType = RunStepInto;
+				stepBeforeCodegen = beforeCodegen;
+				return true;
+			}
+
+			WfDebugger::State WfDebugger::GetState()
+			{
+				return state;
+			}
+
+			WfDebugger::RunningType WfDebugger::GetRunningType()
+			{
+				return runningType;
+			}
+
+			vint WfDebugger::GetLastActivatedBreakPoint()
+			{
+				return lastActivatedBreakPoint;
+			}
+
+			const WfDebugger::ThreadContextList& WfDebugger::GetThreadContexts()
+			{
+				return threadContexts;
+			}
+
+			WfRuntimeThreadContext* WfDebugger::GetCurrentThreadContext()
+			{
+				if (threadContexts.Count() == 0)
+				{
+					return nullptr;
+				}
+				return threadContexts[threadContexts.Count() - 1];
+			}
+
+			const parsing::ParsingTextRange& WfDebugger::GetCurrentPosition(bool beforeCodegen, WfRuntimeThreadContext* context, vint callStackIndex)
+			{
+				if (!context)
+				{
+					context = GetCurrentThreadContext();
+				}
+				if (callStackIndex == -1)
+				{
+					callStackIndex = context->stackFrames.Count() - 1;
+				}
+
+				auto& stackFrame = context->stackFrames[callStackIndex];
+				auto ins = stackFrame.nextInstructionIndex;
+				auto debugInfo = (beforeCodegen ? context->globalContext->assembly->insBeforeCodegen : context->globalContext->assembly->insAfterCodegen);
+				return debugInfo->instructionCodeMapping[ins];
+			}
+
+			reflection::description::Value WfDebugger::GetValueByName(const WString& name, WfRuntimeThreadContext* context, vint callStackIndex)
+			{
+				if (!context)
+				{
+					context = GetCurrentThreadContext();
+				}
+				if (callStackIndex == -1)
+				{
+					callStackIndex = context->stackFrames.Count() - 1;
+				}
+
+				auto& stackFrame = context->stackFrames[callStackIndex];
+				auto function = context->globalContext->assembly->functions[stackFrame.functionIndex];
+
+				vint index = function->argumentNames.IndexOf(name);
+				if (index != -1)
+				{
+					return context->stack[stackFrame.stackBase + index];
+				}
+
+				index = function->localVariableNames.IndexOf(name);
+				if (index != -1)
+				{
+					return context->stack[stackFrame.stackBase + function->argumentNames.Count() + index];
+				}
+
+				index = function->capturedVariableNames.IndexOf(name);
+				if (index != -1)
+				{
+					return stackFrame.capturedVariables->variables[index];
+				}
+
+				index = context->globalContext->assembly->variableNames.IndexOf(name);
+				if (index != -1)
+				{
+					return context->globalContext->globalVariables->variables[index];
+				}
+
+				return Value();
+			}
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+			ThreadVariable<Ptr<WfDebugger>> threadDebugger;
+
+			IWfDebuggerCallback* GetDebuggerCallback()
+			{
+				return GetDebuggerCallback(GetDebuggerForCurrentThread().Obj());
+			}
+
+			IWfDebuggerCallback* GetDebuggerCallback(WfDebugger* debugger)
+			{
+				return debugger;
+			}
+
+			Ptr<WfDebugger> GetDebuggerForCurrentThread()
+			{
+				return threadDebugger.HasData() ? threadDebugger.Get() : nullptr;
+			}
+
+			void SetDebuggerForCurrentThread(Ptr<WfDebugger> debugger)
+			{
+				threadDebugger.Set(debugger);
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\WFRUNTIMECONSTRUCTIONS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace runtime
+		{
+			using namespace reflection::description;
+			
+/***********************************************************************
+WfRuntimeLambda
+***********************************************************************/
+
+			WfRuntimeLambda::WfRuntimeLambda(Ptr<WfRuntimeGlobalContext> _globalContext, Ptr<WfRuntimeVariableContext> _capturedVariables, vint _functionIndex)
+				:globalContext(_globalContext)
+				, capturedVariables(_capturedVariables)
+				, functionIndex(_functionIndex)
+			{
+			}
+
+			Value WfRuntimeLambda::Invoke(Ptr<reflection::description::IValueList> arguments)
+			{
+				return Invoke(globalContext, capturedVariables, functionIndex, arguments);
+			}
+
+			Value WfRuntimeLambda::Invoke(Ptr<WfRuntimeGlobalContext> globalContext, Ptr<WfRuntimeVariableContext> capturedVariables, vint functionIndex, Ptr<reflection::description::IValueList> arguments)
+			{
+				WfRuntimeThreadContext context(globalContext);
+				vint count = arguments->GetCount();
+				for (vint i = 0; i < count; i++)
+				{
+					context.PushValue(arguments->Get(i));
+				}
+					
+				WString message;
+				if (context.PushStackFrame(functionIndex, count, capturedVariables) != WfRuntimeThreadContextError::Success)
+				{
+					throw WfRuntimeException(L"Internal error: failed to invoke a function.", true);
+				}
+
+				context.ExecuteToEnd();
+				if (context.status != WfRuntimeExecutionStatus::Finished)
+				{
+					throw WfRuntimeException(context.exceptionInfo);
+				}
+
+				Value result;
+				if (context.PopValue(result) != WfRuntimeThreadContextError::Success)
+				{
+					throw WfRuntimeException(L"Internal error: failed to pop the function result.", true);
+				}
+					
+				return result;
+			}
+			
+/***********************************************************************
+WfRuntimeInterfaceInstance
+***********************************************************************/
+
+			Value WfRuntimeInterfaceInstance::Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)
+			{
+				vint index = functions.Keys().IndexOf(methodInfo);
+				if (index == -1)
+				{
+					throw WfRuntimeException(
+						L"Internal error: failed to invoke the interface method \"" +
+						methodInfo->GetName() +
+						L"\" of type \"" +
+						methodInfo->GetOwnerTypeDescriptor()->GetTypeName() +
+						L"\"", true);
+				}
+				else
+				{
+					vint functionIndex = functions.Values()[index];
+					return WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, arguments);
 				}
 			}
 		}
@@ -2230,3227 +4904,553 @@ WfAssembly
 
 
 /***********************************************************************
-.\WFRUNTIMECONSTRUCTIONS.CPP
+.\WFRUNTIME.CPP
 ***********************************************************************/
 
 namespace vl
 {
+	using namespace reflection;
+	using namespace reflection::description;
+	using namespace workflow::runtime;
+	using namespace collections;
+
 	namespace workflow
 	{
 		namespace runtime
 		{
-			using namespace reflection::description;
-			
-/***********************************************************************
-WfRuntimeLambda
-***********************************************************************/
-
-			WfRuntimeLambda::WfRuntimeLambda(Ptr<WfRuntimeGlobalContext> _globalContext, Ptr<WfRuntimeVariableContext> _capturedVariables, vint _functionIndex)
-				:globalContext(_globalContext)
-				, capturedVariables(_capturedVariables)
-				, functionIndex(_functionIndex)
-			{
-			}
-
-			Value WfRuntimeLambda::Invoke(Ptr<reflection::description::IValueList> arguments)
-			{
-				return Invoke(globalContext, capturedVariables, functionIndex, arguments);
-			}
-
-			Value WfRuntimeLambda::Invoke(Ptr<WfRuntimeGlobalContext> globalContext, Ptr<WfRuntimeVariableContext> capturedVariables, vint functionIndex, Ptr<reflection::description::IValueList> arguments)
-			{
-				WfRuntimeThreadContext context(globalContext);
-				vint count = arguments->GetCount();
-				for (vint i = 0; i < count; i++)
-				{
-					context.PushValue(arguments->Get(i));
-				}
-					
-				WString message;
-				if (context.PushStackFrame(functionIndex, count, capturedVariables) != WfRuntimeThreadContextError::Success)
-				{
-					throw WfRuntimeException(L"Internal error: failed to invoke a function.", true);
-				}
-
-				context.ExecuteToEnd();
-				if (context.status != WfRuntimeExecutionStatus::Finished)
-				{
-					throw WfRuntimeException(context.exceptionInfo);
-				}
-
-				Value result;
-				if (context.PopValue(result) != WfRuntimeThreadContextError::Success)
-				{
-					throw WfRuntimeException(L"Internal error: failed to pop the function result.", true);
-				}
-					
-				return result;
-			}
-			
-/***********************************************************************
-WfRuntimeInterfaceInstance
-***********************************************************************/
-
-			Value WfRuntimeInterfaceInstance::Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)
-			{
-				vint index = functions.Keys().IndexOf(methodInfo);
-				if (index == -1)
-				{
-					throw WfRuntimeException(
-						L"Internal error: failed to invoke the interface method \"" +
-						methodInfo->GetName() +
-						L"\" of type \"" +
-						methodInfo->GetOwnerTypeDescriptor()->GetTypeName() +
-						L"\"", true);
-				}
-				else
-				{
-					vint functionIndex = functions.Values()[index];
-					return WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, arguments);
-				}
-			}
-		}
-	}
-}
 
 /***********************************************************************
-.\WFRUNTIMEDEBUGGER.CPP
-***********************************************************************/
-#include <math.h>
-
-namespace vl
-{
-	namespace workflow
-	{
-		namespace runtime
-		{
-			using namespace collections;
-			using namespace reflection;
-			using namespace reflection::description;
-
-/***********************************************************************
-IWfDebuggerCallback
+WfRuntimeGlobalContext
 ***********************************************************************/
 
-			WfBreakPoint WfBreakPoint::Ins(WfAssembly* assembly, vint instruction)
+			WfRuntimeGlobalContext::WfRuntimeGlobalContext(Ptr<WfAssembly> _assembly)
+				:assembly(_assembly)
 			{
-				WfBreakPoint breakPoint;
-				breakPoint.type = Instruction;
-				breakPoint.assembly = assembly;
-				breakPoint.instruction = instruction;
-				return breakPoint;
+				globalVariables = new WfRuntimeVariableContext;
+				globalVariables->variables.Resize(assembly->variableNames.Count());
+				if (assembly->typeImpl)
+				{
+					assembly->typeImpl->SetGlobalContext(this);
+				}
 			}
 
-			WfBreakPoint WfBreakPoint::Read(WfAssembly* assembly, vint variable)
+			WfRuntimeGlobalContext::~WfRuntimeGlobalContext()
 			{
-				WfBreakPoint breakPoint;
-				breakPoint.type = ReadGlobalVar;
-				breakPoint.assembly = assembly;
-				breakPoint.variable = variable;
-				return breakPoint;
-			}
-
-			WfBreakPoint WfBreakPoint::Write(WfAssembly* assembly, vint variable)
-			{
-				WfBreakPoint breakPoint;
-				breakPoint.type = WriteGlobalVar;
-				breakPoint.assembly = assembly;
-				breakPoint.variable = variable;
-				return breakPoint;
-			}
-
-			WfBreakPoint WfBreakPoint::Get(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo)
-			{
-				WfBreakPoint breakPoint;
-				breakPoint.type = GetProperty;
-				breakPoint.thisObject = thisObject;
-				breakPoint.propertyInfo = propertyInfo;
-				return breakPoint;
-			}
-
-			WfBreakPoint WfBreakPoint::Set(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo)
-			{
-				WfBreakPoint breakPoint;
-				breakPoint.type = SetProperty;
-				breakPoint.thisObject = thisObject;
-				breakPoint.propertyInfo = propertyInfo;
-				return breakPoint;
-			}
-
-			WfBreakPoint WfBreakPoint::Attach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
-			{
-				WfBreakPoint breakPoint;
-				breakPoint.type = AttachEvent;
-				breakPoint.thisObject = thisObject;
-				breakPoint.eventInfo = eventInfo;
-				return breakPoint;
-			}
-
-			WfBreakPoint WfBreakPoint::Detach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
-			{
-				WfBreakPoint breakPoint;
-				breakPoint.type = DetachEvent;
-				breakPoint.thisObject = thisObject;
-				breakPoint.eventInfo = eventInfo;
-				return breakPoint;
-			}
-
-			WfBreakPoint WfBreakPoint::Invoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
-			{
-				WfBreakPoint breakPoint;
-				breakPoint.type = InvokeEvent;
-				breakPoint.thisObject = thisObject;
-				breakPoint.eventInfo = eventInfo;
-				return breakPoint;
-			}
-
-			WfBreakPoint WfBreakPoint::Invoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo)
-			{
-				WfBreakPoint breakPoint;
-				breakPoint.type = InvokeMethod;
-				breakPoint.thisObject = thisObject;
-				breakPoint.methodInfo = methodInfo;
-				return breakPoint;
-			}
-
-			WfBreakPoint WfBreakPoint::Create(reflection::description::ITypeDescriptor* typeDescriptor)
-			{
-				WfBreakPoint breakPoint;
-				breakPoint.type = CreateObject;
-				breakPoint.typeDescriptor = typeDescriptor;
-				return breakPoint;
+				if (assembly->typeImpl)
+				{
+					assembly->typeImpl->SetGlobalContext(nullptr);
+				}
 			}
 
 /***********************************************************************
-InstructionLocation
+WfRuntimeCallStackInfo
 ***********************************************************************/
 
-			bool WfDebugger::InstructionLocation::BreakStepOver(const InstructionLocation& il, bool beforeCodegen)
+			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetVariables(collections::List<WString>& names, Ptr<WfRuntimeVariableContext> context, Ptr<IValueReadonlyDictionary>& cache)
 			{
-				if (contextIndex != il.contextIndex) return contextIndex > il.contextIndex;
-				if (assembly != il.assembly) return true;
-				if (stackFrameIndex != il.stackFrameIndex) return stackFrameIndex > il.stackFrameIndex;
-
-				auto debugInfo = (beforeCodegen ? assembly->insBeforeCodegen : assembly->insAfterCodegen);
-				auto& range1 = debugInfo->instructionCodeMapping[instruction];
-				auto& range2 = debugInfo->instructionCodeMapping[il.instruction];
-
-				if (range1.codeIndex != range2.codeIndex) return true;
-				if (range1.start.row != range2.start.row) return true;
-
-				return false;
-			}
-
-			bool WfDebugger::InstructionLocation::BreakStepInto(const InstructionLocation& il, bool beforeCodegen)
-			{
-				if (contextIndex != il.contextIndex) return true;
-				if (assembly != il.assembly) return true;
-				if (stackFrameIndex != il.stackFrameIndex) return true;
-
-				auto debugInfo = (beforeCodegen ? assembly->insBeforeCodegen : assembly->insAfterCodegen);
-				auto& range1 = debugInfo->instructionCodeMapping[instruction];
-				auto& range2 = debugInfo->instructionCodeMapping[il.instruction];
-
-				if (range1.codeIndex != range2.codeIndex) return true;
-				if (range1.start.row != range2.start.row) return true;
-
-				return false;
-			}
-
-/***********************************************************************
-WfDebugger
-***********************************************************************/
-
-			void WfDebugger::OnBlockExecution()
-			{
-			}
-
-			void WfDebugger::OnStartExecution()
-			{
-			}
-
-			void WfDebugger::OnStopExecution()
-			{
-			}
-
-			WfDebugger::InstructionLocation WfDebugger::MakeCurrentInstructionLocation()
-			{
-				auto context = threadContexts[threadContexts.Count() - 1];
-				InstructionLocation il;
-				il.contextIndex = threadContexts.Count() - 1;
-				il.assembly = context->globalContext->assembly.Obj();
-				il.stackFrameIndex = context->stackFrames.Count() - 1;
-				il.instruction = context->stackFrames[context->stackFrames.Count() - 1].nextInstructionIndex;
-				return il;
-			}
-				
-			template<typename TKey>
-			bool WfDebugger::HandleBreakPoint(const TKey& key, collections::Dictionary<TKey, vint>& breakPointMap)
-			{
-				if (evaluatingBreakPoint)
+				if (!cache)
 				{
-					return false;
-				}
-
-				evaluatingBreakPoint = true;
-				bool activated = false;
-				vint index = breakPointMap.Keys().IndexOf(key);
-				if (index != -1)
-				{
-					index = breakPointMap.Values()[index];
-					const auto& breakPoint = breakPoints[index];
-					if (breakPoint.available && breakPoint.enabled)
+					if (!context)
 					{
-						if (breakPoint.action)
+						Dictionary<WString, Value> map;
+						FOREACH_INDEXER(WString, name, index, names)
 						{
-							activated = breakPoint.action->EvaluateCondition(this);
-							breakPoint.action->PostAction(this);
+							map.Add(name, context->variables[index]);
 						}
-						else
-						{
-							activated = true;
-						}
+						cache = IValueDictionary::Create(
+							From(map)
+								.Select([](Pair<WString, Value> pair)
+								{
+									return Pair<Value, Value>(BoxValue(pair.key), pair.value);
+								})
+							);
 					}
-
-					if (activated)
+					else
 					{
-						lastActivatedBreakPoint = index;
+						cache = IValueDictionary::Create();
 					}
 				}
-				evaluatingBreakPoint = false;
-				return activated;
+				return cache;
 			}
 
-			void WfDebugger::EnterThreadContext(WfRuntimeThreadContext* context)
+			WfRuntimeCallStackInfo::WfRuntimeCallStackInfo()
 			{
-				if (threadContexts.Count() == 0)
+			}
+
+			WfRuntimeCallStackInfo::WfRuntimeCallStackInfo(WfRuntimeThreadContext* context, const WfRuntimeStackFrame& stackFrame)
+			{
+				assembly = context->globalContext->assembly;
+				functionIndex = stackFrame.functionIndex;
+				instruction = stackFrame.nextInstructionIndex - 1;
+
+				auto function = assembly->functions[functionIndex];
+
+				if (context->globalContext->globalVariables->variables.Count() > 0)
 				{
-					lastActivatedBreakPoint = InvalidBreakPoint;
-					instructionLocation = InstructionLocation();
-					OnStartExecution();
-					if (state == Stopped)
-					{
-						state = Running;
-					}
+					global = context->globalContext->globalVariables;
 				}
-				threadContexts.Add(context);
-			}
 
-			void WfDebugger::LeaveThreadContext(WfRuntimeThreadContext* context)
-			{
-				auto oldContext = threadContexts[threadContexts.Count() - 1];
-				threadContexts.RemoveAt(threadContexts.Count() - 1);
-				CHECK_ERROR(context == oldContext, L"vl::workflow::runtime::WfDebugger::LeaveThreadContext(WfRuntimeThreadContext*)#EnterThreadContext and LeaveThreadContext should be called in pairs.");
+				captured = stackFrame.capturedVariables;
 
-				if (threadContexts.Count() == 0)
+				if (function->argumentNames.Count() > 0)
 				{
-					state = Stopped;
-					OnStopExecution();
+					arguments = new WfRuntimeVariableContext;
+					arguments->variables.Resize(function->argumentNames.Count());
+					for (vint i = 0; i < arguments->variables.Count(); i++)
+					{
+						arguments->variables[i] = context->stack[stackFrame.stackBase + i];
+					}
 				}
-			}
 
-			bool WfDebugger::BreakIns(WfAssembly* assembly, vint instruction)
-			{
-				if (runningType != RunUntilBreakPoint)
+				if (function->localVariableNames.Count()>0)
 				{
-					auto il = MakeCurrentInstructionLocation();
-					bool needToBreak = false;
-					switch (runningType)
+					localVariables = new WfRuntimeVariableContext;
+					localVariables->variables.Resize(function->localVariableNames.Count());
+					for (vint i = 0; i < localVariables->variables.Count(); i++)
 					{
-					case RunStepOver:
-						needToBreak = instructionLocation.BreakStepOver(il, stepBeforeCodegen);
-						break;
-					case RunStepInto:
-						needToBreak = instructionLocation.BreakStepInto(il, stepBeforeCodegen);
-						break;
-					default:;
-					}
-					if (needToBreak)
-					{
-						instructionLocation = il;
-						lastActivatedBreakPoint = WfDebugger::PauseBreakPoint;
-						return true;
+						localVariables->variables[i] = context->stack[stackFrame.stackBase + function->argumentNames.Count() + i];
 					}
 				}
+			}
 
-				switch (state)
+			WfRuntimeCallStackInfo::~WfRuntimeCallStackInfo()
+			{
+			}
+
+			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetLocalVariables()
+			{
+				return GetVariables(assembly->functions[functionIndex]->localVariableNames, localVariables, cachedLocalVariables);
+			}
+
+			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetLocalArguments()
+			{
+				return GetVariables(assembly->functions[functionIndex]->argumentNames, arguments, cachedLocalArguments);
+			}
+
+			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetCapturedVariables()
+			{
+				return GetVariables(assembly->functions[functionIndex]->capturedVariableNames, captured, cachedCapturedVariables);
+			}
+
+			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetGlobalVariables()
+			{
+				return GetVariables(assembly->variableNames, global, cachedGlobalVariables);
+			}
+
+			WString WfRuntimeCallStackInfo::GetFunctionName()
+			{
+				if (!assembly)
 				{
-				case RequiredToPause:
-				case RequiredToStop:
-					lastActivatedBreakPoint = WfDebugger::PauseBreakPoint;
-					return true;
-				default:;
+					return L"<EXTERNAL CODE>";
 				}
-
-				AssemblyKey key(assembly, instruction);
-				return HandleBreakPoint(key, insBreakPoints);
+				return assembly->functions[functionIndex]->name;
 			}
 
-			bool WfDebugger::BreakRead(WfAssembly* assembly, vint variable)
+			WString WfRuntimeCallStackInfo::GetSourceCodeBeforeCodegen()
 			{
-				AssemblyKey key(assembly, variable);
-				return HandleBreakPoint(key, getGlobalVarBreakPoints);
-			}
-
-			bool WfDebugger::BreakWrite(WfAssembly* assembly, vint variable)
-			{
-				AssemblyKey key(assembly, variable);
-				return HandleBreakPoint(key, setGlobalVarBreakPoints);
-			}
-
-			bool WfDebugger::BreakGet(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo)
-			{
-				PropertyKey key1(thisObject, propertyInfo);
-				PropertyKey key2(nullptr, propertyInfo);
-				return HandleBreakPoint(key1, getPropertyBreakPoints) || HandleBreakPoint(key2, getPropertyBreakPoints);
-			}
-
-			bool WfDebugger::BreakSet(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo)
-			{
-				PropertyKey key1(thisObject, propertyInfo);
-				PropertyKey key2(nullptr, propertyInfo);
-				return HandleBreakPoint(key1, setPropertyBreakPoints) || HandleBreakPoint(key2, setPropertyBreakPoints);
-			}
-
-			bool WfDebugger::BreakAttach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
-			{
-				EventKey key1(thisObject, eventInfo);
-				EventKey key2(nullptr, eventInfo);
-				return HandleBreakPoint(key1, attachEventBreakPoints) || HandleBreakPoint(key2, attachEventBreakPoints);
-			}
-
-			bool WfDebugger::BreakDetach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
-			{
-				EventKey key1(thisObject, eventInfo);
-				EventKey key2(nullptr, eventInfo);
-				return HandleBreakPoint(key1, detachEventBreakPoints) || HandleBreakPoint(key2, detachEventBreakPoints);
-			}
-
-			bool WfDebugger::BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
-			{
-				EventKey key1(thisObject, eventInfo);
-				EventKey key2(nullptr, eventInfo);
-				return HandleBreakPoint(key1, invokeEventBreakPoints) || HandleBreakPoint(key2, invokeEventBreakPoints);
-			}
-
-			bool WfDebugger::BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo)
-			{
-				MethodKey key1(thisObject, methodInfo);
-				MethodKey key2(nullptr, methodInfo);
-				return HandleBreakPoint(key1, invokeMethodBreakPoints) || HandleBreakPoint(key2, invokeMethodBreakPoints);
-			}
-
-			bool WfDebugger::BreakCreate(reflection::description::ITypeDescriptor* typeDescriptor)
-			{
-				return HandleBreakPoint(typeDescriptor, createObjectBreakPoints);
-			}
-
-			bool WfDebugger::BreakException(Ptr<WfRuntimeExceptionInfo> info)
-			{
-				if (breakException)
+				if (!assembly)
 				{
-					lastActivatedBreakPoint = PauseBreakPoint;
-					return true;
+					return L"";
 				}
-				else
+				const auto& range = assembly->insBeforeCodegen->instructionCodeMapping[instruction];
+				if (range.codeIndex == -1)
 				{
-					return false;
+					return L"";
 				}
+				return assembly->insBeforeCodegen->moduleCodes[range.codeIndex];
 			}
 
-			bool WfDebugger::WaitForContinue()
+			WString WfRuntimeCallStackInfo::GetSourceCodeAfterCodegen()
 			{
-				if (state == RequiredToStop)
+				if (!assembly)
 				{
-					return false;
+					return L"";
 				}
-
-				state = lastActivatedBreakPoint >= 0 ? PauseByBreakPoint : PauseByOperation;
-				while (state == PauseByBreakPoint || state == PauseByOperation)
+				const auto& range = assembly->insAfterCodegen->instructionCodeMapping[instruction];
+				if (range.codeIndex == -1)
 				{
-					OnBlockExecution();
+					return L"";
 				}
-				
-				if (state == Continue)
-				{
-					state = Running;
-				}
-				return true;
+				return assembly->insAfterCodegen->moduleCodes[range.codeIndex];
 			}
 
-/***********************************************************************
-WfDebugger
-***********************************************************************/
-
-#define TEST(AVAILABLE, KEY, MAP) if (AVAILABLE && available == MAP.Keys().Contains(KEY)) return false;
-#define SET(KEY, MAP) if (available) MAP.Add(KEY, index); else MAP.Remove(KEY);
-#define SETC(AVAILABLE, KEY, MAP) if (AVAILABLE) {if (available) MAP.Add(KEY, index); else MAP.Remove(KEY);}
-
-			bool WfDebugger::SetBreakPoint(const WfBreakPoint& breakPoint, bool available, vint index)
+			vint WfRuntimeCallStackInfo::GetRowBeforeCodegen()
 			{
-				switch (breakPoint.type)
-				{
-				case WfBreakPoint::Instruction:
-					{
-						AssemblyKey key(breakPoint.assembly, breakPoint.instruction);
-						TEST(true, key, insBreakPoints);
-						SET(key, insBreakPoints);
-					}
-					break;
-				case WfBreakPoint::ReadGlobalVar:
-					{
-						AssemblyKey key(breakPoint.assembly, breakPoint.variable);
-						TEST(true, key, getGlobalVarBreakPoints);
-						SET(key, getGlobalVarBreakPoints);
-					}
-					break;
-				case WfBreakPoint::WriteGlobalVar:
-					{
-						AssemblyKey key(breakPoint.assembly, breakPoint.instruction);
-						TEST(true, key, setGlobalVarBreakPoints);
-						SET(key, setGlobalVarBreakPoints);
-					}
-					break;
-				case WfBreakPoint::GetProperty:
-					{
-						PropertyKey key1(breakPoint.thisObject, breakPoint.propertyInfo);
-						MethodKey key2(breakPoint.thisObject, breakPoint.propertyInfo->GetGetter());
-						TEST(true, key1, getPropertyBreakPoints);
-						TEST(key2.f1, key2, invokeMethodBreakPoints);
-						SET(key1, getPropertyBreakPoints);
-						SETC(key2.f1, key2, invokeMethodBreakPoints);
-					}
-					break;
-				case WfBreakPoint::SetProperty:
-					{
-						PropertyKey key1(breakPoint.thisObject, breakPoint.propertyInfo);
-						MethodKey key2(breakPoint.thisObject, breakPoint.propertyInfo->GetSetter());
-						TEST(true, key1, setPropertyBreakPoints);
-						TEST(key2.f1, key2, invokeMethodBreakPoints);
-						SET(key1, setPropertyBreakPoints);
-						SETC(key2.f1, key2, invokeMethodBreakPoints);
-					}
-					break;
-				case WfBreakPoint::AttachEvent:
-					{
-						EventKey key(breakPoint.thisObject, breakPoint.eventInfo);
-						TEST(true, key, attachEventBreakPoints);
-						SET(key, attachEventBreakPoints);
-					}
-					break;
-				case WfBreakPoint::DetachEvent:
-					{
-						EventKey key(breakPoint.thisObject, breakPoint.eventInfo);
-						TEST(true, key, detachEventBreakPoints);
-						SET(key, detachEventBreakPoints);
-					}
-					break;
-				case WfBreakPoint::InvokeEvent:
-					{
-						EventKey key(breakPoint.thisObject, breakPoint.eventInfo);
-						TEST(true, key, invokeEventBreakPoints);
-						SET(key, invokeEventBreakPoints);
-					}
-					break;
-				case WfBreakPoint::InvokeMethod:
-					{
-						// get property, set property and new object are all compiled to invoke method
-						// so here it is not noecessary to generate other keys
-						MethodKey key(breakPoint.thisObject, breakPoint.methodInfo);
-						TEST(true, key, invokeMethodBreakPoints);
-						SET(key, invokeMethodBreakPoints);
-					}
-					break;
-				case WfBreakPoint::CreateObject:
-					{
-						auto group = breakPoint.typeDescriptor->GetConstructorGroup();
-						vint count = group ? group->GetMethodCount() : 0;
-
-						TEST(true, breakPoint.typeDescriptor, createObjectBreakPoints);
-						for (vint i = 0; i < count; i++)
-						{
-							MethodKey key(nullptr, group->GetMethod(i));
-							TEST(true, key, invokeMethodBreakPoints);
-						}
-						SET(breakPoint.typeDescriptor, createObjectBreakPoints);
-						for (vint i = 0; i < count; i++)
-						{
-							MethodKey key(nullptr, group->GetMethod(i));
-							SET(key, invokeMethodBreakPoints);
-						}
-					}
-					break;
-				default:
-					return false;
-				}
-				return true;
-			}
-
-#undef TEST
-#undef SET
-#undef SETC
-
-			WfDebugger::WfDebugger()
-			{
-			}
-
-			WfDebugger::~WfDebugger()
-			{
-			}
-
-			vint WfDebugger::AddBreakPoint(const WfBreakPoint& breakPoint)
-			{
-				vint index = breakPoints.Count();
-				if (freeBreakPointIndices.Count() > 0)
-				{
-					index = freeBreakPointIndices[freeBreakPointIndices.Count() - 1];
-				}
-
-				if (!SetBreakPoint(breakPoint, true, index))
+				if (!assembly)
 				{
 					return -1;
 				}
-				
-				if (index == breakPoints.Count())
-				{
-					breakPoints.Add(breakPoint);
-				}
-				else
-				{
-					freeBreakPointIndices.RemoveAt(freeBreakPointIndices.Count() - 1);
-					breakPoints[index] = breakPoint;
-				}
-
-				breakPoints[index].id = index;
-				breakPoints[index].available = true;
-				breakPoints[index].enabled = true;
-				return index;
+				const auto& range = assembly->insBeforeCodegen->instructionCodeMapping[instruction];
+				return range.start.row;
 			}
 
-			vint WfDebugger::AddCodeLineBreakPoint(WfAssembly* assembly, vint codeIndex, vint row, bool beforeCodegen)
+			vint WfRuntimeCallStackInfo::GetRowAfterCodegen()
 			{
-				auto& codeInsMap = (beforeCodegen ? assembly->insBeforeCodegen : assembly->insAfterCodegen)->codeInstructionMapping;
-				Tuple<vint, vint> key(codeIndex, row);
-				vint index = codeInsMap.Keys().IndexOf(key);
-				if (index == -1)
+				if (!assembly)
 				{
 					return -1;
 				}
-
-				vint ins = codeInsMap.GetByIndex(index)[0];
-				return AddBreakPoint(WfBreakPoint::Ins(assembly, ins));
-			}
-
-			vint WfDebugger::GetBreakPointCount()
-			{
-				return breakPoints.Count();
-			}
-
-			const WfBreakPoint& WfDebugger::GetBreakPoint(vint index)
-			{
-				return breakPoints[index];
-			}
-
-			bool WfDebugger::RemoveBreakPoint(vint index)
-			{
-				if (index < 0 || index >= breakPoints.Count())
-				{
-					return false;
-				}
-
-				auto& breakPoint = breakPoints[index];
-				if (!breakPoint.available || !SetBreakPoint(breakPoint, false, -1))
-				{
-					return false;
-				}
-
-				breakPoint.available = false;
-				freeBreakPointIndices.Add(index);
-				return true;
-			}
-
-			bool WfDebugger::EnableBreakPoint(vint index, bool enabled)
-			{
-				if (0 <= index && index <= breakPoints.Count())
-				{
-					auto& breakPoint = breakPoints[index];
-					if (breakPoint.available)
-					{
-						breakPoint.enabled = enabled;
-						return true;
-					}
-				}
-				return false;
-			}
-
-			bool WfDebugger::GetBreakException()
-			{
-				return breakException;
-			}
-
-			void WfDebugger::SetBreakException(bool value)
-			{
-				breakException = value;
-			}
-
-			bool WfDebugger::Run()
-			{
-				if (state != PauseByOperation && state != PauseByBreakPoint)
-				{
-					return false;
-				}
-				state = Continue;
-				runningType = RunUntilBreakPoint;
-				return true;
-			}
-
-			bool WfDebugger::Pause()
-			{
-				if (state != Running && state != Stopped)
-				{
-					return false;
-				}
-				state = RequiredToPause;
-				return true;
-			}
-
-			bool WfDebugger::Stop()
-			{
-				if (state != PauseByOperation && state != PauseByBreakPoint && state != Running)
-				{
-					return false;
-				}
-				state = RequiredToStop;
-				return true;
-			}
-
-			bool WfDebugger::StepOver(bool beforeCodegen)
-			{
-				if (state != PauseByOperation && state != PauseByBreakPoint && state != Stopped)
-				{
-					return false;
-				}
-				if (state != Stopped)
-				{
-					state = Continue;
-					instructionLocation = MakeCurrentInstructionLocation();
-				}
-				runningType = RunStepOver;
-				stepBeforeCodegen = beforeCodegen;
-				return true;
-			}
-
-			bool WfDebugger::StepInto(bool beforeCodegen)
-			{
-				if (state != PauseByOperation && state != PauseByBreakPoint && state != Stopped)
-				{
-					return false;
-				}
-				if (state != Stopped)
-				{
-					state = Continue;
-					instructionLocation = MakeCurrentInstructionLocation();
-				}
-				state = Continue;
-				runningType = RunStepInto;
-				stepBeforeCodegen = beforeCodegen;
-				return true;
-			}
-
-			WfDebugger::State WfDebugger::GetState()
-			{
-				return state;
-			}
-
-			WfDebugger::RunningType WfDebugger::GetRunningType()
-			{
-				return runningType;
-			}
-
-			vint WfDebugger::GetLastActivatedBreakPoint()
-			{
-				return lastActivatedBreakPoint;
-			}
-
-			const WfDebugger::ThreadContextList& WfDebugger::GetThreadContexts()
-			{
-				return threadContexts;
-			}
-
-			WfRuntimeThreadContext* WfDebugger::GetCurrentThreadContext()
-			{
-				if (threadContexts.Count() == 0)
-				{
-					return nullptr;
-				}
-				return threadContexts[threadContexts.Count() - 1];
-			}
-
-			const parsing::ParsingTextRange& WfDebugger::GetCurrentPosition(bool beforeCodegen, WfRuntimeThreadContext* context, vint callStackIndex)
-			{
-				if (!context)
-				{
-					context = GetCurrentThreadContext();
-				}
-				if (callStackIndex == -1)
-				{
-					callStackIndex = context->stackFrames.Count() - 1;
-				}
-
-				auto& stackFrame = context->stackFrames[callStackIndex];
-				auto ins = stackFrame.nextInstructionIndex;
-				auto debugInfo = (beforeCodegen ? context->globalContext->assembly->insBeforeCodegen : context->globalContext->assembly->insAfterCodegen);
-				return debugInfo->instructionCodeMapping[ins];
-			}
-
-			reflection::description::Value WfDebugger::GetValueByName(const WString& name, WfRuntimeThreadContext* context, vint callStackIndex)
-			{
-				if (!context)
-				{
-					context = GetCurrentThreadContext();
-				}
-				if (callStackIndex == -1)
-				{
-					callStackIndex = context->stackFrames.Count() - 1;
-				}
-
-				auto& stackFrame = context->stackFrames[callStackIndex];
-				auto function = context->globalContext->assembly->functions[stackFrame.functionIndex];
-
-				vint index = function->argumentNames.IndexOf(name);
-				if (index != -1)
-				{
-					return context->stack[stackFrame.stackBase + index];
-				}
-
-				index = function->localVariableNames.IndexOf(name);
-				if (index != -1)
-				{
-					return context->stack[stackFrame.stackBase + function->argumentNames.Count() + index];
-				}
-
-				index = function->capturedVariableNames.IndexOf(name);
-				if (index != -1)
-				{
-					return stackFrame.capturedVariables->variables[index];
-				}
-
-				index = context->globalContext->assembly->variableNames.IndexOf(name);
-				if (index != -1)
-				{
-					return context->globalContext->globalVariables->variables[index];
-				}
-
-				return Value();
+				const auto& range = assembly->insAfterCodegen->instructionCodeMapping[instruction];
+				return range.start.row;
 			}
 
 /***********************************************************************
-Helper Functions
+WfRuntimeExceptionInfo
 ***********************************************************************/
 
-			ThreadVariable<Ptr<WfDebugger>> threadDebugger;
-
-			IWfDebuggerCallback* GetDebuggerCallback()
+			WfRuntimeExceptionInfo::WfRuntimeExceptionInfo(const WString& _message, bool _fatal)
+				:message(_message)
+				, fatal(_fatal)
 			{
-				return GetDebuggerCallback(GetDebuggerForCurrentThread().Obj());
 			}
 
-			IWfDebuggerCallback* GetDebuggerCallback(WfDebugger* debugger)
+			WfRuntimeExceptionInfo::~WfRuntimeExceptionInfo()
 			{
-				return debugger;
+			}
+				
+#pragma push_macro("GetMessage")
+#if defined GetMessage
+#undef GetMessage
+#endif
+			WString WfRuntimeExceptionInfo::GetMessage()
+			{
+				return message;
+			}
+#pragma pop_macro("GetMessage")
+
+			bool WfRuntimeExceptionInfo::GetFatal()
+			{
+				return fatal;
 			}
 
-			Ptr<WfDebugger> GetDebuggerForCurrentThread()
+			Ptr<IValueReadonlyList> WfRuntimeExceptionInfo::GetCallStack()
 			{
-				return threadDebugger.HasData() ? threadDebugger.Get() : nullptr;
-			}
-
-			void SetDebuggerForCurrentThread(Ptr<WfDebugger> debugger)
-			{
-				threadDebugger.Set(debugger);
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\WFRUNTIMEEXECUTION.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace workflow
-	{
-		namespace runtime
-		{
-			using namespace collections;
-			using namespace reflection;
-			using namespace reflection::description;
-			using namespace typeimpl;
-
-/***********************************************************************
-WfRuntimeThreadContext (Operators)
-***********************************************************************/
-
-#define INTERNAL_ERROR(MESSAGE)\
-				do{\
-					context.RaiseException(WString(L"Internal error: " MESSAGE), true);\
-					return WfRuntimeExecutionAction::Nop; \
-				} while (0)\
-
-#define CONTEXT_ACTION(ACTION, MESSAGE)\
-				do{\
-					if ((context.ACTION) != WfRuntimeThreadContextError::Success)\
-					{\
-						INTERNAL_ERROR(MESSAGE);\
-					}\
-				} while (0)\
-
-			//-------------------------------------------------------------------------------
-
-#define UNARY_OPERATOR(NAME, OPERATOR)\
-			template<typename T>\
-			WfRuntimeExecutionAction OPERATOR_##NAME(WfRuntimeThreadContext& context)\
-			{\
-				Value operand;\
-				CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");\
-				T value = OPERATOR UnboxValue<T>(operand);\
-				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");\
-				return WfRuntimeExecutionAction::ExecuteInstruction;\
-			}\
-
-#define BINARY_OPERATOR(NAME, OPERATOR)\
-			template<typename T>\
-			WfRuntimeExecutionAction OPERATOR_##NAME(WfRuntimeThreadContext& context)\
-			{\
-				Value first, second;\
-				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");\
-				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");\
-				T value = UnboxValue<T>(first) OPERATOR UnboxValue<T>(second);\
-				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");\
-				return WfRuntimeExecutionAction::ExecuteInstruction;\
-			}\
-
-			//-------------------------------------------------------------------------------
-
-			UNARY_OPERATOR(OpNot, ~)
-			UNARY_OPERATOR(OpNot_Bool, !)
-			UNARY_OPERATOR(OpPositive, +)
-			UNARY_OPERATOR(OpNegative, -)
-
-			BINARY_OPERATOR(OpAdd, +)
-			BINARY_OPERATOR(OpSub, -)
-			BINARY_OPERATOR(OpMul, *)
-			BINARY_OPERATOR(OpDiv, /)
-			BINARY_OPERATOR(OpMod, %)
-			BINARY_OPERATOR(OpShl, <<)
-			BINARY_OPERATOR(OpShr, >>)
-			BINARY_OPERATOR(OpAnd, &)
-			BINARY_OPERATOR(OpAnd_Bool, &&)
-			BINARY_OPERATOR(OpOr, |)
-			BINARY_OPERATOR(OpOr_Bool, ||)
-			BINARY_OPERATOR(OpXor, ^)
-
-			template<typename T>
-			WfRuntimeExecutionAction OPERATOR_OpExp(WfRuntimeThreadContext& context)
-			{
-				Value first, second;
-				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
-				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-				T firstValue = UnboxValue<T>(first);
-				T secondValue = UnboxValue<T>(second);
-				T value = (T)exp(secondValue * log(firstValue));
-				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");
-				return WfRuntimeExecutionAction::ExecuteInstruction;
-			}
-			
-			template<typename T>
-			WfRuntimeExecutionAction OPERATOR_OpCompare(WfRuntimeThreadContext& context)
-			{
-				Value first, second;
-				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
-				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-
-				bool firstNull = first.GetValueType() == Value::Null;
-				bool secondNull = second.GetValueType() == Value::Null;
-				if (firstNull)
+				if (!cachedCallStack)
 				{
-					if (secondNull)
-					{
-						CONTEXT_ACTION(PushValue(BoxValue((vint)0)), L"failed to push a value to the stack.");
-					}
-					else
-					{
-						CONTEXT_ACTION(PushValue(BoxValue((vint)-1)), L"failed to push a value to the stack.");
-					}
-				}
-				else
-				{
-					if (secondNull)
-					{
-						CONTEXT_ACTION(PushValue(BoxValue((vint)1)), L"failed to push a value to the stack.");
-					}
-					else
-					{
-						T firstValue = UnboxValue<T>(first);
-						T secondValue = UnboxValue<T>(second);
-						if (firstValue < secondValue)
-						{
-							CONTEXT_ACTION(PushValue(BoxValue((vint)-1)), L"failed to push a value to the stack.");
-						}
-						else if (firstValue > secondValue)
-						{
-							CONTEXT_ACTION(PushValue(BoxValue((vint)1)), L"failed to push a value to the stack.");
-						}
-						else
-						{
-							CONTEXT_ACTION(PushValue(BoxValue((vint)0)), L"failed to push a value to the stack.");
-						}
-					}
-				}
-				return WfRuntimeExecutionAction::ExecuteInstruction;
-			}
-			
-/***********************************************************************
-WfRuntimeThreadContext (TypeConversion)
-***********************************************************************/
-
-			bool OPERATOR_OpConvertToType(const Value& result, Value& converted, const WfInstruction& ins)
-			{
-				switch (ins.flagParameter)
-				{
-				case Value::Null:
-					return false;
-				case Value::RawPtr:
-					if (result.GetValueType() == Value::BoxedValue)
-					{
-						return false;
-					}
-					else if (result.GetRawPtr())
-					{
-						if (result.GetTypeDescriptor()->CanConvertTo(ins.typeDescriptorParameter))
-						{
-							converted = Value::From(result.GetRawPtr());
-						}
-						else
-						{
-							return false;
-						}
-					}
-					break;
-				case Value::SharedPtr:
-					if (result.GetValueType() == Value::BoxedValue)
-					{
-						return false;
-					}
-					else if (result.GetRawPtr())
-					{
-						if (result.GetTypeDescriptor()->CanConvertTo(ins.typeDescriptorParameter))
-						{
-							converted = Value::From(Ptr<DescriptableObject>(result.GetRawPtr()));
-						}
-						else
-						{
-							return false;
-						}
-					}
-					break;
-				case Value::BoxedValue:
-					if (result.GetValueType() != Value::BoxedValue)
-					{
-						return false;
-					}
-					if (result.GetTypeDescriptor() == ins.typeDescriptorParameter)
-					{
-						converted = result;
-						return true;
-					}
-
-					if (auto stFrom = result.GetTypeDescriptor()->GetSerializableType())
-					{
-						if (auto stTo = ins.typeDescriptorParameter->GetSerializableType())
-						{
-							WString text;
-							return stFrom->Serialize(result, text) && stTo->Deserialize(text, converted);
-						}
-						else
-						{
-							switch (ins.typeDescriptorParameter->GetTypeDescriptorFlags())
+					cachedCallStack = IValueList::Create(
+						From(callStack)
+							.Cast<IValueCallStack>()
+							.Select([](Ptr<IValueCallStack> callStack)
 							{
-							case TypeDescriptorFlags::FlagEnum:
-							case TypeDescriptorFlags::NormalEnum:
-								if (result.GetTypeDescriptor() != GetTypeDescriptor<vuint64_t>())
-								{
-									return false;
-								}
-								else
-								{
-									auto intValue = result.GetBoxedValue().Cast<IValueType::TypedBox<vuint64_t>>()->value;
-									converted = ins.typeDescriptorParameter->GetEnumType()->ToEnum(intValue);
-								}
-								break;
-							default:
-								return false;
-							}
-						}
-					}
-					else
-					{
-						switch (result.GetTypeDescriptor()->GetTypeDescriptorFlags())
-						{
-						case TypeDescriptorFlags::FlagEnum:
-						case TypeDescriptorFlags::NormalEnum:
-							if (ins.typeDescriptorParameter != GetTypeDescriptor<vuint64_t>())
-							{
-								return false;
-							}
-							else
-							{
-								auto intValue = result.GetTypeDescriptor()->GetEnumType()->FromEnum(result);
-								converted = BoxValue<vuint64_t>(intValue);
-							}
-							break;
-						default:
-							return false;
-						}
-					}
+								return BoxValue(callStack);
+							})
+						);
 				}
-
-				return true;
-			}
-			
-/***********************************************************************
-WfRuntimeThreadContext (Range)
-***********************************************************************/
-			
-			template<typename T>
-			WfRuntimeExecutionAction OPERATOR_OpCreateRange(WfRuntimeThreadContext& context)
-			{
-				Value first, second;
-				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
-				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-				T firstValue = UnboxValue<T>(first);
-				T secondValue = UnboxValue<T>(second);
-				auto enumerable = MakePtr<WfRuntimeRange<T>>(firstValue, secondValue);
-				CONTEXT_ACTION(PushValue(Value::From(enumerable)), L"failed to push a value to the stack.");
-				return WfRuntimeExecutionAction::ExecuteInstruction;
-			}
-
-#undef INTERNAL_ERROR
-#undef CONTEXT_ACTION
-#undef UNARY_OPERATOR
-#undef BINARY_OPERATOR
-
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-
-			Ptr<reflection::description::IValueFunctionProxy> LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name)
-			{
-				const auto& names = context->assembly->functionByName[name];
-				CHECK_ERROR(names.Count() == 1, L"vl::workflow::runtime::LoadFunction(Ptr<WfRUntimeGlobalContext>, const WString&)#Multiple functions are found.");
-				vint functionIndex = names[0];
-				auto lambda = MakePtr<WfRuntimeLambda>(context, nullptr, functionIndex);
-				return lambda;
+				return cachedCallStack;
 			}
 
 /***********************************************************************
 WfRuntimeThreadContext
 ***********************************************************************/
-			
-#define INTERNAL_ERROR(MESSAGE)\
-				do{\
-					RaiseException(WString(L"Internal error: " MESSAGE), true);\
-					return WfRuntimeExecutionAction::Nop; \
-				} while (0)\
 
-#define CONTEXT_ACTION(ACTION, MESSAGE)\
-				do{\
-					if ((ACTION) != WfRuntimeThreadContextError::Success)\
-					{\
-						INTERNAL_ERROR(MESSAGE);\
-					}\
-				} while (0)\
-
-#define CALL_DEBUGGER(ACTION)\
-				do {\
-					if (callback)\
-					{\
-						if (ACTION)\
-						{\
-							if (!callback->WaitForContinue())\
-							{\
-								INTERNAL_ERROR(L"Debugger stopped the program.");\
-							}\
-						}\
-					}\
-				} while (0)\
-
-#define TYPE_OF_Bool							bool
-#define TYPE_OF_I1								vint8_t
-#define TYPE_OF_I2								vint16_t
-#define TYPE_OF_I4								vint32_t
-#define TYPE_OF_I8								vint64_t
-#define TYPE_OF_U1								vuint8_t
-#define TYPE_OF_U2								vuint16_t
-#define TYPE_OF_U4								vuint32_t
-#define TYPE_OF_U8								vuint64_t
-#define TYPE_OF_F4								float
-#define TYPE_OF_F8								double
-#define TYPE_OF_String							WString
-#define EXECUTE(OPERATION, TYPE)				case WfInsType::TYPE: return OPERATOR_##OPERATION<TYPE_OF_##TYPE>(*this);
-#define BEGIN_TYPE								switch(ins.typeParameter) {
-#define END_TYPE								default: INTERNAL_ERROR(L"unexpected type argument."); }
-
-			WfRuntimeExecutionAction WfRuntimeThreadContext::ExecuteInternal(WfInstruction& ins, WfRuntimeStackFrame& stackFrame, IWfDebuggerCallback* callback)
+			WfRuntimeThreadContext::WfRuntimeThreadContext(Ptr<WfRuntimeGlobalContext> _context)
+				:globalContext(_context)
 			{
-				switch (ins.code)
+				stack.SetLessMemoryMode(false);
+				stackFrames.SetLessMemoryMode(false);
+			}
+
+			WfRuntimeThreadContext::WfRuntimeThreadContext(Ptr<WfAssembly> _assembly)
+				:globalContext(new WfRuntimeGlobalContext(_assembly))
+			{
+				stack.SetLessMemoryMode(false);
+				stackFrames.SetLessMemoryMode(false);
+			}
+
+			WfRuntimeStackFrame& WfRuntimeThreadContext::GetCurrentStackFrame()
+			{
+				return stackFrames[stackFrames.Count() - 1];
+			}
+
+			WfRuntimeThreadContextError WfRuntimeThreadContext::PushStackFrame(vint functionIndex, vint argumentCount, Ptr<WfRuntimeVariableContext> capturedVariables)
+			{
+				if (stackFrames.Count() == 0)
 				{
-				case WfInsCode::LoadValue:
-					CONTEXT_ACTION(PushValue(ins.valueParameter), L"failed to push a value to the stack.");
-					return WfRuntimeExecutionAction::ExecuteInstruction;
-				case WfInsCode::LoadFunction:
+					if (stack.Count() < argumentCount)
 					{
-						CONTEXT_ACTION(PushValue(BoxValue(ins.indexParameter)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
+						return WfRuntimeThreadContextError::StackCorrupted;
 					}
-				case WfInsCode::LoadException:
-					{
-						CONTEXT_ACTION(PushValue(BoxValue(exceptionInfo)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::LoadLocalVar:
-					{
-						Value operand;
-						CONTEXT_ACTION(LoadLocalVariable(ins.indexParameter, operand), L"illegal local variable index.");
-						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::LoadCapturedVar:
-					{
-						Value operand;
-						CONTEXT_ACTION(LoadCapturedVariable(ins.indexParameter, operand), L"illegal captured variable index.");
-						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::LoadGlobalVar:
-					{
-						CALL_DEBUGGER(callback->BreakRead(globalContext->assembly.Obj(), ins.indexParameter));
-						Value operand;
-						CONTEXT_ACTION(LoadGlobalVariable(ins.indexParameter, operand), L"illegal global variable index.");
-						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::LoadMethodInfo:
-					{
-						CONTEXT_ACTION(PushValue(Value::From(ins.methodParameter)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::LoadMethodClosure:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						auto closure = ins.methodParameter->CreateFunctionProxy(operand);
-						CONTEXT_ACTION(PushValue(closure), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::LoadClosureContext:
-					{
-						auto capturedVariables = GetCurrentStackFrame().capturedVariables;
-						CONTEXT_ACTION(PushValue(Value::From(capturedVariables)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::StoreLocalVar:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(StoreLocalVariable(ins.indexParameter, operand), L"illegal local variable index.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::StoreCapturedVar:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(StoreCapturedVariable(ins.indexParameter, operand), L"illegal global variable index.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::StoreGlobalVar:
-					{
-						CALL_DEBUGGER(callback->BreakWrite(globalContext->assembly.Obj(), ins.indexParameter));
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(StoreGlobalVariable(ins.indexParameter, operand), L"illegal global variable index.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::Duplicate:
-					{
-						vint index = stack.Count() - 1 - ins.countParameter;
-						Value operand;
-						CONTEXT_ACTION(LoadStackValue(index, operand), L"failed to duplicate a value from the stack.");
-						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::Pop:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::Return:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop the function result.");
-						CONTEXT_ACTION(PopStackFrame(), L"failed to pop the stack frame.");
-						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
-						if (stackFrames.Count() == 0)
-						{
-							status = WfRuntimeExecutionStatus::Finished;
-						}
-						return WfRuntimeExecutionAction::ExitStackFrame;
-					}
-				case WfInsCode::CreateArray:
-					{
-						auto list = IValueList::Create();
-						Value operand;
-						for (vint i = 0; i < ins.countParameter; i++)
-						{
-							CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-							list->Add(operand);
-						}
-						CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::CreateObservableList:
-				{
-					auto list = IValueObservableList::Create();
-					Value operand;
-					for (vint i = 0; i < ins.countParameter; i++)
-					{
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						list->Add(operand);
-					}
-					CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
-					return WfRuntimeExecutionAction::ExecuteInstruction;
-				}
-				case WfInsCode::CreateMap:
-					{
-						auto map = IValueDictionary::Create();
-						Value key, value;
-						for (vint i = 0; i < ins.countParameter; i+=2)
-						{
-							CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
-							CONTEXT_ACTION(PopValue(key), L"failed to pop a value from the stack.");
-							map->Set(key, value);
-						}
-						CONTEXT_ACTION(PushValue(Value::From(map)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::CreateClosureContext:
-					{
-						Ptr<WfRuntimeVariableContext> capturedVariables;
-						if (ins.countParameter > 0)
-						{
-							capturedVariables = new WfRuntimeVariableContext;
-							capturedVariables->variables.Resize(ins.countParameter);
-							Value operand;
-							for (vint i = 0; i < ins.countParameter; i++)
-							{
-								CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-								capturedVariables->variables[ins.countParameter - 1 - i] = operand;
-							}
-						}
-
-						CONTEXT_ACTION(PushValue(Value::From(capturedVariables)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::CreateClosure:
-					{
-						Value context, function;
-						CONTEXT_ACTION(PopValue(function), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(context), L"failed to pop a value from the stack.");
-						auto capturedVariables = context.GetSharedPtr().Cast<WfRuntimeVariableContext>();
-						auto functionIndex = UnboxValue<vint>(function);
-
-						auto lambda = MakePtr<WfRuntimeLambda>(globalContext, capturedVariables, functionIndex);
-						CONTEXT_ACTION(PushValue(Value::From(lambda)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::CreateInterface:
-					{
-						auto proxy = MakePtr<WfRuntimeInterfaceInstance>();
-						Value key, value, operand;
-						for (vint i = 0; i < ins.countParameter; i+=2)
-						{
-							CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
-							CONTEXT_ACTION(PopValue(key), L"failed to pop a value from the stack.");
-							auto name = UnboxValue<IMethodInfo*>(key);
-							auto func = UnboxValue<vint>(value);
-							proxy->functions.Add(name, func);
-						}
-
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						auto capturedVariables = operand.GetSharedPtr().Cast<WfRuntimeVariableContext>();
-						proxy->capturedVariables = capturedVariables;
-						proxy->globalContext = globalContext;
-
-						Array<Value> arguments(1);
-						arguments[0] = Value::From(proxy);
-						auto obj = ins.methodParameter->Invoke(Value(), arguments);
-						capturedVariables->variables[capturedVariables->variables.Count() - 1] = Value::From(obj.GetRawPtr());
-
-						CONTEXT_ACTION(PushValue(obj), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::CreateRange:
-					BEGIN_TYPE
-						EXECUTE(OpCreateRange, I1)
-						EXECUTE(OpCreateRange, I2)
-						EXECUTE(OpCreateRange, I4)
-						EXECUTE(OpCreateRange, I8)
-						EXECUTE(OpCreateRange, U1)
-						EXECUTE(OpCreateRange, U2)
-						EXECUTE(OpCreateRange, U4)
-						EXECUTE(OpCreateRange, U8)
-					END_TYPE
-				case WfInsCode::CreateStruct:
-					{
-						if (ins.typeDescriptorParameter->GetTypeDescriptorFlags() != TypeDescriptorFlags::Struct)
-						{
-							INTERNAL_ERROR(L"Type \"" + ins.typeDescriptorParameter->GetTypeName() + L"\" is not a struct.");
-						}
-						Value result = ins.typeDescriptorParameter->GetValueType()->CreateDefault();
-						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::DeleteRawPtr:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						operand.DeleteRawPtr();
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::ConvertToType:
-					{
-						Value result, converted;
-						CONTEXT_ACTION(PopValue(result), L"failed to pop a value from the stack.");
-						if (OPERATOR_OpConvertToType(result, converted, ins))
-						{
-							CONTEXT_ACTION(PushValue(converted), L"failed to push a value to the stack.");
-						}
-						else
-						{
-							WString from;
-							if (result.IsNull())
-							{
-								from = L"<null>";
-							}
-							else
-							{
-								if (auto st = result.GetTypeDescriptor()->GetSerializableType())
-								{
-									WString text;
-									st->Serialize(result, text);
-									from = L"<" + text + L"> of " + result.GetTypeDescriptor()->GetTypeName();
-								}
-								else
-								{
-									from = result.GetTypeDescriptor()->GetTypeName();
-								}
-							}
-							WString to = ins.typeDescriptorParameter->GetTypeName();
-							RaiseException(L"Failed to convert from \"" + from + L"\" to \"" + to + L"\".", false);
-						}
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::TryConvertToType:
-					{
-						Value result, converted;
-						CONTEXT_ACTION(PopValue(result), L"failed to pop a value from the stack.");
-						if (OPERATOR_OpConvertToType(result, converted, ins))
-						{
-							CONTEXT_ACTION(PushValue(converted), L"failed to push a value to the stack.");
-						}
-						else
-						{
-							CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
-						}
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::TestType:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						if (operand.GetTypeDescriptor() && operand.GetValueType() == ins.flagParameter && operand.GetTypeDescriptor()->CanConvertTo(ins.typeDescriptorParameter))
-						{
-							CONTEXT_ACTION(PushValue(BoxValue(true)), L"failed to push a value to the stack.");
-						}
-						else
-						{
-							CONTEXT_ACTION(PushValue(BoxValue(false)), L"failed to push a value to the stack.");
-						}
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::GetType:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PushValue(Value::From(operand.GetTypeDescriptor())), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::Jump:
-					{
-						stackFrame.nextInstructionIndex = ins.indexParameter;
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::JumpIf:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						if (UnboxValue<bool>(operand))
-						{
-							stackFrame.nextInstructionIndex = ins.indexParameter;
-						}
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::Invoke:
-					{
-						CONTEXT_ACTION(PushStackFrame(ins.indexParameter, ins.countParameter), L"failed to invoke a function.");
-						return WfRuntimeExecutionAction::EnterStackFrame;
-					}
-				case WfInsCode::InvokeWithContext:
-					{
-						CONTEXT_ACTION(PushStackFrame(ins.indexParameter, ins.countParameter, GetCurrentStackFrame().capturedVariables), L"failed to invoke a function.");
-						return WfRuntimeExecutionAction::EnterStackFrame;
-					}
-				case WfInsCode::GetProperty:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						CALL_DEBUGGER(callback->BreakGet(operand.GetRawPtr(), ins.propertyParameter));
-						Value result = ins.propertyParameter->GetValue(operand);
-						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::SetProperty:
-					{
-						Value operand, value;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
-						CALL_DEBUGGER(callback->BreakSet(operand.GetRawPtr(), ins.propertyParameter));
-						ins.propertyParameter->SetValue(operand, value);
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::UpdateProperty:
-					{
-						Value operand, value;
-						CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						CALL_DEBUGGER(callback->BreakSet(operand.GetRawPtr(), ins.propertyParameter));
-						ins.propertyParameter->SetValue(operand, value);
-						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::InvokeProxy:
-					{
-						Value thisValue;
-						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
-						auto proxy = UnboxValue<Ptr<IValueFunctionProxy>>(thisValue);
-						if (!proxy)
-						{
-							INTERNAL_ERROR(L"failed to invoke a null function proxy.");
-							return WfRuntimeExecutionAction::Nop;
-						}
-
-						if (auto lambda = proxy.Cast<WfRuntimeLambda>())
-						{
-							if (lambda->globalContext == globalContext)
-							{
-								CONTEXT_ACTION(PushStackFrame(lambda->functionIndex, ins.countParameter, lambda->capturedVariables), L"failed to invoke a function.");
-								return WfRuntimeExecutionAction::EnterStackFrame;
-							}
-						}
-
-						List<Value> arguments;
-						for (vint i = 0; i < ins.countParameter; i++)
-						{
-							Value argument;
-							CONTEXT_ACTION(PopValue(argument), L"failed to pop a value from the stack.");
-							arguments.Insert(0, argument);
-						}
-
-						Ptr<IValueList> list = new ValueListWrapper<List<Value>*>(&arguments);
-						Value result = proxy->Invoke(list);
-						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::InvokeMethod:
-					{
-						Value thisValue;
-						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
-						CALL_DEBUGGER(callback->BreakInvoke(thisValue.GetRawPtr(), ins.methodParameter));
-
-						if (auto staticMethod = dynamic_cast<WfStaticMethod*>(ins.methodParameter))
-						{
-							if (staticMethod->GetGlobalContext() == globalContext.Obj())
-							{
-								CONTEXT_ACTION(PushStackFrame(staticMethod->functionIndex, ins.countParameter, nullptr), L"failed to invoke a function.");
-								return WfRuntimeExecutionAction::EnterStackFrame;
-							}
-						}
-
-						if (auto classMethod = dynamic_cast<WfClassMethod*>(ins.methodParameter))
-						{
-							if (classMethod->GetGlobalContext() == globalContext.Obj())
-							{
-								auto capturedVariable = MakePtr<WfRuntimeVariableContext>();
-								capturedVariable->variables.Resize(1);
-								capturedVariable->variables[0] = Value::From(thisValue.GetRawPtr());
-
-								CONTEXT_ACTION(PushStackFrame(classMethod->functionIndex, ins.countParameter, capturedVariable), L"failed to invoke a function.");
-								return WfRuntimeExecutionAction::EnterStackFrame;
-							}
-						}
-
-						Array<Value> arguments(ins.countParameter);
-						for (vint i = 0; i < ins.countParameter; i++)
-						{
-							Value argument;
-							CONTEXT_ACTION(PopValue(argument), L"failed to pop a value from the stack.");
-							arguments[ins.countParameter - i - 1] = argument;
-						}
-
-						Value result = ins.methodParameter->Invoke(thisValue, arguments);
-						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::InvokeEvent:
-					{
-						Value thisValue;
-						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
-						CALL_DEBUGGER(callback->BreakInvoke(thisValue.GetRawPtr(), ins.eventParameter));
-
-						auto arguments = IValueList::Create();
-						for (vint i = 0; i < ins.countParameter; i++)
-						{
-							Value argument;
-							CONTEXT_ACTION(PopValue(argument), L"failed to pop a value from the stack.");
-							arguments->Insert(0, argument);
-						}
-
-						ins.eventParameter->Invoke(thisValue, arguments);
-						CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::InvokeBaseCtor:
-					{
-						Value thisValue;
-						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
-						CALL_DEBUGGER(callback->BreakInvoke(thisValue.GetRawPtr(), ins.eventParameter));
-						
-						if (auto ctor = dynamic_cast<WfClassConstructor*>(ins.methodParameter))
-						{
-							if (ctor->GetGlobalContext() == globalContext.Obj())
-							{
-								auto capturedVariable = MakePtr<WfRuntimeVariableContext>();
-								capturedVariable->variables.Resize(1);
-								capturedVariable->variables[0] = Value::From(thisValue.GetRawPtr());
-
-								CONTEXT_ACTION(PushStackFrame(ctor->functionIndex, ins.countParameter, capturedVariable), L"failed to invoke a function.");
-								return WfRuntimeExecutionAction::EnterStackFrame;
-							}
-						}
-
-						Array<Value> arguments(ins.countParameter);
-						for (vint i = 0; i < ins.countParameter; i++)
-						{
-							Value argument;
-							CONTEXT_ACTION(PopValue(argument), L"failed to pop a value from the stack.");
-							arguments[ins.countParameter - i - 1] = argument;
-						}
-						
-						if (auto ctor = dynamic_cast<WfClassConstructor*>(ins.methodParameter))
-						{
-							ctor->InvokeBaseCtor(thisValue, arguments);
-						}
-						else
-						{
-							auto instance = dynamic_cast<WfClassInstance*>(thisValue.GetRawPtr());
-							if (!instance)
-							{
-								INTERNAL_ERROR(L"Wrong class instance for invoking base constructor.");
-							}
-
-							Value baseValue = ins.methodParameter->Invoke(Value(), arguments);
-							instance->InstallBaseObject(ins.methodParameter->GetOwnerTypeDescriptor(), baseValue);
-						}
-						CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::AttachEvent:
-					{
-						Value thisValue, function;
-						CONTEXT_ACTION(PopValue(function), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
-						CALL_DEBUGGER(callback->BreakAttach(thisValue.GetRawPtr(), ins.eventParameter));
-						auto proxy = UnboxValue<Ptr<IValueFunctionProxy>>(function);
-						auto handler = ins.eventParameter->Attach(thisValue, proxy);
-						CONTEXT_ACTION(PushValue(Value::From(handler)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::DetachEvent:
-					{
-						Value thisValue, operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
-						CALL_DEBUGGER(callback->BreakDetach(thisValue.GetRawPtr(), ins.eventParameter));
-						auto handler = UnboxValue<Ptr<IEventHandler>>(operand);
-						auto result = ins.eventParameter->Detach(thisValue, handler);
-						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::InstallTry:
-					CONTEXT_ACTION(PushTrapFrame(ins.indexParameter), L"failed to push a trap frame");
-					return WfRuntimeExecutionAction::ExecuteInstruction;
-				case WfInsCode::UninstallTry:
-					{
-						if (trapFrames.Count() == 0)
-						{
-							INTERNAL_ERROR(L"failed to pop the trap frame.");
-						}
-						auto frame = GetCurrentTrapFrame();
-						CONTEXT_ACTION(PopTrapFrame(ins.countParameter), L"failed to pop the trap frame.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::RaiseException:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						if (operand.GetValueType() == Value::BoxedValue)
-						{
-							WString text;
-							operand.GetTypeDescriptor()->GetSerializableType()->Serialize(operand, text);
-							RaiseException(text, false);
-						}
-						else if (auto info = operand.GetSharedPtr().Cast<WfRuntimeExceptionInfo>())
-						{
-							RaiseException(info);
-						}
-						else if (auto ex = operand.GetSharedPtr().Cast<IValueException>())
-						{
-							RaiseException(ex->GetMessage(), false);
-						}
-						else
-						{
-							INTERNAL_ERROR(L"failed to raise an exception which is neither a string nor a WfRuntimeExceptionInfo.");
-						}
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::TestElementInSet:
-					{
-						Value element, set;
-						CONTEXT_ACTION(PopValue(set), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(element), L"failed to pop a value from the stack.");
-
-						auto enumerable = UnboxValue<Ptr<IValueEnumerable>>(set);
-						auto enumerator = enumerable->CreateEnumerator();
-						while (enumerator->Next())
-						{
-							if (enumerator->GetCurrent() == element)
-							{
-								CONTEXT_ACTION(PushValue(BoxValue(true)), L"failed to push a value to the stack.");
-								return WfRuntimeExecutionAction::ExecuteInstruction;
-							}
-						}
-						CONTEXT_ACTION(PushValue(BoxValue(false)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::CompareLiteral:
-					BEGIN_TYPE
-						EXECUTE(OpCompare, Bool)
-						EXECUTE(OpCompare, I1)
-						EXECUTE(OpCompare, I2)
-						EXECUTE(OpCompare, I4)
-						EXECUTE(OpCompare, I8)
-						EXECUTE(OpCompare, U1)
-						EXECUTE(OpCompare, U2)
-						EXECUTE(OpCompare, U4)
-						EXECUTE(OpCompare, U8)
-						EXECUTE(OpCompare, F4)
-						EXECUTE(OpCompare, F8)
-						EXECUTE(OpCompare, String)
-					END_TYPE
-				case WfInsCode::CompareReference:
-					{
-						Value first, second;
-						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-						bool result = first.GetValueType() != Value::BoxedValue && second.GetValueType() != Value::BoxedValue && first.GetRawPtr() == second.GetRawPtr();
-						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::CompareValue:
-					{
-						Value first, second;
-						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-						bool result = first == second;
-						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::OpNot:
-					BEGIN_TYPE
-						EXECUTE(OpNot_Bool, Bool)
-						EXECUTE(OpNot, I1)
-						EXECUTE(OpNot, I2)
-						EXECUTE(OpNot, I4)
-						EXECUTE(OpNot, I8)
-						EXECUTE(OpNot, U1)
-						EXECUTE(OpNot, U2)
-						EXECUTE(OpNot, U4)
-						EXECUTE(OpNot, U8)
-					END_TYPE
-				case WfInsCode::OpPositive:
-					BEGIN_TYPE
-						EXECUTE(OpPositive, I1)
-						EXECUTE(OpPositive, I2)
-						EXECUTE(OpPositive, I4)
-						EXECUTE(OpPositive, I8)
-						EXECUTE(OpPositive, U1)
-						EXECUTE(OpPositive, U2)
-						EXECUTE(OpPositive, U4)
-						EXECUTE(OpPositive, U8)
-						EXECUTE(OpPositive, F4)
-						EXECUTE(OpPositive, F8)
-					END_TYPE
-				case WfInsCode::OpNegative:
-					BEGIN_TYPE
-						EXECUTE(OpNegative, I1)
-						EXECUTE(OpNegative, I2)
-						EXECUTE(OpNegative, I4)
-						EXECUTE(OpNegative, I8)
-						EXECUTE(OpNegative, F4)
-						EXECUTE(OpNegative, F8)
-					END_TYPE
-				case WfInsCode::OpConcat:
-					{
-						Value first, second;
-						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-
-						WString firstText, secondText;
-						first.GetTypeDescriptor()->GetSerializableType()->Serialize(first, firstText);
-						first.GetTypeDescriptor()->GetSerializableType()->Serialize(second, secondText);
-
-						CONTEXT_ACTION(PushValue(BoxValue(firstText + secondText)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::OpExp:
-					BEGIN_TYPE
-						EXECUTE(OpExp, F4)
-						EXECUTE(OpExp, F8)
-					END_TYPE
-				case WfInsCode::OpAdd:
-					BEGIN_TYPE
-						EXECUTE(OpAdd, I1)
-						EXECUTE(OpAdd, I2)
-						EXECUTE(OpAdd, I4)
-						EXECUTE(OpAdd, I8)
-						EXECUTE(OpAdd, U1)
-						EXECUTE(OpAdd, U2)
-						EXECUTE(OpAdd, U4)
-						EXECUTE(OpAdd, U8)
-						EXECUTE(OpAdd, F4)
-						EXECUTE(OpAdd, F8)
-					END_TYPE
-				case WfInsCode::OpSub:
-					BEGIN_TYPE
-						EXECUTE(OpSub, I1)
-						EXECUTE(OpSub, I2)
-						EXECUTE(OpSub, I4)
-						EXECUTE(OpSub, I8)
-						EXECUTE(OpSub, U1)
-						EXECUTE(OpSub, U2)
-						EXECUTE(OpSub, U4)
-						EXECUTE(OpSub, U8)
-						EXECUTE(OpSub, F4)
-						EXECUTE(OpSub, F8)
-					END_TYPE
-				case WfInsCode::OpMul:
-					BEGIN_TYPE
-						EXECUTE(OpMul, I1)
-						EXECUTE(OpMul, I2)
-						EXECUTE(OpMul, I4)
-						EXECUTE(OpMul, I8)
-						EXECUTE(OpMul, U1)
-						EXECUTE(OpMul, U2)
-						EXECUTE(OpMul, U4)
-						EXECUTE(OpMul, U8)
-						EXECUTE(OpMul, F4)
-						EXECUTE(OpMul, F8)
-					END_TYPE
-				case WfInsCode::OpDiv:
-					BEGIN_TYPE
-						EXECUTE(OpDiv, I1)
-						EXECUTE(OpDiv, I2)
-						EXECUTE(OpDiv, I4)
-						EXECUTE(OpDiv, I8)
-						EXECUTE(OpDiv, U1)
-						EXECUTE(OpDiv, U2)
-						EXECUTE(OpDiv, U4)
-						EXECUTE(OpDiv, U8)
-						EXECUTE(OpDiv, F4)
-						EXECUTE(OpDiv, F8)
-					END_TYPE
-				case WfInsCode::OpMod:
-					BEGIN_TYPE
-						EXECUTE(OpMod, I1)
-						EXECUTE(OpMod, I2)
-						EXECUTE(OpMod, I4)
-						EXECUTE(OpMod, I8)
-						EXECUTE(OpMod, U1)
-						EXECUTE(OpMod, U2)
-						EXECUTE(OpMod, U4)
-						EXECUTE(OpMod, U8)
-					END_TYPE
-				case WfInsCode::OpShl:
-					BEGIN_TYPE
-						EXECUTE(OpShl, I1)
-						EXECUTE(OpShl, I2)
-						EXECUTE(OpShl, I4)
-						EXECUTE(OpShl, I8)
-						EXECUTE(OpShl, U1)
-						EXECUTE(OpShl, U2)
-						EXECUTE(OpShl, U4)
-						EXECUTE(OpShl, U8)
-					END_TYPE
-				case WfInsCode::OpShr:
-					BEGIN_TYPE
-						EXECUTE(OpShr, I1)
-						EXECUTE(OpShr, I2)
-						EXECUTE(OpShr, I4)
-						EXECUTE(OpShr, I8)
-						EXECUTE(OpShr, U1)
-						EXECUTE(OpShr, U2)
-						EXECUTE(OpShr, U4)
-						EXECUTE(OpShr, U8)
-					END_TYPE
-				case WfInsCode::OpXor:
-					BEGIN_TYPE
-						EXECUTE(OpXor, Bool)
-						EXECUTE(OpXor, I1)
-						EXECUTE(OpXor, I2)
-						EXECUTE(OpXor, I4)
-						EXECUTE(OpXor, I8)
-						EXECUTE(OpXor, U1)
-						EXECUTE(OpXor, U2)
-						EXECUTE(OpXor, U4)
-						EXECUTE(OpXor, U8)
-					END_TYPE
-				case WfInsCode::OpAnd:
-					BEGIN_TYPE
-						EXECUTE(OpAnd_Bool, Bool)
-						EXECUTE(OpAnd, I1)
-						EXECUTE(OpAnd, I2)
-						EXECUTE(OpAnd, I4)
-						EXECUTE(OpAnd, I8)
-						EXECUTE(OpAnd, U1)
-						EXECUTE(OpAnd, U2)
-						EXECUTE(OpAnd, U4)
-						EXECUTE(OpAnd, U8)
-					END_TYPE
-				case WfInsCode::OpOr:
-					BEGIN_TYPE
-						EXECUTE(OpOr_Bool, Bool)
-						EXECUTE(OpOr, I1)
-						EXECUTE(OpOr, I2)
-						EXECUTE(OpOr, I4)
-						EXECUTE(OpOr, I8)
-						EXECUTE(OpOr, U1)
-						EXECUTE(OpOr, U2)
-						EXECUTE(OpOr, U4)
-						EXECUTE(OpOr, U8)
-					END_TYPE
-				case WfInsCode::OpLT:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						vint value = UnboxValue<vint>(operand);
-						CONTEXT_ACTION(PushValue(BoxValue(value < 0)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-					break;
-				case WfInsCode::OpGT:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						vint value = UnboxValue<vint>(operand);
-						CONTEXT_ACTION(PushValue(BoxValue(value > 0)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-					break;
-				case WfInsCode::OpLE:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						vint value = UnboxValue<vint>(operand);
-						CONTEXT_ACTION(PushValue(BoxValue(value <= 0)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-					break;
-				case WfInsCode::OpGE:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						vint value = UnboxValue<vint>(operand);
-						CONTEXT_ACTION(PushValue(BoxValue(value >= 0)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-					break;
-				case WfInsCode::OpEQ:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						vint value = UnboxValue<vint>(operand);
-						CONTEXT_ACTION(PushValue(BoxValue(value == 0)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-					break;
-				case WfInsCode::OpNE:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						vint value = UnboxValue<vint>(operand);
-						CONTEXT_ACTION(PushValue(BoxValue(value != 0)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-					break;
-				default:
-					return WfRuntimeExecutionAction::Nop;
-				}
-			}
-
-			WfRuntimeExecutionAction WfRuntimeThreadContext::Execute(IWfDebuggerCallback* callback)
-			{
-				try
-				{
-					switch (status)
-					{
-					case WfRuntimeExecutionStatus::Ready:
-					case WfRuntimeExecutionStatus::Executing:
-						{
-							if (stackFrames.Count() == 0)
-							{
-								INTERNAL_ERROR(L"empty stack frame.");
-							}
-							auto& stackFrame = GetCurrentStackFrame();
-							if (stackFrame.nextInstructionIndex < 0 || stackFrame.nextInstructionIndex >= globalContext->assembly->instructions.Count())
-							{
-								INTERNAL_ERROR(L"illegal instruction index.");
-							}
-
-							auto insIndex = stackFrame.nextInstructionIndex;
-							CALL_DEBUGGER(callback->BreakIns(globalContext->assembly.Obj(), insIndex));
-
-							stackFrame.nextInstructionIndex++;
-							auto& ins = globalContext->assembly->instructions[insIndex];
-							return ExecuteInternal(ins, stackFrame, callback);
-						}
-						break;
-					case WfRuntimeExecutionStatus::RaisedException:
-						if (trapFrames.Count() > 0)
-						{
-							auto trapFrame = GetCurrentTrapFrame();
-							if (trapFrame.stackFrameIndex == stackFrames.Count() - 1)
-							{
-								CONTEXT_ACTION(PopTrapFrame(0), L"failed to pop the trap frame");
-								GetCurrentStackFrame().nextInstructionIndex = trapFrame.instructionIndex;
-								status = WfRuntimeExecutionStatus::Executing;
-								return WfRuntimeExecutionAction::UnwrapStack;
-							}
-							else if (stackFrames.Count() > 0)
-							{
-								CONTEXT_ACTION(PopStackFrame(), L"failed to pop the stack frame.");
-								return WfRuntimeExecutionAction::UnwrapStack;
-							}
-						}
-						break;
-					default:;
-					}
-					return WfRuntimeExecutionAction::Nop;
-				}
-				catch (const WfRuntimeException& ex)
-				{
-					if (ex.GetInfo())
-					{
-						RaiseException(ex.GetInfo());
-					}
-					else
-					{
-						RaiseException(ex.Message(), ex.IsFatal());
-					}
-					return WfRuntimeExecutionAction::ExecuteInstruction;
-				}
-				catch (const Exception& ex)
-				{
-					RaiseException(ex.Message(), false);
-					return WfRuntimeExecutionAction::ExecuteInstruction;
-				}
-			}
-
-#undef INTERNAL_ERROR
-#undef CONTEXT_ACTION
-#undef CALL_DEBUGGER
-#undef TYPE_OF_Bool
-#undef TYPE_OF_I1
-#undef TYPE_OF_I2
-#undef TYPE_OF_I4
-#undef TYPE_OF_I8
-#undef TYPE_OF_U1
-#undef TYPE_OF_U2
-#undef TYPE_OF_U4
-#undef TYPE_OF_U8
-#undef TYPE_OF_F4
-#undef TYPE_OF_F8
-#undef TYPE_OF_String
-#undef EXECUTE
-#undef BEGIN_TYPE
-#undef END_TYPE
-		}
-	}
-}
-
-/***********************************************************************
-.\WFRUNTIMEINSTRUCTION.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace workflow
-	{
-		namespace runtime
-		{
-			using namespace reflection::description;
-
-/***********************************************************************
-WfInstruction
-***********************************************************************/
-
-			WfInstruction::WfInstruction()
-				:flagParameter(Value::Null)
-				, typeDescriptorParameter(0)
-			{
-
-			}
-
-#define CTOR(NAME)\
-			WfInstruction WfInstruction::NAME()\
-			{\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				return ins; \
-			}\
-
-#define CTOR_VALUE(NAME)\
-			WfInstruction WfInstruction::NAME(const reflection::description::Value& value)\
-			{\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.valueParameter = value; \
-				return ins; \
-			}\
-
-#define CTOR_FUNCTION(NAME)\
-			WfInstruction WfInstruction::NAME(vint function)\
-			{\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.indexParameter = function; \
-				return ins; \
-			}\
-
-#define CTOR_FUNCTION_COUNT(NAME)\
-			WfInstruction WfInstruction::NAME(vint function, vint count)\
-			{\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.indexParameter = function; \
-				ins.countParameter = count; \
-				return ins; \
-			}\
-
-#define CTOR_VARIABLE(NAME)\
-			WfInstruction WfInstruction::NAME(vint variable)\
-			{\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.indexParameter = variable; \
-				return ins; \
-			}\
-
-#define CTOR_COUNT(NAME)\
-			WfInstruction WfInstruction::NAME(vint count)\
-			{\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.countParameter = count; \
-				return ins; \
-			}\
-
-#define CTOR_FLAG_TYPEDESCRIPTOR(NAME)\
-			WfInstruction WfInstruction::NAME(reflection::description::Value::ValueType flag, reflection::description::ITypeDescriptor* typeDescriptor)\
-			{\
-				CHECK_ERROR(typeDescriptor != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(Value::ValueType, ITypeDescriptor*)#Internal error, argument null.");\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.flagParameter = flag; \
-				ins.typeDescriptorParameter = typeDescriptor; \
-				return ins; \
-			}\
-
-#define CTOR_PROPERTY(NAME)\
-			WfInstruction WfInstruction::NAME(reflection::description::IPropertyInfo* propertyInfo)\
-			{\
-				CHECK_ERROR(propertyInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(propertyInfo*)#Internal error, argument null.");\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.propertyParameter = propertyInfo; \
-				return ins; \
-			}\
-
-#define CTOR_METHOD(NAME)\
-			WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo)\
-			{\
-				CHECK_ERROR(methodInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(methodInfo*)#Internal error, argument null.");\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.methodParameter = methodInfo; \
-				return ins; \
-			}\
-
-#define CTOR_METHOD_COUNT(NAME)\
-			WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo, vint count)\
-			{\
-				CHECK_ERROR(methodInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(methodInfo*, vint)#Internal error, argument null.");\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.methodParameter = methodInfo; \
-				ins.countParameter = count; \
-				return ins; \
-			}\
-
-#define CTOR_EVENT(NAME)\
-			WfInstruction WfInstruction::NAME(reflection::description::IEventInfo* eventInfo)\
-			{\
-				CHECK_ERROR(eventInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(IEventInfo*)#Internal error, argument null.");\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.eventParameter = eventInfo; \
-				return ins; \
-			}\
-
-#define CTOR_EVENT_COUNT(NAME)\
-			WfInstruction WfInstruction::NAME(reflection::description::IEventInfo* eventInfo, vint count)\
-			{\
-				CHECK_ERROR(eventInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(IEventInfo*, vint)#Internal error, argument null.");\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.eventParameter = eventInfo; \
-				ins.countParameter = count; \
-				return ins; \
-			}\
-
-#define CTOR_LABEL(NAME)\
-			WfInstruction WfInstruction::NAME(vint label)\
-			{\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.indexParameter = label; \
-				return ins; \
-			}\
-
-#define CTOR_TYPE(NAME)\
-			WfInstruction WfInstruction::NAME(WfInsType type)\
-			{\
-				WfInstruction ins; \
-				ins.code = WfInsCode::NAME; \
-				ins.typeParameter = type; \
-				return ins; \
-			}\
-
-			INSTRUCTION_CASES(
-				CTOR,
-				CTOR_VALUE,
-				CTOR_FUNCTION,
-				CTOR_FUNCTION_COUNT,
-				CTOR_VARIABLE,
-				CTOR_COUNT,
-				CTOR_FLAG_TYPEDESCRIPTOR,
-				CTOR_PROPERTY,
-				CTOR_METHOD,
-				CTOR_METHOD_COUNT,
-				CTOR_EVENT,
-				CTOR_EVENT_COUNT,
-				CTOR_LABEL,
-				CTOR_TYPE)
-
-#undef CTOR
-#undef CTOR_VALUE
-#undef CTOR_FUNCTION
-#undef CTOR_FUNCTION_COUNT
-#undef CTOR_VARIABLE
-#undef CTOR_COUNT
-#undef CTOR_FLAG_TYPEDESCRIPTOR
-#undef CTOR_PROPERTY
-#undef CTOR_METHOD
-#undef CTOR_METHOD_COUNT
-#undef CTOR_EVENT
-#undef CTOR_EVENT_COUNT
-#undef CTOR_LABEL
-#undef CTOR_TYPE
-		}
-	}
-}
-
-
-/***********************************************************************
-.\WFRUNTIMETYPEDESCRIPTOR.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace workflow
-	{
-		namespace typeimpl
-		{
-			using namespace reflection;
-			using namespace reflection::description;
-			using namespace collections;
-			using namespace runtime;
-
-/***********************************************************************
-WfMethodProxy
-***********************************************************************/
-
-			WfMethodProxy::WfMethodProxy(const Value& _thisObject, IMethodInfo* _methodInfo)
-				:thisObject(_thisObject)
-				, methodInfo(_methodInfo)
-			{
-
-			}
-
-			WfMethodProxy::~WfMethodProxy()
-			{
-			}
-				
-			Value WfMethodProxy::Invoke(Ptr<IValueList> arguments)
-			{
-				Array<Value> values;
-				UnboxParameter(Value::From(arguments), values);
-				return methodInfo->Invoke(thisObject, values);
-			}
-
-/***********************************************************************
-WfMethodBase
-***********************************************************************/
-
-			Value WfMethodBase::CreateFunctionProxyInternal(const Value& thisObject)
-			{
-				return Value::From(MakePtr<WfMethodProxy>(thisObject, this));
-			}
-
-			void WfMethodBase::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
-			{
-				globalContext = _globalContext;
-			}
-
-			WfMethodBase::WfMethodBase(bool isStatic)
-				:MethodInfoImpl(nullptr, nullptr, isStatic)
-			{
-			}
-
-			WfMethodBase::~WfMethodBase()
-			{
-			}
-
-			IMethodInfo::ICpp* WfMethodBase::GetCpp()
-			{
-				return nullptr;
-			}
-			
-			runtime::WfRuntimeGlobalContext* WfMethodBase::GetGlobalContext()
-			{
-				return globalContext;
-			}
-
-			void WfMethodBase::SetReturn(Ptr<ITypeInfo> type)
-			{
-				returnInfo = type;
-			}
-
-/***********************************************************************
-WfStaticMethod
-***********************************************************************/
-
-			Value WfStaticMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
-			{
-				auto argumentArray = IValueList::Create(arguments);
-				return WfRuntimeLambda::Invoke(globalContext, nullptr, functionIndex, argumentArray);
-			}
-
-			WfStaticMethod::WfStaticMethod()
-				:WfMethodBase(true)
-			{
-			}
-
-/***********************************************************************
-WfClassConstructor
-***********************************************************************/
-
-			Value WfClassConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
-			{
-				auto instance = MakePtr<WfClassInstance>(GetOwnerTypeDescriptor());
-				{
-					InvokeBaseCtor(Value::From(instance.Obj()), arguments);
-				}
-
-				if (returnInfo->GetDecorator() == ITypeInfo::SharedPtr)
-				{
-					return Value::From(instance);
 				}
 				else
 				{
-					return Value::From(instance.Detach());
-				}
-			}
-
-			WfClassConstructor::WfClassConstructor(Ptr<ITypeInfo> type)
-				:WfMethodBase(true)
-			{
-				SetReturn(type);
-			}
-
-			void WfClassConstructor::InvokeBaseCtor(const Value& thisObject, collections::Array<Value>& arguments)
-			{
-				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
-				capturedVariables->variables.Resize(1);
-				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
-					
-				auto argumentArray = IValueList::Create(arguments);
-				WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
-			}
-
-/***********************************************************************
-WfClassMethod
-***********************************************************************/
-
-			Value WfClassMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
-			{
-				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
-				capturedVariables->variables.Resize(1);
-				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
-
-				auto argumentArray = IValueList::Create(arguments);
-				return WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
-			}
-
-			WfClassMethod::WfClassMethod()
-				:WfMethodBase(false)
-			{
-			}
-
-/***********************************************************************
-WfInterfaceConstructor
-***********************************************************************/
-
-			Value WfInterfaceConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
-			{
-				if (arguments.Count() != 1)
-				{
-					throw ArgumentCountMismtatchException(GetOwnerMethodGroup());
-				}
-				auto proxy = UnboxValue<Ptr<IValueInterfaceProxy>>(arguments[0]);
-
-				List<IMethodInfo*> baseCtors;
-				{
-					const auto& baseTypes = dynamic_cast<WfCustomType*>(GetOwnerTypeDescriptor())->GetExpandedBaseTypes();
-
-					for (vint i = 0; i < baseTypes.Count(); i++)
+					auto& frame = GetCurrentStackFrame();
+					if (stack.Count() - frame.freeStackBase < argumentCount)
 					{
-						auto td = baseTypes[i];
-						if (td != description::GetTypeDescriptor<IDescriptable>())
-						{
-							if (auto group = td->GetConstructorGroup())
-							{
-								vint count = group->GetMethodCount();
-								IMethodInfo* selectedCtor = nullptr;
+						return WfRuntimeThreadContextError::StackCorrupted;
+					}
+				}
+				if (functionIndex < 0 || functionIndex >= globalContext->assembly->functions.Count())
+				{
+					return WfRuntimeThreadContextError::WrongFunctionIndex;
+				}
+				auto meta = globalContext->assembly->functions[functionIndex];
+				if (meta->argumentNames.Count() != argumentCount)
+				{
+					return WfRuntimeThreadContextError::WrongArgumentCount;
+				}
+				if (meta->capturedVariableNames.Count() == 0)
+				{
+					if (capturedVariables)
+					{
+						return WfRuntimeThreadContextError::WrongCapturedVariableCount;
+					}
+				}
+				else
+				{
+					if (!capturedVariables || capturedVariables->variables.Count() != meta->capturedVariableNames.Count())
+					{
+						return WfRuntimeThreadContextError::WrongCapturedVariableCount;
+					}
+				}
 
-								for (vint j = 0; j < count; j++)
+				WfRuntimeStackFrame frame;
+				frame.capturedVariables = capturedVariables;
+				frame.functionIndex = functionIndex;
+				frame.nextInstructionIndex = globalContext->assembly->functions[functionIndex]->firstInstruction;
+				frame.stackBase = stack.Count() - argumentCount;
+
+				frame.fixedVariableCount = meta->argumentNames.Count() + meta->localVariableNames.Count();
+				frame.freeStackBase = frame.stackBase + frame.fixedVariableCount;
+				stackFrames.Add(frame);
+
+				for (vint i = 0; i < meta->localVariableNames.Count(); i++)
+				{
+					stack.Add(Value());
+				}
+				if (status == WfRuntimeExecutionStatus::Finished || status == WfRuntimeExecutionStatus::FatalError)
+				{
+					status = WfRuntimeExecutionStatus::Ready;
+				}
+				return WfRuntimeThreadContextError::Success;
+			}
+
+			WfRuntimeThreadContextError WfRuntimeThreadContext::PopStackFrame()
+			{
+				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
+				WfRuntimeStackFrame frame = GetCurrentStackFrame();
+				if (trapFrames.Count() > 0)
+				{
+					WfRuntimeTrapFrame& trapFrame = GetCurrentTrapFrame();
+					if (trapFrame.stackFrameIndex == stackFrames.Count() - 1)
+					{
+						return WfRuntimeThreadContextError::TrapFrameCorrupted;
+					}
+				}
+				stackFrames.RemoveAt(stackFrames.Count() - 1);
+
+				if (stack.Count() > frame.stackBase)
+				{
+					stack.RemoveRange(frame.stackBase, stack.Count() - frame.stackBase);
+				}
+				return WfRuntimeThreadContextError::Success;
+			}
+
+			WfRuntimeTrapFrame& WfRuntimeThreadContext::GetCurrentTrapFrame()
+			{
+				return trapFrames[trapFrames.Count() - 1];
+			}
+
+			WfRuntimeThreadContextError WfRuntimeThreadContext::PushTrapFrame(vint instructionIndex)
+			{
+				WfRuntimeTrapFrame frame;
+				frame.stackFrameIndex = stackFrames.Count() - 1;
+				frame.instructionIndex = instructionIndex;
+				frame.stackPatternCount = stack.Count();
+				trapFrames.Add(frame);
+				return WfRuntimeThreadContextError::Success;
+			}
+
+			WfRuntimeThreadContextError WfRuntimeThreadContext::PopTrapFrame(vint saveStackPatternCount)
+			{
+				if (trapFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyTrapFrame;
+				WfRuntimeTrapFrame& frame = trapFrames[trapFrames.Count() - 1];
+				if (frame.stackFrameIndex != stackFrames.Count() - 1) return WfRuntimeThreadContextError::TrapFrameCorrupted;
+
+				vint stackPopCount = stack.Count() - frame.stackPatternCount - saveStackPatternCount;
+				if (stackPopCount < 0)
+				{
+					return WfRuntimeThreadContextError::StackCorrupted;
+				}
+				else if (stackPopCount>0)
+				{
+					stack.RemoveRange(stack.Count() - stackPopCount, stackPopCount);
+				}
+
+				trapFrames.RemoveAt(trapFrames.Count() - 1);
+				return WfRuntimeThreadContextError::Success;
+			}
+
+			WfRuntimeThreadContextError WfRuntimeThreadContext::PushValue(const reflection::description::Value& value)
+			{
+				stack.Add(value);
+				return WfRuntimeThreadContextError::Success;
+			}
+
+			WfRuntimeThreadContextError WfRuntimeThreadContext::PopValue(reflection::description::Value& value)
+			{
+				if (stackFrames.Count() == 0)
+				{
+					if (stack.Count() == 0) return WfRuntimeThreadContextError::EmptyStack;
+				}
+				else
+				{
+					WfRuntimeStackFrame& frame = GetCurrentStackFrame();
+					if (stack.Count() <= frame.freeStackBase) return WfRuntimeThreadContextError::StackCorrupted;
+				}
+				value = stack[stack.Count() - 1];
+				stack.RemoveAt(stack.Count() - 1);
+				return WfRuntimeThreadContextError::Success;
+			}
+
+			WfRuntimeThreadContextError WfRuntimeThreadContext::RaiseException(const WString& exception, bool fatalError, bool skipDebugger)
+			{
+				auto info = MakePtr<WfRuntimeExceptionInfo>(exception, fatalError);
+				return RaiseException(info, skipDebugger);
+			}
+
+			WfRuntimeThreadContextError WfRuntimeThreadContext::RaiseException(Ptr<WfRuntimeExceptionInfo> info, bool skipDebugger)
+			{
+				exceptionInfo = info;
+				status = info->fatal ? WfRuntimeExecutionStatus::FatalError : WfRuntimeExecutionStatus::RaisedException;
+
+				if (info->callStack.Count() == 0)
+				{
+					if (auto debugger = GetDebuggerForCurrentThread())
+					{
+						vint contextCount = debugger->GetThreadContexts().Count();
+						for (vint i = contextCount - 1; i >= 0; i--)
+						{
+							auto context = debugger->GetThreadContexts()[i];
+							vint stackCount = context->stackFrames.Count();
+							for (vint j = stackCount - 1; j >= 0; j--)
+							{
+								const auto& stackFrame = context->stackFrames[j];
+								info->callStack.Add(new WfRuntimeCallStackInfo(context, stackFrame));
+							}
+
+							if (i > 0)
+							{
+								info->callStack.Add(new WfRuntimeCallStackInfo);
+							}
+						}
+
+						if (!skipDebugger)
+						{
+							if (auto callback = GetDebuggerCallback(debugger.Obj()))
+							{
+								if (callback->BreakException(info))
 								{
-									auto ctor = group->GetMethod(j);
-									if (ctor->GetParameterCount() == 1)
+									if (!callback->WaitForContinue())
 									{
-										auto type = ctor->GetParameter(0)->GetType();
-										if (type->GetDecorator() == ITypeInfo::SharedPtr && type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueInterfaceProxy>())
-										{
-											selectedCtor = ctor;
-											break;
-										}
+										RaiseException(L"Internal error: Debugger stopped the program.", true, true);
 									}
 								}
-
-								if (selectedCtor)
-								{
-									baseCtors.Add(selectedCtor);
-								}
-								else
-								{
-									throw ArgumentCountMismtatchException(group);
-								}
-							}
-							else
-							{
-								throw ConstructorNotExistsException(td);
 							}
 						}
 					}
 				}
 
-				Ptr<WfInterfaceInstance> instance = new WfInterfaceInstance(GetOwnerTypeDescriptor(), proxy, baseCtors);
+				return WfRuntimeThreadContextError::Success;
+			}
 
-				if (returnInfo->GetDecorator() == ITypeInfo::SharedPtr)
+			WfRuntimeThreadContextError WfRuntimeThreadContext::LoadStackValue(vint stackItemIndex, reflection::description::Value& value)
+			{
+				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
+				auto frame = GetCurrentStackFrame();
+				if (stackItemIndex < frame.freeStackBase || stackItemIndex >= stack.Count())
 				{
-					return Value::From(instance);
-				}
-				else
-				{
-					return Value::From(instance.Detach());
-				}
-			}
-
-			WfInterfaceConstructor::WfInterfaceConstructor(Ptr<ITypeInfo> type)
-				:WfMethodBase(true)
-			{
-				auto argumentType = TypeInfoRetriver<Ptr<IValueInterfaceProxy>>::CreateTypeInfo();
-				auto parameter = MakePtr<ParameterInfoImpl>(this, L"proxy", argumentType);
-				AddParameter(parameter);
-				SetReturn(type);
-			}
-
-/***********************************************************************
-WfInterfaceMethod
-***********************************************************************/
-
-			Value WfInterfaceMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
-			{
-				auto instance = thisObject.GetRawPtr()->SafeAggregationCast<WfInterfaceInstance>();
-				return instance->GetProxy()->Invoke(this, IValueList::Create(From(arguments)));
-			}
-
-			WfInterfaceMethod::WfInterfaceMethod()
-				:WfMethodBase(false)
-			{
-			}
-
-/***********************************************************************
-GetInfoRecord
-***********************************************************************/
-
-			template<typename TRecord, typename TInfo>
-			Ptr<TRecord> GetInfoRecord(TInfo* target, DescriptableObject* thisObject, const WString& key, bool createIfNotExist)
-			{
-				if (!thisObject)
-				{
-					throw ArgumentNullException(L"thisObject", target);
-				}
-				auto untypedValue = thisObject->GetInternalProperty(key);
-				auto typedValue = untypedValue.Cast<TRecord>();
-				if (untypedValue)
-				{
-					if (!typedValue)
-					{
-						throw ArgumentException(L"Key mismatches with the record type.", L"vl::workflow::typeimpl::GetFieldRecord", L"key");
-					}
-				}
-				else if(createIfNotExist)
-				{
-					typedValue = new TRecord;
-					thisObject->SetInternalProperty(key, typedValue);
-				}
-				return typedValue;
-			}
-
-/***********************************************************************
-WfEvent
-***********************************************************************/
-
-			const wchar_t* WfEvent::EventRecordInternalPropertyName = L"WfEvent::EventRecord";
-
-			Ptr<WfEvent::EventRecord> WfEvent::GetEventRecord(DescriptableObject* thisObject, bool createIfNotExist)
-			{
-				return GetInfoRecord<EventRecord>(this, thisObject, EventRecordInternalPropertyName, createIfNotExist);
-			}
-
-			Ptr<IEventHandler> WfEvent::AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)
-			{
-				auto record = GetEventRecord(thisObject, true);
-				auto result = MakePtr<EventHandlerImpl>(handler);
-				record->handlers.Add(this, result);
-				return result;
-			}
-
-			bool WfEvent::DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)
-			{
-				auto impl = handler.Cast<EventHandlerImpl>();
-				if (!impl)return false;
-				auto record = GetEventRecord(thisObject, true);
-				if (record->handlers.Remove(this, impl.Obj()))
-				{
-					impl->isAttached = false;
-					return true;
-				}
-				return false;
-			}
-
-			void WfEvent::InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)
-			{
-				auto record = GetEventRecord(thisObject, false);
-				if (record)
-				{
-					vint index = record->handlers.Keys().IndexOf(this);
-					if (index != -1)
-					{
-						auto& values = record->handlers.GetByIndex(index);
-						FOREACH(Ptr<EventHandlerImpl>, handler, values)
-						{
-							handler->proxy->Invoke(arguments);
-						}
-					}
-				}
-			}
-
-			Ptr<ITypeInfo> WfEvent::GetHandlerTypeInternal()
-			{
-				return handlerType;
-			}
-
-			WfEvent::WfEvent(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
-				:EventInfoImpl(ownerTypeDescriptor, name)
-			{
-			}
-
-			WfEvent::~WfEvent()
-			{
-			}
-
-			IEventInfo::ICpp* WfEvent::GetCpp()
-			{
-				return nullptr;
-			}
-
-			void WfEvent::SetHandlerType(Ptr<ITypeInfo> typeInfo)
-			{
-				handlerType = typeInfo;
-			}
-
-/***********************************************************************
-WfField
-***********************************************************************/
-
-			const wchar_t* WfField::FieldRecordInternalPropertyName = L"WfField::FieldRecord";
-
-			Ptr<WfField::FieldRecord> WfField::GetFieldRecord(DescriptableObject* thisObject, bool createIfNotExist)
-			{
-				return GetInfoRecord<FieldRecord>(this, thisObject, FieldRecordInternalPropertyName, createIfNotExist);
-			}
-
-			Value WfField::GetValueInternal(const Value& thisObject)
-			{
-				auto record = GetFieldRecord(thisObject.GetRawPtr(), true);
-				return record->values.Get(this);
-			}
-
-			void WfField::SetValueInternal(Value& thisObject, const Value& newValue)
-			{
-				auto record = GetFieldRecord(thisObject.GetRawPtr(), true);
-				record->values.Set(this, newValue);
-			}
-
-			WfField::WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
-				:FieldInfoImpl(ownerTypeDescriptor, name, nullptr)
-			{
-			}
-
-			WfField::~WfField()
-			{
-			}
-
-			IPropertyInfo::ICpp* WfField::GetCpp()
-			{
-				return nullptr;
-			}
-
-			void WfField::SetReturn(Ptr<ITypeInfo> typeInfo)
-			{
-				returnInfo = typeInfo;
-			}
-
-/***********************************************************************
-WfStructField
-***********************************************************************/
-
-			Value WfStructField::GetValueInternal(const Value& thisObject)
-			{
-				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
-				if (!structValue)
-				{
-					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
-				}
-				vint index = structValue->value.fieldValues.Keys().IndexOf(this);
-				if (index == -1)
-				{
-					return returnInfo->GetTypeDescriptor()->GetValueType()->CreateDefault();
-				}
-				else
-				{
-					return structValue->value.fieldValues.Values()[index];
-				}
-			}
-
-			void WfStructField::SetValueInternal(Value& thisObject, const Value& newValue)
-			{
-				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
-				if (!structValue)
-				{
-					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
-				}
-				structValue->value.fieldValues.Set(this, newValue);
-			}
-
-			WfStructField::WfStructField(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
-				:FieldInfoImpl(ownerTypeDescriptor, name, nullptr)
-			{
-			}
-
-			WfStructField::~WfStructField()
-			{
-			}
-
-			IPropertyInfo::ICpp* WfStructField::GetCpp()
-			{
-				return nullptr;
-			}
-
-			void WfStructField::SetReturn(Ptr<ITypeInfo> typeInfo)
-			{
-				returnInfo = typeInfo;
-			}
-
-/***********************************************************************
-WfProperty
-***********************************************************************/
-
-			WfProperty::WfProperty(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
-				:PropertyInfoImpl(ownerTypeDescriptor, name, nullptr, nullptr, nullptr)
-			{
-			}
-
-			WfProperty::~WfProperty()
-			{
-			}
-
-			void WfProperty::SetGetter(MethodInfoImpl* value)
-			{
-				getter = value;
-			}
-
-			void WfProperty::SetSetter(MethodInfoImpl* value)
-			{
-				setter = value;
-			}
-
-			void WfProperty::SetValueChangedEvent(EventInfoImpl* value)
-			{
-				valueChangedEvent = value;
-			}
-
-/***********************************************************************
-WfTypeInfoContent
-***********************************************************************/
-
-			WfTypeInfoContent::WfTypeInfoContent(const WString& _workflowTypeName)
-				:workflowTypeName(_workflowTypeName)
-			{
-				typeName = workflowTypeName.Buffer();
-				cppFullTypeName = nullptr;
-				cppName = TypeInfoContent::CppType;
-			}
-
-/***********************************************************************
-WfCustomType
-***********************************************************************/
-
-			void WfCustomType::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext, IMethodGroupInfo* group)
-			{
-				vint methodCount = group->GetMethodCount();
-				for (vint j = 0; j < methodCount; j++)
-				{
-					auto method = group->GetMethod(j);
-					if (auto methodInfo = dynamic_cast<WfMethodBase*>(method))
-					{
-						methodInfo->SetGlobalContext(globalContext);
-					}
-				}
-			}
-
-			void WfCustomType::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
-			{
-				globalContext = _globalContext;
-				
-				if (auto group = GetConstructorGroup())
-				{
-					SetGlobalContext(globalContext, group);
+					return WfRuntimeThreadContextError::WrongVariableIndex;
 				}
 
-				vint methodGroupCount = GetMethodGroupCount();
-				for (vint i = 0; i < methodGroupCount; i++)
+				value = stack[stackItemIndex];
+				return WfRuntimeThreadContextError::Success;
+			}
+
+			WfRuntimeThreadContextError WfRuntimeThreadContext::LoadGlobalVariable(vint variableIndex, reflection::description::Value& value)
+			{
+				if (variableIndex < 0 || variableIndex >= globalContext->globalVariables->variables.Count())
 				{
-					auto group = GetMethodGroup(i);
-					SetGlobalContext(globalContext, group);
-				}
-			}
-
-			void WfCustomType::LoadInternal()
-			{
-			}
-
-			WfCustomType::WfCustomType(reflection::description::TypeDescriptorFlags typeDescriptorFlags, const WString& typeName)
-				:WfCustomTypeBase<reflection::description::TypeDescriptorImpl>(typeDescriptorFlags, typeName)
-			{
-			}
-
-			WfCustomType::~WfCustomType()
-			{
-			}
-			
-			runtime::WfRuntimeGlobalContext* WfCustomType::GetGlobalContext()
-			{
-				return globalContext;
-			}
-
-			const WfCustomType::TypeDescriptorList& WfCustomType::GetExpandedBaseTypes()
-			{
-				if (!baseTypeExpanded)
-				{
-					baseTypeExpanded = true;
-					TypeDescriptorList customTypes;
-					customTypes.Add(this);
-
-					for (vint i = 0; i < customTypes.Count(); i++)
-					{
-						auto td = customTypes[i];
-						vint count = td->GetBaseTypeDescriptorCount();
-						for (vint j = 0; j < count; j++)
-						{
-							auto baseTd = td->GetBaseTypeDescriptor(j);
-							if (dynamic_cast<WfCustomType*>(baseTd))
-							{
-								customTypes.Add(baseTd);
-							}
-							else
-							{
-								expandedBaseTypes.Add(baseTd);
-							}
-						}
-					}
-				}
-				return expandedBaseTypes;
-			}
-
-			void WfCustomType::AddBaseType(ITypeDescriptor* type)
-			{
-				TypeDescriptorImpl::AddBaseType(type);
-			}
-
-			void WfCustomType::AddMember(const WString& name, Ptr<WfMethodBase> value)
-			{
-				AddMethod(name, value);
-			}
-
-			void WfCustomType::AddMember(Ptr<WfClassConstructor> value)
-			{
-				AddConstructor(value);
-			}
-
-			void WfCustomType::AddMember(Ptr<WfInterfaceConstructor> value)
-			{
-				AddConstructor(value);
-			}
-
-			void WfCustomType::AddMember(Ptr<WfField> value)
-			{
-				AddProperty(value);
-			}
-
-			void WfCustomType::AddMember(Ptr<WfProperty> value)
-			{
-				AddProperty(value);
-			}
-
-			void WfCustomType::AddMember(Ptr<WfEvent> value)
-			{
-				AddEvent(value);
-			}
-
-/***********************************************************************
-WfClass
-***********************************************************************/
-
-			WfClass::WfClass(const WString& typeName)
-				:WfCustomType(TypeDescriptorFlags::Class, typeName)
-			{
-			}
-
-			WfClass::~WfClass()
-			{
-			}
-
-/***********************************************************************
-WfInterface
-***********************************************************************/
-
-			WfInterface::WfInterface(const WString& typeName)
-				:WfCustomType(TypeDescriptorFlags::Interface, typeName)
-			{
-			}
-
-			WfInterface::~WfInterface()
-			{
-			}
-
-/***********************************************************************
-WfStruct
-***********************************************************************/
-
-			WfStruct::WfValueType::WfValueType(WfStruct* _owner)
-				:owner(_owner)
-			{
-			}
-
-			Value WfStruct::WfValueType::CreateDefault()
-			{
-				return Value::From(new IValueType::TypedBox<WfStructInstance>, owner);
-			}
-
-			IBoxedValue::CompareResult WfStruct::WfValueType::Compare(const Value& a, const Value& b)
-			{
-				return IBoxedValue::NotComparable;
-			}
-
-			WfStruct::WfStruct(const WString& typeName)
-				:WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>(TypeDescriptorFlags::Struct, typeName)
-			{
-				this->valueType = new WfValueType(this);
-			}
-
-			WfStruct::~WfStruct()
-			{
-			}
-
-			vint WfStruct::GetPropertyCount()
-			{
-				this->Load();
-				return fields.Count();
-			}
-
-			IPropertyInfo* WfStruct::GetProperty(vint index)
-			{
-				this->Load();
-				if (index < 0 || index >= fields.Count())
-				{
-					return nullptr;
-				}
-				return fields.Values()[index].Obj();
-			}
-
-			bool WfStruct::IsPropertyExists(const WString& name, bool inheritable)
-			{
-				this->Load();
-				return fields.Keys().Contains(name);
-			}
-
-			IPropertyInfo* WfStruct::GetPropertyByName(const WString& name, bool inheritable)
-			{
-				this->Load();
-				vint index = fields.Keys().IndexOf(name);
-				if (index == -1) return nullptr;
-				return fields.Values()[index].Obj();
-			}
-
-			void WfStruct::AddMember(Ptr<WfStructField> value)
-			{
-				fields.Add(value->GetName(), value);
-			}
-
-/***********************************************************************
-WfEnum::WfEnumType
-***********************************************************************/
-
-			WfEnum::WfEnumType::WfEnumType(WfEnum* _owner)
-				:owner(_owner)
-			{
-			}
-
-			bool WfEnum::WfEnumType::IsFlagEnum()
-			{
-				return owner->GetTypeDescriptorFlags() == TypeDescriptorFlags::FlagEnum;
-			}
-
-			vint WfEnum::WfEnumType::GetItemCount()
-			{
-				return owner->enumItems.Count();
-			}
-
-			WString WfEnum::WfEnumType::GetItemName(vint index)
-			{
-				if (index < 0 || index >= owner->enumItems.Count())
-				{
-					return L"";
-				}
-				return owner->enumItems.Keys()[index];
-			}
-
-			vuint64_t WfEnum::WfEnumType::GetItemValue(vint index)
-			{
-				if (index < 0 || index >= owner->enumItems.Count())
-				{
-					return 0;
-				}
-				return owner->enumItems.Values()[index];
-			}
-
-			vint WfEnum::WfEnumType::IndexOfItem(WString name)
-			{
-				return owner->enumItems.Keys().IndexOf(name);
-			}
-
-			Value WfEnum::WfEnumType::ToEnum(vuint64_t value)
-			{
-				auto boxedValue = MakePtr<IValueType::TypedBox<WfEnumInstance>>();
-				boxedValue->value.value = value;
-				return Value::From(boxedValue, owner);
-			}
-
-			vuint64_t WfEnum::WfEnumType::FromEnum(const Value& value)
-			{
-				auto enumValue = value.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
-				if (!enumValue)
-				{
-					throw ArgumentTypeMismtatchException(L"enumValue", owner, Value::BoxedValue, value);
-				}
-				return enumValue->value.value;
-			}
-
-/***********************************************************************
-WfEnum
-***********************************************************************/
-
-			WfEnum::WfValueType::WfValueType(WfEnum* _owner)
-				:owner(_owner)
-			{
-			}
-
-			Value WfEnum::WfValueType::CreateDefault()
-			{
-				return Value::From(new IValueType::TypedBox<WfEnumInstance>, owner);
-			}
-
-			IBoxedValue::CompareResult WfEnum::WfValueType::Compare(const Value& a, const Value& b)
-			{
-				auto ea = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
-				if (!ea)
-				{
-					throw ArgumentTypeMismtatchException(L"ea", owner, Value::BoxedValue, a);
+					return WfRuntimeThreadContextError::WrongVariableIndex;
 				}
 
-				auto eb = b.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
-				if (!eb)
-				{
-					throw ArgumentTypeMismtatchException(L"eb", owner, Value::BoxedValue, b);
-				}
-
-				if (ea->value.value < eb->value.value) return IBoxedValue::Smaller;
-				if (ea->value.value > eb->value.value)return IBoxedValue::Greater;
-				return IBoxedValue::Equal;
+				value = globalContext->globalVariables->variables[variableIndex];
+				return WfRuntimeThreadContextError::Success;
 			}
 
-			WfEnum::WfEnum(bool isFlags, const WString& typeName)
-				:WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>((isFlags ? TypeDescriptorFlags::FlagEnum : TypeDescriptorFlags::NormalEnum), typeName)
+			WfRuntimeThreadContextError WfRuntimeThreadContext::StoreGlobalVariable(vint variableIndex, const reflection::description::Value& value)
 			{
-				this->valueType = new WfValueType(this);
-				this->enumType = new WfEnumType(this);
+				if (variableIndex < 0 || variableIndex >= globalContext->globalVariables->variables.Count())
+				{
+					return WfRuntimeThreadContextError::WrongVariableIndex;
+				}
+
+				globalContext->globalVariables->variables[variableIndex] = value;
+				return WfRuntimeThreadContextError::Success;
 			}
 
-			WfEnum::~WfEnum()
+			WfRuntimeThreadContextError WfRuntimeThreadContext::LoadCapturedVariable(vint variableIndex, reflection::description::Value& value)
 			{
+				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
+				auto frame = GetCurrentStackFrame();
+				if (variableIndex < 0 || variableIndex >= frame.capturedVariables->variables.Count())
+				{
+					return WfRuntimeThreadContextError::WrongVariableIndex;
+				}
+
+				value = frame.capturedVariables->variables[variableIndex];
+				return WfRuntimeThreadContextError::Success;
 			}
 
-			void WfEnum::AddEnumItem(const WString& name, vuint64_t value)
+			WfRuntimeThreadContextError WfRuntimeThreadContext::StoreCapturedVariable(vint variableIndex, const reflection::description::Value& value)
 			{
-				enumItems.Add(name, value);
+				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
+				auto frame = GetCurrentStackFrame();
+				if (variableIndex < 0 || variableIndex >= frame.capturedVariables->variables.Count())
+				{
+					return WfRuntimeThreadContextError::WrongVariableIndex;
+				}
+
+				frame.capturedVariables->variables[variableIndex] = value;
+				return WfRuntimeThreadContextError::Success;
 			}
 
-/***********************************************************************
-WfClassInstance
-***********************************************************************/
-
-			WfClassInstance::WfClassInstance(ITypeDescriptor* _typeDescriptor)
-				:Description<WfClassInstance>(_typeDescriptor)
+			WfRuntimeThreadContextError WfRuntimeThreadContext::LoadLocalVariable(vint variableIndex, reflection::description::Value& value)
 			{
-				classType = dynamic_cast<WfClass*>(_typeDescriptor);
-				InitializeAggregation(classType->GetExpandedBaseTypes().Count());
+				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
+				auto frame = GetCurrentStackFrame();
+				if (variableIndex < 0 || variableIndex >= frame.fixedVariableCount)
+				{
+					return WfRuntimeThreadContextError::WrongVariableIndex;
+				}
+
+				value = stack[frame.stackBase + variableIndex];
+				return WfRuntimeThreadContextError::Success;
 			}
 
-			WfClassInstance::~WfClassInstance()
+			WfRuntimeThreadContextError WfRuntimeThreadContext::StoreLocalVariable(vint variableIndex, const reflection::description::Value& value)
 			{
-				if (classType->destructorFunctionIndex != -1)
+				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
+				auto frame = GetCurrentStackFrame();
+				if (variableIndex < 0 || variableIndex >= frame.fixedVariableCount)
 				{
-					auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
-					capturedVariables->variables.Resize(1);
-					capturedVariables->variables[0] = Value::From(this);
-
-					auto argumentArray = IValueList::Create();
-					WfRuntimeLambda::Invoke(classType->GetGlobalContext(), capturedVariables, classType->destructorFunctionIndex, argumentArray);
+					return WfRuntimeThreadContextError::WrongVariableIndex;
 				}
+
+				stack[frame.stackBase + variableIndex] = value;
+				return WfRuntimeThreadContextError::Success;
 			}
 
-			void WfClassInstance::InstallBaseObject(ITypeDescriptor* td, Value& value)
+			void WfRuntimeThreadContext::ExecuteToEnd()
 			{
-				Ptr<DescriptableObject> ptr;
+				auto callback = GetDebuggerCallback();
+				if (callback)
 				{
-					if (!(ptr = value.GetSharedPtr()))
-					{
-						ptr = value.GetRawPtr();
-					}
-					value = Value();
+					callback->EnterThreadContext(this);
 				}
-				
-				vint index = classType->GetExpandedBaseTypes().IndexOf(td);
-				SetAggregationParent(index, ptr);
-			}
-
-/***********************************************************************
-WfInterfaceInstance
-***********************************************************************/
-
-			WfInterfaceInstance::WfInterfaceInstance(ITypeDescriptor* _typeDescriptor, Ptr<IValueInterfaceProxy> _proxy, collections::List<IMethodInfo*>& baseCtors)
-				:Description<WfInterfaceInstance>(_typeDescriptor)
-				, proxy(_proxy)
-			{
-				Array<Value> arguments(1);
-				arguments[0] = Value::From(_proxy);
-
-				InitializeAggregation(baseCtors.Count());
-				FOREACH_INDEXER(IMethodInfo*, ctor, index, baseCtors)
+				while (Execute(callback) != WfRuntimeExecutionAction::Nop);
+				if (callback)
 				{
-					Ptr<DescriptableObject> ptr;
-					{
-						auto value = ctor->Invoke(Value(), arguments);
-						if (!(ptr = value.GetSharedPtr()))
-						{
-							ptr = value.GetRawPtr();
-						}
-					}
-
-					SetAggregationParent(index, ptr);
-				}
-			}
-
-			WfInterfaceInstance::~WfInterfaceInstance()
-			{
-			}
-
-			Ptr<IValueInterfaceProxy> WfInterfaceInstance::GetProxy()
-			{
-				return proxy;
-			}
-
-/***********************************************************************
-WfTypeImpl
-***********************************************************************/
-			
-			runtime::WfRuntimeGlobalContext* WfTypeImpl::GetGlobalContext()
-			{
-				return globalContext;
-			}
-
-			void WfTypeImpl::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
-			{
-				if (globalContext)
-				{
-					CHECK_ERROR(!_globalContext, L"vl::workflow::typeimpl::WfTypeImpl::SetGlobalContext(WfRuntimeGlobalContext*)#Only one global context is allowed to create from an assembly at the same time.");
-				}
-				else
-				{
-					CHECK_ERROR(_globalContext, L"vl::workflow::typeimpl::WfTypeImpl::SetGlobalContext(WfRuntimeGlobalContext*)#Only one global context is allowed to create from an assembly at the same time.");
-				}
-
-				globalContext = _globalContext;
-				FOREACH(Ptr<WfClass>, td, classes)
-				{
-					td->SetGlobalContext(globalContext);
-				}
-				FOREACH(Ptr<WfInterface>, td, interfaces)
-				{
-					td->SetGlobalContext(globalContext);
-				}
-
-				if (globalContext)
-				{
-					GetGlobalTypeManager()->AddTypeLoader(Ptr<WfTypeImpl>(this));
-				}
-				else
-				{
-					GetGlobalTypeManager()->RemoveTypeLoader(Ptr<WfTypeImpl>(this));
-				}
-			}
-
-			void WfTypeImpl::Load(reflection::description::ITypeManager* manager)
-			{
-				FOREACH(Ptr<WfClass>, td, classes)
-				{
-					manager->SetTypeDescriptor(td->GetTypeName(), td);
-				}
-				FOREACH(Ptr<WfInterface>, td, interfaces)
-				{
-					manager->SetTypeDescriptor(td->GetTypeName(), td);
-				}
-				FOREACH(Ptr<WfStruct>, td, structs)
-				{
-					manager->SetTypeDescriptor(td->GetTypeName(), td);
-				}
-				FOREACH(Ptr<WfEnum>, td, enums)
-				{
-					manager->SetTypeDescriptor(td->GetTypeName(), td);
-				}
-			}
-
-			void WfTypeImpl::Unload(reflection::description::ITypeManager* manager)
-			{
-				FOREACH(Ptr<WfClass>, td, classes)
-				{
-					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
-				}
-				FOREACH(Ptr<WfInterface>, td, interfaces)
-				{
-					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
-				}
-				FOREACH(Ptr<WfStruct>, td, structs)
-				{
-					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
-				}
-				FOREACH(Ptr<WfEnum>, td, enums)
-				{
-					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
+					callback->LeaveThreadContext(this);
 				}
 			}
 		}
