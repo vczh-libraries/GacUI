@@ -7,6 +7,624 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppWorkflowLibrary.h"
 
 /***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSDIALOGSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
+
+#include <windows.h>
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsDialogService : public INativeDialogService
+			{
+				typedef HWND (*HandleRetriver)(INativeWindow*);
+			protected:
+				HandleRetriver									handleRetriver;
+
+			public:
+				WindowsDialogService(HandleRetriver _handleRetriver);
+
+				MessageBoxButtonsOutput			ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal)override;
+				bool							ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors)override;
+				bool							ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist)override;
+				bool							ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options)override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSINPUTSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsInputService : public Object, public INativeInputService
+			{
+			protected:
+				HWND									ownerHandle;
+				HHOOK									mouseHook;
+				bool									isTimerEnabled;
+				HOOKPROC								mouseProc;
+
+				collections::Array<WString>				keyNames;
+				collections::Dictionary<WString, vint>	keys;
+
+				WString									GetKeyNameInternal(vint code);
+				void									InitializeKeyNames();
+			public:
+				WindowsInputService(HOOKPROC _mouseProc);
+
+				void									SetOwnerHandle(HWND handle);
+				void									StartHookMouse()override;
+				void									StopHookMouse()override;
+				bool									IsHookingMouse()override;
+				void									StartTimer()override;
+				void									StopTimer()override;
+				bool									IsTimerEnabled()override;
+				bool									IsKeyPressing(vint code)override;
+				bool									IsKeyToggled(vint code)override;
+				WString									GetKeyName(vint code)override;
+				vint									GetKey(const WString& name)override;
+			};
+
+			extern bool									WinIsKeyPressing(vint code);
+			extern bool									WinIsKeyToggled(vint code);
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCALLBACKSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsCallbackService : public Object, public INativeCallbackService
+			{
+			protected:
+				collections::List<INativeControllerListener*>	listeners;
+
+			public:
+				WindowsCallbackService();
+
+				bool											InstallListener(INativeControllerListener* listener)override;
+				bool											UninstallListener(INativeControllerListener* listener)override;
+
+				void											InvokeMouseHook(WPARAM message, Point location);
+				void											InvokeGlobalTimer();
+				void											InvokeClipboardUpdated();
+				void											InvokeNativeWindowCreated(INativeWindow* window);
+				void											InvokeNativeWindowDestroyed(INativeWindow* window);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSSCREENSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsScreen : public Object, public INativeScreen
+			{
+				friend class WindowsScreenService;
+			protected:
+				HMONITOR										monitor;
+			public:
+				WindowsScreen();
+
+				Rect											GetBounds()override;
+				Rect											GetClientBounds()override;
+				WString											GetName()override;
+				bool											IsPrimary()override;
+			};
+
+			class WindowsScreenService : public Object, public INativeScreenService
+			{
+				typedef HWND (*HandleRetriver)(INativeWindow*);
+			protected:
+				collections::List<Ptr<WindowsScreen>>			screens;
+				HandleRetriver									handleRetriver;
+			public:
+
+				struct MonitorEnumProcData
+				{
+					WindowsScreenService*	screenService;
+					vint						currentScreen;
+				};
+
+				WindowsScreenService(HandleRetriver _handleRetriver);
+
+				static BOOL CALLBACK							MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
+				void											RefreshScreenInformation();
+				vint											GetScreenCount()override;
+				INativeScreen*									GetScreen(vint index)override;
+				INativeScreen*									GetScreen(INativeWindow* window)override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSASYNCSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsAsyncService : public INativeAsyncService
+			{
+			protected:
+				struct TaskItem
+				{
+					Semaphore*							semaphore;
+					Func<void()>						proc;
+
+					TaskItem();
+					TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
+					~TaskItem();
+				};
+
+				class DelayItem : public Object, public INativeDelay
+				{
+				public:
+					DelayItem(WindowsAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
+					~DelayItem();
+
+					WindowsAsyncService*				service;
+					Func<void()>						proc;
+					ExecuteStatus						status;
+					DateTime							executeTime;
+					bool								executeInMainThread;
+
+					ExecuteStatus						GetStatus()override;
+					bool								Delay(vint milliseconds)override;
+					bool								Cancel()override;
+				};
+			protected:
+				vint									mainThreadId;
+				SpinLock								taskListLock;
+				collections::List<TaskItem>				taskItems;
+				collections::List<Ptr<DelayItem>>		delayItems;
+			public:
+				WindowsAsyncService();
+				~WindowsAsyncService();
+
+				void									ExecuteAsyncTasks();
+				bool									IsInMainThread(INativeWindow* window)override;
+				void									InvokeAsync(const Func<void()>& proc)override;
+				void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
+				bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
+				Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
+				Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCLIPBOARDSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsClipboardService;
+
+			class WindowsClipboardReader : public Object, public INativeClipboardReader
+			{
+				friend class WindowsClipboardService;
+			protected:
+				WindowsClipboardService*		service;
+				bool							ContainsFormat(UINT format);
+
+			public:
+				WindowsClipboardReader(WindowsClipboardService* _service);
+				~WindowsClipboardReader();
+
+				bool							ContainsText()override;
+				WString							GetText()override;
+
+				bool							ContainsDocument()override;
+				Ptr<DocumentModel>				GetDocument()override;
+
+				bool							ContainsImage()override;
+				Ptr<INativeImage>				GetImage()override;
+
+				void							CloseClipboard();
+			};
+
+			class WindowsClipboardWriter : public Object, public INativeClipboardWriter
+			{
+				friend class WindowsClipboardService;
+			protected:
+				WindowsClipboardService*		service;
+				Nullable<WString>				textData;
+				Ptr<DocumentModel>				documentData;
+				Ptr<INativeImage>				imageData;
+
+				void							SetClipboardData(UINT format, stream::MemoryStream& memoryStream);
+			public:
+				WindowsClipboardWriter(WindowsClipboardService* _service);
+				~WindowsClipboardWriter();
+
+				void							SetText(const WString& value)override;
+				void							SetDocument(Ptr<DocumentModel> value)override;
+				void							SetImage(Ptr<INativeImage> value)override;
+				void							Submit()override;
+			};
+
+			class WindowsClipboardService : public Object, public INativeClipboardService
+			{
+				friend class WindowsClipboardReader;
+				friend class WindowsClipboardWriter;
+			protected:
+				HWND							ownerHandle;
+				UINT							WCF_Document;
+				UINT							WCF_RTF;
+				UINT							WCF_HTML;
+				WindowsClipboardReader*			reader = nullptr;
+
+			public:
+				WindowsClipboardService();
+
+				Ptr<INativeClipboardReader>		ReadClipboard()override;
+				Ptr<INativeClipboardWriter>		WriteClipboard()override;
+
+				void							SetOwnerHandle(HWND handle);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSRESOURCESERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSRESOURCESERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSRESOURCESERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsCursor : public Object, public INativeCursor
+			{
+			protected:
+				HCURSOR										handle;
+				bool										isSystemCursor;
+				SystemCursorType							systemCursorType;
+			public:
+				WindowsCursor(HCURSOR _handle);
+				WindowsCursor(SystemCursorType type);
+
+				bool										IsSystemCursor()override;
+				SystemCursorType							GetSystemCursorType()override;
+				HCURSOR										GetCursorHandle();
+			};
+
+			class WindowsResourceService : public Object, public INativeResourceService
+			{
+			protected:
+				collections::Array<Ptr<WindowsCursor>>		systemCursors;
+				FontProperties								defaultFont;
+			public:
+				WindowsResourceService();
+
+				INativeCursor*								GetSystemCursor(INativeCursor::SystemCursorType type)override;
+				INativeCursor*								GetDefaultSystemCursor()override;
+				FontProperties								GetDefaultFont()override;
+				void										SetDefaultFont(const FontProperties& value)override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSIMAGESERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
+
+#include <wincodec.h>
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsImageFrame : public Object, public INativeImageFrame
+			{
+			protected:
+				INativeImage*													image;
+				ComPtr<IWICBitmap>												frameBitmap;
+				collections::Dictionary<void*, Ptr<INativeImageFrameCache>>		caches;
+
+				void										Initialize(IWICBitmapSource* bitmapSource);
+			public:
+				WindowsImageFrame(INativeImage* _image, IWICBitmapFrameDecode* frameDecode);
+				WindowsImageFrame(INativeImage* _image, IWICBitmap* sourceBitmap);
+				~WindowsImageFrame();
+
+				INativeImage*								GetImage()override;
+				Size										GetSize()override;
+				bool										SetCache(void* key, Ptr<INativeImageFrameCache> cache)override;
+				Ptr<INativeImageFrameCache>					GetCache(void* key)override;
+				Ptr<INativeImageFrameCache>					RemoveCache(void* key)override;
+				IWICBitmap*									GetFrameBitmap();
+				void										SaveBitmapToStream(stream::IStream& stream);
+			};
+
+			class WindowsImage : public Object, public INativeImage
+			{
+			protected:
+				INativeImageService*						imageService;
+				ComPtr<IWICBitmapDecoder>					bitmapDecoder;
+				collections::Array<Ptr<WindowsImageFrame>>	frames;
+			public:
+				WindowsImage(INativeImageService* _imageService, IWICBitmapDecoder* _bitmapDecoder);
+				~WindowsImage();
+
+				INativeImageService*						GetImageService()override;
+				FormatType									GetFormat()override;
+				vint										GetFrameCount()override;
+				INativeImageFrame*							GetFrame(vint index)override;
+				void										SaveToStream(stream::IStream& stream, FormatType formatType)override;
+			};
+
+			class WindowsBitmapImage : public Object, public INativeImage
+			{
+			protected:
+				INativeImageService*						imageService;
+				Ptr<WindowsImageFrame>						frame;
+				FormatType									formatType;
+			public:
+				WindowsBitmapImage(INativeImageService* _imageService, IWICBitmap* sourceBitmap, FormatType _formatType);
+				~WindowsBitmapImage();
+
+				INativeImageService*						GetImageService()override;
+				FormatType									GetFormat()override;
+				vint										GetFrameCount()override;
+				INativeImageFrame*							GetFrame(vint index)override;
+				void										SaveToStream(stream::IStream& stream, FormatType formatType)override;
+			};
+
+			class WindowsImageService : public Object, public INativeImageService
+			{
+			protected:
+				ComPtr<IWICImagingFactory>					imagingFactory;
+			public:
+				WindowsImageService();
+				~WindowsImageService();
+
+				Ptr<INativeImage>							CreateImageFromFile(const WString& path);
+				Ptr<INativeImage>							CreateImageFromMemory(void* buffer, vint length);
+				Ptr<INativeImage>							CreateImageFromStream(stream::IStream& stream);
+				Ptr<INativeImage>							CreateImageFromHBITMAP(HBITMAP handle);
+				Ptr<INativeImage>							CreateImageFromHICON(HICON handle);
+				IWICImagingFactory*							GetImagingFactory();
+			};
+
+			extern IWICImagingFactory*						GetWICImagingFactory();
+			extern IWICBitmap*								GetWICBitmap(INativeImageFrame* frame);
+			extern Ptr<INativeImage>						CreateImageFromHBITMAP(HBITMAP handle);
+			extern Ptr<INativeImage>						CreateImageFromHICON(HICON handle);
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\WINNATIVEWINDOW.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
+#define VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+
+/***********************************************************************
+Windows Platform Native Controller
+***********************************************************************/
+
+			class INativeMessageHandler : public Interface
+			{
+			public:
+				virtual void								BeforeHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip) = 0;
+				virtual void								AfterHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip, LRESULT& result) = 0;
+			};
+
+			class IWindowsForm : public Interface
+			{
+			public:
+				virtual HWND								GetWindowHandle() = 0;
+				virtual Interface*							GetGraphicsHandler() = 0;
+				virtual void								SetGraphicsHandler(Interface* handler) = 0;
+				virtual bool								InstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
+				virtual bool								UninstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
+			};
+
+			extern INativeController*						CreateWindowsNativeController(HINSTANCE hInstance);
+			extern IWindowsForm*							GetWindowsFormFromHandle(HWND hwnd);
+			extern IWindowsForm*							GetWindowsForm(INativeWindow* window);
+			extern void										DestroyWindowsNativeController(INativeController* controller);
+			extern void										EnableCrossKernelCrashing();
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Direct2D Provider for Windows Implementation
+
+Interfaces:
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
+#define VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
+
+#include <d2d1_1.h>
+#include <dwrite_1.h>
+#include <d3d11_1.h>
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			extern ID2D1Factory*						GetDirect2DFactory();
+			extern IDWriteFactory*						GetDirectWriteFactory();
+			extern ID3D11Device*						GetD3D11Device();
+		}
+	}
+}
+
+extern int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)());
+
+#endif
+
+/***********************************************************************
 .\NATIVEWINDOW\WINDOWS\GDI\WINGDI.H
 ***********************************************************************/
 /*******************************************************************************
@@ -65,7 +683,6 @@ Comments:
 #ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDI
 #define VCZH_PRESENTATION_WINDOWS_GDI_WINGDI
 
-#include<windows.h>
 
 namespace vl
 {
@@ -476,34 +1093,32 @@ Device Context
 #endif
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.H
+.\NATIVEWINDOW\WINDOWS\GDI\WINGDIAPPLICATION.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
+GacUI::Native Window::GDI Provider for Windows Implementation
 
 Interfaces:
 ***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
+#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
+#define VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
 
 
 namespace vl
 {
 	namespace presentation
 	{
-		namespace elements_windows_d2d
+		namespace windows
 		{
-			class WindowsDirect2DLayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
-			{
-			public:
-				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
-			};
+			extern WinDC*									GetNativeWindowDC(INativeWindow* window);
+			extern HDC										GetNativeWindowHDC(INativeWindow* window);
 		}
 	}
 }
+
+extern int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)());
 
 #endif
 
@@ -540,71 +1155,470 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSASYNCSERVICE.H
+.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSWINDOWSGDI.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
+GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
 
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSGDI
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSGDI
 
+#include <MLang.h>
 
 namespace vl
 {
 	namespace presentation
 	{
-		namespace windows
+		namespace elements
 		{
-			class WindowsAsyncService : public INativeAsyncService
-			{
-			protected:
-				struct TaskItem
-				{
-					Semaphore*							semaphore;
-					Func<void()>						proc;
+			
+/***********************************************************************
+Raw API Rendering Element
+***********************************************************************/
 
-					TaskItem();
-					TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
-					~TaskItem();
+			class GuiGDIElement;
+
+			/// <summary>GDI Rendering event arguments.</summary>
+			struct GuiGDIElementEventArgs : compositions::GuiEventArgs
+			{
+			public:
+				/// <summary>The element that raised this event.</summary>
+				GuiGDIElement*				element;
+				/// <summary>The device context to draw. The HDC handle can be retrived using dc->GetHandle(), but it is recommended that using the WinDC class directly.</summary>
+				windows::WinDC*				dc;
+				/// <summary>The range for rendering.</summary>
+				Rect						bounds;
+
+				GuiGDIElementEventArgs(GuiGDIElement* _element, windows::WinDC* _dc, Rect _bounds)
+					:element(_element)
+					,dc(_dc)
+					,bounds(_bounds)
+				{
+				}
+			};
+
+			/// <summary>
+			/// Defines an element for customized rendering using GDI.
+			/// </summary>
+			class GuiGDIElement : public GuiElementBase<GuiGDIElement>
+			{
+				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGDIElement, L"GDIElement")
+			protected:
+				GuiGDIElement();
+			public:
+				/// <summary>Rendering event.</summary>
+				compositions::GuiGraphicsEvent<GuiGDIElementEventArgs>		Rendering;
+			};
+		}
+
+		namespace elements_windows_gdi
+		{
+
+/***********************************************************************
+Functionality
+***********************************************************************/
+
+			class IWindowsGDIRenderTarget : public elements::IGuiGraphicsRenderTarget
+			{
+			public:
+				virtual windows::WinDC*					GetDC()=0;
+			};
+
+			class IWindowsGDIResourceManager : public Interface
+			{
+			public:
+				virtual Ptr<windows::WinPen>				CreateGdiPen(Color color)=0;
+				virtual void								DestroyGdiPen(Color color)=0;
+				virtual Ptr<windows::WinBrush>				CreateGdiBrush(Color color)=0;
+				virtual void								DestroyGdiBrush(Color color)=0;
+				virtual Ptr<windows::WinFont>				CreateGdiFont(const FontProperties& fontProperties)=0;
+				virtual void								DestroyGdiFont(const FontProperties& fontProperties)=0;
+				virtual Ptr<elements::text::CharMeasurer>	CreateCharMeasurer(const FontProperties& fontProperties)=0;
+				virtual void								DestroyCharMeasurer(const FontProperties& fontProperties)=0;
+
+				virtual Ptr<windows::WinBitmap>				GetBitmap(INativeImageFrame* frame, bool enabled)=0;
+				virtual void								DestroyBitmapCache(INativeImageFrame* frame)=0;
+			};
+
+			extern IWindowsGDIResourceManager*				GetWindowsGDIResourceManager();
+
+/***********************************************************************
+OS Supporting
+***********************************************************************/
+
+			class IWindowsGDIObjectProvider : public Interface
+			{
+			public:
+				virtual windows::WinDC*						GetNativeWindowDC(INativeWindow* window)=0;
+				virtual IWindowsGDIRenderTarget*			GetBindedRenderTarget(INativeWindow* window)=0;
+				virtual void								SetBindedRenderTarget(INativeWindow* window, IWindowsGDIRenderTarget* renderTarget)=0;
+				virtual IWICImagingFactory*					GetWICImagingFactory()=0;
+				virtual IWICBitmap*							GetWICBitmap(INativeImageFrame* frame)=0;
+				virtual IMLangFontLink2*					GetMLangFontLink()=0;
+			};
+
+			extern IWindowsGDIObjectProvider*				GetWindowsGDIObjectProvider();
+			extern void										SetWindowsGDIObjectProvider(IWindowsGDIObjectProvider* provider);
+		}
+	}
+}
+
+extern void RendererMainGDI();
+
+#endif
+
+/***********************************************************************
+.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSUNISCRIBE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSUNISCRIBE
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSUNISCRIBE
+
+#include <usp10.h>
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements_windows_gdi
+		{
+			using namespace elements;
+			using namespace collections;
+			using namespace windows;
+
+/***********************************************************************
+UniscribeColor
+***********************************************************************/
+
+			struct UniscribeColorRange
+			{
+				vint							start;
+				vint							end;
+
+				UniscribeColorRange(){}
+				UniscribeColorRange(vint _start, vint _end):start(_start),end(_end){}
+
+				bool operator==(const UniscribeColorRange& range) const { return start==range.start; }
+				bool operator!=(const UniscribeColorRange& range) const { return start!=range.start; }
+				bool operator<(const UniscribeColorRange& range) const { return start<range.start; }
+				bool operator<=(const UniscribeColorRange& range) const { return start<=range.start; }
+				bool operator>(const UniscribeColorRange& range) const { return start>range.start; }
+				bool operator>=(const UniscribeColorRange& range) const { return start>=range.start; }
+			};
+
+			struct UniscribeColor
+			{
+				Color							fontColor;
+				Color							backgroundColor;
+
+				UniscribeColor(){}
+				UniscribeColor(Color _fontColor, Color _backgroundColor):fontColor(_fontColor),backgroundColor(_backgroundColor){}
+
+				bool operator==(const UniscribeColor& color) const { return fontColor==color.fontColor && backgroundColor==color.backgroundColor; }
+				bool operator!=(const UniscribeColor& color) const { return fontColor!=color.fontColor || backgroundColor!=color.backgroundColor; }
+			};
+		}
+	}
+
+	template<>
+	struct POD<presentation::elements_windows_gdi::UniscribeColorRange>
+	{
+		static const bool Result=true;
+	};
+
+	template<>
+	struct POD<presentation::elements_windows_gdi::UniscribeColor>
+	{
+		static const bool Result=true;
+	};
+
+	namespace presentation
+	{
+		namespace elements_windows_gdi
+		{
+
+			typedef Nullable<IGuiGraphicsParagraph::InlineObjectProperties>	InlineObject;
+
+/***********************************************************************
+UniscribeFragment
+***********************************************************************/
+
+			struct UniscribeFragment
+			{
+				typedef Dictionary<UniscribeColorRange, UniscribeColor>		ColorRangeMap;
+
+				//***************************** Document Data (Text)
+				ColorRangeMap									colors;
+				FontProperties									fontStyle;
+				const WString									text;
+				Ptr<WinFont>									fontObject;
+				//***************************** Document Data (Element)
+				InlineObject									inlineObjectProperties;
+				List<Ptr<UniscribeFragment>>					cachedTextFragment;
+
+				UniscribeFragment(const WString& _text);
+
+				WString							GetFingerprint();
+				void							CutColors(vint start, vint length);
+				void							UpdateOverlappedColors(vint start, vint length, Color UniscribeColor::* colorField, Color color);
+				void							DefragmentColors();
+				UniscribeColor					GetCharColor(vint charIndex);
+				Ptr<UniscribeFragment>			Copy(vint start, vint length);
+			};
+
+/***********************************************************************
+UniscribeGlyphData
+***********************************************************************/
+
+			struct UniscribeGlyphData
+			{
+				//***************************** Uniscribe Data
+				Array<WORD>						glyphs;
+				Array<SCRIPT_VISATTR>			glyphVisattrs;
+				Array<int>						glyphAdvances;
+				Array<GOFFSET>					glyphOffsets;
+				Array<WORD>						charCluster;
+				ABC								runAbc;
+				SCRIPT_ANALYSIS					sa;
+
+				UniscribeGlyphData();
+
+				void							ClearUniscribeData(vint glyphCount, vint length);
+				bool							BuildUniscribeData(WinDC* dc, SCRIPT_ITEM* scriptItem, SCRIPT_CACHE& scriptCache, const wchar_t* runText, vint length, List<vint>& breakings, List<bool>& breakingAvailabilities);
+				void							BuildUniscribeData(WinDC* dc, SCRIPT_ITEM* scriptItem, SCRIPT_LOGATTR* charLogattrs, const wchar_t* runText, vint length);
+			};
+
+/***********************************************************************
+UniscribeItem
+***********************************************************************/
+
+			class UniscribeItem : public Object
+			{
+			public:
+				//***************************** Uniscribe Data
+				SCRIPT_ITEM						scriptItem;
+				vint							startFromLine;
+				vint							length;
+				const wchar_t*					itemText;
+				Array<SCRIPT_LOGATTR>			charLogattrs;
+
+				UniscribeItem();
+				~UniscribeItem();
+
+				void							ClearUniscribeData();
+				bool							BuildUniscribeData();
+				bool							IsRightToLeft();
+			};
+
+/***********************************************************************
+UniscribeRun
+***********************************************************************/
+
+			class UniscribeRun : public Object
+			{
+			public:
+				struct RunFragmentBounds
+				{
+					vint						startFromRun;
+					vint						length;
+					Rect						bounds;
 				};
 
-				class DelayItem : public Object, public INativeDelay
+				class IRendererCallback : public Interface
 				{
 				public:
-					DelayItem(WindowsAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
-					~DelayItem();
-
-					WindowsAsyncService*				service;
-					Func<void()>						proc;
-					ExecuteStatus						status;
-					DateTime							executeTime;
-					bool								executeInMainThread;
-
-					ExecuteStatus						GetStatus()override;
-					bool								Delay(vint milliseconds)override;
-					bool								Cancel()override;
+					virtual WinDC*									GetWinDC() = 0;
+					virtual Point									GetParagraphOffset() = 0;
+					virtual IGuiGraphicsParagraphCallback*			GetParagraphCallback() = 0;
 				};
-			protected:
-				vint									mainThreadId;
-				SpinLock								taskListLock;
-				collections::List<TaskItem>				taskItems;
-				collections::List<Ptr<DelayItem>>		delayItems;
-			public:
-				WindowsAsyncService();
-				~WindowsAsyncService();
+				
+				//***************************** Document Data
+				UniscribeFragment*				documentFragment;
+				UniscribeItem*					scriptItem;
+				//***************************** Uniscribe Data
+				vint							startFromLine;
+				vint							startFromFragment;
+				vint							length;
+				const wchar_t*					runText;
+				//***************************** Layout Data
+				List<RunFragmentBounds>			fragmentBounds;
 
-				void									ExecuteAsyncTasks();
-				bool									IsInMainThread(INativeWindow* window)override;
-				void									InvokeAsync(const Func<void()>& proc)override;
-				void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
-				bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
-				Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
-				Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
+				UniscribeRun();
+				~UniscribeRun();
+
+				virtual bool					BuildUniscribeData(WinDC* dc, List<vint>& breakings)=0;
+				virtual vint					SumWidth(vint charStart, vint charLength)=0;
+				virtual vint					SumHeight()=0;
+				virtual vint					SumTextHeight()=0;
+				virtual void					SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)=0;
+				virtual void					Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)=0;
+			};
+
+/***********************************************************************
+UniscribeTextRun
+***********************************************************************/
+
+			class UniscribeTextRun : public UniscribeRun
+			{
+			public:
+				//***************************** Uniscribe Data
+				SCRIPT_CACHE					scriptCache;
+				vint							advance;
+				UniscribeGlyphData				wholeGlyph;
+				bool							needFontFallback;
+
+				UniscribeTextRun();
+				~UniscribeTextRun();
+
+				void							ClearUniscribeData();
+				void							SearchSingleGlyphCluster(vint charStart, vint& charLength, vint& cluster, vint& nextCluster);
+				void							SearchSingleChar(vint charStart, vint& charLength, vint& cluster, vint& nextCluster);
+				void							SearchGlyphCluster(vint charStart, vint charLength, vint& cluster, vint& nextCluster);
+				bool							BuildUniscribeData(WinDC* dc, List<vint>& breakings)override;
+				vint							SumWidth(vint charStart, vint charLength)override;
+				vint							SumHeight()override;
+				vint							SumTextHeight()override;
+				void							SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
+				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
+			};
+
+/***********************************************************************
+UniscribeElementRun
+***********************************************************************/
+
+			class UniscribeEmbeddedObjectRun : public UniscribeRun
+			{
+			public:
+				//***************************** Document Data
+				IGuiGraphicsParagraph::InlineObjectProperties	properties;
+
+				UniscribeEmbeddedObjectRun();
+				~UniscribeEmbeddedObjectRun();
+
+				bool							BuildUniscribeData(WinDC* dc, List<vint>& breakings)override;
+				vint							SumWidth(vint charStart, vint charLength)override;
+				vint							SumHeight()override;
+				vint							SumTextHeight()override;
+				void							SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
+				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
+			};
+
+/***********************************************************************
+UniscribeVirtualLine
+***********************************************************************/
+
+			class UniscribeVirtualLine : Object
+			{
+			public:
+				//***************************** Document Data
+				vint							startFromLine;
+				vint							length;
+				const wchar_t*					runText;
+				//***************************** Layout Data
+				vint							firstRunIndex;
+				vint							firstRunBoundsIndex;
+				vint							lastRunIndex;
+				vint							lastRunBoundsIndex;
+				Rect							bounds;
+
+				UniscribeVirtualLine();
+			};
+
+/***********************************************************************
+UniscribeLine
+***********************************************************************/
+
+			class UniscribeLine : public Object
+			{
+			public:
+				//***************************** Document Data
+				List<Ptr<UniscribeFragment>>	documentFragments;
+				vint							startFromParagraph;
+				WString							lineText;
+				//***************************** Uniscribe Data
+				List<Ptr<UniscribeItem>>		scriptItems;
+				List<Ptr<UniscribeRun>>			scriptRuns;
+				//***************************** Layout Data
+				List<Ptr<UniscribeVirtualLine>>	virtualLines;
+				Rect							bounds;
+
+				UniscribeLine();
+
+				void							ClearUniscribeData();
+				bool							BuildUniscribeData(WinDC* dc);
+				void							Layout(vint availableWidth, Alignment alignment, vint top, vint& totalHeight);
+				void							Render(UniscribeRun::IRendererCallback* callback, vint offsetX, vint offsetY, bool renderBackground);
+			};
+
+/***********************************************************************
+UniscribeParagraph
+***********************************************************************/
+
+			class UniscribeParagraph : public Object
+			{
+			public:
+				//***************************** Document Data
+				List<Ptr<UniscribeFragment>>	documentFragments;
+				Alignment						paragraphAlignment;
+				WString							paragraphText;
+				bool							built;
+				//***************************** Uniscribe Data
+				List<Ptr<UniscribeLine>>		lines;
+				//***************************** Layout Data
+				vint							lastAvailableWidth;
+				Rect							bounds;
+
+				UniscribeParagraph();
+				~UniscribeParagraph();
+
+				void							ClearUniscribeData();
+				bool							BuildUniscribeData(WinDC* dc);
+				void							Layout(vint availableWidth, Alignment alignment);
+				void							Render(UniscribeRun::IRendererCallback* callback, bool renderBackground);
+
+				void							SearchFragment(vint start, vint length, vint& fs, vint& ss, vint& fe, vint& se);
+				bool							CutFragment(vint fs, vint ss, vint fe, vint se, vint& f1, vint& f2);
+				void							CutFragmentColors(vint fs, vint ss, vint fe, vint se, Color UniscribeColor::* colorField, Color color);
+
+				bool							SetFont(vint start, vint length, const WString& value);
+				bool							SetSize(vint start, vint length, vint value);
+				bool							SetStyle(vint start, vint length, bool bold, bool italic, bool underline, bool strikeline);
+				bool							SetColor(vint start, vint length, Color value);
+				bool							SetBackgroundColor(vint start, vint length, Color value);
+				bool							SetInlineObject(vint start, vint length, const IGuiGraphicsParagraph::InlineObjectProperties& properties);
+				InlineObject					ResetInlineObject(vint start, vint length);
+
+				void							GetLineIndexFromTextPos(vint textPos, vint& frontLine, vint& backLine);
+				void							GetVirtualLineIndexFromTextPos(vint textPos, vint lineIndex, vint& frontLine, vint& backLine);
+				void							GetItemIndexFromTextPos(vint textPos, vint lineIndex, vint& frontItem, vint& backItem);
+				Rect							GetCaretBoundsWithLine(vint caret, vint lineIndex, vint virtualLineIndex, bool frontSide);
+				vint							GetCaretFromXWithTextRunBounds(vint x, vint lineIndex, vint runIndex, vint runBoundsIndex);
+				vint							GetCaretFromXWithLine(vint x, vint lineIndex, vint virtualLineIndex);
+				InlineObject					GetInlineObjectFromXWithLine(vint x, vint lineIndex, vint virtualLineIndex, vint& start, vint& length);
+				vint							GetLineY(vint lineIndex);
+				vint							GetVirtualLineY(vint lineIndex, vint virtualLineIndex);
+				vint							GetLineIndexFromY(vint y);
+				vint							GetVirtualLineIndexFromY(vint y, vint lineIndex);
+
+				vint							GetCaret(vint comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide);
+				Rect							GetCaretBounds(vint caret, bool frontSide);
+				vint							GetCaretFromPoint(Point point);
+				InlineObject					GetInlineObjectFromPoint(Point point, vint& start, vint& length);
+				vint							GetNearestCaretFromTextPos(vint textPos, bool frontSide);
+				bool							IsValidCaret(vint caret);
+				bool							IsValidTextPos(vint textPos);
 			};
 		}
 	}
@@ -613,454 +1627,241 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCALLBACKSERVICE.H
+.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSRENDERERSWINDOWSGDI.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
+GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
 
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSGDI
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSGDI
 
 
 namespace vl
 {
 	namespace presentation
 	{
-		namespace windows
+		namespace elements_windows_gdi
 		{
-			class WindowsCallbackService : public Object, public INativeCallbackService
-			{
-			protected:
-				collections::List<INativeControllerListener*>	listeners;
-
-			public:
-				WindowsCallbackService();
-
-				bool											InstallListener(INativeControllerListener* listener)override;
-				bool											UninstallListener(INativeControllerListener* listener)override;
-
-				void											InvokeMouseHook(WPARAM message, Point location);
-				void											InvokeGlobalTimer();
-				void											InvokeClipboardUpdated();
-				void											InvokeNativeWindowCreated(INativeWindow* window);
-				void											InvokeNativeWindowDestroyed(INativeWindow* window);
-			};
-		}
-	}
-}
-
-#endif
+			using namespace elements;
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCLIPBOARDSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
+Renderers
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsClipboardService;
-
-			class WindowsClipboardReader : public Object, public INativeClipboardReader
+			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
-				friend class WindowsClipboardService;
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				WindowsClipboardService*		service;
-				bool							ContainsFormat(UINT format);
+				Color					oldColor;
+				Ptr<windows::WinPen>	pen;
+				Ptr<windows::WinBrush>	brush;
 
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
 			public:
-				WindowsClipboardReader(WindowsClipboardService* _service);
-				~WindowsClipboardReader();
-
-				bool							ContainsText()override;
-				WString							GetText()override;
-
-				bool							ContainsDocument()override;
-				Ptr<DocumentModel>				GetDocument()override;
-
-				bool							ContainsImage()override;
-				Ptr<INativeImage>				GetImage()override;
-
-				void							CloseClipboard();
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
 			};
 
-			class WindowsClipboardWriter : public Object, public INativeClipboardWriter
+			class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
-				friend class WindowsClipboardService;
+				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				WindowsClipboardService*		service;
-				Nullable<WString>				textData;
-				Ptr<DocumentModel>				documentData;
-				Ptr<INativeImage>				imageData;
+				Color					oldColor1;
+				Color					oldColor2;
+				Ptr<windows::WinPen>	pen1;
+				Ptr<windows::WinPen>	pen2;
 
-				void							SetClipboardData(UINT format, stream::MemoryStream& memoryStream);
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
 			public:
-				WindowsClipboardWriter(WindowsClipboardService* _service);
-				~WindowsClipboardWriter();
-
-				void							SetText(const WString& value)override;
-				void							SetDocument(Ptr<DocumentModel> value)override;
-				void							SetImage(Ptr<INativeImage> value)override;
-				void							Submit()override;
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
 			};
 
-			class WindowsClipboardService : public Object, public INativeClipboardService
+			class Gui3DSplitterElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
-				friend class WindowsClipboardReader;
-				friend class WindowsClipboardWriter;
+				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				HWND							ownerHandle;
-				UINT							WCF_Document;
-				UINT							WCF_RTF;
-				UINT							WCF_HTML;
-				WindowsClipboardReader*			reader = nullptr;
+				Color					oldColor1;
+				Color					oldColor2;
+				Ptr<windows::WinPen>	pen1;
+				Ptr<windows::WinPen>	pen2;
 
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
 			public:
-				WindowsClipboardService();
-
-				Ptr<INativeClipboardReader>		ReadClipboard()override;
-				Ptr<INativeClipboardWriter>		WriteClipboard()override;
-
-				void							SetOwnerHandle(HWND handle);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSDIALOGSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsDialogService : public INativeDialogService
-			{
-				typedef HWND (*HandleRetriver)(INativeWindow*);
-			protected:
-				HandleRetriver									handleRetriver;
-
-			public:
-				WindowsDialogService(HandleRetriver _handleRetriver);
-
-				MessageBoxButtonsOutput			ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal)override;
-				bool							ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors)override;
-				bool							ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist)override;
-				bool							ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options)override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSIMAGESERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
-
-#include <wincodec.h>
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsImageFrame : public Object, public INativeImageFrame
-			{
-			protected:
-				INativeImage*													image;
-				ComPtr<IWICBitmap>												frameBitmap;
-				collections::Dictionary<void*, Ptr<INativeImageFrameCache>>		caches;
-
-				void										Initialize(IWICBitmapSource* bitmapSource);
-			public:
-				WindowsImageFrame(INativeImage* _image, IWICBitmapFrameDecode* frameDecode);
-				WindowsImageFrame(INativeImage* _image, IWICBitmap* sourceBitmap);
-				~WindowsImageFrame();
-
-				INativeImage*								GetImage()override;
-				Size										GetSize()override;
-				bool										SetCache(void* key, Ptr<INativeImageFrameCache> cache)override;
-				Ptr<INativeImageFrameCache>					GetCache(void* key)override;
-				Ptr<INativeImageFrameCache>					RemoveCache(void* key)override;
-				IWICBitmap*									GetFrameBitmap();
-				void										SaveBitmapToStream(stream::IStream& stream);
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
 			};
 
-			class WindowsImage : public Object, public INativeImage
+			class GuiSolidBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				INativeImageService*						imageService;
-				ComPtr<IWICBitmapDecoder>					bitmapDecoder;
-				collections::Array<Ptr<WindowsImageFrame>>	frames;
-			public:
-				WindowsImage(INativeImageService* _imageService, IWICBitmapDecoder* _bitmapDecoder);
-				~WindowsImage();
+				Color					oldColor;
+				Ptr<windows::WinPen>	pen;
+				Ptr<windows::WinBrush>	brush;
 
-				INativeImageService*						GetImageService()override;
-				FormatType									GetFormat()override;
-				vint										GetFrameCount()override;
-				INativeImageFrame*							GetFrame(vint index)override;
-				void										SaveToStream(stream::IStream& stream, FormatType formatType)override;
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
 			};
 
-			class WindowsBitmapImage : public Object, public INativeImage
+			class GuiGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				INativeImageService*						imageService;
-				Ptr<WindowsImageFrame>						frame;
-				FormatType									formatType;
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
 			public:
-				WindowsBitmapImage(INativeImageService* _imageService, IWICBitmap* sourceBitmap, FormatType _formatType);
-				~WindowsBitmapImage();
-
-				INativeImageService*						GetImageService()override;
-				FormatType									GetFormat()override;
-				vint										GetFrameCount()override;
-				INativeImageFrame*							GetFrame(vint index)override;
-				void										SaveToStream(stream::IStream& stream, FormatType formatType)override;
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
 			};
 
-			class WindowsImageService : public Object, public INativeImageService
+			class GuiInnerShadowElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				ComPtr<IWICImagingFactory>					imagingFactory;
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
 			public:
-				WindowsImageService();
-				~WindowsImageService();
+				GuiInnerShadowElementRenderer();
 
-				Ptr<INativeImage>							CreateImageFromFile(const WString& path);
-				Ptr<INativeImage>							CreateImageFromMemory(void* buffer, vint length);
-				Ptr<INativeImage>							CreateImageFromStream(stream::IStream& stream);
-				Ptr<INativeImage>							CreateImageFromHBITMAP(HBITMAP handle);
-				Ptr<INativeImage>							CreateImageFromHICON(HICON handle);
-				IWICImagingFactory*							GetImagingFactory();
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
 			};
 
-			extern IWICImagingFactory*						GetWICImagingFactory();
-			extern IWICBitmap*								GetWICBitmap(INativeImageFrame* frame);
-			extern Ptr<INativeImage>						CreateImageFromHBITMAP(HBITMAP handle);
-			extern Ptr<INativeImage>						CreateImageFromHICON(HICON handle);
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSINPUTSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsInputService : public Object, public INativeInputService
+			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				HWND									ownerHandle;
-				HHOOK									mouseHook;
-				bool									isTimerEnabled;
-				HOOKPROC								mouseProc;
+				FontProperties			oldFont;
+				Ptr<windows::WinFont>	font;
+				vint					oldMaxWidth;
 
-				collections::Array<WString>				keyNames;
-				collections::Dictionary<WString, vint>	keys;
+				void					UpdateMinSize();
 
-				WString									GetKeyNameInternal(vint code);
-				void									InitializeKeyNames();
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
 			public:
-				WindowsInputService(HOOKPROC _mouseProc);
+				GuiSolidLabelElementRenderer();
 
-				void									SetOwnerHandle(HWND handle);
-				void									StartHookMouse()override;
-				void									StopHookMouse()override;
-				bool									IsHookingMouse()override;
-				void									StartTimer()override;
-				void									StopTimer()override;
-				bool									IsTimerEnabled()override;
-				bool									IsKeyPressing(vint code)override;
-				bool									IsKeyToggled(vint code)override;
-				WString									GetKeyName(vint code)override;
-				vint									GetKey(const WString& name)override;
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
 			};
 
-			extern bool									WinIsKeyPressing(vint code);
-			extern bool									WinIsKeyToggled(vint code);
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSRESOURCESERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSRESOURCESERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSRESOURCESERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsCursor : public Object, public INativeCursor
+			class GuiImageFrameElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				HCURSOR										handle;
-				bool										isSystemCursor;
-				SystemCursorType							systemCursorType;
-			public:
-				WindowsCursor(HCURSOR _handle);
-				WindowsCursor(SystemCursorType type);
+				Ptr<windows::WinBitmap>		bitmap;
 
-				bool										IsSystemCursor()override;
-				SystemCursorType							GetSystemCursorType()override;
-				HCURSOR										GetCursorHandle();
+				void					UpdateBitmap();
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				GuiImageFrameElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
 			};
 
-			class WindowsResourceService : public Object, public INativeResourceService
+			class GuiPolygonElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiPolygonElement, GuiPolygonElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				collections::Array<Ptr<WindowsCursor>>		systemCursors;
-				FontProperties								defaultFont;
+				POINT*							points;
+				vint								pointCount;
+				Color							oldPenColor;
+				Color							oldBrushColor;
+				Ptr<windows::WinPen>			pen;
+				Ptr<windows::WinBrush>			brush;
+
+				void							InitializeInternal();
+				void							FinalizeInternal();
+				void							RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
 			public:
-				WindowsResourceService();
+				GuiPolygonElementRenderer();
+				~GuiPolygonElementRenderer();
 
-				INativeCursor*								GetSystemCursor(INativeCursor::SystemCursorType type)override;
-				INativeCursor*								GetDefaultSystemCursor()override;
-				FontProperties								GetDefaultFont()override;
-				void										SetDefaultFont(const FontProperties& value)override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSSCREENSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsScreen : public Object, public INativeScreen
-			{
-				friend class WindowsScreenService;
-			protected:
-				HMONITOR										monitor;
-			public:
-				WindowsScreen();
-
-				Rect											GetBounds()override;
-				Rect											GetClientBounds()override;
-				WString											GetName()override;
-				bool											IsPrimary()override;
+				void							Render(Rect bounds)override;
+				void							OnElementStateChanged()override;
 			};
 
-			class WindowsScreenService : public Object, public INativeScreenService
+			class GuiColorizedTextElementRenderer : public Object, public IGuiGraphicsRenderer, protected GuiColorizedTextElement::ICallback
 			{
-				typedef HWND (*HandleRetriver)(INativeWindow*);
-			protected:
-				collections::List<Ptr<WindowsScreen>>			screens;
-				HandleRetriver									handleRetriver;
-			public:
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget)
 
-				struct MonitorEnumProcData
+			public:
+				struct ColorItemResource
 				{
-					WindowsScreenService*	screenService;
-					vint						currentScreen;
+					Color						text;
+					Color						background;
+					Ptr<windows::WinBrush>		backgroundBrush;
 				};
 
-				WindowsScreenService(HandleRetriver _handleRetriver);
+				struct ColorEntryResource
+				{
+					ColorItemResource			normal;
+					ColorItemResource			selectedFocused;
+					ColorItemResource			selectedUnfocused;
 
-				static BOOL CALLBACK							MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
-				void											RefreshScreenInformation();
-				vint											GetScreenCount()override;
-				INativeScreen*									GetScreen(vint index)override;
-				INativeScreen*									GetScreen(INativeWindow* window)override;
+					bool						operator==(const ColorEntryResource& value){return false;}
+					bool						operator!=(const ColorEntryResource& value){return true;}
+				};
+
+				typedef collections::Array<ColorEntryResource>			ColorArray;
+			protected:
+				FontProperties			oldFont;
+				Ptr<windows::WinFont>	font;
+				ColorArray				colors;
+				Color					oldCaretColor;
+				Ptr<windows::WinPen>	caretPen;
+
+				void					DestroyColors();
+				void					ColorChanged();
+				void					FontChanged();
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiGDIElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget)
+
+			protected:
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				GuiGDIElementRenderer();
+				~GuiGDIElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
 			};
 		}
 	}
@@ -1069,120 +1870,34 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\WINNATIVEWINDOW.H
+.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
+GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
 
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
-#define VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
 
 
 namespace vl
 {
 	namespace presentation
 	{
-		namespace windows
+		namespace elements_windows_d2d
 		{
-
-/***********************************************************************
-Windows Platform Native Controller
-***********************************************************************/
-
-			class INativeMessageHandler : public Interface
+			class WindowsDirect2DLayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
 			{
 			public:
-				virtual void								BeforeHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip) = 0;
-				virtual void								AfterHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip, LRESULT& result) = 0;
+				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
 			};
-
-			class IWindowsForm : public Interface
-			{
-			public:
-				virtual HWND								GetWindowHandle() = 0;
-				virtual Interface*							GetGraphicsHandler() = 0;
-				virtual void								SetGraphicsHandler(Interface* handler) = 0;
-				virtual bool								InstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
-				virtual bool								UninstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
-			};
-
-			extern INativeController*						CreateWindowsNativeController(HINSTANCE hInstance);
-			extern IWindowsForm*							GetWindowsFormFromHandle(HWND hwnd);
-			extern IWindowsForm*							GetWindowsForm(INativeWindow* window);
-			extern void										DestroyWindowsNativeController(INativeController* controller);
-			extern void										EnableCrossKernelCrashing();
 		}
 	}
 }
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Direct2D Provider for Windows Implementation
-
-Interfaces:
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
-#define VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
-
-#include <d2d1_1.h>
-#include <dwrite_1.h>
-#include <d3d11_1.h>
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			extern ID2D1Factory*						GetDirect2DFactory();
-			extern IDWriteFactory*						GetDirectWriteFactory();
-			extern ID3D11Device*						GetD3D11Device();
-		}
-	}
-}
-
-extern int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)());
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\GDI\WINGDIAPPLICATION.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::GDI Provider for Windows Implementation
-
-Interfaces:
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
-#define VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			extern WinDC*									GetNativeWindowDC(INativeWindow* window);
-			extern HDC										GetNativeWindowHDC(INativeWindow* window);
-		}
-	}
-}
-
-extern int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)());
 
 #endif
 
@@ -1590,721 +2305,6 @@ Renderers
 
 				void					Render(Rect bounds)override;
 				void					OnElementStateChanged()override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSWINDOWSGDI.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSGDI
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSGDI
-
-#include <MLang.h>
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace elements
-		{
-			
-/***********************************************************************
-Raw API Rendering Element
-***********************************************************************/
-
-			class GuiGDIElement;
-
-			/// <summary>GDI Rendering event arguments.</summary>
-			struct GuiGDIElementEventArgs : compositions::GuiEventArgs
-			{
-			public:
-				/// <summary>The element that raised this event.</summary>
-				GuiGDIElement*				element;
-				/// <summary>The device context to draw. The HDC handle can be retrived using dc->GetHandle(), but it is recommended that using the WinDC class directly.</summary>
-				windows::WinDC*				dc;
-				/// <summary>The range for rendering.</summary>
-				Rect						bounds;
-
-				GuiGDIElementEventArgs(GuiGDIElement* _element, windows::WinDC* _dc, Rect _bounds)
-					:element(_element)
-					,dc(_dc)
-					,bounds(_bounds)
-				{
-				}
-			};
-
-			/// <summary>
-			/// Defines an element for customized rendering using GDI.
-			/// </summary>
-			class GuiGDIElement : public GuiElementBase<GuiGDIElement>
-			{
-				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGDIElement, L"GDIElement")
-			protected:
-				GuiGDIElement();
-			public:
-				/// <summary>Rendering event.</summary>
-				compositions::GuiGraphicsEvent<GuiGDIElementEventArgs>		Rendering;
-			};
-		}
-
-		namespace elements_windows_gdi
-		{
-
-/***********************************************************************
-Functionality
-***********************************************************************/
-
-			class IWindowsGDIRenderTarget : public elements::IGuiGraphicsRenderTarget
-			{
-			public:
-				virtual windows::WinDC*					GetDC()=0;
-			};
-
-			class IWindowsGDIResourceManager : public Interface
-			{
-			public:
-				virtual Ptr<windows::WinPen>				CreateGdiPen(Color color)=0;
-				virtual void								DestroyGdiPen(Color color)=0;
-				virtual Ptr<windows::WinBrush>				CreateGdiBrush(Color color)=0;
-				virtual void								DestroyGdiBrush(Color color)=0;
-				virtual Ptr<windows::WinFont>				CreateGdiFont(const FontProperties& fontProperties)=0;
-				virtual void								DestroyGdiFont(const FontProperties& fontProperties)=0;
-				virtual Ptr<elements::text::CharMeasurer>	CreateCharMeasurer(const FontProperties& fontProperties)=0;
-				virtual void								DestroyCharMeasurer(const FontProperties& fontProperties)=0;
-
-				virtual Ptr<windows::WinBitmap>				GetBitmap(INativeImageFrame* frame, bool enabled)=0;
-				virtual void								DestroyBitmapCache(INativeImageFrame* frame)=0;
-			};
-
-			extern IWindowsGDIResourceManager*				GetWindowsGDIResourceManager();
-
-/***********************************************************************
-OS Supporting
-***********************************************************************/
-
-			class IWindowsGDIObjectProvider : public Interface
-			{
-			public:
-				virtual windows::WinDC*						GetNativeWindowDC(INativeWindow* window)=0;
-				virtual IWindowsGDIRenderTarget*			GetBindedRenderTarget(INativeWindow* window)=0;
-				virtual void								SetBindedRenderTarget(INativeWindow* window, IWindowsGDIRenderTarget* renderTarget)=0;
-				virtual IWICImagingFactory*					GetWICImagingFactory()=0;
-				virtual IWICBitmap*							GetWICBitmap(INativeImageFrame* frame)=0;
-				virtual IMLangFontLink2*					GetMLangFontLink()=0;
-			};
-
-			extern IWindowsGDIObjectProvider*				GetWindowsGDIObjectProvider();
-			extern void										SetWindowsGDIObjectProvider(IWindowsGDIObjectProvider* provider);
-		}
-	}
-}
-
-extern void RendererMainGDI();
-
-#endif
-
-/***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSRENDERERSWINDOWSGDI.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSGDI
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSGDI
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace elements_windows_gdi
-		{
-			using namespace elements;
-
-/***********************************************************************
-Renderers
-***********************************************************************/
-
-			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				Color					oldColor;
-				Ptr<windows::WinPen>	pen;
-				Ptr<windows::WinBrush>	brush;
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				Color					oldColor1;
-				Color					oldColor2;
-				Ptr<windows::WinPen>	pen1;
-				Ptr<windows::WinPen>	pen2;
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class Gui3DSplitterElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				Color					oldColor1;
-				Color					oldColor2;
-				Ptr<windows::WinPen>	pen1;
-				Ptr<windows::WinPen>	pen2;
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiSolidBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				Color					oldColor;
-				Ptr<windows::WinPen>	pen;
-				Ptr<windows::WinBrush>	brush;
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiInnerShadowElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				GuiInnerShadowElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				FontProperties			oldFont;
-				Ptr<windows::WinFont>	font;
-				vint					oldMaxWidth;
-
-				void					UpdateMinSize();
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				GuiSolidLabelElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiImageFrameElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				Ptr<windows::WinBitmap>		bitmap;
-
-				void					UpdateBitmap();
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				GuiImageFrameElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiPolygonElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiPolygonElement, GuiPolygonElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				POINT*							points;
-				vint								pointCount;
-				Color							oldPenColor;
-				Color							oldBrushColor;
-				Ptr<windows::WinPen>			pen;
-				Ptr<windows::WinBrush>			brush;
-
-				void							InitializeInternal();
-				void							FinalizeInternal();
-				void							RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				GuiPolygonElementRenderer();
-				~GuiPolygonElementRenderer();
-
-				void							Render(Rect bounds)override;
-				void							OnElementStateChanged()override;
-			};
-
-			class GuiColorizedTextElementRenderer : public Object, public IGuiGraphicsRenderer, protected GuiColorizedTextElement::ICallback
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget)
-
-			public:
-				struct ColorItemResource
-				{
-					Color						text;
-					Color						background;
-					Ptr<windows::WinBrush>		backgroundBrush;
-				};
-
-				struct ColorEntryResource
-				{
-					ColorItemResource			normal;
-					ColorItemResource			selectedFocused;
-					ColorItemResource			selectedUnfocused;
-
-					bool						operator==(const ColorEntryResource& value){return false;}
-					bool						operator!=(const ColorEntryResource& value){return true;}
-				};
-
-				typedef collections::Array<ColorEntryResource>			ColorArray;
-			protected:
-				FontProperties			oldFont;
-				Ptr<windows::WinFont>	font;
-				ColorArray				colors;
-				Color					oldCaretColor;
-				Ptr<windows::WinPen>	caretPen;
-
-				void					DestroyColors();
-				void					ColorChanged();
-				void					FontChanged();
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiGDIElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget)
-
-			protected:
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				GuiGDIElementRenderer();
-				~GuiGDIElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSUNISCRIBE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSUNISCRIBE
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSUNISCRIBE
-
-#include <usp10.h>
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace elements_windows_gdi
-		{
-			using namespace elements;
-			using namespace collections;
-			using namespace windows;
-
-/***********************************************************************
-UniscribeColor
-***********************************************************************/
-
-			struct UniscribeColorRange
-			{
-				vint							start;
-				vint							end;
-
-				UniscribeColorRange(){}
-				UniscribeColorRange(vint _start, vint _end):start(_start),end(_end){}
-
-				bool operator==(const UniscribeColorRange& range) const { return start==range.start; }
-				bool operator!=(const UniscribeColorRange& range) const { return start!=range.start; }
-				bool operator<(const UniscribeColorRange& range) const { return start<range.start; }
-				bool operator<=(const UniscribeColorRange& range) const { return start<=range.start; }
-				bool operator>(const UniscribeColorRange& range) const { return start>range.start; }
-				bool operator>=(const UniscribeColorRange& range) const { return start>=range.start; }
-			};
-
-			struct UniscribeColor
-			{
-				Color							fontColor;
-				Color							backgroundColor;
-
-				UniscribeColor(){}
-				UniscribeColor(Color _fontColor, Color _backgroundColor):fontColor(_fontColor),backgroundColor(_backgroundColor){}
-
-				bool operator==(const UniscribeColor& color) const { return fontColor==color.fontColor && backgroundColor==color.backgroundColor; }
-				bool operator!=(const UniscribeColor& color) const { return fontColor!=color.fontColor || backgroundColor!=color.backgroundColor; }
-			};
-		}
-	}
-
-	template<>
-	struct POD<presentation::elements_windows_gdi::UniscribeColorRange>
-	{
-		static const bool Result=true;
-	};
-
-	template<>
-	struct POD<presentation::elements_windows_gdi::UniscribeColor>
-	{
-		static const bool Result=true;
-	};
-
-	namespace presentation
-	{
-		namespace elements_windows_gdi
-		{
-
-			typedef Nullable<IGuiGraphicsParagraph::InlineObjectProperties>	InlineObject;
-
-/***********************************************************************
-UniscribeFragment
-***********************************************************************/
-
-			struct UniscribeFragment
-			{
-				typedef Dictionary<UniscribeColorRange, UniscribeColor>		ColorRangeMap;
-
-				//***************************** Document Data (Text)
-				ColorRangeMap									colors;
-				FontProperties									fontStyle;
-				const WString									text;
-				Ptr<WinFont>									fontObject;
-				//***************************** Document Data (Element)
-				InlineObject									inlineObjectProperties;
-				List<Ptr<UniscribeFragment>>					cachedTextFragment;
-
-				UniscribeFragment(const WString& _text);
-
-				WString							GetFingerprint();
-				void							CutColors(vint start, vint length);
-				void							UpdateOverlappedColors(vint start, vint length, Color UniscribeColor::* colorField, Color color);
-				void							DefragmentColors();
-				UniscribeColor					GetCharColor(vint charIndex);
-				Ptr<UniscribeFragment>			Copy(vint start, vint length);
-			};
-
-/***********************************************************************
-UniscribeGlyphData
-***********************************************************************/
-
-			struct UniscribeGlyphData
-			{
-				//***************************** Uniscribe Data
-				Array<WORD>						glyphs;
-				Array<SCRIPT_VISATTR>			glyphVisattrs;
-				Array<int>						glyphAdvances;
-				Array<GOFFSET>					glyphOffsets;
-				Array<WORD>						charCluster;
-				ABC								runAbc;
-				SCRIPT_ANALYSIS					sa;
-
-				UniscribeGlyphData();
-
-				void							ClearUniscribeData(vint glyphCount, vint length);
-				bool							BuildUniscribeData(WinDC* dc, SCRIPT_ITEM* scriptItem, SCRIPT_CACHE& scriptCache, const wchar_t* runText, vint length, List<vint>& breakings, List<bool>& breakingAvailabilities);
-				void							BuildUniscribeData(WinDC* dc, SCRIPT_ITEM* scriptItem, SCRIPT_LOGATTR* charLogattrs, const wchar_t* runText, vint length);
-			};
-
-/***********************************************************************
-UniscribeItem
-***********************************************************************/
-
-			class UniscribeItem : public Object
-			{
-			public:
-				//***************************** Uniscribe Data
-				SCRIPT_ITEM						scriptItem;
-				vint							startFromLine;
-				vint							length;
-				const wchar_t*					itemText;
-				Array<SCRIPT_LOGATTR>			charLogattrs;
-
-				UniscribeItem();
-				~UniscribeItem();
-
-				void							ClearUniscribeData();
-				bool							BuildUniscribeData();
-				bool							IsRightToLeft();
-			};
-
-/***********************************************************************
-UniscribeRun
-***********************************************************************/
-
-			class UniscribeRun : public Object
-			{
-			public:
-				struct RunFragmentBounds
-				{
-					vint						startFromRun;
-					vint						length;
-					Rect						bounds;
-				};
-
-				class IRendererCallback : public Interface
-				{
-				public:
-					virtual WinDC*									GetWinDC() = 0;
-					virtual Point									GetParagraphOffset() = 0;
-					virtual IGuiGraphicsParagraphCallback*			GetParagraphCallback() = 0;
-				};
-				
-				//***************************** Document Data
-				UniscribeFragment*				documentFragment;
-				UniscribeItem*					scriptItem;
-				//***************************** Uniscribe Data
-				vint							startFromLine;
-				vint							startFromFragment;
-				vint							length;
-				const wchar_t*					runText;
-				//***************************** Layout Data
-				List<RunFragmentBounds>			fragmentBounds;
-
-				UniscribeRun();
-				~UniscribeRun();
-
-				virtual bool					BuildUniscribeData(WinDC* dc, List<vint>& breakings)=0;
-				virtual vint					SumWidth(vint charStart, vint charLength)=0;
-				virtual vint					SumHeight()=0;
-				virtual vint					SumTextHeight()=0;
-				virtual void					SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)=0;
-				virtual void					Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)=0;
-			};
-
-/***********************************************************************
-UniscribeTextRun
-***********************************************************************/
-
-			class UniscribeTextRun : public UniscribeRun
-			{
-			public:
-				//***************************** Uniscribe Data
-				SCRIPT_CACHE					scriptCache;
-				vint							advance;
-				UniscribeGlyphData				wholeGlyph;
-				bool							needFontFallback;
-
-				UniscribeTextRun();
-				~UniscribeTextRun();
-
-				void							ClearUniscribeData();
-				void							SearchSingleGlyphCluster(vint charStart, vint& charLength, vint& cluster, vint& nextCluster);
-				void							SearchSingleChar(vint charStart, vint& charLength, vint& cluster, vint& nextCluster);
-				void							SearchGlyphCluster(vint charStart, vint charLength, vint& cluster, vint& nextCluster);
-				bool							BuildUniscribeData(WinDC* dc, List<vint>& breakings)override;
-				vint							SumWidth(vint charStart, vint charLength)override;
-				vint							SumHeight()override;
-				vint							SumTextHeight()override;
-				void							SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
-				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
-			};
-
-/***********************************************************************
-UniscribeElementRun
-***********************************************************************/
-
-			class UniscribeEmbeddedObjectRun : public UniscribeRun
-			{
-			public:
-				//***************************** Document Data
-				IGuiGraphicsParagraph::InlineObjectProperties	properties;
-
-				UniscribeEmbeddedObjectRun();
-				~UniscribeEmbeddedObjectRun();
-
-				bool							BuildUniscribeData(WinDC* dc, List<vint>& breakings)override;
-				vint							SumWidth(vint charStart, vint charLength)override;
-				vint							SumHeight()override;
-				vint							SumTextHeight()override;
-				void							SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
-				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
-			};
-
-/***********************************************************************
-UniscribeVirtualLine
-***********************************************************************/
-
-			class UniscribeVirtualLine : Object
-			{
-			public:
-				//***************************** Document Data
-				vint							startFromLine;
-				vint							length;
-				const wchar_t*					runText;
-				//***************************** Layout Data
-				vint							firstRunIndex;
-				vint							firstRunBoundsIndex;
-				vint							lastRunIndex;
-				vint							lastRunBoundsIndex;
-				Rect							bounds;
-
-				UniscribeVirtualLine();
-			};
-
-/***********************************************************************
-UniscribeLine
-***********************************************************************/
-
-			class UniscribeLine : public Object
-			{
-			public:
-				//***************************** Document Data
-				List<Ptr<UniscribeFragment>>	documentFragments;
-				vint							startFromParagraph;
-				WString							lineText;
-				//***************************** Uniscribe Data
-				List<Ptr<UniscribeItem>>		scriptItems;
-				List<Ptr<UniscribeRun>>			scriptRuns;
-				//***************************** Layout Data
-				List<Ptr<UniscribeVirtualLine>>	virtualLines;
-				Rect							bounds;
-
-				UniscribeLine();
-
-				void							ClearUniscribeData();
-				bool							BuildUniscribeData(WinDC* dc);
-				void							Layout(vint availableWidth, Alignment alignment, vint top, vint& totalHeight);
-				void							Render(UniscribeRun::IRendererCallback* callback, vint offsetX, vint offsetY, bool renderBackground);
-			};
-
-/***********************************************************************
-UniscribeParagraph
-***********************************************************************/
-
-			class UniscribeParagraph : public Object
-			{
-			public:
-				//***************************** Document Data
-				List<Ptr<UniscribeFragment>>	documentFragments;
-				Alignment						paragraphAlignment;
-				WString							paragraphText;
-				bool							built;
-				//***************************** Uniscribe Data
-				List<Ptr<UniscribeLine>>		lines;
-				//***************************** Layout Data
-				vint							lastAvailableWidth;
-				Rect							bounds;
-
-				UniscribeParagraph();
-				~UniscribeParagraph();
-
-				void							ClearUniscribeData();
-				bool							BuildUniscribeData(WinDC* dc);
-				void							Layout(vint availableWidth, Alignment alignment);
-				void							Render(UniscribeRun::IRendererCallback* callback, bool renderBackground);
-
-				void							SearchFragment(vint start, vint length, vint& fs, vint& ss, vint& fe, vint& se);
-				bool							CutFragment(vint fs, vint ss, vint fe, vint se, vint& f1, vint& f2);
-				void							CutFragmentColors(vint fs, vint ss, vint fe, vint se, Color UniscribeColor::* colorField, Color color);
-
-				bool							SetFont(vint start, vint length, const WString& value);
-				bool							SetSize(vint start, vint length, vint value);
-				bool							SetStyle(vint start, vint length, bool bold, bool italic, bool underline, bool strikeline);
-				bool							SetColor(vint start, vint length, Color value);
-				bool							SetBackgroundColor(vint start, vint length, Color value);
-				bool							SetInlineObject(vint start, vint length, const IGuiGraphicsParagraph::InlineObjectProperties& properties);
-				InlineObject					ResetInlineObject(vint start, vint length);
-
-				void							GetLineIndexFromTextPos(vint textPos, vint& frontLine, vint& backLine);
-				void							GetVirtualLineIndexFromTextPos(vint textPos, vint lineIndex, vint& frontLine, vint& backLine);
-				void							GetItemIndexFromTextPos(vint textPos, vint lineIndex, vint& frontItem, vint& backItem);
-				Rect							GetCaretBoundsWithLine(vint caret, vint lineIndex, vint virtualLineIndex, bool frontSide);
-				vint							GetCaretFromXWithTextRunBounds(vint x, vint lineIndex, vint runIndex, vint runBoundsIndex);
-				vint							GetCaretFromXWithLine(vint x, vint lineIndex, vint virtualLineIndex);
-				InlineObject					GetInlineObjectFromXWithLine(vint x, vint lineIndex, vint virtualLineIndex, vint& start, vint& length);
-				vint							GetLineY(vint lineIndex);
-				vint							GetVirtualLineY(vint lineIndex, vint virtualLineIndex);
-				vint							GetLineIndexFromY(vint y);
-				vint							GetVirtualLineIndexFromY(vint y, vint lineIndex);
-
-				vint							GetCaret(vint comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide);
-				Rect							GetCaretBounds(vint caret, bool frontSide);
-				vint							GetCaretFromPoint(Point point);
-				InlineObject					GetInlineObjectFromPoint(Point point, vint& start, vint& length);
-				vint							GetNearestCaretFromTextPos(vint textPos, bool frontSide);
-				bool							IsValidCaret(vint caret);
-				bool							IsValidTextPos(vint textPos);
 			};
 		}
 	}

@@ -3,6 +3,7 @@
   <folders>
     <folder path="..\Source" />
     <folder path="..\Import" />
+    <except pattern="\Resource.xml.log\" />
   </folders>
   <categories>
     <category name="vlpp" pattern="\Import\Vlpp."/>
