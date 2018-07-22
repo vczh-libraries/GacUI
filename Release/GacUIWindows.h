@@ -7,529 +7,179 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppWorkflowLibrary.h"
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSDIALOGSERVICE.H
+.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSWINDOWSDIRECT2D.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
+GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
 
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
-
-#include <windows.h>
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsDialogService : public INativeDialogService
-			{
-				typedef HWND (*HandleRetriver)(INativeWindow*);
-			protected:
-				HandleRetriver									handleRetriver;
-
-			public:
-				WindowsDialogService(HandleRetriver _handleRetriver);
-
-				MessageBoxButtonsOutput			ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal)override;
-				bool							ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors)override;
-				bool							ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist)override;
-				bool							ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options)override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSINPUTSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsInputService : public Object, public INativeInputService
-			{
-			protected:
-				HWND									ownerHandle;
-				HHOOK									mouseHook;
-				bool									isTimerEnabled;
-				HOOKPROC								mouseProc;
-
-				collections::Array<WString>				keyNames;
-				collections::Dictionary<WString, vint>	keys;
-
-				WString									GetKeyNameInternal(vint code);
-				void									InitializeKeyNames();
-			public:
-				WindowsInputService(HOOKPROC _mouseProc);
-
-				void									SetOwnerHandle(HWND handle);
-				void									StartHookMouse()override;
-				void									StopHookMouse()override;
-				bool									IsHookingMouse()override;
-				void									StartTimer()override;
-				void									StopTimer()override;
-				bool									IsTimerEnabled()override;
-				bool									IsKeyPressing(vint code)override;
-				bool									IsKeyToggled(vint code)override;
-				WString									GetKeyName(vint code)override;
-				vint									GetKey(const WString& name)override;
-			};
-
-			extern bool									WinIsKeyPressing(vint code);
-			extern bool									WinIsKeyToggled(vint code);
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCALLBACKSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsCallbackService : public Object, public INativeCallbackService
-			{
-			protected:
-				collections::List<INativeControllerListener*>	listeners;
-
-			public:
-				WindowsCallbackService();
-
-				bool											InstallListener(INativeControllerListener* listener)override;
-				bool											UninstallListener(INativeControllerListener* listener)override;
-
-				void											InvokeMouseHook(WPARAM message, Point location);
-				void											InvokeGlobalTimer();
-				void											InvokeClipboardUpdated();
-				void											InvokeNativeWindowCreated(INativeWindow* window);
-				void											InvokeNativeWindowDestroyed(INativeWindow* window);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSSCREENSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsScreen : public Object, public INativeScreen
-			{
-				friend class WindowsScreenService;
-			protected:
-				HMONITOR										monitor;
-			public:
-				WindowsScreen();
-
-				Rect											GetBounds()override;
-				Rect											GetClientBounds()override;
-				WString											GetName()override;
-				bool											IsPrimary()override;
-			};
-
-			class WindowsScreenService : public Object, public INativeScreenService
-			{
-				typedef HWND (*HandleRetriver)(INativeWindow*);
-			protected:
-				collections::List<Ptr<WindowsScreen>>			screens;
-				HandleRetriver									handleRetriver;
-			public:
-
-				struct MonitorEnumProcData
-				{
-					WindowsScreenService*	screenService;
-					vint						currentScreen;
-				};
-
-				WindowsScreenService(HandleRetriver _handleRetriver);
-
-				static BOOL CALLBACK							MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
-				void											RefreshScreenInformation();
-				vint											GetScreenCount()override;
-				INativeScreen*									GetScreen(vint index)override;
-				INativeScreen*									GetScreen(INativeWindow* window)override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSASYNCSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsAsyncService : public INativeAsyncService
-			{
-			protected:
-				struct TaskItem
-				{
-					Semaphore*							semaphore;
-					Func<void()>						proc;
-
-					TaskItem();
-					TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
-					~TaskItem();
-				};
-
-				class DelayItem : public Object, public INativeDelay
-				{
-				public:
-					DelayItem(WindowsAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
-					~DelayItem();
-
-					WindowsAsyncService*				service;
-					Func<void()>						proc;
-					ExecuteStatus						status;
-					DateTime							executeTime;
-					bool								executeInMainThread;
-
-					ExecuteStatus						GetStatus()override;
-					bool								Delay(vint milliseconds)override;
-					bool								Cancel()override;
-				};
-			protected:
-				vint									mainThreadId;
-				SpinLock								taskListLock;
-				collections::List<TaskItem>				taskItems;
-				collections::List<Ptr<DelayItem>>		delayItems;
-			public:
-				WindowsAsyncService();
-				~WindowsAsyncService();
-
-				void									ExecuteAsyncTasks();
-				bool									IsInMainThread(INativeWindow* window)override;
-				void									InvokeAsync(const Func<void()>& proc)override;
-				void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
-				bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
-				Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
-				Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCLIPBOARDSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsClipboardService;
-
-			class WindowsClipboardReader : public Object, public INativeClipboardReader
-			{
-				friend class WindowsClipboardService;
-			protected:
-				WindowsClipboardService*		service;
-				bool							ContainsFormat(UINT format);
-
-			public:
-				WindowsClipboardReader(WindowsClipboardService* _service);
-				~WindowsClipboardReader();
-
-				bool							ContainsText()override;
-				WString							GetText()override;
-
-				bool							ContainsDocument()override;
-				Ptr<DocumentModel>				GetDocument()override;
-
-				bool							ContainsImage()override;
-				Ptr<INativeImage>				GetImage()override;
-
-				void							CloseClipboard();
-			};
-
-			class WindowsClipboardWriter : public Object, public INativeClipboardWriter
-			{
-				friend class WindowsClipboardService;
-			protected:
-				WindowsClipboardService*		service;
-				Nullable<WString>				textData;
-				Ptr<DocumentModel>				documentData;
-				Ptr<INativeImage>				imageData;
-
-				void							SetClipboardData(UINT format, stream::MemoryStream& memoryStream);
-			public:
-				WindowsClipboardWriter(WindowsClipboardService* _service);
-				~WindowsClipboardWriter();
-
-				void							SetText(const WString& value)override;
-				void							SetDocument(Ptr<DocumentModel> value)override;
-				void							SetImage(Ptr<INativeImage> value)override;
-				void							Submit()override;
-			};
-
-			class WindowsClipboardService : public Object, public INativeClipboardService
-			{
-				friend class WindowsClipboardReader;
-				friend class WindowsClipboardWriter;
-			protected:
-				HWND							ownerHandle;
-				UINT							WCF_Document;
-				UINT							WCF_RTF;
-				UINT							WCF_HTML;
-				WindowsClipboardReader*			reader = nullptr;
-
-			public:
-				WindowsClipboardService();
-
-				Ptr<INativeClipboardReader>		ReadClipboard()override;
-				Ptr<INativeClipboardWriter>		WriteClipboard()override;
-
-				void							SetOwnerHandle(HWND handle);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSRESOURCESERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSRESOURCESERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSRESOURCESERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsCursor : public Object, public INativeCursor
-			{
-			protected:
-				HCURSOR										handle;
-				bool										isSystemCursor;
-				SystemCursorType							systemCursorType;
-			public:
-				WindowsCursor(HCURSOR _handle);
-				WindowsCursor(SystemCursorType type);
-
-				bool										IsSystemCursor()override;
-				SystemCursorType							GetSystemCursorType()override;
-				HCURSOR										GetCursorHandle();
-			};
-
-			class WindowsResourceService : public Object, public INativeResourceService
-			{
-			protected:
-				collections::Array<Ptr<WindowsCursor>>		systemCursors;
-				FontProperties								defaultFont;
-			public:
-				WindowsResourceService();
-
-				INativeCursor*								GetSystemCursor(INativeCursor::SystemCursorType type)override;
-				INativeCursor*								GetDefaultSystemCursor()override;
-				FontProperties								GetDefaultFont()override;
-				void										SetDefaultFont(const FontProperties& value)override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSIMAGESERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
-
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
+
+#include <d2d1_1.h>
+#include <dwrite_1.h>
 #include <wincodec.h>
 
 namespace vl
 {
 	namespace presentation
 	{
-		namespace windows
+		namespace elements
 		{
-			class WindowsImageFrame : public Object, public INativeImageFrame
+			
+/***********************************************************************
+Raw API Rendering Element
+***********************************************************************/
+
+			class GuiDirect2DElement;
+			
+			/// <summary>Direct2D Rendering event arguments.</summary>
+			struct GuiDirect2DElementEventArgs : compositions::GuiEventArgs
 			{
-			protected:
-				INativeImage*													image;
-				ComPtr<IWICBitmap>												frameBitmap;
-				collections::Dictionary<void*, Ptr<INativeImageFrameCache>>		caches;
-
-				void										Initialize(IWICBitmapSource* bitmapSource);
 			public:
-				WindowsImageFrame(INativeImage* _image, IWICBitmapFrameDecode* frameDecode);
-				WindowsImageFrame(INativeImage* _image, IWICBitmap* sourceBitmap);
-				~WindowsImageFrame();
+				/// <summary>The element that raised this event.</summary>
+				GuiDirect2DElement*				element;
+				/// <summary>Direct2D render target object.</summary>
+				ID2D1RenderTarget*				rt;
+				/// <summary>DirectWrite factory object.</summary>
+				IDWriteFactory*					factoryDWrite;
+				/// <summary>Direct2D factory object.</summary>
+				ID2D1Factory*					factoryD2D;
+				/// <summary>The range for rendering.</summary>
+				Rect							bounds;
 
-				INativeImage*								GetImage()override;
-				Size										GetSize()override;
-				bool										SetCache(void* key, Ptr<INativeImageFrameCache> cache)override;
-				Ptr<INativeImageFrameCache>					GetCache(void* key)override;
-				Ptr<INativeImageFrameCache>					RemoveCache(void* key)override;
-				IWICBitmap*									GetFrameBitmap();
-				void										SaveBitmapToStream(stream::IStream& stream);
+				GuiDirect2DElementEventArgs(GuiDirect2DElement* _element, ID2D1RenderTarget* _rt, IDWriteFactory* _fdw, ID2D1Factory* _fd2d, Rect _bounds)
+					:element(_element)
+					,rt(_rt)
+					,factoryDWrite(_fdw)
+					,factoryD2D(_fd2d)
+					,bounds(_bounds)
+				{
+				}
 			};
 
-			class WindowsImage : public Object, public INativeImage
+			/// <summary>
+			/// Defines an element for customized rendering using Direct2D.
+			/// </summary>
+			class GuiDirect2DElement : public GuiElementBase<GuiDirect2DElement>
 			{
+				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDirect2DElement, L"Direct2DElement")
 			protected:
-				INativeImageService*						imageService;
-				ComPtr<IWICBitmapDecoder>					bitmapDecoder;
-				collections::Array<Ptr<WindowsImageFrame>>	frames;
+				GuiDirect2DElement();
 			public:
-				WindowsImage(INativeImageService* _imageService, IWICBitmapDecoder* _bitmapDecoder);
-				~WindowsImage();
+				/// <summary>Render target changed (before) event. Resources that binded to the render target can be released at this moment.</summary>
+				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		BeforeRenderTargetChanged;
+				/// <summary>Render target changed (after) event. Resources that binded to the render target can be recreated at this moment.</summary>
+				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		AfterRenderTargetChanged;
+				/// <summary>Rendering event.</summary>
+				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		Rendering;
+			};
+		}
 
-				INativeImageService*						GetImageService()override;
-				FormatType									GetFormat()override;
-				vint										GetFrameCount()override;
-				INativeImageFrame*							GetFrame(vint index)override;
-				void										SaveToStream(stream::IStream& stream, FormatType formatType)override;
+		namespace elements_windows_d2d
+		{
+
+/***********************************************************************
+Functionality
+***********************************************************************/
+
+			class IWindowsDirect2DRenderTarget : public elements::IGuiGraphicsRenderTarget
+			{
+			public:
+				virtual ID2D1RenderTarget*					GetDirect2DRenderTarget()=0;
+				virtual ComPtr<ID2D1Bitmap>					GetBitmap(INativeImageFrame* frame, bool enabled)=0;
+				virtual void								DestroyBitmapCache(INativeImageFrame* frame)=0;
+				virtual void								SetTextAntialias(bool antialias, bool verticalAntialias)=0;
+
+				virtual ID2D1SolidColorBrush*				CreateDirect2DBrush(Color color)=0;
+				virtual void								DestroyDirect2DBrush(Color color)=0;
+				virtual ID2D1LinearGradientBrush*			CreateDirect2DLinearBrush(Color c1, Color c2)=0;
+				virtual void								DestroyDirect2DLinearBrush(Color c1, Color c2)=0;
+				virtual ID2D1RadialGradientBrush*			CreateDirect2DRadialBrush(Color c1, Color c2) = 0;
+				virtual void								DestroyDirect2DRadialBrush(Color c1, Color c2) = 0;
 			};
 
-			class WindowsBitmapImage : public Object, public INativeImage
+			class Direct2DTextFormatPackage
 			{
-			protected:
-				INativeImageService*						imageService;
-				Ptr<WindowsImageFrame>						frame;
-				FormatType									formatType;
 			public:
-				WindowsBitmapImage(INativeImageService* _imageService, IWICBitmap* sourceBitmap, FormatType _formatType);
-				~WindowsBitmapImage();
-
-				INativeImageService*						GetImageService()override;
-				FormatType									GetFormat()override;
-				vint										GetFrameCount()override;
-				INativeImageFrame*							GetFrame(vint index)override;
-				void										SaveToStream(stream::IStream& stream, FormatType formatType)override;
+				ComPtr<IDWriteTextFormat>		textFormat;
+				DWRITE_TRIMMING					trimming;
+				ComPtr<IDWriteInlineObject>		ellipseInlineObject;
 			};
 
-			class WindowsImageService : public Object, public INativeImageService
+			class IWindowsDirect2DResourceManager : public Interface
 			{
-			protected:
-				ComPtr<IWICImagingFactory>					imagingFactory;
 			public:
-				WindowsImageService();
-				~WindowsImageService();
-
-				Ptr<INativeImage>							CreateImageFromFile(const WString& path);
-				Ptr<INativeImage>							CreateImageFromMemory(void* buffer, vint length);
-				Ptr<INativeImage>							CreateImageFromStream(stream::IStream& stream);
-				Ptr<INativeImage>							CreateImageFromHBITMAP(HBITMAP handle);
-				Ptr<INativeImage>							CreateImageFromHICON(HICON handle);
-				IWICImagingFactory*							GetImagingFactory();
+				virtual Direct2DTextFormatPackage*			CreateDirect2DTextFormat(const FontProperties& fontProperties)=0;
+				virtual void								DestroyDirect2DTextFormat(const FontProperties& fontProperties)=0;
+				virtual Ptr<elements::text::CharMeasurer>	CreateDirect2DCharMeasurer(const FontProperties& fontProperties)=0;
+				virtual void								DestroyDirect2DCharMeasurer(const FontProperties& fontProperties)=0;
 			};
 
-			extern IWICImagingFactory*						GetWICImagingFactory();
-			extern IWICBitmap*								GetWICBitmap(INativeImageFrame* frame);
-			extern Ptr<INativeImage>						CreateImageFromHBITMAP(HBITMAP handle);
-			extern Ptr<INativeImage>						CreateImageFromHICON(HICON handle);
+			extern IWindowsDirect2DResourceManager*			GetWindowsDirect2DResourceManager();
+			extern D2D1::ColorF								GetD2DColor(Color color);
+
+/***********************************************************************
+OS Supporting
+***********************************************************************/
+
+			class IWindowsDirect2DObjectProvider : public Interface
+			{
+			public:
+				virtual void								RecreateRenderTarget(INativeWindow* window) = 0;
+				virtual void								ResizeRenderTarget(INativeWindow* window) = 0;
+				virtual ID2D1RenderTarget*					GetNativeWindowDirect2DRenderTarget(INativeWindow* window) = 0;
+				virtual void								StartRendering(INativeWindow* window) = 0;
+				virtual elements::RenderTargetFailure		StopRenderingAndPresent(INativeWindow* window) = 0;
+
+				virtual ID2D1Factory*						GetDirect2DFactory() = 0;
+				virtual IDWriteFactory*						GetDirectWriteFactory() = 0;
+				virtual IWindowsDirect2DRenderTarget*		GetBindedRenderTarget(INativeWindow* window) = 0;
+				virtual void								SetBindedRenderTarget(INativeWindow* window, IWindowsDirect2DRenderTarget* renderTarget) = 0;
+				virtual IWICImagingFactory*					GetWICImagingFactory() = 0;
+				virtual IWICBitmap*							GetWICBitmap(INativeImageFrame* frame) = 0;
+			};
+
+			extern IWindowsDirect2DObjectProvider*			GetWindowsDirect2DObjectProvider();
+			extern void										SetWindowsDirect2DObjectProvider(IWindowsDirect2DObjectProvider* provider);
+		}
+	}
+}
+
+extern void RendererMainDirect2D();
+
+#endif
+
+/***********************************************************************
+.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements_windows_d2d
+		{
+			class WindowsDirect2DLayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
+			{
+			public:
+				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
+			};
 		}
 	}
 }
@@ -537,53 +187,265 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\WINNATIVEWINDOW.H
+.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSRENDERERSWINDOWSDIRECT2D.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
+GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
 
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
-#define VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSDIRECT2D
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSDIRECT2D
 
 
 namespace vl
 {
 	namespace presentation
 	{
-		namespace windows
+		namespace elements_windows_d2d
 		{
+			using namespace elements;
+
+#define DEFINE_BRUSH_ELEMENT_RENDERER(TELEMENT, TRENDERER, TBRUSH, TBRUSHPROPERTY)\
+				DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, IWindowsDirect2DRenderTarget)\
+			protected:\
+				TBRUSHPROPERTY			oldColor;\
+				TBRUSH*					brush = nullptr;\
+				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);\
+				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);\
+				void					InitializeInternal();\
+				void					FinalizeInternal();\
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);\
+			public:\
+				TRENDERER();\
+				void					Render(Rect bounds)override;\
+				void					OnElementStateChanged()override;\
 
 /***********************************************************************
-Windows Platform Native Controller
+Renderers
 ***********************************************************************/
 
-			class INativeMessageHandler : public Interface
+
+			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
-			public:
-				virtual void								BeforeHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip) = 0;
-				virtual void								AfterHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip, LRESULT& result) = 0;
+				DEFINE_BRUSH_ELEMENT_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, ID2D1SolidColorBrush, Color)
 			};
 
-			class IWindowsForm : public Interface
+			class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
+				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsDirect2DRenderTarget)
+			protected:
+				Color					oldColor1;
+				Color					oldColor2;
+				ID2D1SolidColorBrush*	brush1 = nullptr;
+				ID2D1SolidColorBrush*	brush2 = nullptr;
+
+				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
 			public:
-				virtual HWND								GetWindowHandle() = 0;
-				virtual Interface*							GetGraphicsHandler() = 0;
-				virtual void								SetGraphicsHandler(Interface* handler) = 0;
-				virtual bool								InstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
-				virtual bool								UninstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
+				Gui3DBorderElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
 			};
 
-			extern INativeController*						CreateWindowsNativeController(HINSTANCE hInstance);
-			extern IWindowsForm*							GetWindowsFormFromHandle(HWND hwnd);
-			extern IWindowsForm*							GetWindowsForm(INativeWindow* window);
-			extern void										DestroyWindowsNativeController(INativeController* controller);
-			extern void										EnableCrossKernelCrashing();
+			class Gui3DSplitterElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsDirect2DRenderTarget)
+			protected:
+				Color					oldColor1;
+				Color					oldColor2;
+				ID2D1SolidColorBrush*	brush1 = nullptr;
+				ID2D1SolidColorBrush*	brush2 = nullptr;
+
+				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+				Gui3DSplitterElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiSolidBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_BRUSH_ELEMENT_RENDERER(GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, ID2D1SolidColorBrush, Color)
+			};
+
+			class GuiGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				typedef collections::Pair<Color, Color> ColorPair;
+				DEFINE_BRUSH_ELEMENT_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, ID2D1LinearGradientBrush, ColorPair)
+			};
+
+			class GuiInnerShadowElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				typedef collections::Pair<Color, Color> ColorPair;
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsDirect2DRenderTarget)
+			protected:
+				Color							oldColor;
+				Color							transparentColor;
+				ID2D1LinearGradientBrush*		linearBrush = nullptr;
+				ID2D1RadialGradientBrush*		radialBrush = nullptr;
+
+				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+				GuiInnerShadowElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsDirect2DRenderTarget)
+			protected:
+				Color							oldColor;
+				FontProperties					oldFont;
+				WString							oldText;
+				ID2D1SolidColorBrush*			brush = nullptr;
+				Direct2DTextFormatPackage*		textFormat = nullptr;
+				IDWriteTextLayout*				textLayout = nullptr;
+				vint							oldMaxWidth = -1;
+
+				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					CreateTextFormat(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					DestroyTextFormat(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					CreateTextLayout();
+				void					DestroyTextLayout();
+				void					UpdateMinSize();
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+				GuiSolidLabelElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiImageFrameElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsDirect2DRenderTarget)
+			protected:
+				ComPtr<ID2D1Bitmap>		bitmap;
+
+				void					UpdateBitmap(IWindowsDirect2DRenderTarget* renderTarget);
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+				GuiImageFrameElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiPolygonElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiPolygonElement, GuiPolygonElementRenderer, IWindowsDirect2DRenderTarget)
+			protected:
+				Color							oldBorderColor;
+				Color							oldBackgroundColor;
+				ID2D1SolidColorBrush*			borderBrush = nullptr;
+				ID2D1SolidColorBrush*			backgroundBrush = nullptr;
+				collections::Array<Point>		oldPoints;
+				ComPtr<ID2D1PathGeometry>		geometry;
+
+				void							CreateGeometry();
+				void							DestroyGeometry();
+				void							FillGeometry(Point offset);
+				void							RecreateResource(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+				void							InitializeInternal();
+				void							FinalizeInternal();
+				void							RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+				GuiPolygonElementRenderer();
+
+				void							Render(Rect bounds)override;
+				void							OnElementStateChanged()override;
+			};
+
+			class GuiColorizedTextElementRenderer : public Object, public IGuiGraphicsRenderer, protected GuiColorizedTextElement::ICallback
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsDirect2DRenderTarget)
+
+			public:
+				struct ColorItemResource
+				{
+					Color						text;
+					ID2D1SolidColorBrush*		textBrush;
+					Color						background;
+					ID2D1SolidColorBrush*		backgroundBrush;
+				};
+
+				struct ColorEntryResource
+				{
+					ColorItemResource			normal;
+					ColorItemResource			selectedFocused;
+					ColorItemResource			selectedUnfocused;
+
+					bool						operator==(const ColorEntryResource& value){return false;}
+					bool						operator!=(const ColorEntryResource& value){return true;}
+				};
+
+				typedef collections::Array<ColorEntryResource>			ColorArray;
+			protected:
+				FontProperties					oldFont;
+				Direct2DTextFormatPackage*		textFormat;
+				ColorArray						colors;
+				Color							oldCaretColor;
+				ID2D1SolidColorBrush*			caretBrush;
+				
+				void					CreateTextBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					DestroyTextBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					CreateCaretBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					DestroyCaretBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+
+				void					ColorChanged();
+				void					FontChanged();
+				text::CharMeasurer*		GetCharMeasurer();
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiDirect2DElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget)
+
+			protected:
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+				GuiDirect2DElementRenderer();
+				~GuiDirect2DElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
 		}
 	}
 }
@@ -591,36 +453,34 @@ Windows Platform Native Controller
 #endif
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.H
+.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI::Native Window::Direct2D Provider for Windows Implementation
+GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
 
 Interfaces:
 ***********************************************************************/
-#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
-#define VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
 
-#include <d2d1_1.h>
-#include <dwrite_1.h>
-#include <d3d11_1.h>
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI
+
 
 namespace vl
 {
 	namespace presentation
 	{
-		namespace windows
+		namespace elements_windows_gdi
 		{
-			extern ID2D1Factory*						GetDirect2DFactory();
-			extern IDWriteFactory*						GetDirectWriteFactory();
-			extern ID3D11Device*						GetD3D11Device();
+			class WindowsGDILayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
+			{
+			public:
+				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
+			};
 		}
 	}
 }
-
-extern int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)());
 
 #endif
 
@@ -683,6 +543,7 @@ Comments:
 #ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDI
 #define VCZH_PRESENTATION_WINDOWS_GDI_WINGDI
 
+#include<windows.h>
 
 namespace vl
 {
@@ -1093,68 +954,6 @@ Device Context
 #endif
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\GDI\WINGDIAPPLICATION.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::GDI Provider for Windows Implementation
-
-Interfaces:
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
-#define VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			extern WinDC*									GetNativeWindowDC(INativeWindow* window);
-			extern HDC										GetNativeWindowHDC(INativeWindow* window);
-		}
-	}
-}
-
-extern int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)());
-
-#endif
-
-/***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace elements_windows_gdi
-		{
-			class WindowsGDILayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
-			{
-			public:
-				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSWINDOWSGDI.H
 ***********************************************************************/
 /***********************************************************************
@@ -1269,6 +1068,249 @@ OS Supporting
 }
 
 extern void RendererMainGDI();
+
+#endif
+
+/***********************************************************************
+.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSRENDERERSWINDOWSGDI.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSGDI
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSGDI
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements_windows_gdi
+		{
+			using namespace elements;
+
+/***********************************************************************
+Renderers
+***********************************************************************/
+
+			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				Color					oldColor;
+				Ptr<windows::WinPen>	pen;
+				Ptr<windows::WinBrush>	brush;
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				Color					oldColor1;
+				Color					oldColor2;
+				Ptr<windows::WinPen>	pen1;
+				Ptr<windows::WinPen>	pen2;
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class Gui3DSplitterElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				Color					oldColor1;
+				Color					oldColor2;
+				Ptr<windows::WinPen>	pen1;
+				Ptr<windows::WinPen>	pen2;
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiSolidBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				Color					oldColor;
+				Ptr<windows::WinPen>	pen;
+				Ptr<windows::WinBrush>	brush;
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiInnerShadowElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				GuiInnerShadowElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				FontProperties			oldFont;
+				Ptr<windows::WinFont>	font;
+				vint					oldMaxWidth;
+
+				void					UpdateMinSize();
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				GuiSolidLabelElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiImageFrameElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				Ptr<windows::WinBitmap>		bitmap;
+
+				void					UpdateBitmap();
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				GuiImageFrameElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiPolygonElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiPolygonElement, GuiPolygonElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				POINT*							points;
+				vint								pointCount;
+				Color							oldPenColor;
+				Color							oldBrushColor;
+				Ptr<windows::WinPen>			pen;
+				Ptr<windows::WinBrush>			brush;
+
+				void							InitializeInternal();
+				void							FinalizeInternal();
+				void							RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				GuiPolygonElementRenderer();
+				~GuiPolygonElementRenderer();
+
+				void							Render(Rect bounds)override;
+				void							OnElementStateChanged()override;
+			};
+
+			class GuiColorizedTextElementRenderer : public Object, public IGuiGraphicsRenderer, protected GuiColorizedTextElement::ICallback
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget)
+
+			public:
+				struct ColorItemResource
+				{
+					Color						text;
+					Color						background;
+					Ptr<windows::WinBrush>		backgroundBrush;
+				};
+
+				struct ColorEntryResource
+				{
+					ColorItemResource			normal;
+					ColorItemResource			selectedFocused;
+					ColorItemResource			selectedUnfocused;
+
+					bool						operator==(const ColorEntryResource& value){return false;}
+					bool						operator!=(const ColorEntryResource& value){return true;}
+				};
+
+				typedef collections::Array<ColorEntryResource>			ColorArray;
+			protected:
+				FontProperties			oldFont;
+				Ptr<windows::WinFont>	font;
+				ColorArray				colors;
+				Color					oldCaretColor;
+				Ptr<windows::WinPen>	caretPen;
+
+				void					DestroyColors();
+				void					ColorChanged();
+				void					FontChanged();
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
+			class GuiGDIElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget)
+
+			protected:
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				GuiGDIElementRenderer();
+				~GuiGDIElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+		}
+	}
+}
 
 #endif
 
@@ -1627,241 +1669,242 @@ UniscribeParagraph
 #endif
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSRENDERERSWINDOWSGDI.H
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSIMAGESERVICE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
+GacUI::Native Window::Windows Implementation
 
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSGDI
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSGDI
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
 
 
 namespace vl
 {
 	namespace presentation
 	{
-		namespace elements_windows_gdi
+		namespace windows
 		{
-			using namespace elements;
+			class WindowsImageFrame : public Object, public INativeImageFrame
+			{
+			protected:
+				INativeImage*													image;
+				ComPtr<IWICBitmap>												frameBitmap;
+				collections::Dictionary<void*, Ptr<INativeImageFrameCache>>		caches;
+
+				void										Initialize(IWICBitmapSource* bitmapSource);
+			public:
+				WindowsImageFrame(INativeImage* _image, IWICBitmapFrameDecode* frameDecode);
+				WindowsImageFrame(INativeImage* _image, IWICBitmap* sourceBitmap);
+				~WindowsImageFrame();
+
+				INativeImage*								GetImage()override;
+				Size										GetSize()override;
+				bool										SetCache(void* key, Ptr<INativeImageFrameCache> cache)override;
+				Ptr<INativeImageFrameCache>					GetCache(void* key)override;
+				Ptr<INativeImageFrameCache>					RemoveCache(void* key)override;
+				IWICBitmap*									GetFrameBitmap();
+				void										SaveBitmapToStream(stream::IStream& stream);
+			};
+
+			class WindowsImage : public Object, public INativeImage
+			{
+			protected:
+				INativeImageService*						imageService;
+				ComPtr<IWICBitmapDecoder>					bitmapDecoder;
+				collections::Array<Ptr<WindowsImageFrame>>	frames;
+			public:
+				WindowsImage(INativeImageService* _imageService, IWICBitmapDecoder* _bitmapDecoder);
+				~WindowsImage();
+
+				INativeImageService*						GetImageService()override;
+				FormatType									GetFormat()override;
+				vint										GetFrameCount()override;
+				INativeImageFrame*							GetFrame(vint index)override;
+				void										SaveToStream(stream::IStream& stream, FormatType formatType)override;
+			};
+
+			class WindowsBitmapImage : public Object, public INativeImage
+			{
+			protected:
+				INativeImageService*						imageService;
+				Ptr<WindowsImageFrame>						frame;
+				FormatType									formatType;
+			public:
+				WindowsBitmapImage(INativeImageService* _imageService, IWICBitmap* sourceBitmap, FormatType _formatType);
+				~WindowsBitmapImage();
+
+				INativeImageService*						GetImageService()override;
+				FormatType									GetFormat()override;
+				vint										GetFrameCount()override;
+				INativeImageFrame*							GetFrame(vint index)override;
+				void										SaveToStream(stream::IStream& stream, FormatType formatType)override;
+			};
+
+			class WindowsImageService : public Object, public INativeImageService
+			{
+			protected:
+				ComPtr<IWICImagingFactory>					imagingFactory;
+			public:
+				WindowsImageService();
+				~WindowsImageService();
+
+				Ptr<INativeImage>							CreateImageFromFile(const WString& path);
+				Ptr<INativeImage>							CreateImageFromMemory(void* buffer, vint length);
+				Ptr<INativeImage>							CreateImageFromStream(stream::IStream& stream);
+				Ptr<INativeImage>							CreateImageFromHBITMAP(HBITMAP handle);
+				Ptr<INativeImage>							CreateImageFromHICON(HICON handle);
+				IWICImagingFactory*							GetImagingFactory();
+			};
+
+			extern IWICImagingFactory*						GetWICImagingFactory();
+			extern IWICBitmap*								GetWICBitmap(INativeImageFrame* frame);
+			extern Ptr<INativeImage>						CreateImageFromHBITMAP(HBITMAP handle);
+			extern Ptr<INativeImage>						CreateImageFromHICON(HICON handle);
+		}
+	}
+}
+
+#endif
 
 /***********************************************************************
-Renderers
+.\NATIVEWINDOW\WINDOWS\WINNATIVEWINDOW.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
 ***********************************************************************/
 
-			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				Color					oldColor;
-				Ptr<windows::WinPen>	pen;
-				Ptr<windows::WinBrush>	brush;
+#ifndef VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
+#define VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
 
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+
+/***********************************************************************
+Windows Platform Native Controller
+***********************************************************************/
+
+			class INativeMessageHandler : public Interface
+			{
 			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
+				virtual void								BeforeHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip) = 0;
+				virtual void								AfterHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip, LRESULT& result) = 0;
 			};
 
-			class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
+			class IWindowsForm : public Interface
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				Color					oldColor1;
-				Color					oldColor2;
-				Ptr<windows::WinPen>	pen1;
-				Ptr<windows::WinPen>	pen2;
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
 			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
+				virtual HWND								GetWindowHandle() = 0;
+				virtual Interface*							GetGraphicsHandler() = 0;
+				virtual void								SetGraphicsHandler(Interface* handler) = 0;
+				virtual bool								InstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
+				virtual bool								UninstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
 			};
 
-			class Gui3DSplitterElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				Color					oldColor1;
-				Color					oldColor2;
-				Ptr<windows::WinPen>	pen1;
-				Ptr<windows::WinPen>	pen2;
+			extern INativeController*						CreateWindowsNativeController(HINSTANCE hInstance);
+			extern IWindowsForm*							GetWindowsFormFromHandle(HWND hwnd);
+			extern IWindowsForm*							GetWindowsForm(INativeWindow* window);
+			extern void										DestroyWindowsNativeController(INativeController* controller);
+			extern void										EnableCrossKernelCrashing();
+		}
+	}
+}
 
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Direct2D Provider for Windows Implementation
+
+Interfaces:
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
+#define VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
+
+#include <d3d11_1.h>
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			extern ID2D1Factory*						GetDirect2DFactory();
+			extern IDWriteFactory*						GetDirectWriteFactory();
+			extern ID3D11Device*						GetD3D11Device();
+		}
+	}
+}
+
+extern int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)());
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSRESOURCESERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSRESOURCESERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSRESOURCESERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsCursor : public Object, public INativeCursor
+			{
+			protected:
+				HCURSOR										handle;
+				bool										isSystemCursor;
+				SystemCursorType							systemCursorType;
 			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
+				WindowsCursor(HCURSOR _handle);
+				WindowsCursor(SystemCursorType type);
+
+				bool										IsSystemCursor()override;
+				SystemCursorType							GetSystemCursorType()override;
+				HCURSOR										GetCursorHandle();
 			};
 
-			class GuiSolidBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			class WindowsResourceService : public Object, public INativeResourceService
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				Color					oldColor;
-				Ptr<windows::WinPen>	pen;
-				Ptr<windows::WinBrush>	brush;
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+				collections::Array<Ptr<WindowsCursor>>		systemCursors;
+				FontProperties								defaultFont;
 			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
+				WindowsResourceService();
 
-			class GuiGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiInnerShadowElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				GuiInnerShadowElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				FontProperties			oldFont;
-				Ptr<windows::WinFont>	font;
-				vint					oldMaxWidth;
-
-				void					UpdateMinSize();
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				GuiSolidLabelElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiImageFrameElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				Ptr<windows::WinBitmap>		bitmap;
-
-				void					UpdateBitmap();
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				GuiImageFrameElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiPolygonElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiPolygonElement, GuiPolygonElementRenderer, IWindowsGDIRenderTarget)
-			protected:
-				POINT*							points;
-				vint								pointCount;
-				Color							oldPenColor;
-				Color							oldBrushColor;
-				Ptr<windows::WinPen>			pen;
-				Ptr<windows::WinBrush>			brush;
-
-				void							InitializeInternal();
-				void							FinalizeInternal();
-				void							RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				GuiPolygonElementRenderer();
-				~GuiPolygonElementRenderer();
-
-				void							Render(Rect bounds)override;
-				void							OnElementStateChanged()override;
-			};
-
-			class GuiColorizedTextElementRenderer : public Object, public IGuiGraphicsRenderer, protected GuiColorizedTextElement::ICallback
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget)
-
-			public:
-				struct ColorItemResource
-				{
-					Color						text;
-					Color						background;
-					Ptr<windows::WinBrush>		backgroundBrush;
-				};
-
-				struct ColorEntryResource
-				{
-					ColorItemResource			normal;
-					ColorItemResource			selectedFocused;
-					ColorItemResource			selectedUnfocused;
-
-					bool						operator==(const ColorEntryResource& value){return false;}
-					bool						operator!=(const ColorEntryResource& value){return true;}
-				};
-
-				typedef collections::Array<ColorEntryResource>			ColorArray;
-			protected:
-				FontProperties			oldFont;
-				Ptr<windows::WinFont>	font;
-				ColorArray				colors;
-				Color					oldCaretColor;
-				Ptr<windows::WinPen>	caretPen;
-
-				void					DestroyColors();
-				void					ColorChanged();
-				void					FontChanged();
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiGDIElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget)
-
-			protected:
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				GuiGDIElementRenderer();
-				~GuiGDIElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
+				INativeCursor*								GetSystemCursor(INativeCursor::SystemCursorType type)override;
+				INativeCursor*								GetDefaultSystemCursor()override;
+				FontProperties								GetDefaultFont()override;
+				void										SetDefaultFont(const FontProperties& value)override;
 			};
 		}
 	}
@@ -1870,30 +1913,89 @@ Renderers
 #endif
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.H
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCLIPBOARDSERVICE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
+GacUI::Native Window::Windows Implementation
 
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
 
 
 namespace vl
 {
 	namespace presentation
 	{
-		namespace elements_windows_d2d
+		namespace windows
 		{
-			class WindowsDirect2DLayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
+			class WindowsClipboardService;
+
+			class WindowsClipboardReader : public Object, public INativeClipboardReader
 			{
+				friend class WindowsClipboardService;
+			protected:
+				WindowsClipboardService*		service;
+				bool							ContainsFormat(UINT format);
+
 			public:
-				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
+				WindowsClipboardReader(WindowsClipboardService* _service);
+				~WindowsClipboardReader();
+
+				bool							ContainsText()override;
+				WString							GetText()override;
+
+				bool							ContainsDocument()override;
+				Ptr<DocumentModel>				GetDocument()override;
+
+				bool							ContainsImage()override;
+				Ptr<INativeImage>				GetImage()override;
+
+				void							CloseClipboard();
+			};
+
+			class WindowsClipboardWriter : public Object, public INativeClipboardWriter
+			{
+				friend class WindowsClipboardService;
+			protected:
+				WindowsClipboardService*		service;
+				Nullable<WString>				textData;
+				Ptr<DocumentModel>				documentData;
+				Ptr<INativeImage>				imageData;
+
+				void							SetClipboardData(UINT format, stream::MemoryStream& memoryStream);
+			public:
+				WindowsClipboardWriter(WindowsClipboardService* _service);
+				~WindowsClipboardWriter();
+
+				void							SetText(const WString& value)override;
+				void							SetDocument(Ptr<DocumentModel> value)override;
+				void							SetImage(Ptr<INativeImage> value)override;
+				void							Submit()override;
+			};
+
+			class WindowsClipboardService : public Object, public INativeClipboardService
+			{
+				friend class WindowsClipboardReader;
+				friend class WindowsClipboardWriter;
+			protected:
+				HWND							ownerHandle;
+				UINT							WCF_Document;
+				UINT							WCF_RTF;
+				UINT							WCF_HTML;
+				WindowsClipboardReader*			reader = nullptr;
+
+			public:
+				WindowsClipboardService();
+
+				Ptr<INativeClipboardReader>		ReadClipboard()override;
+				Ptr<INativeClipboardWriter>		WriteClipboard()override;
+
+				void							SetOwnerHandle(HWND handle);
 			};
 		}
 	}
@@ -1902,412 +2004,310 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSWINDOWSDIRECT2D.H
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSASYNCSERVICE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
+GacUI::Native Window::Windows Implementation
 
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
 
 
 namespace vl
 {
 	namespace presentation
 	{
-		namespace elements
+		namespace windows
 		{
-			
-/***********************************************************************
-Raw API Rendering Element
-***********************************************************************/
-
-			class GuiDirect2DElement;
-			
-			/// <summary>Direct2D Rendering event arguments.</summary>
-			struct GuiDirect2DElementEventArgs : compositions::GuiEventArgs
+			class WindowsAsyncService : public INativeAsyncService
 			{
-			public:
-				/// <summary>The element that raised this event.</summary>
-				GuiDirect2DElement*				element;
-				/// <summary>Direct2D render target object.</summary>
-				ID2D1RenderTarget*				rt;
-				/// <summary>DirectWrite factory object.</summary>
-				IDWriteFactory*					factoryDWrite;
-				/// <summary>Direct2D factory object.</summary>
-				ID2D1Factory*					factoryD2D;
-				/// <summary>The range for rendering.</summary>
-				Rect							bounds;
-
-				GuiDirect2DElementEventArgs(GuiDirect2DElement* _element, ID2D1RenderTarget* _rt, IDWriteFactory* _fdw, ID2D1Factory* _fd2d, Rect _bounds)
-					:element(_element)
-					,rt(_rt)
-					,factoryDWrite(_fdw)
-					,factoryD2D(_fd2d)
-					,bounds(_bounds)
-				{
-				}
-			};
-
-			/// <summary>
-			/// Defines an element for customized rendering using Direct2D.
-			/// </summary>
-			class GuiDirect2DElement : public GuiElementBase<GuiDirect2DElement>
-			{
-				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDirect2DElement, L"Direct2DElement")
 			protected:
-				GuiDirect2DElement();
+				struct TaskItem
+				{
+					Semaphore*							semaphore;
+					Func<void()>						proc;
+
+					TaskItem();
+					TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
+					~TaskItem();
+				};
+
+				class DelayItem : public Object, public INativeDelay
+				{
+				public:
+					DelayItem(WindowsAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
+					~DelayItem();
+
+					WindowsAsyncService*				service;
+					Func<void()>						proc;
+					ExecuteStatus						status;
+					DateTime							executeTime;
+					bool								executeInMainThread;
+
+					ExecuteStatus						GetStatus()override;
+					bool								Delay(vint milliseconds)override;
+					bool								Cancel()override;
+				};
+			protected:
+				vint									mainThreadId;
+				SpinLock								taskListLock;
+				collections::List<TaskItem>				taskItems;
+				collections::List<Ptr<DelayItem>>		delayItems;
 			public:
-				/// <summary>Render target changed (before) event. Resources that binded to the render target can be released at this moment.</summary>
-				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		BeforeRenderTargetChanged;
-				/// <summary>Render target changed (after) event. Resources that binded to the render target can be recreated at this moment.</summary>
-				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		AfterRenderTargetChanged;
-				/// <summary>Rendering event.</summary>
-				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		Rendering;
+				WindowsAsyncService();
+				~WindowsAsyncService();
+
+				void									ExecuteAsyncTasks();
+				bool									IsInMainThread(INativeWindow* window)override;
+				void									InvokeAsync(const Func<void()>& proc)override;
+				void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
+				bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
+				Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
+				Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
 			};
-		}
-
-		namespace elements_windows_d2d
-		{
-
-/***********************************************************************
-Functionality
-***********************************************************************/
-
-			class IWindowsDirect2DRenderTarget : public elements::IGuiGraphicsRenderTarget
-			{
-			public:
-				virtual ID2D1RenderTarget*					GetDirect2DRenderTarget()=0;
-				virtual ComPtr<ID2D1Bitmap>					GetBitmap(INativeImageFrame* frame, bool enabled)=0;
-				virtual void								DestroyBitmapCache(INativeImageFrame* frame)=0;
-				virtual void								SetTextAntialias(bool antialias, bool verticalAntialias)=0;
-
-				virtual ID2D1SolidColorBrush*				CreateDirect2DBrush(Color color)=0;
-				virtual void								DestroyDirect2DBrush(Color color)=0;
-				virtual ID2D1LinearGradientBrush*			CreateDirect2DLinearBrush(Color c1, Color c2)=0;
-				virtual void								DestroyDirect2DLinearBrush(Color c1, Color c2)=0;
-				virtual ID2D1RadialGradientBrush*			CreateDirect2DRadialBrush(Color c1, Color c2) = 0;
-				virtual void								DestroyDirect2DRadialBrush(Color c1, Color c2) = 0;
-			};
-
-			class Direct2DTextFormatPackage
-			{
-			public:
-				ComPtr<IDWriteTextFormat>		textFormat;
-				DWRITE_TRIMMING					trimming;
-				ComPtr<IDWriteInlineObject>		ellipseInlineObject;
-			};
-
-			class IWindowsDirect2DResourceManager : public Interface
-			{
-			public:
-				virtual Direct2DTextFormatPackage*			CreateDirect2DTextFormat(const FontProperties& fontProperties)=0;
-				virtual void								DestroyDirect2DTextFormat(const FontProperties& fontProperties)=0;
-				virtual Ptr<elements::text::CharMeasurer>	CreateDirect2DCharMeasurer(const FontProperties& fontProperties)=0;
-				virtual void								DestroyDirect2DCharMeasurer(const FontProperties& fontProperties)=0;
-			};
-
-			extern IWindowsDirect2DResourceManager*			GetWindowsDirect2DResourceManager();
-			extern D2D1::ColorF								GetD2DColor(Color color);
-
-/***********************************************************************
-OS Supporting
-***********************************************************************/
-
-			class IWindowsDirect2DObjectProvider : public Interface
-			{
-			public:
-				virtual void								RecreateRenderTarget(INativeWindow* window) = 0;
-				virtual void								ResizeRenderTarget(INativeWindow* window) = 0;
-				virtual ID2D1RenderTarget*					GetNativeWindowDirect2DRenderTarget(INativeWindow* window) = 0;
-				virtual void								StartRendering(INativeWindow* window) = 0;
-				virtual elements::RenderTargetFailure		StopRenderingAndPresent(INativeWindow* window) = 0;
-
-				virtual ID2D1Factory*						GetDirect2DFactory() = 0;
-				virtual IDWriteFactory*						GetDirectWriteFactory() = 0;
-				virtual IWindowsDirect2DRenderTarget*		GetBindedRenderTarget(INativeWindow* window) = 0;
-				virtual void								SetBindedRenderTarget(INativeWindow* window, IWindowsDirect2DRenderTarget* renderTarget) = 0;
-				virtual IWICImagingFactory*					GetWICImagingFactory() = 0;
-				virtual IWICBitmap*							GetWICBitmap(INativeImageFrame* frame) = 0;
-			};
-
-			extern IWindowsDirect2DObjectProvider*			GetWindowsDirect2DObjectProvider();
-			extern void										SetWindowsDirect2DObjectProvider(IWindowsDirect2DObjectProvider* provider);
 		}
 	}
 }
-
-extern void RendererMainDirect2D();
 
 #endif
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSRENDERERSWINDOWSDIRECT2D.H
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSSCREENSERVICE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
+GacUI::Native Window::Windows Implementation
 
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSDIRECT2D
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSRENDERERSWINDOWSDIRECT2D
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
 
 
 namespace vl
 {
 	namespace presentation
 	{
-		namespace elements_windows_d2d
+		namespace windows
 		{
-			using namespace elements;
-
-#define DEFINE_BRUSH_ELEMENT_RENDERER(TELEMENT, TRENDERER, TBRUSH, TBRUSHPROPERTY)\
-				DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, IWindowsDirect2DRenderTarget)\
-			protected:\
-				TBRUSHPROPERTY			oldColor;\
-				TBRUSH*					brush = nullptr;\
-				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);\
-				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);\
-				void					InitializeInternal();\
-				void					FinalizeInternal();\
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);\
-			public:\
-				TRENDERER();\
-				void					Render(Rect bounds)override;\
-				void					OnElementStateChanged()override;\
-
-/***********************************************************************
-Renderers
-***********************************************************************/
-
-
-			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
+			class WindowsScreen : public Object, public INativeScreen
 			{
-				DEFINE_BRUSH_ELEMENT_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, ID2D1SolidColorBrush, Color)
-			};
-
-			class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsDirect2DRenderTarget)
+				friend class WindowsScreenService;
 			protected:
-				Color					oldColor1;
-				Color					oldColor2;
-				ID2D1SolidColorBrush*	brush1 = nullptr;
-				ID2D1SolidColorBrush*	brush2 = nullptr;
-
-				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+				HMONITOR										monitor;
 			public:
-				Gui3DBorderElementRenderer();
+				WindowsScreen();
 
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
+				Rect											GetBounds()override;
+				Rect											GetClientBounds()override;
+				WString											GetName()override;
+				bool											IsPrimary()override;
 			};
 
-			class Gui3DSplitterElementRenderer : public Object, public IGuiGraphicsRenderer
+			class WindowsScreenService : public Object, public INativeScreenService
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsDirect2DRenderTarget)
+				typedef HWND (*HandleRetriver)(INativeWindow*);
 			protected:
-				Color					oldColor1;
-				Color					oldColor2;
-				ID2D1SolidColorBrush*	brush1 = nullptr;
-				ID2D1SolidColorBrush*	brush2 = nullptr;
-
-				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+				collections::List<Ptr<WindowsScreen>>			screens;
+				HandleRetriver									handleRetriver;
 			public:
-				Gui3DSplitterElementRenderer();
 
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiSolidBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_BRUSH_ELEMENT_RENDERER(GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, ID2D1SolidColorBrush, Color)
-			};
-
-			class GuiGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				typedef collections::Pair<Color, Color> ColorPair;
-				DEFINE_BRUSH_ELEMENT_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, ID2D1LinearGradientBrush, ColorPair)
-			};
-
-			class GuiInnerShadowElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				typedef collections::Pair<Color, Color> ColorPair;
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsDirect2DRenderTarget)
-			protected:
-				Color							oldColor;
-				Color							transparentColor;
-				ID2D1LinearGradientBrush*		linearBrush = nullptr;
-				ID2D1RadialGradientBrush*		radialBrush = nullptr;
-
-				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
-			public:
-				GuiInnerShadowElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsDirect2DRenderTarget)
-			protected:
-				Color							oldColor;
-				FontProperties					oldFont;
-				WString							oldText;
-				ID2D1SolidColorBrush*			brush = nullptr;
-				Direct2DTextFormatPackage*		textFormat = nullptr;
-				IDWriteTextLayout*				textLayout = nullptr;
-				vint							oldMaxWidth = -1;
-
-				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					CreateTextFormat(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					DestroyTextFormat(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					CreateTextLayout();
-				void					DestroyTextLayout();
-				void					UpdateMinSize();
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
-			public:
-				GuiSolidLabelElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiImageFrameElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsDirect2DRenderTarget)
-			protected:
-				ComPtr<ID2D1Bitmap>		bitmap;
-
-				void					UpdateBitmap(IWindowsDirect2DRenderTarget* renderTarget);
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
-			public:
-				GuiImageFrameElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiPolygonElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiPolygonElement, GuiPolygonElementRenderer, IWindowsDirect2DRenderTarget)
-			protected:
-				Color							oldBorderColor;
-				Color							oldBackgroundColor;
-				ID2D1SolidColorBrush*			borderBrush = nullptr;
-				ID2D1SolidColorBrush*			backgroundBrush = nullptr;
-				collections::Array<Point>		oldPoints;
-				ComPtr<ID2D1PathGeometry>		geometry;
-
-				void							CreateGeometry();
-				void							DestroyGeometry();
-				void							FillGeometry(Point offset);
-				void							RecreateResource(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
-				void							InitializeInternal();
-				void							FinalizeInternal();
-				void							RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
-			public:
-				GuiPolygonElementRenderer();
-
-				void							Render(Rect bounds)override;
-				void							OnElementStateChanged()override;
-			};
-
-			class GuiColorizedTextElementRenderer : public Object, public IGuiGraphicsRenderer, protected GuiColorizedTextElement::ICallback
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsDirect2DRenderTarget)
-
-			public:
-				struct ColorItemResource
+				struct MonitorEnumProcData
 				{
-					Color						text;
-					ID2D1SolidColorBrush*		textBrush;
-					Color						background;
-					ID2D1SolidColorBrush*		backgroundBrush;
+					WindowsScreenService*	screenService;
+					vint						currentScreen;
 				};
 
-				struct ColorEntryResource
-				{
-					ColorItemResource			normal;
-					ColorItemResource			selectedFocused;
-					ColorItemResource			selectedUnfocused;
+				WindowsScreenService(HandleRetriver _handleRetriver);
 
-					bool						operator==(const ColorEntryResource& value){return false;}
-					bool						operator!=(const ColorEntryResource& value){return true;}
-				};
-
-				typedef collections::Array<ColorEntryResource>			ColorArray;
-			protected:
-				FontProperties					oldFont;
-				Direct2DTextFormatPackage*		textFormat;
-				ColorArray						colors;
-				Color							oldCaretColor;
-				ID2D1SolidColorBrush*			caretBrush;
-				
-				void					CreateTextBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					DestroyTextBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					CreateCaretBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					DestroyCaretBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-
-				void					ColorChanged();
-				void					FontChanged();
-				text::CharMeasurer*		GetCharMeasurer();
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
-			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiDirect2DElementRenderer : public Object, public IGuiGraphicsRenderer
-			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget)
-
-			protected:
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
-			public:
-				GuiDirect2DElementRenderer();
-				~GuiDirect2DElementRenderer();
-
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
+				static BOOL CALLBACK							MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
+				void											RefreshScreenInformation();
+				vint											GetScreenCount()override;
+				INativeScreen*									GetScreen(vint index)override;
+				INativeScreen*									GetScreen(INativeWindow* window)override;
 			};
 		}
 	}
 }
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCALLBACKSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsCallbackService : public Object, public INativeCallbackService
+			{
+			protected:
+				collections::List<INativeControllerListener*>	listeners;
+
+			public:
+				WindowsCallbackService();
+
+				bool											InstallListener(INativeControllerListener* listener)override;
+				bool											UninstallListener(INativeControllerListener* listener)override;
+
+				void											InvokeMouseHook(WPARAM message, Point location);
+				void											InvokeGlobalTimer();
+				void											InvokeClipboardUpdated();
+				void											InvokeNativeWindowCreated(INativeWindow* window);
+				void											InvokeNativeWindowDestroyed(INativeWindow* window);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSINPUTSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsInputService : public Object, public INativeInputService
+			{
+			protected:
+				HWND									ownerHandle;
+				HHOOK									mouseHook;
+				bool									isTimerEnabled;
+				HOOKPROC								mouseProc;
+
+				collections::Array<WString>				keyNames;
+				collections::Dictionary<WString, vint>	keys;
+
+				WString									GetKeyNameInternal(vint code);
+				void									InitializeKeyNames();
+			public:
+				WindowsInputService(HOOKPROC _mouseProc);
+
+				void									SetOwnerHandle(HWND handle);
+				void									StartHookMouse()override;
+				void									StopHookMouse()override;
+				bool									IsHookingMouse()override;
+				void									StartTimer()override;
+				void									StopTimer()override;
+				bool									IsTimerEnabled()override;
+				bool									IsKeyPressing(vint code)override;
+				bool									IsKeyToggled(vint code)override;
+				WString									GetKeyName(vint code)override;
+				vint									GetKey(const WString& name)override;
+			};
+
+			extern bool									WinIsKeyPressing(vint code);
+			extern bool									WinIsKeyToggled(vint code);
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSDIALOGSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsDialogService : public INativeDialogService
+			{
+				typedef HWND (*HandleRetriver)(INativeWindow*);
+			protected:
+				HandleRetriver									handleRetriver;
+
+			public:
+				WindowsDialogService(HandleRetriver _handleRetriver);
+
+				MessageBoxButtonsOutput			ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal)override;
+				bool							ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors)override;
+				bool							ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist)override;
+				bool							ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options)override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\GDI\WINGDIAPPLICATION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::GDI Provider for Windows Implementation
+
+Interfaces:
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
+#define VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			extern WinDC*									GetNativeWindowDC(INativeWindow* window);
+			extern HDC										GetNativeWindowHDC(INativeWindow* window);
+		}
+	}
+}
+
+extern int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)());
 
 #endif
