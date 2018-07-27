@@ -31770,6 +31770,7 @@ namespace vl
 		using namespace parsing::tabling;
 		using namespace parsing::xml;
 		using namespace regex;
+		using namespace stream;
 
 /***********************************************************************
 DocumentFontSize
@@ -31880,15 +31881,10 @@ DocumentParagraphRun
 
 		WString DocumentParagraphRun::GetText(bool skipNonTextContent)
 		{
-			stream::MemoryStream memoryStream;
+			return GenerateToStream([&](StreamWriter& writer)
 			{
-				stream::StreamWriter writer(memoryStream);
 				GetText(writer, skipNonTextContent);
-			}
-
-			memoryStream.SeekFromBegin(0);
-			stream::StreamReader reader(memoryStream);
-			return reader.ReadToEnd();
+			});
 		}
 
 		void DocumentParagraphRun::GetText(stream::TextWriter& writer, bool skipNonTextContent)
@@ -32105,15 +32101,10 @@ DocumentModel
 
 		WString DocumentModel::GetText(bool skipNonTextContent)
 		{
-			stream::MemoryStream memoryStream;
+			return GenerateToStream([&](StreamWriter& writer)
 			{
-				stream::StreamWriter writer(memoryStream);
 				GetText(writer, skipNonTextContent);
-			}
-
-			memoryStream.SeekFromBegin(0);
-			stream::StreamReader reader(memoryStream);
-			return reader.ReadToEnd();
+			});
 		}
 
 		void DocumentModel::GetText(stream::TextWriter& writer, bool skipNonTextContent)
@@ -38117,17 +38108,11 @@ GuiResource
 			stream::internal::ContextFreeWriter writer(stream);
 			{
 				auto xmlMetadata = metadata->SaveToXml();
-				stream::MemoryStream memoryStream;
+				WString xml = GenerateToStream([&](StreamWriter& writer)
 				{
-					stream::StreamWriter writer(memoryStream);
 					XmlPrint(xmlMetadata, writer);
-				}
-				memoryStream.SeekFromBegin(0);
-				{
-					stream::StreamReader reader(memoryStream);
-					WString xml = reader.ReadToEnd();
-					writer << xml;
-				}
+				});
+				writer << xml;
 			}
 			List<WString> typeNames;
 			CollectTypeNames(typeNames);
@@ -38529,81 +38514,6 @@ IGuiResourceResolverManager
 /***********************************************************************
 Helpers
 ***********************************************************************/
-
-		vint CopyStream(stream::IStream& inputStream, stream::IStream& outputStream)
-		{
-			vint totalSize = 0;
-			while (true)
-			{
-				char buffer[1024];
-				vint copied = inputStream.Read(buffer, (vint)sizeof(buffer));
-				if (copied == 0)
-				{
-					break;
-				}
-				totalSize += outputStream.Write(buffer, copied);
-			}
-			return totalSize;
-		}
-
-		const vint CompressionFragmentSize = 1048576;
-
-		void CompressStream(stream::IStream& inputStream, stream::IStream& outputStream)
-		{
-			Array<char> buffer(CompressionFragmentSize);
-			while (true)
-			{
-				vint size = inputStream.Read(&buffer[0], buffer.Count());
-				if (size == 0) break;
-
-				MemoryStream compressedStream;
-				{
-					LzwEncoder encoder;
-					EncoderStream encoderStream(compressedStream, encoder);
-					encoderStream.Write(&buffer[0], size);
-				}
-
-				compressedStream.SeekFromBegin(0);
-				{
-					{
-						vint32_t bufferSize = (vint32_t)size;
-						outputStream.Write(&bufferSize, (vint)sizeof(bufferSize));
-					}
-					{
-						vint32_t compressedSize = (vint32_t)compressedStream.Size();
-						outputStream.Write(&compressedSize, (vint)sizeof(compressedSize));
-					}
-					CopyStream(compressedStream, outputStream);
-				}
-			}
-		}
-
-		void DecompressStream(stream::IStream& inputStream, stream::IStream& outputStream)
-		{
-			vint totalSize = 0;
-			vint totalWritten = 0;
-			while (true)
-			{
-				vint32_t bufferSize = 0;
-				if (inputStream.Read(&bufferSize, (vint)sizeof(bufferSize)) != sizeof(bufferSize))
-				{
-					break;
-				}
-
-				vint32_t compressedSize = 0;
-				CHECK_ERROR(inputStream.Read(&compressedSize, (vint)sizeof(compressedSize)) == sizeof(compressedSize), L"vl::presentation::DecompressStream(MemoryStream&, MemoryStream&)#Incomplete input");
-
-				Array<char> buffer(compressedSize);
-				CHECK_ERROR(inputStream.Read(&buffer[0], compressedSize) == compressedSize, L"vl::presentation::DecompressStream(MemoryStream&, MemoryStream&)#Incomplete input");
-
-				MemoryWrapperStream compressedStream(&buffer[0], compressedSize);
-				LzwDecoder decoder;
-				DecoderStream decoderStream(compressedStream, decoder);
-				totalWritten += CopyStream(decoderStream, outputStream);
-				totalSize += bufferSize;
-			}
-			CHECK_ERROR(outputStream.Size() == totalSize, L"vl::presentation::DecompressStream(MemoryStream&, MemoryStream&)#Incomplete input");
-		}
 
 		void DecompressStream(const char** buffer, bool decompress, vint rows, vint block, vint remain, stream::IStream& outputStream)
 		{
@@ -39121,19 +39031,12 @@ Xml Type Resolver (Xml)
 			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
 				auto obj = content.Cast<XmlDocument>();
-				MemoryStream buffer;
+				WString text = GenerateToStream([&](StreamWriter& writer)
 				{
-					StreamWriter writer(buffer);
 					XmlPrint(obj, writer);
-				}
-				{
-					buffer.SeekFromBegin(0);
-					StreamReader reader(buffer);
-					WString text = reader.ReadToEnd();
-
-					stream::internal::ContextFreeWriter writer(stream);
-					writer << text;
-				}
+				});
+				stream::internal::ContextFreeWriter writer(stream);
+				writer << text;
 			}
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override

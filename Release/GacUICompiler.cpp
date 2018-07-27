@@ -60,19 +60,10 @@ namespace vl
 					{
 						FOREACH_INDEXER(GuiInstanceCompiledWorkflow::ModuleRecord, moduleRecord, codeIndex, compiled->modules)
 						{
-							WString code;
+							WString code = GenerateToStream([&](StreamWriter& writer)
 							{
-								MemoryStream stream;
-								{
-									StreamWriter writer(stream);
-									WfPrint(moduleRecord.module, L"", writer);
-								}
-								stream.SeekFromBegin(0);
-								{
-									StreamReader reader(stream);
-									code = reader.ReadToEnd();
-								}
-							}
+								WfPrint(moduleRecord.module, L"", writer);
+							});
 							text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(compiled->modules.Count()) + L")================================\r\n";
 							text += code + L"\r\n";
 						}
@@ -240,11 +231,8 @@ namespace vl
 			bool compress,
 			const filesystem::FilePath& filePath)
 		{
-			WString code;
-			MemoryStream stream;
+			WString code = GenerateToStream([&](StreamWriter& writer)
 			{
-				StreamWriter writer(stream);
-
 				writer.WriteLine(L"#include \"" + cppOutput->entryFileName + L".h\"");
 				writer.WriteLine(L"");
 				writer.WriteLine(L"namespace vl");
@@ -304,12 +292,7 @@ namespace vl
 				writer.WriteLine(L"\t\t}");
 				writer.WriteLine(L"\t}");
 				writer.WriteLine(L"}");
-			}
-			stream.SeekFromBegin(0);
-			{
-				StreamReader reader(stream);
-				code = reader.ReadToEnd();
-			}
+			});
 
 			File file(filePath);
 			if (file.Exists())
@@ -6695,18 +6678,10 @@ GuiInstanceStyle
 
 			auto attPath = MakePtr<XmlAttribute>();
 			attPath->name.value = L"ref.Path";
+			attPath->value.value = GenerateToStream([&](StreamWriter& writer)
 			{
-				MemoryStream stream;
-				{
-					StreamWriter writer(stream);
-					GuiIqPrint(query, writer);
-				}
-				stream.SeekFromBegin(0);
-				{
-					StreamReader reader(stream);
-					attPath->value.value = reader.ReadToEnd();
-				}
-			}
+				GuiIqPrint(query, writer);
+			});
 			xmlStyle->attributes.Add(attPath);
 
 			setter->FillXml(xmlStyle);
@@ -13093,6 +13068,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace stream;
 		using namespace reflection::description;
 		using namespace workflow;
 		using namespace workflow::analyzer;
@@ -13162,14 +13138,10 @@ Workflow_ModuleToString
 
 		WString Workflow_ModuleToString(Ptr<workflow::WfModule> module)
 		{
-			stream::MemoryStream stream;
+			return GenerateToStream([&](StreamWriter& writer)
 			{
-				stream::StreamWriter writer(stream);
 				WfPrint(module, L"", writer);
-			}
-			stream.SeekFromBegin(0);
-			stream::StreamReader reader(stream);
-			return reader.ReadToEnd();
+			});
 		}
 
 /***********************************************************************
