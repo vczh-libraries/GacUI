@@ -703,15 +703,10 @@ ParserGrammarAutoComplete
 		textBox->SetColorizer(colorizer);
 		textBox->SetAutoComplete(autoComplete);
 		
-		MemoryStream memoryStream;
+		textBox->SetText(GenerateToStream([&](StreamWriter& writer)
 		{
-			auto def = CreateParserDefinition();
-			StreamWriter writer(memoryStream);
-			Log(def, writer);
-		}
-		memoryStream.SeekFromBegin(0);
-		StreamReader reader(memoryStream);
-		textBox->SetText(reader.ReadToEnd());
+			Log(CreateParserDefinition(), writer);
+		}));
 		textBox->Select(TextPos(), TextPos());
 
 		textBox->GetBoundsComposition()->SetAlignmentToParent(Margin(5, 5, 5, 5));

@@ -1414,17 +1414,11 @@ GuiResource
 			stream::internal::ContextFreeWriter writer(stream);
 			{
 				auto xmlMetadata = metadata->SaveToXml();
-				stream::MemoryStream memoryStream;
+				WString xml = GenerateToStream([&](StreamWriter& writer)
 				{
-					stream::StreamWriter writer(memoryStream);
 					XmlPrint(xmlMetadata, writer);
-				}
-				memoryStream.SeekFromBegin(0);
-				{
-					stream::StreamReader reader(memoryStream);
-					WString xml = reader.ReadToEnd();
-					writer << xml;
-				}
+				});
+				writer << xml;
 			}
 			List<WString> typeNames;
 			CollectTypeNames(typeNames);

@@ -5,6 +5,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace stream;
 		using namespace reflection::description;
 		using namespace workflow;
 		using namespace workflow::analyzer;
@@ -74,14 +75,10 @@ Workflow_ModuleToString
 
 		WString Workflow_ModuleToString(Ptr<workflow::WfModule> module)
 		{
-			stream::MemoryStream stream;
+			return GenerateToStream([&](StreamWriter& writer)
 			{
-				stream::StreamWriter writer(stream);
 				WfPrint(module, L"", writer);
-			}
-			stream.SeekFromBegin(0);
-			stream::StreamReader reader(stream);
-			return reader.ReadToEnd();
+			});
 		}
 
 /***********************************************************************

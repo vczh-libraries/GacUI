@@ -8,6 +8,7 @@ namespace vl
 		using namespace parsing::tabling;
 		using namespace parsing::xml;
 		using namespace regex;
+		using namespace stream;
 
 /***********************************************************************
 DocumentFontSize
@@ -118,15 +119,10 @@ DocumentParagraphRun
 
 		WString DocumentParagraphRun::GetText(bool skipNonTextContent)
 		{
-			stream::MemoryStream memoryStream;
+			return GenerateToStream([&](StreamWriter& writer)
 			{
-				stream::StreamWriter writer(memoryStream);
 				GetText(writer, skipNonTextContent);
-			}
-
-			memoryStream.SeekFromBegin(0);
-			stream::StreamReader reader(memoryStream);
-			return reader.ReadToEnd();
+			});
 		}
 
 		void DocumentParagraphRun::GetText(stream::TextWriter& writer, bool skipNonTextContent)
@@ -343,15 +339,10 @@ DocumentModel
 
 		WString DocumentModel::GetText(bool skipNonTextContent)
 		{
-			stream::MemoryStream memoryStream;
+			return GenerateToStream([&](StreamWriter& writer)
 			{
-				stream::StreamWriter writer(memoryStream);
 				GetText(writer, skipNonTextContent);
-			}
-
-			memoryStream.SeekFromBegin(0);
-			stream::StreamReader reader(memoryStream);
-			return reader.ReadToEnd();
+			});
 		}
 
 		void DocumentModel::GetText(stream::TextWriter& writer, bool skipNonTextContent)

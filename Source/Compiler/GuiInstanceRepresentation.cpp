@@ -980,18 +980,10 @@ GuiInstanceStyle
 
 			auto attPath = MakePtr<XmlAttribute>();
 			attPath->name.value = L"ref.Path";
+			attPath->value.value = GenerateToStream([&](StreamWriter& writer)
 			{
-				MemoryStream stream;
-				{
-					StreamWriter writer(stream);
-					GuiIqPrint(query, writer);
-				}
-				stream.SeekFromBegin(0);
-				{
-					StreamReader reader(stream);
-					attPath->value.value = reader.ReadToEnd();
-				}
-			}
+				GuiIqPrint(query, writer);
+			});
 			xmlStyle->attributes.Add(attPath);
 
 			setter->FillXml(xmlStyle);

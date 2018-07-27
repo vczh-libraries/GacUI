@@ -52,19 +52,10 @@ namespace vl
 					{
 						FOREACH_INDEXER(GuiInstanceCompiledWorkflow::ModuleRecord, moduleRecord, codeIndex, compiled->modules)
 						{
-							WString code;
+							WString code = GenerateToStream([&](StreamWriter& writer)
 							{
-								MemoryStream stream;
-								{
-									StreamWriter writer(stream);
-									WfPrint(moduleRecord.module, L"", writer);
-								}
-								stream.SeekFromBegin(0);
-								{
-									StreamReader reader(stream);
-									code = reader.ReadToEnd();
-								}
-							}
+								WfPrint(moduleRecord.module, L"", writer);
+							});
 							text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(compiled->modules.Count()) + L")================================\r\n";
 							text += code + L"\r\n";
 						}
@@ -232,11 +223,8 @@ namespace vl
 			bool compress,
 			const filesystem::FilePath& filePath)
 		{
-			WString code;
-			MemoryStream stream;
+			WString code = GenerateToStream([&](StreamWriter& writer)
 			{
-				StreamWriter writer(stream);
-
 				writer.WriteLine(L"#include \"" + cppOutput->entryFileName + L".h\"");
 				writer.WriteLine(L"");
 				writer.WriteLine(L"namespace vl");
@@ -296,12 +284,7 @@ namespace vl
 				writer.WriteLine(L"\t\t}");
 				writer.WriteLine(L"\t}");
 				writer.WriteLine(L"}");
-			}
-			stream.SeekFromBegin(0);
-			{
-				StreamReader reader(stream);
-				code = reader.ReadToEnd();
-			}
+			});
 
 			File file(filePath);
 			if (file.Exists())

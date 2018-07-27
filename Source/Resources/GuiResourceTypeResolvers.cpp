@@ -241,19 +241,12 @@ Xml Type Resolver (Xml)
 			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
 				auto obj = content.Cast<XmlDocument>();
-				MemoryStream buffer;
+				WString text = GenerateToStream([&](StreamWriter& writer)
 				{
-					StreamWriter writer(buffer);
 					XmlPrint(obj, writer);
-				}
-				{
-					buffer.SeekFromBegin(0);
-					StreamReader reader(buffer);
-					WString text = reader.ReadToEnd();
-
-					stream::internal::ContextFreeWriter writer(stream);
-					writer << text;
-				}
+				});
+				stream::internal::ContextFreeWriter writer(stream);
+				writer << text;
 			}
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
