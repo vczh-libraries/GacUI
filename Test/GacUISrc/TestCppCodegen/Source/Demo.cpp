@@ -29,7 +29,6 @@ https://github.com/vczh-libraries
 #define GLOBAL_SYMBOL ::vl_workflow_global::Demo::
 #define GLOBAL_NAME ::vl_workflow_global::Demo::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::Demo::Instance()
-#define USERIMPL(...)
 
 /***********************************************************************
 Global Variables
@@ -11404,6 +11403,55 @@ namespace demo
 	}
 
 /***********************************************************************
+Class (::demo::AnimationTabPage)
+***********************************************************************/
+
+	::vl::Ptr<::vl::presentation::controls::IGuiAnimation> AnimationTabPage::BallAnimation(::vl::presentation::compositions::GuiBoundsComposition* container, ::vl::presentation::compositions::GuiBoundsComposition* ball)
+	{
+		return ::vl::presentation::controls::IGuiAnimation::CreateAnimation(LAMBDA(::vl_workflow_global::__vwsnf64_Demo_demo_AnimationTabPage_BallAnimation_(ball, container)), static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(2000)));
+	}
+
+	::vl::Ptr<::vl::presentation::controls::IGuiAnimation> AnimationTabPage::BallAnimationWithDelay(::vl::presentation::compositions::GuiBoundsComposition* container, ::vl::presentation::compositions::GuiBoundsComposition* ball, ::vl::vint32_t delay)
+	{
+		return ::vl::presentation::controls::IGuiAnimationCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf65_Demo_demo_AnimationTabPage_BallAnimationWithDelay_(ball, container, delay)));
+	}
+
+	::vl::Ptr<::vl::presentation::controls::IGuiAnimation> AnimationTabPage::WaitingAnimation(::vl::presentation::compositions::GuiBoundsComposition* container)
+	{
+		return ::vl::presentation::controls::IGuiAnimationCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf66_Demo_demo_AnimationTabPage_WaitingAnimation_(container)));
+	}
+
+	void AnimationTabPage::PerformGradientAnimation(::vl::Ptr<::demo::ColorDef> target)
+	{
+		this->KillAnimation(this->lastGradientAnimation);
+		(this->lastGradientAnimation = ::vl::__vwsn::This(this->gradientColorDef.Obj())->CreateAnimation(target, static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(500))));
+		this->AddAnimation(this->lastGradientAnimation);
+	}
+
+	AnimationTabPage::AnimationTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+		, gradientColorDef(::vl::Ptr<::demo::ColorAnimation>(new ::demo::ColorAnimation(::demo::ColorDef::Dark())))
+		, lastGradientAnimation(::vl::Ptr<::vl::presentation::controls::IGuiAnimation>())
+		, counter(static_cast<::vl::vint32_t>(0))
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::AnimationTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_AnimationTabPage_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void AnimationTabPage::__vwsn_instance_ctor_()
+	{
+		::vl::__vwsn::This(this->self)->AddAnimation(::demo::AnimationTabPage::WaitingAnimation(this->animationBackground));
+	}
+
+	AnimationTabPage::~AnimationTabPage()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::CategoryDisplayerConstructor)
 ***********************************************************************/
 
@@ -11508,6 +11556,38 @@ Class (::demo::CategoryDisplayerConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::CategoryDisplayer)
+***********************************************************************/
+
+	::demo::MyCategory CategoryDisplayer::GetCategory()
+	{
+		return this->__vwsn_prop_Category;
+	}
+	void CategoryDisplayer::SetCategory(::demo::MyCategory __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Category != __vwsn_value_))
+		{
+			(this->__vwsn_prop_Category = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->CategoryChanged)();
+		}
+	}
+
+	CategoryDisplayer::CategoryDisplayer()
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_Category(::demo::MyCategory::Black)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::CategoryDisplayer", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_CategoryDisplayer_Initialize(this);
+	}
+
+	CategoryDisplayer::~CategoryDisplayer()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::CategoryEditorConstructor)
 ***********************************************************************/
 
@@ -11563,6 +11643,24 @@ Class (::demo::CategoryEditorConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::CategoryEditor)
+***********************************************************************/
+
+	CategoryEditor::CategoryEditor()
+		: items((::vl::__vwsn::CreateList().Add(::demo::MyCategory::Black).Add(::demo::MyCategory::Red).Add(::demo::MyCategory::Lime).Add(::demo::MyCategory::Blue).Add(::demo::MyCategory::White)).list)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::CategoryEditor", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_CategoryEditor_Initialize(this);
+	}
+
+	CategoryEditor::~CategoryEditor()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::CategoryItemTemplateConstructor)
 ***********************************************************************/
 
@@ -11600,6 +11698,30 @@ Class (::demo::CategoryItemTemplateConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::CategoryItemTemplate)
+***********************************************************************/
+
+	::demo::MyCategory CategoryItemTemplate::GetSelectedCategory()
+	{
+		return this->__vwsn_parameter_SelectedCategory;
+	}
+
+	CategoryItemTemplate::CategoryItemTemplate(::demo::MyCategory __vwsn_ctor_parameter_SelectedCategory)
+		: __vwsn_parameter_SelectedCategory(static_cast<::demo::MyCategory>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0))))
+	{
+		(this->__vwsn_parameter_SelectedCategory = __vwsn_ctor_parameter_SelectedCategory);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::CategoryItemTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_CategoryItemTemplate_Initialize(this);
+	}
+
+	CategoryItemTemplate::~CategoryItemTemplate()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::CategoryVisualizerConstructor)
 ***********************************************************************/
 
@@ -11631,6 +11753,23 @@ Class (::demo::CategoryVisualizerConstructor)
 		, __vwsn_precompile_0(static_cast<::demo::CategoryDisplayer*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
+	}
+
+/***********************************************************************
+Class (::demo::CategoryVisualizer)
+***********************************************************************/
+
+	CategoryVisualizer::CategoryVisualizer()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::CategoryVisualizer", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_CategoryVisualizer_Initialize(this);
+	}
+
+	CategoryVisualizer::~CategoryVisualizer()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
 	}
 
 /***********************************************************************
@@ -12229,6 +12368,45 @@ Class (::demo::DataGridTabPageConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::DataGridTabPage)
+***********************************************************************/
+
+	DataGridTabPage::DataGridTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::DataGridTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_DataGridTabPage_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void DataGridTabPage::__vwsn_instance_ctor_()
+	{
+		auto tempData = (::vl::__vwsn::CreateObservableList().Add(::vl::Ptr<::demo::MyDataItem>(new ::demo::MyDataItem(::vl::WString(L"涼宮 春日", false), ::demo::MyGender::Female, ::demo::MyCategory::Lime, ::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString(L"1988-08-08 00:00:00.000", false)), ::vl::WString(L"http://www.haruhi.tv/", false)))).Add(::vl::Ptr<::demo::MyDataItem>(new ::demo::MyDataItem(::vl::WString(L"キョン", false), ::demo::MyGender::Male, ::demo::MyCategory::Black, ::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString(L"1988-08-08 00:00:00.000", false)), ::vl::WString(L"http://www.haruhi.tv/", false)))).Add(::vl::Ptr<::demo::MyDataItem>(new ::demo::MyDataItem(::vl::WString(L"长门 有希", false), ::demo::MyGender::Female, ::demo::MyCategory::White, ::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString(L"2000-08-06 00:00:00.000", false)), ::vl::WString(L"http://www.haruhi.tv/", false)))).Add(::vl::Ptr<::demo::MyDataItem>(new ::demo::MyDataItem(::vl::WString(L"朝比奈 实玖瑠", false), ::demo::MyGender::Female, ::demo::MyCategory::Red, ::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString(L"1987-08-30 00:00:00.000", false)), ::vl::WString(L"http://www.haruhi.tv/", false)))).Add(::vl::Ptr<::demo::MyDataItem>(new ::demo::MyDataItem(::vl::WString(L"古泉 一树", false), ::demo::MyGender::Male, ::demo::MyCategory::Blue, ::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString(L"1986-08-12 00:00:00.000", false)), ::vl::WString(L"http://www.haruhi.tv/", false))))).list;
+		auto largeImage = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(this->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Task", false), true).Obj()));
+		auto smallImage = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(this->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Task", false), true).Obj()));
+		{
+			auto __vwsn_for_enumerable_item = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(tempData);
+			auto __vwsn_for_enumerator_item = ::vl::__vwsn::This(__vwsn_for_enumerable_item.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->Next())
+			{
+				auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->GetCurrent());
+				{
+					::vl::__vwsn::This(item.Obj())->SetLargeImage(largeImage);
+					::vl::__vwsn::This(item.Obj())->SetSmallImage(smallImage);
+				}
+			}
+		}
+		::vl::__vwsn::This(this->dataGrid)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(tempData));
+	}
+
+	DataGridTabPage::~DataGridTabPage()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::DateEditorConstructor)
 ***********************************************************************/
 
@@ -12265,6 +12443,23 @@ Class (::demo::DateEditorConstructor)
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, comboBox(static_cast<::vl::presentation::controls::GuiDateComboBox*>(nullptr))
 	{
+	}
+
+/***********************************************************************
+Class (::demo::DateEditor)
+***********************************************************************/
+
+	DateEditor::DateEditor()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::DateEditor", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_DateEditor_Initialize(this);
+	}
+
+	DateEditor::~DateEditor()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
 	}
 
 /***********************************************************************
@@ -12408,6 +12603,49 @@ Class (::demo::DateFilterConstructor)
 		, checkTo(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, dateTo(static_cast<::vl::presentation::controls::GuiDateComboBox*>(nullptr))
 	{
+	}
+
+/***********************************************************************
+Class (::demo::DateFilter)
+***********************************************************************/
+
+	void DateFilter::UpdateFilter()
+	{
+		if ((this->callback != nullptr))
+		{
+			::vl::__vwsn::This(this->callback)->OnProcessorChanged();
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::controls::list::IDataFilter> DateFilter::GetFilter()
+	{
+		return this->__vwsn_prop_Filter;
+	}
+	void DateFilter::SetFilter(::vl::Ptr<::vl::presentation::controls::list::IDataFilter> __vwsn_value_)
+	{
+		(this->__vwsn_prop_Filter = __vwsn_value_);
+	}
+
+	DateFilter::DateFilter()
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+		, callback(static_cast<::vl::presentation::controls::list::IDataProcessorCallback*>(nullptr))
+		, __vwsn_prop_Filter(::vl::Ptr<::vl::presentation::controls::list::IDataFilter>())
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::DateFilter", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_DateFilter_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void DateFilter::__vwsn_instance_ctor_()
+	{
+		this->SetFilter(::vl::Ptr<::vl::presentation::controls::list::IDataFilter>(new ::vl_workflow_global::__vwsnc19_Demo_demo_DateFilter___vwsn_instance_ctor___vl_presentation_controls_list_IDataFilter(this)));
+	}
+
+	DateFilter::~DateFilter()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
 	}
 
 /***********************************************************************
@@ -14256,6 +14494,162 @@ Class (::demo::DocumentEditorRibbonConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::DocumentEditorRibbon)
+***********************************************************************/
+
+	bool DocumentEditorRibbon::GetAlignLeftSelected()
+	{
+		return this->__vwsn_prop_AlignLeftSelected;
+	}
+	void DocumentEditorRibbon::SetAlignLeftSelected(bool __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_AlignLeftSelected != __vwsn_value_))
+		{
+			(this->__vwsn_prop_AlignLeftSelected = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->AlignLeftSelectedChanged)();
+		}
+	}
+
+	bool DocumentEditorRibbon::GetAlignCenterSelected()
+	{
+		return this->__vwsn_prop_AlignCenterSelected;
+	}
+	void DocumentEditorRibbon::SetAlignCenterSelected(bool __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_AlignCenterSelected != __vwsn_value_))
+		{
+			(this->__vwsn_prop_AlignCenterSelected = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->AlignCenterSelectedChanged)();
+		}
+	}
+
+	bool DocumentEditorRibbon::GetAlignRightSelected()
+	{
+		return this->__vwsn_prop_AlignRightSelected;
+	}
+	void DocumentEditorRibbon::SetAlignRightSelected(bool __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_AlignRightSelected != __vwsn_value_))
+		{
+			(this->__vwsn_prop_AlignRightSelected = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->AlignRightSelectedChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueList> DocumentEditorRibbon::GetStyleGroups()
+	{
+		return this->__vwsn_prop_StyleGroups;
+	}
+	void DocumentEditorRibbon::SetStyleGroups(::vl::Ptr<::vl::reflection::description::IValueList> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_StyleGroups.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_StyleGroups = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StyleGroupsChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueList> DocumentEditorRibbon::GenerateStyleGroups()
+	{
+		auto group1 = ::vl::Ptr<::demo::StyleGroup>(new ::demo::StyleGroup());
+		(::vl::__vwsn::This(group1.Obj())->Name = ::vl::WString(L"Headers", false));
+		::vl::__vwsn::This(::vl::__vwsn::This(group1.Obj())->Items.Obj())->Add(::vl::__vwsn::Box(::vl::Ptr<::demo::StyleItem>(new ::demo::StyleItem(::vl::WString(L"Header 1", false), [&](){ ::vl::presentation::DocumentFontSize __vwsn_temp__; __vwsn_temp__.size = static_cast<double>(2); __vwsn_temp__.relative = true; return __vwsn_temp__; }(), ::vl::Nullable<::vl::presentation::Color>(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FF8000", false))), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>()))));
+		::vl::__vwsn::This(::vl::__vwsn::This(group1.Obj())->Items.Obj())->Add(::vl::__vwsn::Box(::vl::Ptr<::demo::StyleItem>(new ::demo::StyleItem(::vl::WString(L"Header 2", false), [&](){ ::vl::presentation::DocumentFontSize __vwsn_temp__; __vwsn_temp__.size = static_cast<double>(1.6); __vwsn_temp__.relative = true; return __vwsn_temp__; }(), ::vl::Nullable<::vl::presentation::Color>(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FF8000", false))), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>()))));
+		::vl::__vwsn::This(::vl::__vwsn::This(group1.Obj())->Items.Obj())->Add(::vl::__vwsn::Box(::vl::Ptr<::demo::StyleItem>(new ::demo::StyleItem(::vl::WString(L"Header 3", false), [&](){ ::vl::presentation::DocumentFontSize __vwsn_temp__; __vwsn_temp__.size = static_cast<double>(1.3); __vwsn_temp__.relative = true; return __vwsn_temp__; }(), ::vl::Nullable<::vl::presentation::Color>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>()))));
+		auto group2 = ::vl::Ptr<::demo::StyleGroup>(new ::demo::StyleGroup());
+		(::vl::__vwsn::This(group2.Obj())->Name = ::vl::WString(L"Content", false));
+		::vl::__vwsn::This(::vl::__vwsn::This(group2.Obj())->Items.Obj())->Add(::vl::__vwsn::Box(::vl::Ptr<::demo::StyleItem>(new ::demo::StyleItem(::vl::WString(L"Strong", false), ::vl::Nullable<::vl::presentation::DocumentFontSize>(), ::vl::Nullable<::vl::presentation::Color>(), ::vl::Nullable<bool>(true), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>()))));
+		::vl::__vwsn::This(::vl::__vwsn::This(group2.Obj())->Items.Obj())->Add(::vl::__vwsn::Box(::vl::Ptr<::demo::StyleItem>(new ::demo::StyleItem(::vl::WString(L"Quote", false), ::vl::Nullable<::vl::presentation::DocumentFontSize>(), ::vl::Nullable<::vl::presentation::Color>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(true), ::vl::Nullable<bool>(), ::vl::Nullable<bool>()))));
+		::vl::__vwsn::This(::vl::__vwsn::This(group2.Obj())->Items.Obj())->Add(::vl::__vwsn::Box(::vl::Ptr<::demo::StyleItem>(new ::demo::StyleItem(::vl::WString(L"Emphasis", false), ::vl::Nullable<::vl::presentation::DocumentFontSize>(), ::vl::Nullable<::vl::presentation::Color>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(true), ::vl::Nullable<bool>(true), ::vl::Nullable<bool>()))));
+		::vl::__vwsn::This(::vl::__vwsn::This(group2.Obj())->Items.Obj())->Add(::vl::__vwsn::Box(::vl::Ptr<::demo::StyleItem>(new ::demo::StyleItem(::vl::WString(L"Intense Emphasis", false), ::vl::Nullable<::vl::presentation::DocumentFontSize>(), ::vl::Nullable<::vl::presentation::Color>(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#8080FF", false))), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(true), ::vl::Nullable<bool>(true), ::vl::Nullable<bool>()))));
+		::vl::__vwsn::This(::vl::__vwsn::This(group2.Obj())->Items.Obj())->Add(::vl::__vwsn::Box(::vl::Ptr<::demo::StyleItem>(new ::demo::StyleItem(::vl::WString(L"Deleted", false), ::vl::Nullable<::vl::presentation::DocumentFontSize>(), ::vl::Nullable<::vl::presentation::Color>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(), ::vl::Nullable<bool>(true)))));
+		auto styles = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(this->document)->GetDocument().Obj())->styles);
+		{
+			auto __vwsn_for_enumerable_styleItem = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(group1.Obj())->Items);
+			auto __vwsn_for_enumerator_styleItem = ::vl::__vwsn::This(__vwsn_for_enumerable_styleItem.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_styleItem.Obj())->Next())
+			{
+				auto styleItem = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::StyleItem>>(::vl::__vwsn::This(__vwsn_for_enumerator_styleItem.Obj())->GetCurrent());
+				{
+					::vl::__vwsn::This(styles.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(styleItem.Obj())->Name), ::vl::__vwsn::Box(::vl::__vwsn::This(styleItem.Obj())->Style));
+				}
+			}
+		}
+		{
+			auto __vwsn_for_enumerable_styleItem = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(group2.Obj())->Items);
+			auto __vwsn_for_enumerator_styleItem = ::vl::__vwsn::This(__vwsn_for_enumerable_styleItem.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_styleItem.Obj())->Next())
+			{
+				auto styleItem = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::StyleItem>>(::vl::__vwsn::This(__vwsn_for_enumerator_styleItem.Obj())->GetCurrent());
+				{
+					::vl::__vwsn::This(styles.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(styleItem.Obj())->Name), ::vl::__vwsn::Box(::vl::__vwsn::This(styleItem.Obj())->Style));
+				}
+			}
+		}
+		return (::vl::__vwsn::CreateList().Add(group1).Add(group2)).list;
+	}
+
+	void DocumentEditorRibbon::SelectStyleName(const ::vl::Nullable<::vl::WString>& styleName)
+	{
+		if (static_cast<bool>(styleName))
+		{
+			{
+				auto __vwsn_for_begin_groupIndex = static_cast<::vl::vint32_t>(0);
+				auto __vwsn_for_end_groupIndex = (::vl::__vwsn::This(this->GetStyleGroups().Obj())->GetCount() - static_cast<::vl::vint32_t>(1));
+				auto groupIndex = __vwsn_for_begin_groupIndex;
+				while ((groupIndex <= __vwsn_for_end_groupIndex))
+				{
+					{
+						auto group = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::StyleGroup>>(::vl::__vwsn::This(this->GetStyleGroups().Obj())->Get(groupIndex));
+						{
+							auto __vwsn_for_begin_itemIndex = static_cast<::vl::vint32_t>(0);
+							auto __vwsn_for_end_itemIndex = (::vl::__vwsn::This(::vl::__vwsn::This(group.Obj())->Items.Obj())->GetCount() - static_cast<::vl::vint32_t>(1));
+							auto itemIndex = __vwsn_for_begin_itemIndex;
+							while ((itemIndex <= __vwsn_for_end_itemIndex))
+							{
+								{
+									if ((::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::demo::StyleItem>>(::vl::__vwsn::This(::vl::__vwsn::This(group.Obj())->Items.Obj())->Get(itemIndex)).Obj())->Name == styleName.Value()))
+									{
+										::vl::__vwsn::This(this->styleGallery)->SelectItem(::vl::__vwsn::This(this->styleGallery)->GalleryPosToIndex([&](){ ::vl::presentation::controls::GalleryPos __vwsn_temp__; __vwsn_temp__.group = groupIndex; __vwsn_temp__.item = itemIndex; return __vwsn_temp__; }()));
+										return;
+									}
+								}
+								(itemIndex = (itemIndex + static_cast<::vl::vint32_t>(1)));
+							}
+						}
+					}
+					(groupIndex = (groupIndex + static_cast<::vl::vint32_t>(1)));
+				}
+			}
+		}
+		::vl::__vwsn::This(this->styleGallery)->SelectItem((- static_cast<::vl::vint32_t>(1)));
+	}
+
+	DocumentEditorRibbon::DocumentEditorRibbon()
+		: __vwsn_prop_AlignLeftSelected(true)
+		, __vwsn_prop_AlignCenterSelected(true)
+		, __vwsn_prop_AlignRightSelected(true)
+		, __vwsn_prop_StyleGroups(::vl::Ptr<::vl::reflection::description::IValueList>())
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::DocumentEditorRibbon", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_DocumentEditorRibbon_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void DocumentEditorRibbon::__vwsn_instance_ctor_()
+	{
+		this->SetStyleGroups(this->GenerateStyleGroups());
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->document)->SelectionChanged, LAMBDA(::vl_workflow_global::__vwsnf171_Demo_demo_DocumentEditorRibbon___vwsn_instance_ctor__(this)));
+	}
+
+	DocumentEditorRibbon::~DocumentEditorRibbon()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::DocumentEditorToolstripConstructor)
 ***********************************************************************/
 
@@ -15078,6 +15472,23 @@ Class (::demo::DocumentEditorToolstripConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::DocumentEditorToolstrip)
+***********************************************************************/
+
+	DocumentEditorToolstrip::DocumentEditorToolstrip()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::DocumentEditorToolstrip", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_DocumentEditorToolstrip_Initialize(this);
+	}
+
+	DocumentEditorToolstrip::~DocumentEditorToolstrip()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::ElementTabPageConstructor)
 ***********************************************************************/
 
@@ -15575,6 +15986,24 @@ Class (::demo::ElementTabPageConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::ElementTabPage)
+***********************************************************************/
+
+	ElementTabPage::ElementTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ElementTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_ElementTabPage_Initialize(this);
+	}
+
+	ElementTabPage::~ElementTabPage()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::EnglishNumbersControllerConstructor)
 ***********************************************************************/
 
@@ -15763,6 +16192,193 @@ Class (::demo::EnglishNumbersControllerConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::EnglishNumbersController)
+***********************************************************************/
+
+	::vl::Ptr<::vl::reflection::description::IValueObservableList> EnglishNumbersController::GetItemsToBind()
+	{
+		return this->__vwsn_prop_ItemsToBind;
+	}
+	void EnglishNumbersController::SetItemsToBind(::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsn_value_)
+	{
+		(this->__vwsn_prop_ItemsToBind = __vwsn_value_);
+	}
+
+	::vl::WString EnglishNumbersController::ToText_1to9(::vl::vint32_t i)
+	{
+		{
+			auto __vwsn_switch_4 = i;
+			if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(1)))
+			{
+				return ::vl::WString(L"one", false);
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(2)))
+			{
+				return ::vl::WString(L"two", false);
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(3)))
+			{
+				return ::vl::WString(L"three", false);
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(4)))
+			{
+				return ::vl::WString(L"four", false);
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(5)))
+			{
+				return ::vl::WString(L"five", false);
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(6)))
+			{
+				return ::vl::WString(L"six", false);
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(7)))
+			{
+				return ::vl::WString(L"seven", false);
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(8)))
+			{
+				return ::vl::WString(L"eight", false);
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(9)))
+			{
+				return ::vl::WString(L"nine", false);
+			}
+		}
+		throw ::vl::Exception(::vl::WString(L"ToText_1to9: Number out of range.", false));
+	}
+
+	::vl::WString EnglishNumbersController::ToText_11to19(::vl::vint32_t i)
+	{
+		{
+			auto __vwsn_switch_5 = i;
+			if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(1)))
+			{
+				return ::vl::WString(L"eleven", false);
+			}
+			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(2)))
+			{
+				return ::vl::WString(L"twelve", false);
+			}
+			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(3)))
+			{
+				return ::vl::WString(L"thirteen", false);
+			}
+			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(4)))
+			{
+				return ::vl::WString(L"fourteen", false);
+			}
+			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(5)))
+			{
+				return ::vl::WString(L"fifteen", false);
+			}
+			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(6)))
+			{
+				return ::vl::WString(L"sixteen", false);
+			}
+			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(7)))
+			{
+				return ::vl::WString(L"seventeen", false);
+			}
+			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(8)))
+			{
+				return ::vl::WString(L"eightteen", false);
+			}
+			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(9)))
+			{
+				return ::vl::WString(L"nineteen", false);
+			}
+		}
+		throw ::vl::Exception(::vl::WString(L"ToText_11to19: Number out of range.", false));
+	}
+
+	::vl::WString EnglishNumbersController::NumberToText_1To99(::vl::vint32_t i)
+	{
+		{
+			auto __vwsn_switch_6 = (i / static_cast<::vl::vint32_t>(10));
+			if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(0)))
+			{
+				return this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)));
+			}
+			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(1)))
+			{
+				return ((i == static_cast<::vl::vint32_t>(10)) ? ::vl::WString(L"ten", false) : this->ToText_11to19((i % static_cast<::vl::vint32_t>(10))));
+			}
+			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(2)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"twenty", false) : (::vl::WString(L"twenty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(3)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"thirty", false) : (::vl::WString(L"thirty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(4)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"fourty", false) : (::vl::WString(L"fourty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(5)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"fifty", false) : (::vl::WString(L"fifty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(6)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"sixty", false) : (::vl::WString(L"sixty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(7)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"seventy", false) : (::vl::WString(L"seventy-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(8)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"eighty", false) : (::vl::WString(L"eighty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(9)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"ninety", false) : (::vl::WString(L"ninety-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+		}
+		throw ::vl::Exception(::vl::WString(L"NumberToText_1To99: Number out of range.", false));
+	}
+
+	::vl::WString EnglishNumbersController::NumberToText_0to999(::vl::vint32_t i)
+	{
+		if ((i < static_cast<::vl::vint32_t>(100)))
+		{
+			return this->NumberToText_1To99(i);
+		}
+		return ((this->ToText_1to9((i / static_cast<::vl::vint32_t>(100))) + ::vl::WString(L" hundred", false)) + (((i % static_cast<::vl::vint32_t>(100)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"", false) : (::vl::WString(L" and ", false) + this->NumberToText_1To99((i % static_cast<::vl::vint32_t>(100))))));
+	}
+
+	::vl::WString EnglishNumbersController::NumberToText(::vl::vint32_t i)
+	{
+		if ((i == static_cast<::vl::vint32_t>(0)))
+		{
+			return ::vl::WString(L"zero", false);
+		}
+		if ((i < static_cast<::vl::vint32_t>(1000)))
+		{
+			return this->NumberToText_0to999(i);
+		}
+		return (::vl::WString(L"Number too large: ", false) + ::vl::__vwsn::ToString(i));
+	}
+
+	EnglishNumbersController::EnglishNumbersController()
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+		, counter(static_cast<::vl::vint32_t>(0))
+		, __vwsn_prop_ItemsToBind(::vl::reflection::description::IValueObservableList::Create())
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::EnglishNumbersController", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_EnglishNumbersController_Initialize(this);
+	}
+
+	EnglishNumbersController::~EnglishNumbersController()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::EnglishNumbersControllerTabPageConstructor)
 ***********************************************************************/
 
@@ -15823,6 +16439,51 @@ Class (::demo::EnglishNumbersControllerTabPageConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::EnglishNumbersControllerTabPage)
+***********************************************************************/
+
+	::vl::Ptr<::vl::reflection::description::IValueObservableList> EnglishNumbersControllerTabPage::GetItemsToBind()
+	{
+		return this->__vwsn_prop_ItemsToBind;
+	}
+	void EnglishNumbersControllerTabPage::SetItemsToBind(::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsn_value_)
+	{
+		(this->__vwsn_prop_ItemsToBind = __vwsn_value_);
+	}
+
+	::vl::presentation::compositions::GuiGraphicsComposition* EnglishNumbersControllerTabPage::GetContentComposition()
+	{
+		return this->__vwsn_prop_ContentComposition;
+	}
+	void EnglishNumbersControllerTabPage::SetContentComposition(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_value_)
+	{
+		(this->__vwsn_prop_ContentComposition = __vwsn_value_);
+	}
+
+	EnglishNumbersControllerTabPage::EnglishNumbersControllerTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_ItemsToBind(::vl::reflection::description::IValueObservableList::Create())
+		, __vwsn_prop_ContentComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::EnglishNumbersControllerTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_EnglishNumbersControllerTabPage_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void EnglishNumbersControllerTabPage::__vwsn_instance_ctor_()
+	{
+		this->SetItemsToBind(::vl::__vwsn::This(this->controller)->GetItemsToBind());
+		this->SetContentComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->content));
+	}
+
+	EnglishNumbersControllerTabPage::~EnglishNumbersControllerTabPage()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::GenderDisplayerConstructor)
 ***********************************************************************/
 
@@ -15861,6 +16522,38 @@ Class (::demo::GenderDisplayerConstructor)
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>())
 	{
+	}
+
+/***********************************************************************
+Class (::demo::GenderDisplayer)
+***********************************************************************/
+
+	::demo::MyGender GenderDisplayer::GetGender()
+	{
+		return this->__vwsn_prop_Gender;
+	}
+	void GenderDisplayer::SetGender(::demo::MyGender __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Gender != __vwsn_value_))
+		{
+			(this->__vwsn_prop_Gender = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->GenderChanged)();
+		}
+	}
+
+	GenderDisplayer::GenderDisplayer()
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_Gender(::demo::MyGender::Male)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderDisplayer", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_GenderDisplayer_Initialize(this);
+	}
+
+	GenderDisplayer::~GenderDisplayer()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
 	}
 
 /***********************************************************************
@@ -15919,6 +16612,24 @@ Class (::demo::GenderEditorConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::GenderEditor)
+***********************************************************************/
+
+	GenderEditor::GenderEditor()
+		: items((::vl::__vwsn::CreateList().Add(::demo::MyGender::Male).Add(::demo::MyGender::Female)).list)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderEditor", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_GenderEditor_Initialize(this);
+	}
+
+	GenderEditor::~GenderEditor()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::GenderItemTemplateConstructor)
 ***********************************************************************/
 
@@ -15951,6 +16662,30 @@ Class (::demo::GenderItemTemplateConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::GenderItemTemplate)
+***********************************************************************/
+
+	::demo::MyGender GenderItemTemplate::GetSelectedGender()
+	{
+		return this->__vwsn_parameter_SelectedGender;
+	}
+
+	GenderItemTemplate::GenderItemTemplate(::demo::MyGender __vwsn_ctor_parameter_SelectedGender)
+		: __vwsn_parameter_SelectedGender(static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0))))
+	{
+		(this->__vwsn_parameter_SelectedGender = __vwsn_ctor_parameter_SelectedGender);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderItemTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_GenderItemTemplate_Initialize(this);
+	}
+
+	GenderItemTemplate::~GenderItemTemplate()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::GenderVisualizerConstructor)
 ***********************************************************************/
 
@@ -15977,6 +16712,23 @@ Class (::demo::GenderVisualizerConstructor)
 		, __vwsn_precompile_0(static_cast<::demo::GenderDisplayer*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
+	}
+
+/***********************************************************************
+Class (::demo::GenderVisualizer)
+***********************************************************************/
+
+	GenderVisualizer::GenderVisualizer()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderVisualizer", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_GenderVisualizer_Initialize(this);
+	}
+
+	GenderVisualizer::~GenderVisualizer()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
 	}
 
 /***********************************************************************
@@ -16156,6 +16908,38 @@ Class (::demo::HyperlinkWindowConstructor)
 		, __vwsn_precompile_13(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, textUrl(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
 	{
+	}
+
+/***********************************************************************
+Class (::demo::HyperlinkWindow)
+***********************************************************************/
+
+	::vl::Nullable<::vl::WString> HyperlinkWindow::GetUrl()
+	{
+		return this->__vwsn_prop_Url;
+	}
+	void HyperlinkWindow::SetUrl(const ::vl::Nullable<::vl::WString>& __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Url != __vwsn_value_))
+		{
+			(this->__vwsn_prop_Url = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->UrlChanged)();
+		}
+	}
+
+	HyperlinkWindow::HyperlinkWindow()
+		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
+		, __vwsn_prop_Url(::vl::Nullable<::vl::WString>())
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::HyperlinkWindow", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_HyperlinkWindow_Initialize(this);
+	}
+
+	HyperlinkWindow::~HyperlinkWindow()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
 	}
 
 /***********************************************************************
@@ -16464,6 +17248,33 @@ Class (::demo::ListViewTabPageConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::ListViewTabPage)
+***********************************************************************/
+
+	ListViewTabPage::ListViewTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ListViewTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_ListViewTabPage_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void ListViewTabPage::__vwsn_instance_ctor_()
+	{
+		GLOBAL_NAME LoadListView(static_cast<::vl::presentation::controls::GuiInstanceRootObject*>(this), LAMBDA(::vl_workflow_global::__vwsnf37_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(this)));
+		auto itemsToBind = ::vl::reflection::description::IValueObservableList::Create();
+		GLOBAL_NAME LoadListView(static_cast<::vl::presentation::controls::GuiInstanceRootObject*>(this), LAMBDA(::vl_workflow_global::__vwsnf38_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(itemsToBind, this)));
+		::vl::__vwsn::This(this->bindableListView)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(itemsToBind));
+	}
+
+	ListViewTabPage::~ListViewTabPage()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::LocalizedStringsTabPageConstructor)
 ***********************************************************************/
 
@@ -16748,6 +17559,61 @@ Class (::demo::LocalizedStringsTabPageConstructor)
 		, comboLocales(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
 		, listLocales(static_cast<::vl::presentation::controls::GuiTextList*>(nullptr))
 	{
+	}
+
+/***********************************************************************
+Class (::demo::LocalizedStringsTabPage)
+***********************************************************************/
+
+	::vl::vint32_t LocalizedStringsTabPage::GetLocaleIndex(::vl::Locale locale)
+	{
+		{
+			auto __vwsn_for_begin_i = (static_cast<::vl::vint32_t>(0) + static_cast<::vl::vint32_t>(1));
+			auto __vwsn_for_end_i = (::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->listLocales)->GetItems()).Obj())->GetCount() - static_cast<::vl::vint32_t>(1));
+			auto i = __vwsn_for_begin_i;
+			while ((i <= __vwsn_for_end_i))
+			{
+				{
+					if ((::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::TextItem>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->listLocales)->GetItems()).Obj())->Get(i)).Obj())->GetText() == ::vl::__vwsn::ToString(locale)))
+					{
+						return i;
+					}
+				}
+				(i = (i + static_cast<::vl::vint32_t>(1)));
+			}
+		}
+		return static_cast<::vl::vint32_t>(0);
+	}
+
+	::vl::Ptr<::demo::IStringResourceStrings> LocalizedStringsTabPage::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void LocalizedStringsTabPage::SetStrings(::vl::Ptr<::demo::IStringResourceStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	LocalizedStringsTabPage::LocalizedStringsTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+		, dateTime(::vl::reflection::description::Sys::GetLocalTime())
+		, number(static_cast<::vl::vint32_t>(2147483647))
+		, currency(static_cast<double>(1342177.28))
+		, __vwsn_prop_Strings(::vl::Ptr<::demo::IStringResourceStrings>())
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::LocalizedStringsTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_LocalizedStringsTabPage_Initialize(this);
+	}
+
+	LocalizedStringsTabPage::~LocalizedStringsTabPage()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
 	}
 
 /***********************************************************************
@@ -17201,6 +18067,30 @@ Class (::demo::RepeatItemTemplateConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::RepeatItemTemplate)
+***********************************************************************/
+
+	::vl::Ptr<::demo::MyTextItem> RepeatItemTemplate::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	RepeatItemTemplate::RepeatItemTemplate(::vl::Ptr<::demo::MyTextItem> __vwsn_ctor_parameter_ViewModel)
+		: __vwsn_parameter_ViewModel(::vl::Ptr<::demo::MyTextItem>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::RepeatItemTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_RepeatItemTemplate_Initialize(this);
+	}
+
+	RepeatItemTemplate::~RepeatItemTemplate()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::RepeatTabPageConstructor)
 ***********************************************************************/
 
@@ -17568,6 +18458,24 @@ Class (::demo::RepeatTabPageConstructor)
 		, __vwsn_precompile_27(static_cast<::vl::presentation::controls::GuiScroll*>(nullptr))
 		, __vwsn_precompile_28(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
+	}
+
+/***********************************************************************
+Class (::demo::RepeatTabPage)
+***********************************************************************/
+
+	RepeatTabPage::RepeatTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::RepeatTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_RepeatTabPage_Initialize(this);
+	}
+
+	RepeatTabPage::~RepeatTabPage()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
 	}
 
 /***********************************************************************
@@ -17945,6 +18853,24 @@ Class (::demo::ResponsiveGroupControlConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::ResponsiveGroupControl)
+***********************************************************************/
+
+	ResponsiveGroupControl::ResponsiveGroupControl()
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ResponsiveGroupControl", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_ResponsiveGroupControl_Initialize(this);
+	}
+
+	ResponsiveGroupControl::~ResponsiveGroupControl()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::ResponsiveStackControlConstructor)
 ***********************************************************************/
 
@@ -18319,6 +19245,24 @@ Class (::demo::ResponsiveStackControlConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::ResponsiveStackControl)
+***********************************************************************/
+
+	ResponsiveStackControl::ResponsiveStackControl()
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ResponsiveStackControl", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_ResponsiveStackControl_Initialize(this);
+	}
+
+	ResponsiveStackControl::~ResponsiveStackControl()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::ResponsiveTabPageConstructor)
 ***********************************************************************/
 
@@ -18451,6 +19395,24 @@ Class (::demo::ResponsiveTabPageConstructor)
 		, __vwsn_precompile_14(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_15(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
+	}
+
+/***********************************************************************
+Class (::demo::ResponsiveTabPage)
+***********************************************************************/
+
+	ResponsiveTabPage::ResponsiveTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ResponsiveTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_ResponsiveTabPage_Initialize(this);
+	}
+
+	ResponsiveTabPage::~ResponsiveTabPage()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
 	}
 
 /***********************************************************************
@@ -18849,6 +19811,24 @@ Class (::demo::ResponsiveViewControlConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::ResponsiveViewControl)
+***********************************************************************/
+
+	ResponsiveViewControl::ResponsiveViewControl()
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ResponsiveViewControl", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_ResponsiveViewControl_Initialize(this);
+	}
+
+	ResponsiveViewControl::~ResponsiveViewControl()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::SharedSizeItemTemplateConstructor)
 ***********************************************************************/
 
@@ -18896,6 +19876,30 @@ Class (::demo::SharedSizeItemTemplateConstructor)
 		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, ViewModel(::vl::Ptr<::demo::MyTextItem>())
 	{
+	}
+
+/***********************************************************************
+Class (::demo::SharedSizeItemTemplate)
+***********************************************************************/
+
+	::vl::Ptr<::demo::MyTextItem> SharedSizeItemTemplate::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	SharedSizeItemTemplate::SharedSizeItemTemplate(::vl::Ptr<::demo::MyTextItem> __vwsn_ctor_parameter_ViewModel)
+		: __vwsn_parameter_ViewModel(::vl::Ptr<::demo::MyTextItem>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::SharedSizeItemTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_SharedSizeItemTemplate_Initialize(this);
+	}
+
+	SharedSizeItemTemplate::~SharedSizeItemTemplate()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
 	}
 
 /***********************************************************************
@@ -18949,6 +19953,30 @@ Class (::demo::SharedSizeTextItemTemplateConstructor)
 		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 		, ViewModel(::vl::Ptr<::demo::MyTextItem>())
 	{
+	}
+
+/***********************************************************************
+Class (::demo::SharedSizeTextItemTemplate)
+***********************************************************************/
+
+	::vl::Ptr<::demo::MyTextItem> SharedSizeTextItemTemplate::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	SharedSizeTextItemTemplate::SharedSizeTextItemTemplate(::vl::Ptr<::demo::MyTextItem> __vwsn_ctor_parameter_ViewModel)
+		: __vwsn_parameter_ViewModel(::vl::Ptr<::demo::MyTextItem>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::SharedSizeTextItemTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_SharedSizeTextItemTemplate_Initialize(this);
+	}
+
+	SharedSizeTextItemTemplate::~SharedSizeTextItemTemplate()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
 	}
 
 /***********************************************************************
@@ -19160,6 +20188,80 @@ Class (::demo::StyleItemTemplateConstructor)
 		, containerControl(static_cast<::vl::presentation::controls::GuiCustomControl*>(nullptr))
 		, styleLabel(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
+	}
+
+/***********************************************************************
+Class (::demo::StyleItemTemplate)
+***********************************************************************/
+
+	::vl::Ptr<::demo::StyleItem> StyleItemTemplate::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	StyleItemTemplate::StyleItemTemplate(::vl::Ptr<::demo::StyleItem> __vwsn_ctor_parameter_ViewModel)
+		: __vwsn_parameter_ViewModel(::vl::Ptr<::demo::StyleItem>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::StyleItemTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_StyleItemTemplate_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void StyleItemTemplate::__vwsn_instance_ctor_()
+	{
+		auto styles = ::vl::__vwsn::This(::vl::__vwsn::This(this->GetViewModel().Obj())->Style.Obj())->styles;
+		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->color))
+		{
+			::vl::__vwsn::This(this->styleLabel.Obj())->SetColor(::vl::__vwsn::This(styles.Obj())->color.Value());
+		}
+		auto font = ::vl::__vwsn::This(this->containerControl)->GetFont();
+		auto fontFamily = font.fontFamily;
+		auto bold = font.bold;
+		auto italic = font.italic;
+		auto underline = font.underline;
+		auto strikeline = font.strikeline;
+		auto size = font.size;
+		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->face))
+		{
+			(fontFamily = ::vl::__vwsn::This(styles.Obj())->face.Value());
+		}
+		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->bold))
+		{
+			(bold = ::vl::__vwsn::This(styles.Obj())->bold.Value());
+		}
+		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->italic))
+		{
+			(italic = ::vl::__vwsn::This(styles.Obj())->italic.Value());
+		}
+		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->underline))
+		{
+			(underline = ::vl::__vwsn::This(styles.Obj())->underline.Value());
+		}
+		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->strikeline))
+		{
+			(strikeline = ::vl::__vwsn::This(styles.Obj())->strikeline.Value());
+		}
+		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->size))
+		{
+			auto dsize = ::vl::__vwsn::This(styles.Obj())->size;
+			if (dsize.Value().relative)
+			{
+				(size = static_cast<::vl::vint32_t>(::vl::reflection::description::Math::Round((dsize.Value().size * static_cast<double>(font.size)))));
+			}
+			else
+			{
+				(size = static_cast<::vl::vint32_t>(::vl::reflection::description::Math::Round(dsize.Value().size)));
+			}
+		}
+		::vl::__vwsn::This(this->styleLabel.Obj())->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = fontFamily; __vwsn_temp__.size = size; __vwsn_temp__.bold = bold; __vwsn_temp__.italic = italic; __vwsn_temp__.underline = underline; __vwsn_temp__.strikeline = strikeline; __vwsn_temp__.antialias = font.antialias; __vwsn_temp__.verticalAntialias = font.verticalAntialias; return __vwsn_temp__; }());
+	}
+
+	StyleItemTemplate::~StyleItemTemplate()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
 	}
 
 /***********************************************************************
@@ -19491,6 +20593,34 @@ Class (::demo::TextBoxTabPageConstructor)
 	}
 
 /***********************************************************************
+Class (::demo::TextBoxTabPage)
+***********************************************************************/
+
+	void TextBoxTabPage::UpdateFont(::vl::presentation::FontProperties newFont)
+	{
+		::vl::__vwsn::This(this->textBoxS)->SetFont(newFont);
+		::vl::__vwsn::This(this->textBoxM)->SetFont(newFont);
+		::vl::__vwsn::This(this->documentTextBox)->SetFont(newFont);
+		::vl::__vwsn::This(this->documentViewer)->SetFont(newFont);
+		::vl::__vwsn::This(this->documentLabel)->SetFont(newFont);
+	}
+
+	TextBoxTabPage::TextBoxTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+		, flag(false)
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::TextBoxTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_TextBoxTabPage_Initialize(this);
+	}
+
+	TextBoxTabPage::~TextBoxTabPage()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::TextEditorConstructor)
 ***********************************************************************/
 
@@ -19527,6 +20657,23 @@ Class (::demo::TextEditorConstructor)
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, textBox(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
 	{
+	}
+
+/***********************************************************************
+Class (::demo::TextEditor)
+***********************************************************************/
+
+	TextEditor::TextEditor()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::TextEditor", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_TextEditor_Initialize(this);
+	}
+
+	TextEditor::~TextEditor()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
 	}
 
 /***********************************************************************
@@ -19850,6 +20997,26 @@ Class (::demo::TextListTabPageConstructor)
 		, __vwsn_precompile_26(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_27(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
+	}
+
+/***********************************************************************
+Class (::demo::TextListTabPage)
+***********************************************************************/
+
+	TextListTabPage::TextListTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+		, counter(static_cast<::vl::vint32_t>(0))
+		, itemsToBind(::vl::reflection::description::IValueObservableList::Create())
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::TextListTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_demo_TextListTabPage_Initialize(this);
+	}
+
+	TextListTabPage::~TextListTabPage()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
 	}
 
 /***********************************************************************
@@ -20179,1001 +21346,6 @@ Class (::demo::TreeViewTabPageConstructor)
 	}
 
 /***********************************************************************
-Class (::demo::AnimationTabPage)
-***********************************************************************/
-
-	::vl::Ptr<::vl::presentation::controls::IGuiAnimation> AnimationTabPage::BallAnimation(::vl::presentation::compositions::GuiBoundsComposition* container, ::vl::presentation::compositions::GuiBoundsComposition* ball)
-	{
-		return ::vl::presentation::controls::IGuiAnimation::CreateAnimation(LAMBDA(::vl_workflow_global::__vwsnf64_Demo_demo_AnimationTabPage_BallAnimation_(ball, container)), static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(2000)));
-	}
-
-	::vl::Ptr<::vl::presentation::controls::IGuiAnimation> AnimationTabPage::BallAnimationWithDelay(::vl::presentation::compositions::GuiBoundsComposition* container, ::vl::presentation::compositions::GuiBoundsComposition* ball, ::vl::vint32_t delay)
-	{
-		return ::vl::presentation::controls::IGuiAnimationCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf65_Demo_demo_AnimationTabPage_BallAnimationWithDelay_(ball, container, delay)));
-	}
-
-	::vl::Ptr<::vl::presentation::controls::IGuiAnimation> AnimationTabPage::WaitingAnimation(::vl::presentation::compositions::GuiBoundsComposition* container)
-	{
-		return ::vl::presentation::controls::IGuiAnimationCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf66_Demo_demo_AnimationTabPage_WaitingAnimation_(container)));
-	}
-
-	void AnimationTabPage::PerformGradientAnimation(::vl::Ptr<::demo::ColorDef> target)
-	{
-		this->KillAnimation(this->lastGradientAnimation);
-		(this->lastGradientAnimation = ::vl::__vwsn::This(this->gradientColorDef.Obj())->CreateAnimation(target, static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(500))));
-		this->AddAnimation(this->lastGradientAnimation);
-	}
-
-	AnimationTabPage::AnimationTabPage()
-		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
-		, gradientColorDef(::vl::Ptr<::demo::ColorAnimation>(new ::demo::ColorAnimation(::demo::ColorDef::Dark())))
-		, lastGradientAnimation(::vl::Ptr<::vl::presentation::controls::IGuiAnimation>())
-		, counter(static_cast<::vl::vint32_t>(0))
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::AnimationTabPage", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_AnimationTabPage_Initialize(this);
-		this->__vwsn_instance_ctor_();
-	}
-
-	void AnimationTabPage::__vwsn_instance_ctor_()
-	{
-		::vl::__vwsn::This(this->self)->AddAnimation(::demo::AnimationTabPage::WaitingAnimation(this->animationBackground));
-	}
-
-	AnimationTabPage::~AnimationTabPage()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::CategoryDisplayer)
-***********************************************************************/
-
-	::demo::MyCategory CategoryDisplayer::GetCategory()
-	{
-		return this->__vwsn_prop_Category;
-	}
-	void CategoryDisplayer::SetCategory(::demo::MyCategory __vwsn_value_)
-	{
-		if ((this->__vwsn_prop_Category != __vwsn_value_))
-		{
-			(this->__vwsn_prop_Category = __vwsn_value_);
-			::vl::__vwsn::EventInvoke(this->CategoryChanged)();
-		}
-	}
-
-	CategoryDisplayer::CategoryDisplayer()
-		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
-		, __vwsn_prop_Category(::demo::MyCategory::Black)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::CategoryDisplayer", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_CategoryDisplayer_Initialize(this);
-	}
-
-	CategoryDisplayer::~CategoryDisplayer()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::CategoryEditor)
-***********************************************************************/
-
-	CategoryEditor::CategoryEditor()
-		: items((::vl::__vwsn::CreateList().Add(::demo::MyCategory::Black).Add(::demo::MyCategory::Red).Add(::demo::MyCategory::Lime).Add(::demo::MyCategory::Blue).Add(::demo::MyCategory::White)).list)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::CategoryEditor", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_CategoryEditor_Initialize(this);
-	}
-
-	CategoryEditor::~CategoryEditor()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::CategoryItemTemplate)
-***********************************************************************/
-
-	::demo::MyCategory CategoryItemTemplate::GetSelectedCategory()
-	{
-		return this->__vwsn_parameter_SelectedCategory;
-	}
-
-	CategoryItemTemplate::CategoryItemTemplate(::demo::MyCategory __vwsn_ctor_parameter_SelectedCategory)
-		: __vwsn_parameter_SelectedCategory(static_cast<::demo::MyCategory>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0))))
-	{
-		(this->__vwsn_parameter_SelectedCategory = __vwsn_ctor_parameter_SelectedCategory);
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::CategoryItemTemplate", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_CategoryItemTemplate_Initialize(this);
-	}
-
-	CategoryItemTemplate::~CategoryItemTemplate()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::CategoryVisualizer)
-***********************************************************************/
-
-	CategoryVisualizer::CategoryVisualizer()
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::CategoryVisualizer", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_CategoryVisualizer_Initialize(this);
-	}
-
-	CategoryVisualizer::~CategoryVisualizer()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::DataGridTabPage)
-***********************************************************************/
-
-	DataGridTabPage::DataGridTabPage()
-		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::DataGridTabPage", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_DataGridTabPage_Initialize(this);
-		this->__vwsn_instance_ctor_();
-	}
-
-	void DataGridTabPage::__vwsn_instance_ctor_()
-	{
-		auto tempData = (::vl::__vwsn::CreateObservableList().Add(::vl::Ptr<::demo::MyDataItem>(new ::demo::MyDataItem(::vl::WString(L"涼宮 春日", false), ::demo::MyGender::Female, ::demo::MyCategory::Lime, ::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString(L"1988-08-08 00:00:00.000", false)), ::vl::WString(L"http://www.haruhi.tv/", false)))).Add(::vl::Ptr<::demo::MyDataItem>(new ::demo::MyDataItem(::vl::WString(L"キョン", false), ::demo::MyGender::Male, ::demo::MyCategory::Black, ::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString(L"1988-08-08 00:00:00.000", false)), ::vl::WString(L"http://www.haruhi.tv/", false)))).Add(::vl::Ptr<::demo::MyDataItem>(new ::demo::MyDataItem(::vl::WString(L"长门 有希", false), ::demo::MyGender::Female, ::demo::MyCategory::White, ::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString(L"2000-08-06 00:00:00.000", false)), ::vl::WString(L"http://www.haruhi.tv/", false)))).Add(::vl::Ptr<::demo::MyDataItem>(new ::demo::MyDataItem(::vl::WString(L"朝比奈 实玖瑠", false), ::demo::MyGender::Female, ::demo::MyCategory::Red, ::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString(L"1987-08-30 00:00:00.000", false)), ::vl::WString(L"http://www.haruhi.tv/", false)))).Add(::vl::Ptr<::demo::MyDataItem>(new ::demo::MyDataItem(::vl::WString(L"古泉 一树", false), ::demo::MyGender::Male, ::demo::MyCategory::Blue, ::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString(L"1986-08-12 00:00:00.000", false)), ::vl::WString(L"http://www.haruhi.tv/", false))))).list;
-		auto largeImage = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(this->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Task", false), true).Obj()));
-		auto smallImage = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(this->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Task", false), true).Obj()));
-		{
-			auto __vwsn_for_enumerable_item = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(tempData);
-			auto __vwsn_for_enumerator_item = ::vl::__vwsn::This(__vwsn_for_enumerable_item.Obj())->CreateEnumerator();
-			while (::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->Next())
-			{
-				auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->GetCurrent());
-				{
-					::vl::__vwsn::This(item.Obj())->SetLargeImage(largeImage);
-					::vl::__vwsn::This(item.Obj())->SetSmallImage(smallImage);
-				}
-			}
-		}
-		::vl::__vwsn::This(this->dataGrid)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(tempData));
-	}
-
-	DataGridTabPage::~DataGridTabPage()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::DateEditor)
-***********************************************************************/
-
-	DateEditor::DateEditor()
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::DateEditor", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_DateEditor_Initialize(this);
-	}
-
-	DateEditor::~DateEditor()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::DateFilter)
-***********************************************************************/
-
-	void DateFilter::UpdateFilter()
-	{
-		if ((this->callback != nullptr))
-		{
-			::vl::__vwsn::This(this->callback)->OnProcessorChanged();
-		}
-	}
-
-	::vl::Ptr<::vl::presentation::controls::list::IDataFilter> DateFilter::GetFilter()
-	{
-		return this->__vwsn_prop_Filter;
-	}
-	void DateFilter::SetFilter(::vl::Ptr<::vl::presentation::controls::list::IDataFilter> __vwsn_value_)
-	{
-		(this->__vwsn_prop_Filter = __vwsn_value_);
-	}
-
-	DateFilter::DateFilter()
-		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
-		, callback(static_cast<::vl::presentation::controls::list::IDataProcessorCallback*>(nullptr))
-		, __vwsn_prop_Filter(::vl::Ptr<::vl::presentation::controls::list::IDataFilter>())
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::DateFilter", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_DateFilter_Initialize(this);
-		this->__vwsn_instance_ctor_();
-	}
-
-	void DateFilter::__vwsn_instance_ctor_()
-	{
-		this->SetFilter(::vl::Ptr<::vl::presentation::controls::list::IDataFilter>(new ::vl_workflow_global::__vwsnc19_Demo_demo_DateFilter___vwsn_instance_ctor___vl_presentation_controls_list_IDataFilter(this)));
-	}
-
-	DateFilter::~DateFilter()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::ElementTabPage)
-***********************************************************************/
-
-	ElementTabPage::ElementTabPage()
-		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ElementTabPage", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_ElementTabPage_Initialize(this);
-	}
-
-	ElementTabPage::~ElementTabPage()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::EnglishNumbersController)
-***********************************************************************/
-
-	::vl::Ptr<::vl::reflection::description::IValueObservableList> EnglishNumbersController::GetItemsToBind()
-	{
-		return this->__vwsn_prop_ItemsToBind;
-	}
-	void EnglishNumbersController::SetItemsToBind(::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsn_value_)
-	{
-		(this->__vwsn_prop_ItemsToBind = __vwsn_value_);
-	}
-
-	::vl::WString EnglishNumbersController::ToText_1to9(::vl::vint32_t i)
-	{
-		{
-			auto __vwsn_switch_4 = i;
-			if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(1)))
-			{
-				return ::vl::WString(L"one", false);
-			}
-			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(2)))
-			{
-				return ::vl::WString(L"two", false);
-			}
-			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(3)))
-			{
-				return ::vl::WString(L"three", false);
-			}
-			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(4)))
-			{
-				return ::vl::WString(L"four", false);
-			}
-			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(5)))
-			{
-				return ::vl::WString(L"five", false);
-			}
-			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(6)))
-			{
-				return ::vl::WString(L"six", false);
-			}
-			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(7)))
-			{
-				return ::vl::WString(L"seven", false);
-			}
-			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(8)))
-			{
-				return ::vl::WString(L"eight", false);
-			}
-			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(9)))
-			{
-				return ::vl::WString(L"nine", false);
-			}
-		}
-		throw ::vl::Exception(::vl::WString(L"ToText_1to9: Number out of range.", false));
-	}
-
-	::vl::WString EnglishNumbersController::ToText_11to19(::vl::vint32_t i)
-	{
-		{
-			auto __vwsn_switch_5 = i;
-			if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(1)))
-			{
-				return ::vl::WString(L"eleven", false);
-			}
-			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(2)))
-			{
-				return ::vl::WString(L"twelve", false);
-			}
-			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(3)))
-			{
-				return ::vl::WString(L"thirteen", false);
-			}
-			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(4)))
-			{
-				return ::vl::WString(L"fourteen", false);
-			}
-			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(5)))
-			{
-				return ::vl::WString(L"fifteen", false);
-			}
-			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(6)))
-			{
-				return ::vl::WString(L"sixteen", false);
-			}
-			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(7)))
-			{
-				return ::vl::WString(L"seventeen", false);
-			}
-			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(8)))
-			{
-				return ::vl::WString(L"eightteen", false);
-			}
-			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(9)))
-			{
-				return ::vl::WString(L"nineteen", false);
-			}
-		}
-		throw ::vl::Exception(::vl::WString(L"ToText_11to19: Number out of range.", false));
-	}
-
-	::vl::WString EnglishNumbersController::NumberToText_1To99(::vl::vint32_t i)
-	{
-		{
-			auto __vwsn_switch_6 = (i / static_cast<::vl::vint32_t>(10));
-			if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(0)))
-			{
-				return this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)));
-			}
-			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(1)))
-			{
-				return ((i == static_cast<::vl::vint32_t>(10)) ? ::vl::WString(L"ten", false) : this->ToText_11to19((i % static_cast<::vl::vint32_t>(10))));
-			}
-			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(2)))
-			{
-				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"twenty", false) : (::vl::WString(L"twenty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
-			}
-			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(3)))
-			{
-				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"thirty", false) : (::vl::WString(L"thirty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
-			}
-			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(4)))
-			{
-				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"fourty", false) : (::vl::WString(L"fourty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
-			}
-			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(5)))
-			{
-				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"fifty", false) : (::vl::WString(L"fifty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
-			}
-			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(6)))
-			{
-				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"sixty", false) : (::vl::WString(L"sixty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
-			}
-			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(7)))
-			{
-				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"seventy", false) : (::vl::WString(L"seventy-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
-			}
-			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(8)))
-			{
-				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"eighty", false) : (::vl::WString(L"eighty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
-			}
-			else if ((__vwsn_switch_6 == static_cast<::vl::vint32_t>(9)))
-			{
-				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"ninety", false) : (::vl::WString(L"ninety-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
-			}
-		}
-		throw ::vl::Exception(::vl::WString(L"NumberToText_1To99: Number out of range.", false));
-	}
-
-	::vl::WString EnglishNumbersController::NumberToText_0to999(::vl::vint32_t i)
-	{
-		if ((i < static_cast<::vl::vint32_t>(100)))
-		{
-			return this->NumberToText_1To99(i);
-		}
-		return ((this->ToText_1to9((i / static_cast<::vl::vint32_t>(100))) + ::vl::WString(L" hundred", false)) + (((i % static_cast<::vl::vint32_t>(100)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"", false) : (::vl::WString(L" and ", false) + this->NumberToText_1To99((i % static_cast<::vl::vint32_t>(100))))));
-	}
-
-	::vl::WString EnglishNumbersController::NumberToText(::vl::vint32_t i)
-	{
-		if ((i == static_cast<::vl::vint32_t>(0)))
-		{
-			return ::vl::WString(L"zero", false);
-		}
-		if ((i < static_cast<::vl::vint32_t>(1000)))
-		{
-			return this->NumberToText_0to999(i);
-		}
-		return (::vl::WString(L"Number too large: ", false) + ::vl::__vwsn::ToString(i));
-	}
-
-	EnglishNumbersController::EnglishNumbersController()
-		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
-		, counter(static_cast<::vl::vint32_t>(0))
-		, __vwsn_prop_ItemsToBind(::vl::reflection::description::IValueObservableList::Create())
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::EnglishNumbersController", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_EnglishNumbersController_Initialize(this);
-	}
-
-	EnglishNumbersController::~EnglishNumbersController()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::EnglishNumbersControllerTabPage)
-***********************************************************************/
-
-	::vl::Ptr<::vl::reflection::description::IValueObservableList> EnglishNumbersControllerTabPage::GetItemsToBind()
-	{
-		return this->__vwsn_prop_ItemsToBind;
-	}
-	void EnglishNumbersControllerTabPage::SetItemsToBind(::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsn_value_)
-	{
-		(this->__vwsn_prop_ItemsToBind = __vwsn_value_);
-	}
-
-	::vl::presentation::compositions::GuiGraphicsComposition* EnglishNumbersControllerTabPage::GetContentComposition()
-	{
-		return this->__vwsn_prop_ContentComposition;
-	}
-	void EnglishNumbersControllerTabPage::SetContentComposition(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_value_)
-	{
-		(this->__vwsn_prop_ContentComposition = __vwsn_value_);
-	}
-
-	EnglishNumbersControllerTabPage::EnglishNumbersControllerTabPage()
-		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
-		, __vwsn_prop_ItemsToBind(::vl::reflection::description::IValueObservableList::Create())
-		, __vwsn_prop_ContentComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::EnglishNumbersControllerTabPage", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_EnglishNumbersControllerTabPage_Initialize(this);
-		this->__vwsn_instance_ctor_();
-	}
-
-	void EnglishNumbersControllerTabPage::__vwsn_instance_ctor_()
-	{
-		this->SetItemsToBind(::vl::__vwsn::This(this->controller)->GetItemsToBind());
-		this->SetContentComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->content));
-	}
-
-	EnglishNumbersControllerTabPage::~EnglishNumbersControllerTabPage()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::GenderDisplayer)
-***********************************************************************/
-
-	::demo::MyGender GenderDisplayer::GetGender()
-	{
-		return this->__vwsn_prop_Gender;
-	}
-	void GenderDisplayer::SetGender(::demo::MyGender __vwsn_value_)
-	{
-		if ((this->__vwsn_prop_Gender != __vwsn_value_))
-		{
-			(this->__vwsn_prop_Gender = __vwsn_value_);
-			::vl::__vwsn::EventInvoke(this->GenderChanged)();
-		}
-	}
-
-	GenderDisplayer::GenderDisplayer()
-		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
-		, __vwsn_prop_Gender(::demo::MyGender::Male)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderDisplayer", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_GenderDisplayer_Initialize(this);
-	}
-
-	GenderDisplayer::~GenderDisplayer()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::GenderEditor)
-***********************************************************************/
-
-	GenderEditor::GenderEditor()
-		: items((::vl::__vwsn::CreateList().Add(::demo::MyGender::Male).Add(::demo::MyGender::Female)).list)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderEditor", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_GenderEditor_Initialize(this);
-	}
-
-	GenderEditor::~GenderEditor()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::GenderItemTemplate)
-***********************************************************************/
-
-	::demo::MyGender GenderItemTemplate::GetSelectedGender()
-	{
-		return this->__vwsn_parameter_SelectedGender;
-	}
-
-	GenderItemTemplate::GenderItemTemplate(::demo::MyGender __vwsn_ctor_parameter_SelectedGender)
-		: __vwsn_parameter_SelectedGender(static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0))))
-	{
-		(this->__vwsn_parameter_SelectedGender = __vwsn_ctor_parameter_SelectedGender);
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderItemTemplate", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_GenderItemTemplate_Initialize(this);
-	}
-
-	GenderItemTemplate::~GenderItemTemplate()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::GenderVisualizer)
-***********************************************************************/
-
-	GenderVisualizer::GenderVisualizer()
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderVisualizer", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_GenderVisualizer_Initialize(this);
-	}
-
-	GenderVisualizer::~GenderVisualizer()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::HyperlinkWindow)
-***********************************************************************/
-
-	::vl::Nullable<::vl::WString> HyperlinkWindow::GetUrl()
-	{
-		return this->__vwsn_prop_Url;
-	}
-	void HyperlinkWindow::SetUrl(const ::vl::Nullable<::vl::WString>& __vwsn_value_)
-	{
-		if ((this->__vwsn_prop_Url != __vwsn_value_))
-		{
-			(this->__vwsn_prop_Url = __vwsn_value_);
-			::vl::__vwsn::EventInvoke(this->UrlChanged)();
-		}
-	}
-
-	HyperlinkWindow::HyperlinkWindow()
-		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
-		, __vwsn_prop_Url(::vl::Nullable<::vl::WString>())
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::HyperlinkWindow", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_HyperlinkWindow_Initialize(this);
-	}
-
-	HyperlinkWindow::~HyperlinkWindow()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::ListViewTabPage)
-***********************************************************************/
-
-	ListViewTabPage::ListViewTabPage()
-		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ListViewTabPage", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_ListViewTabPage_Initialize(this);
-		this->__vwsn_instance_ctor_();
-	}
-
-	void ListViewTabPage::__vwsn_instance_ctor_()
-	{
-		GLOBAL_NAME LoadListView(static_cast<::vl::presentation::controls::GuiInstanceRootObject*>(this), LAMBDA(::vl_workflow_global::__vwsnf37_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(this)));
-		auto itemsToBind = ::vl::reflection::description::IValueObservableList::Create();
-		GLOBAL_NAME LoadListView(static_cast<::vl::presentation::controls::GuiInstanceRootObject*>(this), LAMBDA(::vl_workflow_global::__vwsnf38_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(itemsToBind, this)));
-		::vl::__vwsn::This(this->bindableListView)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(itemsToBind));
-	}
-
-	ListViewTabPage::~ListViewTabPage()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::LocalizedStringsTabPage)
-***********************************************************************/
-
-	::vl::vint32_t LocalizedStringsTabPage::GetLocaleIndex(::vl::Locale locale)
-	{
-		{
-			auto __vwsn_for_begin_i = (static_cast<::vl::vint32_t>(0) + static_cast<::vl::vint32_t>(1));
-			auto __vwsn_for_end_i = (::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->listLocales)->GetItems()).Obj())->GetCount() - static_cast<::vl::vint32_t>(1));
-			auto i = __vwsn_for_begin_i;
-			while ((i <= __vwsn_for_end_i))
-			{
-				{
-					if ((::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::TextItem>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->listLocales)->GetItems()).Obj())->Get(i)).Obj())->GetText() == ::vl::__vwsn::ToString(locale)))
-					{
-						return i;
-					}
-				}
-				(i = (i + static_cast<::vl::vint32_t>(1)));
-			}
-		}
-		return static_cast<::vl::vint32_t>(0);
-	}
-
-	::vl::Ptr<::demo::IStringResourceStrings> LocalizedStringsTabPage::GetStrings()
-	{
-		return this->__vwsn_prop_Strings;
-	}
-	void LocalizedStringsTabPage::SetStrings(::vl::Ptr<::demo::IStringResourceStrings> __vwsn_value_)
-	{
-		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
-		{
-			(this->__vwsn_prop_Strings = __vwsn_value_);
-			::vl::__vwsn::EventInvoke(this->StringsChanged)();
-		}
-	}
-
-	LocalizedStringsTabPage::LocalizedStringsTabPage()
-		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
-		, dateTime(::vl::reflection::description::Sys::GetLocalTime())
-		, number(static_cast<::vl::vint32_t>(2147483647))
-		, currency(static_cast<double>(1342177.28))
-		, __vwsn_prop_Strings(::vl::Ptr<::demo::IStringResourceStrings>())
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::LocalizedStringsTabPage", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_LocalizedStringsTabPage_Initialize(this);
-	}
-
-	LocalizedStringsTabPage::~LocalizedStringsTabPage()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::RepeatItemTemplate)
-***********************************************************************/
-
-	::vl::Ptr<::demo::MyTextItem> RepeatItemTemplate::GetViewModel()
-	{
-		return this->__vwsn_parameter_ViewModel;
-	}
-
-	RepeatItemTemplate::RepeatItemTemplate(::vl::Ptr<::demo::MyTextItem> __vwsn_ctor_parameter_ViewModel)
-		: __vwsn_parameter_ViewModel(::vl::Ptr<::demo::MyTextItem>())
-	{
-		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::RepeatItemTemplate", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_RepeatItemTemplate_Initialize(this);
-	}
-
-	RepeatItemTemplate::~RepeatItemTemplate()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::RepeatTabPage)
-***********************************************************************/
-
-	RepeatTabPage::RepeatTabPage()
-		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::RepeatTabPage", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_RepeatTabPage_Initialize(this);
-	}
-
-	RepeatTabPage::~RepeatTabPage()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::ResponsiveGroupControl)
-***********************************************************************/
-
-	ResponsiveGroupControl::ResponsiveGroupControl()
-		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ResponsiveGroupControl", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_ResponsiveGroupControl_Initialize(this);
-	}
-
-	ResponsiveGroupControl::~ResponsiveGroupControl()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::ResponsiveStackControl)
-***********************************************************************/
-
-	ResponsiveStackControl::ResponsiveStackControl()
-		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ResponsiveStackControl", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_ResponsiveStackControl_Initialize(this);
-	}
-
-	ResponsiveStackControl::~ResponsiveStackControl()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::ResponsiveTabPage)
-***********************************************************************/
-
-	ResponsiveTabPage::ResponsiveTabPage()
-		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ResponsiveTabPage", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_ResponsiveTabPage_Initialize(this);
-	}
-
-	ResponsiveTabPage::~ResponsiveTabPage()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::ResponsiveViewControl)
-***********************************************************************/
-
-	ResponsiveViewControl::ResponsiveViewControl()
-		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ResponsiveViewControl", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_ResponsiveViewControl_Initialize(this);
-	}
-
-	ResponsiveViewControl::~ResponsiveViewControl()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::SharedSizeItemTemplate)
-***********************************************************************/
-
-	::vl::Ptr<::demo::MyTextItem> SharedSizeItemTemplate::GetViewModel()
-	{
-		return this->__vwsn_parameter_ViewModel;
-	}
-
-	SharedSizeItemTemplate::SharedSizeItemTemplate(::vl::Ptr<::demo::MyTextItem> __vwsn_ctor_parameter_ViewModel)
-		: __vwsn_parameter_ViewModel(::vl::Ptr<::demo::MyTextItem>())
-	{
-		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::SharedSizeItemTemplate", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_SharedSizeItemTemplate_Initialize(this);
-	}
-
-	SharedSizeItemTemplate::~SharedSizeItemTemplate()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::SharedSizeTextItemTemplate)
-***********************************************************************/
-
-	::vl::Ptr<::demo::MyTextItem> SharedSizeTextItemTemplate::GetViewModel()
-	{
-		return this->__vwsn_parameter_ViewModel;
-	}
-
-	SharedSizeTextItemTemplate::SharedSizeTextItemTemplate(::vl::Ptr<::demo::MyTextItem> __vwsn_ctor_parameter_ViewModel)
-		: __vwsn_parameter_ViewModel(::vl::Ptr<::demo::MyTextItem>())
-	{
-		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::SharedSizeTextItemTemplate", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_SharedSizeTextItemTemplate_Initialize(this);
-	}
-
-	SharedSizeTextItemTemplate::~SharedSizeTextItemTemplate()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::StyleItemTemplate)
-***********************************************************************/
-
-	::vl::Ptr<::demo::StyleItem> StyleItemTemplate::GetViewModel()
-	{
-		return this->__vwsn_parameter_ViewModel;
-	}
-
-	StyleItemTemplate::StyleItemTemplate(::vl::Ptr<::demo::StyleItem> __vwsn_ctor_parameter_ViewModel)
-		: __vwsn_parameter_ViewModel(::vl::Ptr<::demo::StyleItem>())
-	{
-		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::StyleItemTemplate", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_StyleItemTemplate_Initialize(this);
-		this->__vwsn_instance_ctor_();
-	}
-
-	void StyleItemTemplate::__vwsn_instance_ctor_()
-	{
-		auto styles = ::vl::__vwsn::This(::vl::__vwsn::This(this->GetViewModel().Obj())->Style.Obj())->styles;
-		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->color))
-		{
-			::vl::__vwsn::This(this->styleLabel.Obj())->SetColor(::vl::__vwsn::This(styles.Obj())->color.Value());
-		}
-		auto font = ::vl::__vwsn::This(this->containerControl)->GetFont();
-		auto fontFamily = font.fontFamily;
-		auto bold = font.bold;
-		auto italic = font.italic;
-		auto underline = font.underline;
-		auto strikeline = font.strikeline;
-		auto size = font.size;
-		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->face))
-		{
-			(fontFamily = ::vl::__vwsn::This(styles.Obj())->face.Value());
-		}
-		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->bold))
-		{
-			(bold = ::vl::__vwsn::This(styles.Obj())->bold.Value());
-		}
-		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->italic))
-		{
-			(italic = ::vl::__vwsn::This(styles.Obj())->italic.Value());
-		}
-		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->underline))
-		{
-			(underline = ::vl::__vwsn::This(styles.Obj())->underline.Value());
-		}
-		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->strikeline))
-		{
-			(strikeline = ::vl::__vwsn::This(styles.Obj())->strikeline.Value());
-		}
-		if (static_cast<bool>(::vl::__vwsn::This(styles.Obj())->size))
-		{
-			auto dsize = ::vl::__vwsn::This(styles.Obj())->size;
-			if (dsize.Value().relative)
-			{
-				(size = static_cast<::vl::vint32_t>(::vl::reflection::description::Math::Round((dsize.Value().size * static_cast<double>(font.size)))));
-			}
-			else
-			{
-				(size = static_cast<::vl::vint32_t>(::vl::reflection::description::Math::Round(dsize.Value().size)));
-			}
-		}
-		::vl::__vwsn::This(this->styleLabel.Obj())->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = fontFamily; __vwsn_temp__.size = size; __vwsn_temp__.bold = bold; __vwsn_temp__.italic = italic; __vwsn_temp__.underline = underline; __vwsn_temp__.strikeline = strikeline; __vwsn_temp__.antialias = font.antialias; __vwsn_temp__.verticalAntialias = font.verticalAntialias; return __vwsn_temp__; }());
-	}
-
-	StyleItemTemplate::~StyleItemTemplate()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::TextBoxTabPage)
-***********************************************************************/
-
-	void TextBoxTabPage::UpdateFont(::vl::presentation::FontProperties newFont)
-	{
-		::vl::__vwsn::This(this->textBoxS)->SetFont(newFont);
-		::vl::__vwsn::This(this->textBoxM)->SetFont(newFont);
-		::vl::__vwsn::This(this->documentTextBox)->SetFont(newFont);
-		::vl::__vwsn::This(this->documentViewer)->SetFont(newFont);
-		::vl::__vwsn::This(this->documentLabel)->SetFont(newFont);
-	}
-
-	TextBoxTabPage::TextBoxTabPage()
-		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
-		, flag(false)
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::TextBoxTabPage", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_TextBoxTabPage_Initialize(this);
-	}
-
-	TextBoxTabPage::~TextBoxTabPage()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::TextEditor)
-***********************************************************************/
-
-	TextEditor::TextEditor()
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::TextEditor", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_TextEditor_Initialize(this);
-	}
-
-	TextEditor::~TextEditor()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::demo::TextListTabPage)
-***********************************************************************/
-
-	TextListTabPage::TextListTabPage()
-		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
-		, counter(static_cast<::vl::vint32_t>(0))
-		, itemsToBind(::vl::reflection::description::IValueObservableList::Create())
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::TextListTabPage", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_TextListTabPage_Initialize(this);
-	}
-
-	TextListTabPage::~TextListTabPage()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
-	}
-
-/***********************************************************************
 Class (::demo::TreeViewTabPage)
 ***********************************************************************/
 
@@ -21202,7 +21374,6 @@ Class (::demo::TreeViewTabPage)
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
-#undef USERIMPL
 
 #if defined( _MSC_VER)
 #pragma warning(pop)

@@ -263,8 +263,6 @@
     <ClCompile Include="Source\DemoReflection.cpp" />
     <ClCompile Include="Source\DemoResource.cpp" />
     <ClCompile Include="Source\DocumentEditorBase.cpp" />
-    <ClCompile Include="Source\DocumentEditorRibbon.cpp" />
-    <ClCompile Include="Source\DocumentEditorToolstrip.cpp" />
     <ClCompile Include="Source\MainWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -273,11 +271,10 @@
     <ClInclude Include="Source\DarkSkinIncludes.h" />
     <ClInclude Include="Source\DarkSkinReflection.h" />
     <ClInclude Include="Source\Demo.h" />
+    <ClInclude Include="Source\Demo1.h" />
     <ClInclude Include="Source\DemoIncludes.h" />
     <ClInclude Include="Source\DemoReflection.h" />
     <ClInclude Include="Source\DocumentEditorBase.h" />
-    <ClInclude Include="Source\DocumentEditorRibbon.h" />
-    <ClInclude Include="Source\DocumentEditorToolstrip.h" />
     <ClInclude Include="Source\MainWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

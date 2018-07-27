@@ -29,7 +29,9 @@ https://github.com/vczh-libraries
 #define GLOBAL_SYMBOL ::vl_workflow_global::Demo::
 #define GLOBAL_NAME ::vl_workflow_global::Demo::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::Demo::Instance()
-#define USERIMPL(...)
+
+/* USER_CONTENT_BEGIN(custom global declarations) */
+/* USER_CONTENT_END() */
 
 /***********************************************************************
 Class (::demo::DocumentEditorBase)
@@ -121,28 +123,25 @@ namespace demo
 		return static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->toolstripContainer);
 	}
 
-	USERIMPL(/* ::demo::DocumentEditorBase */)
 	void DocumentEditorBase::LoadAsPrivateFormat(const ::vl::WString& fileName)
-	{
+	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
 		stream::FileStream fileStream(fileName, stream::FileStream::ReadOnly);
 		auto model = presentation::LoadDocumentFromClipboardStream(fileStream);
 		document->SetDocument(model);
-	}
+	}/* USER_CONTENT_END() */
 
-	USERIMPL(/* ::demo::DocumentEditorBase */)
 	void DocumentEditorBase::SaveAsPrivateFormat(const ::vl::WString& fileName)
-	{
+	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
 		document->SelectAll();
 		auto model = document->GetSelectionModel();
 
 		presentation::ModifyDocumentForClipboard(model);
 		stream::FileStream fileStream(fileName, stream::FileStream::WriteOnly);
 		presentation::SaveDocumentToClipboardStream(model, fileStream);
-	}
+	}/* USER_CONTENT_END() */
 
-	USERIMPL(/* ::demo::DocumentEditorBase */)
 	void DocumentEditorBase::SaveAsRTF(const ::vl::WString& fileName)
-	{
+	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
 		document->SelectAll();
 		auto model = document->GetSelectionModel();
 
@@ -150,11 +149,10 @@ namespace demo
 		presentation::SaveDocumentToRtf(model, rtf);
 		stream::FileStream fileStream(fileName, stream::FileStream::WriteOnly);
 		fileStream.Write((void*)rtf.Buffer(), rtf.Length());
-	}
+	}/* USER_CONTENT_END() */
 
-	USERIMPL(/* ::demo::DocumentEditorBase */)
 	void DocumentEditorBase::SaveAsHTML(const ::vl::WString& fileName)
-	{
+	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
 		document->SelectAll();
 		auto model = document->GetSelectionModel();
 
@@ -164,7 +162,7 @@ namespace demo
 		fileStream.Write((void*)header.Buffer(), header.Length());
 		fileStream.Write((void*)content.Buffer(), content.Length());
 		fileStream.Write((void*)footer.Buffer(), footer.Length());
-	}
+	}/* USER_CONTENT_END() */
 
 	void DocumentEditorBase::SaveDocument()
 	{
@@ -215,7 +213,6 @@ namespace demo
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
-#undef USERIMPL
 
 #if defined( _MSC_VER)
 #pragma warning(pop)

@@ -42,12 +42,6 @@
     <ClCompile Include="Source\DocumentEditorBase.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DocumentEditorToolstrip.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DocumentEditorRibbon.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Helpers.h">
@@ -77,10 +71,7 @@
     <ClInclude Include="Source\DocumentEditorBase.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DocumentEditorToolstrip.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DocumentEditorRibbon.h">
+    <ClInclude Include="Source\Demo1.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>

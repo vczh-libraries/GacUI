@@ -12,8 +12,7 @@ https://github.com/vczh-libraries
 
 #include "Demo.h"
 #include "DocumentEditorBase.h"
-#include "DocumentEditorRibbon.h"
-#include "DocumentEditorToolstrip.h"
 #include "MainWindow.h"
+#include "Demo1.h"
 
 #endif
