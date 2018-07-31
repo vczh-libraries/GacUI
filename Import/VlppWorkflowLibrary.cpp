@@ -1041,6 +1041,16 @@ WfLoadLibraryTypes
 			};
 
 			BEGIN_CLASS_MEMBER(Sys)
+				CLASS_MEMBER_STATIC_METHOD(Int32ToInt, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(Int64ToInt, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(IntToInt32, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(IntToInt64, { L"value" })
+
+				CLASS_MEMBER_STATIC_METHOD(UInt32ToUInt, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(UInt64ToUInt, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(UIntToUInt32, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(UIntToUInt64, { L"value" })
+
 				CLASS_MEMBER_STATIC_METHOD(Len, { L"value" })
 				CLASS_MEMBER_STATIC_METHOD(Left, { L"value" _ L"length" })
 				CLASS_MEMBER_STATIC_METHOD(Right, { L"value" _ L"length" })

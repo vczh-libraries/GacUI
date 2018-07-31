@@ -199,6 +199,16 @@ Libraries
 			class Sys : public Description<Sys>
 			{
 			public:
+				static vint			Int32ToInt(vint32_t value)							{ return (vint)value; }
+				static vint			Int64ToInt(vint64_t value)							{ return (vint)value; }
+				static vint32_t		IntToInt32(vint value)								{ return (vint32_t)value; }
+				static vint64_t		IntToInt64(vint value)								{ return (vint64_t)value; }
+				
+				static vuint		UInt32ToUInt(vuint32_t value)						{ return (vuint)value; }
+				static vuint		UInt64ToUInt(vuint64_t value)						{ return (vuint)value; }
+				static vuint32_t	UIntToUInt32(vuint value)							{ return (vuint32_t)value; }
+				static vuint64_t	UIntToUInt64(vuint value)							{ return (vuint64_t)value; }
+
 				static vint			Len(const WString& value)							{ return value.Length(); }
 				static WString		Left(const WString& value, vint length)				{ return value.Left(length); }
 				static WString		Right(const WString& value, vint length)			{ return value.Right(length); }
