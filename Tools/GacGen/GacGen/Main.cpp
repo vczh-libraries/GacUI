@@ -27,22 +27,10 @@ void PrintErrors(List<GuiResourceError>& errors)
 
 void SaveErrors(FilePath errorFilePath, List<GuiResourceError>& errors)
 {
-	FileStream fileStream(errorFilePath.GetFullPath(), FileStream::WriteOnly);
-	if (fileStream.IsAvailable())
+	PrintErrors(errors);
+	if (WriteErrors(errors, errorFilePath))
 	{
-		BomEncoder encoder(BomEncoder::Utf16);
-		EncoderStream encoderStream(fileStream, encoder);
-		StreamWriter writer(encoderStream);
-
-		List<WString> output;
-		GuiResourceError::SortAndLog(errors, output);
-		FOREACH(WString, line, output)
-		{
-			PrintErrorMessage(line);
-			writer.WriteLine(line);
-		}
-
-		PrintInformationMessage(L"gacgen> Error information is saved at : " + errorFilePath.GetFullPath());
+		PrintErrorMessage(L"error> Error information is saved at : " + errorFilePath.GetFullPath());
 	}
 	else
 	{
@@ -430,104 +418,108 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 	PrintSuccessMessage(L"gacgen> Compiling...");
 	List<GuiResourceError> errors;
 	Callback callback;
-	if (auto precompiledFolder = PrecompileAndWriteErrors(resource, &callback, errors, errorFilePath))
+
+	auto precompiledFolder = PrecompileResource(resource, &callback, errors);
+	if (errors.Count() > 0)
 	{
-		if (errors.Count() == 0)
+		SaveErrors(errorFilePath, errors);
+		return;
+	}
+
+	if (auto compiled = WriteWorkflowScript(precompiledFolder, L"Workflow/InstanceClass", scriptFilePath))
+	{
+		if (cppOutput)
 		{
-			if (auto compiled = WriteWorkflowScript(precompiledFolder, L"Workflow/InstanceClass", scriptFilePath))
+			PrintSuccessMessage(L"gacgen> Generating C++ source code ...");
+			auto input = MakePtr<WfCppInput>(cppOutput->name);
+			input->multiFile = WfCppFileSwitch::Enabled;
+			input->reflection = WfCppFileSwitch::Enabled;
+			input->comment = L"GacGen.exe " + FilePath(inputPath).GetName();
+			input->defaultFileName = cppOutput->name + L"PartialClasses";
+			input->includeFileName = cppOutput->name;
+			CopyFrom(input->normalIncludes, cppOutput->normalIncludes);
+			CopyFrom(input->reflectionIncludes, cppOutput->reflectionIncludes);
+
+			FilePath cppFolder = workingDir / cppOutput->sourceFolder;
+			if (partialMode)
 			{
-				if (cppOutput)
-				{
-					PrintSuccessMessage(L"gacgen> Generating C++ source code ...");
-					auto input = MakePtr<WfCppInput>(cppOutput->name);
-					input->multiFile = WfCppFileSwitch::Enabled;
-					input->reflection = WfCppFileSwitch::Enabled;
-					input->comment = L"GacGen.exe " + FilePath(inputPath).GetName();
-					input->defaultFileName = cppOutput->name + L"PartialClasses";
-					input->includeFileName = cppOutput->name;
-					CopyFrom(input->normalIncludes, cppOutput->normalIncludes);
-					CopyFrom(input->reflectionIncludes, cppOutput->reflectionIncludes);
+				File(logFolderPath / L"CppOutput.txt").WriteAllText(cppFolder.GetFullPath(), false, BomEncoder::Mbcs);
 
-					FilePath cppFolder = workingDir / cppOutput->sourceFolder;
-					if (partialMode)
-					{
-						File(logFolderPath / L"CppOutput.txt").WriteAllText(cppFolder.GetFullPath(), false, BomEncoder::Mbcs);
-
-						cppFolder = logFolderPath / L"Source";
-						if (!Folder(cppFolder).Create(true))
-						{
-							PrintSuccessMessage(L"gacgen> Unable to create source folder : " + cppFolder.GetFullPath());
-						}
-					}
-
-					auto output = WriteCppCodesToFile(compiled, input, cppFolder);
-					if (cppOutput->cppResource != L"")
-					{
-						WriteEmbeddedResource(resource, input, output, false, cppFolder / cppOutput->cppResource);
-					}
-					if (cppOutput->cppCompressed != L"")
-					{
-						WriteEmbeddedResource(resource, input, output, true, cppFolder / cppOutput->cppCompressed);
-					}
-				}
-
-				FOREACH(FilePath, filePath, cppResourcePaths)
+				cppFolder = logFolderPath / L"Source";
+				if (!Folder(cppFolder).Create(true))
 				{
-					PrintSuccessMessage(L"Generating binary resource file (no script): " + filePath.GetFullPath());
-					WriteBinaryResource(resource, false, false, filePath, {});
-				}
-				FOREACH(FilePath, filePath, cppCompressedPaths)
-				{
-					PrintSuccessMessage(L"Generating compressed resource file (no script): " + filePath.GetFullPath());
-					WriteBinaryResource(resource, true, false, filePath, {});
-				}
-				FOREACH(FilePath, filePath, resResourcePaths)
-				{
-					PrintSuccessMessage(L"Generating binary resource files : " + filePath.GetFullPath());
-					WriteBinaryResource(resource, false, true, filePath, {});
-				}
-				FOREACH(FilePath, filePath, resCompressedPaths)
-				{
-					PrintSuccessMessage(L"Generating compressed resource files : " + filePath.GetFullPath());
-					WriteBinaryResource(resource, true, true, filePath, {});
-				}
-				FOREACH(FilePath, filePath, resAssemblyPaths)
-				{
-					PrintSuccessMessage(L"Generating assembly files : " + filePath.GetFullPath());
-					WriteBinaryResource(resource, false, false, {}, filePath);
-				}
-
-				if (partialMode)
-				{
-					List<WString> lines;
-					List<FilePath>* outputPaths[] =
-					{
-						&cppResourcePaths,
-						&cppCompressedPaths,
-						&resResourcePaths,
-						&resCompressedPaths,
-						&resAssemblyPaths,
-					};
-
-					for (vint i = 0; i < sizeof(outputPaths) / sizeof(*outputPaths); i++)
-					{
-						auto& paths = *outputPaths[i];
-						if (paths.Count() == 2)
-						{
-							lines.Add(L"copy \"" + paths[0].GetFullPath() + L"\" \"" + paths[1].GetFullPath() + L"\"");
-						}
-					}
-
-					if (lines.Count() > 0)
-					{
-						File(logFolderPath / L"Deploy.bat").WriteAllLines(lines, false, BomEncoder::Mbcs);
-					}
+					PrintSuccessMessage(L"gacgen> Unable to create source folder : " + cppFolder.GetFullPath());
 				}
 			}
+
+			auto output = WriteCppCodesToFile(resource, compiled, input, cppFolder, errors);
+			if (errors.Count() > 0)
+			{
+				SaveErrors(errorFilePath, errors);
+				return;
+			}
+
+			if (cppOutput->cppResource != L"")
+			{
+				WriteEmbeddedResource(resource, input, output, false, cppFolder / cppOutput->cppResource);
+			}
+			if (cppOutput->cppCompressed != L"")
+			{
+				WriteEmbeddedResource(resource, input, output, true, cppFolder / cppOutput->cppCompressed);
+			}
 		}
-		else
+
+		FOREACH(FilePath, filePath, cppResourcePaths)
 		{
-			PrintErrorMessage(L"error> Failed to compile resource, error information is saved at : " + errorFilePath.GetFullPath());
+			PrintSuccessMessage(L"Generating binary resource file (no script): " + filePath.GetFullPath());
+			WriteBinaryResource(resource, false, false, filePath, {});
+		}
+		FOREACH(FilePath, filePath, cppCompressedPaths)
+		{
+			PrintSuccessMessage(L"Generating compressed resource file (no script): " + filePath.GetFullPath());
+			WriteBinaryResource(resource, true, false, filePath, {});
+		}
+		FOREACH(FilePath, filePath, resResourcePaths)
+		{
+			PrintSuccessMessage(L"Generating binary resource files : " + filePath.GetFullPath());
+			WriteBinaryResource(resource, false, true, filePath, {});
+		}
+		FOREACH(FilePath, filePath, resCompressedPaths)
+		{
+			PrintSuccessMessage(L"Generating compressed resource files : " + filePath.GetFullPath());
+			WriteBinaryResource(resource, true, true, filePath, {});
+		}
+		FOREACH(FilePath, filePath, resAssemblyPaths)
+		{
+			PrintSuccessMessage(L"Generating assembly files : " + filePath.GetFullPath());
+			WriteBinaryResource(resource, false, false, {}, filePath);
+		}
+
+		if (partialMode)
+		{
+			List<WString> lines;
+			List<FilePath>* outputPaths[] =
+			{
+				&cppResourcePaths,
+				&cppCompressedPaths,
+				&resResourcePaths,
+				&resCompressedPaths,
+				&resAssemblyPaths,
+			};
+
+			for (vint i = 0; i < sizeof(outputPaths) / sizeof(*outputPaths); i++)
+			{
+				auto& paths = *outputPaths[i];
+				if (paths.Count() == 2)
+				{
+					lines.Add(L"copy \"" + paths[0].GetFullPath() + L"\" \"" + paths[1].GetFullPath() + L"\"");
+				}
+			}
+
+			if (lines.Count() > 0)
+			{
+				File(logFolderPath / L"Deploy.bat").WriteAllLines(lines, false, BomEncoder::Mbcs);
+			}
 		}
 	}
 }
