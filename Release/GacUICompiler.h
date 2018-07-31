@@ -939,11 +939,15 @@ namespace vl
 	{
 		using namespace reflection;
 
-		extern Ptr<GuiResourceFolder>					PrecompileAndWriteErrors(
+		extern bool										WriteErrors(
+															collections::List<GuiResourceError>& errors,
+															const filesystem::FilePath& errorPath
+															);
+
+		extern Ptr<GuiResourceFolder>					PrecompileResource(
 															Ptr<GuiResource> resource,
 															IGuiResourcePrecompileCallback* callback,
-															collections::List<GuiResourceError>& errors,
-															const filesystem::FilePath& errorPath);
+															collections::List<GuiResourceError>& errors);
 
 		extern Ptr<GuiInstanceCompiledWorkflow>			WriteWorkflowScript(
 															Ptr<GuiResourceFolder> precompiledFolder,
@@ -951,9 +955,11 @@ namespace vl
 															const filesystem::FilePath& workflowPath);
 
 		extern Ptr<workflow::cppcodegen::WfCppOutput>	WriteCppCodesToFile(
+															Ptr<GuiResource> resource,
 															Ptr<GuiInstanceCompiledWorkflow> compiled,
 															Ptr<workflow::cppcodegen::WfCppInput> cppInput,
-															const filesystem::FilePath& cppFolder);
+															const filesystem::FilePath& cppFolder,
+															collections::List<GuiResourceError>& errors);
 
 		extern bool										WriteBinaryResource(
 															Ptr<GuiResource> resource,

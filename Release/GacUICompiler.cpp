@@ -15,25 +15,25 @@ namespace vl
 		using namespace collections;
 		using namespace stream;
 		using namespace filesystem;
+		using namespace parsing;
 		using namespace workflow;
 		using namespace workflow::cppcodegen;
 
-		Ptr<GuiResourceFolder> PrecompileAndWriteErrors(
-			Ptr<GuiResource> resource,
-			IGuiResourcePrecompileCallback* callback,
+		bool WriteErrors(
 			collections::List<GuiResourceError>& errors,
 			const filesystem::FilePath& errorPath)
 		{
+			List<WString> output;
+			GuiResourceError::SortAndLog(errors, output);
+			return File(errorPath).WriteAllLines(output, true, BomEncoder::Utf8);
+		}
+
+		Ptr<GuiResourceFolder> PrecompileResource(
+			Ptr<GuiResource> resource,
+			IGuiResourcePrecompileCallback* callback,
+			collections::List<GuiResourceError>& errors)
+		{
 			auto precompiledFolder = resource->Precompile(callback, errors);
-			if (errors.Count() > 0)
-			{
-				List<WString> output;
-				GuiResourceError::SortAndLog(errors, output);
-				if (!File(errorPath).WriteAllLines(output, true, BomEncoder::Utf8))
-				{
-					return nullptr;
-				}
-			}
 			return precompiledFolder;
 		}
 
@@ -79,11 +79,23 @@ namespace vl
 		}
 
 		Ptr<workflow::cppcodegen::WfCppOutput> WriteCppCodesToFile(
+			Ptr<GuiResource> resource,
 			Ptr<GuiInstanceCompiledWorkflow> compiled,
 			Ptr<workflow::cppcodegen::WfCppInput> cppInput,
-			const filesystem::FilePath& cppFolder)
+			const filesystem::FilePath& cppFolder,
+			collections::List<GuiResourceError>& errors)
 		{
 			auto output = GenerateCppFiles(cppInput, compiled->metadata.Obj());
+
+			if (compiled->metadata->errors.Count() > 0)
+			{
+				FOREACH(Ptr<ParsingError>, error, compiled->metadata->errors)
+				{
+					errors.Add(GuiResourceError({ {resource} }, error->errorMessage));
+				}
+				return nullptr;
+			}
+
 			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
 			{
 				WString code = output->cppFiles.Values()[index];
