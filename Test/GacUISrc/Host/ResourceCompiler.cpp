@@ -136,11 +136,15 @@ FilePath CompileResources(
 	File(assemblyPath32).Delete();
 	File(assemblyPath64).Delete();
 
-	auto precompiledFolder = PrecompileAndWriteErrors(resource, &debugCallback, errors, errorPath);
+	auto precompiledFolder = PrecompileResource(resource, &debugCallback, errors);
+	if (errors.Count() > 0)
+	{
+		WriteErrors(errors, errorPath);
+		CHECK_FAIL(L"Error");
+	}
 	WriteWorkflowScript(precompiledFolder, L"Workflow/Shared", workflowPath1);
 	WriteWorkflowScript(precompiledFolder, L"Workflow/TemporaryClass", workflowPath2);
 	auto compiled = WriteWorkflowScript(precompiledFolder, L"Workflow/InstanceClass", workflowPath3);
-	CHECK_ERROR(errors.Count() == 0, L"Error");
 
 	if (outputCppFolder != L"")
 	{
@@ -153,7 +157,12 @@ FilePath CompileResources(
 		input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h");
 
 		FilePath cppFolder = outputCppFolder;
-		auto output = WriteCppCodesToFile(compiled, input, cppFolder);
+		auto output = WriteCppCodesToFile(resource, compiled, input, cppFolder, errors);
+		if (errors.Count() > 0)
+		{
+			WriteErrors(errors, errorPath);
+			CHECK_FAIL(L"Error");
+		}
 		WriteEmbeddedResource(resource, input, output, compressResource, cppFolder / (name + L"Resource.cpp"));
 	}
 
