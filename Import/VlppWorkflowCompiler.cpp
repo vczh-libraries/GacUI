@@ -10486,15 +10486,15 @@ CreateTypeInfoFromType
 					VisitReferenceType(node);
 				}
 
-				static Ptr<ITypeInfo> Execute(WfLexicalScope* scope, WfType* type)
+				static Ptr<ITypeInfo> Execute(WfLexicalScope* scope, WfType* type, bool checkTypeForValue)
 				{
-					return CreateTypeInfoFromTypeVisitor(scope).Call(type, true);
+					return CreateTypeInfoFromTypeVisitor(scope).Call(type, checkTypeForValue);
 				}
 			};
 
-			Ptr<reflection::description::ITypeInfo>	CreateTypeInfoFromType(WfLexicalScope* scope, Ptr<WfType> type)
+			Ptr<reflection::description::ITypeInfo>	CreateTypeInfoFromType(WfLexicalScope* scope, Ptr<WfType> type, bool checkTypeForValue)
 			{
-				return CreateTypeInfoFromTypeVisitor::Execute(scope, type.Obj());
+				return CreateTypeInfoFromTypeVisitor::Execute(scope, type.Obj(), checkTypeForValue);
 			}
 
 /***********************************************************************
@@ -18016,7 +18016,7 @@ WfGenerateClassMemberImplVisitor
 					vint callIndex = 0;
 					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
 					{
-						auto callType = CreateTypeInfoFromType(scope, call->type);
+						auto callType = CreateTypeInfoFromType(scope, call->type, false);
 						auto callCtor = config->manager->baseConstructorCallResolvings[{node, callType->GetTypeDescriptor()}].value;
 
 						writer.WriteString(prefix);
@@ -25837,7 +25837,7 @@ GenerateInstructions(Expression)
 				void Visit(WfTypeOfTypeExpression* node)override
 				{
 					auto scope = context.manager->nodeScopes[node].Obj();
-					auto type = CreateTypeInfoFromType(scope, node->type);
+					auto type = CreateTypeInfoFromType(scope, node->type, false);
 					auto value = Value::From(type->GetTypeDescriptor());
 					INSTRUCTION(Ins::LoadValue(value));
 				}
