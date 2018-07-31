@@ -4349,6 +4349,10 @@ Error Messages
 				static Ptr<parsing::ParsingError>			TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node);
 				static Ptr<parsing::ParsingError>			AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl);
+
+				// CPP: C++ code generation error
+				static Ptr<parsing::ParsingError>			CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
+				static Ptr<parsing::ParsingError>			CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
 			};
 		}
 	}
@@ -4798,6 +4802,17 @@ GenerateCppFiles
 				bool											multiFile = false;
 				bool											reflection = false;
 				WString											entryFileName;
+			};
+
+			class MergeCppMultiPlatformException : public Exception
+			{
+			public:
+				vint											row32;
+				vint											column32;
+				vint											row64;
+				vint											column64;
+
+				MergeCppMultiPlatformException(vint _row32, vint _column32, vint _row64, vint _column64);
 			};
 
 			extern Ptr<WfCppOutput>		GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager);

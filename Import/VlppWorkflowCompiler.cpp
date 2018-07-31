@@ -4470,6 +4470,28 @@ WfErrors
 			{
 				return new ParsingError(node, L"G13: Auto property \"" + node->name.value + L"\" cannot be initialized in interface \"" + classDecl->name.value + L"\".");
 			}
+
+			Ptr<parsing::ParsingError> WfErrors::CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
+			{
+				WString description;
+				FOREACH(ITypeDescriptor*, td, tds)
+				{
+					description += L"\r\n\t";
+					description += td->GetTypeName();
+				}
+				return new ParsingError(node, L"CPP1: (C++ Code Generation) Cannot decide order of the following classes. It is probably caused by inheritance relationships of internal classes inside these classes:" + description + L".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
+			{
+				WString description;
+				FOREACH(ITypeDescriptor*, td, tds)
+				{
+					description += L"\r\n\t";
+					description += td->GetTypeName();
+				}
+				return new ParsingError(node, L"CPP2: (C++ Code Generation) @cpp:File atrribute values for these classes are invalid. Generating classes to source files specified by these attribute values will create source files which do not compile. It is probably caused by inheritance relationships of internal classes inside these classes:" + description + L".");
+			}
 		}
 	}
 }
@@ -17086,6 +17108,7 @@ namespace vl
 	{
 		namespace cppcodegen
 		{
+			using namespace analyzer;
 			using namespace collections;
 
 #define ASSIGN_INDEX_KEY(INDEX_DECL, INDEX_KEY, STRING_KEY) \
@@ -17262,7 +17285,24 @@ WfCppConfig::Collect
 						for (vint j = 0; j < pop.components.Count(); j++)
 						{
 							auto& component = pop.components[j];
-							CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+
+							// check error
+							if (component.nodeCount > 1)
+							{
+								List<ITypeDescriptor*> tds;
+								for (vint k = 0; k < component.nodeCount; k++)
+								{
+									auto& node = pop.nodes[component.firstNode[k]];
+									auto indexKey = classLevelDep.subClass[items[node.firstSubClassItem[0]]];
+									tds.Add(globalDep.allTds.Values()[indexKey]);
+								}
+
+								Sort<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
+								{
+									return WString::Compare(a->GetTypeName(), b->GetTypeName());
+								});
+								manager->errors.Add(WfErrors::CppUnableToDecideClassOrder(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));
+							}
 
 							auto& node = pop.nodes[component.firstNode[0]];
 							auto subDeclIndexKey = classLevelDep.subClass[items[node.firstSubClassItem[0]]];
@@ -17271,7 +17311,7 @@ WfCppConfig::Collect
 						}
 					}
 
-					if (!parent)
+					if (!parent && manager->errors.Count() == 0)
 					{
 						for (vint i = 0; i < classLevelDep.subClass.Count(); i++)
 						{
@@ -17334,7 +17374,32 @@ WfCppConfig::Collect
 						for (vint i = 0; i < popSubClass.components.Count(); i++)
 						{
 							auto& component = popSubClass.components[i];
-							CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+
+							// check error
+							if (component.nodeCount > 1)
+							{
+								List<ITypeDescriptor*> tds;
+								for (vint j = 0; j < component.nodeCount; j++)
+								{
+									auto& node = popSubClass.nodes[component.firstNode[j]];
+									for (vint k = 0; k < node.subClassItemCount; k++)
+									{
+										auto indexKey = globalDep.topLevelClasses[node.firstSubClassItem[k]];
+										tds.Add(globalDep.allTds.Values()[indexKey]);
+									}
+								}
+
+								Sort<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
+								{
+									return WString::Compare(a->GetTypeName(), b->GetTypeName());
+								});
+								manager->errors.Add(WfErrors::CppUnableToSeparateCustomFile(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));
+							}
+						}
+
+						if (manager->errors.Count() != 0)
+						{
+							return;
 						}
 
 						// generate two item list, one have all @cpp:File classes put in front, one have all non-@cpp:File classes put in front
@@ -17417,9 +17482,9 @@ WfCppConfig::Collect
 					popNonCustomFirst.InitWithGroup(nonCustomFirstItems, subClassDepGroup);
 					popNonCustomFirst.Sort();
 
-					CHECK_ERROR(popCustomFirst.components.Count() == customFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
-					CHECK_ERROR(popNonCustomFirst.components.Count() == nonCustomFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
-					CHECK_ERROR(popCustomFirst.components.Count() == popNonCustomFirst.components.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+					CHECK_ERROR(popCustomFirst.components.Count() == customFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Internal error: Unexpected circle dependency found, this should have been caught by code above.");
+					CHECK_ERROR(popNonCustomFirst.components.Count() == nonCustomFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found, this should have been caught by code above.");
+					CHECK_ERROR(popCustomFirst.components.Count() == popNonCustomFirst.components.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found, this should have been caught by code above.");
 
 					// translate popCustomFirst's sorting result
 					// popSubClass.nodes's index
@@ -21135,6 +21200,10 @@ GenerateCppFiles
 			Ptr<WfCppOutput> GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager)
 			{
 				WfCppConfig config(manager, input->assemblyName, input->assemblyNamespace);
+				if (manager->errors.Count() > 0)
+				{
+					return nullptr;
+				}
 
 				auto output = MakePtr<WfCppOutput>();
 				if (config.manager->declarationTypes.Count() > 0)
@@ -21406,6 +21475,40 @@ MergeCppFile
 				});
 			}
 
+			MergeCppMultiPlatformException::MergeCppMultiPlatformException(vint _row32, vint _column32, vint _row64, vint _column64)
+				:Exception(L"The difference at "
+					L"x86 file(row:" + itow(_row32 + 1) + L", column:" + itow(_column32 + 1) + L") and "
+					L"x64 file(row:" + itow(_row64 + 1) + L", column:" + itow(_column64 + 1) + L") are not "
+					L"\"vint32_t\" and \"vint64_t\", "
+					L"\"vuint32_t\" and \"vuint64_t\", "
+					L"\"<number>\" and \"<number>L\", "
+					L"\"<number>\" and \"<number>UL\".")
+				, row32(_row32)
+				, column32(_column32)
+				, row64(_row64)
+				, column64(_column64)
+			{
+			}
+
+			void CountRowAndColumn(const wchar_t* start, const wchar_t* reading, vint& row, vint& column)
+			{
+				row = 0;
+				column = 0;
+				while (start < reading)
+				{
+					if (*start++ == L'\n')
+					{
+						row++;
+						column = 0;
+					}
+					else
+					{
+						column++;
+					}
+				}
+			}
+
+
 			WString MergeCppMultiPlatform(const WString& code32, const WString& code64)
 			{
 				static wchar_t stringCast32[] = L"static_cast<::vl::vint32_t>(";
@@ -21419,6 +21522,7 @@ MergeCppFile
 					const wchar_t* reading32 = code32.Buffer();
 					const wchar_t* reading64 = code64.Buffer();
 					const wchar_t* start32 = reading32;
+					const wchar_t* start64 = reading64;
 					while (true)
 					{
 						vint length = 0;
@@ -21450,6 +21554,15 @@ MergeCppFile
 							if (length >= 4)
 							{
 								if (wcsncmp(reading32 - 4, L"vint32_t", 8) == 0 && wcsncmp(reading64 - 4, L"vint64_t", 8) == 0)
+								{
+									reading32 += 4;
+									reading64 += 4;
+									goto NEXT_ROUND;
+								}
+							}
+							if (length >= 5)
+							{
+								if (wcsncmp(reading32 - 5, L"vuint32_t", 9) == 0 && wcsncmp(reading64 - 5, L"vuint64_t", 9) == 0)
 								{
 									reading32 += 4;
 									reading64 += 4;
@@ -21515,13 +21628,17 @@ MergeCppFile
 								goto NEXT_ROUND;
 							}
 						}
-						throw Exception(L"The difference at " + itow((vint)(reading32 - start32)) + L"-th character between Input C++ source files are not "
-							L"\"vint32_t\" and \"vint64_t\", "
-							L"\"<number>\" and \"<number>L\", "
-							L"\"<number>\" and \"<number>UL\"."
-							);
-					NEXT_ROUND:;
 
+						{
+							vint row32 = 0;
+							vint column32 = 0;
+							vint row64 = 0;
+							vint column64 = 0;
+							CountRowAndColumn(start32, reading32, row32, column32);
+							CountRowAndColumn(start64, reading64, row64, column64);
+							throw MergeCppMultiPlatformException(row32, column32, row64, column64);
+						}
+					NEXT_ROUND:;
 #undef IS_DIGIT
 					}
 				});
