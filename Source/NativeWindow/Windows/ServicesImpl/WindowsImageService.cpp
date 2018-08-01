@@ -227,6 +227,48 @@ WindowsImage
 				}
 			}
 
+			void CopyMetadataBody(IWICMetadataQueryReader* reader, IWICMetadataQueryWriter* writer, const WString& prefix)
+			{
+				IEnumString* enumString = nullptr;
+				HRESULT hr = reader->GetEnumerator(&enumString);
+				if (enumString)
+				{
+					while (true)
+					{
+						LPOLESTR metadataName = nullptr;
+						ULONG fetched = 0;
+						hr = enumString->Next(1, &metadataName, &fetched);
+						if (hr != S_OK) break;
+						if (fetched == 0) break;
+
+						PROPVARIANT metadataValue;
+						PropVariantInit(&metadataValue);
+						hr = reader->GetMetadataByName(metadataName, &metadataValue);
+						if (hr == S_OK)
+						{
+							if (metadataValue.vt == VT_UNKNOWN && metadataValue.punkVal)
+							{
+								IWICMetadataQueryReader* embeddedReader = nullptr;
+								hr = metadataValue.punkVal->QueryInterface<IWICMetadataQueryReader>(&embeddedReader);
+								if (embeddedReader)
+								{
+									CopyMetadataBody(embeddedReader, writer, prefix + metadataName);
+									embeddedReader->Release();
+								}
+							}
+							else
+							{
+								hr = writer->SetMetadataByName((prefix + metadataName).Buffer(), &metadataValue);
+							}
+							hr = PropVariantClear(&metadataValue);
+						}
+
+						CoTaskMemFree(metadataName);
+					}
+					enumString->Release();
+				}
+			}
+
 			template<typename TDecoder, typename TEncoder>
 			void CopyMetadata(TDecoder* decoder, TEncoder* encoder)
 			{
@@ -236,31 +278,7 @@ WindowsImage
 				hr = encoder->GetMetadataQueryWriter(&writer);
 				if (reader && writer)
 				{
-					IEnumString* enumString = nullptr;
-					hr = reader->GetEnumerator(&enumString);
-					if (enumString)
-					{
-						while (true)
-						{
-							LPOLESTR metadataName = nullptr;
-							ULONG fetched = 0;
-							hr = enumString->Next(1, &metadataName, &fetched);
-							if (hr != S_OK) break;
-							if (fetched == 0) break;
-
-							PROPVARIANT metadataValue;
-							PropVariantInit(&metadataValue);
-							hr = reader->GetMetadataByName(metadataName, &metadataValue);
-							if (hr == S_OK)
-							{
-								hr = writer->SetMetadataByName(metadataName, &metadataValue);
-								hr = PropVariantClear(&metadataValue);
-							}
-
-							CoTaskMemFree(metadataName);
-						}
-						enumString->Release();
-					}
+					CopyMetadataBody(reader, writer, WString::Empty);
 				}
 				if (reader) reader->Release();
 				if (writer) writer->Release();
@@ -404,6 +422,7 @@ WindowsImage
 							hr = frameEncode->Initialize(NULL);
 							CopyMetadata(frameDecode, frameEncode);
 							hr = frameEncode->WriteSource(frameDecode, NULL);
+							CHECK_ERROR(hr == S_OK, L"");
 							hr = frameEncode->Commit();
 						}
 						if (frameDecode) frameDecode->Release();
