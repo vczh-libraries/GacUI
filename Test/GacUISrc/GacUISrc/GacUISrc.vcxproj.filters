@@ -511,7 +511,7 @@
       <Filter>GacUI\Resources\DocumentClipboard</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>GacUI\Resources\DocumentClipboard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

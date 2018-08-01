@@ -1,47 +1,15 @@
 <Resource>
-  <Instance name="MainWindowInstance">
+  <Folder name="DocumentComponents" content="Link">..\..\Host\Resources\FullControlTest\DocumentComponents.xml</Folder>
+  <Folder name="DocumentEditorBase" content="Link">..\..\Host\Resources\FullControlTest\DocumentEditorBase.xml</Folder>
+  <Folder name="DocumentEditorToolstrip" content="Link">..\..\Host\Resources\FullControlTest\DocumentEditorToolstrip.xml</Folder>
+  <Folder name="ToolbarImages" content="Link">..\..\Host\Resources\FullControlTest\ToolbarImages\Images.xml</Folder>
+
+  <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <Window ref.Name="self" Text="𩰪㦲𦰗𠀼 𣂕𣴑𣱳𦁚" ClientSize="x:480 y:240">
-        <Stack MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical" Padding="10">
-          <StackItem>
-            <Button Text="ShowModalAndDelete">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    var window = new MainWindow*();
-                    window.MoveToScreenCenter();
-                    window.ShowModalAndDelete(self, func():void{});
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </StackItem>
-          <StackItem>
-            <Button Text="$Await ShowModalAsync">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  $Async{
-                    var window = new MainWindow*();
-                    window.MoveToScreenCenter();
-                    $Await window.ShowModalAsync(self);
-                    delete window;
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </StackItem>
-          <StackItem>
-            <Button Text="Close">
-              <ev.Clicked-eval>
-                <![CDATA[
-                 {
-                    self.Close();
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </StackItem>
-        </Stack>
+      <Window Text="Document Editor" ClientSize="x:800 y:600">
+        <demo:DocumentEditorToolstrip>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </demo:DocumentEditorToolstrip>
       </Window>
     </Instance>
   </Instance>

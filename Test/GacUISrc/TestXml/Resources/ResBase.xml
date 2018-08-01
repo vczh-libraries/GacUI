@@ -1,5 +1,0 @@
-<Resource>
-  <Folder name="Images">
-    <Image name="Logo" content="File">..\..\Host\Resources\Gaclib.png</Image>
-  </Folder>
-</Resource>

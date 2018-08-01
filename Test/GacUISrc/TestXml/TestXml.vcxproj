@@ -192,8 +192,6 @@
     <Xml Include="Resources\Resource.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="Resources\ResBase.xml" />
-    <Xml Include="Resources\ResDerived.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GacUISrc\GacUISrc.vcxproj">
