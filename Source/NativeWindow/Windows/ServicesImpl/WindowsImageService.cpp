@@ -422,7 +422,6 @@ WindowsImage
 							hr = frameEncode->Initialize(NULL);
 							CopyMetadata(frameDecode, frameEncode);
 							hr = frameEncode->WriteSource(frameDecode, NULL);
-							CHECK_ERROR(hr == S_OK, L"");
 							hr = frameEncode->Commit();
 						}
 						if (frameDecode) frameDecode->Release();
