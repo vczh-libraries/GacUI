@@ -154,29 +154,36 @@ namespace vl
 			{
 				paragraph->Accept(&visitor);
 			}
+
+			internal::ContextFreeWriter writer(stream);
+			{
+				WString title = L"WCF_Document";
+				vint32_t version = 1;
+				writer << title << version;
+			}
+			{
+				auto xmlText = GenerateToStream([&](StreamWriter& streamWriter)
+				{
+					auto xml = model->SaveToXml();
+					XmlPrint(xml, streamWriter);
+				});
+				writer << xmlText;
+			}
 			{
 				vint32_t count = (vint32_t)visitor.imageRuns.Count();
-				stream.Write(&count, sizeof(count));
+				writer << count;
+
 				FOREACH(Ptr<DocumentImageRun>, imageRun, visitor.imageRuns)
 				{
-					stream::MemoryStream memoryStream;
+					MemoryStream memoryStream;
 					if (imageRun->image)
 					{
 						imageRun->image->SaveToStream(memoryStream);
 					}
 					
-					count = (vint32_t)memoryStream.Size();
-					stream.Write(&count, sizeof(count));
-					if (count > 0)
-					{
-						stream.Write(memoryStream.GetInternalBuffer(), count);
-					}
+					writer << (IStream&)memoryStream;
 				}
 			}
-
-			StreamWriter streamWriter(stream);
-			auto xml = model->SaveToXml();
-			XmlPrint(xml, streamWriter);
 		}
 	}
 }
