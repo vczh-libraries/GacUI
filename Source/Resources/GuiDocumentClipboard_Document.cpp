@@ -114,34 +114,40 @@ namespace vl
 			tempResource->AddItem(L"Document", tempResourceItem);
 			auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
 
+			internal::ContextFreeReader reader(stream);
 			{
-				vint32_t count = 0;
-				if (stream.Read(&count, sizeof(count)) != sizeof(count)) return nullptr;
-				for (vint i = 0; i < count; i++)
+				WString title;
+				vint32_t version = 0;
+				reader << title << version;
+
+				if (title != L"WCF_Document" || version < 1)
 				{
-					vint32_t size = 0;
-					if (stream.Read(&size, sizeof(size)) != sizeof(size)) return nullptr;
-					if (size > 0)
-					{
-						Array<char> buffer(size);
-						if (stream.Read(&buffer[0], size) != size) return nullptr;
-						if (auto image = GetCurrentController()->ImageService()->CreateImageFromMemory(&buffer[0], buffer.Count()))
-						{
-							auto imageItem = MakePtr<GuiResourceItem>();
-							imageItem->SetContent(L"Image", MakePtr<GuiImageData>(image, 0));
-							tempResource->AddItem(L"Image_" + itow(i), imageItem);
-						}
-					}
+					return nullptr;
 				}
 			}
 
-			StreamReader streamReader(stream);
-			auto text = streamReader.ReadToEnd();
+			WString xmlText;
+			reader << xmlText;
 			List<GuiResourceError> errors;
-
 			auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
-			auto xml = parser->Parse({}, text, errors);
+			auto xml = parser->Parse({}, xmlText, errors);
 			if (errors.Count() > 0) return nullptr;
+
+			{
+				vint32_t count = 0;
+				reader << count;
+				for (vint i = 0; i < count; i++)
+				{
+					MemoryStream memoryStream;
+					reader << (IStream&)memoryStream;
+					if (auto image = GetCurrentController()->ImageService()->CreateImageFromStream(memoryStream))
+					{
+						auto imageItem = MakePtr<GuiResourceItem>();
+						imageItem->SetContent(L"Image", MakePtr<GuiImageData>(image, 0));
+						tempResource->AddItem(L"Image_" + itow(i), imageItem);
+					}
+				}
+			}
 
 			auto document = DocumentModel::LoadFromXml(tempResourceItem, xml, tempResolver, errors);
 			return document;
