@@ -244,11 +244,12 @@ WindowsImage
 						{
 							LPOLESTR metadataName = nullptr;
 							ULONG fetched = 0;
-							hr = enumString->Next(0, &metadataName, &fetched);
+							hr = enumString->Next(1, &metadataName, &fetched);
 							if (hr != S_OK) break;
 							if (fetched == 0) break;
 
 							PROPVARIANT metadataValue;
+							PropVariantInit(&metadataValue);
 							hr = reader->GetMetadataByName(metadataName, &metadataValue);
 							if (hr == S_OK)
 							{
