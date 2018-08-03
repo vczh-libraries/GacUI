@@ -326,6 +326,8 @@ WindowsImage
 				auto factory = GetWICImagingFactory();
 				GUID formatGUID;
 				HRESULT hr;
+
+				bool sameFormat = formatType == INativeImage::Unknown || formatType == GetFormat();
 				if (formatType == INativeImage::Unknown)
 				{
 					hr = bitmapDecoder->GetContainerFormat(&formatGUID);
@@ -407,7 +409,11 @@ WindowsImage
 							source->Release();
 						}
 					}
-					CopyMetadata(bitmapDecoder.Obj(), bitmapEncoder);
+
+					if (sameFormat)
+					{
+						CopyMetadata(bitmapDecoder.Obj(), bitmapEncoder);
+					}
 
 					UINT frameCount = 0;
 					bitmapDecoder->GetFrameCount(&frameCount);
@@ -420,7 +426,10 @@ WindowsImage
 						if (frameDecode && frameEncode)
 						{
 							hr = frameEncode->Initialize(NULL);
-							CopyMetadata(frameDecode, frameEncode);
+							if (sameFormat)
+							{
+								CopyMetadata(frameDecode, frameEncode);
+							}
 							hr = frameEncode->WriteSource(frameDecode, NULL);
 							hr = frameEncode->Commit();
 						}

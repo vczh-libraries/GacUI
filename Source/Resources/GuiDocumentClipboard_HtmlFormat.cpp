@@ -130,7 +130,13 @@ namespace vl
 					if (run->image)
 					{
 						writer.WriteString(L"<img width=\"" + itow(run->size.x) + L"\" height=\"" + itow(run->size.y) + L"\" src=\"data:image/");
-						switch (run->image->GetFormat())
+						auto format = run->image->GetFormat();
+						if (format == INativeImage::Gif)
+						{
+							format = INativeImage::Png;
+						}
+
+						switch (format)
 						{
 						case INativeImage::Bmp: writer.WriteString(L"bmp;base64,"); break;
 						case INativeImage::Gif: writer.WriteString(L"gif;base64,"); break;
@@ -143,7 +149,7 @@ namespace vl
 						}
 
 						MemoryStream memoryStream;
-						run->image->SaveToStream(memoryStream);
+						run->image->SaveToStream(memoryStream, format);
 						memoryStream.SeekFromBegin(0);
 						while (true)
 						{

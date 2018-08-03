@@ -184,7 +184,13 @@ namespace vl
 					MemoryStream memoryStream;
 					if (imageRun->image)
 					{
-						imageRun->image->SaveToStream(memoryStream);
+						auto format = imageRun->image->GetFormat();
+						if (format == INativeImage::Gif)
+						{
+							format = INativeImage::Png;
+						}
+
+						imageRun->image->SaveToStream(memoryStream, format);
 					}
 					
 					writer << (IStream&)memoryStream;
