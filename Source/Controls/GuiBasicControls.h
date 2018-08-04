@@ -126,8 +126,8 @@ Basic Construction
 				compositions::GuiNotifyEvent			ControlThemeNameChanged;
 				/// <summary>Control template changed event. This event will be raised when the control template is changed.</summary>
 				compositions::GuiNotifyEvent			ControlTemplateChanged;
-				/// <summary>Render target changed event. This event will be raised when the render target of the control is changed.</summary>
-				compositions::GuiNotifyEvent			RenderTargetChanged;
+				/// <summary>Control signal trigerred. This event will be raised because of multiple reason specified in the argument.</summary>
+				compositions::GuiControlSignalEvent		ControlSignalTrigerred;
 				/// <summary>Visible event. This event will be raised when the visibility state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			VisibleChanged;
 				/// <summary>Enabled event. This event will be raised when the enabling state of the control is changed.</summary>

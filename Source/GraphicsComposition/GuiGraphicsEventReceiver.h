@@ -313,11 +313,35 @@ Predefined Events
 				}
 			};
 
+			/// <summary>Control signal.</summary>
+			enum class ControlSignal
+			{
+				/// <summary>Render target changed.</summary>
+				RenderTargetChanged,
+				/// <summary>Render target changed.</summary>
+				ParentLineChanged,
+				/// <summary>Service added changed.</summary>
+				ServiceAdded,
+			};
+
+			/// <summary>Control signal event arguments.</summary>
+			struct GuiControlSignalEventArgs : public GuiEventArgs, public Description<GuiMouseEventArgs>
+			{
+				/// <summary>The event raiser composition.</summary>
+				ControlSignal				controlSiangl = ControlSignal::ParentLineChanged;
+
+				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
+				GuiControlSignalEventArgs()
+				{
+				}
+			};
+
 			typedef GuiGraphicsEvent<GuiEventArgs>				GuiNotifyEvent;
 			typedef GuiGraphicsEvent<GuiRequestEventArgs>		GuiRequestEvent;
 			typedef GuiGraphicsEvent<GuiKeyEventArgs>			GuiKeyEvent;
 			typedef GuiGraphicsEvent<GuiCharEventArgs>			GuiCharEvent;
 			typedef GuiGraphicsEvent<GuiMouseEventArgs>			GuiMouseEvent;
+			typedef GuiGraphicsEvent<GuiControlSignalEventArgs>	GuiControlSignalEvent;
 
 /***********************************************************************
 Predefined Item Events

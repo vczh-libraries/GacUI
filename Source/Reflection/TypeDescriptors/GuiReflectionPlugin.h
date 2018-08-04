@@ -198,6 +198,8 @@ Type List (Events)
 			F(presentation::compositions::GuiKeyEventArgs)\
 			F(presentation::compositions::GuiCharEventArgs)\
 			F(presentation::compositions::GuiMouseEventArgs)\
+			F(presentation::compositions::ControlSignal)\
+			F(presentation::compositions::GuiControlSignalEventArgs)\
 			F(presentation::compositions::GuiItemEventArgs)\
 			F(presentation::compositions::GuiItemMouseEventArgs)\
 			F(presentation::compositions::GuiNodeEventArgs)\

@@ -703,7 +703,7 @@ Type Declaration (Class)
 
 				CLASS_MEMBER_EXTERNALMETHOD(SafeDelete, NO_PARAMETER, void(GuiControl::*)(), vl::presentation::compositions::SafeDeleteControl)
 
-				CLASS_MEMBER_GUIEVENT(RenderTargetChanged)
+				CLASS_MEMBER_GUIEVENT(ControlSignalTrigerred)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ControlThemeName)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ControlTemplate)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BoundsComposition)
