@@ -1,15 +1,103 @@
 <Resource>
-  <Folder name="DocumentComponents" content="Link">..\..\Host\Resources\FullControlTest\DocumentComponents.xml</Folder>
-  <Folder name="DocumentEditorBase" content="Link">..\..\Host\Resources\FullControlTest\DocumentEditorBase.xml</Folder>
-  <Folder name="DocumentEditorToolstrip" content="Link">..\..\Host\Resources\FullControlTest\DocumentEditorToolstrip.xml</Folder>
-  <Folder name="ToolbarImages" content="Link">..\..\Host\Resources\FullControlTest\ToolbarImages\Images.xml</Folder>
+  <Script name="ViewModelResource">
+    <Workflow>
+      <![CDATA[
+        module viewmodel;
+        
+        interface IDemoService
+        {
+          static func GetIdentifier() : string { return "IDemoService"; }
+          
+          prop Name : string {}
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
+  <Instance name="DemoServiceControlResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DemoServiceControl">
+      <ref.Members>
+        <![CDATA[
+          @cpp:Private
+          var demoService : IDemoService* = null;
+        ]]>
+      </ref.Members>
+      <CustomControl ref.Name="self">
+        <ev.RenderTargetChanged-eval>
+          <![CDATA[
+            {
+              self.demoService = self.QueryService(IDemoService::GetIdentifier()) as IDemoService*;
+              if (self.demoService is not null)
+              {
+                textBox.Text = self.demoService.Name;
+              }
+            }
+          ]]>
+        </ev.RenderTargetChanged-eval>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <SinglelineTextBox ref.Name="textBox">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.TextChanged-eval>
+                <![CDATA[
+                  {
+                    if (self.demoService is not null)
+                    {
+                      self.demoService.Name = textBox.Text;
+                    }
+                  }
+                ]]>
+              </ev.TextChanged-eval>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:2 column:0">
+            <SolidLabel HorizontalAlignment="Center" Font-bind="self.Font" Color="#FFFFFF" Text="Type and change the title of the window."/>
+          </Cell>
+        </Table>
+      </CustomControl>
+    </Instance>
+  </Instance>
 
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <Window Text="Document Editor" ClientSize="x:800 y:600">
-        <demo:DocumentEditorToolstrip>
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-        </demo:DocumentEditorToolstrip>
+      <ref.Members>
+        <![CDATA[
+          @cpp:Private
+          var demoService : IDemoService^ = new IDemoService^
+          {
+            override prop Name : string = "Name of MainWindow" {}
+          };
+        ]]>
+      </ref.Members>
+      <Window ref.Name="self" Text-bind="self.demoService.Name" ClientSize="x:640 y:480">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <demo:DemoServiceControl>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:100"/>
+            </demo:DemoServiceControl>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>
