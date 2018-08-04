@@ -81,7 +81,7 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiControlSignalEventArgs)
 				CLASS_MEMBER_BASE(GuiEventArgs)
 				
-				CLASS_MEMBER_FIELD(controlSiangl)
+				CLASS_MEMBER_FIELD(controlSignal)
 			END_CLASS_MEMBER(GuiControlSignalEventArgs)
 
 			BEGIN_CLASS_MEMBER(GuiItemEventArgs)

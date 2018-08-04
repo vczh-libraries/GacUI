@@ -23,7 +23,7 @@
         ]]>
       </ref.Members>
       <CustomControl ref.Name="self">
-        <ev.RenderTargetChanged-eval>
+        <ev.ControlSignalTrigerred-eval>
           <![CDATA[
             {
               self.demoService = self.QueryService(IDemoService::GetIdentifier()) as IDemoService*;
@@ -33,7 +33,7 @@
               }
             }
           ]]>
-        </ev.RenderTargetChanged-eval>
+        </ev.ControlSignalTrigerred-eval>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>

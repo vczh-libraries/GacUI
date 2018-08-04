@@ -99,6 +99,24 @@ GuiControl
 
 			void GuiControl::OnParentLineChanged()
 			{
+				{
+					GuiControlSignalEventArgs arguments(boundsComposition);
+					arguments.controlSignal = ControlSignal::ParentLineChanged;
+					ControlSignalTrigerred.Execute(arguments);
+				}
+				for(vint i=0;i<children.Count();i++)
+				{
+					children[i]->OnParentLineChanged();
+				}
+			}
+
+			void GuiControl::OnServiceAdded()
+			{
+				{
+					GuiControlSignalEventArgs arguments(boundsComposition);
+					arguments.controlSignal = ControlSignal::ServiceAdded;
+					ControlSignalTrigerred.Execute(arguments);
+				}
 				for(vint i=0;i<children.Count();i++)
 				{
 					children[i]->OnParentLineChanged();
@@ -107,7 +125,9 @@ GuiControl
 
 			void GuiControl::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
 			{
-				RenderTargetChanged.Execute(GetNotifyEventArguments());
+				GuiControlSignalEventArgs arguments(boundsComposition);
+				arguments.controlSignal = ControlSignal::RenderTargetChanged;
+				ControlSignalTrigerred.Execute(arguments);
 			}
 
 			void GuiControl::OnBeforeReleaseGraphicsHost()
@@ -214,7 +234,7 @@ GuiControl
 				{
 					ControlThemeNameChanged.SetAssociatedComposition(boundsComposition);
 					ControlTemplateChanged.SetAssociatedComposition(boundsComposition);
-					RenderTargetChanged.SetAssociatedComposition(boundsComposition);
+					ControlSignalTrigerred.SetAssociatedComposition(boundsComposition);
 					VisibleChanged.SetAssociatedComposition(boundsComposition);
 					EnabledChanged.SetAssociatedComposition(boundsComposition);
 					VisuallyEnabledChanged.SetAssociatedComposition(boundsComposition);
@@ -580,7 +600,9 @@ GuiControl
 				{
 					return false;
 				}
+
 				controlServices.Add(identifier, value);
+				OnServiceAdded();
 				return true;
 			}
 

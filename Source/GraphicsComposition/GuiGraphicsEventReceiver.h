@@ -328,10 +328,17 @@ Predefined Events
 			struct GuiControlSignalEventArgs : public GuiEventArgs, public Description<GuiMouseEventArgs>
 			{
 				/// <summary>The event raiser composition.</summary>
-				ControlSignal				controlSiangl = ControlSignal::ParentLineChanged;
+				ControlSignal				controlSignal = ControlSignal::ParentLineChanged;
 
 				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
 				GuiControlSignalEventArgs()
+				{
+				}
+
+				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to a specified value.</summary>
+				/// <param name="composition">The speciied value to set <see cref="compositionSource"/> and <see cref="eventSource"/>.</param>
+				GuiControlSignalEventArgs(GuiGraphicsComposition* composition)
+					:GuiEventArgs(composition)
 				{
 				}
 			};
