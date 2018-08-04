@@ -25,6 +25,7 @@
       <CustomControl ref.Name="self">
         <ev.ControlSignalTrigerred-eval>
           <![CDATA[
+            if (arguments.controlSignal == ControlSignal::ParentLineChanged or arguments.controlSignal == ControlSignal::ServiceAdded)
             {
               self.demoService = self.QueryService(IDemoService::GetIdentifier()) as IDemoService*;
               if (self.demoService is not null)

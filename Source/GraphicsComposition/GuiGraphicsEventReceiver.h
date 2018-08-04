@@ -325,7 +325,7 @@ Predefined Events
 			};
 
 			/// <summary>Control signal event arguments.</summary>
-			struct GuiControlSignalEventArgs : public GuiEventArgs, public Description<GuiMouseEventArgs>
+			struct GuiControlSignalEventArgs : public GuiEventArgs, public Description<GuiControlSignalEventArgs>
 			{
 				/// <summary>The event raiser composition.</summary>
 				ControlSignal				controlSignal = ControlSignal::ParentLineChanged;

@@ -140,7 +140,7 @@ GuiToolstripCommand
 					{
 						if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
 						{
-							control->RenderTargetChanged.Detach(renderTargetChangedHandler);
+							control->ControlSignalTrigerred.Detach(renderTargetChangedHandler);
 						}
 						else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(attachedRootObject))
 						{
@@ -154,7 +154,11 @@ GuiToolstripCommand
 					{
 						if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
 						{
-							renderTargetChangedHandler = control->RenderTargetChanged.AttachMethod(this, &GuiToolstripCommand::OnRenderTargetChanged);
+							renderTargetChangedHandler = control->ControlSignalTrigerred.AttachLambda(
+								[=](GuiGraphicsComposition* sender, GuiControlSignalEventArgs& arguments)
+								{
+									OnRenderTargetChanged(sender, arguments);
+								});
 						}
 						else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(attachedRootObject))
 						{
