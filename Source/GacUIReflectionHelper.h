@@ -93,12 +93,6 @@ External Functions
 			extern void														GuiTableComposition_SetRows(presentation::compositions::GuiTableComposition* thisObject, vint value);
 			extern void														GuiTableComposition_SetColumns(presentation::compositions::GuiTableComposition* thisObject, vint value);
 			extern void														IGuiAltActionHost_CollectAltActions(presentation::compositions::IGuiAltActionHost* host, collections::List<presentation::compositions::IGuiAltAction*>& actions);
-
-			template<typename T>
-			WString Interface_GetIdentifier()
-			{
-				return T::Identifier;
-			}
 		}
 	}
 }

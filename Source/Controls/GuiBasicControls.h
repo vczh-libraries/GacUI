@@ -23,6 +23,26 @@ namespace vl
 
 		namespace controls
 		{
+			template<typename T, typename Enabled = YesType>
+			struct QueryServiceHelper;
+
+			template<typename T>
+			struct QueryServiceHelper<T, typename RequiresConvertable<decltype(T::Identifier), const wchar_t* const>::YesNoType>
+			{
+				static WString GetIdentifier()
+				{
+					return WString(T::Identifier, false);
+				}
+			};
+
+			template<typename T>
+			struct QueryServiceHelper<T, typename RequiresConvertable<decltype(T::GetIdentifier()), WString>::YesNoType>
+			{
+				static WString GetIdentifier()
+				{
+					return MoveValue<WString>(T::GetIdentifier());
+				}
+			};
 
 /***********************************************************************
 Basic Construction
@@ -259,7 +279,7 @@ Basic Construction
 				template<typename T>
 				T* QueryTypedService()
 				{
-					return dynamic_cast<T*>(QueryService(T::Identifier));
+					return dynamic_cast<T*>(QueryService(QueryServiceHelper<T>::GetIdentifier()));
 				}
 			};
 
