@@ -60,6 +60,7 @@ Basic Construction
 
 			protected:
 				using ControlList = collections::List<GuiControl*>;
+				using ControlServiceMap = collections::Dictionary<WString, Ptr<IDescriptable>>;
 				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
 
 			private:
@@ -81,6 +82,7 @@ Basic Construction
 				FontProperties							font;
 				description::Value						context;
 				compositions::IGuiAltActionHost*		activatingAltHost = nullptr;
+				ControlServiceMap						controlServices;
 
 				GuiControl*								parent = nullptr;
 				ControlList								children;
@@ -275,6 +277,12 @@ Basic Construction
 				/// <returns>The requested service. If the control doesn't support this service, it will be null.</returns>
 				/// <param name="identifier">The identifier.</param>
 				virtual IDescriptable*					QueryService(const WString& identifier);
+
+				/// <summary>Add a service to this control dynamically. The added service cannot override existing services.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="identifier">The identifier. You are suggested to fill this parameter using the value from the interface's GetIdentifier function, or <see cref="QueryTypedService"/> will not work on this service.</param>
+				/// <param name="value">The service.</param>
+				bool									AddService(const WString& identifier, Ptr<IDescriptable> value);
 
 				template<typename T>
 				T* QueryTypedService()

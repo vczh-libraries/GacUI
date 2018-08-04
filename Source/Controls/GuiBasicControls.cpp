@@ -556,16 +556,32 @@ GuiControl
 				}
 				else if (identifier == IGuiAltActionContainer::Identifier)
 				{
-					return 0;
-				}
-				else if(parent)
-				{
-					return parent->QueryService(identifier);
+					return nullptr;
 				}
 				else
 				{
-					return 0;
+					vint index = controlServices.Keys().IndexOf(identifier);
+					if (index != -1)
+					{
+						return controlServices.Values()[index].Obj();
+					}
+
+					if (parent)
+					{
+						return parent->QueryService(identifier);
+					}
 				}
+				return nullptr;
+			}
+
+			bool GuiControl::AddService(const WString& identifier, Ptr<IDescriptable> value)
+			{
+				if (controlServices.Keys().Contains(identifier))
+				{
+					return false;
+				}
+				controlServices.Add(identifier, value);
+				return true;
 			}
 
 /***********************************************************************

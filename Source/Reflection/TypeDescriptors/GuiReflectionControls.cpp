@@ -731,7 +731,8 @@ Type Declaration (Class)
 				CLASS_MEMBER_METHOD(SetFocus, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(DisplayTooltip, {L"location"})
 				CLASS_MEMBER_METHOD(CloseTooltip, NO_PARAMETER)
-				CLASS_MEMBER_METHOD_OVERLOAD(QueryService, {L"identifier"}, IDescriptable*(GuiControl::*)(const WString&))
+				CLASS_MEMBER_METHOD(QueryService, {L"identifier"})
+				CLASS_MEMBER_METHOD(AddService, { L"identifier" _ L"value" })
 			END_CLASS_MEMBER(GuiControl)
 
 			BEGIN_CLASS_MEMBER(GuiCustomControl)
@@ -991,7 +992,6 @@ Type Declaration (Class)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiMenu, GuiControl*, owner)
 
 				CLASS_MEMBER_METHOD(UpdateMenuService, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(QueryService, {L"identifier"})
 			END_CLASS_MEMBER(GuiMenu)
 
 			BEGIN_CLASS_MEMBER(GuiMenuBar)
