@@ -5418,10 +5418,18 @@ WfTypeImpl
 			{
 				FOREACH(Ptr<WfClass>, td, classes)
 				{
+					if (td->GetBaseTypeDescriptorCount() == 0)
+					{
+						td->AddBaseType(description::GetTypeDescriptor<DescriptableObject>());
+					}
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
 				FOREACH(Ptr<WfInterface>, td, interfaces)
 				{
+					if (td->GetBaseTypeDescriptorCount() == 0)
+					{
+						td->AddBaseType(description::GetTypeDescriptor<IDescriptable>());
+					}
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
 				FOREACH(Ptr<WfStruct>, td, structs)

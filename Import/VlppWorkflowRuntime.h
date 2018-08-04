@@ -730,7 +730,7 @@ Instance
 				void									InstallBaseObject(ITypeDescriptor* td, Value& value);
 			};
 
-			class WfInterfaceInstance : public Object, public reflection::Description<WfInterfaceInstance>
+			class WfInterfaceInstance : public Object, public reflection::IDescriptable, public reflection::Description<WfInterfaceInstance>
 			{
 				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
 				typedef reflection::description::IMethodInfo				IMethodInfo;

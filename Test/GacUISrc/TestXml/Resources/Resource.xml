@@ -79,6 +79,13 @@
           };
         ]]>
       </ref.Members>
+      <ref.Ctor>
+        <![CDATA[
+          {
+            self.AddService(IDemoService::GetIdentifier(), self.demoService);
+          }
+        ]]>
+      </ref.Ctor>
       <Window ref.Name="self" Text-bind="self.demoService.Name" ClientSize="x:640 y:480">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
