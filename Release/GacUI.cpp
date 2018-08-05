@@ -804,6 +804,24 @@ GuiControl
 
 			void GuiControl::OnParentLineChanged()
 			{
+				{
+					GuiControlSignalEventArgs arguments(boundsComposition);
+					arguments.controlSignal = ControlSignal::ParentLineChanged;
+					ControlSignalTrigerred.Execute(arguments);
+				}
+				for(vint i=0;i<children.Count();i++)
+				{
+					children[i]->OnParentLineChanged();
+				}
+			}
+
+			void GuiControl::OnServiceAdded()
+			{
+				{
+					GuiControlSignalEventArgs arguments(boundsComposition);
+					arguments.controlSignal = ControlSignal::ServiceAdded;
+					ControlSignalTrigerred.Execute(arguments);
+				}
 				for(vint i=0;i<children.Count();i++)
 				{
 					children[i]->OnParentLineChanged();
@@ -812,7 +830,9 @@ GuiControl
 
 			void GuiControl::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
 			{
-				RenderTargetChanged.Execute(GetNotifyEventArguments());
+				GuiControlSignalEventArgs arguments(boundsComposition);
+				arguments.controlSignal = ControlSignal::RenderTargetChanged;
+				ControlSignalTrigerred.Execute(arguments);
 			}
 
 			void GuiControl::OnBeforeReleaseGraphicsHost()
@@ -919,7 +939,7 @@ GuiControl
 				{
 					ControlThemeNameChanged.SetAssociatedComposition(boundsComposition);
 					ControlTemplateChanged.SetAssociatedComposition(boundsComposition);
-					RenderTargetChanged.SetAssociatedComposition(boundsComposition);
+					ControlSignalTrigerred.SetAssociatedComposition(boundsComposition);
 					VisibleChanged.SetAssociatedComposition(boundsComposition);
 					EnabledChanged.SetAssociatedComposition(boundsComposition);
 					VisuallyEnabledChanged.SetAssociatedComposition(boundsComposition);
@@ -1261,16 +1281,34 @@ GuiControl
 				}
 				else if (identifier == IGuiAltActionContainer::Identifier)
 				{
-					return 0;
-				}
-				else if(parent)
-				{
-					return parent->QueryService(identifier);
+					return nullptr;
 				}
 				else
 				{
-					return 0;
+					vint index = controlServices.Keys().IndexOf(identifier);
+					if (index != -1)
+					{
+						return controlServices.Values()[index].Obj();
+					}
+
+					if (parent)
+					{
+						return parent->QueryService(identifier);
+					}
 				}
+				return nullptr;
+			}
+
+			bool GuiControl::AddService(const WString& identifier, Ptr<IDescriptable> value)
+			{
+				if (controlServices.Keys().Contains(identifier))
+				{
+					return false;
+				}
+
+				controlServices.Add(identifier, value);
+				OnServiceAdded();
+				return true;
 			}
 
 /***********************************************************************
@@ -22199,7 +22237,7 @@ GuiToolstripCommand
 					{
 						if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
 						{
-							control->RenderTargetChanged.Detach(renderTargetChangedHandler);
+							control->ControlSignalTrigerred.Detach(renderTargetChangedHandler);
 						}
 						else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(attachedRootObject))
 						{
@@ -22213,7 +22251,11 @@ GuiToolstripCommand
 					{
 						if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
 						{
-							renderTargetChangedHandler = control->RenderTargetChanged.AttachMethod(this, &GuiToolstripCommand::OnRenderTargetChanged);
+							renderTargetChangedHandler = control->ControlSignalTrigerred.AttachLambda(
+								[=](GuiGraphicsComposition* sender, GuiControlSignalEventArgs& arguments)
+								{
+									OnRenderTargetChanged(sender, arguments);
+								});
 						}
 						else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(attachedRootObject))
 						{
@@ -32239,34 +32281,40 @@ namespace vl
 			tempResource->AddItem(L"Document", tempResourceItem);
 			auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
 
+			internal::ContextFreeReader reader(stream);
 			{
-				vint32_t count = 0;
-				if (stream.Read(&count, sizeof(count)) != sizeof(count)) return nullptr;
-				for (vint i = 0; i < count; i++)
+				WString title;
+				vint32_t version = 0;
+				reader << title << version;
+
+				if (title != L"WCF_Document" || version < 1)
 				{
-					vint32_t size = 0;
-					if (stream.Read(&size, sizeof(size)) != sizeof(size)) return nullptr;
-					if (size > 0)
-					{
-						Array<char> buffer(size);
-						if (stream.Read(&buffer[0], size) != size) return nullptr;
-						if (auto image = GetCurrentController()->ImageService()->CreateImageFromMemory(&buffer[0], buffer.Count()))
-						{
-							auto imageItem = MakePtr<GuiResourceItem>();
-							imageItem->SetContent(L"Image", MakePtr<GuiImageData>(image, 0));
-							tempResource->AddItem(L"Image_" + itow(i), imageItem);
-						}
-					}
+					return nullptr;
 				}
 			}
 
-			StreamReader streamReader(stream);
-			auto text = streamReader.ReadToEnd();
+			WString xmlText;
+			reader << xmlText;
 			List<GuiResourceError> errors;
-
 			auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
-			auto xml = parser->Parse({}, text, errors);
+			auto xml = parser->Parse({}, xmlText, errors);
 			if (errors.Count() > 0) return nullptr;
+
+			{
+				vint32_t count = 0;
+				reader << count;
+				for (vint i = 0; i < count; i++)
+				{
+					MemoryStream memoryStream;
+					reader << (IStream&)memoryStream;
+					if (auto image = GetCurrentController()->ImageService()->CreateImageFromStream(memoryStream))
+					{
+						auto imageItem = MakePtr<GuiResourceItem>();
+						imageItem->SetContent(L"Image", MakePtr<GuiImageData>(image, 0));
+						tempResource->AddItem(L"Image_" + itow(i), imageItem);
+					}
+				}
+			}
 
 			auto document = DocumentModel::LoadFromXml(tempResourceItem, xml, tempResolver, errors);
 			return document;
@@ -32279,29 +32327,42 @@ namespace vl
 			{
 				paragraph->Accept(&visitor);
 			}
+
+			internal::ContextFreeWriter writer(stream);
+			{
+				WString title = L"WCF_Document";
+				vint32_t version = 1;
+				writer << title << version;
+			}
+			{
+				auto xmlText = GenerateToStream([&](StreamWriter& streamWriter)
+				{
+					auto xml = model->SaveToXml();
+					XmlPrint(xml, streamWriter);
+				});
+				writer << xmlText;
+			}
 			{
 				vint32_t count = (vint32_t)visitor.imageRuns.Count();
-				stream.Write(&count, sizeof(count));
+				writer << count;
+
 				FOREACH(Ptr<DocumentImageRun>, imageRun, visitor.imageRuns)
 				{
-					stream::MemoryStream memoryStream;
+					MemoryStream memoryStream;
 					if (imageRun->image)
 					{
-						imageRun->image->SaveToStream(memoryStream);
+						auto format = imageRun->image->GetFormat();
+						if (format == INativeImage::Gif)
+						{
+							format = INativeImage::Png;
+						}
+
+						imageRun->image->SaveToStream(memoryStream, format);
 					}
 					
-					count = (vint32_t)memoryStream.Size();
-					stream.Write(&count, sizeof(count));
-					if (count > 0)
-					{
-						stream.Write(memoryStream.GetInternalBuffer(), count);
-					}
+					writer << (IStream&)memoryStream;
 				}
 			}
-
-			StreamWriter streamWriter(stream);
-			auto xml = model->SaveToXml();
-			XmlPrint(xml, streamWriter);
 		}
 	}
 }
@@ -32440,7 +32501,13 @@ namespace vl
 					if (run->image)
 					{
 						writer.WriteString(L"<img width=\"" + itow(run->size.x) + L"\" height=\"" + itow(run->size.y) + L"\" src=\"data:image/");
-						switch (run->image->GetFormat())
+						auto format = run->image->GetFormat();
+						if (format == INativeImage::Gif)
+						{
+							format = INativeImage::Png;
+						}
+
+						switch (format)
 						{
 						case INativeImage::Bmp: writer.WriteString(L"bmp;base64,"); break;
 						case INativeImage::Gif: writer.WriteString(L"gif;base64,"); break;
@@ -32453,7 +32520,7 @@ namespace vl
 						}
 
 						MemoryStream memoryStream;
-						run->image->SaveToStream(memoryStream);
+						run->image->SaveToStream(memoryStream, format);
 						memoryStream.SeekFromBegin(0);
 						while (true)
 						{

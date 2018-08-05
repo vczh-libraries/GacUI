@@ -836,7 +836,7 @@ namespace vl
 #define _ ,
 
 #define INTERFACE_IDENTIFIER(INTERFACE)\
-	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<::INTERFACE>)
+	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::presentation::controls::QueryServiceHelper<::INTERFACE>::GetIdentifier)
 
 /***********************************************************************
 Type Declaration (Extra)
@@ -1367,7 +1367,7 @@ namespace vl
 	CLASS_MEMBER_PROPERTY_READONLY_FAST(ControlTemplateObject)\
 
 #define INTERFACE_IDENTIFIER(INTERFACE)\
-	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<::INTERFACE>)
+	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::presentation::controls::QueryServiceHelper<::INTERFACE>::GetIdentifier)
 
 /***********************************************************************
 Type Declaration (Extra)
@@ -2030,7 +2030,7 @@ Type Declaration (Class)
 
 				CLASS_MEMBER_EXTERNALMETHOD(SafeDelete, NO_PARAMETER, void(GuiControl::*)(), vl::presentation::compositions::SafeDeleteControl)
 
-				CLASS_MEMBER_GUIEVENT(RenderTargetChanged)
+				CLASS_MEMBER_GUIEVENT(ControlSignalTrigerred)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ControlThemeName)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ControlTemplate)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BoundsComposition)
@@ -2058,7 +2058,8 @@ Type Declaration (Class)
 				CLASS_MEMBER_METHOD(SetFocus, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(DisplayTooltip, {L"location"})
 				CLASS_MEMBER_METHOD(CloseTooltip, NO_PARAMETER)
-				CLASS_MEMBER_METHOD_OVERLOAD(QueryService, {L"identifier"}, IDescriptable*(GuiControl::*)(const WString&))
+				CLASS_MEMBER_METHOD(QueryService, {L"identifier"})
+				CLASS_MEMBER_METHOD(AddService, { L"identifier" _ L"value" })
 			END_CLASS_MEMBER(GuiControl)
 
 			BEGIN_CLASS_MEMBER(GuiCustomControl)
@@ -2318,7 +2319,6 @@ Type Declaration (Class)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiMenu, GuiControl*, owner)
 
 				CLASS_MEMBER_METHOD(UpdateMenuService, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(QueryService, {L"identifier"})
 			END_CLASS_MEMBER(GuiMenu)
 
 			BEGIN_CLASS_MEMBER(GuiMenuBar)
@@ -3163,6 +3163,18 @@ Type Declaration
 				CLASS_MEMBER_FIELD(wheel)
 				CLASS_MEMBER_FIELD(nonClient)
 			END_CLASS_MEMBER(GuiMouseEventArgs)
+
+			BEGIN_ENUM_ITEM(ControlSignal)
+				ENUM_CLASS_ITEM(RenderTargetChanged)
+				ENUM_CLASS_ITEM(ParentLineChanged)
+				ENUM_CLASS_ITEM(ServiceAdded)
+			END_ENUM_ITEM(ControlSignal)
+
+			BEGIN_CLASS_MEMBER(GuiControlSignalEventArgs)
+				CLASS_MEMBER_BASE(GuiEventArgs)
+				
+				CLASS_MEMBER_FIELD(controlSignal)
+			END_CLASS_MEMBER(GuiControlSignalEventArgs)
 
 			BEGIN_CLASS_MEMBER(GuiItemEventArgs)
 				CLASS_MEMBER_BASE(GuiEventArgs)

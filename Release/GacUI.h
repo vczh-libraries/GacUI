@@ -3277,11 +3277,42 @@ Predefined Events
 				}
 			};
 
+			/// <summary>Control signal.</summary>
+			enum class ControlSignal
+			{
+				/// <summary>Render target changed.</summary>
+				RenderTargetChanged,
+				/// <summary>Render target changed.</summary>
+				ParentLineChanged,
+				/// <summary>Service added changed.</summary>
+				ServiceAdded,
+			};
+
+			/// <summary>Control signal event arguments.</summary>
+			struct GuiControlSignalEventArgs : public GuiEventArgs, public Description<GuiControlSignalEventArgs>
+			{
+				/// <summary>The event raiser composition.</summary>
+				ControlSignal				controlSignal = ControlSignal::ParentLineChanged;
+
+				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
+				GuiControlSignalEventArgs()
+				{
+				}
+
+				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to a specified value.</summary>
+				/// <param name="composition">The speciied value to set <see cref="compositionSource"/> and <see cref="eventSource"/>.</param>
+				GuiControlSignalEventArgs(GuiGraphicsComposition* composition)
+					:GuiEventArgs(composition)
+				{
+				}
+			};
+
 			typedef GuiGraphicsEvent<GuiEventArgs>				GuiNotifyEvent;
 			typedef GuiGraphicsEvent<GuiRequestEventArgs>		GuiRequestEvent;
 			typedef GuiGraphicsEvent<GuiKeyEventArgs>			GuiKeyEvent;
 			typedef GuiGraphicsEvent<GuiCharEventArgs>			GuiCharEvent;
 			typedef GuiGraphicsEvent<GuiMouseEventArgs>			GuiMouseEvent;
+			typedef GuiGraphicsEvent<GuiControlSignalEventArgs>	GuiControlSignalEvent;
 
 /***********************************************************************
 Predefined Item Events
@@ -9516,6 +9547,26 @@ namespace vl
 
 		namespace controls
 		{
+			template<typename T, typename Enabled = YesType>
+			struct QueryServiceHelper;
+
+			template<typename T>
+			struct QueryServiceHelper<T, typename RequiresConvertable<decltype(T::Identifier), const wchar_t* const>::YesNoType>
+			{
+				static WString GetIdentifier()
+				{
+					return WString(T::Identifier, false);
+				}
+			};
+
+			template<typename T>
+			struct QueryServiceHelper<T, typename RequiresConvertable<decltype(T::GetIdentifier()), WString>::YesNoType>
+			{
+				static WString GetIdentifier()
+				{
+					return MoveValue<WString>(T::GetIdentifier());
+				}
+			};
 
 /***********************************************************************
 Basic Construction
@@ -9533,6 +9584,7 @@ Basic Construction
 
 			protected:
 				using ControlList = collections::List<GuiControl*>;
+				using ControlServiceMap = collections::Dictionary<WString, Ptr<IDescriptable>>;
 				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
 
 			private:
@@ -9554,6 +9606,7 @@ Basic Construction
 				FontProperties							font;
 				description::Value						context;
 				compositions::IGuiAltActionHost*		activatingAltHost = nullptr;
+				ControlServiceMap						controlServices;
 
 				GuiControl*								parent = nullptr;
 				ControlList								children;
@@ -9572,6 +9625,7 @@ Basic Construction
 				virtual void							OnChildRemoved(GuiControl* control);
 				virtual void							OnParentChanged(GuiControl* oldParent, GuiControl* newParent);
 				virtual void							OnParentLineChanged();
+				virtual void							OnServiceAdded();
 				virtual void							OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget);
 				virtual void							OnBeforeReleaseGraphicsHost();
 				virtual void							UpdateVisuallyEnabled();
@@ -9597,8 +9651,8 @@ Basic Construction
 				compositions::GuiNotifyEvent			ControlThemeNameChanged;
 				/// <summary>Control template changed event. This event will be raised when the control template is changed.</summary>
 				compositions::GuiNotifyEvent			ControlTemplateChanged;
-				/// <summary>Render target changed event. This event will be raised when the render target of the control is changed.</summary>
-				compositions::GuiNotifyEvent			RenderTargetChanged;
+				/// <summary>Control signal trigerred. This event will be raised because of multiple reason specified in the argument.</summary>
+				compositions::GuiControlSignalEvent		ControlSignalTrigerred;
 				/// <summary>Visible event. This event will be raised when the visibility state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			VisibleChanged;
 				/// <summary>Enabled event. This event will be raised when the enabling state of the control is changed.</summary>
@@ -9749,10 +9803,16 @@ Basic Construction
 				/// <param name="identifier">The identifier.</param>
 				virtual IDescriptable*					QueryService(const WString& identifier);
 
+				/// <summary>Add a service to this control dynamically. The added service cannot override existing services.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="identifier">The identifier. You are suggested to fill this parameter using the value from the interface's GetIdentifier function, or <see cref="QueryTypedService"/> will not work on this service.</param>
+				/// <param name="value">The service.</param>
+				bool									AddService(const WString& identifier, Ptr<IDescriptable> value);
+
 				template<typename T>
 				T* QueryTypedService()
 				{
-					return dynamic_cast<T*>(QueryService(T::Identifier));
+					return dynamic_cast<T*>(QueryService(QueryServiceHelper<T>::GetIdentifier()));
 				}
 			};
 
@@ -18225,12 +18285,6 @@ External Functions
 			extern void														GuiTableComposition_SetRows(presentation::compositions::GuiTableComposition* thisObject, vint value);
 			extern void														GuiTableComposition_SetColumns(presentation::compositions::GuiTableComposition* thisObject, vint value);
 			extern void														IGuiAltActionHost_CollectAltActions(presentation::compositions::IGuiAltActionHost* host, collections::List<presentation::compositions::IGuiAltAction*>& actions);
-
-			template<typename T>
-			WString Interface_GetIdentifier()
-			{
-				return T::Identifier;
-			}
 		}
 	}
 }
