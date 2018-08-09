@@ -2,7 +2,83 @@
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
-
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <SolidBorder Color="#FF0000"/>
+          <Stack AlignmentToParent="left:10 top:10" Padding="5" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
+            <StackItem>
+              <CheckBox ref.Name="checkMaximizedBox" Text="MaximizedBox" Selected-eval="self.MaximizedBox" AutoSelection="false">
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      self.MaximizedBox = not self.MaximizedBox;
+                      checkMaximizedBox.Selected = self.MaximizedBox;
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </CheckBox>
+            </StackItem>
+            <StackItem>
+              <CheckBox ref.Name="checkMinimizedBox" Text="MinimizedBox" Selected-eval="self.MinimizedBox" AutoSelection="false">
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      self.MinimizedBox = not self.MinimizedBox;
+                      checkMinimizedBox.Selected = self.MinimizedBox;
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </CheckBox>
+            </StackItem>
+            <StackItem>
+              <CheckBox ref.Name="checkBorder" Text="Border" Selected-eval="self.Border" AutoSelection="false">
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      self.Border = not self.Border;
+                      checkBorder.Selected = self.Border;
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </CheckBox>
+            </StackItem>
+            <StackItem>
+              <CheckBox ref.Name="checkSizeBox" Text="SizeBox" Selected-eval="self.SizeBox" AutoSelection="false">
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      self.SizeBox = not self.SizeBox;
+                      checkSizeBox.Selected = self.SizeBox;
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </CheckBox>
+            </StackItem>
+            <StackItem>
+              <CheckBox ref.Name="checkIconVisible" Text="IconVisible" Selected-eval="self.IconVisible" AutoSelection="false">
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      self.IconVisible = not self.IconVisible;
+                      checkIconVisible.Selected = self.IconVisible;
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </CheckBox>
+            </StackItem>
+            <StackItem>
+              <CheckBox ref.Name="checkTitleBar" Text="TitleBar" Selected-eval="self.TitleBar" AutoSelection="false">
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      self.TitleBar = not self.TitleBar;
+                      checkTitleBar.Selected = self.TitleBar;
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </CheckBox>
+            </StackItem>
+          </Stack>
+        </Bounds>
       </Window>
     </Instance>
   </Instance>
