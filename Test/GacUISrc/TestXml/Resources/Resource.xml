@@ -98,12 +98,6 @@
   <Instance name="WindowTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::WindowTemplate" ref.Styles="res://DarkSkin/Style">
       <WindowTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.MaximizedBoxOption>AlwaysTrue</att.MaximizedBoxOption>
-        <att.MinimizedBoxOption>AlwaysTrue</att.MinimizedBoxOption>
-        <att.BorderOption>AlwaysTrue</att.BorderOption>
-        <att.SizeBoxOption>AlwaysTrue</att.SizeBoxOption>
-        <att.IconVisibleOption>AlwaysTrue</att.IconVisibleOption>
-        <att.TitleBarOption>AlwaysTrue</att.TitleBarOption>
         <att.CustomizedBorder>true</att.CustomizedBorder>
         <att.TooltipTemplate>darkskin::TooltipTemplate</att.TooltipTemplate>
 
