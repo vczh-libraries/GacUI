@@ -1,112 +1,92 @@
 <Resource>
-  <Script name="ViewModelResource">
-    <Workflow>
-      <![CDATA[
-        module viewmodel;
-        
-        interface IDemoService
-        {
-          static func GetIdentifier() : string { return "IDemoService"; }
-          
-          prop Name : string {}
-        }
-      ]]>
-    </Workflow>
-  </Script>
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
+      <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
 
-  <Instance name="DemoServiceControlResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::DemoServiceControl">
-      <ref.Members>
-        <![CDATA[
-          @cpp:Private
-          var demoService : IDemoService* = null;
-        ]]>
-      </ref.Members>
-      <CustomControl ref.Name="self">
-        <ev.ControlSignalTrigerred-eval>
-          <![CDATA[
-            if (arguments.controlSignal == ControlSignal::ParentLineChanged or arguments.controlSignal == ControlSignal::ServiceAdded)
-            {
-              self.demoService = self.QueryService(IDemoService::GetIdentifier()) as IDemoService*;
-              if (self.demoService is not null)
-              {
-                textBox.Text = self.demoService.Name;
-              }
-            }
-          ]]>
-        </ev.ControlSignalTrigerred-eval>
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-          <att.Rows>
-            <_>composeType:MinSize</_>
-            <_>composeType:Percentage percentage:1.0</_>
-            <_>composeType:MinSize</_>
-          </att.Rows>
-          <att.Columns>
-            <_>composeType:Percentage percentage:1.0</_>
-          </att.Columns>
-
-          <Cell Site="row:0 column:0">
-            <SinglelineTextBox ref.Name="textBox">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <ev.TextChanged-eval>
-                <![CDATA[
-                  {
-                    if (self.demoService is not null)
-                    {
-                      self.demoService.Name = textBox.Text;
-                    }
-                  }
-                ]]>
-              </ev.TextChanged-eval>
-            </SinglelineTextBox>
-          </Cell>
-
-          <Cell Site="row:2 column:0">
-            <SolidLabel HorizontalAlignment="Center" Font-bind="self.Font" Color="#FFFFFF" Text="Type and change the title of the window."/>
-          </Cell>
-        </Table>
-      </CustomControl>
+      </Window>
     </Instance>
   </Instance>
 
-  <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <ref.Members>
-        <![CDATA[
-          @cpp:Private
-          var demoService : IDemoService^ = new IDemoService^
-          {
-            override prop Name : string = "Name of MainWindow" {}
-          };
-        ]]>
-      </ref.Members>
-      <ref.Ctor>
-        <![CDATA[
-          {
-            self.AddService(IDemoService::GetIdentifier(), self.demoService);
-          }
-        ]]>
-      </ref.Ctor>
-      <Window ref.Name="self" Text-bind="self.demoService.Name" ClientSize="x:640 y:480">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-          <att.Rows>
-            <_>composeType:Percentage percentage:1.0</_>
-            <_>composeType:MinSize</_>
-            <_>composeType:Percentage percentage:1.0</_>
-          </att.Rows>
-          <att.Columns>
-            <_>composeType:Percentage percentage:1.0</_>
-            <_>composeType:MinSize</_>
-            <_>composeType:Percentage percentage:1.0</_>
-          </att.Columns>
+  <Folder name="DarkSkin">
+    <InstanceStyle name="Style" content="File">..\..\Host\Resources\DarkSkin\Style.xml</InstanceStyle>
+  </Folder>
 
-          <Cell Site="row:1 column:1">
-            <demo:DemoServiceControl>
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:100"/>
-            </demo:DemoServiceControl>
-          </Cell>
-        </Table>
-      </Window>
+  <Instance name="ThemeResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestTheme" xmlns:demo="demo::*">
+      <ThemeTemplates Name="TestSkin">
+        <att.Window>demo:WindowTemplate</att.Window>
+      </ThemeTemplates>
+    </Instance>
+  </Instance>
+
+  <Instance name="WindowTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::WindowTemplate" ref.Styles="res://DarkSkin/Style">
+      <WindowTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.MaximizedBoxOption>AlwaysTrue</att.MaximizedBoxOption>
+        <att.MinimizedBoxOption>AlwaysTrue</att.MinimizedBoxOption>
+        <att.BorderOption>AlwaysTrue</att.BorderOption>
+        <att.SizeBoxOption>AlwaysTrue</att.SizeBoxOption>
+        <att.IconVisibleOption>AlwaysTrue</att.IconVisibleOption>
+        <att.TitleBarOption>AlwaysTrue</att.TitleBarOption>
+        <att.CustomizedBorder>true</att.CustomizedBorder>
+        <att.TooltipTemplate>darkskin::TooltipTemplate</att.TooltipTemplate>
+
+        <SolidBackground Color="#2D2D30"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder Color="#017ACC"/>
+          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.Rows>
+              <CellOption>composeType:Absolute absolute:8</CellOption>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+              <CellOption>composeType:Absolute absolute:8</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Absolute absolute:8</CellOption>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Absolute absolute:8</CellOption>
+            </att.Columns>
+
+            <Cell Site="row:0 column:0" AssociatedHitTestResult="BorderLeftTop"/>
+            <Cell Site="row:0 column:5" AssociatedHitTestResult="BorderRightTop"/>
+            <Cell Site="row:3 column:0" AssociatedHitTestResult="BorderLeftBottom"/>
+            <Cell Site="row:3 column:5" AssociatedHitTestResult="BorderRightBottom"/>
+
+            <Cell Site="row:1 column:0 rowSpan:2 columnSpan:1" AssociatedHitTestResult="BorderLeft"/>
+            <Cell Site="row:1 column:5 rowSpan:2 columnSpan:1" AssociatedHitTestResult="BorderRight"/>
+            <Cell Site="row:0 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="BorderTop"/>
+            <Cell Site="row:3 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="BorderBottom"/>
+
+            <Cell Site="row:1 column:2" AssociatedHitTestResult="ButtonMinimum">
+              <Button Text=" 0 " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+              </Button>
+            </Cell>
+            <Cell Site="row:1 column:3" AssociatedHitTestResult="ButtonMaximum">
+              <Button Text-bind="self.Maximized ? ' 1 ' : ' 2 '" Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+              </Button>
+            </Cell>
+            <Cell Site="row:1 column:4" AssociatedHitTestResult="ButtonClose">
+              <Button Text=" r " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+              </Button>
+            </Cell>
+
+            <Cell Site="row:1 column:1" AssociatedHitTestResult="Title">
+              <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5">
+                <SolidLabel Color="#999999" Text-bind="self.Text" Ellipse="true" Font="fontFamily:'Segoe WP SemiLight' size:14 antialias:true"/>
+              </Bounds>
+            </Cell>
+            <Cell Site="row:2 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="Client">
+              <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Cell>
+          </Table>
+        </Bounds>
+      </WindowTemplate>
     </Instance>
   </Instance>
 </Resource>

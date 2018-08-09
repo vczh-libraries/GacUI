@@ -86,6 +86,10 @@ void OpenMainWindow()
 		RegisterTheme(theme);
 	}
 	{
+		auto theme = UnboxValue<Ptr<ThemeTemplates>>(Value::Create(L"demo::TestTheme"));
+		RegisterTheme(theme);
+	}
+	{
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 		AttachDumpCompositionMenu(window);
 		window->ForceCalculateSizeImmediately();
@@ -106,7 +110,6 @@ void GuiMain()
 	names.Add(L"Resource");
 
 	Group<WString, WString> deps;
-	deps.Add(L"ResDerived", L"ResBase");
 
 	Dictionary<WString, FilePath> paths;
 	FOREACH(WString, name, names)
