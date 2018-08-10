@@ -1482,7 +1482,6 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_21)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_22)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_23)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_24)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
@@ -1491,6 +1490,8 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
 				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(contentTable)
+				CLASS_MEMBER_FIELD(frameTable)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::WindowTemplateConstructor)
 
