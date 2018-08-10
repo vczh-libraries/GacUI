@@ -202,7 +202,6 @@ Control Template
 				F(GuiWindowTemplate, bool, SizeBox, true)\
 				F(GuiWindowTemplate, bool, IconVisible, true)\
 				F(GuiWindowTemplate, bool, TitleBar, true)\
-				F(GuiWindowTemplate, bool, CustomizedBorder, false)\
 				F(GuiWindowTemplate, bool, Maximized, false)\
 				F(GuiWindowTemplate, bool, Activated, false)\
 				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate, {})\

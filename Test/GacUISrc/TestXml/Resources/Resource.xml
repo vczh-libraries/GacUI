@@ -98,7 +98,7 @@
   <Instance name="WindowTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::WindowTemplate" ref.Styles="res://DarkSkin/Style">
       <WindowTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.CustomizedBorder>true</att.CustomizedBorder>
+        <att.CustomFrameEnabled>true</att.CustomFrameEnabled>
         <att.TooltipTemplate>darkskin::TooltipTemplate</att.TooltipTemplate>
 
         <SolidBackground Color="#2D2D30"/>
