@@ -621,6 +621,7 @@ GuiWindow
 				ct->SetTitleBar(hasTitleBar);
 				ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
 				ct->SetActivated(GetActivated());
+				ct->SetCustomFramePadding(Margin(8, 8, 8, 8));
 				SyncNativeWindowProperties();
 			}
 

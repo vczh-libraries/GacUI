@@ -207,6 +207,7 @@ Control Template
 				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate, {})\
 				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate, {})\
 				F(GuiWindowTemplate, bool, CustomFrameEnabled, true)\
+				F(GuiWindowTemplate, Margin, CustomFramePadding, {})\
 
 #define GuiMenuTemplate_PROPERTIES(F)
 

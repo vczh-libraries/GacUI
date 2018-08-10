@@ -116,11 +116,23 @@
           ]]>
         </ev.TitleBarChanged-eval>
 
+        <ev.CustomFramePaddingChanged-eval>
+          <![CDATA[
+            {
+              var margin = self.CustomFramePadding;
+              frameTable.SetRowOption(0, {composeType:Absolute absolute:margin.top});
+              frameTable.SetRowOption(2, {composeType:Absolute absolute:margin.bottom});
+              frameTable.SetColumnOption(0, {composeType:Absolute absolute:margin.left});
+              frameTable.SetColumnOption(2, {composeType:Absolute absolute:margin.right});
+            }
+          ]]>
+        </ev.CustomFramePaddingChanged-eval>
+
         <SolidBackground Color="#2D2D30"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="windowBorder"/>
 
-          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <Table ref.Name="frameTable" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.Rows>
               <CellOption>composeType:Absolute absolute:8</CellOption>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -143,7 +155,7 @@
             <Cell Site="row:2 column:1" AssociatedHitTestResult="BorderBottom"/>
           </Table>
 
-          <Table ref.Name="contentTable" AlignmentToParent="left:8 top:8 right:8 bottom:8">
+          <Table ref.Name="contentTable" AlignmentToParent-bind="self.CustomFramePadding">
             <att.Rows>
               <CellOption>composeType:MinSize</CellOption>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
