@@ -236,6 +236,9 @@ Window
 				void									OnActivatedAltHost(IGuiAltActionHost* previousHost)override;
 				void									OnDeactivatedAltHost()override;
 				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
+				
+				void									OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

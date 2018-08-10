@@ -204,6 +204,7 @@ Control Template
 				F(GuiWindowTemplate, bool, TitleBar, true)\
 				F(GuiWindowTemplate, bool, CustomizedBorder, false)\
 				F(GuiWindowTemplate, bool, Maximized, false)\
+				F(GuiWindowTemplate, bool, Activated, false)\
 				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate, {})\
 				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate, {})\
 				F(GuiWindowTemplate, bool, CustomFrameEnabled, true)\

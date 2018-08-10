@@ -1,5 +1,25 @@
 <Styles>
   <Style ref.Path="(//Bounds + //Table + //RepeatStack + //RepeatFlow)" MinSizeLimitation="LimitToElementAndChildren"/>
+  <Style ref.Path="//*.windowBorder">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color (
+          self.VisuallyEnabled and self.Activated ? "#017ACC" :
+          "#434346"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.windowTitle">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color (
+          self.VisuallyEnabled and self.Activated ? "#999999" :
+          "#6D6D6D"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
   <Style ref.Path="//*.buttonBackground">
     <att.Color-bind>
       <![CDATA[

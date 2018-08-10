@@ -620,6 +620,7 @@ GuiWindow
 				ct->SetIconVisible(isIconVisible);
 				ct->SetTitleBar(hasTitleBar);
 				ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+				ct->SetActivated(GetActivated());
 				SyncNativeWindowProperties();
 			}
 
@@ -692,6 +693,22 @@ GuiWindow
 				IGuiAltActionHost::CollectAltActionsFromControl(this, actions);
 			}
 
+			void GuiWindow::OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (auto ct = GetControlTemplateObject(false))
+				{
+					ct->SetActivated(true);
+				}
+			}
+
+			void GuiWindow::OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (auto ct = GetControlTemplateObject(false))
+				{
+					ct->SetActivated(false);
+				}
+			}
+
 			GuiWindow::GuiWindow(theme::ThemeName themeName)
 				:GuiControlHost(themeName)
 				,previousAltHost(0)
@@ -700,6 +717,9 @@ GuiWindow
 				SetNativeWindow(window);
 				GetApplication()->RegisterWindow(this);
 				ClipboardUpdated.SetAssociatedComposition(boundsComposition);
+
+				WindowActivated.AttachMethod(this, &GuiWindow::OnWindowActivated);
+				WindowDeactivated.AttachMethod(this, &GuiWindow::OnWindowDeactivated);
 			}
 
 			GuiWindow::~GuiWindow()

@@ -103,7 +103,7 @@
 
         <SolidBackground Color="#2D2D30"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder Color="#017ACC"/>
+          <SolidBorder ref.Style="windowBorder"/>
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.Rows>
               <CellOption>composeType:Absolute absolute:8</CellOption>
@@ -154,7 +154,7 @@
 
             <Cell Site="row:1 column:1" AssociatedHitTestResult="Title">
               <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5">
-                <SolidLabel Color="#999999" Text-bind="self.Text" Ellipse="true" Font="fontFamily:'Segoe WP SemiLight' size:14 antialias:true"/>
+                <SolidLabel ref.Style="windowTitle" Text-bind="self.Text" Ellipse="true" Font="fontFamily:'Segoe WP SemiLight' size:14 antialias:true"/>
               </Bounds>
             </Cell>
             <Cell Site="row:2 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="Client">
