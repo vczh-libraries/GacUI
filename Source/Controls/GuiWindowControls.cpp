@@ -784,9 +784,9 @@ GuiWindow
 					ct->Set ## NAME(visible); \
 					if (auto window = GetNativeWindow()) \
 					{ \
-						ct->SetCustomFramePadding(window->GetCustomFramePadding()); \
 						CONDITION_BREAK \
 						window->Set ## NAME(visible); \
+						ct->SetCustomFramePadding(window->GetCustomFramePadding()); \
 					} \
 					else \
 					{ \
@@ -796,7 +796,7 @@ GuiWindow
 			} \
 
 #define IMPL_WINDOW_PROPERTY_EMPTY_CONDITION
-#define IMPL_WINDOW_PROPERTY_BORDER_CONDITION if (ct->GetCustomFrameEnabled()) return;
+#define IMPL_WINDOW_PROPERTY_BORDER_CONDITION if (!ct->GetCustomFrameEnabled())
 
 			IMPL_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
 			IMPL_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)

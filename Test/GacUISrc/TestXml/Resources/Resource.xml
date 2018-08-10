@@ -3,7 +3,6 @@
     <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-          <SolidBorder Color="#FF0000"/>
           <Stack AlignmentToParent="left:10 top:10" Padding="5" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
             <StackItem>
               <CheckBox ref.Name="checkMaximizedBox" Text="MaximizedBox" Selected-eval="self.MaximizedBox" AutoSelection="false">

@@ -3,8 +3,8 @@
   <Style ref.Path="//*.windowBorder">
     <att.Color-bind>
       <![CDATA[
-        cast Color (
-          not self.Border ? "#00000000" :
+        cast Color let margin = self.CustomFramePadding in (
+          (not self.Border) or (margin.left + margin.top + margin.right + margin.bottom == 0) ? "#00000000" :
           self.VisuallyEnabled and self.Activated ? "#017ACC" :
           "#434346"
         )
