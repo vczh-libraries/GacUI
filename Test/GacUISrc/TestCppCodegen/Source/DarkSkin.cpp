@@ -28895,7 +28895,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetTooltipTemplate(LAMBDA(::vl_workflow_global::__vwsnf337_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetCustomizedBorder(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+			::vl::__vwsn::This(this->self)->SetCustomFrameEnabled(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetTitleBarOption(::vl::presentation::templates::BoolOption::AlwaysTrue);
