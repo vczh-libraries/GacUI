@@ -101,6 +101,21 @@
         <att.CustomFrameEnabled>true</att.CustomFrameEnabled>
         <att.TooltipTemplate>darkskin::TooltipTemplate</att.TooltipTemplate>
 
+        <ev.TitleBarChanged-eval>
+          <![CDATA[
+            {
+              if (self.TitleBar)
+              {
+                contentTable.SetRowOption(0, {composeType:MinSize});
+              }
+              else
+              {
+                contentTable.SetRowOption(0, {composeType:Absolute absolute:0});
+              }
+            }
+          ]]>
+        </ev.TitleBarChanged-eval>
+
         <SolidBackground Color="#2D2D30"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="windowBorder"/>
@@ -128,7 +143,7 @@
             <Cell Site="row:2 column:1" AssociatedHitTestResult="BorderBottom"/>
           </Table>
 
-          <Table AlignmentToParent="left:8 top:8 right:8 bottom:8">
+          <Table ref.Name="contentTable" AlignmentToParent="left:8 top:8 right:8 bottom:8">
             <att.Rows>
               <CellOption>composeType:MinSize</CellOption>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
