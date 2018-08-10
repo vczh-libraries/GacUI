@@ -784,8 +784,13 @@ GuiWindow
 					ct->Set ## NAME(visible); \
 					if (auto window = GetNativeWindow()) \
 					{ \
+						ct->SetCustomFramePadding(window->GetCustomFramePadding()); \
 						CONDITION_BREAK \
 						window->Set ## NAME(visible); \
+					} \
+					else \
+					{ \
+						ct->SetCustomFramePadding({}); \
 					} \
 				} \
 			} \

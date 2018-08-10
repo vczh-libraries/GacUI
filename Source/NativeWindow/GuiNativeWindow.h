@@ -404,6 +404,11 @@ Native Window
 			/// </summary>
 			/// <returns>Returns true if the window customized frame mode is enabled.</returns>
 			virtual bool				IsCustomFrameModeEnabled()=0;
+			/// <summary>
+			/// Get the amount of the border. The window template may need this value to calculate where to put the client area.
+			/// </summary>
+			/// <returns>Returns the amount of the border.</returns>
+			virtual Margin				GetCustomFramePadding() = 0;
 
 			/// <summary>Window size state.</summary>
 			enum WindowSizeState

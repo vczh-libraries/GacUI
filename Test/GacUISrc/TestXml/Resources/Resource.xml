@@ -134,14 +134,14 @@
 
           <Table ref.Name="frameTable" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.Rows>
-              <CellOption>composeType:Absolute absolute:8</CellOption>
+              <CellOption>composeType:Absolute absolute:0</CellOption>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
-              <CellOption>composeType:Absolute absolute:8</CellOption>
+              <CellOption>composeType:Absolute absolute:0</CellOption>
             </att.Rows>
             <att.Columns>
-              <CellOption>composeType:Absolute absolute:8</CellOption>
+              <CellOption>composeType:Absolute absolute:0</CellOption>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
-              <CellOption>composeType:Absolute absolute:8</CellOption>
+              <CellOption>composeType:Absolute absolute:0</CellOption>
             </att.Columns>
 
             <Cell Site="row:0 column:0" AssociatedHitTestResult="BorderLeftTop"/>

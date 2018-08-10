@@ -804,6 +804,7 @@ WindowsForm
 				List<Ptr<INativeMessageHandler>>	messageHandlers;
 				bool								supressingAlt = false;
 				Ptr<bool>							flagDisposed = new bool(false);
+				Margin								customFramePadding;
 
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
@@ -811,6 +812,9 @@ WindowsForm
 					DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
 					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 					handle=CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
+
+					auto padding = (vint)(GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER));
+					customFramePadding = Margin(padding, padding, padding, padding);
 				}
 
 				~WindowsForm()
@@ -1037,6 +1041,18 @@ WindowsForm
 				bool IsCustomFrameModeEnabled()
 				{
 					return customFrameMode;
+				}
+
+				Margin GetCustomFramePadding()
+				{
+					if (GetSizeBox() || GetTitleBar())
+					{
+						return customFramePadding;
+					}
+					else
+					{
+						return Margin(0, 0, 0, 0);
+					}
 				}
 
 				WindowSizeState GetSizeState()
