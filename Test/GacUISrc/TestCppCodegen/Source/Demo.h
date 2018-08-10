@@ -1172,11 +1172,11 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_21;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_22;
 		::vl::presentation::controls::GuiRibbonGroup* __vwsn_precompile_23;
-		::vl::presentation::controls::GuiRibbonButtons* __vwsn_precompile_24;
 		::vl::presentation::controls::GuiMessageDialog* dialogMessage;
 		::vl::presentation::controls::GuiToolstripMenu* toolstripHome;
 		::vl::presentation::controls::GuiButton* buttonHome;
 		::vl::presentation::controls::GuiBindableRibbonGalleryList* styleGallery;
+		::vl::presentation::controls::GuiRibbonButtons* __vwsn_precompile_24;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_25;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_26;
 		::vl::presentation::controls::GuiControl* __vwsn_precompile_27;
@@ -1288,8 +1288,8 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_21;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_22;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_23;
-		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_24;
 		::vl::presentation::controls::GuiToolstripButton* buttonAlignment;
+		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_24;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_25;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_26;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_27;
@@ -1935,9 +1935,9 @@ namespace demo
 		::demo::TextBoxTabPage* __vwsn_precompile_21;
 		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_22;
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_23;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
 		::demo::DocumentEditorRibbon* editorRibbon;
 		::demo::DocumentEditorToolstrip* editorToolstrip;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
 		::demo::ElementTabPage* __vwsn_precompile_25;
 		::demo::AnimationTabPage* __vwsn_precompile_26;
 		::demo::LocalizedStringsTabPage* __vwsn_precompile_27;
@@ -2079,12 +2079,12 @@ namespace demo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_21;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_23;
-		::vl::presentation::controls::GuiScroll* __vwsn_precompile_24;
 		::demo::EnglishNumbersControllerTabPage* repeatStackTabPage;
 		::demo::EnglishNumbersControllerTabPage* repeatFlowTabPage;
 		::demo::EnglishNumbersControllerTabPage* sharedSizeFlowTabPage;
 		::demo::EnglishNumbersControllerTabPage* sharedSizeListTabPage;
 		::vl::presentation::controls::GuiScroll* hTracker;
+		::vl::presentation::controls::GuiScroll* __vwsn_precompile_24;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_25;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_26;
 		::vl::presentation::controls::GuiScroll* __vwsn_precompile_27;
@@ -2149,8 +2149,8 @@ namespace demo
 		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_21;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_22;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_23;
-		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_24;
 		::vl::presentation::compositions::GuiResponsiveGroupComposition* responsive;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_24;
 		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_25;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_26;
 		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_27;
@@ -2226,8 +2226,8 @@ namespace demo
 		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_21;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_22;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_23;
-		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_24;
 		::vl::presentation::compositions::GuiResponsiveStackComposition* responsive;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* __vwsn_precompile_24;
 		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_25;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_26;
 		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_27;
@@ -2350,9 +2350,9 @@ namespace demo
 		::vl::presentation::compositions::GuiResponsiveSharedComposition* __vwsn_precompile_21;
 		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_22;
 		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_23;
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_24;
 		::vl::presentation::compositions::GuiResponsiveViewComposition* responsive;
 		::vl::presentation::controls::GuiDocumentLabel* documentBox;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_24;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_25;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_26;
 		::vl::presentation::compositions::GuiResponsiveSharedComposition* __vwsn_precompile_27;
@@ -2691,10 +2691,10 @@ namespace demo
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_21;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_22;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_23;
-		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_24;
 		::vl::presentation::controls::GuiComboBoxListControl* comboView;
 		::vl::presentation::controls::GuiTextList* textList;
 		::vl::presentation::controls::GuiBindableTextList* bindableTextList;
+		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_24;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_25;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_26;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_27;
@@ -2757,9 +2757,9 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_21;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_22;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_23;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
 		::vl::presentation::controls::GuiTreeView* treeView;
 		::vl::presentation::controls::GuiBindableTreeView* bindableTreeView;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_25;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_26;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_27;
@@ -5813,14 +5813,12 @@ Closures
 
 		__vwsnc45_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -5833,12 +5831,14 @@ Closures
 
 		__vwsnc46_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -5851,14 +5851,12 @@ Closures
 
 		__vwsnc47_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -5871,12 +5869,14 @@ Closures
 
 		__vwsnc48_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -5889,14 +5889,12 @@ Closures
 
 		__vwsnc49_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -5920,24 +5918,6 @@ Closures
 
 		__vwsnc50_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc51_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::demo::DocumentEditorBaseConstructor* __vwsnthis_0;
-
-		__vwsnc51_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
-
 		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
@@ -5951,12 +5931,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc52_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc51_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::DocumentEditorBaseConstructor* __vwsnthis_0;
 
-		__vwsnc52_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
+		__vwsnc51_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
 		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -5964,6 +5944,26 @@ Closures
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc52_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::DocumentEditorBaseConstructor* __vwsnthis_0;
+
+		__vwsnc52_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -6045,12 +6045,9 @@ Closures
 
 		__vwsnc57_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -6063,9 +6060,12 @@ Closures
 
 		__vwsnc58_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -6078,12 +6078,9 @@ Closures
 
 		__vwsnc59_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -6107,9 +6104,12 @@ Closures
 
 		__vwsnc60_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -6122,12 +6122,9 @@ Closures
 
 		__vwsnc61_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -6140,9 +6137,12 @@ Closures
 
 		__vwsnc62_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
