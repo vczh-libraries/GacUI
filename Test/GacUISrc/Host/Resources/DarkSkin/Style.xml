@@ -4,6 +4,7 @@
     <att.Color-bind>
       <![CDATA[
         cast Color (
+          not self.Border ? "#00000000" :
           self.VisuallyEnabled and self.Activated ? "#017ACC" :
           "#434346"
         )

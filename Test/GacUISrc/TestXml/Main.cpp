@@ -16,6 +16,11 @@ using namespace vl::reflection::description;
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
+	auto x1 = GetSystemMetrics(SM_CXSIZEFRAME);
+	auto x2 = GetSystemMetrics(SM_CYSIZEFRAME);
+	auto x3 = GetSystemMetrics(SM_CXFIXEDFRAME);
+	auto x4 = GetSystemMetrics(SM_CYFIXEDFRAME);
+	auto x5 = GetSystemMetrics(SM_CXPADDEDBORDER);
 #ifdef GUI_GRAPHICS_RENDERER_GDI
 	int result = SetupWindowsGDIRenderer();
 #endif
