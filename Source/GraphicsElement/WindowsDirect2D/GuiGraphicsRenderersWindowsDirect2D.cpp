@@ -131,10 +131,10 @@ GuiSolidBorderElementRenderer
 						FLOAT w = (FLOAT)bounds.Width();
 						FLOAT h = (FLOAT)bounds.Height();
 
-						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y), D2D1::RectF(0, 0, w, 1), D2D1_INTERPOLATION_MODE_DEFINITION_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_XOR);
-						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y2), D2D1::RectF(0, 0, w, 1), D2D1_INTERPOLATION_MODE_DEFINITION_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_XOR);
-						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y + 1), D2D1::RectF(0, 1, 1, h - 2), D2D1_INTERPOLATION_MODE_DEFINITION_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_XOR);
-						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x2, y + 1), D2D1::RectF(0, 1, 1, h - 2), D2D1_INTERPOLATION_MODE_DEFINITION_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_XOR);
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y), D2D1::RectF(0, 0, w, 1), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_XOR);
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y2), D2D1::RectF(0, 0, w, 1), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_XOR);
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y + 1), D2D1::RectF(0, 1, 1, h - 2), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_XOR);
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x2, y + 1), D2D1::RectF(0, 1, 1, h - 2), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_XOR);
 					}
 
 					if (d2dDeviceContext)
