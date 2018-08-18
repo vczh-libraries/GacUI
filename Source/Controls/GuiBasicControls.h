@@ -62,7 +62,7 @@ Basic Construction
 				using ControlList = collections::List<GuiControl*>;
 				using ControlServiceMap = collections::Dictionary<WString, Ptr<IDescriptable>>;
 				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
-				using EventHandler = compositions::IGuiGraphicsEventHandler;
+				using IGuiGraphicsEventHandler = compositions::IGuiGraphicsEventHandler;
 
 			private:
 				theme::ThemeName						controlThemeName;
@@ -76,8 +76,8 @@ Basic Construction
 				compositions::GuiGraphicsEventReceiver*	eventReceiver = nullptr;
 
 				bool									isFocused = false;
-				Ptr<EventHandler>						gotFocusHandler;
-				Ptr<EventHandler>						lostFocusHandler;
+				Ptr<IGuiGraphicsEventHandler>			gotFocusHandler;
+				Ptr<IGuiGraphicsEventHandler>			lostFocusHandler;
 
 				bool									isEnabled = true;
 				bool									isVisuallyEnabled = true;
