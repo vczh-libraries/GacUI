@@ -573,20 +573,24 @@ WindowsDirect2DRenderTarget
 						{
 							if (auto wicFactory = GetWICImagingFactory())
 							{
-								BYTE effectMask[] = { 255,255,255,0,0,0,0,0,0,255,255,255 };
+								BYTE effectMask[] = { 0,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255 };
 								IWICBitmap* wicEffectBitmap = nullptr;
-								hr = wicFactory->CreateBitmapFromMemory(2, 2, GUID_WICPixelFormat24bppBGR, 6, 12, effectMask, &wicEffectBitmap);
+								hr = wicFactory->CreateBitmapFromMemory(2, 2, GUID_WICPixelFormat32bppBGRA, 8, 16, effectMask, &wicEffectBitmap);
 								if (wicEffectBitmap)
 								{
 									ID2D1Bitmap* d2dEffectBitmap = nullptr;
-									hr = d2dRenderTarget->CreateBitmapFromWicBitmap(wicEffectBitmap, &d2dEffectBitmap);
+									auto properties = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
+									hr = d2dRenderTarget->CreateBitmapFromWicBitmap(wicEffectBitmap, &properties, &d2dEffectBitmap);
 									if (d2dEffectBitmap)
 									{
 										ID2D1Effect* d2dEffect = nullptr;
-										d2dDeviceContext->CreateEffect(CLSID_D2D1Tile, &d2dEffect);
-										d2dEffect->SetInput(0, d2dEffectBitmap);
-										d2dEffect->SetValue(D2D1_TILE_PROP_RECT, D2D1::RectF(0, 0, 2, 2));
-										focusRectangleEffect = d2dEffect;
+										hr = d2dDeviceContext->CreateEffect(CLSID_D2D1Tile, &d2dEffect);
+										if (d2dEffect)
+										{
+											d2dEffect->SetInput(0, d2dEffectBitmap);
+											d2dEffect->SetValue(D2D1_TILE_PROP_RECT, D2D1::RectF(0, 0, 2, 2));
+											focusRectangleEffect = d2dEffect;
+										}
 										d2dEffectBitmap->Release();
 									}
 									wicEffectBitmap->Release();
