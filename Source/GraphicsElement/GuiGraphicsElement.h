@@ -51,6 +51,18 @@ Elements
 			};
 
 			/// <summary>
+			/// Defines a focus rectangle with a thickness of one pixel.
+			/// </summary>
+			class GuiFocusRectangleElement : public GuiElementBase<GuiFocusRectangleElement>
+			{
+				DEFINE_GUI_GRAPHICS_ELEMENT(GuiFocusRectangleElement, L"FocusRectangle")
+			protected:
+
+				GuiFocusRectangleElement();
+			public:
+			};
+
+			/// <summary>
 			/// Defines a border element with a thickness of one pixel.
 			/// </summary>
 			class GuiSolidBorderElement : public GuiElementBase<GuiSolidBorderElement>

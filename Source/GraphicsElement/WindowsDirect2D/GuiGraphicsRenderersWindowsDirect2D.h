@@ -38,6 +38,20 @@ namespace vl
 Renderers
 ***********************************************************************/
 
+			class GuiFocusRectangleElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsDirect2DRenderTarget)
+			protected:
+				ID2D1Effect*			focusRectangleEffect = nullptr;
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
 
 			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
 			{

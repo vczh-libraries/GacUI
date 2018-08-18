@@ -327,6 +327,7 @@ WindowsGDIResourceManager
 			protected:
 				SortedList<Ptr<WindowsGDIRenderTarget>>		renderTargets;
 				Ptr<WindowsGDILayoutProvider>				layoutProvider;
+				Ptr<WinPen>									focusRectanglePen;
 				CachedPenAllocator							pens;
 				CachedBrushAllocator						brushes;
 				CachedFontAllocator							fonts;
@@ -368,6 +369,16 @@ WindowsGDIResourceManager
 					WindowsGDIRenderTarget* renderTarget=dynamic_cast<WindowsGDIRenderTarget*>(GetWindowsGDIObjectProvider()->GetBindedRenderTarget(window));
 					GetWindowsGDIObjectProvider()->SetBindedRenderTarget(window, 0);
 					renderTargets.Remove(renderTarget);
+				}
+
+				Ptr<windows::WinPen> GetFocusRectanglePen()override
+				{
+					if (!focusRectanglePen)
+					{
+						DWORD styleArray[] = { 1,1 };
+						focusRectanglePen = new WinPen(PS_USERSTYLE, PS_ENDCAP_FLAT, PS_JOIN_BEVEL, 1, RGB(255, 255, 255), (DWORD)(sizeof(styleArray) / sizeof(*styleArray)), styleArray);
+					}
+					return focusRectanglePen;
 				}
 
 				Ptr<windows::WinPen> CreateGdiPen(Color color)override
@@ -486,6 +497,7 @@ void RendererMainGDI()
 	elements_windows_gdi::SetWindowsGDIResourceManager(&resourceManager);
 	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
 
+	elements_windows_gdi::GuiFocusRectangleElementRenderer::Register();
 	elements_windows_gdi::GuiSolidBorderElementRenderer::Register();
 	elements_windows_gdi::Gui3DBorderElementRenderer::Register();
 	elements_windows_gdi::Gui3DSplitterElementRenderer::Register();

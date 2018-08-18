@@ -11,6 +11,7 @@ Interfaces:
 
 #include <d2d1_1.h>
 #include <dwrite_1.h>
+#include <d2d1effects.h>
 #include <wincodec.h>
 #include "..\GuiGraphicsElement.h"
 #include "..\..\GraphicsComposition\GuiGraphicsComposition.h"
@@ -86,6 +87,7 @@ Functionality
 				virtual void								DestroyBitmapCache(INativeImageFrame* frame)=0;
 				virtual void								SetTextAntialias(bool antialias, bool verticalAntialias)=0;
 
+				virtual ID2D1Effect*						GetFocusRectangleEffect() = 0;
 				virtual ID2D1SolidColorBrush*				CreateDirect2DBrush(Color color)=0;
 				virtual void								DestroyDirect2DBrush(Color color)=0;
 				virtual ID2D1LinearGradientBrush*			CreateDirect2DLinearBrush(Color c1, Color c2)=0;

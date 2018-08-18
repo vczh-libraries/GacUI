@@ -23,6 +23,20 @@ namespace vl
 Renderers
 ***********************************************************************/
 
+			class GuiFocusRectangleElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				Ptr<windows::WinPen>	pen;
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+
 			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
 				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsGDIRenderTarget)

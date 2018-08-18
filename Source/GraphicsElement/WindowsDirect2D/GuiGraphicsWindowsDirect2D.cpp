@@ -1,7 +1,9 @@
 #include "GuiGraphicsWindowsDirect2D.h"
 #include "GuiGraphicsRenderersWindowsDirect2D.h"
 #include "GuiGraphicsLayoutProviderWindowsDirect2D.h"
+#include "..\..\NativeWindow\Windows\ServicesImpl\WindowsImageService.h"
 #include "..\..\Controls\GuiApplication.h"
+#include "..\..\NativeWindow\Windows\GDI\WinGDI.h"
 #include <math.h>
 
 namespace vl
@@ -24,6 +26,7 @@ GuiDirect2DElement
 		{
 			using namespace elements;
 			using namespace collections;
+			using namespace windows;
 
 			D2D1::ColorF GetD2DColor(Color color)
 			{
@@ -362,6 +365,7 @@ WindowsDirect2DRenderTarget
 			protected:
 				INativeWindow*					window;
 				ID2D1RenderTarget*				d2dRenderTarget = nullptr;
+				ID2D1DeviceContext*				d2dDeviceContext = nullptr;
 				List<Rect>						clippers;
 				vint							clipperCoverWholeTargetCounter = 0;
 
@@ -369,6 +373,7 @@ WindowsDirect2DRenderTarget
 				CachedLinearBrushAllocator		linearBrushes;
 				CachedRadialBrushAllocator		radialBrushes;
 				ImageCacheList					imageCaches;
+				ComPtr<ID2D1Effect>				focusRectangleEffect;
 
 				ComPtr<IDWriteRenderingParams>	noAntialiasParams;
 				ComPtr<IDWriteRenderingParams>	horizontalAntialiasParams;
@@ -557,6 +562,46 @@ WindowsDirect2DRenderTarget
 					return clipperCoverWholeTargetCounter>0;
 				}
 
+				ID2D1Effect* GetFocusRectangleEffect()override
+				{
+					if (!focusRectangleEffect)
+					{
+						ID2D1RenderTarget* d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
+						ID2D1DeviceContext* d2dDeviceContext = nullptr;
+						HRESULT hr = d2dRenderTarget->QueryInterface(&d2dDeviceContext);
+						if (d2dDeviceContext)
+						{
+							if (auto wicFactory = GetWICImagingFactory())
+							{
+								BYTE effectMask[] = { 255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255 };
+								IWICBitmap* wicEffectBitmap = nullptr;
+								hr = wicFactory->CreateBitmapFromMemory(2, 2, GUID_WICPixelFormat32bppBGRA, 8, 16, effectMask, &wicEffectBitmap);
+								if (wicEffectBitmap)
+								{
+									ID2D1Bitmap* d2dEffectBitmap = nullptr;
+									auto properties = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
+									hr = d2dRenderTarget->CreateBitmapFromWicBitmap(wicEffectBitmap, &properties, &d2dEffectBitmap);
+									if (d2dEffectBitmap)
+									{
+										ID2D1Effect* d2dEffect = nullptr;
+										hr = d2dDeviceContext->CreateEffect(CLSID_D2D1Tile, &d2dEffect);
+										if (d2dEffect)
+										{
+											d2dEffect->SetInput(0, d2dEffectBitmap);
+											d2dEffect->SetValue(D2D1_TILE_PROP_RECT, D2D1::RectF(0, 0, 2, 2));
+											focusRectangleEffect = d2dEffect;
+										}
+										d2dEffectBitmap->Release();
+									}
+									wicEffectBitmap->Release();
+								}
+							}
+							d2dDeviceContext->Release();
+						}
+					}
+					return focusRectangleEffect.Obj();
+				}
+
 				ID2D1SolidColorBrush* CreateDirect2DBrush(Color color)override
 				{
 					return solidBrushes.Create(color).Obj();
@@ -711,6 +756,7 @@ void RendererMainDirect2D()
 	elements_windows_d2d::SetWindowsDirect2DResourceManager(&resourceManager);
 	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
 
+	elements_windows_d2d::GuiFocusRectangleElementRenderer::Register();
 	elements_windows_d2d::GuiSolidBorderElementRenderer::Register();
 	elements_windows_d2d::Gui3DBorderElementRenderer::Register();
 	elements_windows_d2d::Gui3DSplitterElementRenderer::Register();

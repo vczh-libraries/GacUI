@@ -114,6 +114,7 @@ Type List (Elements)
 			F(presentation::elements::text::ColorEntry)\
 
 #define GUIREFLECTIONELEMENT_CLASS_TYPELIST(F)\
+			F(presentation::elements::GuiFocusRectangleElement)\
 			F(presentation::elements::GuiSolidBorderElement)\
 			F(presentation::elements::Gui3DBorderElement)\
 			F(presentation::elements::Gui3DSplitterElement)\

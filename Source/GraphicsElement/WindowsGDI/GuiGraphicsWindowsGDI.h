@@ -78,6 +78,7 @@ Functionality
 			class IWindowsGDIResourceManager : public Interface
 			{
 			public:
+				virtual Ptr<windows::WinPen>				GetFocusRectanglePen()=0;
 				virtual Ptr<windows::WinPen>				CreateGdiPen(Color color)=0;
 				virtual void								DestroyGdiPen(Color color)=0;
 				virtual Ptr<windows::WinBrush>				CreateGdiBrush(Color color)=0;

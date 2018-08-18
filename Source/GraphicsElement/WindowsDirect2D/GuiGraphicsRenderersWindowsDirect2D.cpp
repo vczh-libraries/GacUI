@@ -96,6 +96,62 @@ IMPLEMENT_BRUSH_ELEMENT_RENDERER
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 
+			void GuiFocusRectangleElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiFocusRectangleElementRenderer::FinalizeInternal()
+			{
+				focusRectangleEffect = nullptr;
+			}
+
+			void GuiFocusRectangleElementRenderer::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
+			{
+				focusRectangleEffect = nullptr;
+				if (newRenderTarget)
+				{
+					focusRectangleEffect = newRenderTarget->GetFocusRectangleEffect();
+				}
+			}
+
+			void GuiFocusRectangleElementRenderer::Render(Rect bounds)
+			{
+				if (focusRectangleEffect)
+				{
+					ID2D1RenderTarget* d2dRenderTarget = renderTarget->GetDirect2DRenderTarget();
+					ID2D1DeviceContext* d2dDeviceContext = nullptr;
+
+					HRESULT hr = d2dRenderTarget->QueryInterface(&d2dDeviceContext);
+					if (SUCCEEDED(hr))
+					{
+						FLOAT x = (FLOAT)bounds.Left();
+						FLOAT y = (FLOAT)bounds.Top();
+						FLOAT x2 = (FLOAT)bounds.Right() - 1;
+						FLOAT y2 = (FLOAT)bounds.Bottom() - 1;
+						FLOAT w = (FLOAT)bounds.Width();
+						FLOAT h = (FLOAT)bounds.Height();
+
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y), D2D1::RectF(0, 0, w, 1), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_MASK_INVERT);
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y2), D2D1::RectF(0, y2 - y, w, h), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_MASK_INVERT);
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y + 1), D2D1::RectF(0, 1, 1, h - 1), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_MASK_INVERT);
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x2, y + 1), D2D1::RectF(x2 - x, 1, w, h - 1), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_MASK_INVERT);
+					}
+
+					if (d2dDeviceContext)
+					{
+						d2dDeviceContext->Release();
+					}
+				}
+			}
+
+			void GuiFocusRectangleElementRenderer::OnElementStateChanged()
+			{
+			}
+
+/***********************************************************************
+GuiSolidBorderElementRenderer
+***********************************************************************/
+
 			IMPLEMENT_BRUSH_ELEMENT_RENDERER_SOLID_COLOR_BRUSH(GuiSolidBorderElementRenderer)
 			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiSolidBorderElementRenderer)
 			{
