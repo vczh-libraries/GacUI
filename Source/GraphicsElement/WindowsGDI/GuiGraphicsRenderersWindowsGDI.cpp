@@ -15,6 +15,8 @@ GuiSolidBorderElementRenderer
 
 			void GuiFocusRectangleElementRenderer::InitializeInternal()
 			{
+				auto resourceManager = GetWindowsGDIResourceManager();
+				pen = resourceManager->GetFocusRectanglePen();
 			}
 
 			void GuiFocusRectangleElementRenderer::FinalizeInternal()
@@ -27,7 +29,10 @@ GuiSolidBorderElementRenderer
 
 			void GuiFocusRectangleElementRenderer::Render(Rect bounds)
 			{
-				renderTarget->GetDC()->FocusRectangle(bounds.Left(), bounds.Top(), bounds.Right(), bounds.Bottom());
+				int originRop2 = renderTarget->GetDC()->SetRasterOperation(R2_XORPEN);
+				renderTarget->GetDC()->SetPen(pen);
+				renderTarget->GetDC()->Rectangle(bounds.Left(), bounds.Top(), bounds.Right() - 1, bounds.Bottom() - 1);
+				renderTarget->GetDC()->SetRasterOperation(originRop2);
 			}
 
 			void GuiFocusRectangleElementRenderer::OnElementStateChanged()
@@ -40,7 +45,7 @@ GuiSolidBorderElementRenderer
 
 			void GuiSolidBorderElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				oldColor=element->GetColor();
 				pen=resourceManager->CreateGdiPen(oldColor);
 				brush=resourceManager->CreateGdiBrush(Color(0, 0, 0, 0));
@@ -48,7 +53,7 @@ GuiSolidBorderElementRenderer
 
 			void GuiSolidBorderElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiPen(oldColor);
 				resourceManager->DestroyGdiBrush(Color(0, 0, 0, 0));
 			}
@@ -85,7 +90,7 @@ GuiSolidBorderElementRenderer
 				Color color=element->GetColor();
 				if(oldColor!=color)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor);
 					oldColor=color;
 					pen=resourceManager->CreateGdiPen(oldColor);
@@ -98,7 +103,7 @@ Gui3DBorderElementRenderer
 
 			void Gui3DBorderElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				oldColor1=element->GetColor1();
 				oldColor2=element->GetColor2();
 				pen1=resourceManager->CreateGdiPen(oldColor1);
@@ -107,7 +112,7 @@ Gui3DBorderElementRenderer
 
 			void Gui3DBorderElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiPen(oldColor1);
 				resourceManager->DestroyGdiPen(oldColor2);
 			}
@@ -141,7 +146,7 @@ Gui3DBorderElementRenderer
 				Color color1=element->GetColor1();
 				if(oldColor1!=color1)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor1);
 					oldColor1=color1;
 					pen1=resourceManager->CreateGdiPen(oldColor1);
@@ -150,7 +155,7 @@ Gui3DBorderElementRenderer
 				Color color2=element->GetColor2();
 				if(oldColor2!=color2)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor2);
 					oldColor2=color2;
 					pen2=resourceManager->CreateGdiPen(oldColor2);
@@ -163,7 +168,7 @@ Gui3DSplitterElementRenderer
 
 			void Gui3DSplitterElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				oldColor1=element->GetColor1();
 				oldColor2=element->GetColor2();
 				pen1=resourceManager->CreateGdiPen(oldColor1);
@@ -172,7 +177,7 @@ Gui3DSplitterElementRenderer
 
 			void Gui3DSplitterElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiPen(oldColor1);
 				resourceManager->DestroyGdiPen(oldColor2);
 			}
@@ -224,7 +229,7 @@ Gui3DSplitterElementRenderer
 				Color color1=element->GetColor1();
 				if(oldColor1!=color1)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor1);
 					oldColor1=color1;
 					pen1=resourceManager->CreateGdiPen(oldColor1);
@@ -233,7 +238,7 @@ Gui3DSplitterElementRenderer
 				Color color2=element->GetColor2();
 				if(oldColor2!=color2)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor2);
 					oldColor2=color2;
 					pen2=resourceManager->CreateGdiPen(oldColor2);
@@ -246,7 +251,7 @@ GuiSolidBackgroundElementRenderer
 
 			void GuiSolidBackgroundElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				oldColor=element->GetColor();
 				pen=resourceManager->CreateGdiPen(oldColor);
 				brush=resourceManager->CreateGdiBrush(oldColor);
@@ -254,7 +259,7 @@ GuiSolidBackgroundElementRenderer
 
 			void GuiSolidBackgroundElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiPen(oldColor);
 				resourceManager->DestroyGdiBrush(oldColor);
 			}
@@ -291,7 +296,7 @@ GuiSolidBackgroundElementRenderer
 				Color color=element->GetColor();
 				if(oldColor!=color)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor);
 					resourceManager->DestroyGdiBrush(oldColor);
 					oldColor=color;
@@ -521,14 +526,14 @@ GuiSolidLabelElementRenderer
 
 			void GuiSolidLabelElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				oldFont=element->GetFont();
 				font=resourceManager->CreateGdiFont(oldFont);
 			}
 
 			void GuiSolidLabelElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiFont(oldFont);
 			}
 
@@ -613,7 +618,7 @@ GuiSolidLabelElementRenderer
 				FontProperties fontProperties=element->GetFont();
 				if(oldFont!=fontProperties)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiFont(oldFont);
 					oldFont=fontProperties;
 					font=resourceManager->CreateGdiFont(oldFont);
@@ -629,7 +634,7 @@ GuiImageFrameElementRenderer
 			{
 				if(element->GetImage())
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					INativeImageFrame* frame=element->GetImage()->GetFrame(element->GetFrameIndex());
 					bitmap=resourceManager->GetBitmap(frame, element->GetEnabled());
 
@@ -711,7 +716,7 @@ GuiImageFrameElementRenderer
 					}
 					if(element->GetImage()->GetFormat()==INativeImage::Gif &&  element->GetFrameIndex()>0)
 					{
-						IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+						auto resourceManager=GetWindowsGDIResourceManager();
 						vint max=element->GetFrameIndex();
 						for(vint i=0;i<=max;i++)
 						{
@@ -745,14 +750,14 @@ GuiPolygonElementRenderer
 
 			void GuiPolygonElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				pen=resourceManager->CreateGdiPen(oldPenColor);
 				brush=resourceManager->CreateGdiBrush(oldBrushColor);
 			}
 
 			void GuiPolygonElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiPen(oldPenColor);
 				resourceManager->DestroyGdiBrush(oldBrushColor);
 			}
@@ -818,7 +823,7 @@ GuiPolygonElementRenderer
 					}
 				}
 
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				if(oldPenColor!=element->GetBorderColor() || !pen)
 				{
 					resourceManager->DestroyGdiPen(oldPenColor);
@@ -839,7 +844,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::DestroyColors()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				for(vint i=0;i<colors.Count();i++)
 				{
 					resourceManager->DestroyGdiBrush(colors[i].normal.background);
@@ -850,7 +855,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::ColorChanged()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				ColorArray newColors;
 				newColors.Resize(element->GetColors().Count());
 				for(vint i=0;i<newColors.Count();i++)
@@ -876,7 +881,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::FontChanged()
 			{
-				IWindowsGDIResourceManager* resourceManager = GetWindowsGDIResourceManager();
+				auto resourceManager = GetWindowsGDIResourceManager();
 				if (font)
 				{
 					element->GetLines().SetCharMeasurer(nullptr);
@@ -891,7 +896,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				element->SetCallback(this);
 				oldCaretColor=element->GetCaretColor();
 				caretPen=resourceManager->CreateGdiPen(oldCaretColor);
@@ -899,7 +904,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				if(font)
 				{
 					resourceManager->DestroyGdiFont(oldFont);
@@ -1020,7 +1025,7 @@ GuiColorizedTextElementRenderer
 				Color caretColor=element->GetCaretColor();
 				if(oldCaretColor!=caretColor)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldCaretColor);
 					oldCaretColor=caretColor;
 					caretPen=resourceManager->CreateGdiPen(oldCaretColor);
