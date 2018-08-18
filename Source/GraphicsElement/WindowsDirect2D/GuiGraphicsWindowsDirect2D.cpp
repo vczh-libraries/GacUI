@@ -1,7 +1,10 @@
 #include "GuiGraphicsWindowsDirect2D.h"
 #include "GuiGraphicsRenderersWindowsDirect2D.h"
 #include "GuiGraphicsLayoutProviderWindowsDirect2D.h"
+#include "..\..\NativeWindow\Windows\ServicesImpl\WindowsImageService.h"
 #include "..\..\Controls\GuiApplication.h"
+#include "..\..\NativeWindow\Windows\GDI\WinGDI.h"
+#include <d2d1effects.h>
 #include <math.h>
 
 namespace vl
@@ -24,6 +27,7 @@ GuiDirect2DElement
 		{
 			using namespace elements;
 			using namespace collections;
+			using namespace windows;
 
 			D2D1::ColorF GetD2DColor(Color color)
 			{
@@ -362,6 +366,7 @@ WindowsDirect2DRenderTarget
 			protected:
 				INativeWindow*					window;
 				ID2D1RenderTarget*				d2dRenderTarget = nullptr;
+				ID2D1DeviceContext*				d2dDeviceContext = nullptr;
 				List<Rect>						clippers;
 				vint							clipperCoverWholeTargetCounter = 0;
 
@@ -562,6 +567,47 @@ WindowsDirect2DRenderTarget
 				{
 					if (!focusRectangleEffect)
 					{
+						ID2D1RenderTarget* d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
+						ID2D1DeviceContext* d2dDeviceContext = nullptr;
+						HRESULT hr = d2dRenderTarget->QueryInterface(&d2dDeviceContext);
+						if (d2dDeviceContext)
+						{
+							if (auto wicFactory = GetWICImagingFactory())
+							{
+								Ptr<WinBitmap> effectMask = new WinBitmap(2, 2, WinBitmap::vbb24Bits, true);
+								effectMask->GetScanLines()[0][0] = 255;
+								effectMask->GetScanLines()[0][1] = 255;
+								effectMask->GetScanLines()[0][2] = 255;
+								effectMask->GetScanLines()[0][3] = 0;
+								effectMask->GetScanLines()[0][4] = 0;
+								effectMask->GetScanLines()[0][5] = 0;
+								effectMask->GetScanLines()[1][0] = 0;
+								effectMask->GetScanLines()[1][1] = 0;
+								effectMask->GetScanLines()[1][2] = 0;
+								effectMask->GetScanLines()[1][3] = 255;
+								effectMask->GetScanLines()[1][4] = 255;
+								effectMask->GetScanLines()[1][5] = 255;
+
+								IWICBitmap* wicEffectBitmap = nullptr;
+								hr = wicFactory->CreateBitmapFromHBITMAP(effectMask->GetBitmap(), NULL, WICBitmapIgnoreAlpha, &wicEffectBitmap);
+								if (wicEffectBitmap)
+								{
+									ID2D1Bitmap* d2dEffectBitmap = nullptr;
+									hr = d2dRenderTarget->CreateBitmapFromWicBitmap(wicEffectBitmap, &d2dEffectBitmap);
+									if (d2dEffectBitmap)
+									{
+										ID2D1Effect* d2dEffect = nullptr;
+										d2dDeviceContext->CreateEffect(CLSID_D2D1Tile, &d2dEffect);
+										d2dEffect->SetInput(0, d2dEffectBitmap);
+										d2dEffect->SetValue(D2D1_TILE_PROP_RECT, D2D1::RectF(0, 0, 2, 2));
+										focusRectangleEffect = d2dEffect;
+										d2dEffectBitmap->Release();
+									}
+									wicEffectBitmap->Release();
+								}
+							}
+							d2dDeviceContext->Release();
+						}
 					}
 					return focusRectangleEffect.Obj();
 				}
