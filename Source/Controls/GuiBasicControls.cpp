@@ -157,14 +157,52 @@ GuiControl
 				}
 			}
 
+			void GuiControl::OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (!isFocused)
+				{
+					isFocused = true;
+					FocusedChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			void GuiControl::OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (isFocused)
+				{
+					isFocused = false;
+					FocusedChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
 			void GuiControl::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
 			{
 				if (focusableComposition != value)
 				{
+					if (focusableComposition)
+					{
+						focusableComposition->GetEventReceiver()->gotFocus.Detach(gotFocusHandler);
+						focusableComposition->GetEventReceiver()->lostFocus.Detach(lostFocusHandler);
+
+						gotFocusHandler = nullptr;
+						lostFocusHandler = nullptr;
+					}
+
 					focusableComposition = value;
 					if (controlTemplateObject)
 					{
 						controlTemplateObject->SetFocusableComposition(focusableComposition);
+					}
+
+					if (focusableComposition)
+					{
+						gotFocusHandler = focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiControl::OnGotFocus);
+						lostFocusHandler = focusableComposition->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiControl::OnLostFocus);
+					}
+					else
+					{
+						GuiEventArgs arguments(boundsComposition);
+						OnLostFocus(boundsComposition, arguments);
 					}
 				}
 			}
@@ -237,6 +275,7 @@ GuiControl
 					ControlSignalTrigerred.SetAssociatedComposition(boundsComposition);
 					VisibleChanged.SetAssociatedComposition(boundsComposition);
 					EnabledChanged.SetAssociatedComposition(boundsComposition);
+					FocusedChanged.SetAssociatedComposition(boundsComposition);
 					VisuallyEnabledChanged.SetAssociatedComposition(boundsComposition);
 					AltChanged.SetAssociatedComposition(boundsComposition);
 					TextChanged.SetAssociatedComposition(boundsComposition);
@@ -402,6 +441,11 @@ GuiControl
 			bool GuiControl::GetVisuallyEnabled()
 			{
 				return isVisuallyEnabled;
+			}
+
+			bool GuiControl::GetFocused()
+			{
+				return isFocused;
 			}
 
 			bool GuiControl::GetEnabled()

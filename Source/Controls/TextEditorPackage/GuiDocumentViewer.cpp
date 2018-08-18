@@ -94,7 +94,7 @@ GuiDocumentCommonInterface
 			{
 				if(IGuiShortcutKeyItem* item=internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, code))
 				{
-					GuiEventArgs arguments;
+					GuiEventArgs arguments(documentControl->GetBoundsComposition());
 					item->Executed.Execute(arguments);
 					return true;
 				}

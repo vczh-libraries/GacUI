@@ -240,7 +240,7 @@ GuiTextBoxCommonInterface
 			{
 				if(IGuiShortcutKeyItem* item=internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, code))
 				{
-					GuiEventArgs arguments;
+					GuiEventArgs arguments(textControl->GetBoundsComposition());
 					item->Executed.Execute(arguments);
 					return true;
 				}

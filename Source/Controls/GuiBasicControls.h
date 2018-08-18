@@ -62,6 +62,7 @@ Basic Construction
 				using ControlList = collections::List<GuiControl*>;
 				using ControlServiceMap = collections::Dictionary<WString, Ptr<IDescriptable>>;
 				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
+				using EventHandler = compositions::IGuiGraphicsEventHandler;
 
 			private:
 				theme::ThemeName						controlThemeName;
@@ -73,6 +74,10 @@ Basic Construction
 				compositions::GuiBoundsComposition*		containerComposition = nullptr;
 				compositions::GuiGraphicsComposition*	focusableComposition = nullptr;
 				compositions::GuiGraphicsEventReceiver*	eventReceiver = nullptr;
+
+				bool									isFocused = false;
+				Ptr<EventHandler>						gotFocusHandler;
+				Ptr<EventHandler>						lostFocusHandler;
 
 				bool									isEnabled = true;
 				bool									isVisuallyEnabled = true;
@@ -105,6 +110,8 @@ Basic Construction
 				virtual void							OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget);
 				virtual void							OnBeforeReleaseGraphicsHost();
 				virtual void							UpdateVisuallyEnabled();
+				void									OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
 
 				bool									IsAltEnabled()override;
@@ -133,6 +140,8 @@ Basic Construction
 				compositions::GuiNotifyEvent			VisibleChanged;
 				/// <summary>Enabled event. This event will be raised when the enabling state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			EnabledChanged;
+				/// <summary>Focused event. This event will be raised when the focusing state of the control is changed.</summary>
+				compositions::GuiNotifyEvent			FocusedChanged;
 				/// <summary>
 				/// Enabled event. This event will be raised when the visually enabling state of the control is changed. A visually enabling is combined by the enabling state and the parent's visually enabling state.
 				/// A control is rendered as disabled, not only when the control itself is disabled, but also when the parent control is rendered as disabled.
@@ -205,6 +214,9 @@ Basic Construction
 				/// <summary>Test if this control is rendered as enabled.</summary>
 				/// <returns>Returns true if this control is rendered as enabled.</returns>
 				virtual bool							GetVisuallyEnabled();
+				/// <summary>Test if this control is focused.</summary>
+				/// <returns>Returns true if this control is focused.</returns>
+				virtual bool							GetFocused();
 				/// <summary>Test if this control is enabled.</summary>
 				/// <returns>Returns true if this control is enabled.</returns>
 				virtual bool							GetEnabled();
