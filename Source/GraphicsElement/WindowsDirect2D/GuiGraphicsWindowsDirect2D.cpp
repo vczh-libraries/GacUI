@@ -573,7 +573,7 @@ WindowsDirect2DRenderTarget
 						{
 							if (auto wicFactory = GetWICImagingFactory())
 							{
-								BYTE effectMask[] = { 0,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255 };
+								BYTE effectMask[] = { 255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255 };
 								IWICBitmap* wicEffectBitmap = nullptr;
 								hr = wicFactory->CreateBitmapFromMemory(2, 2, GUID_WICPixelFormat32bppBGRA, 8, 16, effectMask, &wicEffectBitmap);
 								if (wicEffectBitmap)
