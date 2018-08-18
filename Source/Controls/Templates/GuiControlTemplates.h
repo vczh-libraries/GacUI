@@ -172,10 +172,11 @@ Control Template
 				AlwaysFalse,
 				Customizable,
 			};
-				
+
 #define GuiControlTemplate_PROPERTIES(F)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition, this)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, FocusableComposition, nullptr)\
+				F(GuiControlTemplate, bool, Focused, false)\
 
 #define GuiLabelTemplate_PROPERTIES(F)\
 				F(GuiLabelTemplate, Color, DefaultTextColor, {})\

@@ -28,6 +28,7 @@ GuiControl
 				controlTemplateObject->SetContext(context);
 				controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
 				controlTemplateObject->SetFocusableComposition(focusableComposition);
+				controlTemplateObject->SetFocused(isFocused);
 			}
 
 			void GuiControl::CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)
@@ -162,6 +163,10 @@ GuiControl
 				if (!isFocused)
 				{
 					isFocused = true;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetFocused(true);
+					}
 					FocusedChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -171,6 +176,10 @@ GuiControl
 				if (isFocused)
 				{
 					isFocused = false;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetFocused(false);
+					}
 					FocusedChanged.Execute(GetNotifyEventArguments());
 				}
 			}
