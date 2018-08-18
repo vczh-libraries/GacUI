@@ -86,6 +86,7 @@ Functionality
 				virtual void								DestroyBitmapCache(INativeImageFrame* frame)=0;
 				virtual void								SetTextAntialias(bool antialias, bool verticalAntialias)=0;
 
+				virtual ID2D1Effect*						GetFocusRectangleEffect() = 0;
 				virtual ID2D1SolidColorBrush*				CreateDirect2DBrush(Color color)=0;
 				virtual void								DestroyDirect2DBrush(Color color)=0;
 				virtual ID2D1LinearGradientBrush*			CreateDirect2DLinearBrush(Color c1, Color c2)=0;

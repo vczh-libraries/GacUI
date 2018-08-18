@@ -369,6 +369,7 @@ WindowsDirect2DRenderTarget
 				CachedLinearBrushAllocator		linearBrushes;
 				CachedRadialBrushAllocator		radialBrushes;
 				ImageCacheList					imageCaches;
+				ComPtr<ID2D1Effect>				focusRectangleEffect;
 
 				ComPtr<IDWriteRenderingParams>	noAntialiasParams;
 				ComPtr<IDWriteRenderingParams>	horizontalAntialiasParams;
@@ -555,6 +556,14 @@ WindowsDirect2DRenderTarget
 				bool IsClipperCoverWholeTarget()override
 				{
 					return clipperCoverWholeTargetCounter>0;
+				}
+
+				ID2D1Effect* GetFocusRectangleEffect()override
+				{
+					if (!focusRectangleEffect)
+					{
+					}
+					return focusRectangleEffect.Obj();
 				}
 
 				ID2D1SolidColorBrush* CreateDirect2DBrush(Color color)override

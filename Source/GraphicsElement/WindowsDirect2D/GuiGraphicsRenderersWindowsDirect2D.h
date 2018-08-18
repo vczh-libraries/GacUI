@@ -42,6 +42,7 @@ Renderers
 			{
 				DEFINE_GUI_GRAPHICS_RENDERER(GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsDirect2DRenderTarget)
 			protected:
+				ID2D1Effect*			focusRectangleEffect = nullptr;
 
 				void					InitializeInternal();
 				void					FinalizeInternal();
