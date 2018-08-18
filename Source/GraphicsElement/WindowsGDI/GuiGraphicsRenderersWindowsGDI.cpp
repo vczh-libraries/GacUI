@@ -27,7 +27,7 @@ GuiSolidBorderElementRenderer
 
 			void GuiFocusRectangleElementRenderer::Render(Rect bounds)
 			{
-				renderTarget->GetDC()->FocusRectangle(bounds.Left(), bounds.Top(), bounds.Right() - 1, bounds.Bottom() - 1);
+				renderTarget->GetDC()->FocusRectangle(bounds.Left(), bounds.Top(), bounds.Right(), bounds.Bottom());
 			}
 
 			void GuiFocusRectangleElementRenderer::OnElementStateChanged()

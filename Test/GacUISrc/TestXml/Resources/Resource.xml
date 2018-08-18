@@ -2,10 +2,28 @@
   <Folder name="DarkSkin">
     <InstanceStyle name="Style" content="File">..\..\Host\Resources\DarkSkin\Style.xml</InstanceStyle>
   </Folder>
+  
+  <Instance name="ButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="testtheme::ButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="buttonBackground"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="buttonBorder"/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+          <FocusRectangle/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
+          <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
 
   <Instance name="ThemeResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::TestTheme" xmlns:demo="demo::*">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestTheme" xmlns:x="testtheme::*">
       <ThemeTemplates Name="TestSkin">
+        <att.Button>x:ButtonTemplate</att.Button>
       </ThemeTemplates>
     </Instance>
   </Instance>

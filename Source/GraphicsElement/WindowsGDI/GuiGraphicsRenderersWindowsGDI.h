@@ -27,9 +27,6 @@ Renderers
 			{
 				DEFINE_GUI_GRAPHICS_RENDERER(GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsGDIRenderTarget)
 			protected:
-				Color					oldColor;
-				Ptr<windows::WinPen>	pen;
-				Ptr<windows::WinBrush>	brush;
 
 				void					InitializeInternal();
 				void					FinalizeInternal();

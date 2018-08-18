@@ -47,7 +47,6 @@ Renderers
 				void					FinalizeInternal();
 				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
 			public:
-				GuiFocusRectangleElementRenderer();
 
 				void					Render(Rect bounds)override;
 				void					OnElementStateChanged()override;
