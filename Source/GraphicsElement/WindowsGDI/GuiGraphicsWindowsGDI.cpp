@@ -486,6 +486,7 @@ void RendererMainGDI()
 	elements_windows_gdi::SetWindowsGDIResourceManager(&resourceManager);
 	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
 
+	elements_windows_gdi::GuiFocusRectangleElementRenderer::Register();
 	elements_windows_gdi::GuiSolidBorderElementRenderer::Register();
 	elements_windows_gdi::Gui3DBorderElementRenderer::Register();
 	elements_windows_gdi::Gui3DSplitterElementRenderer::Register();

@@ -13,6 +13,31 @@ namespace vl
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 
+			void GuiFocusRectangleElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiFocusRectangleElementRenderer::FinalizeInternal()
+			{
+			}
+
+			void GuiFocusRectangleElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
+			{
+			}
+
+			void GuiFocusRectangleElementRenderer::Render(Rect bounds)
+			{
+				renderTarget->GetDC()->FocusRectangle(bounds.Left(), bounds.Top(), bounds.Right() - 1, bounds.Bottom() - 1);
+			}
+
+			void GuiFocusRectangleElementRenderer::OnElementStateChanged()
+			{
+			}
+
+/***********************************************************************
+GuiSolidBorderElementRenderer
+***********************************************************************/
+
 			void GuiSolidBorderElementRenderer::InitializeInternal()
 			{
 				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();

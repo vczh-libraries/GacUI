@@ -96,6 +96,30 @@ IMPLEMENT_BRUSH_ELEMENT_RENDERER
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 
+			void GuiFocusRectangleElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiFocusRectangleElementRenderer::FinalizeInternal()
+			{
+			}
+
+			void GuiFocusRectangleElementRenderer::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
+			{
+			}
+
+			void GuiFocusRectangleElementRenderer::Render(Rect bounds)
+			{
+			}
+
+			void GuiFocusRectangleElementRenderer::OnElementStateChanged()
+			{
+			}
+
+/***********************************************************************
+GuiSolidBorderElementRenderer
+***********************************************************************/
+
 			IMPLEMENT_BRUSH_ELEMENT_RENDERER_SOLID_COLOR_BRUSH(GuiSolidBorderElementRenderer)
 			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiSolidBorderElementRenderer)
 			{

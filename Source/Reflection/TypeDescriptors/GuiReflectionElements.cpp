@@ -105,6 +105,11 @@ Type Declaration (Extra)
 Type Declaration (Class)
 ***********************************************************************/
 
+			BEGIN_CLASS_MEMBER(GuiFocusRectangleElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				ELEMENT_CONSTRUCTOR(GuiFocusRectangleElement)
+			END_CLASS_MEMBER(GuiFocusRectangleElement)
+
 			BEGIN_CLASS_MEMBER(GuiSolidBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
 				ELEMENT_CONSTRUCTOR(GuiSolidBorderElement)

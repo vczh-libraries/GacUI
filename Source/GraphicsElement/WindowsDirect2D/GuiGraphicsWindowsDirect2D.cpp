@@ -711,6 +711,7 @@ void RendererMainDirect2D()
 	elements_windows_d2d::SetWindowsDirect2DResourceManager(&resourceManager);
 	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
 
+	elements_windows_d2d::GuiFocusRectangleElementRenderer::Register();
 	elements_windows_d2d::GuiSolidBorderElementRenderer::Register();
 	elements_windows_d2d::Gui3DBorderElementRenderer::Register();
 	elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
