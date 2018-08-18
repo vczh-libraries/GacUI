@@ -11,6 +11,7 @@ Interfaces:
 
 #include <d2d1_1.h>
 #include <dwrite_1.h>
+#include <d2d1effects.h>
 #include <wincodec.h>
 #include "..\GuiGraphicsElement.h"
 #include "..\..\GraphicsComposition\GuiGraphicsComposition.h"

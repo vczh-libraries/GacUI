@@ -4,7 +4,6 @@
 #include "..\..\NativeWindow\Windows\ServicesImpl\WindowsImageService.h"
 #include "..\..\Controls\GuiApplication.h"
 #include "..\..\NativeWindow\Windows\GDI\WinGDI.h"
-#include <d2d1effects.h>
 #include <math.h>
 
 namespace vl
@@ -574,22 +573,9 @@ WindowsDirect2DRenderTarget
 						{
 							if (auto wicFactory = GetWICImagingFactory())
 							{
-								Ptr<WinBitmap> effectMask = new WinBitmap(2, 2, WinBitmap::vbb24Bits, true);
-								effectMask->GetScanLines()[0][0] = 255;
-								effectMask->GetScanLines()[0][1] = 255;
-								effectMask->GetScanLines()[0][2] = 255;
-								effectMask->GetScanLines()[0][3] = 0;
-								effectMask->GetScanLines()[0][4] = 0;
-								effectMask->GetScanLines()[0][5] = 0;
-								effectMask->GetScanLines()[1][0] = 0;
-								effectMask->GetScanLines()[1][1] = 0;
-								effectMask->GetScanLines()[1][2] = 0;
-								effectMask->GetScanLines()[1][3] = 255;
-								effectMask->GetScanLines()[1][4] = 255;
-								effectMask->GetScanLines()[1][5] = 255;
-
+								BYTE effectMask[] = { 255,255,255,0,0,0,0,0,0,255,255,255 };
 								IWICBitmap* wicEffectBitmap = nullptr;
-								hr = wicFactory->CreateBitmapFromHBITMAP(effectMask->GetBitmap(), NULL, WICBitmapIgnoreAlpha, &wicEffectBitmap);
+								hr = wicFactory->CreateBitmapFromMemory(2, 2, GUID_WICPixelFormat24bppBGR, 6, 12, effectMask, &wicEffectBitmap);
 								if (wicEffectBitmap)
 								{
 									ID2D1Bitmap* d2dEffectBitmap = nullptr;
