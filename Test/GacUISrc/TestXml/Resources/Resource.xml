@@ -1,6 +1,17 @@
 <Resource>
+  <Folder name="DarkSkin">
+    <InstanceStyle name="Style" content="File">..\..\Host\Resources\DarkSkin\Style.xml</InstanceStyle>
+  </Folder>
+
+  <Instance name="ThemeResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestTheme" xmlns:demo="demo::*">
+      <ThemeTemplates Name="TestSkin">
+      </ThemeTemplates>
+    </Instance>
+  </Instance>
+
   <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MainWindow2">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <Stack AlignmentToParent="left:10 top:10" Padding="5" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
@@ -79,17 +90,6 @@
           </Stack>
         </Bounds>
       </Window>
-    </Instance>
-  </Instance>
-
-  <Folder name="DarkSkin">
-    <InstanceStyle name="Style" content="File">..\..\Host\Resources\DarkSkin\Style.xml</InstanceStyle>
-  </Folder>
-
-  <Instance name="ThemeResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::TestTheme" xmlns:demo="demo::*">
-      <ThemeTemplates Name="TestSkin">
-      </ThemeTemplates>
     </Instance>
   </Instance>
 </Resource>

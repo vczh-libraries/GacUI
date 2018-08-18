@@ -1,8 +1,8 @@
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 #include "../Host/ResourceCompiler.h"
-#include "../TestCppCodegen/Source/DarkSkinIncludes.h"
 #include "../TestCppCodegen/Source/DarkSkinReflection.h"
+#include "../TestCppCodegen/Source/DemoReflection.h"
 #include <Windows.h>
 
 using namespace vl;
@@ -16,11 +16,6 @@ using namespace vl::reflection::description;
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
-	auto x1 = GetSystemMetrics(SM_CXSIZEFRAME);
-	auto x2 = GetSystemMetrics(SM_CYSIZEFRAME);
-	auto x3 = GetSystemMetrics(SM_CXFIXEDFRAME);
-	auto x4 = GetSystemMetrics(SM_CYFIXEDFRAME);
-	auto x5 = GetSystemMetrics(SM_CXPADDEDBORDER);
 #ifdef GUI_GRAPHICS_RENDERER_GDI
 	int result = SetupWindowsGDIRenderer();
 #endif
@@ -110,6 +105,7 @@ void GuiMain()
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	LoadDarkSkinTypes();
+	LoadDemoTypes();
 
 	List<WString> names;
 	names.Add(L"Resource");

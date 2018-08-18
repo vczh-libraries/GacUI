@@ -19,6 +19,9 @@
     <Filter Include="DarkSkin">
       <UniqueIdentifier>{de33df03-fad0-4813-8e07-27390fc07287}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Demo">
+      <UniqueIdentifier>{85e46810-7bf3-48fd-9137-95c1d430d3e7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -39,6 +42,21 @@
     <ClCompile Include="..\Host\CompositionDumper.cpp">
       <Filter>Host</Filter>
     </ClCompile>
+    <ClCompile Include="..\TestCppCodegen\Source\Demo.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TestCppCodegen\Source\DemoReflection.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TestCppCodegen\Source\DemoResource.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TestCppCodegen\Source\DocumentEditorBase.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TestCppCodegen\Source\MainWindow.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Host\ResourceCompiler.h">
@@ -52,6 +70,24 @@
     </ClInclude>
     <ClInclude Include="..\TestCppCodegen\Source\DarkSkinReflection.h">
       <Filter>DarkSkin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TestCppCodegen\Source\Demo.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TestCppCodegen\Source\Demo1.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TestCppCodegen\Source\DemoIncludes.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TestCppCodegen\Source\DemoReflection.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TestCppCodegen\Source\DocumentEditorBase.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TestCppCodegen\Source\MainWindow.h">
+      <Filter>Demo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
