@@ -2,102 +2,10 @@
   <Folder name="DarkSkin">
     <InstanceStyle name="Style" content="File">..\..\Host\Resources\DarkSkin\Style.xml</InstanceStyle>
   </Folder>
-  
-  <Instance name="ButtonTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="testtheme::ButtonTemplate" ref.Styles="res://DarkSkin/Style">
-      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground ref.Style="buttonBackground"/>
-        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder ref.Style="buttonBorder"/>
-        </Bounds>
-        <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1" Visible-bind="self.Focused">
-          <FocusRectangle/>
-        </Bounds>
-        <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
-          <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Bounds>
-      </ButtonTemplate>
-    </Instance>
-  </Instance>
-
-  <Instance name="CheckBoxTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="testtheme::CheckBoxTemplate" ref.Styles="res://DarkSkin/Style">
-      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <att.Rows>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            <CellOption>composeType:Absolute absolute:17</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-          </att.Rows>
-          <att.Columns>
-            <CellOption>composeType:Absolute absolute:17</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-          </att.Columns>
-
-          <Cell Site="row:1 column:0">
-            <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
-              <SolidBackground ref.Style="buttonBackground"/>
-            </Bounds>
-            <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
-              <SolidBorder ref.Style="buttonBorder"/>
-            </Bounds>
-            <Bounds Visible-bind="self.Selected" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-              <SolidLabel ref.Style="buttonText" Text="a" Font="fontFamily:'Webdings' size:16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Bounds>
-          </Cell>
-
-          <Cell Site="row:0 column:1 rowSpan:3 columnSpan:1">
-            <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
-              <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            </Bounds>
-          </Cell>
-        </Table>
-      </SelectableButtonTemplate>
-    </Instance>
-  </Instance>
-
-  <Instance name="RadioButtonTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="testtheme::RadioButtonTemplate" ref.Styles="res://DarkSkin/Style">
-      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <att.Rows>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            <CellOption>composeType:Absolute absolute:17</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-          </att.Rows>
-          <att.Columns>
-            <CellOption>composeType:Absolute absolute:17</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-          </att.Columns>
-
-          <Cell Site="row:1 column:0">
-            <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
-              <SolidBackground ref.Style="buttonBackground" Shape="shapeType:Ellipse"/>
-            </Bounds>
-            <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
-              <SolidBorder ref.Style="buttonBorder" Shape="shapeType:Ellipse"/>
-            </Bounds>
-            <Bounds Visible-bind="self.Selected" AlignmentToParent="left:5 top:5 right:5 bottom:5">
-              <SolidBackground ref.Style="buttonText" Shape="shapeType:Ellipse"/>
-            </Bounds>
-          </Cell>
-
-          <Cell Site="row:0 column:1 rowSpan:3 columnSpan:1">
-            <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
-              <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            </Bounds>
-          </Cell>
-        </Table>
-      </SelectableButtonTemplate>
-    </Instance>
-  </Instance>
 
   <Instance name="ThemeResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestTheme" xmlns:x="testtheme::*">
       <ThemeTemplates Name="TestSkin">
-        <att.Button>x:ButtonTemplate</att.Button>
-        <att.CheckBox>x:CheckBoxTemplate</att.CheckBox>
-        <att.RadioButton>x:RadioButtonTemplate</att.RadioButton>
       </ThemeTemplates>
     </Instance>
   </Instance>

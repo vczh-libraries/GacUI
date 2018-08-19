@@ -6,7 +6,10 @@
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="buttonBorder"/>
         </Bounds>
-        <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
+        <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1" Visible-bind="self.Focused">
+          <FocusRectangle/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:4 top:2 right:4 bottom:2">
           <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Bounds>
       </ButtonTemplate>
@@ -40,8 +43,13 @@
           </Cell>
 
           <Cell Site="row:0 column:1 rowSpan:3 columnSpan:1">
-            <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
-              <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Bounds AlignmentToParent="left:2 top:0 right:-1 bottom:0">
+              <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" Visible-bind="self.Focused">
+                <FocusRectangle/>
+              </Bounds>
+              <Bounds AlignmentToParent="left:4 top:2 right:4 bottom:2">
+                <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+              </Bounds>
             </Bounds>
           </Cell>
         </Table>
@@ -76,8 +84,13 @@
           </Cell>
 
           <Cell Site="row:0 column:1 rowSpan:3 columnSpan:1">
-            <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
-              <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Bounds AlignmentToParent="left:2 top:0 right:-1 bottom:0">
+              <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" Visible-bind="self.Focused">
+                <FocusRectangle/>
+              </Bounds>
+              <Bounds AlignmentToParent="left:4 top:2 right:4 bottom:2">
+                <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+              </Bounds>
             </Bounds>
           </Cell>
         </Table>
