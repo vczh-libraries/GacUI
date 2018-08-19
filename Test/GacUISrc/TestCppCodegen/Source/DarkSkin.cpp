@@ -22688,7 +22688,7 @@ Class (::darkskin::ComboBoxTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetEllipse(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetEllipse(true);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_4));
@@ -23082,7 +23082,7 @@ Class (::darkskin::DocumentViewerTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
-		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
+		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint32_t>(20)));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf77_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_darkskin_DocumentViewerTemplate_Initialize_(this)));
 		}
@@ -23476,10 +23476,10 @@ Class (::darkskin::HScrollTemplateConstructor)
 		}
 		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiSideAlignedComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMaxRatio(::vl::__vwsn::Parse<double>(::vl::WString(L"0.5", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMaxRatio(static_cast<double>(0.5));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMaxLength(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMaxLength(static_cast<::vl::vint32_t>(20));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetDirection(::vl::presentation::compositions::GuiSideAlignedComposition::Direction::Left);
@@ -23492,7 +23492,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->buttonDecrease)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->buttonDecrease)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf251_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_(this)));
@@ -23505,10 +23505,10 @@ Class (::darkskin::HScrollTemplateConstructor)
 		}
 		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiSideAlignedComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMaxRatio(::vl::__vwsn::Parse<double>(::vl::WString(L"0.5", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMaxRatio(static_cast<double>(0.5));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMaxLength(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMaxLength(static_cast<::vl::vint32_t>(20));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetDirection(::vl::presentation::compositions::GuiSideAlignedComposition::Direction::Right);
@@ -23521,7 +23521,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->buttonIncrease)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->buttonIncrease)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf252_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_(this)));
@@ -23548,7 +23548,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf253_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_(this)));
@@ -23685,7 +23685,7 @@ Class (::darkskin::HTrackerTemplateConstructor)
 		}
 		(this->handle = new ::vl::presentation::compositions::GuiPartialViewComposition());
 		{
-			::vl::__vwsn::This(this->handle)->SetWidthPageSize(::vl::__vwsn::Parse<double>(::vl::WString(L"0", false)));
+			::vl::__vwsn::This(this->handle)->SetWidthPageSize(static_cast<double>(0));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(12); __vwsn_temp__.y = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -23701,7 +23701,7 @@ Class (::darkskin::HTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf256_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_darkskin_HTrackerTemplate_Initialize_(this)));
@@ -24097,7 +24097,7 @@ Class (::darkskin::ListViewColumnHeaderTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetEllipse(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetEllipse(true);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_12));
@@ -24287,7 +24287,7 @@ Class (::darkskin::ListViewTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
-		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
+		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint32_t>(20)));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf113_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_darkskin_ListViewTemplate_Initialize_(this)));
 		}
@@ -24483,7 +24483,7 @@ Class (::darkskin::MenuItemButtonTemplateConstructor)
 		}
 		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiSharedSizeItemComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSharedWidth(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSharedWidth(true);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetGroup(::vl::WString(L"MenuItem-Text", false));
@@ -24513,7 +24513,7 @@ Class (::darkskin::MenuItemButtonTemplateConstructor)
 		}
 		(this->__vwsn_precompile_8 = new ::vl::presentation::compositions::GuiSharedSizeItemComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetSharedWidth(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetSharedWidth(true);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetGroup(::vl::WString(L"MenuItem-Shortcut", false));
@@ -24762,7 +24762,7 @@ Class (::darkskin::MultilineTextBoxTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
-		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
+		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint32_t>(20)));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf292_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_(this)));
 		}
@@ -25380,7 +25380,7 @@ Class (::darkskin::RibbonGalleryTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(4); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(4); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf157_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_(this)));
@@ -25403,7 +25403,7 @@ Class (::darkskin::RibbonGalleryTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(4); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(4); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf158_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_(this)));
@@ -25426,7 +25426,7 @@ Class (::darkskin::RibbonGalleryTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(4); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(4); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf159_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_(this)));
@@ -25741,7 +25741,7 @@ Class (::darkskin::RibbonGroupTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = (- static_cast<::vl::vint32_t>(1)); __vwsn_temp__.top = (- static_cast<::vl::vint32_t>(1)); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf168_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_(this)));
@@ -26556,7 +26556,7 @@ Class (::darkskin::RibbonSmallButtonTemplateConstructor)
 		}
 		(this->container = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			::vl::__vwsn::This(this->container)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"3", false)));
+			::vl::__vwsn::This(this->container)->SetCellPadding(static_cast<::vl::vint32_t>(3));
 		}
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -26720,7 +26720,7 @@ Class (::darkskin::RibbonSmallDropdownButtonTemplateConstructor)
 		}
 		(this->container = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			::vl::__vwsn::This(this->container)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"3", false)));
+			::vl::__vwsn::This(this->container)->SetCellPadding(static_cast<::vl::vint32_t>(3));
 		}
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -26959,7 +26959,7 @@ Class (::darkskin::RibbonSmallIconLabelTemplateConstructor)
 		}
 		(this->__vwsn_precompile_4 = new ::vl::presentation::compositions::GuiSharedSizeItemComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetSharedWidth(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetSharedWidth(true);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetGroup(::vl::WString(L"MenuItem-Text", false));
@@ -27094,7 +27094,7 @@ Class (::darkskin::RibbonSmallSplitButtonTemplateConstructor)
 		}
 		(this->container = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			::vl::__vwsn::This(this->container)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"3", false)));
+			::vl::__vwsn::This(this->container)->SetCellPadding(static_cast<::vl::vint32_t>(3));
 		}
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -27806,7 +27806,7 @@ Class (::darkskin::ScrollViewTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
-		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
+		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint32_t>(20)));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf263_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_darkskin_ScrollViewTemplate_Initialize_(this)));
 		}
@@ -28142,7 +28142,7 @@ Class (::darkskin::TabHeaderTemplateConstructor)
 			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAutoSelection(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAutoSelection(false);
 		}
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
 		{
@@ -28487,7 +28487,7 @@ Class (::darkskin::TextListTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
-		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
+		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint32_t>(20)));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf118_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_darkskin_TextListTemplate_Initialize_(this)));
 		}
@@ -29668,7 +29668,7 @@ Class (::darkskin::TreeViewTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
-		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false))));
+		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint32_t>(20)));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf122_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_darkskin_TreeViewTemplate_Initialize_(this)));
 		}
@@ -29799,10 +29799,10 @@ Class (::darkskin::VScrollTemplateConstructor)
 		}
 		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiSideAlignedComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMaxRatio(::vl::__vwsn::Parse<double>(::vl::WString(L"0.5", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMaxRatio(static_cast<double>(0.5));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMaxLength(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMaxLength(static_cast<::vl::vint32_t>(20));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetDirection(::vl::presentation::compositions::GuiSideAlignedComposition::Direction::Top);
@@ -29815,7 +29815,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->buttonDecrease)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->buttonDecrease)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf268_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_(this)));
@@ -29828,10 +29828,10 @@ Class (::darkskin::VScrollTemplateConstructor)
 		}
 		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiSideAlignedComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMaxRatio(::vl::__vwsn::Parse<double>(::vl::WString(L"0.5", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMaxRatio(static_cast<double>(0.5));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMaxLength(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"20", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMaxLength(static_cast<::vl::vint32_t>(20));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetDirection(::vl::presentation::compositions::GuiSideAlignedComposition::Direction::Bottom);
@@ -29844,7 +29844,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->buttonIncrease)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->buttonIncrease)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf269_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_(this)));
@@ -29871,7 +29871,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf270_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_(this)));
@@ -30008,7 +30008,7 @@ Class (::darkskin::VTrackerTemplateConstructor)
 		}
 		(this->handle = new ::vl::presentation::compositions::GuiPartialViewComposition());
 		{
-			::vl::__vwsn::This(this->handle)->SetHeightPageSize(::vl::__vwsn::Parse<double>(::vl::WString(L"0", false)));
+			::vl::__vwsn::This(this->handle)->SetHeightPageSize(static_cast<double>(0));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(0); __vwsn_temp__.y = static_cast<::vl::vint32_t>(12); return __vwsn_temp__; }());
@@ -30024,7 +30024,7 @@ Class (::darkskin::VTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf273_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_darkskin_VTrackerTemplate_Initialize_(this)));
@@ -30095,7 +30095,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetTooltipTemplate(LAMBDA(::vl_workflow_global::__vwsnf340_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetCustomFrameEnabled(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+			::vl::__vwsn::This(this->self)->SetCustomFrameEnabled(true);
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -30245,7 +30245,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetText(::vl::WString(L" 0 ", false));
@@ -30274,7 +30274,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf342_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_(this)));
@@ -30303,7 +30303,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAutoFocus(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetText(::vl::WString(L" r ", false));
@@ -30333,7 +30333,7 @@ Class (::darkskin::WindowTemplateConstructor)
 		}
 		(this->__vwsn_precompile_22 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_22.Obj())->SetEllipse(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_22.Obj())->SetEllipse(true);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_22.Obj())->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Segoe WP SemiLight", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(14); __vwsn_temp__.antialias = true; return __vwsn_temp__; }());

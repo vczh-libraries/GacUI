@@ -89,10 +89,54 @@ Converter
 		{
 			if (typeDescriptor == description::GetTypeDescriptor<WString>())
 			{
-				auto str = MakePtr<WfStringExpression>();
-				str->value.value = textValue;
-				return str;
+				auto valueExpr = MakePtr<WfStringExpression>();
+				valueExpr->value.value = textValue;
+				return valueExpr;
 			}
+			else if (typeDescriptor == description::GetTypeDescriptor<bool>())
+			{
+				bool value = false;
+				if (!TypedValueSerializerProvider<bool>::Deserialize(textValue, value)) return nullptr;
+				auto valueExpr = MakePtr<WfLiteralExpression>();
+				valueExpr->value = value ? WfLiteralValue::True : WfLiteralValue::False;
+				return valueExpr;
+			}
+#define INTEGER_BRANCH(TYPE) \
+			else if (typeDescriptor == description::GetTypeDescriptor<TYPE>()) \
+			{ \
+				auto valueExpr = MakePtr<WfIntegerExpression>(); \
+				valueExpr->value.value = textValue; \
+				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal); \
+				auto infer = MakePtr<WfInferExpression>(); \
+				infer->type = GetTypeFromTypeInfo(type.Obj()); \
+				infer->expression = valueExpr; \
+				return infer; \
+			}
+			INTEGER_BRANCH(vint8_t)
+			INTEGER_BRANCH(vint16_t)
+			INTEGER_BRANCH(vint32_t)
+			INTEGER_BRANCH(vint64_t)
+			INTEGER_BRANCH(vuint8_t)
+			INTEGER_BRANCH(vuint16_t)
+			INTEGER_BRANCH(vuint32_t)
+			INTEGER_BRANCH(vuint64_t)
+#undef INTEGER_BRANCH
+				
+#define FLOATING_BRANCH(TYPE) \
+			else if (typeDescriptor == description::GetTypeDescriptor<TYPE>()) \
+			{ \
+				auto valueExpr = MakePtr<WfFloatingExpression>(); \
+				valueExpr->value.value = textValue; \
+				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal); \
+				auto infer = MakePtr<WfInferExpression>(); \
+				infer->type = GetTypeFromTypeInfo(type.Obj()); \
+				infer->expression = valueExpr; \
+				return infer; \
+			}
+			FLOATING_BRANCH(float)
+			FLOATING_BRANCH(double)
+#undef FLOATING_BRANCH
+
 			else if (typeDescriptor->GetSerializableType())
 			{
 				auto str = MakePtr<WfStringExpression>();
