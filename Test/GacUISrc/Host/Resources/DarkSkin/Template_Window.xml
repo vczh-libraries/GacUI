@@ -91,7 +91,7 @@
 
             <Cell Site="row:0 column:1">
               <att.AssociatedHitTestResult-bind>self.MinimizedBox ? ButtonMinimum : NoDecision</att.AssociatedHitTestResult-bind>
-              <Button Text=" 0 " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+              <Button AutoFocus="false" Text=" 0 " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
                 <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
                 <att.Enabled-bind>self.MinimizedBox</att.Enabled-bind>
                 <att.Visible-bind>self.MinimizedBox or self.MaximizedBox</att.Visible-bind>
@@ -99,14 +99,14 @@
             </Cell>
             <Cell Site="row:0 column:2">
               <att.AssociatedHitTestResult-bind>self.MaximizedBox ? ButtonMaximum : NoDecision</att.AssociatedHitTestResult-bind>
-              <Button Text-bind="self.Maximized ? ' 1 ' : ' 2 '" Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+              <Button AutoFocus="false" Text-bind="self.Maximized ? ' 1 ' : ' 2 '" Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
                 <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
                 <att.Enabled-bind>self.MaximizedBox</att.Enabled-bind>
                 <att.Visible-bind>self.MinimizedBox or self.MaximizedBox</att.Visible-bind>
               </Button>
             </Cell>
             <Cell Site="row:0 column:3" AssociatedHitTestResult="ButtonClose">
-              <Button Text=" r " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+              <Button AutoFocus="false" Text=" r " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
                 <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
               </Button>
             </Cell>

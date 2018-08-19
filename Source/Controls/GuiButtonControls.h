@@ -29,6 +29,7 @@ Buttons
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ButtonTemplate, GuiControl)
 			protected:
 				bool									clickOnMouseUp = true;
+				bool									autoFocus = true;
 				bool									mousePressing = false;
 				bool									mouseHoving = false;
 				ButtonState								controlState = ButtonState::Normal;
@@ -36,6 +37,7 @@ Buttons
 				void									OnParentLineChanged()override;
 				void									OnActiveAlt()override;
 				void									UpdateControlState();
+				void									CheckAndClick(compositions::GuiEventArgs& arguments);
 				void									OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -55,6 +57,13 @@ Buttons
 				/// <summary>Set is the <see cref="Clicked"/> event raised when left mouse button up or not.</summary>
 				/// <param name="value">Set to true to make this event raised when left mouse button up</param>
 				void									SetClickOnMouseUp(bool value);
+
+				/// <summary>Test if the button gets focus when it is clicked.</summary>
+				/// <returns>Returns true if the button gets focus when it is clicked</returns>
+				bool									GetAutoFocus();
+				/// <summary>Set if the button gets focus when it is clicked.</summary>
+				/// <param name="value">Set to true to make this button get focus when it is clicked.</param>
+				void									SetAutoFocus(bool value);
 			};
 
 			/// <summary>A <see cref="GuiButton"/> with a selection state.</summary>

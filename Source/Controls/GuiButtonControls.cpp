@@ -73,16 +73,33 @@ GuiButton
 				}
 			}
 
+			void GuiButton::CheckAndClick(compositions::GuiEventArgs& arguments)
+			{
+				auto eventSource = arguments.eventSource->GetAssociatedControl();
+				while (eventSource && eventSource != this)
+				{
+					if (eventSource->GetFocusableComposition())
+					{
+						return;
+					}
+					eventSource = eventSource->GetParent();
+				}
+				Clicked.Execute(GetNotifyEventArguments());
+			}
+
 			void GuiButton::OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
 				if(arguments.eventSource==boundsComposition)
 				{
 					mousePressing=true;
-					boundsComposition->GetRelatedGraphicsHost()->SetFocus(boundsComposition);
-					UpdateControlState();
-					if(!clickOnMouseUp && arguments.eventSource->GetAssociatedControl()==this)
+					if (autoFocus)
 					{
-						Clicked.Execute(GetNotifyEventArguments());
+						boundsComposition->GetRelatedGraphicsHost()->SetFocus(boundsComposition);
+					}
+					UpdateControlState();
+					if(!clickOnMouseUp)
+					{
+						CheckAndClick(arguments);
 					}
 				}
 			}
@@ -98,16 +115,7 @@ GuiButton
 				{
 					if(mouseHoving && clickOnMouseUp)
 					{
-						auto eventSource = arguments.eventSource->GetAssociatedControl();
-						while (eventSource && eventSource != this)
-						{
-							if (eventSource->GetFocusableComposition())
-							{
-								return;
-							}
-							eventSource = eventSource->GetParent();
-						}
-						Clicked.Execute(GetNotifyEventArguments());
+						CheckAndClick(arguments);
 					}
 				}
 			}
@@ -154,6 +162,16 @@ GuiButton
 			void GuiButton::SetClickOnMouseUp(bool value)
 			{
 				clickOnMouseUp=value;
+			}
+
+			bool GuiButton::GetAutoFocus()
+			{
+				return autoFocus;
+			}
+
+			void GuiButton::SetAutoFocus(bool value)
+			{
+				autoFocus = value;
 			}
 
 /***********************************************************************

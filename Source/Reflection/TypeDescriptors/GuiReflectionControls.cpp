@@ -756,6 +756,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_GUIEVENT(Clicked)
 
 				CLASS_MEMBER_PROPERTY_FAST(ClickOnMouseUp)
+				CLASS_MEMBER_PROPERTY_FAST(AutoFocus)
 			END_CLASS_MEMBER(GuiButton)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableButton)

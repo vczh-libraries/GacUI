@@ -373,7 +373,7 @@
                 <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
               </Bounds>
 
-              <Button Visible-bind="self.Expandable" ControlTemplate="darkskin::RibbonGroupExpandButtonTemplate">
+              <Button AutoFocus="false" Visible-bind="self.Expandable" ControlTemplate="darkskin::RibbonGroupExpandButtonTemplate">
                 <att.BoundsComposition-set AlignmentToParent="left:-1 top:-1 right:0 bottom:0"/>
                 <ev.Clicked-eval>
                   <![CDATA[
@@ -468,19 +468,19 @@
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <Button ControlTemplate="x:TopScrollButtonTemplate" Enabled-bind="self.ScrollUpEnabled" ev.Clicked-eval="self.Commands.NotifyScrollUp();">
+            <Button AutoFocus="false" ControlTemplate="x:TopScrollButtonTemplate" Enabled-bind="self.ScrollUpEnabled" ev.Clicked-eval="self.Commands.NotifyScrollUp();">
               <att.BoundsComposition-set AlignmentToParent="left:4 top:0 right:4 bottom:0"/>
             </Button>
           </Cell>
 
           <Cell Site="row:1 column:1">
-            <Button ControlTemplate="x:BottomScrollButtonTemplate" Enabled-bind="self.ScrollDownEnabled" ev.Clicked-eval="self.Commands.NotifyScrollDown();">
+            <Button AutoFocus="false" ControlTemplate="x:BottomScrollButtonTemplate" Enabled-bind="self.ScrollDownEnabled" ev.Clicked-eval="self.Commands.NotifyScrollDown();">
               <att.BoundsComposition-set AlignmentToParent="left:4 top:0 right:4 bottom:0"/>
             </Button>
           </Cell>
 
           <Cell Site="row:2 column:1">
-            <Button ControlTemplate="x:RibbonGalleryDropdownButtonTemplate" ev.Clicked-eval="self.Commands.NotifyDropdown();">
+            <Button AutoFocus="false" ControlTemplate="x:RibbonGalleryDropdownButtonTemplate" ev.Clicked-eval="self.Commands.NotifyDropdown();">
               <att.BoundsComposition-set AlignmentToParent="left:4 top:0 right:4 bottom:0"/>
             </Button>
           </Cell>

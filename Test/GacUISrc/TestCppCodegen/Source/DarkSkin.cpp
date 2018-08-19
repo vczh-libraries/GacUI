@@ -23492,6 +23492,9 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->buttonDecrease)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
 			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf251_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_(this)));
 		}
 		{
@@ -23518,6 +23521,9 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->buttonIncrease)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
 			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf252_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_(this)));
 		}
 		{
@@ -23540,6 +23546,9 @@ Class (::darkskin::HScrollTemplateConstructor)
 		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->__vwsn_precompile_5)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf253_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_(this)));
@@ -23690,6 +23699,9 @@ Class (::darkskin::HTrackerTemplateConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf256_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_darkskin_HTrackerTemplate_Initialize_(this)));
@@ -25368,6 +25380,9 @@ Class (::darkskin::RibbonGalleryTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(4); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(4); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf157_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_(this)));
 		}
 		{
@@ -25388,6 +25403,9 @@ Class (::darkskin::RibbonGalleryTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(4); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(4); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf158_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_(this)));
 		}
 		{
@@ -25406,6 +25424,9 @@ Class (::darkskin::RibbonGalleryTemplateConstructor)
 		(this->__vwsn_precompile_12 = ::vl::__vwsn::This(this->__vwsn_precompile_11)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(4); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(4); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf159_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_(this)));
@@ -25718,6 +25739,9 @@ Class (::darkskin::RibbonGroupTemplateConstructor)
 		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = (- static_cast<::vl::vint32_t>(1)); __vwsn_temp__.top = (- static_cast<::vl::vint32_t>(1)); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf168_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_(this)));
@@ -29791,6 +29815,9 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->buttonDecrease)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
 			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf268_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_(this)));
 		}
 		{
@@ -29817,6 +29844,9 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->buttonIncrease)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
 			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf269_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_(this)));
 		}
 		{
@@ -29839,6 +29869,9 @@ Class (::darkskin::VScrollTemplateConstructor)
 		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->__vwsn_precompile_5)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf270_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_(this)));
@@ -29989,6 +30022,9 @@ Class (::darkskin::VTrackerTemplateConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.size = static_cast<::vl::vint32_t>(1); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf273_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_darkskin_VTrackerTemplate_Initialize_(this)));
@@ -30209,6 +30245,9 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetText(::vl::WString(L" 0 ", false));
 		}
 		{
@@ -30235,6 +30274,9 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf342_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_(this)));
 		}
 		{
@@ -30259,6 +30301,9 @@ Class (::darkskin::WindowTemplateConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint32_t>(16); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAutoFocus(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetText(::vl::WString(L" r ", false));

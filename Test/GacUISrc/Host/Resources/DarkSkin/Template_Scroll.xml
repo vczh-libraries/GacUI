@@ -152,12 +152,12 @@
         
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Left">
-          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::LeftScrollButtonTemplate">
+          <Button AutoFocus="false" ref.Name="buttonDecrease" ControlTemplate="darkskin::LeftScrollButtonTemplate">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           </Button>
         </SideAligned>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Right">
-          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::RightScrollButtonTemplate">
+          <Button AutoFocus="false" ref.Name="buttonIncrease" ControlTemplate="darkskin::RightScrollButtonTemplate">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           </Button>
         </SideAligned>
@@ -165,7 +165,7 @@
           <PartialView ref.Name="handle">
             <att.WidthPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.WidthPageSize-bind>
             <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
-            <Button ControlTemplate="darkskin::HScrollHandleTemplate">
+            <Button AutoFocus="false" ControlTemplate="darkskin::HScrollHandleTemplate">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
           </PartialView>
@@ -191,12 +191,12 @@
 
         <SolidBackground Color="#3D3D42"/>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Top">
-          <Button ref.Name="buttonDecrease" ControlTemplate="darkskin::TopScrollButtonTemplate">
+          <Button AutoFocus="false" ref.Name="buttonDecrease" ControlTemplate="darkskin::TopScrollButtonTemplate">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           </Button>
         </SideAligned>
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Bottom">
-          <Button ref.Name="buttonIncrease" ControlTemplate="darkskin::BottomScrollButtonTemplate">
+          <Button AutoFocus="false" ref.Name="buttonIncrease" ControlTemplate="darkskin::BottomScrollButtonTemplate">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           </Button>
         </SideAligned>
@@ -204,7 +204,7 @@
           <PartialView ref.Name="handle">
             <att.HeightPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.HeightPageSize-bind>
             <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
-            <Button ControlTemplate="darkskin::VScrollHandleTemplate">
+            <Button AutoFocus="false" ControlTemplate="darkskin::VScrollHandleTemplate">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
           </PartialView>
@@ -247,7 +247,7 @@
 
           <PartialView ref.Name="handle" PreferredMinSize="x:12 y:0" WidthPageSize="0">
             <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
-            <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
+            <Button AutoFocus="false" ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
               <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
           </PartialView>
@@ -290,7 +290,7 @@
 
           <PartialView ref.Name="handle" PreferredMinSize="x:0 y:12" HeightPageSize="0">
             <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
-            <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
+            <Button AutoFocus="false" ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
               <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Button>
           </PartialView>
