@@ -164,14 +164,14 @@ WindowsClipboardWriter
 				imageData = value;
 			}
 
-			void WindowsClipboardWriter::Submit()
+			bool WindowsClipboardWriter::Submit()
 			{
 				if (service->reader)
 				{
 					service->reader->CloseClipboard();
 				}
 
-				CHECK_ERROR(::OpenClipboard(service->ownerHandle), L"WindowsClipboardWriter::Submit()#Failed to open the clipboard.");
+				if (!::OpenClipboard(service->ownerHandle)) return false;
 				::EmptyClipboard();
 
 				if (textData)
@@ -226,11 +226,23 @@ WindowsClipboardWriter
 				}
 
 				::CloseClipboard();
+				return true;
 			}
 
 /***********************************************************************
 WindowsClipboardService
 ***********************************************************************/
+
+			class WindowsFakeClipboardReader : public Object, public INativeClipboardReader
+			{
+			public:
+				bool							ContainsText()override { return false; }
+				WString							GetText()override { return L""; }
+				bool							ContainsDocument()override { return false; }
+				Ptr<DocumentModel>				GetDocument()override { return nullptr; }
+				bool							ContainsImage()override { return false; }
+				Ptr<INativeImage>				GetImage()override { return nullptr; }
+			};
 
 			WindowsClipboardService::WindowsClipboardService()
 				:ownerHandle(NULL)
@@ -244,7 +256,7 @@ WindowsClipboardService
 			{
 				if (!reader)
 				{
-					CHECK_ERROR(::OpenClipboard(ownerHandle), L"WindowsClipboardWriter::Submit()#Failed to open the clipboard.");
+					if (!::OpenClipboard(ownerHandle)) return new WindowsFakeClipboardReader;
 					reader = new WindowsClipboardReader(this);
 				}
 				return reader;

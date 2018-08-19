@@ -1,4 +1,4 @@
-<Instance ref.CodeBehind="false" ref.Class="demo::TextListTabPage">
+<Instance ref.CodeBehind="false" ref.Class="demo::TextListTabPage" xmlns:x="presentation::controls::GuiSelectableButton::*">
   <ref.Members>
     <![CDATA[
       var counter : int = 0;
@@ -6,6 +6,7 @@
     ]]>
   </ref.Members>
   <TabPage ref.Name="self" Text="TextList">
+    <x:MutexGroupController ref.Name="mutexGroupController"/>
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
       <att.Rows>
         <_>composeType:MinSize</_>
@@ -160,6 +161,26 @@
                   ]]>
                 </ev.Clicked-eval>
               </Button>
+            </StackItem>
+            <StackItem>
+              <CheckBox Text="Dummy">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              </CheckBox>
+            </StackItem>
+            <StackItem>
+              <CheckBox Text="Dummy">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              </CheckBox>
+            </StackItem>
+            <StackItem>
+              <RadioButton Text="Dummy" GroupController-ref="mutexGroupController">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              </RadioButton>
+            </StackItem>
+            <StackItem>
+              <RadioButton Text="Dummy" GroupController-ref="mutexGroupController">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              </RadioButton>
             </StackItem>
           </Stack>
         </GroupBox>

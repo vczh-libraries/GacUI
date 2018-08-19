@@ -1055,7 +1055,8 @@ Native Window Services
 			virtual void					SetImage(Ptr<INativeImage> value) = 0;
 
 			/// <summary>Send all data to the clipboard.</summary>
-			virtual void					Submit() = 0;
+			/// <returns>Returns true if this operation succeeded.</returns>
+			virtual bool					Submit() = 0;
 		};
 		
 		/// <summary>

@@ -60,7 +60,7 @@ namespace vl
 				void							SetText(const WString& value)override;
 				void							SetDocument(Ptr<DocumentModel> value)override;
 				void							SetImage(Ptr<INativeImage> value)override;
-				void							Submit()override;
+				bool							Submit()override;
 			};
 
 			class WindowsClipboardService : public Object, public INativeClipboardService
