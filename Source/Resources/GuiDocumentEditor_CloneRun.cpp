@@ -236,6 +236,7 @@ Clone the current run with its children
 		{
 			Ptr<DocumentStyleProperties> CopyStyle(Ptr<DocumentStyleProperties> style)
 			{
+				if (!style) return nullptr;
 				Ptr<DocumentStyleProperties> newStyle = new DocumentStyleProperties;
 
 				newStyle->face = style->face;

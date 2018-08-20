@@ -283,6 +283,7 @@ GuiToolstripButton
 				:GuiMenuButton(themeName)
 				,command(0)
 			{
+				SetAutoFocus(false);
 				Clicked.AttachMethod(this, &GuiToolstripButton::OnClicked);
 				TextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
 				ShortcutTextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
