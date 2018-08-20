@@ -421,6 +421,7 @@ GuiBindableRibbonGalleryList
 							{
 								backgroundButton->SetControlTemplate(style);
 							}
+							backgroundButton->SetAutoFocus(false);
 							backgroundButton->SetAutoSelection(false);
 							backgroundButton->Clicked.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 							{

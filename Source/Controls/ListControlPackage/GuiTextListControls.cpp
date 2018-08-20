@@ -40,6 +40,7 @@ DefaultTextListItemTemplate
 					if (auto bulletStyleController = CreateBulletStyle())
 					{
 						bulletButton = new GuiSelectableButton(theme::ThemeName::Unknown);
+						bulletButton->SetAutoFocus(false);
 						bulletButton->SetControlTemplate(bulletStyleController);
 						bulletButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						bulletButton->SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnBulletSelectedChanged);

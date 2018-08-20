@@ -987,6 +987,7 @@ DefaultTreeItemTemplate
 								expandingButton->SetControlTemplate(expanderStyle);
 							}
 						}
+						expandingButton->SetAutoFocus(false);
 						expandingButton->SetAutoSelection(false);
 						expandingButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						expandingButton->GetBoundsComposition()->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);

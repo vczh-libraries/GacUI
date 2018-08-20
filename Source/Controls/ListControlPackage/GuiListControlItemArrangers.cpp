@@ -56,6 +56,7 @@ RangedItemArrangerBase
 						{
 							backgroundButton->SetControlTemplate(style);
 						}
+						backgroundButton->SetAutoFocus(false);
 						backgroundButton->SetAutoSelection(false);
 					}
 
