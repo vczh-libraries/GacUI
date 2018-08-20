@@ -57,6 +57,17 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.listBorder">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color (
+          not self.VisuallyEnabled ? "#434346" :
+          self.Focused ? "#1C97EA" :
+          "#54545C"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
   <Style ref.Path="//*.tabHeaderBackground">
     <att.Color-bind>
       <![CDATA[

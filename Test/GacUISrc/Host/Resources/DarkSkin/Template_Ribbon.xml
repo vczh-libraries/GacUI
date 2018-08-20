@@ -461,7 +461,7 @@
 
           <Cell Site="row:0 column:0 rowSpan:3">
             <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
-              <SolidBorder Color="#3F3F46"/>
+              <SolidBorder ref.Style="listBorder"/>
               <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0">
               </Bounds>
             </Bounds>

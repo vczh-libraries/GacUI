@@ -31,7 +31,7 @@
 
         <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
-          <SolidBorder Color="#3F3F46"/>
+          <SolidBorder ref.Style="listBorder"/>
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
             <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
@@ -156,7 +156,7 @@
 
         <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
-          <SolidBorder Color="#3F3F46"/>
+          <SolidBorder ref.Style="listBorder"/>
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
             <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
@@ -220,7 +220,7 @@
 
         <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
-          <SolidBorder Color="#3F3F46"/>
+          <SolidBorder ref.Style="listBorder"/>
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
             <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
