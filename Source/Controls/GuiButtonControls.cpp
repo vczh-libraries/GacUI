@@ -44,7 +44,11 @@ GuiButton
 			void GuiButton::UpdateControlState()
 			{
 				auto newControlState = ButtonState::Normal;
-				if (mousePressing)
+				if (keyPressing)
+				{
+					newControlState = ButtonState::Pressed;
+				}
+				else if (mousePressing)
 				{
 					if (mouseHoving)
 					{
@@ -137,6 +141,53 @@ GuiButton
 					UpdateControlState();
 				}
 			}
+			
+			void GuiButton::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			{
+				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				{
+					switch (arguments.code)
+					{
+					case VKEY_RETURN:
+						CheckAndClick(arguments);
+						break;
+					case VKEY_SPACE:
+						if (!arguments.autoRepeatKeyDown)
+						{
+							keyPressing = true;
+							UpdateControlState();
+						}
+						break;
+					}
+				}
+			}
+
+			void GuiButton::OnKeyUp(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			{
+				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				{
+					switch (arguments.code)
+					{
+					case VKEY_SPACE:
+						if (keyPressing)
+						{
+							keyPressing = false;
+							UpdateControlState();
+							CheckAndClick(arguments);
+						}
+						break;
+					}
+				}
+			}
+
+			void GuiButton::OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (keyPressing)
+				{
+					keyPressing = false;
+					UpdateControlState();
+				}
+			}
 
 			GuiButton::GuiButton(theme::ThemeName themeName)
 				:GuiControl(themeName)
@@ -148,6 +199,9 @@ GuiButton
 				boundsComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiButton::OnLeftButtonUp);
 				boundsComposition->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiButton::OnMouseEnter);
 				boundsComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiButton::OnMouseLeave);
+				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiButton::OnKeyDown);
+				boundsComposition->GetEventReceiver()->keyUp.AttachMethod(this, &GuiButton::OnKeyUp);
+				boundsComposition->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiButton::OnLostFocus);
 			}
 
 			GuiButton::~GuiButton()

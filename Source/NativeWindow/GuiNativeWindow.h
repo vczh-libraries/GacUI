@@ -668,6 +668,8 @@ Native Window
 			bool						alt;
 			/// <summary>True if the capslock button is pressed.</summary>
 			bool						capslock;
+			/// <summary>True if this repeated event is generated because a key is holding down.</summary>
+			bool						autoRepeatKeyDown;
 		};
 		
 		/// <summary>

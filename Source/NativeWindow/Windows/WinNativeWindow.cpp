@@ -208,6 +208,7 @@ WindowsForm
 					info.shift=WinIsKeyPressing(VK_SHIFT);
 					info.alt=WinIsKeyPressing(VK_MENU);
 					info.capslock=WinIsKeyToggled(VK_CAPITAL);
+					info.autoRepeatKeyDown = (((vuint32_t)lParam) >> 30) % 2 == 1;
 					return info;
 				}
 
@@ -545,6 +546,7 @@ WindowsForm
 					case WM_KEYUP:
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
+							info.autoRepeatKeyDown = false;
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->KeyUp(info);
@@ -563,6 +565,7 @@ WindowsForm
 					case WM_SYSKEYUP:
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
+							info.autoRepeatKeyDown = false;
 							if (supressingAlt && !info.ctrl && !info.shift && info.code == VK_MENU)
 							{
 								supressingAlt = false;

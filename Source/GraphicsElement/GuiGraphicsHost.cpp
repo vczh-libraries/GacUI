@@ -387,31 +387,34 @@ GuiGraphicsHost
 			void GuiGraphicsHost::OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
 			{
 				List<GuiGraphicsComposition*> compositions;
-				while(composition)
 				{
-					if(composition->HasEventReceiver())
+					auto current = composition;
+					while (current)
 					{
-						compositions.Add(composition);
+						if (current->HasEventReceiver())
+						{
+							compositions.Add(current);
+						}
+						current = current->GetParent();
 					}
-					composition=composition->GetParent();
 				}
 
 				GuiKeyEventArgs arguments(composition);
-				(NativeWindowKeyInfo&)arguments=info;
+				(NativeWindowKeyInfo&)arguments = info;
 
-				for(vint i=compositions.Count()-1;i>=0;i--)
+				for (vint i = compositions.Count() - 1; i >= 0; i--)
 				{
 					compositions[i]->GetEventReceiver()->previewKey.Execute(arguments);
-					if(arguments.handled)
+					if (arguments.handled)
 					{
 						return;
 					}
 				}
 
-				for(vint i=0;i<compositions.Count();i++)
+				for (vint i = 0; i < compositions.Count(); i++)
 				{
 					(compositions[i]->GetEventReceiver()->*eventReceiverEvent).Execute(arguments);
-					if(arguments.handled)
+					if (arguments.handled)
 					{
 						return;
 					}

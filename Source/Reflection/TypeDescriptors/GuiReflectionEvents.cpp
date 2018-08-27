@@ -44,6 +44,7 @@ Type Declaration
 				CLASS_MEMBER_FIELD(shift)
 				CLASS_MEMBER_FIELD(alt)
 				CLASS_MEMBER_FIELD(capslock)
+				CLASS_MEMBER_FIELD(autoRepeatKeyDown)
 			END_CLASS_MEMBER(GuiKeyEventArgs)
 
 			BEGIN_CLASS_MEMBER(GuiCharEventArgs)
