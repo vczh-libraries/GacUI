@@ -19,6 +19,7 @@ Test/GacUISrc/TestXml/TestXml.xml
 *.suo
 *.user
 *.sln.docstates
+.vs/
 
 # Build results
 
