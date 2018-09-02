@@ -30,33 +30,15 @@ ComboBox Base
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ComboBoxTemplate, GuiMenuButton)
 			protected:
-
-				class CommandExecutor : public Object, public virtual IComboBoxCommandExecutor
-				{
-				protected:
-					GuiComboBoxBase*						combo;
-
-				public:
-					CommandExecutor(GuiComboBoxBase* _combo);
-					~CommandExecutor();
-
-					void									SelectItem()override;
-				};
-
-				Ptr<CommandExecutor>						commandExecutor;
 				
 				bool										IsAltAvailable()override;
 				IGuiMenuService::Direction					GetSubMenuDirection()override;
-				virtual void								SelectItem();
 				void										OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiComboBoxBase(theme::ThemeName themeName);
 				~GuiComboBoxBase();
-
-				/// <summary>Item selected event.</summary>
-				compositions::GuiNotifyEvent				ItemSelected;
 			};
 
 /***********************************************************************
@@ -93,6 +75,8 @@ ComboBox with GuiListControl
 				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments);
+				void										OnListControlKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
 			private:
 				// ===================== GuiListControl::IItemProviderCallback =====================

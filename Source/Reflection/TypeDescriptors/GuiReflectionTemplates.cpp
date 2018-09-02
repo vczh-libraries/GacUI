@@ -47,12 +47,6 @@ Type Declaration (Extra)
 				CLASS_MEMBER_METHOD(UnsafeSetText, { L"value" })
 			END_INTERFACE_MEMBER(ITextBoxCommandExecutor)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IComboBoxCommandExecutor)
-				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_METHOD(SelectItem, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IComboBoxCommandExecutor)
-
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IScrollCommandExecutor)
 				CLASS_MEMBER_METHOD(SmallDecrease, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SmallIncrease, NO_PARAMETER)

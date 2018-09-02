@@ -9,38 +9,15 @@ namespace vl
 		{
 
 /***********************************************************************
-GuiComboBoxBase::CommandExecutor
-***********************************************************************/
-
-			GuiComboBoxBase::CommandExecutor::CommandExecutor(GuiComboBoxBase* _combo)
-				:combo(_combo)
-			{
-			}
-
-			GuiComboBoxBase::CommandExecutor::~CommandExecutor()
-			{
-			}
-
-			void GuiComboBoxBase::CommandExecutor::SelectItem()
-			{
-				combo->SelectItem();
-			}
-
-/***********************************************************************
 GuiComboBoxBase
 ***********************************************************************/
 
 			void GuiComboBoxBase::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
-				if (!ct) return;
-
-				ct->SetCommands(nullptr);
 			}
 
 			void GuiComboBoxBase::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject(true)->SetCommands(commandExecutor.Obj());
 			}
 
 			bool GuiComboBoxBase::IsAltAvailable()
@@ -53,11 +30,6 @@ GuiComboBoxBase
 				return IGuiMenuService::Horizontal;
 			}
 
-			void GuiComboBoxBase::SelectItem()
-			{
-				ItemSelected.Execute(GetNotifyEventArguments());
-			}
-
 			void GuiComboBoxBase::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				Size size=GetPreferredMenuClientSize();
@@ -68,8 +40,6 @@ GuiComboBoxBase
 			GuiComboBoxBase::GuiComboBoxBase(theme::ThemeName themeName)
 				:GuiMenuButton(themeName)
 			{
-				commandExecutor = new CommandExecutor(this);
-
 				CreateSubMenu();
 				SetCascadeAction(false);
 
@@ -150,7 +120,6 @@ GuiComboBoxListControl
 				{
 					WString text = containedListControl->GetItemProvider()->GetTextValue(itemIndex);
 					SetText(text);
-					GetSubMenu()->Hide();
 				}
 
 				RemoveStyleController();
@@ -226,8 +195,26 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				DisplaySelectedContent(GetSelectedIndex());
-				SelectItem();
 				SelectedIndexChanged.Execute(GetNotifyEventArguments());
+			}
+
+			void GuiComboBoxListControl::OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments)
+			{
+				GetSubMenu()->Hide();
+			}
+
+			void GuiComboBoxListControl::OnListControlKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			{
+				if (!arguments.autoRepeatKeyDown)
+				{
+					switch (arguments.code)
+					{
+					case VKEY_ESCAPE:
+					case VKEY_RETURN:
+						GetSubMenu()->Hide();
+						break;
+					}
+				}
 			}
 
 			void GuiComboBoxListControl::OnAttached(GuiListControl::IItemProvider* provider)
@@ -256,6 +243,9 @@ GuiComboBoxListControl
 				containedListControl->SetMultiSelect(false);
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
 				containedListControl->SelectionChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
+				containedListControl->ItemLeftButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
+				containedListControl->ItemRightButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
+				containedListControl->GetFocusableComposition()->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlKeyDown);
 				boundsChangedHandler = containedListControl->GetBoundsComposition()->BoundsChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlBoundsChanged);
 
 				auto itemProvider = containedListControl->GetItemProvider();

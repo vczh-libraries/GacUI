@@ -215,7 +215,6 @@ Type List (Templates)
 			F(presentation::controls::ColumnSortingState)\
 			F(presentation::templates::BoolOption)\
 			F(presentation::controls::ITextBoxCommandExecutor)\
-			F(presentation::controls::IComboBoxCommandExecutor)\
 			F(presentation::controls::IScrollCommandExecutor)\
 			F(presentation::controls::ITabCommandExecutor)\
 			F(presentation::controls::IDatePickerCommandExecutor)\

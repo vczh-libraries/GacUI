@@ -51,14 +51,6 @@ namespace vl
 				virtual void						UnsafeSetText(const WString& value) = 0;
 			};
 
-			/// <summary>A command executor for the combo box to change the control state.</summary>
-			class IComboBoxCommandExecutor : public virtual IDescriptable, public Description<IComboBoxCommandExecutor>
-			{
-			public:
-				/// <summary>Notify that an item is selected, the combo box should close the popup and show the text of the selected item.</summary>
-				virtual void						SelectItem() = 0;
-			};
-
 			/// <summary>A command executor for the style controller to change the control state.</summary>
 			class IScrollCommandExecutor : public virtual IDescriptable, public Description<IScrollCommandExecutor>
 			{

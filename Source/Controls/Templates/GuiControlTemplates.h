@@ -231,7 +231,6 @@ Control Template
 				F(GuiListViewColumnHeaderTemplate, controls::ColumnSortingState, SortingState, controls::ColumnSortingState::NotSorted)\
 
 #define GuiComboBoxTemplate_PROPERTIES(F)\
-				F(GuiComboBoxTemplate, controls::IComboBoxCommandExecutor*, Commands, nullptr)\
 				F(GuiComboBoxTemplate, bool, TextVisible, true)\
 
 #define GuiScrollTemplate_PROPERTIES(F)\

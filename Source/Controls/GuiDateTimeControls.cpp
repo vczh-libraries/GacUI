@@ -171,7 +171,6 @@ GuiDateComboBox
 			{
 				selectedDate=datePicker->GetDate();
 				GetSubMenu()->Hide();
-				SelectItem();
 				NotifyUpdateSelectedDate();
 			}
 
