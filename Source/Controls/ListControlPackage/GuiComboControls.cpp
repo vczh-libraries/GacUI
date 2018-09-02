@@ -20,11 +20,6 @@ GuiComboBoxBase
 			{
 			}
 
-			bool GuiComboBoxBase::IsAltAvailable()
-			{
-				return false;
-			}
-
 			IGuiMenuService::Direction GuiComboBoxBase::GetSubMenuDirection()
 			{
 				return IGuiMenuService::Horizontal;
@@ -63,18 +58,6 @@ GuiComboBoxListControl
 			{
 				GuiComboBoxBase::AfterControlTemplateInstalled(initialize);
 				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
-			}
-
-			bool GuiComboBoxListControl::IsAltAvailable()
-			{
-				return true;
-			}
-
-			void GuiComboBoxListControl::OnActiveAlt()
-			{
-				GuiMenuButton::OnActiveAlt();
-				GetSubMenu()->GetNativeWindow()->SetFocus();
-				containedListControl->SetFocus();
 			}
 
 			void GuiComboBoxListControl::RemoveStyleController()
@@ -180,6 +163,12 @@ GuiComboBoxListControl
 				}
 			}
 
+			void GuiComboBoxListControl::OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				GetSubMenu()->GetNativeWindow()->SetFocus();
+				containedListControl->SetFocus();
+			}
+
 			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				AdoptSubMenuSize();
@@ -245,6 +234,7 @@ GuiComboBoxListControl
 				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
 				ContextChanged.AttachMethod(this, &GuiComboBoxListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiComboBoxListControl::OnVisuallyEnabledChanged);
+				AfterSubMenuOpening.AttachMethod(this, &GuiComboBoxListControl::OnAfterSubMenuOpening);
 
 				containedListControl->GetItemProvider()->AttachCallback(this);
 				containedListControl->SetMultiSelect(false);

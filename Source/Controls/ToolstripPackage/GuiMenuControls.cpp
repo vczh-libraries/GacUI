@@ -314,7 +314,6 @@ GuiMenuButton
 			{
 				if(GetVisuallyEnabled())
 				{
-					BeforeSubMenuOpening.Execute(GetNotifyEventArguments());
 					if(GetSubMenu())
 					{
 						OpenSubMenuInternal();
@@ -481,9 +480,11 @@ GuiMenuButton
 				{
 					if(value)
 					{
+						BeforeSubMenuOpening.Execute(GetNotifyEventArguments());
 						subMenu->SetClientSize(preferredMenuClientSize);
 						IGuiMenuService::Direction direction=GetSubMenuDirection();
 						subMenu->ShowPopup(GetSubMenuHost(), direction==IGuiMenuService::Horizontal);
+						AfterSubMenuOpening.Execute(GetNotifyEventArguments());
 					}
 					else
 					{

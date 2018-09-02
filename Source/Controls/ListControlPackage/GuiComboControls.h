@@ -31,7 +31,6 @@ ComboBox Base
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ComboBoxTemplate, GuiMenuButton)
 			protected:
 				
-				bool										IsAltAvailable()override;
 				IGuiMenuService::Direction					GetSubMenuDirection()override;
 				void										OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
@@ -63,8 +62,6 @@ ComboBox with GuiListControl
 
 				void										BeforeControlTemplateUninstalled()override;
 				void										AfterControlTemplateInstalled(bool initialize)override;
-				bool										IsAltAvailable()override;
-				void										OnActiveAlt()override;
 				void										RemoveStyleController();
 				void										InstallStyleController(vint itemIndex);
 				virtual void								DisplaySelectedContent(vint itemIndex);
@@ -73,6 +70,7 @@ ComboBox with GuiListControl
 				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments);

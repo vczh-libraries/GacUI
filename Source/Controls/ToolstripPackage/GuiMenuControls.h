@@ -183,6 +183,8 @@ MenuButton
 
 				/// <summary>Before sub menu opening event.</summary>
 				compositions::GuiNotifyEvent			BeforeSubMenuOpening;
+				/// <summary>After sub menu opening event.</summary>
+				compositions::GuiNotifyEvent			AfterSubMenuOpening;
 				/// <summary>Sub menu opening changed event.</summary>
 				compositions::GuiNotifyEvent			SubMenuOpeningChanged;
 				/// <summary>Large image changed event.</summary>
