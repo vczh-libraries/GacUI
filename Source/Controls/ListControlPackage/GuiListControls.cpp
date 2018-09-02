@@ -570,13 +570,13 @@ GuiSelectableListControl
 
 			void GuiSelectableListControl::NormalizeSelectedItemIndexStartEnd()
 			{
-				if(selectedItemIndexStart<0 || selectedItemIndexStart>=itemProvider->Count())
+				if (selectedItemIndexStart < 0 || selectedItemIndexStart >= itemProvider->Count())
 				{
-					selectedItemIndexStart=0;
+					selectedItemIndexStart = 0;
 				}
-				if(selectedItemIndexEnd<0 || selectedItemIndexEnd>=itemProvider->Count())
+				if (selectedItemIndexEnd < 0 || selectedItemIndexEnd >= itemProvider->Count())
 				{
-					selectedItemIndexEnd=0;
+					selectedItemIndexEnd = 0;
 				}
 			}
 
@@ -621,14 +621,14 @@ GuiSelectableListControl
 
 			GuiSelectableListControl::GuiSelectableListControl(theme::ThemeName themeName, IItemProvider* _itemProvider)
 				:GuiListControl(themeName, _itemProvider, true)
-				,multiSelect(false)
-				,selectedItemIndexStart(-1)
-				,selectedItemIndexEnd(-1)
+				, multiSelect(false)
+				, selectedItemIndexStart(-1)
+				, selectedItemIndexEnd(-1)
 			{
 				SelectionChanged.SetAssociatedComposition(boundsComposition);
 				ItemLeftButtonDown.AttachMethod(this, &GuiSelectableListControl::OnItemLeftButtonDown);
 				ItemRightButtonDown.AttachMethod(this, &GuiSelectableListControl::OnItemRightButtonDown);
-				if(focusableComposition)
+				if (focusableComposition)
 				{
 					focusableComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiSelectableListControl::OnKeyDown);
 				}
@@ -706,36 +706,36 @@ GuiSelectableListControl
 			bool GuiSelectableListControl::SelectItemsByClick(vint itemIndex, bool ctrl, bool shift, bool leftButton)
 			{
 				NormalizeSelectedItemIndexStartEnd();
-				if(0<=itemIndex && itemIndex<itemProvider->Count())
+				if (0 <= itemIndex && itemIndex < itemProvider->Count())
 				{
-					if(!leftButton)
+					if (!leftButton)
 					{
-						if(selectedItems.Contains(itemIndex))
+						if (selectedItems.Contains(itemIndex))
 						{
 							return true;
 						}
 					}
-					if(!multiSelect)
+					if (!multiSelect)
 					{
-						shift=false;
-						ctrl=false;
+						shift = false;
+						ctrl = false;
 					}
-					if(shift)
+					if (shift)
 					{
-						if(!ctrl)
+						if (!ctrl)
 						{
 							SetMultipleItemsSelectedSilently(selectedItemIndexStart, selectedItemIndexEnd, false);
 						}
-						selectedItemIndexEnd=itemIndex;
+						selectedItemIndexEnd = itemIndex;
 						SetMultipleItemsSelectedSilently(selectedItemIndexStart, selectedItemIndexEnd, true);
 						NotifySelectionChanged();
 					}
 					else
 					{
-						if(ctrl)
+						if (ctrl)
 						{
-							vint index=selectedItems.IndexOf(itemIndex);
-							if(index==-1)
+							vint index = selectedItems.IndexOf(itemIndex);
+							if (index == -1)
 							{
 								selectedItems.Add(itemIndex);
 							}
@@ -743,7 +743,7 @@ GuiSelectableListControl
 							{
 								selectedItems.RemoveAt(index);
 							}
-							OnItemSelectionChanged(itemIndex, index==-1);
+							OnItemSelectionChanged(itemIndex, index == -1);
 							NotifySelectionChanged();
 						}
 						else
@@ -754,8 +754,8 @@ GuiSelectableListControl
 							OnItemSelectionChanged(itemIndex, true);
 							NotifySelectionChanged();
 						}
-						selectedItemIndexStart=itemIndex;
-						selectedItemIndexEnd=itemIndex;
+						selectedItemIndexStart = itemIndex;
+						selectedItemIndexEnd = itemIndex;
 					}
 					return true;
 				}
@@ -764,46 +764,46 @@ GuiSelectableListControl
 
 			bool GuiSelectableListControl::SelectItemsByKey(vint code, bool ctrl, bool shift)
 			{
-				if(!GetArranger()) return false;
+				if (!GetArranger()) return false;
 
 				NormalizeSelectedItemIndexStartEnd();
-				KeyDirection keyDirection=KeyDirection::Up;
-				switch(code)
+				KeyDirection keyDirection = KeyDirection::Up;
+				switch (code)
 				{
 				case VKEY_UP:
-					keyDirection=KeyDirection::Up;
+					keyDirection = KeyDirection::Up;
 					break;
 				case VKEY_DOWN:
-					keyDirection=KeyDirection::Down;
+					keyDirection = KeyDirection::Down;
 					break;
 				case VKEY_LEFT:
-					keyDirection=KeyDirection::Left;
+					keyDirection = KeyDirection::Left;
 					break;
 				case VKEY_RIGHT:
-					keyDirection=KeyDirection::Right;
+					keyDirection = KeyDirection::Right;
 					break;
 				case VKEY_HOME:
-					keyDirection=KeyDirection::Home;
+					keyDirection = KeyDirection::Home;
 					break;
 				case VKEY_END:
-					keyDirection=KeyDirection::End;
+					keyDirection = KeyDirection::End;
 					break;
 				case VKEY_PRIOR:
-					keyDirection=KeyDirection::PageUp;
+					keyDirection = KeyDirection::PageUp;
 					break;
 				case VKEY_NEXT:
-					keyDirection=KeyDirection::PageDown;
+					keyDirection = KeyDirection::PageDown;
 					break;
 				default:
 					return false;
 				}
 
-				if(GetAxis())
+				if (GetAxis())
 				{
-					keyDirection=GetAxis()->RealKeyDirectionToVirtualKeyDirection(keyDirection);
+					keyDirection = GetAxis()->RealKeyDirectionToVirtualKeyDirection(keyDirection);
 				}
-				vint itemIndex=GetArranger()->FindItem(selectedItemIndexEnd, keyDirection);
-				if(SelectItemsByClick(itemIndex, ctrl, shift, true))
+				vint itemIndex = GetArranger()->FindItem(selectedItemIndexEnd, keyDirection);
+				if (SelectItemsByClick(itemIndex, ctrl, shift, true))
 				{
 					return EnsureItemVisible(itemIndex);
 				}

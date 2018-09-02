@@ -38,6 +38,7 @@ GuiButton
 
 			void GuiButton::OnActiveAlt()
 			{
+				GuiControl::OnActiveAlt();
 				Clicked.Execute(GetNotifyEventArguments());
 			}
 
