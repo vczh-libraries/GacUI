@@ -160,7 +160,7 @@ MenuButton
 				bool									cascadeAction;
 
 				GuiButton*								GetSubMenuHost();
-				void									OpenSubMenuInternal();
+				bool									OpenSubMenuInternal();
 				void									OnParentLineChanged()override;
 				bool									IsAltAvailable()override;
 				compositions::IGuiAltActionHost*		GetActivatingAltHost()override;

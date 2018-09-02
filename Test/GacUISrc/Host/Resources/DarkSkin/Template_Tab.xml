@@ -9,6 +9,9 @@
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <att.Highlighted-bind>(cast (RibbonTabPage*) self.Context).Highlighted ?? false</att.Highlighted-bind>
         <SolidBackground ref.Style="tabHeaderBackground"/>
+        <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1" Visible-bind="self.Focused">
+          <FocusRectangle/>
+        </Bounds>
         <Bounds AlignmentToParent="left:6 top:3 right:6 bottom:3">
           <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Bounds>

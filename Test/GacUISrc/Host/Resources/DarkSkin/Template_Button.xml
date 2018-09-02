@@ -48,7 +48,7 @@
                 <FocusRectangle/>
               </Bounds>
               <Bounds AlignmentToParent="left:4 top:2 right:4 bottom:2">
-                <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <SolidLabel ref.Style="controlText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
               </Bounds>
             </Bounds>
           </Cell>
@@ -89,7 +89,7 @@
                 <FocusRectangle/>
               </Bounds>
               <Bounds AlignmentToParent="left:4 top:2 right:4 bottom:2">
-                <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <SolidLabel ref.Style="controlText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
               </Bounds>
             </Bounds>
           </Cell>

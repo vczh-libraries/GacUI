@@ -52,7 +52,7 @@
           <SolidBorder ref.Style="comboBorder"/>
           <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:11 bottom:1">
             <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2" Visible-bind="self.TextVisible">
-              <SolidLabel ref.Style="comboText" Text-bind="self.Text" Font-bind="self.Font" Ellipse="true" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+              <SolidLabel ref.Style="controlText" Text-bind="self.Text" Font-bind="self.Font" Ellipse="true" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             </Bounds>
           </Bounds>
 

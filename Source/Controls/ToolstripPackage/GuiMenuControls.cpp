@@ -243,20 +243,30 @@ GuiMenuButton
 				return button ? button : this;
 			}
 
-			void GuiMenuButton::OpenSubMenuInternal()
+			bool GuiMenuButton::OpenSubMenuInternal()
 			{
-				if(!GetSubMenuOpening())
+				if (!GetSubMenuOpening())
 				{
-					if(ownerMenuService)
+					if (ownerMenuService)
 					{
-						GuiMenu* openingSiblingMenu=ownerMenuService->GetOpeningMenu();
-						if(openingSiblingMenu)
+						GuiMenu* openingSiblingMenu = ownerMenuService->GetOpeningMenu();
+						if (openingSiblingMenu)
 						{
 							openingSiblingMenu->Hide();
 						}
 					}
-					SetSubMenuOpening(true);
+
+					BeforeSubMenuOpening.Execute(GetNotifyEventArguments());
+					if (subMenu)
+					{
+						subMenu->SetClientSize(preferredMenuClientSize);
+						IGuiMenuService::Direction direction = GetSubMenuDirection();
+						subMenu->ShowPopup(GetSubMenuHost(), direction == IGuiMenuService::Horizontal);
+						AfterSubMenuOpening.Execute(GetNotifyEventArguments());
+						return true;
+					}
 				}
+				return false;
 			}
 
 			void GuiMenuButton::OnParentLineChanged()
@@ -314,11 +324,7 @@ GuiMenuButton
 			{
 				if(GetVisuallyEnabled())
 				{
-					if(GetSubMenu())
-					{
-						OpenSubMenuInternal();
-					}
-					else if(ownerMenuService)
+					if(!OpenSubMenuInternal() && ownerMenuService)
 					{
 						ownerMenuService->MenuItemExecuted();
 					}
@@ -476,15 +482,11 @@ GuiMenuButton
 
 			void GuiMenuButton::SetSubMenuOpening(bool value)
 			{
-				if(subMenu)
+				if (subMenu && subMenu->GetOpening() != value)
 				{
-					if(value)
+					if (value)
 					{
-						BeforeSubMenuOpening.Execute(GetNotifyEventArguments());
-						subMenu->SetClientSize(preferredMenuClientSize);
-						IGuiMenuService::Direction direction=GetSubMenuDirection();
-						subMenu->ShowPopup(GetSubMenuHost(), direction==IGuiMenuService::Horizontal);
-						AfterSubMenuOpening.Execute(GetNotifyEventArguments());
+						OpenSubMenuInternal();
 					}
 					else
 					{

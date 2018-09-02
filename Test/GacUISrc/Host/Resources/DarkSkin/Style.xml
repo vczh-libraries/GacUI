@@ -105,7 +105,7 @@
       ]]>
     </att.Color-bind>
   </Style>
-  <Style ref.Path="//*.labelText">
+  <Style ref.Path="//*.controlText">
     <att.Color-bind>
       <![CDATA[
         cast Color (
@@ -287,16 +287,6 @@
       ]]>
     </att.Color-bind>
   </Style>
-  <Style ref.Path="//*.menuItemText">
-    <att.Color-bind>
-      <![CDATA[
-        cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#6D6D6D" :
-          "#FFFFFF"
-        )
-      ]]>
-    </att.Color-bind>
-  </Style>
   <Style ref.Path="//*.menuItemArrow">
     <att.BorderColor-bind>
       <![CDATA[
@@ -332,14 +322,12 @@
     </att.Color-bind>
   </Style>
   <Style ref.Path="//*.comboBorder">
-    <att.Color>#434346</att.Color>
-  </Style>
-  <Style ref.Path="//*.comboText">
     <att.Color-bind>
       <![CDATA[
-        cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#65655C" :
-          "#F1F1F1"
+        cast Color (
+          not self.VisuallyEnabled ? "#434346" :
+          self.Focused ? "#1C97EA" :
+          "#54545C"
         )
       ]]>
     </att.Color-bind>
