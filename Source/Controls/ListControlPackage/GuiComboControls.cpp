@@ -112,7 +112,7 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::DisplaySelectedContent(vint itemIndex)
 			{
-				if(itemIndex==-1)
+				if (itemIndex == -1)
 				{
 					SetText(L"");
 				}
@@ -124,6 +124,11 @@ GuiComboBoxListControl
 
 				RemoveStyleController();
 				InstallStyleController(itemIndex);
+				if (selectedIndex != itemIndex)
+				{
+					selectedIndex = itemIndex;
+					SelectedIndexChanged.Execute(GetNotifyEventArguments());
+				}
 			}
 
 			void GuiComboBoxListControl::AdoptSubMenuSize()
@@ -192,14 +197,9 @@ GuiComboBoxListControl
 				});
 			}
 
-			void GuiComboBoxListControl::OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				DisplaySelectedContent(GetSelectedIndex());
-				SelectedIndexChanged.Execute(GetNotifyEventArguments());
-			}
-
 			void GuiComboBoxListControl::OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments)
 			{
+				DisplaySelectedContent(containedListControl->GetSelectedItemIndex());
 				GetSubMenu()->Hide();
 			}
 
@@ -209,8 +209,9 @@ GuiComboBoxListControl
 				{
 					switch (arguments.code)
 					{
-					case VKEY_ESCAPE:
 					case VKEY_RETURN:
+						DisplaySelectedContent(containedListControl->GetSelectedItemIndex());
+					case VKEY_ESCAPE:
 						GetSubMenu()->Hide();
 						break;
 					}
@@ -223,10 +224,16 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnItemModified(vint start, vint count, vint newCount)
 			{
-				vint index = GetSelectedIndex();
-				if (start <= index && index < start + count)
+				if (count == newCount)
 				{
-					DisplaySelectedContent(index);
+					if (start <= selectedIndex && selectedIndex < start + count)
+					{
+						DisplaySelectedContent(selectedIndex);
+					}
+				}
+				else
+				{
+					DisplaySelectedContent(-1);
 				}
 			}
 
@@ -242,7 +249,6 @@ GuiComboBoxListControl
 				containedListControl->GetItemProvider()->AttachCallback(this);
 				containedListControl->SetMultiSelect(false);
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
-				containedListControl->SelectionChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
 				containedListControl->ItemLeftButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
 				containedListControl->ItemRightButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
 				containedListControl->GetFocusableComposition()->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlKeyDown);
@@ -279,30 +285,29 @@ GuiComboBoxListControl
 				RemoveStyleController();
 				itemStyleProperty = value;
 				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
-				InstallStyleController(GetSelectedIndex());
+				InstallStyleController(selectedIndex);
 				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}
 
 			vint GuiComboBoxListControl::GetSelectedIndex()
 			{
-				if(containedListControl->GetSelectedItems().Count()==1)
-				{
-					return containedListControl->GetSelectedItems()[0];
-				}
-				else
-				{
-					return -1;
-				}
+				return selectedIndex;
 			}
 
 			void GuiComboBoxListControl::SetSelectedIndex(vint value)
 			{
-				containedListControl->SetSelected(value, true);
+				if (selectedIndex != value)
+				{
+					if (0 <= value && value < containedListControl->GetItemProvider()->Count())
+					{
+						DisplaySelectedContent(value);
+					}
+				}
+				GetSubMenu()->Hide();
 			}
 
 			description::Value GuiComboBoxListControl::GetSelectedItem()
 			{
-				auto selectedIndex = GetSelectedIndex();
 				if (selectedIndex != -1)
 				{
 					return containedListControl->GetItemProvider()->GetBindingValue(selectedIndex);
