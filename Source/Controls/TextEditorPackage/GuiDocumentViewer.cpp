@@ -423,7 +423,11 @@ GuiDocumentCommonInterface
 			{
 				if (documentControl->GetVisuallyEnabled())
 				{
-					if (editMode == Editable && arguments.code != VKEY::_ESCAPE && arguments.code != VKEY::_BACK && arguments.code != VKEY::_RETURN && !arguments.ctrl)
+					if (editMode == Editable &&
+						arguments.code != (wchar_t)VKEY::_ESCAPE &&
+						arguments.code != (wchar_t)VKEY::_BACK &&
+						arguments.code != (wchar_t)VKEY::_RETURN &&
+						!arguments.ctrl)
 					{
 						Array<WString> text(1);
 						text[0] = WString(arguments.code);

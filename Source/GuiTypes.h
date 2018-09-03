@@ -905,6 +905,8 @@ ITEM(APOSTROPHE,          0xDE)		/* OEM_7 */									\
 		static bool operator <= (VKEY a, VKEY b) { return (vint)a <= (vint)b; }
 		static bool operator >  (VKEY a, VKEY b) { return (vint)a >  (vint)b; }
 		static bool operator >= (VKEY a, VKEY b) { return (vint)a >= (vint)b; }
+		static VKEY operator &  (VKEY a, VKEY b) { return (VKEY)((vint)a & (vint)b); }
+		static VKEY operator |  (VKEY a, VKEY b) { return (VKEY)((vint)a | (vint)b); }
 
 	}
 }

@@ -487,14 +487,14 @@ GuiTextBoxCommonInterface
 				if (preventEnterDueToAutoComplete)
 				{
 					preventEnterDueToAutoComplete = false;
-					if (arguments.code == VKEY::_RETURN)
+					if (arguments.code == (wchar_t)VKEY::_RETURN)
 					{
 						return;
 					}
 				}
 				if (textControl->GetVisuallyEnabled() && arguments.compositionSource == arguments.eventSource)
 				{
-					if (!readonly && arguments.code != VKEY::_ESCAPE && arguments.code != VKEY::_BACK && !arguments.ctrl)
+					if (!readonly && arguments.code != (wchar_t)VKEY::_ESCAPE && arguments.code != (wchar_t)VKEY::_BACK && !arguments.ctrl)
 					{
 						SetSelectionTextAsKeyInput(WString(arguments.code));
 					}

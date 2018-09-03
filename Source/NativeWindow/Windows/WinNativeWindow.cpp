@@ -164,11 +164,11 @@ WindowsForm
 
 					if (nonClient)
 					{
-						info.ctrl = WinIsKeyPressing(VK_CONTROL);
-						info.shift = WinIsKeyPressing(VK_SHIFT);
-						info.left= WinIsKeyPressing(MK_LBUTTON);
-						info.middle= WinIsKeyPressing(MK_MBUTTON);
-						info.right = WinIsKeyPressing(MK_RBUTTON);
+						info.ctrl = WinIsKeyPressing(VKEY::_CONTROL);
+						info.shift = WinIsKeyPressing(VKEY::_SHIFT);
+						info.left= WinIsKeyPressing(VKEY::_LBUTTON);
+						info.middle= WinIsKeyPressing(VKEY::_MBUTTON);
+						info.right = WinIsKeyPressing(VKEY::_RBUTTON);
 						
 						POINTS point = MAKEPOINTS(lParam);
 						Point offset = GetClientBoundsInScreen().LeftTop();
@@ -177,11 +177,11 @@ WindowsForm
 					}
 					else
 					{
-						info.ctrl=(wParam & MK_CONTROL)!=0;
-						info.shift=(wParam & MK_SHIFT)!=0;
-						info.left=(wParam & MK_LBUTTON)!=0;
-						info.middle=(wParam & MK_MBUTTON)!=0;
-						info.right=(wParam & MK_RBUTTON)!=0;
+						info.ctrl=((VKEY)wParam & VKEY::_CONTROL)!=(VKEY)0;
+						info.shift=((VKEY)wParam & VKEY::_SHIFT)!= (VKEY)0;
+						info.left=((VKEY)wParam & VKEY::_LBUTTON)!= (VKEY)0;
+						info.middle=((VKEY)wParam & VKEY::_MBUTTON)!= (VKEY)0;
+						info.right=((VKEY)wParam & VKEY::_RBUTTON)!= (VKEY)0;
 
 						POINTS point = MAKEPOINTS(lParam);
 
@@ -203,11 +203,11 @@ WindowsForm
 				NativeWindowKeyInfo ConvertKey(WPARAM wParam, LPARAM lParam)
 				{
 					NativeWindowKeyInfo info;
-					info.code=wParam;
-					info.ctrl=WinIsKeyPressing(VK_CONTROL);
-					info.shift=WinIsKeyPressing(VK_SHIFT);
-					info.alt=WinIsKeyPressing(VK_MENU);
-					info.capslock=WinIsKeyToggled(VK_CAPITAL);
+					info.code=(VKEY)wParam;
+					info.ctrl=WinIsKeyPressing(VKEY::_CONTROL);
+					info.shift=WinIsKeyPressing(VKEY::_SHIFT);
+					info.alt=WinIsKeyPressing(VKEY::_MENU);
+					info.capslock=WinIsKeyToggled(VKEY::_CAPITAL);
 					info.autoRepeatKeyDown = (((vuint32_t)lParam) >> 30) % 2 == 1;
 					return info;
 				}
@@ -566,7 +566,7 @@ WindowsForm
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
 							info.autoRepeatKeyDown = false;
-							if (supressingAlt && !info.ctrl && !info.shift && info.code == VK_MENU)
+							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::_MENU)
 							{
 								supressingAlt = false;
 								break;
@@ -580,7 +580,7 @@ WindowsForm
 					case WM_SYSKEYDOWN:
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
-							if (supressingAlt && !info.ctrl && !info.shift && info.code == VK_MENU)
+							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::_MENU)
 							{
 								break;
 							}
