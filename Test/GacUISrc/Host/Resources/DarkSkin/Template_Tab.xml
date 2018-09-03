@@ -30,7 +30,7 @@
         ]]>
       </ref.Members>
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <CheckBox ControlTemplate="testtheme::TabHeaderButtonTemplate" AutoSelection="false">
+        <CheckBox ControlTemplate="testtheme::TabHeaderButtonTemplate" AutoFocus="false" AutoSelection="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.Context-ref>CurrentTabPage</att.Context-ref>
           <att.Text-bind>CurrentTabPage.Text</att.Text-bind>
@@ -72,7 +72,7 @@
           }
         ]]>
       </ref.Members>
-      <RibbonTabTemplate ref.Name="self" ContainerComposition-ref="container" TabPageOrder="LeftToRight" MinSizeLimitation="LimitToElementAndChildren">
+      <RibbonTabTemplate ref.Name="self" ContainerComposition-ref="container" TabOrder="LeftToRight" MinSizeLimitation="LimitToElementAndChildren">
         <ev.SelectedTabPageChanged-eval>
           <![CDATA[
             {

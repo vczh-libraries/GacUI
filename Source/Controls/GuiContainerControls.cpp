@@ -132,29 +132,49 @@ GuiTab
 
 			void GuiTab::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				auto eventSource = arguments.eventSource->GetAssociatedControl();
+				while (eventSource && eventSource != this)
+				{
+					if (eventSource->GetFocusableComposition())
+					{
+						return;
+					}
+					eventSource = eventSource->GetParent();
+				}
+
 				if (auto ct = GetControlTemplateObject(false))
 				{
-					auto hint = ct->GetTabOrder();
-					vint tabOffset = 0;
-					switch (hint)
+					vint index = tabPages.IndexOf(selectedPage);
+					if (index != -1)
 					{
-					case TabPageOrder::LeftToRight:
-						if (arguments.code == VKEY::_LEFT) tabOffset = -1;
-						else if (arguments.code == VKEY::_RIGHT) tabOffset = 1;
-						break;
-					case TabPageOrder::RightToLeft:
-						if (arguments.code == VKEY::_LEFT) tabOffset = 1;
-						else if (arguments.code == VKEY::_RIGHT) tabOffset = -1;
-						break;
-					case TabPageOrder::TopToBottom:
-						if (arguments.code == VKEY::_UP) tabOffset = -1;
-						else if (arguments.code == VKEY::_DOWN) tabOffset = 1;
-						break;
-					case TabPageOrder::BottomToTop:
-						if (arguments.code == VKEY::_UP) tabOffset = 1;
-						else if (arguments.code == VKEY::_DOWN) tabOffset = -1;
-						break;
-					default:;
+						auto hint = ct->GetTabOrder();
+						vint tabOffset = 0;
+						switch (hint)
+						{
+						case TabPageOrder::LeftToRight:
+							if (arguments.code == VKEY::_LEFT) tabOffset = -1;
+							else if (arguments.code == VKEY::_RIGHT) tabOffset = 1;
+							break;
+						case TabPageOrder::RightToLeft:
+							if (arguments.code == VKEY::_LEFT) tabOffset = 1;
+							else if (arguments.code == VKEY::_RIGHT) tabOffset = -1;
+							break;
+						case TabPageOrder::TopToBottom:
+							if (arguments.code == VKEY::_UP) tabOffset = -1;
+							else if (arguments.code == VKEY::_DOWN) tabOffset = 1;
+							break;
+						case TabPageOrder::BottomToTop:
+							if (arguments.code == VKEY::_UP) tabOffset = 1;
+							else if (arguments.code == VKEY::_DOWN) tabOffset = -1;
+							break;
+						default:;
+						}
+
+						index += tabOffset;
+						if (index < 0) index = 0;
+						else if (index >= tabPages.Count()) index = tabPages.Count() - 1;
+
+						SetSelectedPage(tabPages[index]);
 					}
 				}
 			}
