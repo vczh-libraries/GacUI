@@ -464,9 +464,11 @@ GuiCommonScrollViewLook
 				horizontalScroll = new GuiScroll(theme::ThemeName::HScroll);
 				horizontalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				horizontalScroll->SetEnabled(false);
+				horizontalScroll->SetAutoFocus(false);
 				verticalScroll = new GuiScroll(theme::ThemeName::VScroll);
 				verticalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				verticalScroll->SetEnabled(false);
+				verticalScroll->SetAutoFocus(false);
 
 				tableComposition = new GuiTableComposition;
 				AddChild(tableComposition);

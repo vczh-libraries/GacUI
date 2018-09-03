@@ -162,11 +162,15 @@ GuiTab
 							default:;
 							}
 
-							index += tabOffset;
-							if (index < 0) index = 0;
-							else if (index >= tabPages.Count()) index = tabPages.Count() - 1;
+							if (tabOffset != 0)
+							{
+								arguments.handled = true;
+								index += tabOffset;
+								if (index < 0) index = 0;
+								else if (index >= tabPages.Count()) index = tabPages.Count() - 1;
 
-							SetSelectedPage(tabPages[index]);
+								SetSelectedPage(tabPages[index]);
+							}
 						}
 					}
 				}

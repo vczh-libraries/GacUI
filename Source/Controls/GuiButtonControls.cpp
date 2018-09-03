@@ -154,6 +154,7 @@ GuiButton
 					{
 					case VKEY::_RETURN:
 						CheckAndClick(arguments);
+						arguments.handled = true;
 						break;
 					case VKEY::_SPACE:
 						if (!arguments.autoRepeatKeyDown)
@@ -161,6 +162,7 @@ GuiButton
 							keyPressing = true;
 							UpdateControlState();
 						}
+						arguments.handled = true;
 						break;
 					}
 				}
@@ -179,6 +181,7 @@ GuiButton
 							UpdateControlState();
 							CheckAndClick(arguments);
 						}
+						arguments.handled = true;
 						break;
 					}
 				}
