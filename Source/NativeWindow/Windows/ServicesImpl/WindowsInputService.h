@@ -29,7 +29,7 @@ namespace vl
 				collections::Array<WString>				keyNames;
 				collections::Dictionary<WString, vint>	keys;
 
-				WString									GetKeyNameInternal(vint code);
+				WString									GetKeyNameInternal(VKEY code);
 				void									InitializeKeyNames();
 			public:
 				WindowsInputService(HOOKPROC _mouseProc);
@@ -41,9 +41,9 @@ namespace vl
 				void									StartTimer()override;
 				void									StopTimer()override;
 				bool									IsTimerEnabled()override;
-				bool									IsKeyPressing(vint code)override;
-				bool									IsKeyToggled(vint code)override;
-				WString									GetKeyName(vint code)override;
+				bool									IsKeyPressing(VKEY code)override;
+				bool									IsKeyToggled(VKEY code)override;
+				WString									GetKeyName(VKEY code)override;
 				vint									GetKey(const WString& name)override;
 			};
 

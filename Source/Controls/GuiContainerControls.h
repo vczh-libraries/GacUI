@@ -64,6 +64,7 @@ Tab Control
 				{
 				protected:
 					GuiTab*										tab;
+
 				public:
 					CommandExecutor(GuiTab* _tab);
 					~CommandExecutor();

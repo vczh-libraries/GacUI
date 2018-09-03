@@ -94,6 +94,12 @@ Type Declaration
 				STRUCT_MEMBER(verticalAntialias)
 			END_STRUCT_MEMBER(FontProperties)
 
+#define GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM(NAME, CODE) ENUM_CLASS_ITEM(_##NAME)
+			BEGIN_ENUM_ITEM(VKEY)
+				GUI_DEFINE_KEYBOARD_CODE(GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM)
+			END_ENUM_ITEM(VKEY)
+#undef GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM
+
 			BEGIN_STRUCT_MEMBER_FLAG(GlobalStringKey, TypeDescriptorFlags::Primitive)
 				valueType = new SerializableValueType<GlobalStringKey>();
 				serializableType = new SerializableType<GlobalStringKey>();

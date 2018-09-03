@@ -39,6 +39,7 @@ Type List (Basic)
 			F(presentation::Rect)\
 			F(presentation::Margin)\
 			F(presentation::FontProperties)\
+			F(presentation::VKEY)\
 			F(presentation::GlobalStringKey)\
 			F(presentation::INativeImageFrame)\
 			F(presentation::INativeImage)\

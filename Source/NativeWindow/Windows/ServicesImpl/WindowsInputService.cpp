@@ -6,12 +6,12 @@ namespace vl
 	{
 		namespace windows
 		{
-			bool WinIsKeyPressing(vint code)
+			bool WinIsKeyPressing(VKEY code)
 			{
 				return (GetKeyState((int)code)&0xF0)!=0;
 			}
 
-			bool WinIsKeyToggled(vint code)
+			bool WinIsKeyToggled(VKEY code)
 			{
 				return (GetKeyState((int)code)&0x0F)!=0;
 			}
@@ -20,7 +20,7 @@ namespace vl
 WindowsInputService
 ***********************************************************************/
 
-			WString WindowsInputService::GetKeyNameInternal(vint code)
+			WString WindowsInputService::GetKeyNameInternal(VKEY code)
 			{
 				if (code < 8) return L"?";
 				wchar_t name[256]={0};
@@ -124,17 +124,17 @@ WindowsInputService
 				return isTimerEnabled;
 			}
 				
-			bool WindowsInputService::IsKeyPressing(vint code)
+			bool WindowsInputService::IsKeyPressing(VKEY code)
 			{
 				return WinIsKeyPressing(code);
 			}
 
-			bool WindowsInputService::IsKeyToggled(vint code)
+			bool WindowsInputService::IsKeyToggled(VKEY code)
 			{
 				return WinIsKeyToggled(code);
 			}
 
-			WString WindowsInputService::GetKeyName(vint code)
+			WString WindowsInputService::GetKeyName(VKEY code)
 			{
 				if (0 <= code && 0 < keyNames.Count())
 				{
