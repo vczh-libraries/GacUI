@@ -256,7 +256,7 @@
           <PartialView ref.Name="handle" PreferredMinSize="x:12 y:0" WidthPageSize="0">
             <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
             <Button AutoFocus="false" ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
-              <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.BoundsComposition-set  AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
             </Button>
           </PartialView>
         </Bounds>
@@ -299,7 +299,7 @@
           <PartialView ref.Name="handle" PreferredMinSize="x:0 y:12" HeightPageSize="0">
             <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
             <Button AutoFocus="false" ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
-              <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.BoundsComposition-set  AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
             </Button>
           </PartialView>
         </Bounds>
