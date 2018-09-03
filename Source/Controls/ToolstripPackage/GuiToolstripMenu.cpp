@@ -224,11 +224,6 @@ GuiToolstripToolBar
 GuiToolstripButton
 ***********************************************************************/
 
-			void GuiToolstripButton::OnActiveAlt()
-			{
-				Clicked.Execute(GetNotifyEventArguments());
-			}
-
 			void GuiToolstripButton::SetCallback(IToolstripUpdateLayout* _callback)
 			{
 				callback = _callback;

@@ -87,6 +87,28 @@ GuiTabPageList
 			}
 
 /***********************************************************************
+GuiTab::CommandExecutor
+***********************************************************************/
+
+			GuiTab::CommandExecutor::CommandExecutor(GuiTab* _tab)
+				:tab(_tab)
+			{
+			}
+
+			GuiTab::CommandExecutor::~CommandExecutor()
+			{
+			}
+
+			void GuiTab::CommandExecutor::ShowTab(vint index, bool setFocus)
+			{
+				tab->SetSelectedPage(tab->GetPages().Get(index));
+				if (setFocus)
+				{
+					tab->SetFocus();
+				}
+			}
+
+/***********************************************************************
 GuiTab
 ***********************************************************************/
 
@@ -108,18 +130,33 @@ GuiTab
 				ct->SetSelectedTabPage(selectedPage);
 			}
 
-			GuiTab::CommandExecutor::CommandExecutor(GuiTab* _tab)
-				:tab(_tab)
+			void GuiTab::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-			}
-
-			GuiTab::CommandExecutor::~CommandExecutor()
-			{
-			}
-
-			void GuiTab::CommandExecutor::ShowTab(vint index)
-			{
-				tab->SetSelectedPage(tab->GetPages().Get(index));
+				if (auto ct = GetControlTemplateObject(false))
+				{
+					auto hint = ct->GetTabOrder();
+					vint tabOffset = 0;
+					switch (hint)
+					{
+					case TabPageOrder::LeftToRight:
+						if (arguments.code == VKEY::_LEFT) tabOffset = -1;
+						else if (arguments.code == VKEY::_RIGHT) tabOffset = 1;
+						break;
+					case TabPageOrder::RightToLeft:
+						if (arguments.code == VKEY::_LEFT) tabOffset = 1;
+						else if (arguments.code == VKEY::_RIGHT) tabOffset = -1;
+						break;
+					case TabPageOrder::TopToBottom:
+						if (arguments.code == VKEY::_UP) tabOffset = -1;
+						else if (arguments.code == VKEY::_DOWN) tabOffset = 1;
+						break;
+					case TabPageOrder::BottomToTop:
+						if (arguments.code == VKEY::_UP) tabOffset = 1;
+						else if (arguments.code == VKEY::_DOWN) tabOffset = -1;
+						break;
+					default:;
+					}
+				}
 			}
 
 			GuiTab::GuiTab(theme::ThemeName themeName)
@@ -127,6 +164,9 @@ GuiTab
 				, tabPages(this)
 			{
 				commandExecutor = new CommandExecutor(this);
+				SetFocusableComposition(boundsComposition);
+
+				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiTab::OnKeyDown);
 			}
 
 			GuiTab::~GuiTab()

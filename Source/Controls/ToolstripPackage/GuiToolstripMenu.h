@@ -149,7 +149,6 @@ Toolstrip Component
 				IToolstripUpdateLayout*							callback = nullptr;
 				Ptr<compositions::IGuiGraphicsEventHandler>		descriptionChangedHandler;
 
-				void											OnActiveAlt()override;
 				void											SetCallback(IToolstripUpdateLayout* _callback)override;
 				void											UpdateCommandContent();
 				void											OnLayoutAwaredPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

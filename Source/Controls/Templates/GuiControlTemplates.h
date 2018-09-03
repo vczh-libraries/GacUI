@@ -274,6 +274,7 @@ Control Template
 				F(GuiTabTemplate, controls::ITabCommandExecutor*, Commands, nullptr)\
 				F(GuiTabTemplate, Ptr<reflection::description::IValueObservableList>, TabPages, {})\
 				F(GuiTabTemplate, controls::GuiTabPage*, SelectedTabPage, nullptr)\
+				F(GuiTabTemplate, controls::TabPageOrder, TabOrder, controls::TabPageOrder::Unknown)\
 
 #define GuiDatePickerTemplate_PROPERTIES(F)\
 				F(GuiDatePickerTemplate, controls::IDatePickerCommandExecutor*, Commands, nullptr)\

@@ -38,7 +38,10 @@ GuiButton
 
 			void GuiButton::OnActiveAlt()
 			{
-				GuiControl::OnActiveAlt();
+				if (autoFocus)
+				{
+					GuiControl::OnActiveAlt();
+				}
 				Clicked.Execute(GetNotifyEventArguments());
 			}
 

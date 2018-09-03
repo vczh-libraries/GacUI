@@ -214,6 +214,7 @@ Type List (Templates)
 #define GUIREFLECTIONTEMPLATES_EXTRA_TYPELIST(F)\
 			F(presentation::controls::ButtonState)\
 			F(presentation::controls::ColumnSortingState)\
+			F(presentation::controls::TabPageOrder)\
 			F(presentation::templates::BoolOption)\
 			F(presentation::controls::ITextBoxCommandExecutor)\
 			F(presentation::controls::IScrollCommandExecutor)\

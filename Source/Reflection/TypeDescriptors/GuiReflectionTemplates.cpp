@@ -35,6 +35,14 @@ Type Declaration (Extra)
 				ENUM_CLASS_ITEM(Descending)
 			END_ENUM_ITEM(ColumnSortingState)
 
+			BEGIN_ENUM_ITEM(TabPageOrder)
+				ENUM_CLASS_ITEM(Unknown)
+				ENUM_CLASS_ITEM(LeftToRight)
+				ENUM_CLASS_ITEM(RightToLeft)
+				ENUM_CLASS_ITEM(TopToBottom)
+				ENUM_CLASS_ITEM(BottomToTop)
+			END_ENUM_ITEM(TabPageOrder)
+
 			BEGIN_ENUM_ITEM(BoolOption)
 				ENUM_CLASS_ITEM(AlwaysTrue)
 				ENUM_CLASS_ITEM(AlwaysFalse)
@@ -59,7 +67,7 @@ Type Declaration (Extra)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(ITabCommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)
-				CLASS_MEMBER_METHOD(ShowTab, { L"index" })
+				CLASS_MEMBER_METHOD(ShowTab, { L"index" _ L"setFocus" })
 			END_INTERFACE_MEMBER(ITabCommandExecutor)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IDatePickerCommandExecutor)

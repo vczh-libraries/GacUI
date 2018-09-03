@@ -42,6 +42,21 @@ namespace vl
 				Descending,
 			};
 
+			/// <summary>Represents the order of tab pages.</summary>
+			enum class TabPageOrder
+			{
+				/// <summary>Unknown.</summary>
+				Unknown,
+				/// <summary>Left to right.</summary>
+				LeftToRight,
+				/// <summary>Right to left.</summary>
+				RightToLeft,
+				/// <summary>Top to bottom.</summary>
+				TopToBottom,
+				/// <summary>Bottom to top.</summary>
+				BottomToTop,
+			};
+
 			/// <summary>A command executor for the combo box to change the control state.</summary>
 			class ITextBoxCommandExecutor : public virtual IDescriptable, public Description<ITextBoxCommandExecutor>
 			{
@@ -81,7 +96,8 @@ namespace vl
 			public:
 				/// <summary>Select a tab page.</summary>
 				/// <param name="index">The specified position for the tab page.</param>
-				virtual void						ShowTab(vint index) = 0;
+				/// <param name="setFocus">Set to true to set focus to the tab control.</param>
+				virtual void						ShowTab(vint index, bool setFocus) = 0;
 			};
 
 			/// <summary>A command executor for the style controller to change the control state.</summary>

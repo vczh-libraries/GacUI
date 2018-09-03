@@ -4,12 +4,14 @@
       <ref.Members>
         <![CDATA[
           prop Highlighted: bool = false {}
+          prop TabFocused: bool = false {}
         ]]>
       </ref.Members>
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <att.Highlighted-bind>(cast (RibbonTabPage*) self.Context).Highlighted ?? false</att.Highlighted-bind>
+        <att.TabFocused-bind>(cast (TabPage*) self.Context).OwnerTab.Focused ?? false</att.TabFocused-bind>
         <SolidBackground ref.Style="tabHeaderBackground"/>
-        <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1" Visible-bind="self.Focused">
+        <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1" Visible-bind="self.Selected and self.TabFocused">
           <FocusRectangle/>
         </Bounds>
         <Bounds AlignmentToParent="left:6 top:3 right:6 bottom:3">
@@ -37,7 +39,7 @@
           <ev.Clicked-eval>
             <![CDATA[
               {
-                self.Commands.ShowTab(CurrentTabPage.OwnerTab.Pages.IndexOf(CurrentTabPage));
+                self.Commands.ShowTab(CurrentTabPage.OwnerTab.Pages.IndexOf(CurrentTabPage), true);
               }
             ]]>
           </ev.Clicked-eval>
@@ -70,7 +72,7 @@
           }
         ]]>
       </ref.Members>
-      <RibbonTabTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+      <RibbonTabTemplate ref.Name="self" ContainerComposition-ref="container" TabPageOrder="LeftToRight" MinSizeLimitation="LimitToElementAndChildren">
         <ev.SelectedTabPageChanged-eval>
           <![CDATA[
             {

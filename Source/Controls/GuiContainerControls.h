@@ -69,12 +69,14 @@ Tab Control
 					CommandExecutor(GuiTab* _tab);
 					~CommandExecutor();
 
-					void										ShowTab(vint index)override;
+					void										ShowTab(vint index, bool setFocus)override;
 				};
 
 				Ptr<CommandExecutor>							commandExecutor;
 				GuiTabPageList									tabPages;
 				GuiTabPage*										selectedPage = nullptr;
+
+				void											OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
