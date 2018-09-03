@@ -16,6 +16,7 @@
         <_>composeType:Absolute absolute:45</_>
         <_>composeType:Absolute absolute:45</_>
         <_>composeType:Absolute absolute:100</_>
+        <_>composeType:Absolute absolute:100</_>
         <_>composeType:Percentage percentage:1.0</_>
       </att.Columns>
 
@@ -86,6 +87,25 @@
       </Cell>
       <Cell Site="row:4 column:4 rowSpan:2">
         <InnerShadow Color="#00FFFF" Thickness="30"/>
+      </Cell>
+
+      <Cell Site="row:0 column:5 rowSpan:2">
+        <SolidBackground Color="#FFFF00"/>
+        <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+          <FocusRectangle/>
+        </Bounds>
+      </Cell>
+      <Cell Site="row:2 column:5 rowSpan:2">
+        <SolidBackground Color="#FF00FF"/>
+        <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+          <FocusRectangle/>
+        </Bounds>
+      </Cell>
+      <Cell Site="row:4 column:5 rowSpan:2">
+        <SolidBackground Color="#00FFFF"/>
+        <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+          <FocusRectangle/>
+        </Bounds>
       </Cell>
     </Table>
   </TabPage>
