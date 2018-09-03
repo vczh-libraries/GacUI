@@ -149,8 +149,12 @@
       </ref.Ctor>
       <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <CommonScrollBehavior ref.Name="behavior"/>
-        
+
         <SolidBackground Color="#3D3D42"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="controlBorder"/>
+        </Bounds>
+        
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Left">
           <Button AutoFocus="false" ref.Name="buttonDecrease" ControlTemplate="darkskin::LeftScrollButtonTemplate">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -190,6 +194,10 @@
         <CommonScrollBehavior ref.Name="behavior"/>
 
         <SolidBackground Color="#3D3D42"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="controlBorder"/>
+        </Bounds>
+        
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Top">
           <Button AutoFocus="false" ref.Name="buttonDecrease" ControlTemplate="darkskin::TopScrollButtonTemplate">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -228,7 +236,7 @@
 
         <SolidBackground Color="#3F3F47"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder Color="#55545A"/>
+          <SolidBorder ref.Style="controlBorder"/>
           
           <Table AlignmentToParent="left:6 top:0 right:6 bottom:0">
             <att.Rows>
@@ -271,7 +279,7 @@
 
         <SolidBackground Color="#3F3F47"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder Color="#55545A"/>
+          <SolidBorder ref.Style="controlBorder"/>
 
           <Table AlignmentToParent="left:0 top:6 right:0 bottom:6">
             <att.Rows>

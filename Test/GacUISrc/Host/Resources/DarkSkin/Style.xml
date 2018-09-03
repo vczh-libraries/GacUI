@@ -115,6 +115,17 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.controlBorder">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color (
+          not self.VisuallyEnabled ? "#434346" :
+          self.Focused ? "#1C97EA" :
+          "#54545C"
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
   <Style ref.Path="//*.scrollArrowColor">
     <att.Color-bind>
       <![CDATA[
@@ -153,7 +164,7 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#3D3D42" :
+          not self.VisuallyEnabled ? "#00000000" :
           state == ButtonState::Active ? "#9E9E9E" :
           state == ButtonState::Pressed ? "#EFEBEF" :
           "#686868"
@@ -317,17 +328,6 @@
           state == ButtonState::Pressed or self.SubMenuOpening ? "#3F3F46" :
           state == ButtonState::Active ? "#3F3F46" :
           "#333337"
-        )
-      ]]>
-    </att.Color-bind>
-  </Style>
-  <Style ref.Path="//*.comboBorder">
-    <att.Color-bind>
-      <![CDATA[
-        cast Color (
-          not self.VisuallyEnabled ? "#434346" :
-          self.Focused ? "#1C97EA" :
-          "#54545C"
         )
       ]]>
     </att.Color-bind>
