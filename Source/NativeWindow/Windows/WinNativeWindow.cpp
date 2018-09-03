@@ -132,7 +132,10 @@ WindowsForm
 					SetWindowLongPtr(handle, GWL_STYLE, Long);
 					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
 				}
-
+#pragma push_macro("_CONTROL")
+#if defined _CONTROL
+#undef _CONTROL
+#endif
 				NativeWindowMouseInfo ConvertMouse(WPARAM wParam, LPARAM lParam, bool wheelMessage, bool nonClient)
 				{
 					NativeWindowMouseInfo info;
@@ -216,12 +219,13 @@ WindowsForm
 				{
 					NativeWindowCharInfo info;
 					info.code=(wchar_t)wParam;
-					info.ctrl=WinIsKeyPressing(VK_CONTROL);
-					info.shift=WinIsKeyPressing(VK_SHIFT);
-					info.alt=WinIsKeyPressing(VK_MENU);
-					info.capslock=WinIsKeyToggled(VK_CAPITAL);
+					info.ctrl=WinIsKeyPressing(VKEY::_CONTROL);
+					info.shift=WinIsKeyPressing(VKEY::_SHIFT);
+					info.alt=WinIsKeyPressing(VKEY::_MENU);
+					info.capslock=WinIsKeyToggled(VKEY::_CAPITAL);
 					return info;
 				}
+#pragma pop_macro("_CONTROL")
 
 				void TrackMouse(bool enable)
 				{

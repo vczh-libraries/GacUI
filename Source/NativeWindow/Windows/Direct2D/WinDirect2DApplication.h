@@ -8,10 +8,10 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
 #define VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
 
+#include "..\WinNativeWindow.h"
 #include <d2d1_1.h>
 #include <dwrite_1.h>
 #include <d3d11_1.h>
-#include "..\WinNativeWindow.h"
 
 namespace vl
 {

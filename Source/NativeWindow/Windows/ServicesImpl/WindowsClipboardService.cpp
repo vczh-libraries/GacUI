@@ -1,7 +1,7 @@
+#include "../../../Resources/GuiDocumentClipboard.h"
 #include "WindowsClipboardService.h"
 #include "WindowsImageService.h"
 #include "../GDI/WinGDI.h"
-#include "../../../Resources/GuiDocumentClipboard.h"
 
 namespace vl
 {

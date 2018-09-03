@@ -8,8 +8,8 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
 #define VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
 
-#include "WinGDI.h"
 #include "..\WinNativeWindow.h"
+#include "WinGDI.h"
 
 namespace vl
 {
