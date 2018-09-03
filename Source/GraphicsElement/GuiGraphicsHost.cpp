@@ -817,7 +817,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Char(const NativeWindowCharInfo& info)
 			{
-				if (!currentAltHost && supressAltKey != VKEY::_UNKNOWN)
+				if (!currentAltHost && supressAltKey == VKEY::_UNKNOWN)
 				{
 					if(focusedComposition && focusedComposition->HasEventReceiver())
 					{
