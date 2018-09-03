@@ -28,7 +28,7 @@ namespace vl
 					bool									ctrl;
 					bool									shift;
 					bool									alt;
-					vint									key;
+					VKEY									key;
 				};
 			protected:
 				Ptr<GuiImageData>							image;

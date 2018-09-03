@@ -484,17 +484,17 @@ GuiTextBoxCommonInterface
 
 			void GuiTextBoxCommonInterface::OnCharInput(compositions::GuiGraphicsComposition* sender, compositions::GuiCharEventArgs& arguments)
 			{
-				if(preventEnterDueToAutoComplete)
+				if (preventEnterDueToAutoComplete)
 				{
-					preventEnterDueToAutoComplete=false;
-					if(arguments.code==VKEY::_RETURN)
+					preventEnterDueToAutoComplete = false;
+					if (arguments.code == VKEY::_RETURN)
 					{
 						return;
 					}
 				}
-				if(textControl->GetVisuallyEnabled() && arguments.compositionSource==arguments.eventSource)
+				if (textControl->GetVisuallyEnabled() && arguments.compositionSource == arguments.eventSource)
 				{
-					if(!readonly && arguments.code!=VKEY::_ESCAPE && arguments.code!=VKEY::_BACK && !arguments.ctrl)
+					if (!readonly && arguments.code != VKEY::_ESCAPE && arguments.code != VKEY::_BACK && !arguments.ctrl)
 					{
 						SetSelectionTextAsKeyInput(WString(arguments.code));
 					}
@@ -617,12 +617,12 @@ GuiTextBoxCommonInterface
 				AttachTextEditCallback(undoRedoProcessor);
 
 				internalShortcutKeyManager=new GuiShortcutKeyManager;
-				AddShortcutCommand('Z', Func<bool()>(this, &GuiTextBoxCommonInterface::Undo));
-				AddShortcutCommand('Y', Func<bool()>(this, &GuiTextBoxCommonInterface::Redo));
-				AddShortcutCommand('A', Func<void()>(this, &GuiTextBoxCommonInterface::SelectAll));
-				AddShortcutCommand('X', Func<bool()>(this, &GuiTextBoxCommonInterface::Cut));
-				AddShortcutCommand('C', Func<bool()>(this, &GuiTextBoxCommonInterface::Copy));
-				AddShortcutCommand('V', Func<bool()>(this, &GuiTextBoxCommonInterface::Paste));
+				AddShortcutCommand(VKEY::_Z, Func<bool()>(this, &GuiTextBoxCommonInterface::Undo));
+				AddShortcutCommand(VKEY::_Y, Func<bool()>(this, &GuiTextBoxCommonInterface::Redo));
+				AddShortcutCommand(VKEY::_A, Func<void()>(this, &GuiTextBoxCommonInterface::SelectAll));
+				AddShortcutCommand(VKEY::_X, Func<bool()>(this, &GuiTextBoxCommonInterface::Cut));
+				AddShortcutCommand(VKEY::_C, Func<bool()>(this, &GuiTextBoxCommonInterface::Copy));
+				AddShortcutCommand(VKEY::_V, Func<bool()>(this, &GuiTextBoxCommonInterface::Paste));
 			}
 
 			GuiTextBoxCommonInterface::~GuiTextBoxCommonInterface()

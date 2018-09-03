@@ -727,13 +727,13 @@ GuiGraphicsHost
 					}
 					else if (VKEY::_NUMPAD0 <= info.code && info.code <= VKEY::_NUMPAD9)
 					{
-						if (EnterAltKey((wchar_t)(L'0' + (info.code - VKEY::_NUMPAD0))))
+						if (EnterAltKey((wchar_t)(L'0' + ((vint)info.code - (vint)VKEY::_NUMPAD0))))
 						{
 							supressAltKey = info.code;
 							return;
 						}
 					}
-					else if (('0' <= info.code && info.code <= '9') || ('A' <= info.code && info.code <= 'Z'))
+					else if ((VKEY::_0 <= info.code && info.code <= VKEY::_9) || (VKEY::_A <= info.code && info.code <= VKEY::_Z))
 					{
 						if (EnterAltKey((wchar_t)info.code))
 						{
@@ -762,7 +762,7 @@ GuiGraphicsHost
 			{
 				if (!info.ctrl && !info.shift && info.code == supressAltKey)
 				{
-					supressAltKey = 0;
+					supressAltKey = VKEY::_UNKNOWN;
 					return;
 				}
 
@@ -817,7 +817,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Char(const NativeWindowCharInfo& info)
 			{
-				if (!currentAltHost && !supressAltKey)
+				if (!currentAltHost && supressAltKey != VKEY::_UNKNOWN)
 				{
 					if(focusedComposition && focusedComposition->HasEventReceiver())
 					{

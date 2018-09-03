@@ -421,12 +421,12 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnCharInput(compositions::GuiGraphicsComposition* sender, compositions::GuiCharEventArgs& arguments)
 			{
-				if(documentControl->GetVisuallyEnabled())
+				if (documentControl->GetVisuallyEnabled())
 				{
-					if(editMode==Editable && arguments.code!=VKEY::_ESCAPE && arguments.code!=VKEY::_BACK && arguments.code!=VKEY::_RETURN && !arguments.ctrl)
+					if (editMode == Editable && arguments.code != VKEY::_ESCAPE && arguments.code != VKEY::_BACK && arguments.code != VKEY::_RETURN && !arguments.ctrl)
 					{
 						Array<WString> text(1);
-						text[0]=WString(arguments.code);
+						text[0] = WString(arguments.code);
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 					}
 				}
@@ -598,12 +598,12 @@ GuiDocumentCommonInterface
 				undoRedoProcessor=new GuiDocumentUndoRedoProcessor;
 
 				internalShortcutKeyManager=new GuiShortcutKeyManager;
-				AddShortcutCommand('Z', Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
-				AddShortcutCommand('Y', Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
-				AddShortcutCommand('A', Func<void()>(this, &GuiDocumentCommonInterface::SelectAll));
-				AddShortcutCommand('X', Func<bool()>(this, &GuiDocumentCommonInterface::Cut));
-				AddShortcutCommand('C', Func<bool()>(this, &GuiDocumentCommonInterface::Copy));
-				AddShortcutCommand('V', Func<bool()>(this, &GuiDocumentCommonInterface::Paste));
+				AddShortcutCommand(VKEY::_Z, Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
+				AddShortcutCommand(VKEY::_Y, Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
+				AddShortcutCommand(VKEY::_A, Func<void()>(this, &GuiDocumentCommonInterface::SelectAll));
+				AddShortcutCommand(VKEY::_X, Func<bool()>(this, &GuiDocumentCommonInterface::Cut));
+				AddShortcutCommand(VKEY::_C, Func<bool()>(this, &GuiDocumentCommonInterface::Copy));
+				AddShortcutCommand(VKEY::_V, Func<bool()>(this, &GuiDocumentCommonInterface::Paste));
 			}
 
 			GuiDocumentCommonInterface::~GuiDocumentCommonInterface()

@@ -297,7 +297,7 @@ GuiToolstripCommand::ShortcutBuilder Parser
 					WString name = match->Groups()[L"key"][0].Value();
 					builder->key = GetCurrentController()->InputService()->GetKey(name);
 
-					return builder->key == -1 ? nullptr : builder;
+					return builder->key == VKEY::_UNKNOWN ? nullptr : builder;
 				}
 			};
 

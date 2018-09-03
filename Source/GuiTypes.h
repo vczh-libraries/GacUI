@@ -895,9 +895,16 @@ ITEM(APOSTROPHE,          0xDE)		/* OEM_7 */									\
 #define GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM(NAME, CODE) _##NAME = CODE,
 		enum class VKEY
 		{
+			_UNKNOWN = -1,
 			GUI_DEFINE_KEYBOARD_CODE(GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM)
 		};
 #undef GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM
+		static bool operator == (VKEY a, VKEY b) { return (vint)a == (vint)b; }
+		static bool operator != (VKEY a, VKEY b) { return (vint)a != (vint)b; }
+		static bool operator <  (VKEY a, VKEY b) { return (vint)a <  (vint)b; }
+		static bool operator <= (VKEY a, VKEY b) { return (vint)a <= (vint)b; }
+		static bool operator >  (VKEY a, VKEY b) { return (vint)a >  (vint)b; }
+		static bool operator >= (VKEY a, VKEY b) { return (vint)a >= (vint)b; }
 
 	}
 }

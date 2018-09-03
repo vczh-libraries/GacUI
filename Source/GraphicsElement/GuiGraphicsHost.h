@@ -183,7 +183,7 @@ Host
 				AltActionMap							currentActiveAltActions;
 				AltControlMap							currentActiveAltTitles;
 				WString									currentAltPrefix;
-				vint									supressAltKey = 0;
+				VKEY									supressAltKey = VKEY::_UNKNOWN;
 
 				void									EnterAltHost(IGuiAltActionHost* host);
 				void									LeaveAltHost();

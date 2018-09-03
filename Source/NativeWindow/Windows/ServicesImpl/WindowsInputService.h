@@ -27,7 +27,7 @@ namespace vl
 				HOOKPROC								mouseProc;
 
 				collections::Array<WString>				keyNames;
-				collections::Dictionary<WString, vint>	keys;
+				collections::Dictionary<WString, VKEY>	keys;
 
 				WString									GetKeyNameInternal(VKEY code);
 				void									InitializeKeyNames();
@@ -44,7 +44,7 @@ namespace vl
 				bool									IsKeyPressing(VKEY code)override;
 				bool									IsKeyToggled(VKEY code)override;
 				WString									GetKeyName(VKEY code)override;
-				vint									GetKey(const WString& name)override;
+				VKEY									GetKey(const WString& name)override;
 			};
 
 			extern bool									WinIsKeyPressing(VKEY code);

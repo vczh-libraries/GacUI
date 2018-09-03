@@ -1192,7 +1192,7 @@ Native Window Services
 			/// </summary>
 			/// <returns>The key, returns -1 if the key name doesn't exist.</returns>
 			/// <param name="name">Key name</param>
-			virtual vint					GetKey(const WString& name)=0;
+			virtual VKEY					GetKey(const WString& name)=0;
 		};
 		
 		/// <summary>
