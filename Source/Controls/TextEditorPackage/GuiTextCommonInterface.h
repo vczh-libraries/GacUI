@@ -84,7 +84,7 @@ Common Interface
 				void												UpdateCaretPoint();
 				void												Move(TextPos pos, bool shift);
 				void												Modify(TextPos start, TextPos end, const WString& input, bool asKeyInput);
-				bool												ProcessKey(vint code, bool shift, bool ctrl);
+				bool												ProcessKey(VKEY code, bool shift, bool ctrl);
 					
 				void												OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void												OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -103,7 +103,7 @@ Common Interface
 				void												SetCallback(ICallback* value);
 				bool												AttachTextEditCallback(Ptr<ICommonTextEditCallback> value);
 				bool												DetachTextEditCallback(Ptr<ICommonTextEditCallback> value);
-				void												AddShortcutCommand(vint key, const Func<void()>& eventHandler);
+				void												AddShortcutCommand(VKEY key, const Func<void()>& eventHandler);
 				elements::GuiColorizedTextElement*					GetTextElement();
 				void												UnsafeSetText(const WString& value);
 

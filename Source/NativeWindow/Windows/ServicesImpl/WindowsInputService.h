@@ -47,8 +47,8 @@ namespace vl
 				vint									GetKey(const WString& name)override;
 			};
 
-			extern bool									WinIsKeyPressing(vint code);
-			extern bool									WinIsKeyToggled(vint code);
+			extern bool									WinIsKeyPressing(VKEY code);
+			extern bool									WinIsKeyToggled(VKEY code);
 		}
 	}
 }

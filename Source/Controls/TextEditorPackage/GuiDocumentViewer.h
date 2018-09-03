@@ -82,11 +82,11 @@ GuiDocumentCommonInterface
 				void										InvokeModifiedChanged();
 				void										UpdateCaretPoint();
 				void										Move(TextPos caret, bool shift, bool frontSide);
-				bool										ProcessKey(vint code, bool shift, bool ctrl);
+				bool										ProcessKey(VKEY code, bool shift, bool ctrl);
 				void										InstallDocumentViewer(GuiControl* _sender, compositions::GuiGraphicsComposition* _container, compositions::GuiGraphicsComposition* eventComposition, compositions::GuiGraphicsComposition* focusableComposition);
 				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package);
 				void										ActivateActiveHyperlink(bool activate);
-				void										AddShortcutCommand(vint key, const Func<void()>& eventHandler);
+				void										AddShortcutCommand(VKEY key, const Func<void()>& eventHandler);
 				void										EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor);
 				void										EditStyleInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos)>& editor);
 				

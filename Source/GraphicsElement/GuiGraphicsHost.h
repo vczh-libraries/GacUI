@@ -293,18 +293,18 @@ Shortcut Key Manager Helpers
 				bool							ctrl;
 				bool							shift;
 				bool							alt;
-				vint							key;
+				VKEY							key;
 
 				void							AttachManager(GuiShortcutKeyManager* manager);
 				void							DetachManager(GuiShortcutKeyManager* manager);
 			public:
-				GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, vint _key);
+				GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, VKEY _key);
 				~GuiShortcutKeyItem();
 
 				IGuiShortcutKeyManager*			GetManager()override;
 				WString							GetName()override;
 				bool							CanActivate(const NativeWindowKeyInfo& info);
-				bool							CanActivate(bool _ctrl, bool _shift, bool _alt, vint _key);
+				bool							CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key);
 			};
 
 			/// <summary>A default implementation for <see cref="IGuiShortcutKeyManager"/>.</summary>
@@ -329,21 +329,21 @@ Shortcut Key Manager Helpers
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
 				/// <param name="key">The non-control key.</param>
-				IGuiShortcutKeyItem*			CreateShortcut(bool ctrl, bool shift, bool alt, vint key);
+				IGuiShortcutKeyItem*			CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key);
 				/// <summary>Destroy a shortcut key item using a key combination</summary>
 				/// <returns>Returns true if the manager destroyed a existing shortcut key item.</returns>
 				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
 				/// <param name="key">The non-control key.</param>
-				bool							DestroyShortcut(bool ctrl, bool shift, bool alt, vint key);
+				bool							DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key);
 				/// <summary>Get a shortcut key item using a key combination. If the item for the key combination does not exist, this function returns null.</summary>
 				/// <returns>The shortcut key item.</returns>
 				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
 				/// <param name="key">The non-control key.</param>
-				IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, vint key);
+				IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key);
 			};
 		}
 	}

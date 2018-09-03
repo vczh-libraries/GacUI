@@ -90,7 +90,7 @@ GuiDocumentCommonInterface
 				SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
 
-			bool GuiDocumentCommonInterface::ProcessKey(vint code, bool shift, bool ctrl)
+			bool GuiDocumentCommonInterface::ProcessKey(VKEY code, bool shift, bool ctrl)
 			{
 				if(IGuiShortcutKeyItem* item=internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, code))
 				{
@@ -106,31 +106,31 @@ GuiDocumentCommonInterface
 
 				switch(code)
 				{
-				case VKEY_UP:
+				case VKEY::_UP:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveUp, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_DOWN:
+				case VKEY::_DOWN:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveDown, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_LEFT:
+				case VKEY::_LEFT:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveLeft, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_RIGHT:
+				case VKEY::_RIGHT:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveRight, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_HOME:
+				case VKEY::_HOME:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineFirst, frontSide);
 						if(newCaret==currentCaret)
@@ -140,7 +140,7 @@ GuiDocumentCommonInterface
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_END:
+				case VKEY::_END:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineLast, frontSide);
 						if(newCaret==currentCaret)
@@ -150,39 +150,39 @@ GuiDocumentCommonInterface
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_PRIOR:
+				case VKEY::_PRIOR:
 					{
 					}
 					break;
-				case VKEY_NEXT:
+				case VKEY::_NEXT:
 					{
 					}
 					break;
-				case VKEY_BACK:
+				case VKEY::_BACK:
 					if(editMode==Editable)
 					{
 						if(begin==end)
 						{
-							ProcessKey(VKEY_LEFT, true, false);
+							ProcessKey(VKEY::_LEFT, true, false);
 						}
 						Array<WString> text;
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 						return true;
 					}
 					break;
-				case VKEY_DELETE:
+				case VKEY::_DELETE:
 					if(editMode==Editable)
 					{
 						if(begin==end)
 						{
-							ProcessKey(VKEY_RIGHT, true, false);
+							ProcessKey(VKEY::_RIGHT, true, false);
 						}
 						Array<WString> text;
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 						return true;
 					}
 					break;
-				case VKEY_RETURN:
+				case VKEY::_RETURN:
 					if(editMode==Editable)
 					{
 						if(ctrl)
@@ -268,7 +268,7 @@ GuiDocumentCommonInterface
 				}
 			}
 
-			void GuiDocumentCommonInterface::AddShortcutCommand(vint key, const Func<void()>& eventHandler)
+			void GuiDocumentCommonInterface::AddShortcutCommand(VKEY key, const Func<void()>& eventHandler)
 			{
 				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateShortcut(true, false, false, key);
 				item->Executed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
@@ -423,7 +423,7 @@ GuiDocumentCommonInterface
 			{
 				if(documentControl->GetVisuallyEnabled())
 				{
-					if(editMode==Editable && arguments.code!=VKEY_ESCAPE && arguments.code!=VKEY_BACK && arguments.code!=VKEY_RETURN && !arguments.ctrl)
+					if(editMode==Editable && arguments.code!=VKEY::_ESCAPE && arguments.code!=VKEY::_BACK && arguments.code!=VKEY::_RETURN && !arguments.ctrl)
 					{
 						Array<WString> text(1);
 						text[0]=WString(arguments.code);

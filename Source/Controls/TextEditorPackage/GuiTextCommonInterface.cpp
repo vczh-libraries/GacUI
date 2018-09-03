@@ -236,7 +236,7 @@ GuiTextBoxCommonInterface
 				}
 			}
 
-			bool GuiTextBoxCommonInterface::ProcessKey(vint code, bool shift, bool ctrl)
+			bool GuiTextBoxCommonInterface::ProcessKey(VKEY code, bool shift, bool ctrl)
 			{
 				if(IGuiShortcutKeyItem* item=internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, code))
 				{
@@ -249,13 +249,13 @@ GuiTextBoxCommonInterface
 				TextPos end=textElement->GetCaretEnd();
 				switch(code)
 				{
-				case VKEY_ESCAPE:
+				case VKEY::_ESCAPE:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						autoComplete->CloseList();
 					}
 					return true;
-				case VKEY_RETURN:
+				case VKEY::_RETURN:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						if(autoComplete->ApplySelectedListItem())
@@ -265,7 +265,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					break;
-				case VKEY_UP:
+				case VKEY::_UP:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						autoComplete->SelectPreviousListItem();
@@ -276,7 +276,7 @@ GuiTextBoxCommonInterface
 						Move(end, shift);
 					}
 					return true;
-				case VKEY_DOWN:
+				case VKEY::_DOWN:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						autoComplete->SelectNextListItem();
@@ -287,7 +287,7 @@ GuiTextBoxCommonInterface
 						Move(end, shift);
 					}
 					return true;
-				case VKEY_LEFT:
+				case VKEY::_LEFT:
 					{
 						if(ctrl)
 						{
@@ -312,7 +312,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					return true;
-				case VKEY_RIGHT:
+				case VKEY::_RIGHT:
 					{
 						if(ctrl)
 						{
@@ -336,7 +336,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					return true;
-				case VKEY_HOME:
+				case VKEY::_HOME:
 					{
 						if(ctrl)
 						{
@@ -349,7 +349,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					return true;
-				case VKEY_END:
+				case VKEY::_END:
 					{
 						if(ctrl)
 						{
@@ -359,60 +359,60 @@ GuiTextBoxCommonInterface
 						Move(end, shift);
 					}
 					return true;
-				case VKEY_PRIOR:
+				case VKEY::_PRIOR:
 					{
 						end.row-=callback->GetPageRows();
 						Move(end, shift);
 					}
 					return true;
-				case VKEY_NEXT:
+				case VKEY::_NEXT:
 					{
 						end.row+=callback->GetPageRows();
 						Move(end, shift);
 					}
 					return true;
-				case VKEY_BACK:
+				case VKEY::_BACK:
 					if(!readonly)
 					{
 						if(ctrl && !shift)
 						{
-							ProcessKey(VKEY_LEFT, true, true);
-							ProcessKey(VKEY_BACK, false, false);
+							ProcessKey(VKEY::_LEFT, true, true);
+							ProcessKey(VKEY::_BACK, false, false);
 						}
 						else if(!ctrl && shift)
 						{
-							ProcessKey(VKEY_UP, true, false);
-							ProcessKey(VKEY_BACK, false, false);
+							ProcessKey(VKEY::_UP, true, false);
+							ProcessKey(VKEY::_BACK, false, false);
 						}
 						else
 						{
 							if(begin==end)
 							{
-								ProcessKey(VKEY_LEFT, true, false);
+								ProcessKey(VKEY::_LEFT, true, false);
 							}
 							SetSelectionTextAsKeyInput(L"");
 						}
 						return true;
 					}
 					break;
-				case VKEY_DELETE:
+				case VKEY::_DELETE:
 					if(!readonly)
 					{
 						if(ctrl && !shift)
 						{
-							ProcessKey(VKEY_RIGHT, true, true);
-							ProcessKey(VKEY_DELETE, false, false);
+							ProcessKey(VKEY::_RIGHT, true, true);
+							ProcessKey(VKEY::_DELETE, false, false);
 						}
 						else if(!ctrl && shift)
 						{
-							ProcessKey(VKEY_DOWN, true, false);
-							ProcessKey(VKEY_DELETE, false, false);
+							ProcessKey(VKEY::_DOWN, true, false);
+							ProcessKey(VKEY::_DELETE, false, false);
 						}
 						else
 						{
 							if(begin==end)
 							{
-								ProcessKey(VKEY_RIGHT, true, false);
+								ProcessKey(VKEY::_RIGHT, true, false);
 							}
 							SetSelectionTextAsKeyInput(L"");
 						}
@@ -487,14 +487,14 @@ GuiTextBoxCommonInterface
 				if(preventEnterDueToAutoComplete)
 				{
 					preventEnterDueToAutoComplete=false;
-					if(arguments.code==VKEY_RETURN)
+					if(arguments.code==VKEY::_RETURN)
 					{
 						return;
 					}
 				}
 				if(textControl->GetVisuallyEnabled() && arguments.compositionSource==arguments.eventSource)
 				{
-					if(!readonly && arguments.code!=VKEY_ESCAPE && arguments.code!=VKEY_BACK && !arguments.ctrl)
+					if(!readonly && arguments.code!=VKEY::_ESCAPE && arguments.code!=VKEY::_BACK && !arguments.ctrl)
 					{
 						SetSelectionTextAsKeyInput(WString(arguments.code));
 					}
@@ -575,7 +575,7 @@ GuiTextBoxCommonInterface
 				}
 			}
 
-			void GuiTextBoxCommonInterface::AddShortcutCommand(vint key, const Func<void()>& eventHandler)
+			void GuiTextBoxCommonInterface::AddShortcutCommand(VKEY key, const Func<void()>& eventHandler)
 			{
 				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateShortcut(true, false, false, key);
 				item->Executed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)

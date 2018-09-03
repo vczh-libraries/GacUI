@@ -716,18 +716,18 @@ GuiGraphicsHost
 			{
 				if (!info.ctrl && !info.shift && currentAltHost)
 				{
-					if (info.code == VKEY_ESCAPE)
+					if (info.code == VKEY::_ESCAPE)
 					{
 						LeaveAltHost();
 						return;
 					}
-					else if (info.code == VKEY_BACK)
+					else if (info.code == VKEY::_BACK)
 					{
 						LeaveAltKey();
 					}
-					else if (VKEY_NUMPAD0 <= info.code && info.code <= VKEY_NUMPAD9)
+					else if (VKEY::_NUMPAD0 <= info.code && info.code <= VKEY::_NUMPAD9)
 					{
-						if (EnterAltKey((wchar_t)(L'0' + (info.code - VKEY_NUMPAD0))))
+						if (EnterAltKey((wchar_t)(L'0' + (info.code - VKEY::_NUMPAD0))))
 						{
 							supressAltKey = info.code;
 							return;
@@ -774,7 +774,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == VKEY_MENU && !currentAltHost)
+				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && !currentAltHost)
 				{
 					if (auto window = dynamic_cast<GuiWindow*>(windowComposition->Children()[0]->GetRelatedControlHost()))
 					{
@@ -801,7 +801,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyUp(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == VKEY_MENU && hostRecord.nativeWindow)
+				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && hostRecord.nativeWindow)
 				{
 					if (hostRecord.nativeWindow)
 					{
@@ -1026,7 +1026,7 @@ GuiGraphicsHost
 GuiShortcutKeyItem
 ***********************************************************************/
 
-			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, vint _key)
+			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, VKEY _key)
 				:shortcutKeyManager(_shortcutKeyManager)
 				,ctrl(_ctrl)
 				,shift(_shift)
@@ -1063,7 +1063,7 @@ GuiShortcutKeyItem
 					info.code==key;
 			}
 
-			bool GuiShortcutKeyItem::CanActivate(bool _ctrl, bool _shift, bool _alt, vint _key)
+			bool GuiShortcutKeyItem::CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key)
 			{
 				return
 					_ctrl==ctrl &&
@@ -1109,7 +1109,7 @@ GuiShortcutKeyManager
 				return executed;
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcut(bool ctrl, bool shift, bool alt, vint key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
 				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
 				{
@@ -1123,7 +1123,7 @@ GuiShortcutKeyManager
 				return item.Obj();
 			}
 
-			bool GuiShortcutKeyManager::DestroyShortcut(bool ctrl, bool shift, bool alt, vint key)
+			bool GuiShortcutKeyManager::DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
 				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
 				{
@@ -1136,7 +1136,7 @@ GuiShortcutKeyManager
 				return false;
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, vint key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
 				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
 				{

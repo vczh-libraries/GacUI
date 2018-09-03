@@ -762,7 +762,7 @@ GuiSelectableListControl
 				return false;
 			}
 
-			bool GuiSelectableListControl::SelectItemsByKey(vint code, bool ctrl, bool shift)
+			bool GuiSelectableListControl::SelectItemsByKey(VKEY code, bool ctrl, bool shift)
 			{
 				if (!GetArranger()) return false;
 
@@ -770,28 +770,28 @@ GuiSelectableListControl
 				KeyDirection keyDirection = KeyDirection::Up;
 				switch (code)
 				{
-				case VKEY_UP:
+				case VKEY::_UP:
 					keyDirection = KeyDirection::Up;
 					break;
-				case VKEY_DOWN:
+				case VKEY::_DOWN:
 					keyDirection = KeyDirection::Down;
 					break;
-				case VKEY_LEFT:
+				case VKEY::_LEFT:
 					keyDirection = KeyDirection::Left;
 					break;
-				case VKEY_RIGHT:
+				case VKEY::_RIGHT:
 					keyDirection = KeyDirection::Right;
 					break;
-				case VKEY_HOME:
+				case VKEY::_HOME:
 					keyDirection = KeyDirection::Home;
 					break;
-				case VKEY_END:
+				case VKEY::_END:
 					keyDirection = KeyDirection::End;
 					break;
-				case VKEY_PRIOR:
+				case VKEY::_PRIOR:
 					keyDirection = KeyDirection::PageUp;
 					break;
-				case VKEY_NEXT:
+				case VKEY::_NEXT:
 					keyDirection = KeyDirection::PageDown;
 					break;
 				default:

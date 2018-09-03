@@ -432,7 +432,7 @@ Selectable List Control
 				/// <param name="code">The key code that is pressing.</param>
 				/// <param name="ctrl">Set to true if the control key is pressing.</param>
 				/// <param name="shift">Set to true if the shift key is pressing.</param>
-				bool											SelectItemsByKey(vint code, bool ctrl, bool shift);
+				bool											SelectItemsByKey(VKEY code, bool ctrl, bool shift);
 				/// <summary>Unselect all items.</summary>
 				void											ClearSelection();
 			};
