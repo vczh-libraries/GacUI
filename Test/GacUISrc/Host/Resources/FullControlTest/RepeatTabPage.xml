@@ -5,9 +5,11 @@
         <_>composeType:Percentage percentage:1.0</_>
         <_>composeType:Absolute absolute:20</_>
         <_>composeType:Absolute absolute:20</_>
+        <_>composeType:Absolute absolute:20</_>
       </att.Rows>
       <att.Columns>
         <_>composeType:Percentage percentage:1.0</_>
+        <_>composeType:Absolute absolute:20</_>
         <_>composeType:Absolute absolute:20</_>
       </att.Columns>
 
@@ -79,18 +81,30 @@
       </Cell>
 
       <Cell Site="row:1 column:0">
+        <HScroll ref.Name="hTracker" TotalSize="100" PageSize="10">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </HScroll>
+      </Cell>
+
+      <Cell Site="row:2 column:0">
         <HTracker ref.Name="hTracker" TotalSize="10">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </HTracker>
       </Cell>
 
-      <Cell Site="row:2 column:0">
+      <Cell Site="row:3 column:0">
         <ProgressBar TotalSize="10" Position-bind="hTracker.Position">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </ProgressBar>
       </Cell>
 
       <Cell Site="row:0 column:1">
+        <VScroll TotalSize="50" PageSize="10">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </VScroll>
+      </Cell>
+
+      <Cell Site="row:0 column:2">
         <VTracker TotalSize="5">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </VTracker>
