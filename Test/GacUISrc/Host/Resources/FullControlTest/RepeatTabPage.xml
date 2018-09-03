@@ -81,13 +81,13 @@
       </Cell>
 
       <Cell Site="row:1 column:0">
-        <HScroll ref.Name="hTracker" TotalSize="100" PageSize="10">
+        <HScroll Alt="H" TotalSize="100" PageSize="10">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </HScroll>
       </Cell>
 
       <Cell Site="row:2 column:0">
-        <HTracker ref.Name="hTracker" TotalSize="10">
+        <HTracker ref.Name="hTracker" Alt="H" TotalSize="10">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </HTracker>
       </Cell>
@@ -99,13 +99,13 @@
       </Cell>
 
       <Cell Site="row:0 column:1">
-        <VScroll TotalSize="50" PageSize="10">
+        <VScroll Alt="V" TotalSize="50" PageSize="10">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </VScroll>
       </Cell>
 
       <Cell Site="row:0 column:2">
-        <VTracker TotalSize="5">
+        <VTracker Alt="V" TotalSize="5">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </VTracker>
       </Cell>
