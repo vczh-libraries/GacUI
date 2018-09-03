@@ -1,6 +1,6 @@
 <Folder>
   <Instance name="TabHeaderButtonTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabHeaderButtonTemplate" ref.Styles="res://DarkSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="testtheme::TabHeaderButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ref.Members>
         <![CDATA[
           prop Highlighted: bool = false {}
@@ -20,7 +20,7 @@
   </Instance>
 
   <Instance name="TabHeaderTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabHeaderTemplate" ref.Styles="res://DarkSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="testtheme::TabHeaderTemplate" ref.Styles="res://DarkSkin/Style">
       <ref.Parameter Name="CurrentTabPage" Class="presentation::controls::GuiTabPage"/>
       <ref.Members>
         <![CDATA[
@@ -28,7 +28,7 @@
         ]]>
       </ref.Members>
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <CheckBox ControlTemplate="darkskin::TabHeaderButtonTemplate" AutoSelection="false">
+        <CheckBox ControlTemplate="testtheme::TabHeaderButtonTemplate" AutoSelection="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.Context-ref>CurrentTabPage</att.Context-ref>
           <att.Text-bind>CurrentTabPage.Text</att.Text-bind>
@@ -47,7 +47,7 @@
   </Instance>
 
   <Instance name="TabTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabTemplate" ref.Styles="res://DarkSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="testtheme::TabTemplate" ref.Styles="res://DarkSkin/Style">
       <ref.Members>
         <![CDATA[
           prop Highlighted: bool = false {}
@@ -100,7 +100,7 @@
 
           <Cell Site="row:0 column:1">
             <RepeatFlow ref.Name="header" AlignmentToParent="left:0 top:0 right:0 bottom:0" ExtraMargin="left:2 top:2 right:2 bottom:0">
-              <att.ItemTemplate>darkskin::TabHeaderTemplate</att.ItemTemplate>
+              <att.ItemTemplate>testtheme::TabHeaderTemplate</att.ItemTemplate>
               <att.ItemSource-bind>self.TabPages</att.ItemSource-bind>
               <ev.ItemInserted-eval>
                 <![CDATA[

@@ -1,11 +1,13 @@
 <Resource>
   <Folder name="DarkSkin">
     <InstanceStyle name="Style" content="File">..\..\Host\Resources\DarkSkin\Style.xml</InstanceStyle>
+    <Folder name="Tab" content="Link">..\..\Host\Resources\DarkSkin\Template_Tab.xml</Folder>
   </Folder>
 
   <Instance name="ThemeResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestTheme" xmlns:x="testtheme::*">
       <ThemeTemplates Name="TestSkin">
+        <att.Tab>x:TabTemplate</att.Tab>
       </ThemeTemplates>
     </Instance>
   </Instance>
