@@ -229,6 +229,19 @@ GuiToolstripButton
 				callback = _callback;
 			}
 
+			void GuiToolstripButton::OnActiveAlt()
+			{
+				auto host = GetSubMenuHost();
+				if (host == this)
+				{
+					GuiMenuButton::OnActiveAlt();
+				}
+				else
+				{
+					host->QueryTypedService<IGuiAltAction>()->OnActiveAlt();
+				}
+			}
+
 			void GuiToolstripButton::UpdateCommandContent()
 			{
 				if(command)

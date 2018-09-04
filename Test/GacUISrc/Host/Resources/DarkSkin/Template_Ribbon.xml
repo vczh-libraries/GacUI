@@ -112,7 +112,7 @@
           <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
             <SolidBackground ref.Style="toolstripSplitBackground"/>
           </Bounds>
-          <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening">
+          <CheckBox ref.Name="buttonArrow" AutoFocus="false" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           </CheckBox>
         </Bounds>
@@ -275,7 +275,7 @@
             <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
               <SolidBackground ref.Style="toolstripSplitBackground"/>
             </Bounds>
-            <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::RibbonSplitArrowTemplate" Selected-bind="self.SubMenuOpening" Text-bind="self.Text">
+            <CheckBox ref.Name="buttonArrow" AutoFocus="false" ControlTemplate="darkskin::RibbonSplitArrowTemplate" Selected-bind="self.SubMenuOpening" Text-bind="self.Text">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </CheckBox>
           </Cell>

@@ -886,6 +886,14 @@ GuiPopup
 				}
 			}
 
+			void GuiPopup::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			{
+				if (!arguments.handled)
+				{
+					Hide();
+				}
+			}
+
 			Point GuiPopup::CalculatePopupPosition(Size size, Point location, INativeScreen* screen)
 			{
 				Rect screenBounds = screen->GetClientBounds();
@@ -1012,6 +1020,7 @@ GuiPopup
 
 				WindowOpened.AttachMethod(this, &GuiPopup::PopupOpened);
 				WindowClosed.AttachMethod(this, &GuiPopup::PopupClosed);
+				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiPopup::OnKeyDown);
 			}
 
 			GuiPopup::~GuiPopup()

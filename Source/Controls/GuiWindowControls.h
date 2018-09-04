@@ -364,6 +364,7 @@ Window
 				void									MouseClickedOnOtherWindow(GuiWindow* window)override;
 				void									PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
 				static bool								IsClippedByScreen(Size size, Point location, INativeScreen* screen);
 				static Point							CalculatePopupPosition(Size size, Point location, INativeScreen* screen);

@@ -124,7 +124,7 @@
           </Bounds>
         </Bounds>
         <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
-          <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening" Visible-bind="self.SubMenuExisting">
+          <CheckBox ref.Name="buttonArrow" AutoFocus="false" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening" Visible-bind="self.SubMenuExisting">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           </CheckBox>
         </Bounds>
