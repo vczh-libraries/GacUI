@@ -107,6 +107,7 @@ Type List (Basic)
 			F(presentation::Rect)\
 			F(presentation::Margin)\
 			F(presentation::FontProperties)\
+			F(presentation::VKEY)\
 			F(presentation::GlobalStringKey)\
 			F(presentation::INativeImageFrame)\
 			F(presentation::INativeImage)\
@@ -182,6 +183,7 @@ Type List (Elements)
 			F(presentation::elements::text::ColorEntry)\
 
 #define GUIREFLECTIONELEMENT_CLASS_TYPELIST(F)\
+			F(presentation::elements::GuiFocusRectangleElement)\
 			F(presentation::elements::GuiSolidBorderElement)\
 			F(presentation::elements::Gui3DBorderElement)\
 			F(presentation::elements::Gui3DSplitterElement)\
@@ -280,9 +282,9 @@ Type List (Templates)
 #define GUIREFLECTIONTEMPLATES_EXTRA_TYPELIST(F)\
 			F(presentation::controls::ButtonState)\
 			F(presentation::controls::ColumnSortingState)\
+			F(presentation::controls::TabPageOrder)\
 			F(presentation::templates::BoolOption)\
 			F(presentation::controls::ITextBoxCommandExecutor)\
-			F(presentation::controls::IComboBoxCommandExecutor)\
 			F(presentation::controls::IScrollCommandExecutor)\
 			F(presentation::controls::ITabCommandExecutor)\
 			F(presentation::controls::IDatePickerCommandExecutor)\

@@ -665,6 +665,257 @@ Resources
 			bool operator>(const FontProperties& value)const {return Compare(value)>0;}
 			bool operator>=(const FontProperties& value)const {return Compare(value)>=0;}
 		};
+
+/***********************************************************************
+Keys
+***********************************************************************/
+
+#define GUI_DEFINE_KEYBOARD_CODE(ITEM)											\
+/*																				\
+ * Virtual Keys, Standard Set													\
+ */																				\
+ITEM(LBUTTON,             0x01)													\
+ITEM(RBUTTON,             0x02)													\
+ITEM(CANCEL,              0x03)													\
+ITEM(MBUTTON,             0x04)		/* NOT contiguous with L & RBUTTON */		\
+ITEM(XBUTTON1,            0x05)		/* NOT contiguous with L & RBUTTON */		\
+ITEM(XBUTTON2,            0x06)		/* NOT contiguous with L & RBUTTON */		\
+ITEM(BACK,                0x08)													\
+ITEM(TAB,                 0x09)													\
+ITEM(CLEAR,               0x0C)													\
+ITEM(RETURN,              0x0D)													\
+ITEM(SHIFT,               0x10)													\
+ITEM(CONTROL,             0x11)													\
+ITEM(MENU,                0x12)													\
+ITEM(PAUSE,               0x13)													\
+ITEM(CAPITAL,             0x14)													\
+ITEM(KANA_HANGUL,         0x15)													\
+ITEM(JUNJA,               0x17)													\
+ITEM(FINAL,               0x18)													\
+ITEM(HANJA,               0x19)													\
+ITEM(KANJI,               0x19)													\
+ITEM(ESCAPE,              0x1B)													\
+ITEM(CONVERT,             0x1C)													\
+ITEM(NONCONVERT,          0x1D)													\
+ITEM(ACCEPT,              0x1E)													\
+ITEM(MODECHANGE,          0x1F)													\
+ITEM(SPACE,               0x20)													\
+ITEM(PRIOR,               0x21)													\
+ITEM(NEXT,                0x22)													\
+ITEM(END,                 0x23)													\
+ITEM(HOME,                0x24)													\
+ITEM(LEFT,                0x25)													\
+ITEM(UP,                  0x26)													\
+ITEM(RIGHT,               0x27)													\
+ITEM(DOWN,                0x28)													\
+ITEM(SELECT,              0x29)													\
+ITEM(PRINT,               0x2A)													\
+ITEM(EXECUTE,             0x2B)													\
+ITEM(SNAPSHOT,            0x2C)													\
+ITEM(INSERT,              0x2D)													\
+ITEM(DELETE,              0x2E)													\
+ITEM(HELP,                0x2F)													\
+/*																				\
+ * VKEY_0 - VKEY_9 are the same as ASCII '0' - '9' (0x30 - 0x39)				\
+ * VKEY_A - VKEY_Z are the same as ASCII 'A' - 'Z' (0x41 - 0x5A)				\
+ */																				\
+ITEM(0,                   0x30)													\
+ITEM(1,                   0x31)													\
+ITEM(2,                   0x32)													\
+ITEM(3,                   0x33)													\
+ITEM(4,                   0x34)													\
+ITEM(5,                   0x35)													\
+ITEM(6,                   0x36)													\
+ITEM(7,                   0x37)													\
+ITEM(8,                   0x38)													\
+ITEM(9,                   0x39)													\
+ITEM(A,                   0x41)													\
+ITEM(B,                   0x42)													\
+ITEM(C,                   0x43)													\
+ITEM(D,                   0x44)													\
+ITEM(E,                   0x45)													\
+ITEM(F,                   0x46)													\
+ITEM(G,                   0x47)													\
+ITEM(H,                   0x48)													\
+ITEM(I,                   0x49)													\
+ITEM(J,                   0x4A)													\
+ITEM(K,                   0x4B)													\
+ITEM(L,                   0x4C)													\
+ITEM(M,                   0x4D)													\
+ITEM(N,                   0x4E)													\
+ITEM(O,                   0x4F)													\
+ITEM(P,                   0x50)													\
+ITEM(Q,                   0x51)													\
+ITEM(R,                   0x52)													\
+ITEM(S,                   0x53)													\
+ITEM(T,                   0x54)													\
+ITEM(U,                   0x55)													\
+ITEM(V,                   0x56)													\
+ITEM(W,                   0x57)													\
+ITEM(X,                   0x58)													\
+ITEM(Y,                   0x59)													\
+ITEM(Z,                   0x5A)													\
+ITEM(LWIN,                0x5B)													\
+ITEM(RWIN,                0x5C)													\
+ITEM(APPS,                0x5D)													\
+ITEM(SLEEP,               0x5F)													\
+ITEM(NUMPAD0,             0x60)													\
+ITEM(NUMPAD1,             0x61)													\
+ITEM(NUMPAD2,             0x62)													\
+ITEM(NUMPAD3,             0x63)													\
+ITEM(NUMPAD4,             0x64)													\
+ITEM(NUMPAD5,             0x65)													\
+ITEM(NUMPAD6,             0x66)													\
+ITEM(NUMPAD7,             0x67)													\
+ITEM(NUMPAD8,             0x68)													\
+ITEM(NUMPAD9,             0x69)													\
+ITEM(MULTIPLY,            0x6A)													\
+ITEM(ADD,                 0x6B)													\
+ITEM(SEPARATOR,           0x6C)													\
+ITEM(SUBTRACT,            0x6D)													\
+ITEM(DECIMAL,             0x6E)													\
+ITEM(DIVIDE,              0x6F)													\
+ITEM(F1,                  0x70)													\
+ITEM(F2,                  0x71)													\
+ITEM(F3,                  0x72)													\
+ITEM(F4,                  0x73)													\
+ITEM(F5,                  0x74)													\
+ITEM(F6,                  0x75)													\
+ITEM(F7,                  0x76)													\
+ITEM(F8,                  0x77)													\
+ITEM(F9,                  0x78)													\
+ITEM(F10,                 0x79)													\
+ITEM(F11,                 0x7A)													\
+ITEM(F12,                 0x7B)													\
+ITEM(F13,                 0x7C)													\
+ITEM(F14,                 0x7D)													\
+ITEM(F15,                 0x7E)													\
+ITEM(F16,                 0x7F)													\
+ITEM(F17,                 0x80)													\
+ITEM(F18,                 0x81)													\
+ITEM(F19,                 0x82)													\
+ITEM(F20,                 0x83)													\
+ITEM(F21,                 0x84)													\
+ITEM(F22,                 0x85)													\
+ITEM(F23,                 0x86)													\
+ITEM(F24,                 0x87)													\
+ITEM(NUMLOCK,             0x90)													\
+ITEM(SCROLL,              0x91)													\
+/*																				\
+ * NEC PC-9800 kbd definitions													\
+ */																				\
+ITEM(OEM_NEC_EQUAL,       0x92)		/* '=' key on numpad */						\
+/*																				\
+ * Fujitsu/OASYS kbd definitions												\
+ */																				\
+ITEM(OEM_FJ_JISHO,        0x92)		/* 'Dictionary' key */						\
+ITEM(OEM_FJ_MASSHOU,      0x93)		/* 'Unregister word' key */					\
+ITEM(OEM_FJ_TOUROKU,      0x94)		/* 'Register word' key */					\
+ITEM(OEM_FJ_LOYA,         0x95)		/* 'Left OYAYUBI' key */					\
+ITEM(OEM_FJ_ROYA,         0x96)		/* 'Right OYAYUBI' key */					\
+/*																				\
+ * VKEY_L* & VKEY_R* - left and right Alt, Ctrl and Shift virtual keys.			\
+ * Used only as parameters to GetAsyncKeyState() and GetKeyState().				\
+ * No other API or message will distinguish left and right keys in this way.	\
+ */																				\
+ITEM(LSHIFT,              0xA0)													\
+ITEM(RSHIFT,              0xA1)													\
+ITEM(LCONTROL,            0xA2)													\
+ITEM(RCONTROL,            0xA3)													\
+ITEM(LMENU,               0xA4)													\
+ITEM(RMENU,               0xA5)													\
+ITEM(BROWSER_BACK,        0xA6)													\
+ITEM(BROWSER_FORWARD,     0xA7)													\
+ITEM(BROWSER_REFRESH,     0xA8)													\
+ITEM(BROWSER_STOP,        0xA9)													\
+ITEM(BROWSER_SEARCH,      0xAA)													\
+ITEM(BROWSER_FAVORITES,   0xAB)													\
+ITEM(BROWSER_HOME,        0xAC)													\
+ITEM(VOLUME_MUTE,         0xAD)													\
+ITEM(VOLUME_DOWN,         0xAE)													\
+ITEM(VOLUME_UP,           0xAF)													\
+ITEM(MEDIA_NEXT_TRACK,    0xB0)													\
+ITEM(MEDIA_PREV_TRACK,    0xB1)													\
+ITEM(MEDIA_STOP,          0xB2)													\
+ITEM(MEDIA_PLAY_PAUSE,    0xB3)													\
+ITEM(LAUNCH_MAIL,         0xB4)													\
+ITEM(LAUNCH_MEDIA_SELECT, 0xB5)													\
+ITEM(LAUNCH_APP1,         0xB6)													\
+ITEM(LAUNCH_APP2,         0xB7)													\
+ITEM(OEM_1,               0xBA)		/* ';:' for US */							\
+ITEM(OEM_PLUS,            0xBB)		/* '+' any country */						\
+ITEM(OEM_COMMA,           0xBC)		/* ',' any country */						\
+ITEM(OEM_MINUS,           0xBD)		/* '-' any country */						\
+ITEM(OEM_PERIOD,          0xBE)		/* '.' any country */						\
+ITEM(OEM_2,               0xBF)		/* '/?' for US */							\
+ITEM(OEM_3,               0xC0)		/* '`~' for US */							\
+ITEM(OEM_4,               0xDB)		/* '[{' for US */							\
+ITEM(OEM_5,               0xDC)		/* '\|' for US */							\
+ITEM(OEM_6,               0xDD)		/* ']}' for US */							\
+ITEM(OEM_7,               0xDE)		/* ''"' for US */							\
+ITEM(OEM_8,               0xDF)													\
+/*																				\
+ * Various extended or enhanced keyboards										\
+ */																				\
+ITEM(OEM_AX,              0xE1)		/* 'AX' key on Japanese AX kbd */			\
+ITEM(OEM_102,             0xE2)		/* "<>" or "\|" on RT 102-key kbd */		\
+ITEM(ICO_HELP,            0xE3)		/* Help key on ICO */						\
+ITEM(ICO_00,              0xE4)		/* 00 key on ICO */							\
+ITEM(PROCESSKEY,          0xE5)													\
+ITEM(ICO_CLEAR,           0xE6)													\
+ITEM(PACKET,              0xE7)													\
+/*																				\
+ * Nokia/Ericsson definitions													\
+ */																				\
+ITEM(OEM_RESET,           0xE9)													\
+ITEM(OEM_JUMP,            0xEA)													\
+ITEM(OEM_PA1,             0xEB)													\
+ITEM(OEM_PA2,             0xEC)													\
+ITEM(OEM_PA3,             0xED)													\
+ITEM(OEM_WSCTRL,          0xEE)													\
+ITEM(OEM_CUSEL,           0xEF)													\
+ITEM(OEM_ATTN,            0xF0)													\
+ITEM(OEM_FINISH,          0xF1)													\
+ITEM(OEM_COPY,            0xF2)													\
+ITEM(OEM_AUTO,            0xF3)													\
+ITEM(OEM_ENLW,            0xF4)													\
+ITEM(OEM_BACKTAB,         0xF5)													\
+ITEM(ATTN,                0xF6)													\
+ITEM(CRSEL,               0xF7)													\
+ITEM(EXSEL,               0xF8)													\
+ITEM(EREOF,               0xF9)													\
+ITEM(PLAY,                0xFA)													\
+ITEM(ZOOM,                0xFB)													\
+ITEM(NONAME,              0xFC)													\
+ITEM(PA1,                 0xFD)													\
+ITEM(OEM_CLEAR,           0xFE)													\
+/*																				\
+ * Friendly names for common keys (US)											\
+ */																				\
+ITEM(SEMICOLON,           0xBA)		/* OEM_1 */									\
+ITEM(SLASH,               0xBF)		/* OEM_2 */									\
+ITEM(GRAVE_ACCENT,        0xC0)		/* OEM_3 */									\
+ITEM(RIGHT_BRACKET,       0xDB)		/* OEM_4 */									\
+ITEM(BACKSLASH,           0xDC)		/* OEM_5 */									\
+ITEM(LEFT_BRACKET,        0xDD)		/* OEM_6 */									\
+ITEM(APOSTROPHE,          0xDE)		/* OEM_7 */									\
+
+#define GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM(NAME, CODE) _##NAME = CODE,
+		enum class VKEY
+		{
+			_UNKNOWN = -1,
+			GUI_DEFINE_KEYBOARD_CODE(GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM)
+		};
+#undef GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM
+		static bool operator == (VKEY a, VKEY b) { return (vint)a == (vint)b; }
+		static bool operator != (VKEY a, VKEY b) { return (vint)a != (vint)b; }
+		static bool operator <  (VKEY a, VKEY b) { return (vint)a <  (vint)b; }
+		static bool operator <= (VKEY a, VKEY b) { return (vint)a <= (vint)b; }
+		static bool operator >  (VKEY a, VKEY b) { return (vint)a >  (vint)b; }
+		static bool operator >= (VKEY a, VKEY b) { return (vint)a >= (vint)b; }
+		static VKEY operator &  (VKEY a, VKEY b) { return (VKEY)((vint)a & (vint)b); }
+		static VKEY operator |  (VKEY a, VKEY b) { return (VKEY)((vint)a | (vint)b); }
+
 	}
 }
 
@@ -1520,6 +1771,11 @@ Native Window
 			/// </summary>
 			/// <returns>Returns true if the window customized frame mode is enabled.</returns>
 			virtual bool				IsCustomFrameModeEnabled()=0;
+			/// <summary>
+			/// Get the amount of the border. The window template may need this value to calculate where to put the client area.
+			/// </summary>
+			/// <returns>Returns the amount of the border.</returns>
+			virtual Margin				GetCustomFramePadding() = 0;
 
 			/// <summary>Window size state.</summary>
 			enum WindowSizeState
@@ -1769,8 +2025,8 @@ Native Window
 		/// </summary>
 		struct NativeWindowKeyInfo
 		{
-			/// <summary>Key code of the key that sends this message, using VKEY_* macros.</summary>
-			vint						code;
+			/// <summary>Key code of the key that sends this message.</summary>
+			VKEY						code;
 			/// <summary>True if the control button is pressed.</summary>
 			bool						ctrl;
 			/// <summary>True if the shift button is pressed.</summary>
@@ -1779,6 +2035,8 @@ Native Window
 			bool						alt;
 			/// <summary>True if the capslock button is pressed.</summary>
 			bool						capslock;
+			/// <summary>True if this repeated event is generated because a key is holding down.</summary>
+			bool						autoRepeatKeyDown;
 		};
 		
 		/// <summary>
@@ -2166,7 +2424,8 @@ Native Window Services
 			virtual void					SetImage(Ptr<INativeImage> value) = 0;
 
 			/// <summary>Send all data to the clipboard.</summary>
-			virtual void					Submit() = 0;
+			/// <returns>Returns true if this operation succeeded.</returns>
+			virtual bool					Submit() = 0;
 		};
 		
 		/// <summary>
@@ -2280,27 +2539,27 @@ Native Window Services
 			/// Test is the specified key pressing.
 			/// </summary>
 			/// <returns>Returns true if the specified key is pressing.</returns>
-			/// <param name="code">The key code to test, using VKEY_* macros.</param>
-			virtual bool					IsKeyPressing(vint code)=0;
+			/// <param name="code">The key code to test.</param>
+			virtual bool					IsKeyPressing(VKEY code)=0;
 			/// <summary>
 			/// Test is the specified key toggled.
 			/// </summary>
 			/// <returns>Returns true if the specified key is toggled.</returns>
-			/// <param name="code">The key code to test, using VKEY_* macros.</param>
-			virtual bool					IsKeyToggled(vint code)=0;
+			/// <param name="code">The key code to test.</param>
+			virtual bool					IsKeyToggled(VKEY code)=0;
 
 			/// <summary>
 			/// Get the name of a key.
 			/// </summary>
 			/// <returns>The name of a key.</returns>
-			/// <param name="code">The key code, using VKEY_* macros.</param>
-			virtual WString					GetKeyName(vint code)=0;
+			/// <param name="code">The key code.</param>
+			virtual WString					GetKeyName(VKEY code)=0;
 			/// <summary>
 			/// Get the key from a name.
 			/// </summary>
 			/// <returns>The key, returns -1 if the key name doesn't exist.</returns>
 			/// <param name="name">Key name</param>
-			virtual vint					GetKey(const WString& name)=0;
+			virtual VKEY					GetKey(const WString& name)=0;
 		};
 		
 		/// <summary>
@@ -2652,311 +2911,6 @@ Native Window Controller
 		extern void							SetCurrentController(INativeController* controller);
 	}
 }
-
-/***********************************************************************
-Native Window Provider
-***********************************************************************/
-
-/*
- * Virtual Keys, Standard Set
- */
-#define VKEY_LBUTTON        0x01
-#define VKEY_RBUTTON        0x02
-#define VKEY_CANCEL         0x03
-#define VKEY_MBUTTON        0x04    /* NOT contiguous with L & RBUTTON */
-
-#define VKEY_XBUTTON1       0x05    /* NOT contiguous with L & RBUTTON */
-#define VKEY_XBUTTON2       0x06    /* NOT contiguous with L & RBUTTON */
-
-/*
- * 0x07 : unassigned
- */
-
-#define VKEY_BACK           0x08
-#define VKEY_TAB            0x09
-
-/*
- * 0x0A - 0x0B : reserved
- */
-
-#define VKEY_CLEAR          0x0C
-#define VKEY_RETURN         0x0D
-
-#define VKEY_SHIFT          0x10
-#define VKEY_CONTROL        0x11
-#define VKEY_MENU           0x12
-#define VKEY_PAUSE          0x13
-#define VKEY_CAPITAL        0x14
-
-#define VKEY_KANA           0x15
-#define VKEY_HANGEUL        0x15  /* old name - should be here for compatibility */
-#define VKEY_HANGUL         0x15
-#define VKEY_JUNJA          0x17
-#define VKEY_FINAL          0x18
-#define VKEY_HANJA          0x19
-#define VKEY_KANJI          0x19
-
-#define VKEY_ESCAPE         0x1B
-
-#define VKEY_CONVERT        0x1C
-#define VKEY_NONCONVERT     0x1D
-#define VKEY_ACCEPT         0x1E
-#define VKEY_MODECHANGE     0x1F
-
-#define VKEY_SPACE          0x20
-#define VKEY_PRIOR          0x21
-#define VKEY_NEXT           0x22
-#define VKEY_END            0x23
-#define VKEY_HOME           0x24
-#define VKEY_LEFT           0x25
-#define VKEY_UP             0x26
-#define VKEY_RIGHT          0x27
-#define VKEY_DOWN           0x28
-#define VKEY_SELECT         0x29
-#define VKEY_PRINT          0x2A
-#define VKEY_EXECUTE        0x2B
-#define VKEY_SNAPSHOT       0x2C
-#define VKEY_INSERT         0x2D
-#define VKEY_DELETE         0x2E
-#define VKEY_HELP           0x2F
-
-/*
- * VKEY_0 - VKEY_9 are the same as ASCII '0' - '9' (0x30 - 0x39)
- * 0x40 : unassigned
- * VKEY_A - VKEY_Z are the same as ASCII 'A' - 'Z' (0x41 - 0x5A)
- */
-
-#define VKEY_0              0x30
-#define VKEY_1              0x31
-#define VKEY_2              0x32
-#define VKEY_3              0x33
-#define VKEY_4              0x34
-#define VKEY_5              0x35
-#define VKEY_6              0x36
-#define VKEY_7              0x37
-#define VKEY_8              0x38
-#define VKEY_9              0x39
-
-#define VKEY_A              0x41
-#define VKEY_B              0x42
-#define VKEY_C              0x43
-#define VKEY_D              0x44
-#define VKEY_E              0x45
-#define VKEY_F              0x46
-#define VKEY_G              0x47
-#define VKEY_H              0x48
-#define VKEY_I              0x49
-#define VKEY_J              0x4A
-#define VKEY_K              0x4B
-#define VKEY_L              0x4C
-#define VKEY_M              0x4D
-#define VKEY_N              0x4E
-#define VKEY_O              0x4F
-#define VKEY_P              0x50
-#define VKEY_Q              0x51
-#define VKEY_R              0x52
-#define VKEY_S              0x53
-#define VKEY_T              0x54
-#define VKEY_U              0x55
-#define VKEY_V              0x56
-#define VKEY_W              0x57
-#define VKEY_X              0x58
-#define VKEY_Y              0x59
-#define VKEY_Z              0x5A
-
-#define VKEY_LWIN           0x5B
-#define VKEY_RWIN           0x5C
-#define VKEY_APPS           0x5D
-
-/*
- * 0x5E : reserved
- */
-
-#define VKEY_SLEEP          0x5F
-
-#define VKEY_NUMPAD0        0x60
-#define VKEY_NUMPAD1        0x61
-#define VKEY_NUMPAD2        0x62
-#define VKEY_NUMPAD3        0x63
-#define VKEY_NUMPAD4        0x64
-#define VKEY_NUMPAD5        0x65
-#define VKEY_NUMPAD6        0x66
-#define VKEY_NUMPAD7        0x67
-#define VKEY_NUMPAD8        0x68
-#define VKEY_NUMPAD9        0x69
-#define VKEY_MULTIPLY       0x6A
-#define VKEY_ADD            0x6B
-#define VKEY_SEPARATOR      0x6C
-#define VKEY_SUBTRACT       0x6D
-#define VKEY_DECIMAL        0x6E
-#define VKEY_DIVIDE         0x6F
-#define VKEY_F1             0x70
-#define VKEY_F2             0x71
-#define VKEY_F3             0x72
-#define VKEY_F4             0x73
-#define VKEY_F5             0x74
-#define VKEY_F6             0x75
-#define VKEY_F7             0x76
-#define VKEY_F8             0x77
-#define VKEY_F9             0x78
-#define VKEY_F10            0x79
-#define VKEY_F11            0x7A
-#define VKEY_F12            0x7B
-#define VKEY_F13            0x7C
-#define VKEY_F14            0x7D
-#define VKEY_F15            0x7E
-#define VKEY_F16            0x7F
-#define VKEY_F17            0x80
-#define VKEY_F18            0x81
-#define VKEY_F19            0x82
-#define VKEY_F20            0x83
-#define VKEY_F21            0x84
-#define VKEY_F22            0x85
-#define VKEY_F23            0x86
-#define VKEY_F24            0x87
-
-/*
- * 0x88 - 0x8F : unassigned
- */
-
-#define VKEY_NUMLOCK        0x90
-#define VKEY_SCROLL         0x91
-
-/*
- * NEC PC-9800 kbd definitions
- */
-#define VKEY_OEM_NEC_EQUAL  0x92   // '=' key on numpad
-
-/*
- * Fujitsu/OASYS kbd definitions
- */
-#define VKEY_OEM_FJ_JISHO   0x92   // 'Dictionary' key
-#define VKEY_OEM_FJ_MASSHOU 0x93   // 'Unregister word' key
-#define VKEY_OEM_FJ_TOUROKU 0x94   // 'Register word' key
-#define VKEY_OEM_FJ_LOYA    0x95   // 'Left OYAYUBI' key
-#define VKEY_OEM_FJ_ROYA    0x96   // 'Right OYAYUBI' key
-
-/*
- * 0x97 - 0x9F : unassigned
- */
-
-/*
- * VKEY_L* & VKEY_R* - left and right Alt, Ctrl and Shift virtual keys.
- * Used only as parameters to GetAsyncKeyState() and GetKeyState().
- * No other API or message will distinguish left and right keys in this way.
- */
-#define VKEY_LSHIFT         0xA0
-#define VKEY_RSHIFT         0xA1
-#define VKEY_LCONTROL       0xA2
-#define VKEY_RCONTROL       0xA3
-#define VKEY_LMENU          0xA4
-#define VKEY_RMENU          0xA5
-
-#define VKEY_BROWSER_BACK        0xA6
-#define VKEY_BROWSER_FORWARD     0xA7
-#define VKEY_BROWSER_REFRESH     0xA8
-#define VKEY_BROWSER_STOP        0xA9
-#define VKEY_BROWSER_SEARCH      0xAA
-#define VKEY_BROWSER_FAVORITES   0xAB
-#define VKEY_BROWSER_HOME        0xAC
-
-#define VKEY_VOLUME_MUTE         0xAD
-#define VKEY_VOLUME_DOWN         0xAE
-#define VKEY_VOLUME_UP           0xAF
-#define VKEY_MEDIA_NEXT_TRACK    0xB0
-#define VKEY_MEDIA_PREV_TRACK    0xB1
-#define VKEY_MEDIA_STOP          0xB2
-#define VKEY_MEDIA_PLAY_PAUSE    0xB3
-#define VKEY_LAUNCH_MAIL         0xB4
-#define VKEY_LAUNCH_MEDIA_SELECT 0xB5
-#define VKEY_LAUNCH_APP1         0xB6
-#define VKEY_LAUNCH_APP2         0xB7
-
-/*
- * 0xB8 - 0xB9 : reserved
- */
-
-#define VKEY_OEM_1          0xBA   // ';:' for US
-#define VKEY_OEM_PLUS       0xBB   // '+' any country
-#define VKEY_OEM_COMMA      0xBC   // ',' any country
-#define VKEY_OEM_MINUS      0xBD   // '-' any country
-#define VKEY_OEM_PERIOD     0xBE   // '.' any country
-#define VKEY_OEM_2          0xBF   // '/?' for US
-#define VKEY_OEM_3          0xC0   // '`~' for US
-
-/*
- * 0xC1 - 0xD7 : reserved
- */
-
-/*
- * 0xD8 - 0xDA : unassigned
- */
-
-#define VKEY_OEM_4          0xDB  //  '[{' for US
-#define VKEY_OEM_5          0xDC  //  '\|' for US
-#define VKEY_OEM_6          0xDD  //  ']}' for US
-#define VKEY_OEM_7          0xDE  //  ''"' for US
-#define VKEY_OEM_8          0xDF
-
-/*
- * 0xE0 : reserved
- */
-
-/*
- * Various extended or enhanced keyboards
- */
-
-#define VKEY_OEM_AX         0xE1  //  'AX' key on Japanese AX kbd
-#define VKEY_OEM_102        0xE2  //  "<>" or "\|" on RT 102-key kbd.
-#define VKEY_ICO_HELP       0xE3  //  Help key on ICO
-#define VKEY_ICO_00         0xE4  //  00 key on ICO
-
-#define VKEY_PROCESSKEY     0xE5
-#define VKEY_ICO_CLEAR      0xE6
-#define VKEY_PACKET         0xE7
-
-/*
- * 0xE8 : unassigned
- */
-
-/*
- * Nokia/Ericsson definitions
- */
-#define VKEY_OEM_RESET      0xE9
-#define VKEY_OEM_JUMP       0xEA
-#define VKEY_OEM_PA1        0xEB
-#define VKEY_OEM_PA2        0xEC
-#define VKEY_OEM_PA3        0xED
-#define VKEY_OEM_WSCTRL     0xEE
-#define VKEY_OEM_CUSEL      0xEF
-#define VKEY_OEM_ATTN       0xF0
-#define VKEY_OEM_FINISH     0xF1
-#define VKEY_OEM_COPY       0xF2
-#define VKEY_OEM_AUTO       0xF3
-#define VKEY_OEM_ENLW       0xF4
-#define VKEY_OEM_BACKTAB    0xF5
-
-#define VKEY_ATTN           0xF6
-#define VKEY_CRSEL          0xF7
-#define VKEY_EXSEL          0xF8
-#define VKEY_EREOF          0xF9
-#define VKEY_PLAY           0xFA
-#define VKEY_ZOOM           0xFB
-#define VKEY_NONAME         0xFC
-#define VKEY_PA1            0xFD
-#define VKEY_OEM_CLEAR      0xFE
-
-/*
- * Friendly names for common keys (US)
- */
-#define VKEY_SEMICOLON		VKEY_OEM_1
-#define VKEY_SLASH			VKEY_OEM_2
-#define VKEY_GRAVE_ACCENT	VKEY_OEM_3
-#define VKEY_RIGHT_BRACKET	VKEY_OEM_4
-#define VKEY_BACKSLASH		VKEY_OEM_5
-#define VKEY_LEFT_BRACKET	VKEY_OEM_6
-#define VKEY_APOSTROPHE		VKEY_OEM_7
-
 
 #endif
 
@@ -5112,6 +5066,18 @@ Elements
 
 				bool operator==(const ElementShape& value)const { return shapeType == value.shapeType && radiusX == value.radiusX && radiusY == value.radiusY; }
 				bool operator!=(const ElementShape& value)const { return !(*this == value); }
+			};
+
+			/// <summary>
+			/// Defines a focus rectangle with a thickness of one pixel.
+			/// </summary>
+			class GuiFocusRectangleElement : public GuiElementBase<GuiFocusRectangleElement>
+			{
+				DEFINE_GUI_GRAPHICS_ELEMENT(GuiFocusRectangleElement, L"FocusRectangle")
+			protected:
+
+				GuiFocusRectangleElement();
+			public:
 			};
 
 			/// <summary>
@@ -8664,7 +8630,7 @@ Host
 				AltActionMap							currentActiveAltActions;
 				AltControlMap							currentActiveAltTitles;
 				WString									currentAltPrefix;
-				vint									supressAltKey = 0;
+				VKEY									supressAltKey = VKEY::_UNKNOWN;
 
 				void									EnterAltHost(IGuiAltActionHost* host);
 				void									LeaveAltHost();
@@ -8774,18 +8740,18 @@ Shortcut Key Manager Helpers
 				bool							ctrl;
 				bool							shift;
 				bool							alt;
-				vint							key;
+				VKEY							key;
 
 				void							AttachManager(GuiShortcutKeyManager* manager);
 				void							DetachManager(GuiShortcutKeyManager* manager);
 			public:
-				GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, vint _key);
+				GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, VKEY _key);
 				~GuiShortcutKeyItem();
 
 				IGuiShortcutKeyManager*			GetManager()override;
 				WString							GetName()override;
 				bool							CanActivate(const NativeWindowKeyInfo& info);
-				bool							CanActivate(bool _ctrl, bool _shift, bool _alt, vint _key);
+				bool							CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key);
 			};
 
 			/// <summary>A default implementation for <see cref="IGuiShortcutKeyManager"/>.</summary>
@@ -8810,21 +8776,21 @@ Shortcut Key Manager Helpers
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
 				/// <param name="key">The non-control key.</param>
-				IGuiShortcutKeyItem*			CreateShortcut(bool ctrl, bool shift, bool alt, vint key);
+				IGuiShortcutKeyItem*			CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key);
 				/// <summary>Destroy a shortcut key item using a key combination</summary>
 				/// <returns>Returns true if the manager destroyed a existing shortcut key item.</returns>
 				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
 				/// <param name="key">The non-control key.</param>
-				bool							DestroyShortcut(bool ctrl, bool shift, bool alt, vint key);
+				bool							DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key);
 				/// <summary>Get a shortcut key item using a key combination. If the item for the key combination does not exist, this function returns null.</summary>
 				/// <returns>The shortcut key item.</returns>
 				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
 				/// <param name="key">The non-control key.</param>
-				IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, vint key);
+				IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key);
 			};
 		}
 	}
@@ -8878,6 +8844,21 @@ namespace vl
 				Descending,
 			};
 
+			/// <summary>Represents the order of tab pages.</summary>
+			enum class TabPageOrder
+			{
+				/// <summary>Unknown.</summary>
+				Unknown,
+				/// <summary>Left to right.</summary>
+				LeftToRight,
+				/// <summary>Right to left.</summary>
+				RightToLeft,
+				/// <summary>Top to bottom.</summary>
+				TopToBottom,
+				/// <summary>Bottom to top.</summary>
+				BottomToTop,
+			};
+
 			/// <summary>A command executor for the combo box to change the control state.</summary>
 			class ITextBoxCommandExecutor : public virtual IDescriptable, public Description<ITextBoxCommandExecutor>
 			{
@@ -8885,14 +8866,6 @@ namespace vl
 				/// <summary>Override the text content in the control.</summary>
 				/// <param name="value">The new text content.</param>
 				virtual void						UnsafeSetText(const WString& value) = 0;
-			};
-
-			/// <summary>A command executor for the combo box to change the control state.</summary>
-			class IComboBoxCommandExecutor : public virtual IDescriptable, public Description<IComboBoxCommandExecutor>
-			{
-			public:
-				/// <summary>Notify that an item is selected, the combo box should close the popup and show the text of the selected item.</summary>
-				virtual void						SelectItem() = 0;
 			};
 
 			/// <summary>A command executor for the style controller to change the control state.</summary>
@@ -8925,7 +8898,8 @@ namespace vl
 			public:
 				/// <summary>Select a tab page.</summary>
 				/// <param name="index">The specified position for the tab page.</param>
-				virtual void						ShowTab(vint index) = 0;
+				/// <param name="setFocus">Set to true to set focus to the tab control.</param>
+				virtual void						ShowTab(vint index, bool setFocus) = 0;
 			};
 
 			/// <summary>A command executor for the style controller to change the control state.</summary>
@@ -9318,10 +9292,11 @@ Control Template
 				AlwaysFalse,
 				Customizable,
 			};
-				
+
 #define GuiControlTemplate_PROPERTIES(F)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition, this)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, FocusableComposition, nullptr)\
+				F(GuiControlTemplate, bool, Focused, false)\
 
 #define GuiLabelTemplate_PROPERTIES(F)\
 				F(GuiLabelTemplate, Color, DefaultTextColor, {})\
@@ -9348,11 +9323,12 @@ Control Template
 				F(GuiWindowTemplate, bool, SizeBox, true)\
 				F(GuiWindowTemplate, bool, IconVisible, true)\
 				F(GuiWindowTemplate, bool, TitleBar, true)\
-				F(GuiWindowTemplate, bool, CustomizedBorder, false)\
 				F(GuiWindowTemplate, bool, Maximized, false)\
+				F(GuiWindowTemplate, bool, Activated, false)\
 				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate, {})\
 				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate, {})\
 				F(GuiWindowTemplate, bool, CustomFrameEnabled, true)\
+				F(GuiWindowTemplate, Margin, CustomFramePadding, {})\
 
 #define GuiMenuTemplate_PROPERTIES(F)
 
@@ -9375,7 +9351,6 @@ Control Template
 				F(GuiListViewColumnHeaderTemplate, controls::ColumnSortingState, SortingState, controls::ColumnSortingState::NotSorted)\
 
 #define GuiComboBoxTemplate_PROPERTIES(F)\
-				F(GuiComboBoxTemplate, controls::IComboBoxCommandExecutor*, Commands, nullptr)\
 				F(GuiComboBoxTemplate, bool, TextVisible, true)\
 
 #define GuiScrollTemplate_PROPERTIES(F)\
@@ -9419,6 +9394,7 @@ Control Template
 				F(GuiTabTemplate, controls::ITabCommandExecutor*, Commands, nullptr)\
 				F(GuiTabTemplate, Ptr<reflection::description::IValueObservableList>, TabPages, {})\
 				F(GuiTabTemplate, controls::GuiTabPage*, SelectedTabPage, nullptr)\
+				F(GuiTabTemplate, controls::TabPageOrder, TabOrder, controls::TabPageOrder::Unknown)\
 
 #define GuiDatePickerTemplate_PROPERTIES(F)\
 				F(GuiDatePickerTemplate, controls::IDatePickerCommandExecutor*, Commands, nullptr)\
@@ -9586,6 +9562,7 @@ Basic Construction
 				using ControlList = collections::List<GuiControl*>;
 				using ControlServiceMap = collections::Dictionary<WString, Ptr<IDescriptable>>;
 				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
+				using IGuiGraphicsEventHandler = compositions::IGuiGraphicsEventHandler;
 
 			private:
 				theme::ThemeName						controlThemeName;
@@ -9597,6 +9574,10 @@ Basic Construction
 				compositions::GuiBoundsComposition*		containerComposition = nullptr;
 				compositions::GuiGraphicsComposition*	focusableComposition = nullptr;
 				compositions::GuiGraphicsEventReceiver*	eventReceiver = nullptr;
+
+				bool									isFocused = false;
+				Ptr<IGuiGraphicsEventHandler>			gotFocusHandler;
+				Ptr<IGuiGraphicsEventHandler>			lostFocusHandler;
 
 				bool									isEnabled = true;
 				bool									isVisuallyEnabled = true;
@@ -9629,6 +9610,8 @@ Basic Construction
 				virtual void							OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget);
 				virtual void							OnBeforeReleaseGraphicsHost();
 				virtual void							UpdateVisuallyEnabled();
+				void									OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
 
 				bool									IsAltEnabled()override;
@@ -9657,6 +9640,8 @@ Basic Construction
 				compositions::GuiNotifyEvent			VisibleChanged;
 				/// <summary>Enabled event. This event will be raised when the enabling state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			EnabledChanged;
+				/// <summary>Focused event. This event will be raised when the focusing state of the control is changed.</summary>
+				compositions::GuiNotifyEvent			FocusedChanged;
 				/// <summary>
 				/// Enabled event. This event will be raised when the visually enabling state of the control is changed. A visually enabling is combined by the enabling state and the parent's visually enabling state.
 				/// A control is rendered as disabled, not only when the control itself is disabled, but also when the parent control is rendered as disabled.
@@ -9729,6 +9714,9 @@ Basic Construction
 				/// <summary>Test if this control is rendered as enabled.</summary>
 				/// <returns>Returns true if this control is rendered as enabled.</returns>
 				virtual bool							GetVisuallyEnabled();
+				/// <summary>Test if this control is focused.</summary>
+				/// <returns>Returns true if this control is focused.</returns>
+				virtual bool							GetFocused();
 				/// <summary>Test if this control is enabled.</summary>
 				/// <returns>Returns true if this control is enabled.</returns>
 				virtual bool							GetEnabled();
@@ -9926,6 +9914,8 @@ Buttons
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ButtonTemplate, GuiControl)
 			protected:
 				bool									clickOnMouseUp = true;
+				bool									autoFocus = true;
+				bool									keyPressing = false;
 				bool									mousePressing = false;
 				bool									mouseHoving = false;
 				ButtonState								controlState = ButtonState::Normal;
@@ -9933,10 +9923,14 @@ Buttons
 				void									OnParentLineChanged()override;
 				void									OnActiveAlt()override;
 				void									UpdateControlState();
+				void									CheckAndClick(compositions::GuiEventArgs& arguments);
 				void									OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+				void									OnKeyUp(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -9952,6 +9946,13 @@ Buttons
 				/// <summary>Set is the <see cref="Clicked"/> event raised when left mouse button up or not.</summary>
 				/// <param name="value">Set to true to make this event raised when left mouse button up</param>
 				void									SetClickOnMouseUp(bool value);
+
+				/// <summary>Test if the button gets focus when it is clicked.</summary>
+				/// <returns>Returns true if the button gets focus when it is clicked</returns>
+				bool									GetAutoFocus();
+				/// <summary>Set if the button gets focus when it is clicked.</summary>
+				/// <param name="value">Set to true to make this button get focus when it is clicked.</param>
+				void									SetAutoFocus(bool value);
 			};
 
 			/// <summary>A <see cref="GuiButton"/> with a selection state.</summary>
@@ -10478,6 +10479,11 @@ Scrolls
 				vint									position = 0;
 				vint									smallMove = 1;
 				vint									bigMove = 10;
+				bool									autoFocus = true;
+
+				void									OnActiveAlt()override;
+				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+				void									OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -10532,6 +10538,13 @@ Scrolls
 				/// <summary>Get the maximum possible position.</summary>
 				/// <returns>The maximum possible position.</returns>
 				vint									GetMaxPosition();
+
+				/// <summary>Test if the scroll gets focus when it is clicked.</summary>
+				/// <returns>Returns true if the scroll gets focus when it is clicked</returns>
+				bool									GetAutoFocus();
+				/// <summary>Set if the scroll gets focus when it is clicked.</summary>
+				/// <param name="value">Set to true to make this scroll get focus when it is clicked.</param>
+				void									SetAutoFocus(bool value);
 			};
 		}
 	}
@@ -10608,16 +10621,19 @@ Tab Control
 				{
 				protected:
 					GuiTab*										tab;
+
 				public:
 					CommandExecutor(GuiTab* _tab);
 					~CommandExecutor();
 
-					void										ShowTab(vint index)override;
+					void										ShowTab(vint index, bool setFocus)override;
 				};
 
 				Ptr<CommandExecutor>							commandExecutor;
 				GuiTabPageList									tabPages;
 				GuiTabPage*										selectedPage = nullptr;
+
+				void											OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -11001,6 +11017,9 @@ Window
 				void									OnActivatedAltHost(IGuiAltActionHost* previousHost)override;
 				void									OnDeactivatedAltHost()override;
 				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
+				
+				void									OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -11126,6 +11145,7 @@ Window
 				void									MouseClickedOnOtherWindow(GuiWindow* window)override;
 				void									PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
 				static bool								IsClippedByScreen(Size size, Point location, INativeScreen* screen);
 				static Point							CalculatePopupPosition(Size size, Point location, INativeScreen* screen);
@@ -11870,7 +11890,7 @@ Selectable List Control
 				/// <param name="code">The key code that is pressing.</param>
 				/// <param name="ctrl">Set to true if the control key is pressing.</param>
 				/// <param name="shift">Set to true if the shift key is pressing.</param>
-				bool											SelectItemsByKey(vint code, bool ctrl, bool shift);
+				bool											SelectItemsByKey(VKEY code, bool ctrl, bool shift);
 				/// <summary>Unselect all items.</summary>
 				void											ClearSelection();
 			};
@@ -12846,9 +12866,8 @@ MenuButton
 				bool									cascadeAction;
 
 				GuiButton*								GetSubMenuHost();
-				void									OpenSubMenuInternal();
+				bool									OpenSubMenuInternal();
 				void									OnParentLineChanged()override;
-				bool									IsAltAvailable()override;
 				compositions::IGuiAltActionHost*		GetActivatingAltHost()override;
 
 				void									OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -12869,6 +12888,8 @@ MenuButton
 
 				/// <summary>Before sub menu opening event.</summary>
 				compositions::GuiNotifyEvent			BeforeSubMenuOpening;
+				/// <summary>After sub menu opening event.</summary>
+				compositions::GuiNotifyEvent			AfterSubMenuOpening;
 				/// <summary>Sub menu opening changed event.</summary>
 				compositions::GuiNotifyEvent			SubMenuOpeningChanged;
 				/// <summary>Large image changed event.</summary>
@@ -13991,33 +14012,14 @@ ComboBox Base
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ComboBoxTemplate, GuiMenuButton)
 			protected:
-
-				class CommandExecutor : public Object, public virtual IComboBoxCommandExecutor
-				{
-				protected:
-					GuiComboBoxBase*						combo;
-
-				public:
-					CommandExecutor(GuiComboBoxBase* _combo);
-					~CommandExecutor();
-
-					void									SelectItem()override;
-				};
-
-				Ptr<CommandExecutor>						commandExecutor;
 				
-				bool										IsAltAvailable()override;
 				IGuiMenuService::Direction					GetSubMenuDirection()override;
-				virtual void								SelectItem();
 				void										OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiComboBoxBase(theme::ThemeName themeName);
 				~GuiComboBoxBase();
-
-				/// <summary>Item selected event.</summary>
-				compositions::GuiNotifyEvent				ItemSelected;
 			};
 
 /***********************************************************************
@@ -14035,14 +14037,13 @@ ComboBox with GuiListControl
 
 			protected:
 				GuiSelectableListControl*					containedListControl = nullptr;
+				vint										selectedIndex = -1;
 				ItemStyleProperty							itemStyleProperty;
 				templates::GuiTemplate*						itemStyleController = nullptr;
 				Ptr<compositions::IGuiGraphicsEventHandler>	boundsChangedHandler;
 
 				void										BeforeControlTemplateUninstalled()override;
 				void										AfterControlTemplateInstalled(bool initialize)override;
-				bool										IsAltAvailable()override;
-				void										OnActiveAlt()override;
 				void										RemoveStyleController();
 				void										InstallStyleController(vint itemIndex);
 				virtual void								DisplaySelectedContent(vint itemIndex);
@@ -14051,9 +14052,11 @@ ComboBox with GuiListControl
 				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments);
+				void										OnListControlKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
 			private:
 				// ===================== GuiListControl::IItemProviderCallback =====================
@@ -14919,11 +14922,11 @@ GuiDocumentCommonInterface
 				void										InvokeModifiedChanged();
 				void										UpdateCaretPoint();
 				void										Move(TextPos caret, bool shift, bool frontSide);
-				bool										ProcessKey(vint code, bool shift, bool ctrl);
+				bool										ProcessKey(VKEY code, bool shift, bool ctrl);
 				void										InstallDocumentViewer(GuiControl* _sender, compositions::GuiGraphicsComposition* _container, compositions::GuiGraphicsComposition* eventComposition, compositions::GuiGraphicsComposition* focusableComposition);
 				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package);
 				void										ActivateActiveHyperlink(bool activate);
-				void										AddShortcutCommand(vint key, const Func<void()>& eventHandler);
+				void										AddShortcutCommand(VKEY key, const Func<void()>& eventHandler);
 				void										EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor);
 				void										EditStyleInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos)>& editor);
 				
@@ -15304,7 +15307,7 @@ Common Interface
 				void												UpdateCaretPoint();
 				void												Move(TextPos pos, bool shift);
 				void												Modify(TextPos start, TextPos end, const WString& input, bool asKeyInput);
-				bool												ProcessKey(vint code, bool shift, bool ctrl);
+				bool												ProcessKey(VKEY code, bool shift, bool ctrl);
 					
 				void												OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void												OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -15323,7 +15326,7 @@ Common Interface
 				void												SetCallback(ICallback* value);
 				bool												AttachTextEditCallback(Ptr<ICommonTextEditCallback> value);
 				bool												DetachTextEditCallback(Ptr<ICommonTextEditCallback> value);
-				void												AddShortcutCommand(vint key, const Func<void()>& eventHandler);
+				void												AddShortcutCommand(VKEY key, const Func<void()>& eventHandler);
 				elements::GuiColorizedTextElement*					GetTextElement();
 				void												UnsafeSetText(const WString& value);
 
@@ -17175,7 +17178,7 @@ namespace vl
 					bool									ctrl;
 					bool									shift;
 					bool									alt;
-					vint									key;
+					VKEY									key;
 				};
 			protected:
 				Ptr<GuiImageData>							image;
@@ -17413,6 +17416,7 @@ Toolstrip Component
 				Ptr<compositions::IGuiGraphicsEventHandler>		descriptionChangedHandler;
 
 				void											SetCallback(IToolstripUpdateLayout* _callback)override;
+				void											OnActiveAlt()override;
 				void											UpdateCommandContent();
 				void											OnLayoutAwaredPropertyChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

@@ -144,7 +144,7 @@
           <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
             <SolidBackground ref.Style="toolstripSplitBackground"/>
           </Bounds>
-          <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening">
+          <CheckBox ref.Name="buttonArrow" AutoFocus="false" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           </CheckBox>
         </Bounds>
@@ -158,7 +158,7 @@
         <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <SolidBackground ref.Style="menuBarItemBackground"/>
         <Bounds AlignmentToParent="left:10 top:3 right:10 bottom:3">
-          <SolidLabel ref.Style="menuItemText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          <SolidLabel ref.Style="controlText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Bounds>
       </ToolstripButtonTemplate>
     </Instance>
@@ -195,12 +195,12 @@
           </Cell>
           <Cell Site="row:1 column:3 rowSpan:3">
             <SharedSizeItem Group="MenuItem-Text" SharedWidth="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-              <SolidLabel ref.Style="menuItemText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+              <SolidLabel ref.Style="controlText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             </SharedSizeItem>
           </Cell>
           <Cell Site="row:1 column:6 rowSpan:3">
             <SharedSizeItem Group="MenuItem-Shortcut" SharedWidth="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-              <SolidLabel ref.Style="menuItemText" Text-bind="self.ShortcutText" Font-bind="self.Font" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+              <SolidLabel ref.Style="controlText" Text-bind="self.ShortcutText" Font-bind="self.Font" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             </SharedSizeItem>
           </Cell>
           <Cell Site="row:2 column:8" Visible-bind="self.SubMenuExisting">

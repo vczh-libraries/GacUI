@@ -8,15 +8,6 @@
     </Instance>
   </Instance>
 
-  <Instance name="CheckItemBackgroundTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="darkskin::CheckItemBackgroundTemplate" ref.Styles="res://DarkSkin/Style">
-      <SelectableButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground ref.Style="itemBackground"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:2 right:0 bottom:1"/>
-      </SelectableButtonTemplate>
-    </Instance>
-  </Instance>
-
   <Instance name="TextListTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TextListTemplate" ref.Styles="res://DarkSkin/Style">
       <TextListTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
@@ -31,7 +22,7 @@
 
         <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
-          <SolidBorder Color="#3F3F46"/>
+          <SolidBorder ref.Style="listBorder"/>
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
             <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
@@ -49,10 +40,10 @@
         <att.DatePickerTemplate>darkskin::DatePickerTemplate</att.DatePickerTemplate>
         <SolidBackground ref.Style="comboBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder ref.Style="comboBorder"/>
+          <SolidBorder ref.Style="controlBorder"/>
           <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:11 bottom:1">
             <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2" Visible-bind="self.TextVisible">
-              <SolidLabel ref.Style="comboText" Text-bind="self.Text" Font-bind="self.Font" Ellipse="true" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+              <SolidLabel ref.Style="controlText" Text-bind="self.Text" Font-bind="self.Font" Ellipse="true" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             </Bounds>
           </Bounds>
 
@@ -133,7 +124,7 @@
           </Bounds>
         </Bounds>
         <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
-          <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening" Visible-bind="self.SubMenuExisting">
+          <CheckBox ref.Name="buttonArrow" AutoFocus="false" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening" Visible-bind="self.SubMenuExisting">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           </CheckBox>
         </Bounds>
@@ -156,7 +147,7 @@
 
         <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
-          <SolidBorder Color="#3F3F46"/>
+          <SolidBorder ref.Style="listBorder"/>
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
             <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
@@ -220,7 +211,7 @@
 
         <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
-          <SolidBorder Color="#3F3F46"/>
+          <SolidBorder ref.Style="listBorder"/>
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
             <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>

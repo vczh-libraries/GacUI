@@ -733,6 +733,7 @@ GuiControl
 				controlTemplateObject->SetContext(context);
 				controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
 				controlTemplateObject->SetFocusableComposition(focusableComposition);
+				controlTemplateObject->SetFocused(isFocused);
 			}
 
 			void GuiControl::CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)
@@ -862,14 +863,60 @@ GuiControl
 				}
 			}
 
+			void GuiControl::OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (!isFocused)
+				{
+					isFocused = true;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetFocused(true);
+					}
+					FocusedChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			void GuiControl::OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (isFocused)
+				{
+					isFocused = false;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetFocused(false);
+					}
+					FocusedChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
 			void GuiControl::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
 			{
 				if (focusableComposition != value)
 				{
+					if (focusableComposition)
+					{
+						focusableComposition->GetEventReceiver()->gotFocus.Detach(gotFocusHandler);
+						focusableComposition->GetEventReceiver()->lostFocus.Detach(lostFocusHandler);
+
+						gotFocusHandler = nullptr;
+						lostFocusHandler = nullptr;
+					}
+
 					focusableComposition = value;
 					if (controlTemplateObject)
 					{
 						controlTemplateObject->SetFocusableComposition(focusableComposition);
+					}
+
+					if (focusableComposition)
+					{
+						gotFocusHandler = focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiControl::OnGotFocus);
+						lostFocusHandler = focusableComposition->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiControl::OnLostFocus);
+					}
+					else
+					{
+						GuiEventArgs arguments(boundsComposition);
+						OnLostFocus(boundsComposition, arguments);
 					}
 				}
 			}
@@ -942,6 +989,7 @@ GuiControl
 					ControlSignalTrigerred.SetAssociatedComposition(boundsComposition);
 					VisibleChanged.SetAssociatedComposition(boundsComposition);
 					EnabledChanged.SetAssociatedComposition(boundsComposition);
+					FocusedChanged.SetAssociatedComposition(boundsComposition);
 					VisuallyEnabledChanged.SetAssociatedComposition(boundsComposition);
 					AltChanged.SetAssociatedComposition(boundsComposition);
 					TextChanged.SetAssociatedComposition(boundsComposition);
@@ -1107,6 +1155,11 @@ GuiControl
 			bool GuiControl::GetVisuallyEnabled()
 			{
 				return isVisuallyEnabled;
+			}
+
+			bool GuiControl::GetFocused()
+			{
+				return isFocused;
 			}
 
 			bool GuiControl::GetEnabled()
@@ -1382,13 +1435,21 @@ GuiButton
 
 			void GuiButton::OnActiveAlt()
 			{
+				if (autoFocus)
+				{
+					GuiControl::OnActiveAlt();
+				}
 				Clicked.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiButton::UpdateControlState()
 			{
 				auto newControlState = ButtonState::Normal;
-				if (mousePressing)
+				if (keyPressing)
+				{
+					newControlState = ButtonState::Pressed;
+				}
+				else if (mousePressing)
 				{
 					if (mouseHoving)
 					{
@@ -1417,16 +1478,33 @@ GuiButton
 				}
 			}
 
+			void GuiButton::CheckAndClick(compositions::GuiEventArgs& arguments)
+			{
+				auto eventSource = arguments.eventSource->GetAssociatedControl();
+				while (eventSource && eventSource != this)
+				{
+					if (eventSource->GetFocusableComposition())
+					{
+						return;
+					}
+					eventSource = eventSource->GetParent();
+				}
+				Clicked.Execute(GetNotifyEventArguments());
+			}
+
 			void GuiButton::OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
 				if(arguments.eventSource==boundsComposition)
 				{
 					mousePressing=true;
-					boundsComposition->GetRelatedGraphicsHost()->SetFocus(boundsComposition);
-					UpdateControlState();
-					if(!clickOnMouseUp && arguments.eventSource->GetAssociatedControl()==this)
+					if (autoFocus)
 					{
-						Clicked.Execute(GetNotifyEventArguments());
+						boundsComposition->GetRelatedGraphicsHost()->SetFocus(boundsComposition);
+					}
+					UpdateControlState();
+					if(!clickOnMouseUp)
+					{
+						CheckAndClick(arguments);
 					}
 				}
 			}
@@ -1442,16 +1520,7 @@ GuiButton
 				{
 					if(mouseHoving && clickOnMouseUp)
 					{
-						auto eventSource = arguments.eventSource->GetAssociatedControl();
-						while (eventSource && eventSource != this)
-						{
-							if (eventSource->GetFocusableComposition())
-							{
-								return;
-							}
-							eventSource = eventSource->GetParent();
-						}
-						Clicked.Execute(GetNotifyEventArguments());
+						CheckAndClick(arguments);
 					}
 				}
 			}
@@ -1473,6 +1542,56 @@ GuiButton
 					UpdateControlState();
 				}
 			}
+			
+			void GuiButton::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			{
+				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				{
+					switch (arguments.code)
+					{
+					case VKEY::_RETURN:
+						CheckAndClick(arguments);
+						arguments.handled = true;
+						break;
+					case VKEY::_SPACE:
+						if (!arguments.autoRepeatKeyDown)
+						{
+							keyPressing = true;
+							UpdateControlState();
+						}
+						arguments.handled = true;
+						break;
+					}
+				}
+			}
+
+			void GuiButton::OnKeyUp(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			{
+				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				{
+					switch (arguments.code)
+					{
+					case VKEY::_SPACE:
+						if (keyPressing)
+						{
+							keyPressing = false;
+							UpdateControlState();
+							CheckAndClick(arguments);
+						}
+						arguments.handled = true;
+						break;
+					}
+				}
+			}
+
+			void GuiButton::OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (keyPressing)
+				{
+					keyPressing = false;
+					UpdateControlState();
+				}
+			}
 
 			GuiButton::GuiButton(theme::ThemeName themeName)
 				:GuiControl(themeName)
@@ -1484,6 +1603,9 @@ GuiButton
 				boundsComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiButton::OnLeftButtonUp);
 				boundsComposition->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiButton::OnMouseEnter);
 				boundsComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiButton::OnMouseLeave);
+				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiButton::OnKeyDown);
+				boundsComposition->GetEventReceiver()->keyUp.AttachMethod(this, &GuiButton::OnKeyUp);
+				boundsComposition->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiButton::OnLostFocus);
 			}
 
 			GuiButton::~GuiButton()
@@ -1498,6 +1620,16 @@ GuiButton
 			void GuiButton::SetClickOnMouseUp(bool value)
 			{
 				clickOnMouseUp=value;
+			}
+
+			bool GuiButton::GetAutoFocus()
+			{
+				return autoFocus;
+			}
+
+			void GuiButton::SetAutoFocus(bool value)
+			{
+				autoFocus = value;
 			}
 
 /***********************************************************************
@@ -1734,6 +1866,28 @@ GuiTabPageList
 			}
 
 /***********************************************************************
+GuiTab::CommandExecutor
+***********************************************************************/
+
+			GuiTab::CommandExecutor::CommandExecutor(GuiTab* _tab)
+				:tab(_tab)
+			{
+			}
+
+			GuiTab::CommandExecutor::~CommandExecutor()
+			{
+			}
+
+			void GuiTab::CommandExecutor::ShowTab(vint index, bool setFocus)
+			{
+				tab->SetSelectedPage(tab->GetPages().Get(index));
+				if (setFocus)
+				{
+					tab->SetFocus();
+				}
+			}
+
+/***********************************************************************
 GuiTab
 ***********************************************************************/
 
@@ -1755,18 +1909,50 @@ GuiTab
 				ct->SetSelectedTabPage(selectedPage);
 			}
 
-			GuiTab::CommandExecutor::CommandExecutor(GuiTab* _tab)
-				:tab(_tab)
+			void GuiTab::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-			}
+				if (arguments.eventSource == focusableComposition)
+				{
+					if (auto ct = GetControlTemplateObject(false))
+					{
+						vint index = tabPages.IndexOf(selectedPage);
+						if (index != -1)
+						{
+							auto hint = ct->GetTabOrder();
+							vint tabOffset = 0;
+							switch (hint)
+							{
+							case TabPageOrder::LeftToRight:
+								if (arguments.code == VKEY::_LEFT) tabOffset = -1;
+								else if (arguments.code == VKEY::_RIGHT) tabOffset = 1;
+								break;
+							case TabPageOrder::RightToLeft:
+								if (arguments.code == VKEY::_LEFT) tabOffset = 1;
+								else if (arguments.code == VKEY::_RIGHT) tabOffset = -1;
+								break;
+							case TabPageOrder::TopToBottom:
+								if (arguments.code == VKEY::_UP) tabOffset = -1;
+								else if (arguments.code == VKEY::_DOWN) tabOffset = 1;
+								break;
+							case TabPageOrder::BottomToTop:
+								if (arguments.code == VKEY::_UP) tabOffset = 1;
+								else if (arguments.code == VKEY::_DOWN) tabOffset = -1;
+								break;
+							default:;
+							}
 
-			GuiTab::CommandExecutor::~CommandExecutor()
-			{
-			}
+							if (tabOffset != 0)
+							{
+								arguments.handled = true;
+								index += tabOffset;
+								if (index < 0) index = 0;
+								else if (index >= tabPages.Count()) index = tabPages.Count() - 1;
 
-			void GuiTab::CommandExecutor::ShowTab(vint index)
-			{
-				tab->SetSelectedPage(tab->GetPages().Get(index));
+								SetSelectedPage(tabPages[index]);
+							}
+						}
+					}
+				}
 			}
 
 			GuiTab::GuiTab(theme::ThemeName themeName)
@@ -1774,6 +1960,9 @@ GuiTab
 				, tabPages(this)
 			{
 				commandExecutor = new CommandExecutor(this);
+				SetFocusableComposition(boundsComposition);
+
+				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiTab::OnKeyDown);
 			}
 
 			GuiTab::~GuiTab()
@@ -2360,7 +2549,6 @@ GuiDateComboBox
 			{
 				selectedDate=datePicker->GetDate();
 				GetSubMenu()->Hide();
-				SelectItem();
 				NotifyUpdateSelectedDate();
 			}
 
@@ -3028,6 +3216,58 @@ GuiScroll::CommandExecutor
 GuiScroll
 ***********************************************************************/
 
+			void GuiScroll::OnActiveAlt()
+			{
+				if (autoFocus)
+				{
+					GuiControl::OnActiveAlt();
+				}
+			}
+
+			void GuiScroll::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			{
+				if (arguments.eventSource == focusableComposition)
+				{
+					switch (arguments.code)
+					{
+					case VKEY::_HOME:
+						SetPosition(GetMinPosition());
+						arguments.handled = true;
+						break;
+					case VKEY::_END:
+						SetPosition(GetMaxPosition());
+						arguments.handled = true;
+						break;
+					case VKEY::_PRIOR:
+						commandExecutor->BigDecrease();
+						arguments.handled = true;
+						break;
+					case VKEY::_NEXT:
+						commandExecutor->BigIncrease();
+						arguments.handled = true;
+						break;
+					case VKEY::_LEFT:
+					case VKEY::_UP:
+						commandExecutor->SmallDecrease();
+						arguments.handled = true;
+						break;
+					case VKEY::_RIGHT:
+					case VKEY::_DOWN:
+						commandExecutor->SmallIncrease();
+						arguments.handled = true;
+						break;
+					}
+				}
+			}
+
+			void GuiScroll::OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+			{
+				if (autoFocus)
+				{
+					SetFocus();
+				}
+			}
+
 			void GuiScroll::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = GetControlTemplateObject(false);
@@ -3048,6 +3288,8 @@ GuiScroll
 			GuiScroll::GuiScroll(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
+				SetFocusableComposition(boundsComposition);
+
 				TotalSizeChanged.SetAssociatedComposition(boundsComposition);
 				PageSizeChanged.SetAssociatedComposition(boundsComposition);
 				PositionChanged.SetAssociatedComposition(boundsComposition);
@@ -3055,6 +3297,9 @@ GuiScroll
 				BigMoveChanged.SetAssociatedComposition(boundsComposition);
 
 				commandExecutor = new CommandExecutor(this);
+				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiScroll::OnKeyDown);
+				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiScroll::OnMouseDown);
+				boundsComposition->GetEventReceiver()->rightButtonDown.AttachMethod(this, &GuiScroll::OnMouseDown);
 			}
 
 			GuiScroll::~GuiScroll()
@@ -3160,6 +3405,16 @@ GuiScroll
 			vint GuiScroll::GetMaxPosition()
 			{
 				return totalSize-pageSize;
+			}
+
+			bool GuiScroll::GetAutoFocus()
+			{
+				return autoFocus;
+			}
+
+			void GuiScroll::SetAutoFocus(bool value)
+			{
+				autoFocus = value;
 			}
 		}
 	}
@@ -3788,6 +4043,8 @@ GuiWindow
 				ct->SetIconVisible(isIconVisible);
 				ct->SetTitleBar(hasTitleBar);
 				ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+				ct->SetActivated(GetActivated());
+				ct->SetCustomFramePadding(Margin(8, 8, 8, 8));
 				SyncNativeWindowProperties();
 			}
 
@@ -3860,6 +4117,22 @@ GuiWindow
 				IGuiAltActionHost::CollectAltActionsFromControl(this, actions);
 			}
 
+			void GuiWindow::OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (auto ct = GetControlTemplateObject(false))
+				{
+					ct->SetActivated(true);
+				}
+			}
+
+			void GuiWindow::OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (auto ct = GetControlTemplateObject(false))
+				{
+					ct->SetActivated(false);
+				}
+			}
+
 			GuiWindow::GuiWindow(theme::ThemeName themeName)
 				:GuiControlHost(themeName)
 				,previousAltHost(0)
@@ -3868,6 +4141,9 @@ GuiWindow
 				SetNativeWindow(window);
 				GetApplication()->RegisterWindow(this);
 				ClipboardUpdated.SetAssociatedComposition(boundsComposition);
+
+				WindowActivated.AttachMethod(this, &GuiWindow::OnWindowActivated);
+				WindowDeactivated.AttachMethod(this, &GuiWindow::OnWindowDeactivated);
 			}
 
 			GuiWindow::~GuiWindow()
@@ -3933,12 +4209,17 @@ GuiWindow
 					{ \
 						CONDITION_BREAK \
 						window->Set ## NAME(visible); \
+						ct->SetCustomFramePadding(window->GetCustomFramePadding()); \
+					} \
+					else \
+					{ \
+						ct->SetCustomFramePadding({}); \
 					} \
 				} \
 			} \
 
 #define IMPL_WINDOW_PROPERTY_EMPTY_CONDITION
-#define IMPL_WINDOW_PROPERTY_BORDER_CONDITION if (ct->GetCustomFrameEnabled()) return;
+#define IMPL_WINDOW_PROPERTY_BORDER_CONDITION if (!ct->GetCustomFrameEnabled())
 
 			IMPL_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
 			IMPL_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
@@ -4025,6 +4306,14 @@ GuiPopup
 				if(auto window = GetNativeWindow())
 				{
 					window->SetParent(nullptr);
+				}
+			}
+
+			void GuiPopup::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			{
+				if (!arguments.handled)
+				{
+					Hide();
 				}
 			}
 
@@ -4154,6 +4443,7 @@ GuiPopup
 
 				WindowOpened.AttachMethod(this, &GuiPopup::PopupOpened);
 				WindowClosed.AttachMethod(this, &GuiPopup::PopupClosed);
+				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiPopup::OnKeyDown);
 			}
 
 			GuiPopup::~GuiPopup()
@@ -6219,53 +6509,20 @@ namespace vl
 		{
 
 /***********************************************************************
-GuiComboBoxBase::CommandExecutor
-***********************************************************************/
-
-			GuiComboBoxBase::CommandExecutor::CommandExecutor(GuiComboBoxBase* _combo)
-				:combo(_combo)
-			{
-			}
-
-			GuiComboBoxBase::CommandExecutor::~CommandExecutor()
-			{
-			}
-
-			void GuiComboBoxBase::CommandExecutor::SelectItem()
-			{
-				combo->SelectItem();
-			}
-
-/***********************************************************************
 GuiComboBoxBase
 ***********************************************************************/
 
 			void GuiComboBoxBase::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
-				if (!ct) return;
-
-				ct->SetCommands(nullptr);
 			}
 
 			void GuiComboBoxBase::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject(true)->SetCommands(commandExecutor.Obj());
-			}
-
-			bool GuiComboBoxBase::IsAltAvailable()
-			{
-				return false;
 			}
 
 			IGuiMenuService::Direction GuiComboBoxBase::GetSubMenuDirection()
 			{
 				return IGuiMenuService::Horizontal;
-			}
-
-			void GuiComboBoxBase::SelectItem()
-			{
-				ItemSelected.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiComboBoxBase::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -6278,8 +6535,6 @@ GuiComboBoxBase
 			GuiComboBoxBase::GuiComboBoxBase(theme::ThemeName themeName)
 				:GuiMenuButton(themeName)
 			{
-				commandExecutor = new CommandExecutor(this);
-
 				CreateSubMenu();
 				SetCascadeAction(false);
 
@@ -6303,18 +6558,6 @@ GuiComboBoxListControl
 			{
 				GuiComboBoxBase::AfterControlTemplateInstalled(initialize);
 				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
-			}
-
-			bool GuiComboBoxListControl::IsAltAvailable()
-			{
-				return true;
-			}
-
-			void GuiComboBoxListControl::OnActiveAlt()
-			{
-				GuiMenuButton::OnActiveAlt();
-				GetSubMenu()->GetNativeWindow()->SetFocus();
-				containedListControl->SetFocus();
 			}
 
 			void GuiComboBoxListControl::RemoveStyleController()
@@ -6352,7 +6595,7 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::DisplaySelectedContent(vint itemIndex)
 			{
-				if(itemIndex==-1)
+				if (itemIndex == -1)
 				{
 					SetText(L"");
 				}
@@ -6360,11 +6603,15 @@ GuiComboBoxListControl
 				{
 					WString text = containedListControl->GetItemProvider()->GetTextValue(itemIndex);
 					SetText(text);
-					GetSubMenu()->Hide();
 				}
 
 				RemoveStyleController();
 				InstallStyleController(itemIndex);
+				if (selectedIndex != itemIndex)
+				{
+					selectedIndex = itemIndex;
+					SelectedIndexChanged.Execute(GetNotifyEventArguments());
+				}
 			}
 
 			void GuiComboBoxListControl::AdoptSubMenuSize()
@@ -6416,6 +6663,13 @@ GuiComboBoxListControl
 				}
 			}
 
+			void GuiComboBoxListControl::OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				containedListControl->SelectItemsByClick(selectedIndex, false, false, true);
+				GetSubMenu()->GetNativeWindow()->SetFocus();
+				containedListControl->SetFocus();
+			}
+
 			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				AdoptSubMenuSize();
@@ -6433,11 +6687,27 @@ GuiComboBoxListControl
 				});
 			}
 
-			void GuiComboBoxListControl::OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiComboBoxListControl::OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments)
 			{
-				DisplaySelectedContent(GetSelectedIndex());
-				SelectItem();
-				SelectedIndexChanged.Execute(GetNotifyEventArguments());
+				DisplaySelectedContent(containedListControl->GetSelectedItemIndex());
+				GetSubMenu()->Hide();
+			}
+
+			void GuiComboBoxListControl::OnListControlKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			{
+				if (!arguments.autoRepeatKeyDown)
+				{
+					switch (arguments.code)
+					{
+					case VKEY::_RETURN:
+						DisplaySelectedContent(containedListControl->GetSelectedItemIndex());
+						arguments.handled = true;
+					case VKEY::_ESCAPE:
+						GetSubMenu()->Hide();
+						arguments.handled = true;
+						break;
+					}
+				}
 			}
 
 			void GuiComboBoxListControl::OnAttached(GuiListControl::IItemProvider* provider)
@@ -6446,10 +6716,16 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnItemModified(vint start, vint count, vint newCount)
 			{
-				vint index = GetSelectedIndex();
-				if (start <= index && index < start + count)
+				if (count == newCount)
 				{
-					DisplaySelectedContent(index);
+					if (start <= selectedIndex && selectedIndex < start + count)
+					{
+						DisplaySelectedContent(selectedIndex);
+					}
+				}
+				else
+				{
+					DisplaySelectedContent(-1);
 				}
 			}
 
@@ -6461,11 +6737,14 @@ GuiComboBoxListControl
 				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
 				ContextChanged.AttachMethod(this, &GuiComboBoxListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiComboBoxListControl::OnVisuallyEnabledChanged);
+				AfterSubMenuOpening.AttachMethod(this, &GuiComboBoxListControl::OnAfterSubMenuOpening);
 
 				containedListControl->GetItemProvider()->AttachCallback(this);
 				containedListControl->SetMultiSelect(false);
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
-				containedListControl->SelectionChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
+				containedListControl->ItemLeftButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
+				containedListControl->ItemRightButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
+				containedListControl->GetFocusableComposition()->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlKeyDown);
 				boundsChangedHandler = containedListControl->GetBoundsComposition()->BoundsChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlBoundsChanged);
 
 				auto itemProvider = containedListControl->GetItemProvider();
@@ -6499,30 +6778,29 @@ GuiComboBoxListControl
 				RemoveStyleController();
 				itemStyleProperty = value;
 				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
-				InstallStyleController(GetSelectedIndex());
+				InstallStyleController(selectedIndex);
 				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}
 
 			vint GuiComboBoxListControl::GetSelectedIndex()
 			{
-				if(containedListControl->GetSelectedItems().Count()==1)
-				{
-					return containedListControl->GetSelectedItems()[0];
-				}
-				else
-				{
-					return -1;
-				}
+				return selectedIndex;
 			}
 
 			void GuiComboBoxListControl::SetSelectedIndex(vint value)
 			{
-				containedListControl->SetSelected(value, true);
+				if (selectedIndex != value)
+				{
+					if (0 <= value && value < containedListControl->GetItemProvider()->Count())
+					{
+						DisplaySelectedContent(value);
+					}
+				}
+				GetSubMenu()->Hide();
 			}
 
 			description::Value GuiComboBoxListControl::GetSelectedItem()
 			{
-				auto selectedIndex = GetSelectedIndex();
 				if (selectedIndex != -1)
 				{
 					return containedListControl->GetItemProvider()->GetBindingValue(selectedIndex);
@@ -7626,6 +7904,7 @@ RangedItemArrangerBase
 						{
 							backgroundButton->SetControlTemplate(style);
 						}
+						backgroundButton->SetAutoFocus(false);
 						backgroundButton->SetAutoSelection(false);
 					}
 
@@ -9058,13 +9337,13 @@ GuiSelectableListControl
 
 			void GuiSelectableListControl::NormalizeSelectedItemIndexStartEnd()
 			{
-				if(selectedItemIndexStart<0 || selectedItemIndexStart>=itemProvider->Count())
+				if (selectedItemIndexStart < 0 || selectedItemIndexStart >= itemProvider->Count())
 				{
-					selectedItemIndexStart=0;
+					selectedItemIndexStart = 0;
 				}
-				if(selectedItemIndexEnd<0 || selectedItemIndexEnd>=itemProvider->Count())
+				if (selectedItemIndexEnd < 0 || selectedItemIndexEnd >= itemProvider->Count())
 				{
-					selectedItemIndexEnd=0;
+					selectedItemIndexEnd = 0;
 				}
 			}
 
@@ -9109,14 +9388,14 @@ GuiSelectableListControl
 
 			GuiSelectableListControl::GuiSelectableListControl(theme::ThemeName themeName, IItemProvider* _itemProvider)
 				:GuiListControl(themeName, _itemProvider, true)
-				,multiSelect(false)
-				,selectedItemIndexStart(-1)
-				,selectedItemIndexEnd(-1)
+				, multiSelect(false)
+				, selectedItemIndexStart(-1)
+				, selectedItemIndexEnd(-1)
 			{
 				SelectionChanged.SetAssociatedComposition(boundsComposition);
 				ItemLeftButtonDown.AttachMethod(this, &GuiSelectableListControl::OnItemLeftButtonDown);
 				ItemRightButtonDown.AttachMethod(this, &GuiSelectableListControl::OnItemRightButtonDown);
-				if(focusableComposition)
+				if (focusableComposition)
 				{
 					focusableComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiSelectableListControl::OnKeyDown);
 				}
@@ -9194,36 +9473,36 @@ GuiSelectableListControl
 			bool GuiSelectableListControl::SelectItemsByClick(vint itemIndex, bool ctrl, bool shift, bool leftButton)
 			{
 				NormalizeSelectedItemIndexStartEnd();
-				if(0<=itemIndex && itemIndex<itemProvider->Count())
+				if (0 <= itemIndex && itemIndex < itemProvider->Count())
 				{
-					if(!leftButton)
+					if (!leftButton)
 					{
-						if(selectedItems.Contains(itemIndex))
+						if (selectedItems.Contains(itemIndex))
 						{
 							return true;
 						}
 					}
-					if(!multiSelect)
+					if (!multiSelect)
 					{
-						shift=false;
-						ctrl=false;
+						shift = false;
+						ctrl = false;
 					}
-					if(shift)
+					if (shift)
 					{
-						if(!ctrl)
+						if (!ctrl)
 						{
 							SetMultipleItemsSelectedSilently(selectedItemIndexStart, selectedItemIndexEnd, false);
 						}
-						selectedItemIndexEnd=itemIndex;
+						selectedItemIndexEnd = itemIndex;
 						SetMultipleItemsSelectedSilently(selectedItemIndexStart, selectedItemIndexEnd, true);
 						NotifySelectionChanged();
 					}
 					else
 					{
-						if(ctrl)
+						if (ctrl)
 						{
-							vint index=selectedItems.IndexOf(itemIndex);
-							if(index==-1)
+							vint index = selectedItems.IndexOf(itemIndex);
+							if (index == -1)
 							{
 								selectedItems.Add(itemIndex);
 							}
@@ -9231,7 +9510,7 @@ GuiSelectableListControl
 							{
 								selectedItems.RemoveAt(index);
 							}
-							OnItemSelectionChanged(itemIndex, index==-1);
+							OnItemSelectionChanged(itemIndex, index == -1);
 							NotifySelectionChanged();
 						}
 						else
@@ -9242,56 +9521,56 @@ GuiSelectableListControl
 							OnItemSelectionChanged(itemIndex, true);
 							NotifySelectionChanged();
 						}
-						selectedItemIndexStart=itemIndex;
-						selectedItemIndexEnd=itemIndex;
+						selectedItemIndexStart = itemIndex;
+						selectedItemIndexEnd = itemIndex;
 					}
 					return true;
 				}
 				return false;
 			}
 
-			bool GuiSelectableListControl::SelectItemsByKey(vint code, bool ctrl, bool shift)
+			bool GuiSelectableListControl::SelectItemsByKey(VKEY code, bool ctrl, bool shift)
 			{
-				if(!GetArranger()) return false;
+				if (!GetArranger()) return false;
 
 				NormalizeSelectedItemIndexStartEnd();
-				KeyDirection keyDirection=KeyDirection::Up;
-				switch(code)
+				KeyDirection keyDirection = KeyDirection::Up;
+				switch (code)
 				{
-				case VKEY_UP:
-					keyDirection=KeyDirection::Up;
+				case VKEY::_UP:
+					keyDirection = KeyDirection::Up;
 					break;
-				case VKEY_DOWN:
-					keyDirection=KeyDirection::Down;
+				case VKEY::_DOWN:
+					keyDirection = KeyDirection::Down;
 					break;
-				case VKEY_LEFT:
-					keyDirection=KeyDirection::Left;
+				case VKEY::_LEFT:
+					keyDirection = KeyDirection::Left;
 					break;
-				case VKEY_RIGHT:
-					keyDirection=KeyDirection::Right;
+				case VKEY::_RIGHT:
+					keyDirection = KeyDirection::Right;
 					break;
-				case VKEY_HOME:
-					keyDirection=KeyDirection::Home;
+				case VKEY::_HOME:
+					keyDirection = KeyDirection::Home;
 					break;
-				case VKEY_END:
-					keyDirection=KeyDirection::End;
+				case VKEY::_END:
+					keyDirection = KeyDirection::End;
 					break;
-				case VKEY_PRIOR:
-					keyDirection=KeyDirection::PageUp;
+				case VKEY::_PRIOR:
+					keyDirection = KeyDirection::PageUp;
 					break;
-				case VKEY_NEXT:
-					keyDirection=KeyDirection::PageDown;
+				case VKEY::_NEXT:
+					keyDirection = KeyDirection::PageDown;
 					break;
 				default:
 					return false;
 				}
 
-				if(GetAxis())
+				if (GetAxis())
 				{
-					keyDirection=GetAxis()->RealKeyDirectionToVirtualKeyDirection(keyDirection);
+					keyDirection = GetAxis()->RealKeyDirectionToVirtualKeyDirection(keyDirection);
 				}
-				vint itemIndex=GetArranger()->FindItem(selectedItemIndexEnd, keyDirection);
-				if(SelectItemsByClick(itemIndex, ctrl, shift, true))
+				vint itemIndex = GetArranger()->FindItem(selectedItemIndexEnd, keyDirection);
+				if (SelectItemsByClick(itemIndex, ctrl, shift, true))
 				{
 					return EnsureItemVisible(itemIndex);
 				}
@@ -9641,6 +9920,7 @@ ListViewColumnItemArranger
 							for (vint i = 0; i < listViewItemView->GetColumnCount(); i++)
 							{
 								GuiListViewColumnHeader* button = new GuiListViewColumnHeader(theme::ThemeName::Unknown);
+								button->SetAutoFocus(false);
 								button->SetControlTemplate(listView->GetControlTemplateObject(true)->GetColumnHeaderTemplate());
 								button->SetText(listViewItemView->GetColumnText(i));
 								button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
@@ -11017,6 +11297,7 @@ DefaultTextListItemTemplate
 					if (auto bulletStyleController = CreateBulletStyle())
 					{
 						bulletButton = new GuiSelectableButton(theme::ThemeName::Unknown);
+						bulletButton->SetAutoFocus(false);
 						bulletButton->SetControlTemplate(bulletStyleController);
 						bulletButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						bulletButton->SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnBulletSelectedChanged);
@@ -12357,6 +12638,7 @@ DefaultTreeItemTemplate
 								expandingButton->SetControlTemplate(expanderStyle);
 							}
 						}
+						expandingButton->SetAutoFocus(false);
 						expandingButton->SetAutoSelection(false);
 						expandingButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						expandingButton->GetBoundsComposition()->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);
@@ -13262,9 +13544,11 @@ GuiCommonScrollViewLook
 				horizontalScroll = new GuiScroll(theme::ThemeName::HScroll);
 				horizontalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				horizontalScroll->SetEnabled(false);
+				horizontalScroll->SetAutoFocus(false);
 				verticalScroll = new GuiScroll(theme::ThemeName::VScroll);
 				verticalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				verticalScroll->SetEnabled(false);
+				verticalScroll->SetAutoFocus(false);
 
 				tableComposition = new GuiTableComposition;
 				AddChild(tableComposition);
@@ -14136,11 +14420,11 @@ GuiDocumentCommonInterface
 				SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
 
-			bool GuiDocumentCommonInterface::ProcessKey(vint code, bool shift, bool ctrl)
+			bool GuiDocumentCommonInterface::ProcessKey(VKEY code, bool shift, bool ctrl)
 			{
 				if(IGuiShortcutKeyItem* item=internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, code))
 				{
-					GuiEventArgs arguments;
+					GuiEventArgs arguments(documentControl->GetBoundsComposition());
 					item->Executed.Execute(arguments);
 					return true;
 				}
@@ -14152,31 +14436,31 @@ GuiDocumentCommonInterface
 
 				switch(code)
 				{
-				case VKEY_UP:
+				case VKEY::_UP:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveUp, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_DOWN:
+				case VKEY::_DOWN:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveDown, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_LEFT:
+				case VKEY::_LEFT:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveLeft, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_RIGHT:
+				case VKEY::_RIGHT:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveRight, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_HOME:
+				case VKEY::_HOME:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineFirst, frontSide);
 						if(newCaret==currentCaret)
@@ -14186,7 +14470,7 @@ GuiDocumentCommonInterface
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_END:
+				case VKEY::_END:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineLast, frontSide);
 						if(newCaret==currentCaret)
@@ -14196,39 +14480,39 @@ GuiDocumentCommonInterface
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY_PRIOR:
+				case VKEY::_PRIOR:
 					{
 					}
 					break;
-				case VKEY_NEXT:
+				case VKEY::_NEXT:
 					{
 					}
 					break;
-				case VKEY_BACK:
+				case VKEY::_BACK:
 					if(editMode==Editable)
 					{
 						if(begin==end)
 						{
-							ProcessKey(VKEY_LEFT, true, false);
+							ProcessKey(VKEY::_LEFT, true, false);
 						}
 						Array<WString> text;
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 						return true;
 					}
 					break;
-				case VKEY_DELETE:
+				case VKEY::_DELETE:
 					if(editMode==Editable)
 					{
 						if(begin==end)
 						{
-							ProcessKey(VKEY_RIGHT, true, false);
+							ProcessKey(VKEY::_RIGHT, true, false);
 						}
 						Array<WString> text;
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 						return true;
 					}
 					break;
-				case VKEY_RETURN:
+				case VKEY::_RETURN:
 					if(editMode==Editable)
 					{
 						if(ctrl)
@@ -14314,7 +14598,7 @@ GuiDocumentCommonInterface
 				}
 			}
 
-			void GuiDocumentCommonInterface::AddShortcutCommand(vint key, const Func<void()>& eventHandler)
+			void GuiDocumentCommonInterface::AddShortcutCommand(VKEY key, const Func<void()>& eventHandler)
 			{
 				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateShortcut(true, false, false, key);
 				item->Executed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
@@ -14467,12 +14751,16 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnCharInput(compositions::GuiGraphicsComposition* sender, compositions::GuiCharEventArgs& arguments)
 			{
-				if(documentControl->GetVisuallyEnabled())
+				if (documentControl->GetVisuallyEnabled())
 				{
-					if(editMode==Editable && arguments.code!=VKEY_ESCAPE && arguments.code!=VKEY_BACK && arguments.code!=VKEY_RETURN && !arguments.ctrl)
+					if (editMode == Editable &&
+						arguments.code != (wchar_t)VKEY::_ESCAPE &&
+						arguments.code != (wchar_t)VKEY::_BACK &&
+						arguments.code != (wchar_t)VKEY::_RETURN &&
+						!arguments.ctrl)
 					{
 						Array<WString> text(1);
-						text[0]=WString(arguments.code);
+						text[0] = WString(arguments.code);
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 					}
 				}
@@ -14644,12 +14932,12 @@ GuiDocumentCommonInterface
 				undoRedoProcessor=new GuiDocumentUndoRedoProcessor;
 
 				internalShortcutKeyManager=new GuiShortcutKeyManager;
-				AddShortcutCommand('Z', Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
-				AddShortcutCommand('Y', Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
-				AddShortcutCommand('A', Func<void()>(this, &GuiDocumentCommonInterface::SelectAll));
-				AddShortcutCommand('X', Func<bool()>(this, &GuiDocumentCommonInterface::Cut));
-				AddShortcutCommand('C', Func<bool()>(this, &GuiDocumentCommonInterface::Copy));
-				AddShortcutCommand('V', Func<bool()>(this, &GuiDocumentCommonInterface::Paste));
+				AddShortcutCommand(VKEY::_Z, Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
+				AddShortcutCommand(VKEY::_Y, Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
+				AddShortcutCommand(VKEY::_A, Func<void()>(this, &GuiDocumentCommonInterface::SelectAll));
+				AddShortcutCommand(VKEY::_X, Func<bool()>(this, &GuiDocumentCommonInterface::Cut));
+				AddShortcutCommand(VKEY::_C, Func<bool()>(this, &GuiDocumentCommonInterface::Copy));
+				AddShortcutCommand(VKEY::_V, Func<bool()>(this, &GuiDocumentCommonInterface::Paste));
 			}
 
 			GuiDocumentCommonInterface::~GuiDocumentCommonInterface()
@@ -15533,11 +15821,11 @@ GuiTextBoxCommonInterface
 				}
 			}
 
-			bool GuiTextBoxCommonInterface::ProcessKey(vint code, bool shift, bool ctrl)
+			bool GuiTextBoxCommonInterface::ProcessKey(VKEY code, bool shift, bool ctrl)
 			{
 				if(IGuiShortcutKeyItem* item=internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, code))
 				{
-					GuiEventArgs arguments;
+					GuiEventArgs arguments(textControl->GetBoundsComposition());
 					item->Executed.Execute(arguments);
 					return true;
 				}
@@ -15546,13 +15834,13 @@ GuiTextBoxCommonInterface
 				TextPos end=textElement->GetCaretEnd();
 				switch(code)
 				{
-				case VKEY_ESCAPE:
+				case VKEY::_ESCAPE:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						autoComplete->CloseList();
 					}
 					return true;
-				case VKEY_RETURN:
+				case VKEY::_RETURN:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						if(autoComplete->ApplySelectedListItem())
@@ -15562,7 +15850,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					break;
-				case VKEY_UP:
+				case VKEY::_UP:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						autoComplete->SelectPreviousListItem();
@@ -15573,7 +15861,7 @@ GuiTextBoxCommonInterface
 						Move(end, shift);
 					}
 					return true;
-				case VKEY_DOWN:
+				case VKEY::_DOWN:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						autoComplete->SelectNextListItem();
@@ -15584,7 +15872,7 @@ GuiTextBoxCommonInterface
 						Move(end, shift);
 					}
 					return true;
-				case VKEY_LEFT:
+				case VKEY::_LEFT:
 					{
 						if(ctrl)
 						{
@@ -15609,7 +15897,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					return true;
-				case VKEY_RIGHT:
+				case VKEY::_RIGHT:
 					{
 						if(ctrl)
 						{
@@ -15633,7 +15921,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					return true;
-				case VKEY_HOME:
+				case VKEY::_HOME:
 					{
 						if(ctrl)
 						{
@@ -15646,7 +15934,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					return true;
-				case VKEY_END:
+				case VKEY::_END:
 					{
 						if(ctrl)
 						{
@@ -15656,60 +15944,60 @@ GuiTextBoxCommonInterface
 						Move(end, shift);
 					}
 					return true;
-				case VKEY_PRIOR:
+				case VKEY::_PRIOR:
 					{
 						end.row-=callback->GetPageRows();
 						Move(end, shift);
 					}
 					return true;
-				case VKEY_NEXT:
+				case VKEY::_NEXT:
 					{
 						end.row+=callback->GetPageRows();
 						Move(end, shift);
 					}
 					return true;
-				case VKEY_BACK:
+				case VKEY::_BACK:
 					if(!readonly)
 					{
 						if(ctrl && !shift)
 						{
-							ProcessKey(VKEY_LEFT, true, true);
-							ProcessKey(VKEY_BACK, false, false);
+							ProcessKey(VKEY::_LEFT, true, true);
+							ProcessKey(VKEY::_BACK, false, false);
 						}
 						else if(!ctrl && shift)
 						{
-							ProcessKey(VKEY_UP, true, false);
-							ProcessKey(VKEY_BACK, false, false);
+							ProcessKey(VKEY::_UP, true, false);
+							ProcessKey(VKEY::_BACK, false, false);
 						}
 						else
 						{
 							if(begin==end)
 							{
-								ProcessKey(VKEY_LEFT, true, false);
+								ProcessKey(VKEY::_LEFT, true, false);
 							}
 							SetSelectionTextAsKeyInput(L"");
 						}
 						return true;
 					}
 					break;
-				case VKEY_DELETE:
+				case VKEY::_DELETE:
 					if(!readonly)
 					{
 						if(ctrl && !shift)
 						{
-							ProcessKey(VKEY_RIGHT, true, true);
-							ProcessKey(VKEY_DELETE, false, false);
+							ProcessKey(VKEY::_RIGHT, true, true);
+							ProcessKey(VKEY::_DELETE, false, false);
 						}
 						else if(!ctrl && shift)
 						{
-							ProcessKey(VKEY_DOWN, true, false);
-							ProcessKey(VKEY_DELETE, false, false);
+							ProcessKey(VKEY::_DOWN, true, false);
+							ProcessKey(VKEY::_DELETE, false, false);
 						}
 						else
 						{
 							if(begin==end)
 							{
-								ProcessKey(VKEY_RIGHT, true, false);
+								ProcessKey(VKEY::_RIGHT, true, false);
 							}
 							SetSelectionTextAsKeyInput(L"");
 						}
@@ -15781,17 +16069,17 @@ GuiTextBoxCommonInterface
 
 			void GuiTextBoxCommonInterface::OnCharInput(compositions::GuiGraphicsComposition* sender, compositions::GuiCharEventArgs& arguments)
 			{
-				if(preventEnterDueToAutoComplete)
+				if (preventEnterDueToAutoComplete)
 				{
-					preventEnterDueToAutoComplete=false;
-					if(arguments.code==VKEY_RETURN)
+					preventEnterDueToAutoComplete = false;
+					if (arguments.code == (wchar_t)VKEY::_RETURN)
 					{
 						return;
 					}
 				}
-				if(textControl->GetVisuallyEnabled() && arguments.compositionSource==arguments.eventSource)
+				if (textControl->GetVisuallyEnabled() && arguments.compositionSource == arguments.eventSource)
 				{
-					if(!readonly && arguments.code!=VKEY_ESCAPE && arguments.code!=VKEY_BACK && !arguments.ctrl)
+					if (!readonly && arguments.code != (wchar_t)VKEY::_ESCAPE && arguments.code != (wchar_t)VKEY::_BACK && !arguments.ctrl)
 					{
 						SetSelectionTextAsKeyInput(WString(arguments.code));
 					}
@@ -15872,7 +16160,7 @@ GuiTextBoxCommonInterface
 				}
 			}
 
-			void GuiTextBoxCommonInterface::AddShortcutCommand(vint key, const Func<void()>& eventHandler)
+			void GuiTextBoxCommonInterface::AddShortcutCommand(VKEY key, const Func<void()>& eventHandler)
 			{
 				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateShortcut(true, false, false, key);
 				item->Executed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
@@ -15914,12 +16202,12 @@ GuiTextBoxCommonInterface
 				AttachTextEditCallback(undoRedoProcessor);
 
 				internalShortcutKeyManager=new GuiShortcutKeyManager;
-				AddShortcutCommand('Z', Func<bool()>(this, &GuiTextBoxCommonInterface::Undo));
-				AddShortcutCommand('Y', Func<bool()>(this, &GuiTextBoxCommonInterface::Redo));
-				AddShortcutCommand('A', Func<void()>(this, &GuiTextBoxCommonInterface::SelectAll));
-				AddShortcutCommand('X', Func<bool()>(this, &GuiTextBoxCommonInterface::Cut));
-				AddShortcutCommand('C', Func<bool()>(this, &GuiTextBoxCommonInterface::Copy));
-				AddShortcutCommand('V', Func<bool()>(this, &GuiTextBoxCommonInterface::Paste));
+				AddShortcutCommand(VKEY::_Z, Func<bool()>(this, &GuiTextBoxCommonInterface::Undo));
+				AddShortcutCommand(VKEY::_Y, Func<bool()>(this, &GuiTextBoxCommonInterface::Redo));
+				AddShortcutCommand(VKEY::_A, Func<void()>(this, &GuiTextBoxCommonInterface::SelectAll));
+				AddShortcutCommand(VKEY::_X, Func<bool()>(this, &GuiTextBoxCommonInterface::Cut));
+				AddShortcutCommand(VKEY::_C, Func<bool()>(this, &GuiTextBoxCommonInterface::Copy));
+				AddShortcutCommand(VKEY::_V, Func<bool()>(this, &GuiTextBoxCommonInterface::Paste));
 			}
 
 			GuiTextBoxCommonInterface::~GuiTextBoxCommonInterface()
@@ -19670,20 +19958,30 @@ GuiMenuButton
 				return button ? button : this;
 			}
 
-			void GuiMenuButton::OpenSubMenuInternal()
+			bool GuiMenuButton::OpenSubMenuInternal()
 			{
-				if(!GetSubMenuOpening())
+				if (!GetSubMenuOpening())
 				{
-					if(ownerMenuService)
+					if (ownerMenuService)
 					{
-						GuiMenu* openingSiblingMenu=ownerMenuService->GetOpeningMenu();
-						if(openingSiblingMenu)
+						GuiMenu* openingSiblingMenu = ownerMenuService->GetOpeningMenu();
+						if (openingSiblingMenu)
 						{
 							openingSiblingMenu->Hide();
 						}
 					}
-					SetSubMenuOpening(true);
+
+					BeforeSubMenuOpening.Execute(GetNotifyEventArguments());
+					if (subMenu)
+					{
+						subMenu->SetClientSize(preferredMenuClientSize);
+						IGuiMenuService::Direction direction = GetSubMenuDirection();
+						subMenu->ShowPopup(GetSubMenuHost(), direction == IGuiMenuService::Horizontal);
+						AfterSubMenuOpening.Execute(GetNotifyEventArguments());
+						return true;
+					}
 				}
+				return false;
 			}
 
 			void GuiMenuButton::OnParentLineChanged()
@@ -19698,11 +19996,6 @@ GuiMenuButton
 				{
 					subMenu->UpdateMenuService();
 				}
-			}
-
-			bool GuiMenuButton::IsAltAvailable()
-			{
-				return true;
 			}
 
 			compositions::IGuiAltActionHost* GuiMenuButton::GetActivatingAltHost()
@@ -19741,12 +20034,7 @@ GuiMenuButton
 			{
 				if(GetVisuallyEnabled())
 				{
-					BeforeSubMenuOpening.Execute(GetNotifyEventArguments());
-					if(GetSubMenu())
-					{
-						OpenSubMenuInternal();
-					}
-					else if(ownerMenuService)
+					if(!OpenSubMenuInternal() && ownerMenuService)
 					{
 						ownerMenuService->MenuItemExecuted();
 					}
@@ -19904,13 +20192,11 @@ GuiMenuButton
 
 			void GuiMenuButton::SetSubMenuOpening(bool value)
 			{
-				if(subMenu)
+				if (subMenu && subMenu->GetOpening() != value)
 				{
-					if(value)
+					if (value)
 					{
-						subMenu->SetClientSize(preferredMenuClientSize);
-						IGuiMenuService::Direction direction=GetSubMenuDirection();
-						subMenu->ShowPopup(GetSubMenuHost(), direction==IGuiMenuService::Horizontal);
+						OpenSubMenuInternal();
 					}
 					else
 					{
@@ -21461,6 +21747,7 @@ GuiBindableRibbonGalleryList
 							{
 								backgroundButton->SetControlTemplate(style);
 							}
+							backgroundButton->SetAutoFocus(false);
 							backgroundButton->SetAutoSelection(false);
 							backgroundButton->Clicked.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 							{
@@ -22394,7 +22681,7 @@ GuiToolstripCommand::ShortcutBuilder Parser
 					WString name = match->Groups()[L"key"][0].Value();
 					builder->key = GetCurrentController()->InputService()->GetKey(name);
 
-					return builder->key == -1 ? nullptr : builder;
+					return builder->key == VKEY::_UNKNOWN ? nullptr : builder;
 				}
 			};
 
@@ -22658,6 +22945,19 @@ GuiToolstripButton
 				callback = _callback;
 			}
 
+			void GuiToolstripButton::OnActiveAlt()
+			{
+				auto host = GetSubMenuHost();
+				if (host == this)
+				{
+					GuiMenuButton::OnActiveAlt();
+				}
+				else
+				{
+					host->QueryTypedService<IGuiAltAction>()->OnActiveAlt();
+				}
+			}
+
 			void GuiToolstripButton::UpdateCommandContent()
 			{
 				if(command)
@@ -22712,6 +23012,7 @@ GuiToolstripButton
 				:GuiMenuButton(themeName)
 				,command(0)
 			{
+				SetAutoFocus(false);
 				Clicked.AttachMethod(this, &GuiToolstripButton::OnClicked);
 				TextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
 				ShortcutTextChanged.AttachMethod(this, &GuiToolstripButton::OnLayoutAwaredPropertyChanged);
@@ -28878,6 +29179,14 @@ namespace vl
 			using namespace collections;
 
 /***********************************************************************
+GuiFocusRectangleElement
+***********************************************************************/
+
+			GuiFocusRectangleElement::GuiFocusRectangleElement()
+			{
+			}
+
+/***********************************************************************
 GuiSolidBorderElement
 ***********************************************************************/
 
@@ -29860,31 +30169,34 @@ GuiGraphicsHost
 			void GuiGraphicsHost::OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
 			{
 				List<GuiGraphicsComposition*> compositions;
-				while(composition)
 				{
-					if(composition->HasEventReceiver())
+					auto current = composition;
+					while (current)
 					{
-						compositions.Add(composition);
+						if (current->HasEventReceiver())
+						{
+							compositions.Add(current);
+						}
+						current = current->GetParent();
 					}
-					composition=composition->GetParent();
 				}
 
 				GuiKeyEventArgs arguments(composition);
-				(NativeWindowKeyInfo&)arguments=info;
+				(NativeWindowKeyInfo&)arguments = info;
 
-				for(vint i=compositions.Count()-1;i>=0;i--)
+				for (vint i = compositions.Count() - 1; i >= 0; i--)
 				{
 					compositions[i]->GetEventReceiver()->previewKey.Execute(arguments);
-					if(arguments.handled)
+					if (arguments.handled)
 					{
 						return;
 					}
 				}
 
-				for(vint i=0;i<compositions.Count();i++)
+				for (vint i = 0; i < compositions.Count(); i++)
 				{
 					(compositions[i]->GetEventReceiver()->*eventReceiverEvent).Execute(arguments);
-					if(arguments.handled)
+					if (arguments.handled)
 					{
 						return;
 					}
@@ -30186,24 +30498,24 @@ GuiGraphicsHost
 			{
 				if (!info.ctrl && !info.shift && currentAltHost)
 				{
-					if (info.code == VKEY_ESCAPE)
+					if (info.code == VKEY::_ESCAPE)
 					{
 						LeaveAltHost();
 						return;
 					}
-					else if (info.code == VKEY_BACK)
+					else if (info.code == VKEY::_BACK)
 					{
 						LeaveAltKey();
 					}
-					else if (VKEY_NUMPAD0 <= info.code && info.code <= VKEY_NUMPAD9)
+					else if (VKEY::_NUMPAD0 <= info.code && info.code <= VKEY::_NUMPAD9)
 					{
-						if (EnterAltKey((wchar_t)(L'0' + (info.code - VKEY_NUMPAD0))))
+						if (EnterAltKey((wchar_t)(L'0' + ((vint)info.code - (vint)VKEY::_NUMPAD0))))
 						{
 							supressAltKey = info.code;
 							return;
 						}
 					}
-					else if (('0' <= info.code && info.code <= '9') || ('A' <= info.code && info.code <= 'Z'))
+					else if ((VKEY::_0 <= info.code && info.code <= VKEY::_9) || (VKEY::_A <= info.code && info.code <= VKEY::_Z))
 					{
 						if (EnterAltKey((wchar_t)info.code))
 						{
@@ -30232,7 +30544,7 @@ GuiGraphicsHost
 			{
 				if (!info.ctrl && !info.shift && info.code == supressAltKey)
 				{
-					supressAltKey = 0;
+					supressAltKey = VKEY::_UNKNOWN;
 					return;
 				}
 
@@ -30244,7 +30556,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == VKEY_MENU && !currentAltHost)
+				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && !currentAltHost)
 				{
 					if (auto window = dynamic_cast<GuiWindow*>(windowComposition->Children()[0]->GetRelatedControlHost()))
 					{
@@ -30271,7 +30583,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyUp(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == VKEY_MENU && hostRecord.nativeWindow)
+				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && hostRecord.nativeWindow)
 				{
 					if (hostRecord.nativeWindow)
 					{
@@ -30287,7 +30599,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Char(const NativeWindowCharInfo& info)
 			{
-				if (!currentAltHost && !supressAltKey)
+				if (!currentAltHost && supressAltKey == VKEY::_UNKNOWN)
 				{
 					if(focusedComposition && focusedComposition->HasEventReceiver())
 					{
@@ -30496,7 +30808,7 @@ GuiGraphicsHost
 GuiShortcutKeyItem
 ***********************************************************************/
 
-			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, vint _key)
+			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, VKEY _key)
 				:shortcutKeyManager(_shortcutKeyManager)
 				,ctrl(_ctrl)
 				,shift(_shift)
@@ -30533,7 +30845,7 @@ GuiShortcutKeyItem
 					info.code==key;
 			}
 
-			bool GuiShortcutKeyItem::CanActivate(bool _ctrl, bool _shift, bool _alt, vint _key)
+			bool GuiShortcutKeyItem::CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key)
 			{
 				return
 					_ctrl==ctrl &&
@@ -30579,7 +30891,7 @@ GuiShortcutKeyManager
 				return executed;
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcut(bool ctrl, bool shift, bool alt, vint key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
 				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
 				{
@@ -30593,7 +30905,7 @@ GuiShortcutKeyManager
 				return item.Obj();
 			}
 
-			bool GuiShortcutKeyManager::DestroyShortcut(bool ctrl, bool shift, bool alt, vint key)
+			bool GuiShortcutKeyManager::DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
 				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
 				{
@@ -30606,7 +30918,7 @@ GuiShortcutKeyManager
 				return false;
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, vint key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
 				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
 				{
@@ -33750,6 +34062,7 @@ Clone the current run with its children
 		{
 			Ptr<DocumentStyleProperties> CopyStyle(Ptr<DocumentStyleProperties> style)
 			{
+				if (!style) return nullptr;
 				Ptr<DocumentStyleProperties> newStyle = new DocumentStyleProperties;
 
 				newStyle->face = style->face;

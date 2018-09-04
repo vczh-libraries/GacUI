@@ -258,6 +258,13 @@ Type Declaration
 				STRUCT_MEMBER(verticalAntialias)
 			END_STRUCT_MEMBER(FontProperties)
 
+#define GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM(NAME, CODE) ENUM_CLASS_ITEM(_##NAME)
+			BEGIN_ENUM_ITEM(VKEY)
+				ENUM_CLASS_ITEM(_UNKNOWN)
+				GUI_DEFINE_KEYBOARD_CODE(GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM)
+			END_ENUM_ITEM(VKEY)
+#undef GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM
+
 			BEGIN_STRUCT_MEMBER_FLAG(GlobalStringKey, TypeDescriptorFlags::Primitive)
 				valueType = new SerializableValueType<GlobalStringKey>();
 				serializableType = new SerializableType<GlobalStringKey>();
@@ -319,6 +326,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(CaretPoint)
 				CLASS_MEMBER_PROPERTY_FAST(Parent)
 				CLASS_MEMBER_PROPERTY_FAST(AlwaysPassFocusToParent)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(CustomFramePadding)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SizeState)
 				CLASS_MEMBER_PROPERTY_FAST(MinimizedBox)
 				CLASS_MEMBER_PROPERTY_FAST(MaximizedBox)
@@ -2040,6 +2048,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ChildrenCount)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(RelatedControlHost, RenderTargetChanged)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(VisuallyEnabled)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Focused)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Enabled)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Visible)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Alt)
@@ -2082,6 +2091,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_GUIEVENT(Clicked)
 
 				CLASS_MEMBER_PROPERTY_FAST(ClickOnMouseUp)
+				CLASS_MEMBER_PROPERTY_FAST(AutoFocus)
 			END_CLASS_MEMBER(GuiButton)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableButton)
@@ -2104,6 +2114,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(BigMove)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MinPosition)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MaxPosition)
+				CLASS_MEMBER_PROPERTY_FAST(AutoFocus)
 			END_CLASS_MEMBER(GuiScroll)
 
 			BEGIN_CLASS_MEMBER(GuiTabPage)
@@ -2331,6 +2342,7 @@ Type Declaration (Class)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiMenuButton)
 
 				CLASS_MEMBER_GUIEVENT(BeforeSubMenuOpening)
+				CLASS_MEMBER_GUIEVENT(AfterSubMenuOpening)
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(LargeImage)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Image)
@@ -2387,8 +2399,6 @@ Type Declaration (Class)
 			BEGIN_CLASS_MEMBER(GuiComboBoxBase)
 				CLASS_MEMBER_BASE(GuiMenuButton)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiComboBoxBase)
-
-				CLASS_MEMBER_GUIEVENT(ItemSelected)
 			END_CLASS_MEMBER(GuiComboBoxBase)
 
 			BEGIN_CLASS_MEMBER(GuiComboBoxListControl)
@@ -2896,6 +2906,11 @@ Type Declaration (Extra)
 Type Declaration (Class)
 ***********************************************************************/
 
+			BEGIN_CLASS_MEMBER(GuiFocusRectangleElement)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				ELEMENT_CONSTRUCTOR(GuiFocusRectangleElement)
+			END_CLASS_MEMBER(GuiFocusRectangleElement)
+
 			BEGIN_CLASS_MEMBER(GuiSolidBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
 				ELEMENT_CONSTRUCTOR(GuiSolidBorderElement)
@@ -3136,6 +3151,7 @@ Type Declaration
 				CLASS_MEMBER_FIELD(shift)
 				CLASS_MEMBER_FIELD(alt)
 				CLASS_MEMBER_FIELD(capslock)
+				CLASS_MEMBER_FIELD(autoRepeatKeyDown)
 			END_CLASS_MEMBER(GuiKeyEventArgs)
 
 			BEGIN_CLASS_MEMBER(GuiCharEventArgs)
@@ -3347,6 +3363,14 @@ Type Declaration (Extra)
 				ENUM_CLASS_ITEM(Descending)
 			END_ENUM_ITEM(ColumnSortingState)
 
+			BEGIN_ENUM_ITEM(TabPageOrder)
+				ENUM_CLASS_ITEM(Unknown)
+				ENUM_CLASS_ITEM(LeftToRight)
+				ENUM_CLASS_ITEM(RightToLeft)
+				ENUM_CLASS_ITEM(TopToBottom)
+				ENUM_CLASS_ITEM(BottomToTop)
+			END_ENUM_ITEM(TabPageOrder)
+
 			BEGIN_ENUM_ITEM(BoolOption)
 				ENUM_CLASS_ITEM(AlwaysTrue)
 				ENUM_CLASS_ITEM(AlwaysFalse)
@@ -3358,12 +3382,6 @@ Type Declaration (Extra)
 
 				CLASS_MEMBER_METHOD(UnsafeSetText, { L"value" })
 			END_INTERFACE_MEMBER(ITextBoxCommandExecutor)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IComboBoxCommandExecutor)
-				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_METHOD(SelectItem, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IComboBoxCommandExecutor)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IScrollCommandExecutor)
 				CLASS_MEMBER_METHOD(SmallDecrease, NO_PARAMETER)
@@ -3377,7 +3395,7 @@ Type Declaration (Extra)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(ITabCommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)
-				CLASS_MEMBER_METHOD(ShowTab, { L"index" })
+				CLASS_MEMBER_METHOD(ShowTab, { L"index" _ L"setFocus" })
 			END_INTERFACE_MEMBER(ITabCommandExecutor)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IDatePickerCommandExecutor)

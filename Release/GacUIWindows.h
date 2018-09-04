@@ -22,6 +22,7 @@ Interfaces:
 
 #include <d2d1_1.h>
 #include <dwrite_1.h>
+#include <d2d1effects.h>
 #include <wincodec.h>
 
 namespace vl
@@ -95,6 +96,7 @@ Functionality
 				virtual void								DestroyBitmapCache(INativeImageFrame* frame)=0;
 				virtual void								SetTextAntialias(bool antialias, bool verticalAntialias)=0;
 
+				virtual ID2D1Effect*						GetFocusRectangleEffect() = 0;
 				virtual ID2D1SolidColorBrush*				CreateDirect2DBrush(Color color)=0;
 				virtual void								DestroyDirect2DBrush(Color color)=0;
 				virtual ID2D1LinearGradientBrush*			CreateDirect2DLinearBrush(Color c1, Color c2)=0;
@@ -228,6 +230,20 @@ namespace vl
 Renderers
 ***********************************************************************/
 
+			class GuiFocusRectangleElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsDirect2DRenderTarget)
+			protected:
+				ID2D1Effect*			focusRectangleEffect = nullptr;
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
 
 			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
@@ -520,21 +536,26 @@ Comments:
     Format: See DrawText
   Pen：
 	Style：
-		PS_SOLID、PS_DASH、PS_DOT、PS_DASHDOT、PS_DASHDOTDOT、PS_USERSTYLE (for Geometric pen)
+		PS_SOLID, PS_DASH, PS_DOT, PS_DASHDOT, PS_DASHDOTDOT, PS_USERSTYLE (for Geometric pen)
 	EndCap：
-		PS_ENDCAP_ROUND、PS_ENDCAP_SQUARE、PS_ENDCAP_FLAT
+		PS_ENDCAP_ROUND, PS_ENDCAP_SQUARE, PS_ENDCAP_FLAT
 	Join：
-		PS_JOIN_BEVEL、PS_JOIN_MITER、PS_JOIN_ROUND
+		PS_JOIN_BEVEL, PS_JOIN_MITER, PS_JOIN_ROUND
   Brush：
 	Hatch：
-		HS_BDIAGONAL、HS_CROSS、HS_DIAGCROSS、HS_FDIAGONAL、HS_HORIZONTAL、HS_VERTICAL
+		HS_BDIAGONAL, HS_CROSS, HS_DIAGCROSS, HS_FDIAGONAL, HS_HORIZONTAL, HS_VERTICAL
   Region：
 	Combine：
-		RGN_AND、RGN_OR、RGN_XOR、RGN_DIFF、RGN_COPY
+		RGN_AND, RGN_OR, RGN_XOR, RGN_DIFF, RGN_COPY
   ImageCopy：
 	Draw ROP：
-		BLACKNESS、DSTINVERT、MERGECOPY、MERGEPAINT、NOTSRCCOPY、NOTSRCERASE、
-		PATCOPY、PATINVERT、PATPAINT、SRCAND、SRCCOPY、SRCERASE、SRCINVERT、SRCPAINT、WHITENESS
+		BLACKNESS, DSTINVERT, MERGECOPY, MERGEPAINT, NOTSRCCOPY, NOTSRCERASE, 
+		PATCOPY, PATINVERT, PATPAINT, SRCAND, SRCCOPY, SRCERASE, SRCINVERT, SRCPAINT, WHITENESS
+
+  RasterOperation:
+	R2_BLACK, R2_COPYPEN, R2_MASKNOTPEN, R2_MASKPEN, R2_MASKPENNOT, R2_MERGENOTPEN, R2_MERGEPEN
+	R2_MERGEPENNOT, R2_NOP, R2_NOT, R2_NOTCOPYPEN, R2_NOTMASKPEN, R2_NOTMERGEPEN, R2_NOTXORPEN
+	R2_WHITE, R2_XORPEN
   WinDIB：
 	TransformAlphaChannel()：	Convert to an GDI compatible bitmap with alpha channel after all pixels are filled.
 	Generate×××()：				Predefined alpha channel generation, TransformAlphaChannel should be called after that
@@ -739,7 +760,7 @@ Resources
 				unsigned char*			FDIBMemory;
 			public:
 				WinPen(vint Style, vint Width, COLORREF Color);
-				WinPen(vint Style, vint EndCap, vint Join, vint Width, COLORREF Color);
+				WinPen(vint Style, vint EndCap, vint Join, vint Width, COLORREF Color, DWORD styleCount = 0, const DWORD* styleArray = nullptr);
 				WinPen(vint Style, vint EndCap, vint Join, vint Hatch, vint Width, COLORREF Color);
 				WinPen(WinBitmap::Ptr DIB, vint Style, vint EndCap, vint Join, vint Width);
 				~WinPen();
@@ -815,6 +836,7 @@ Device Context
 				void					SetBackTransparent(bool Transparent);
 				POINT					GetBrushOrigin();
 				void					SetBrushOrigin(POINT Point);
+				int						SetRasterOperation(int rop2);
 
 				void					DrawBuffer(vint X, vint Y, const wchar_t* Text, vint CharCount);
 				void					DrawBuffer(vint X, vint Y, const wchar_t* Text, vint CharCount, vint TabWidth, vint TabOriginX);
@@ -1031,6 +1053,7 @@ Functionality
 			class IWindowsGDIResourceManager : public Interface
 			{
 			public:
+				virtual Ptr<windows::WinPen>				GetFocusRectanglePen()=0;
 				virtual Ptr<windows::WinPen>				CreateGdiPen(Color color)=0;
 				virtual void								DestroyGdiPen(Color color)=0;
 				virtual Ptr<windows::WinBrush>				CreateGdiBrush(Color color)=0;
@@ -1097,6 +1120,20 @@ namespace vl
 /***********************************************************************
 Renderers
 ***********************************************************************/
+
+			class GuiFocusRectangleElementRenderer : public Object, public IGuiGraphicsRenderer
+			{
+				DEFINE_GUI_GRAPHICS_RENDERER(GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsGDIRenderTarget)
+			protected:
+				Ptr<windows::WinPen>	pen;
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
 
 			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
 			{
@@ -1975,7 +2012,7 @@ namespace vl
 				void							SetText(const WString& value)override;
 				void							SetDocument(Ptr<DocumentModel> value)override;
 				void							SetImage(Ptr<INativeImage> value)override;
-				void							Submit()override;
+				bool							Submit()override;
 			};
 
 			class WindowsClipboardService : public Object, public INativeClipboardService
@@ -2213,9 +2250,9 @@ namespace vl
 				HOOKPROC								mouseProc;
 
 				collections::Array<WString>				keyNames;
-				collections::Dictionary<WString, vint>	keys;
+				collections::Dictionary<WString, VKEY>	keys;
 
-				WString									GetKeyNameInternal(vint code);
+				WString									GetKeyNameInternal(VKEY code);
 				void									InitializeKeyNames();
 			public:
 				WindowsInputService(HOOKPROC _mouseProc);
@@ -2227,14 +2264,14 @@ namespace vl
 				void									StartTimer()override;
 				void									StopTimer()override;
 				bool									IsTimerEnabled()override;
-				bool									IsKeyPressing(vint code)override;
-				bool									IsKeyToggled(vint code)override;
-				WString									GetKeyName(vint code)override;
-				vint									GetKey(const WString& name)override;
+				bool									IsKeyPressing(VKEY code)override;
+				bool									IsKeyToggled(VKEY code)override;
+				WString									GetKeyName(VKEY code)override;
+				VKEY									GetKey(const WString& name)override;
 			};
 
-			extern bool									WinIsKeyPressing(vint code);
-			extern bool									WinIsKeyToggled(vint code);
+			extern bool									WinIsKeyPressing(VKEY code);
+			extern bool									WinIsKeyToggled(VKEY code);
 		}
 	}
 }

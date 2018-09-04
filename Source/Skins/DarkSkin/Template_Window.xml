@@ -20,66 +20,103 @@
   <Instance name="WindowTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::WindowTemplate" ref.Styles="res://DarkSkin/Style">
       <WindowTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.MaximizedBoxOption>AlwaysTrue</att.MaximizedBoxOption>
-        <att.MinimizedBoxOption>AlwaysTrue</att.MinimizedBoxOption>
-        <att.BorderOption>AlwaysTrue</att.BorderOption>
-        <att.SizeBoxOption>AlwaysTrue</att.SizeBoxOption>
-        <att.IconVisibleOption>AlwaysTrue</att.IconVisibleOption>
-        <att.TitleBarOption>AlwaysTrue</att.TitleBarOption>
-        <att.CustomizedBorder>true</att.CustomizedBorder>
+        <att.CustomFrameEnabled>true</att.CustomFrameEnabled>
         <att.TooltipTemplate>darkskin::TooltipTemplate</att.TooltipTemplate>
-        
+
+        <ev.TitleBarChanged-eval>
+          <![CDATA[
+            {
+              if (self.TitleBar)
+              {
+                contentTable.SetRowOption(0, {composeType:MinSize});
+              }
+              else
+              {
+                contentTable.SetRowOption(0, {composeType:Absolute absolute:0});
+              }
+            }
+          ]]>
+        </ev.TitleBarChanged-eval>
+
+        <ev.CustomFramePaddingChanged-eval>
+          <![CDATA[
+            {
+              var margin = self.CustomFramePadding;
+              frameTable.SetRowOption(0, {composeType:Absolute absolute:margin.top});
+              frameTable.SetRowOption(2, {composeType:Absolute absolute:margin.bottom});
+              frameTable.SetColumnOption(0, {composeType:Absolute absolute:margin.left});
+              frameTable.SetColumnOption(2, {composeType:Absolute absolute:margin.right});
+            }
+          ]]>
+        </ev.CustomFramePaddingChanged-eval>
+
         <SolidBackground Color="#2D2D30"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder Color="#017ACC"/>
-          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="windowBorder"/>
+
+          <Table ref.Name="frameTable" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <att.Rows>
-              <CellOption>composeType:Absolute absolute:8</CellOption>
-              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Absolute absolute:0</CellOption>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
-              <CellOption>composeType:Absolute absolute:8</CellOption>
+              <CellOption>composeType:Absolute absolute:0</CellOption>
             </att.Rows>
             <att.Columns>
-              <CellOption>composeType:Absolute absolute:8</CellOption>
+              <CellOption>composeType:Absolute absolute:0</CellOption>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+              <CellOption>composeType:Absolute absolute:0</CellOption>
+            </att.Columns>
+
+            <Cell Site="row:0 column:0" AssociatedHitTestResult="BorderLeftTop"/>
+            <Cell Site="row:0 column:2" AssociatedHitTestResult="BorderRightTop"/>
+            <Cell Site="row:2 column:0" AssociatedHitTestResult="BorderLeftBottom"/>
+            <Cell Site="row:2 column:2" AssociatedHitTestResult="BorderRightBottom"/>
+
+            <Cell Site="row:1 column:0" AssociatedHitTestResult="BorderLeft"/>
+            <Cell Site="row:1 column:2" AssociatedHitTestResult="BorderRight"/>
+            <Cell Site="row:0 column:1" AssociatedHitTestResult="BorderTop"/>
+            <Cell Site="row:2 column:1" AssociatedHitTestResult="BorderBottom"/>
+          </Table>
+
+          <Table ref.Name="contentTable" AlignmentToParent-bind="self.CustomFramePadding">
+            <att.Rows>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            </att.Rows>
+            <att.Columns>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
               <CellOption>composeType:MinSize</CellOption>
               <CellOption>composeType:MinSize</CellOption>
               <CellOption>composeType:MinSize</CellOption>
-              <CellOption>composeType:Absolute absolute:8</CellOption>
             </att.Columns>
-            
-            <Cell Site="row:0 column:0" AssociatedHitTestResult="BorderLeftTop"/>
-            <Cell Site="row:0 column:5" AssociatedHitTestResult="BorderRightTop"/>
-            <Cell Site="row:3 column:0" AssociatedHitTestResult="BorderLeftBottom"/>
-            <Cell Site="row:3 column:5" AssociatedHitTestResult="BorderRightBottom"/>
-            
-            <Cell Site="row:1 column:0 rowSpan:2 columnSpan:1" AssociatedHitTestResult="BorderLeft"/>
-            <Cell Site="row:1 column:5 rowSpan:2 columnSpan:1" AssociatedHitTestResult="BorderRight"/>
-            <Cell Site="row:0 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="BorderTop"/>
-            <Cell Site="row:3 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="BorderBottom"/>
-            
-            <Cell Site="row:1 column:2" AssociatedHitTestResult="ButtonMinimum">
-              <Button Text=" 0 " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+
+            <Cell Site="row:0 column:1">
+              <att.AssociatedHitTestResult-bind>self.MinimizedBox ? ButtonMinimum : NoDecision</att.AssociatedHitTestResult-bind>
+              <Button AutoFocus="false" Text=" 0 " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                <att.Enabled-bind>self.MinimizedBox</att.Enabled-bind>
+                <att.Visible-bind>self.MinimizedBox or self.MaximizedBox</att.Visible-bind>
+              </Button>
+            </Cell>
+            <Cell Site="row:0 column:2">
+              <att.AssociatedHitTestResult-bind>self.MaximizedBox ? ButtonMaximum : NoDecision</att.AssociatedHitTestResult-bind>
+              <Button AutoFocus="false" Text-bind="self.Maximized ? ' 1 ' : ' 2 '" Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                <att.Enabled-bind>self.MaximizedBox</att.Enabled-bind>
+                <att.Visible-bind>self.MinimizedBox or self.MaximizedBox</att.Visible-bind>
+              </Button>
+            </Cell>
+            <Cell Site="row:0 column:3" AssociatedHitTestResult="ButtonClose">
+              <Button AutoFocus="false" Text=" r " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
                 <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
               </Button>
             </Cell>
-            <Cell Site="row:1 column:3" AssociatedHitTestResult="ButtonMaximum">
-              <Button Text-bind="self.Maximized ? ' 1 ' : ' 2 '" Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
-                <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
-              </Button>
-            </Cell>
-            <Cell Site="row:1 column:4" AssociatedHitTestResult="ButtonClose">
-              <Button Text=" r " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
-                <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
-              </Button>
-            </Cell>
-          
-            <Cell Site="row:1 column:1" AssociatedHitTestResult="Title">
+
+            <Cell Site="row:0 column:0" AssociatedHitTestResult="Title">
               <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5">
-                <SolidLabel Color="#999999" Text-bind="self.Text" Ellipse="true" Font="fontFamily:'Segoe WP SemiLight' size:14 antialias:true"/>
+                <SolidLabel ref.Style="windowTitle" Text-bind="self.Text" Ellipse="true" Font="fontFamily:'Segoe WP SemiLight' size:14 antialias:true"/>
               </Bounds>
             </Cell>
-            <Cell Site="row:2 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="Client">
+            <Cell Site="row:1 column:0 columnSpan:4" AssociatedHitTestResult="Client">
               <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Cell>
           </Table>

@@ -1315,6 +1315,62 @@ IMPLEMENT_BRUSH_ELEMENT_RENDERER
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 
+			void GuiFocusRectangleElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiFocusRectangleElementRenderer::FinalizeInternal()
+			{
+				focusRectangleEffect = nullptr;
+			}
+
+			void GuiFocusRectangleElementRenderer::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
+			{
+				focusRectangleEffect = nullptr;
+				if (newRenderTarget)
+				{
+					focusRectangleEffect = newRenderTarget->GetFocusRectangleEffect();
+				}
+			}
+
+			void GuiFocusRectangleElementRenderer::Render(Rect bounds)
+			{
+				if (focusRectangleEffect)
+				{
+					ID2D1RenderTarget* d2dRenderTarget = renderTarget->GetDirect2DRenderTarget();
+					ID2D1DeviceContext* d2dDeviceContext = nullptr;
+
+					HRESULT hr = d2dRenderTarget->QueryInterface(&d2dDeviceContext);
+					if (SUCCEEDED(hr))
+					{
+						FLOAT x = (FLOAT)bounds.Left();
+						FLOAT y = (FLOAT)bounds.Top();
+						FLOAT x2 = (FLOAT)bounds.Right() - 1;
+						FLOAT y2 = (FLOAT)bounds.Bottom() - 1;
+						FLOAT w = (FLOAT)bounds.Width();
+						FLOAT h = (FLOAT)bounds.Height();
+
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y), D2D1::RectF(0, 0, w, 1), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_MASK_INVERT);
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y2), D2D1::RectF(0, y2 - y, w, h), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_MASK_INVERT);
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x, y + 1), D2D1::RectF(0, 1, 1, h - 1), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_MASK_INVERT);
+						d2dDeviceContext->DrawImage(focusRectangleEffect, D2D1::Point2F(x2, y + 1), D2D1::RectF(x2 - x, 1, w, h - 1), D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, D2D1_COMPOSITE_MODE_MASK_INVERT);
+					}
+
+					if (d2dDeviceContext)
+					{
+						d2dDeviceContext->Release();
+					}
+				}
+			}
+
+			void GuiFocusRectangleElementRenderer::OnElementStateChanged()
+			{
+			}
+
+/***********************************************************************
+GuiSolidBorderElementRenderer
+***********************************************************************/
+
 			IMPLEMENT_BRUSH_ELEMENT_RENDERER_SOLID_COLOR_BRUSH(GuiSolidBorderElementRenderer)
 			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiSolidBorderElementRenderer)
 			{
@@ -2692,6 +2748,7 @@ GuiDirect2DElement
 		{
 			using namespace elements;
 			using namespace collections;
+			using namespace windows;
 
 			D2D1::ColorF GetD2DColor(Color color)
 			{
@@ -3030,6 +3087,7 @@ WindowsDirect2DRenderTarget
 			protected:
 				INativeWindow*					window;
 				ID2D1RenderTarget*				d2dRenderTarget = nullptr;
+				ID2D1DeviceContext*				d2dDeviceContext = nullptr;
 				List<Rect>						clippers;
 				vint							clipperCoverWholeTargetCounter = 0;
 
@@ -3037,6 +3095,7 @@ WindowsDirect2DRenderTarget
 				CachedLinearBrushAllocator		linearBrushes;
 				CachedRadialBrushAllocator		radialBrushes;
 				ImageCacheList					imageCaches;
+				ComPtr<ID2D1Effect>				focusRectangleEffect;
 
 				ComPtr<IDWriteRenderingParams>	noAntialiasParams;
 				ComPtr<IDWriteRenderingParams>	horizontalAntialiasParams;
@@ -3225,6 +3284,46 @@ WindowsDirect2DRenderTarget
 					return clipperCoverWholeTargetCounter>0;
 				}
 
+				ID2D1Effect* GetFocusRectangleEffect()override
+				{
+					if (!focusRectangleEffect)
+					{
+						ID2D1RenderTarget* d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
+						ID2D1DeviceContext* d2dDeviceContext = nullptr;
+						HRESULT hr = d2dRenderTarget->QueryInterface(&d2dDeviceContext);
+						if (d2dDeviceContext)
+						{
+							if (auto wicFactory = GetWICImagingFactory())
+							{
+								BYTE effectMask[] = { 255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255 };
+								IWICBitmap* wicEffectBitmap = nullptr;
+								hr = wicFactory->CreateBitmapFromMemory(2, 2, GUID_WICPixelFormat32bppBGRA, 8, 16, effectMask, &wicEffectBitmap);
+								if (wicEffectBitmap)
+								{
+									ID2D1Bitmap* d2dEffectBitmap = nullptr;
+									auto properties = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
+									hr = d2dRenderTarget->CreateBitmapFromWicBitmap(wicEffectBitmap, &properties, &d2dEffectBitmap);
+									if (d2dEffectBitmap)
+									{
+										ID2D1Effect* d2dEffect = nullptr;
+										hr = d2dDeviceContext->CreateEffect(CLSID_D2D1Tile, &d2dEffect);
+										if (d2dEffect)
+										{
+											d2dEffect->SetInput(0, d2dEffectBitmap);
+											d2dEffect->SetValue(D2D1_TILE_PROP_RECT, D2D1::RectF(0, 0, 2, 2));
+											focusRectangleEffect = d2dEffect;
+										}
+										d2dEffectBitmap->Release();
+									}
+									wicEffectBitmap->Release();
+								}
+							}
+							d2dDeviceContext->Release();
+						}
+					}
+					return focusRectangleEffect.Obj();
+				}
+
 				ID2D1SolidColorBrush* CreateDirect2DBrush(Color color)override
 				{
 					return solidBrushes.Create(color).Obj();
@@ -3379,6 +3478,7 @@ void RendererMainDirect2D()
 	elements_windows_d2d::SetWindowsDirect2DResourceManager(&resourceManager);
 	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
 
+	elements_windows_d2d::GuiFocusRectangleElementRenderer::Register();
 	elements_windows_d2d::GuiSolidBorderElementRenderer::Register();
 	elements_windows_d2d::Gui3DBorderElementRenderer::Register();
 	elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
@@ -3750,9 +3850,39 @@ namespace vl
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 
+			void GuiFocusRectangleElementRenderer::InitializeInternal()
+			{
+				auto resourceManager = GetWindowsGDIResourceManager();
+				pen = resourceManager->GetFocusRectanglePen();
+			}
+
+			void GuiFocusRectangleElementRenderer::FinalizeInternal()
+			{
+			}
+
+			void GuiFocusRectangleElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
+			{
+			}
+
+			void GuiFocusRectangleElementRenderer::Render(Rect bounds)
+			{
+				int originRop2 = renderTarget->GetDC()->SetRasterOperation(R2_XORPEN);
+				renderTarget->GetDC()->SetPen(pen);
+				renderTarget->GetDC()->Rectangle(bounds.Left(), bounds.Top(), bounds.Right() - 1, bounds.Bottom() - 1);
+				renderTarget->GetDC()->SetRasterOperation(originRop2);
+			}
+
+			void GuiFocusRectangleElementRenderer::OnElementStateChanged()
+			{
+			}
+
+/***********************************************************************
+GuiSolidBorderElementRenderer
+***********************************************************************/
+
 			void GuiSolidBorderElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				oldColor=element->GetColor();
 				pen=resourceManager->CreateGdiPen(oldColor);
 				brush=resourceManager->CreateGdiBrush(Color(0, 0, 0, 0));
@@ -3760,7 +3890,7 @@ GuiSolidBorderElementRenderer
 
 			void GuiSolidBorderElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiPen(oldColor);
 				resourceManager->DestroyGdiBrush(Color(0, 0, 0, 0));
 			}
@@ -3797,7 +3927,7 @@ GuiSolidBorderElementRenderer
 				Color color=element->GetColor();
 				if(oldColor!=color)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor);
 					oldColor=color;
 					pen=resourceManager->CreateGdiPen(oldColor);
@@ -3810,7 +3940,7 @@ Gui3DBorderElementRenderer
 
 			void Gui3DBorderElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				oldColor1=element->GetColor1();
 				oldColor2=element->GetColor2();
 				pen1=resourceManager->CreateGdiPen(oldColor1);
@@ -3819,7 +3949,7 @@ Gui3DBorderElementRenderer
 
 			void Gui3DBorderElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiPen(oldColor1);
 				resourceManager->DestroyGdiPen(oldColor2);
 			}
@@ -3853,7 +3983,7 @@ Gui3DBorderElementRenderer
 				Color color1=element->GetColor1();
 				if(oldColor1!=color1)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor1);
 					oldColor1=color1;
 					pen1=resourceManager->CreateGdiPen(oldColor1);
@@ -3862,7 +3992,7 @@ Gui3DBorderElementRenderer
 				Color color2=element->GetColor2();
 				if(oldColor2!=color2)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor2);
 					oldColor2=color2;
 					pen2=resourceManager->CreateGdiPen(oldColor2);
@@ -3875,7 +4005,7 @@ Gui3DSplitterElementRenderer
 
 			void Gui3DSplitterElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				oldColor1=element->GetColor1();
 				oldColor2=element->GetColor2();
 				pen1=resourceManager->CreateGdiPen(oldColor1);
@@ -3884,7 +4014,7 @@ Gui3DSplitterElementRenderer
 
 			void Gui3DSplitterElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiPen(oldColor1);
 				resourceManager->DestroyGdiPen(oldColor2);
 			}
@@ -3936,7 +4066,7 @@ Gui3DSplitterElementRenderer
 				Color color1=element->GetColor1();
 				if(oldColor1!=color1)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor1);
 					oldColor1=color1;
 					pen1=resourceManager->CreateGdiPen(oldColor1);
@@ -3945,7 +4075,7 @@ Gui3DSplitterElementRenderer
 				Color color2=element->GetColor2();
 				if(oldColor2!=color2)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor2);
 					oldColor2=color2;
 					pen2=resourceManager->CreateGdiPen(oldColor2);
@@ -3958,7 +4088,7 @@ GuiSolidBackgroundElementRenderer
 
 			void GuiSolidBackgroundElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				oldColor=element->GetColor();
 				pen=resourceManager->CreateGdiPen(oldColor);
 				brush=resourceManager->CreateGdiBrush(oldColor);
@@ -3966,7 +4096,7 @@ GuiSolidBackgroundElementRenderer
 
 			void GuiSolidBackgroundElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiPen(oldColor);
 				resourceManager->DestroyGdiBrush(oldColor);
 			}
@@ -4003,7 +4133,7 @@ GuiSolidBackgroundElementRenderer
 				Color color=element->GetColor();
 				if(oldColor!=color)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldColor);
 					resourceManager->DestroyGdiBrush(oldColor);
 					oldColor=color;
@@ -4233,14 +4363,14 @@ GuiSolidLabelElementRenderer
 
 			void GuiSolidLabelElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				oldFont=element->GetFont();
 				font=resourceManager->CreateGdiFont(oldFont);
 			}
 
 			void GuiSolidLabelElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiFont(oldFont);
 			}
 
@@ -4325,7 +4455,7 @@ GuiSolidLabelElementRenderer
 				FontProperties fontProperties=element->GetFont();
 				if(oldFont!=fontProperties)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiFont(oldFont);
 					oldFont=fontProperties;
 					font=resourceManager->CreateGdiFont(oldFont);
@@ -4341,7 +4471,7 @@ GuiImageFrameElementRenderer
 			{
 				if(element->GetImage())
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					INativeImageFrame* frame=element->GetImage()->GetFrame(element->GetFrameIndex());
 					bitmap=resourceManager->GetBitmap(frame, element->GetEnabled());
 
@@ -4423,7 +4553,7 @@ GuiImageFrameElementRenderer
 					}
 					if(element->GetImage()->GetFormat()==INativeImage::Gif &&  element->GetFrameIndex()>0)
 					{
-						IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+						auto resourceManager=GetWindowsGDIResourceManager();
 						vint max=element->GetFrameIndex();
 						for(vint i=0;i<=max;i++)
 						{
@@ -4457,14 +4587,14 @@ GuiPolygonElementRenderer
 
 			void GuiPolygonElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				pen=resourceManager->CreateGdiPen(oldPenColor);
 				brush=resourceManager->CreateGdiBrush(oldBrushColor);
 			}
 
 			void GuiPolygonElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				resourceManager->DestroyGdiPen(oldPenColor);
 				resourceManager->DestroyGdiBrush(oldBrushColor);
 			}
@@ -4530,7 +4660,7 @@ GuiPolygonElementRenderer
 					}
 				}
 
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				if(oldPenColor!=element->GetBorderColor() || !pen)
 				{
 					resourceManager->DestroyGdiPen(oldPenColor);
@@ -4551,7 +4681,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::DestroyColors()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				for(vint i=0;i<colors.Count();i++)
 				{
 					resourceManager->DestroyGdiBrush(colors[i].normal.background);
@@ -4562,7 +4692,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::ColorChanged()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				ColorArray newColors;
 				newColors.Resize(element->GetColors().Count());
 				for(vint i=0;i<newColors.Count();i++)
@@ -4588,7 +4718,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::FontChanged()
 			{
-				IWindowsGDIResourceManager* resourceManager = GetWindowsGDIResourceManager();
+				auto resourceManager = GetWindowsGDIResourceManager();
 				if (font)
 				{
 					element->GetLines().SetCharMeasurer(nullptr);
@@ -4603,7 +4733,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::InitializeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				element->SetCallback(this);
 				oldCaretColor=element->GetCaretColor();
 				caretPen=resourceManager->CreateGdiPen(oldCaretColor);
@@ -4611,7 +4741,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::FinalizeInternal()
 			{
-				IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+				auto resourceManager=GetWindowsGDIResourceManager();
 				if(font)
 				{
 					resourceManager->DestroyGdiFont(oldFont);
@@ -4732,7 +4862,7 @@ GuiColorizedTextElementRenderer
 				Color caretColor=element->GetCaretColor();
 				if(oldCaretColor!=caretColor)
 				{
-					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
+					auto resourceManager=GetWindowsGDIResourceManager();
 					resourceManager->DestroyGdiPen(oldCaretColor);
 					oldCaretColor=caretColor;
 					caretPen=resourceManager->CreateGdiPen(oldCaretColor);
@@ -7602,6 +7732,7 @@ WindowsGDIResourceManager
 			protected:
 				SortedList<Ptr<WindowsGDIRenderTarget>>		renderTargets;
 				Ptr<WindowsGDILayoutProvider>				layoutProvider;
+				Ptr<WinPen>									focusRectanglePen;
 				CachedPenAllocator							pens;
 				CachedBrushAllocator						brushes;
 				CachedFontAllocator							fonts;
@@ -7643,6 +7774,16 @@ WindowsGDIResourceManager
 					WindowsGDIRenderTarget* renderTarget=dynamic_cast<WindowsGDIRenderTarget*>(GetWindowsGDIObjectProvider()->GetBindedRenderTarget(window));
 					GetWindowsGDIObjectProvider()->SetBindedRenderTarget(window, 0);
 					renderTargets.Remove(renderTarget);
+				}
+
+				Ptr<windows::WinPen> GetFocusRectanglePen()override
+				{
+					if (!focusRectanglePen)
+					{
+						DWORD styleArray[] = { 1,1 };
+						focusRectanglePen = new WinPen(PS_USERSTYLE, PS_ENDCAP_FLAT, PS_JOIN_BEVEL, 1, RGB(255, 255, 255), (DWORD)(sizeof(styleArray) / sizeof(*styleArray)), styleArray);
+					}
+					return focusRectanglePen;
 				}
 
 				Ptr<windows::WinPen> CreateGdiPen(Color color)override
@@ -7761,6 +7902,7 @@ void RendererMainGDI()
 	elements_windows_gdi::SetWindowsGDIResourceManager(&resourceManager);
 	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
 
+	elements_windows_gdi::GuiFocusRectangleElementRenderer::Register();
 	elements_windows_gdi::GuiSolidBorderElementRenderer::Register();
 	elements_windows_gdi::Gui3DBorderElementRenderer::Register();
 	elements_windows_gdi::Gui3DSplitterElementRenderer::Register();
@@ -7907,7 +8049,10 @@ WindowsForm
 					SetWindowLongPtr(handle, GWL_STYLE, Long);
 					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
 				}
-
+#pragma push_macro("_CONTROL")
+#if defined _CONTROL
+#undef _CONTROL
+#endif
 				NativeWindowMouseInfo ConvertMouse(WPARAM wParam, LPARAM lParam, bool wheelMessage, bool nonClient)
 				{
 					NativeWindowMouseInfo info;
@@ -7939,11 +8084,11 @@ WindowsForm
 
 					if (nonClient)
 					{
-						info.ctrl = WinIsKeyPressing(VK_CONTROL);
-						info.shift = WinIsKeyPressing(VK_SHIFT);
-						info.left= WinIsKeyPressing(MK_LBUTTON);
-						info.middle= WinIsKeyPressing(MK_MBUTTON);
-						info.right = WinIsKeyPressing(MK_RBUTTON);
+						info.ctrl = WinIsKeyPressing(VKEY::_CONTROL);
+						info.shift = WinIsKeyPressing(VKEY::_SHIFT);
+						info.left= WinIsKeyPressing(VKEY::_LBUTTON);
+						info.middle= WinIsKeyPressing(VKEY::_MBUTTON);
+						info.right = WinIsKeyPressing(VKEY::_RBUTTON);
 						
 						POINTS point = MAKEPOINTS(lParam);
 						Point offset = GetClientBoundsInScreen().LeftTop();
@@ -7952,11 +8097,11 @@ WindowsForm
 					}
 					else
 					{
-						info.ctrl=(wParam & MK_CONTROL)!=0;
-						info.shift=(wParam & MK_SHIFT)!=0;
-						info.left=(wParam & MK_LBUTTON)!=0;
-						info.middle=(wParam & MK_MBUTTON)!=0;
-						info.right=(wParam & MK_RBUTTON)!=0;
+						info.ctrl=((VKEY)wParam & VKEY::_CONTROL)!=(VKEY)0;
+						info.shift=((VKEY)wParam & VKEY::_SHIFT)!= (VKEY)0;
+						info.left=((VKEY)wParam & VKEY::_LBUTTON)!= (VKEY)0;
+						info.middle=((VKEY)wParam & VKEY::_MBUTTON)!= (VKEY)0;
+						info.right=((VKEY)wParam & VKEY::_RBUTTON)!= (VKEY)0;
 
 						POINTS point = MAKEPOINTS(lParam);
 
@@ -7978,11 +8123,12 @@ WindowsForm
 				NativeWindowKeyInfo ConvertKey(WPARAM wParam, LPARAM lParam)
 				{
 					NativeWindowKeyInfo info;
-					info.code=wParam;
-					info.ctrl=WinIsKeyPressing(VK_CONTROL);
-					info.shift=WinIsKeyPressing(VK_SHIFT);
-					info.alt=WinIsKeyPressing(VK_MENU);
-					info.capslock=WinIsKeyToggled(VK_CAPITAL);
+					info.code=(VKEY)wParam;
+					info.ctrl=WinIsKeyPressing(VKEY::_CONTROL);
+					info.shift=WinIsKeyPressing(VKEY::_SHIFT);
+					info.alt=WinIsKeyPressing(VKEY::_MENU);
+					info.capslock=WinIsKeyToggled(VKEY::_CAPITAL);
+					info.autoRepeatKeyDown = (((vuint32_t)lParam) >> 30) % 2 == 1;
 					return info;
 				}
 
@@ -7990,12 +8136,13 @@ WindowsForm
 				{
 					NativeWindowCharInfo info;
 					info.code=(wchar_t)wParam;
-					info.ctrl=WinIsKeyPressing(VK_CONTROL);
-					info.shift=WinIsKeyPressing(VK_SHIFT);
-					info.alt=WinIsKeyPressing(VK_MENU);
-					info.capslock=WinIsKeyToggled(VK_CAPITAL);
+					info.ctrl=WinIsKeyPressing(VKEY::_CONTROL);
+					info.shift=WinIsKeyPressing(VKEY::_SHIFT);
+					info.alt=WinIsKeyPressing(VKEY::_MENU);
+					info.capslock=WinIsKeyToggled(VKEY::_CAPITAL);
 					return info;
 				}
+#pragma pop_macro("_CONTROL")
 
 				void TrackMouse(bool enable)
 				{
@@ -8320,6 +8467,7 @@ WindowsForm
 					case WM_KEYUP:
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
+							info.autoRepeatKeyDown = false;
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->KeyUp(info);
@@ -8338,7 +8486,8 @@ WindowsForm
 					case WM_SYSKEYUP:
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
-							if (supressingAlt && !info.ctrl && !info.shift && info.code == VK_MENU)
+							info.autoRepeatKeyDown = false;
+							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::_MENU)
 							{
 								supressingAlt = false;
 								break;
@@ -8352,7 +8501,7 @@ WindowsForm
 					case WM_SYSKEYDOWN:
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
-							if (supressingAlt && !info.ctrl && !info.shift && info.code == VK_MENU)
+							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::_MENU)
 							{
 								break;
 							}
@@ -8579,6 +8728,7 @@ WindowsForm
 				List<Ptr<INativeMessageHandler>>	messageHandlers;
 				bool								supressingAlt = false;
 				Ptr<bool>							flagDisposed = new bool(false);
+				Margin								customFramePadding;
 
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
@@ -8586,6 +8736,9 @@ WindowsForm
 					DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
 					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 					handle=CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
+
+					auto padding = (vint)(GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER));
+					customFramePadding = Margin(padding, padding, padding, padding);
 				}
 
 				~WindowsForm()
@@ -8812,6 +8965,18 @@ WindowsForm
 				bool IsCustomFrameModeEnabled()
 				{
 					return customFrameMode;
+				}
+
+				Margin GetCustomFramePadding()
+				{
+					if (GetSizeBox() || GetTitleBar())
+					{
+						return customFramePadding;
+					}
+					else
+					{
+						return Margin(0, 0, 0, 0);
+					}
 				}
 
 				WindowSizeState GetSizeState()
@@ -9425,6 +9590,7 @@ Windows Platform Native Controller
 .\NATIVEWINDOW\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.CPP
 ***********************************************************************/
 #pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dwrite.lib")
 #pragma comment(lib, "d3d11.lib")
 
@@ -10873,14 +11039,14 @@ WinPen
 			FHandle=CreatePen((int)Style, (int)Width, (int)Color);
 		}
 
-		WinPen::WinPen(vint Style, vint EndCap, vint Join, vint Width, COLORREF Color)
+		WinPen::WinPen(vint Style, vint EndCap, vint Join, vint Width, COLORREF Color, DWORD styleCount, const DWORD* styleArray)
 		{
 			FDIBMemory=0;
 			LOGBRUSH Brush;
 			Brush.lbColor=Color;
 			Brush.lbStyle=BS_SOLID;
 			Brush.lbHatch=0;
-			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, 0, 0);
+			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, styleCount, styleArray);
 		}
 
 		WinPen::WinPen(vint Style, vint EndCap, vint Join, vint Hatch, vint Width, COLORREF Color)
@@ -10890,7 +11056,7 @@ WinPen
 			Brush.lbColor=Color;
 			Brush.lbStyle=BS_HATCHED;
 			Brush.lbHatch=Hatch;
-			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, 0, 0);
+			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, NULL, NULL);
 		}
 
 		WinPen::WinPen(WinBitmap::Ptr DIB, vint Style, vint EndCap, vint Join, vint Width)
@@ -10906,7 +11072,7 @@ WinPen
 			Brush.lbColor=RGB(0, 0, 0);
 			Brush.lbStyle=BS_DIBPATTERNPT;
 			Brush.lbHatch=(ULONG_PTR)FDIBMemory;
-			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, 0, 0);
+			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, NULL, NULL);
 		}
 
 		WinPen::~WinPen()
@@ -11137,6 +11303,11 @@ WinDC
 		void WinDC::SetBrushOrigin(POINT Point)
 		{
 			SetBrushOrgEx(FHandle, Point.x, Point.y, NULL);
+		}
+
+		int WinDC::SetRasterOperation(int rop2)
+		{
+			return SetROP2(FHandle, rop2);
 		}
 
 		/*------------------------------------------------------------------------------*/
@@ -12691,14 +12862,14 @@ WindowsClipboardWriter
 				imageData = value;
 			}
 
-			void WindowsClipboardWriter::Submit()
+			bool WindowsClipboardWriter::Submit()
 			{
 				if (service->reader)
 				{
 					service->reader->CloseClipboard();
 				}
 
-				CHECK_ERROR(::OpenClipboard(service->ownerHandle), L"WindowsClipboardWriter::Submit()#Failed to open the clipboard.");
+				if (!::OpenClipboard(service->ownerHandle)) return false;
 				::EmptyClipboard();
 
 				if (textData)
@@ -12753,11 +12924,23 @@ WindowsClipboardWriter
 				}
 
 				::CloseClipboard();
+				return true;
 			}
 
 /***********************************************************************
 WindowsClipboardService
 ***********************************************************************/
+
+			class WindowsFakeClipboardReader : public Object, public INativeClipboardReader
+			{
+			public:
+				bool							ContainsText()override { return false; }
+				WString							GetText()override { return L""; }
+				bool							ContainsDocument()override { return false; }
+				Ptr<DocumentModel>				GetDocument()override { return nullptr; }
+				bool							ContainsImage()override { return false; }
+				Ptr<INativeImage>				GetImage()override { return nullptr; }
+			};
 
 			WindowsClipboardService::WindowsClipboardService()
 				:ownerHandle(NULL)
@@ -12771,7 +12954,7 @@ WindowsClipboardService
 			{
 				if (!reader)
 				{
-					CHECK_ERROR(::OpenClipboard(ownerHandle), L"WindowsClipboardWriter::Submit()#Failed to open the clipboard.");
+					if (!::OpenClipboard(ownerHandle)) return new WindowsFakeClipboardReader;
 					reader = new WindowsClipboardReader(this);
 				}
 				return reader;
@@ -13763,12 +13946,12 @@ namespace vl
 	{
 		namespace windows
 		{
-			bool WinIsKeyPressing(vint code)
+			bool WinIsKeyPressing(VKEY code)
 			{
 				return (GetKeyState((int)code)&0xF0)!=0;
 			}
 
-			bool WinIsKeyToggled(vint code)
+			bool WinIsKeyToggled(VKEY code)
 			{
 				return (GetKeyState((int)code)&0x0F)!=0;
 			}
@@ -13777,12 +13960,12 @@ namespace vl
 WindowsInputService
 ***********************************************************************/
 
-			WString WindowsInputService::GetKeyNameInternal(vint code)
+			WString WindowsInputService::GetKeyNameInternal(VKEY code)
 			{
-				if (code < 8) return L"?";
+				if ((vint)code < 8) return L"?";
 				wchar_t name[256]={0};
 				vint scanCode=MapVirtualKey((int)code, MAPVK_VK_TO_VSC)<<16;
-				switch(code)
+				switch((vint)code)
 				{
 				case VK_INSERT:
 				case VK_DELETE:
@@ -13813,10 +13996,10 @@ WindowsInputService
 			{
 				for (vint i = 0; i < keyNames.Count(); i++)
 				{
-					keyNames[i] = GetKeyNameInternal(i);
+					keyNames[i] = GetKeyNameInternal((VKEY)i);
 					if (keyNames[i] != L"?")
 					{
-						keys.Set(keyNames[i], i);
+						keys.Set(keyNames[i], (VKEY)i);
 					}
 				}
 			}
@@ -13881,21 +14064,21 @@ WindowsInputService
 				return isTimerEnabled;
 			}
 				
-			bool WindowsInputService::IsKeyPressing(vint code)
+			bool WindowsInputService::IsKeyPressing(VKEY code)
 			{
 				return WinIsKeyPressing(code);
 			}
 
-			bool WindowsInputService::IsKeyToggled(vint code)
+			bool WindowsInputService::IsKeyToggled(VKEY code)
 			{
 				return WinIsKeyToggled(code);
 			}
 
-			WString WindowsInputService::GetKeyName(vint code)
+			WString WindowsInputService::GetKeyName(VKEY code)
 			{
-				if (0 <= code && 0 < keyNames.Count())
+				if (0 <= (vint)code && (vint)code < keyNames.Count())
 				{
-					return keyNames[code];
+					return keyNames[(vint)code];
 				}
 				else
 				{
@@ -13903,10 +14086,10 @@ WindowsInputService
 				}
 			}
 
-			vint WindowsInputService::GetKey(const WString& name)
+			VKEY WindowsInputService::GetKey(const WString& name)
 			{
 				vint index = keys.Keys().IndexOf(name);
-				return index == -1 ? -1 : keys.Values()[index];
+				return index == -1 ? VKEY::_UNKNOWN : keys.Values()[index];
 			}
 		}
 	}
