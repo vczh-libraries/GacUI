@@ -253,6 +253,7 @@
     <Xml Include="Resources\FullControlTest\AnimationTabPage.xml" />
     <Xml Include="Resources\FullControlTest\DataGridComponents.xml" />
     <Xml Include="Resources\FullControlTest\DataGridTabPage.xml" />
+    <Xml Include="Resources\FullControlTest\DatePickerTabPage.xml" />
     <Xml Include="Resources\FullControlTest\DocumentComponents.xml" />
     <Xml Include="Resources\FullControlTest\DocumentEditorBase.xml" />
     <Xml Include="Resources\FullControlTest\DocumentEditorRibbon.xml" />

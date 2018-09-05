@@ -1,0 +1,62 @@
+<Folder>
+  <Instance name="DatePickerTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DatePickerTabPage">
+      <TabPage ref.Name="self" Text="DatePicker">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <DatePicker ref.Name="dp1" Alt="D">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </DatePicker>
+          </Cell>
+
+          <Cell Site="row:0 column:1">
+            <DatePicker ref.Name="dp2" Alt="D">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </DatePicker>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <DateComboBox ref.Name="dc1" Alt="D">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </DateComboBox>
+          </Cell>
+
+          <Cell Site="row:1 column:1">
+            <DateComboBox ref.Name="dc2" Alt="D">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </DateComboBox>
+          </Cell>
+
+          <Cell Site="row:0 column:2 rowSpan:2">
+            <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical" Padding="5">
+              <StackItem>
+                <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text-format="DP1: $(dp1.Date)"/>
+              </StackItem>
+              <StackItem>
+                <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text-format="DP2: $(dp2.Date)"/>
+              </StackItem>
+              <StackItem>
+                <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text-format="DC1: $(dc1.SelectedDate)"/>
+              </StackItem>
+              <StackItem>
+                <SolidLabel Font-bind="self.Font" Color="#FFFFFF" Text-format="DC2: $(dc2.SelectedDate)"/>
+              </StackItem>
+            </Stack>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+</Folder>
