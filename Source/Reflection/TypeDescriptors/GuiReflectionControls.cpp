@@ -994,6 +994,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(GuiPopup)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiMenu, GuiControl*, owner)
 
+				CLASS_MEMBER_PROPERTY_FAST(HideOnDeactivateAltHost)
 				CLASS_MEMBER_METHOD(UpdateMenuService, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiMenu)
 

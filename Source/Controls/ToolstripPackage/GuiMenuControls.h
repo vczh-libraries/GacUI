@@ -93,6 +93,7 @@ Menu
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MenuTemplate, GuiPopup)
 			private:
 				IGuiMenuService*						parentMenuService;
+				bool									hideOnDeactivateAltHost = true;
 
 				IGuiMenuService*						GetParentMenuService()override;
 				Direction								GetPreferredDirection()override;
@@ -117,6 +118,13 @@ Menu
 				/// <summary>Update the reference to the parent <see cref="IGuiMenuService"/>. This function is not required to call outside the menu or menu item control.</summary>
 				void									UpdateMenuService();
 				IDescriptable*							QueryService(const WString& identifier)override;
+
+				/// <summary>Test if this menu hide after pressing ESC key to exit to the upper level of ALT shortcuts.</summary>
+				/// <returns>Returns true if this menu hide after pressing ESC key to exit to the upper level of ALT shortcuts.</returns>
+				bool									GetHideOnDeactivateAltHost();
+				/// <summary>Set if this menu hide after pressing ESC key to exit to the upper level of ALT shortcuts.</summary>
+				/// <param name="value">Set to true to make this menu hide after pressing ESC key to exit to the upper level of ALT shortcuts.</param>
+				void									SetHideOnDeactivateAltHost(bool value);
 			};
 			
 			/// <summary>Menu bar.</summary>

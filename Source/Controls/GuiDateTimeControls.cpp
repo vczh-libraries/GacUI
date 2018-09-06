@@ -257,7 +257,9 @@ GuiDateComboBox
 				datePicker->DateLocaleChanged.AttachMethod(this, &GuiDateComboBox::datePicker_DateLocaleChanged);
 				datePicker->DateFormatChanged.AttachMethod(this, &GuiDateComboBox::datePicker_DateFormatChanged);
 				datePicker->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+
 				GetSubMenu()->GetContainerComposition()->AddChild(datePicker->GetBoundsComposition());
+				GetSubMenu()->SetHideOnDeactivateAltHost(false);
 
 				selectedDate=datePicker->GetDate();
 				SubMenuOpeningChanged.AttachMethod(this, &GuiDateComboBox::OnSubMenuOpeningChanged);

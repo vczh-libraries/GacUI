@@ -103,7 +103,11 @@ GuiMenu
 
 			void GuiMenu::OnDeactivatedAltHost()
 			{
-				Hide();
+				if(hideOnDeactivateAltHost)
+				{
+					Hide();
+				}
+				GuiPopup::OnDeactivatedAltHost();
 			}
 
 			void GuiMenu::MouseClickedOnOtherWindow(GuiWindow* window)
@@ -161,6 +165,16 @@ GuiMenu
 				{
 					return GuiPopup::QueryService(identifier);
 				}
+			}
+			
+			bool GuiMenu::GetHideOnDeactivateAltHost()
+			{
+				return hideOnDeactivateAltHost;
+			}
+
+			void GuiMenu::SetHideOnDeactivateAltHost(bool value)
+			{
+				hideOnDeactivateAltHost = value;
 			}
 
 /***********************************************************************
