@@ -83,10 +83,10 @@ void GuiMain()
 #define SOURCE_FOLDER L"../TestCppCodegen/Source/"
 
 	List<WString> dependencies;
-	// LoadResource(CompileResources(L"DarkSkin",	dependencies,	LR"(Resources/DarkSkin/Resource.xml)",			BINARY_FOLDER, SOURCE_FOLDER, true));
-	LoadResource(L"../TestCppCodegen/DarkSkin.UI.bin");
-	// LoadResource(CompileResources(L"Demo",		dependencies,	LR"(Resources/FullControlTest/Resource.xml)",	BINARY_FOLDER, SOURCE_FOLDER, false));
-	LoadResource(L"../TestCppCodegen/Demo.UI.bin");
+	LoadResource(CompileResources(L"DarkSkin",	dependencies,	LR"(Resources/DarkSkin/Resource.xml)",			BINARY_FOLDER, SOURCE_FOLDER, true));
+	//LoadResource(L"../TestCppCodegen/DarkSkin.UI.bin");
+	LoadResource(CompileResources(L"Demo",		dependencies,	LR"(Resources/FullControlTest/Resource.xml)",	BINARY_FOLDER, SOURCE_FOLDER, false));
+	//LoadResource(L"../TestCppCodegen/Demo.UI.bin");
 
 #undef BINARY_FOLDER
 #undef SOURCE_FOLDER

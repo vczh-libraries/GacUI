@@ -72,9 +72,9 @@ IGuiAltAction
 				{
 					auto current = controls[index++];
 
-					if (current != control || includeThisControl)
+					if (current != current || includeThisControl)
 					{
-						if (auto container = control->QueryTypedService<IGuiAltActionContainer>())
+						if (auto container = current->QueryTypedService<IGuiAltActionContainer>())
 						{
 							vint count = container->GetAltActionCount();
 							for (vint i = 0; i < count; i++)
@@ -84,7 +84,7 @@ IGuiAltAction
 							}
 							continue;
 						}
-						else if (auto action = control->QueryTypedService<IGuiAltAction>())
+						else if (auto action = current->QueryTypedService<IGuiAltAction>())
 						{
 							if (action->IsAltAvailable())
 							{
@@ -97,10 +97,10 @@ IGuiAltAction
 						}
 					}
 
-					vint count = control->GetChildrenCount();
+					vint count = current->GetChildrenCount();
 					for (vint i = 0; i < count; i++)
 					{
-						controls.Add(control->GetChild(i));
+						controls.Add(current->GetChild(i));
 					}
 				}
 			}
