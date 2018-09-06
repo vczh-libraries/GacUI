@@ -691,7 +691,7 @@ GuiWindow
 
 			void GuiWindow::CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)
 			{
-				IGuiAltActionHost::CollectAltActionsFromControl(this, actions);
+				IGuiAltActionHost::CollectAltActionsFromControl(this, true, actions);
 			}
 
 			void GuiWindow::OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -712,7 +712,6 @@ GuiWindow
 
 			GuiWindow::GuiWindow(theme::ThemeName themeName)
 				:GuiControlHost(themeName)
-				,previousAltHost(0)
 			{
 				INativeWindow* window=GetCurrentController()->WindowService()->CreateNativeWindow();
 				SetNativeWindow(window);

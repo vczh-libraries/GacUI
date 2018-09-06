@@ -72,6 +72,7 @@ namespace vl
 			F(SelectableButtonTemplate,		CheckBox)					\
 			F(SelectableButtonTemplate,		RadioButton)				\
 			F(DatePickerTemplate,			DatePicker)					\
+			F(DateComboBoxTemplate,			DateComboBox)				\
 			F(ScrollTemplate,				HScroll)					\
 			F(ScrollTemplate,				VScroll)					\
 			F(ScrollTemplate,				HTracker)					\

@@ -195,16 +195,11 @@ GuiControlInstanceLoader
 GuiPredefinedInstanceLoadersPlugin
 ***********************************************************************/
 
-			Ptr<WfExpression> CreateStandardDataPicker(IGuiInstanceLoader::ArgumentMap&)
+			Ptr<WfExpression> CreateTrue(IGuiInstanceLoader::ArgumentMap&)
 			{
-				using TLoader = GuiTemplateControlInstanceLoader<GuiDatePicker>;
-
-				auto controlType = TypeInfoRetriver<GuiDatePicker*>::CreateTypeInfo();
-				auto createControl = MakePtr<WfNewClassExpression>();
-				createControl->type = GetTypeFromTypeInfo(controlType.Obj());
-				createControl->arguments.Add(TLoader::CreateThemeName(theme::ThemeName::DatePicker));
-
-				return createControl;
+				auto expr = MakePtr<WfLiteralExpression>();
+				expr->value = WfLiteralValue::True;
+				return expr;
 			}
 
 			void InitializeTrackerProgressBar(const WString& variableName, Ptr<WfBlockStatement> block)
@@ -258,16 +253,6 @@ GuiPredefinedInstanceLoadersPlugin
 				)\
 			)
 
-	#define ADD_TEMPLATE_CONTROL_2(TYPENAME, THEME_NAME, ARGUMENT_FUNCTION)\
-		manager->SetLoader(\
-		new GuiTemplateControlInstanceLoader<TYPENAME>(\
-				L"presentation::controls::" L ## #TYPENAME,\
-				theme::ThemeName::THEME_NAME,\
-				ARGUMENT_FUNCTION,\
-				nullptr\
-				)\
-			)
-
 	#define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, THEME_NAME)\
 		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
 		new GuiTemplateControlInstanceLoader<TYPENAME>(\
@@ -303,7 +288,7 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,			MultilineTextBox									);
 					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,			SinglelineTextBox									);
 					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,					DatePicker											);
-					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,				ComboBox,				CreateStandardDataPicker	);
+					ADD_TEMPLATE_CONTROL	(							GuiDateComboBox,				DateComboBox										);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonTab,					RibbonTab											);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonTabPage,				CustomControl										);
 					ADD_TEMPLATE_CONTROL	(							GuiRibbonGroup,					RibbonGroup											);
@@ -345,7 +330,6 @@ GuiPredefinedInstanceLoadersPlugin
 					LoadTemplates(manager);
 
 	#undef ADD_TEMPLATE_CONTROL
-	#undef ADD_TEMPLATE_CONTROL_2
 	#undef ADD_VIRTUAL_CONTROL
 	#undef ADD_VIRTUAL_CONTROL_F
 	#endif

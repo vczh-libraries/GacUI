@@ -24,7 +24,7 @@ DatePicker
 ***********************************************************************/
 
 			/// <summary>Date picker control that display a calendar.</summary>
-			class GuiDatePicker : public GuiControl, public Description<GuiDatePicker>
+			class GuiDatePicker : public GuiControl, protected compositions::IGuiAltActionHost, public Description<GuiDatePicker>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DatePickerTemplate, GuiControl)
 			protected:
@@ -45,12 +45,23 @@ DatePicker
 				DateTime												date;
 				WString													dateFormat;
 				Locale													dateLocale;
+				compositions::IGuiAltActionHost*						previousAltHost = nullptr;
+				bool													nestedAlt = false;
 
 				void													UpdateText();
+				bool													IsAltAvailable()override;
+				compositions::IGuiAltActionHost*						GetActivatingAltHost()override;
+				compositions::GuiGraphicsComposition*					GetAltComposition()override;
+				compositions::IGuiAltActionHost*						GetPreviousAltHost()override;
+				void													OnActivatedAltHost(IGuiAltActionHost* previousHost)override;
+				void													OnDeactivatedAltHost()override;
+				void													CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
+
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiDatePicker(theme::ThemeName themeName);
+				/// <param name="_nestedAlt">Set to true to make this date picker an <see cref="compositions::IGuiAltActionHost"/>.</param>
+				GuiDatePicker(theme::ThemeName themeName, bool _nestedAlt = true);
 				~GuiDatePicker();
 
 				/// <summary>Date changed event.</summary>
@@ -63,6 +74,8 @@ DatePicker
 				compositions::GuiNotifyEvent							DateFormatChanged;
 				/// <summary>Date locale changed event.</summary>
 				compositions::GuiNotifyEvent							DateLocaleChanged;
+
+				IDescriptable*											QueryService(const WString& identifier)override;
 				
 				/// <summary>Get the displayed date.</summary>
 				/// <returns>The date.</returns>
@@ -93,6 +106,7 @@ DateComboBox
 			/// <summary>A combo box control with a date picker control.</summary>
 			class GuiDateComboBox : public GuiComboBoxBase, public Description<GuiDateComboBox>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DateComboBoxTemplate, GuiComboBoxBase)
 			protected:
 				GuiDatePicker*											datePicker;
 				DateTime												selectedDate;
@@ -107,7 +121,7 @@ DateComboBox
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_datePicker">The date picker control to show in the popup.</param>
-				GuiDateComboBox(theme::ThemeName themeName, GuiDatePicker* _datePicker);
+				GuiDateComboBox(theme::ThemeName themeName);
 				~GuiDateComboBox();
 				
 				/// <summary>Selected data changed event.</summary>

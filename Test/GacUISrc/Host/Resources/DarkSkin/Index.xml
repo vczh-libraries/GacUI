@@ -31,6 +31,7 @@
     <att.CheckBox>x:CheckBoxTemplate</att.CheckBox>
     <att.RadioButton>x:RadioButtonTemplate</att.RadioButton>
     <att.DatePicker>x:DatePickerTemplate</att.DatePicker>
+    <att.DateComboBox>x:ComboBoxTemplate</att.DateComboBox>
     <att.HScroll>x:HScrollTemplate</att.HScroll>
     <att.VScroll>x:VScrollTemplate</att.VScroll>
     <att.HTracker>x:HTrackerTemplate</att.HTracker>

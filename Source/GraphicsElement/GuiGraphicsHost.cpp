@@ -62,34 +62,37 @@ IGuiAltAction
 				return true;
 			}
 
-			void IGuiAltActionHost::CollectAltActionsFromControl(controls::GuiControl* control, collections::Group<WString, IGuiAltAction*>& actions)
+			void IGuiAltActionHost::CollectAltActionsFromControl(controls::GuiControl* control, bool includeThisControl, collections::Group<WString, IGuiAltAction*>& actions)
 			{
 				List<GuiControl*> controls;
 				controls.Add(control);
-				vint current = 0;
+				vint index = 0;
 
-				while (current < controls.Count())
+				while (index < controls.Count())
 				{
-					GuiControl* control = controls[current++];
+					auto current = controls[index++];
 
-					if (auto container = control->QueryTypedService<IGuiAltActionContainer>())
+					if (current != control || includeThisControl)
 					{
-						vint count = container->GetAltActionCount();
-						for (vint i = 0; i < count; i++)
+						if (auto container = control->QueryTypedService<IGuiAltActionContainer>())
 						{
-							auto action = container->GetAltAction(i);
-							actions.Add(action->GetAlt(), action);
-						}
-						continue;
-					}
-					else if (auto action = control->QueryTypedService<IGuiAltAction>())
-					{
-						if (action->IsAltAvailable())
-						{
-							if (action->IsAltEnabled())
+							vint count = container->GetAltActionCount();
+							for (vint i = 0; i < count; i++)
 							{
+								auto action = container->GetAltAction(i);
 								actions.Add(action->GetAlt(), action);
-								continue;
+							}
+							continue;
+						}
+						else if (auto action = control->QueryTypedService<IGuiAltAction>())
+						{
+							if (action->IsAltAvailable())
+							{
+								if (action->IsAltEnabled())
+								{
+									actions.Add(action->GetAlt(), action);
+									continue;
+								}
 							}
 						}
 					}
