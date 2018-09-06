@@ -58,12 +58,20 @@ GuiCommonDatePickerLook
 				}
 			}
 
-			void GuiCommonDatePickerLook::SetDay(const DateTime& day, vint& index, bool currentMonth)
+			void GuiCommonDatePickerLook::SetDay(const DateTime& day, vint& index, vint monthOffset)
 			{
 				dateDays[index] = day;
 				GuiSolidLabelElement* label = labelDays[index];
 				label->SetText(itow(day.day));
-				label->SetColor(currentMonth ? primaryTextColor : secondaryTextColor);
+				label->SetColor(monthOffset == 0 ? primaryTextColor : secondaryTextColor);
+
+				wchar_t alt[] = L"D00";
+				if (monthOffset == -1) alt[0] = L'C';
+				else if (monthOffset == 1) alt[0] = L'E';
+				alt[1] = L'0' + day.day / 10;
+				alt[2] = L'0' + day.day % 10;
+				buttonDays[index]->SetAlt(alt);
+
 				index++;
 			}
 
@@ -142,17 +150,17 @@ GuiCommonDatePickerLook
 				for (vint i = 0; i < showPrev; i++)
 				{
 					DateTime day = DateTime::FromDateTime(yearPrev, monthPrev, countPrev - (showPrev - i - 1));
-					SetDay(day, index, false);
+					SetDay(day, index, -1);
 				}
 				for (vint i = 0; i < show; i++)
 				{
 					DateTime day = DateTime::FromDateTime(year, month, i + 1);
-					SetDay(day, index, true);
+					SetDay(day, index, 0);
 				}
 				for (vint i = 0; i < showNext; i++)
 				{
 					DateTime day = DateTime::FromDateTime(yearNext, monthNext, i + 1);
-					SetDay(day, index, false);
+					SetDay(day, index, 1);
 				}
 			}
 
@@ -278,7 +286,6 @@ GuiCommonDatePickerLook
 							cell->SetSite(j + DayRowStart, i, 1, 1);
 
 							GuiSelectableButton* button = new GuiSelectableButton(theme::ThemeName::CheckBox);
-							button->SetAlt(L"D");
 							button->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 							button->SetGroupController(dayMutexController);
 							button->SelectedChanged.AttachMethod(this, &GuiCommonDatePickerLook::buttonDay_SelectedChanged);

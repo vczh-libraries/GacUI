@@ -55,7 +55,7 @@ GuiCommonDatePickerLook
 				collections::Array<elements::GuiSolidLabelElement*>	labelDays;
 				collections::Array<DateTime>						dateDays;
 
-				void												SetDay(const DateTime& day, vint& index, bool currentMonth);
+				void												SetDay(const DateTime& day, vint& index, vint monthOffset);
 				void												DisplayMonth(vint year, vint month);
 				void												SelectDay(vint day);
 
