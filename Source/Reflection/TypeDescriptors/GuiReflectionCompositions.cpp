@@ -163,6 +163,7 @@ Type Declaration (Extra)
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltActionHost)
 				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiAltActionHost)
 
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AltComposition)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(PreviousAltHost)
 
 				CLASS_MEMBER_METHOD(OnActivatedAltHost, { L"previousHost" })

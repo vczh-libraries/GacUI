@@ -189,6 +189,7 @@ GuiCommonDatePickerLook
 						listYears->GetItems().Add(new list::TextItem(itow(i)));
 					}
 					comboYear = new GuiComboBoxListControl(theme::ThemeName::ComboBox, listYears);
+					comboYear->SetAlt(L"Y");
 					comboYear->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 2, 0));
 					comboYear->SelectedIndexChanged.AttachMethod(this, &GuiCommonDatePickerLook::comboYearMonth_SelectedIndexChanged);
 				}
@@ -196,6 +197,7 @@ GuiCommonDatePickerLook
 					listMonths = new GuiTextList(theme::ThemeName::TextList);
 					listMonths->SetHorizontalAlwaysVisible(false);
 					comboMonth = new GuiComboBoxListControl(theme::ThemeName::ComboBox, listMonths);
+					comboMonth->SetAlt(L"M");
 					comboMonth->GetBoundsComposition()->SetAlignmentToParent(Margin(2, 0, 0, 0));
 					comboMonth->SelectedIndexChanged.AttachMethod(this, &GuiCommonDatePickerLook::comboYearMonth_SelectedIndexChanged);
 				}
@@ -276,6 +278,7 @@ GuiCommonDatePickerLook
 							cell->SetSite(j + DayRowStart, i, 1, 1);
 
 							GuiSelectableButton* button = new GuiSelectableButton(theme::ThemeName::CheckBox);
+							button->SetAlt(L"D");
 							button->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 							button->SetGroupController(dayMutexController);
 							button->SelectedChanged.AttachMethod(this, &GuiCommonDatePickerLook::buttonDay_SelectedChanged);

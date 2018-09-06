@@ -72,7 +72,7 @@ IGuiAltAction
 				{
 					auto current = controls[index++];
 
-					if (current != current || includeThisControl)
+					if (current != control || includeThisControl)
 					{
 						if (auto container = current->QueryTypedService<IGuiAltActionContainer>())
 						{
