@@ -253,8 +253,9 @@ GuiTextBoxCommonInterface
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						autoComplete->CloseList();
+						return true;
 					}
-					return true;
+					break;
 				case VKEY::_RETURN:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{

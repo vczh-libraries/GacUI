@@ -504,8 +504,23 @@ GuiVirtualDataGrid
 				{
 					if (arguments.code == VKEY::_RETURN)
 					{
+						RequestSaveData();
 						SelectCell(selectedCell, !currentEditor);
 						arguments.handled = true;
+						if (!currentEditor)
+						{
+							SetFocus();
+						}
+						arguments.handled = true;
+					}
+					else if (arguments.code == VKEY::_ESCAPE)
+					{
+						if (currentEditor)
+						{
+							SelectCell(currentEditorPos, false);
+							SetFocus();
+							arguments.handled = true;
+						}
 					}
 					else
 					{
