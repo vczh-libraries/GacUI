@@ -150,7 +150,7 @@ Visualizer Extensions
 					~HyperlinkVisualizerTemplate();
 				};
 
-				class FocusRectangleVisualizerTemplate : public SubColumnVisualizerTemplate
+				class FocusRectangleVisualizerTemplate : public templates::GuiGridVisualizerTemplate
 				{
 				protected:
 					compositions::GuiBoundsComposition*					focusComposition = nullptr;

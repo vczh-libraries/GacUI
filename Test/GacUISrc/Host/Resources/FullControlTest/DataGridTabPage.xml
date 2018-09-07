@@ -105,7 +105,7 @@
             <DataColumn Text="Gender" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Gender)</att.TextProperty>
               <att.ValueProperty>Gender</att.ValueProperty>
-              <att.VisualizerFactory>demo:GenderVisualizer;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.VisualizerFactory>demo:GenderVisualizer;FocusRectangleVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
               <att.EditorFactory>demo:GenderEditor</att.EditorFactory>
               <att.Sorter>[Sys::Compare(cast UInt64 ($1.Gender), cast UInt64 ($2.Gender))]</att.Sorter>
             </DataColumn>
@@ -113,7 +113,7 @@
             <DataColumn Text="Category" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Category)</att.TextProperty>
               <att.ValueProperty>Category</att.ValueProperty>
-              <att.VisualizerFactory>demo:CategoryVisualizer;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.VisualizerFactory>demo:CategoryVisualizer;FocusRectangleVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
               <att.EditorFactory>demo:CategoryEditor</att.EditorFactory>
               <att.Sorter>[Sys::Compare(cast UInt64 ($1.Category), cast UInt64 ($2.Category))]</att.Sorter>
             </DataColumn>
@@ -136,7 +136,7 @@
             <DataColumn Text="Website" Size="160">
               <att.TextProperty>Website</att.TextProperty>
               <att.ValueProperty>Website</att.ValueProperty>
-              <att.VisualizerFactory>HyperlinkVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.VisualizerFactory>HyperlinkVisualizerTemplate;FocusRectangleVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
               <att.EditorFactory>demo:TextEditor</att.EditorFactory>
               <att.Sorter>[Sys::Compare($1.Website, $2.Website)]</att.Sorter>
             </DataColumn>

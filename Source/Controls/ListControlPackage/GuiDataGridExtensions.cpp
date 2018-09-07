@@ -403,16 +403,23 @@ CellBorderVisualizerTemplate
 				FocusRectangleVisualizerTemplate::FocusRectangleVisualizerTemplate()
 				{
 					focusComposition = new GuiBoundsComposition();
-					focusComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					focusComposition->SetVisible(GetSelected());
 					{
 						auto focus = GuiFocusRectangleElement::Create();
 						focusComposition->SetOwnedElement(focus);
+						focusComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					}
-					AddChild(focusComposition);
+					auto container = new GuiBoundsComposition();
+					{
+						container->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+						container->SetAlignmentToParent(Margin(0, 0, 1, 1));
+					}
 
-					SetInternalMargin(Margin(0, 0, 1, 1));
+					AddChild(focusComposition);
+					AddChild(container);
+					SetContainerComposition(container);
+
 					SelectedChanged.AttachMethod(this, &FocusRectangleVisualizerTemplate::OnSelectedChanged);
+					SelectedChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
 				FocusRectangleVisualizerTemplate::~FocusRectangleVisualizerTemplate()
@@ -431,30 +438,32 @@ CellBorderVisualizerTemplate
 
 				CellBorderVisualizerTemplate::CellBorderVisualizerTemplate()
 				{
-					GuiBoundsComposition* bounds1 = nullptr;
-					GuiBoundsComposition* bounds2 = nullptr;
+					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+					auto bounds1 = new GuiBoundsComposition;
 					{
 						border1 = GuiSolidBorderElement::Create();
-
-						bounds1 = new GuiBoundsComposition;
 						bounds1->SetOwnedElement(border1);
 						bounds1->SetAlignmentToParent(Margin(-1, 0, 0, 0));
 					}
+					auto bounds2 = new GuiBoundsComposition;
 					{
 						border2 = GuiSolidBorderElement::Create();
-
-						bounds2 = new GuiBoundsComposition;
 						bounds2->SetOwnedElement(border2);
 						bounds2->SetAlignmentToParent(Margin(0, -1, 0, 0));
 					}
+					auto container = new GuiBoundsComposition();
+					{
+						container->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+						container->SetAlignmentToParent(Margin(0, 0, 1, 1));
+					}
 
-					SetInternalMargin(Margin(0, 0, 1, 1));
-					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					AddChild(bounds1);
 					AddChild(bounds2);
+					AddChild(container);
+					SetContainerComposition(container);
 
 					ItemSeparatorColorChanged.AttachMethod(this, &CellBorderVisualizerTemplate::OnItemSeparatorColorChanged);
-
 					ItemSeparatorColorChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
