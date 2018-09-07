@@ -342,7 +342,7 @@ GuiVirtualDataGrid (Editor)
 				GuiVirtualListView::OnItemModified(start, count, newCount);
 				if(!GetItemProvider()->IsEditing())
 				{
-					StopEdit(false);
+					StopEdit();
 				}
 			}
 
@@ -374,19 +374,22 @@ GuiVirtualDataGrid (Editor)
 
 			void GuiVirtualDataGrid::NotifySelectCell(vint row, vint column)
 			{
-				selectedCell = { row, column };
-				SelectedCellChanged.Execute(GetNotifyEventArguments());
-
-				auto style = GetArranger()->GetVisibleStyle(row);
-				if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
+				if (selectedCell.row != row || selectedCell.column != column)
 				{
-					itemStyle->NotifySelectCell(column);
+					selectedCell = { row, column };
+					SelectedCellChanged.Execute(GetNotifyEventArguments());
+
+					auto style = GetArranger()->GetVisibleStyle(row);
+					if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
+					{
+						itemStyle->NotifySelectCell(column);
+					}
 				}
 			}
 
 			bool GuiVirtualDataGrid::StartEdit(vint row, vint column)
 			{
-				StopEdit(true);
+				StopEdit();
 				NotifySelectCell(row, column);
 
 				auto style = GetArranger()->GetVisibleStyle(row);
@@ -406,7 +409,7 @@ GuiVirtualDataGrid (Editor)
 				return false;
 			}
 
-			void GuiVirtualDataGrid::StopEdit(bool forOpenNewEditor)
+			void GuiVirtualDataGrid::StopEdit()
 			{
 				if (GetItemProvider()->IsEditing())
 				{
@@ -419,10 +422,6 @@ GuiVirtualDataGrid (Editor)
 						if (currentEditor)
 						{
 							NotifyCloseEditor();
-						}
-						if (!forOpenNewEditor)
-						{
-							NotifySelectCell(-1, -1);
 						}
 					}
 				}
@@ -501,53 +500,46 @@ GuiVirtualDataGrid
 
 			void GuiVirtualDataGrid::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if (!arguments.handled && selectedCell.row != -1)
+				if (selectedCell.row != -1)
 				{
-					vint columnOffset = 0;
-					switch (arguments.code)
+					if (arguments.code == VKEY::_RETURN)
 					{
-					case VKEY::_LEFT:
-						columnOffset = -1;
-						break;
-					case VKEY::_RIGHT:
-						columnOffset = 1;
-						break;
+						SelectCell(selectedCell, !currentEditor);
+						arguments.handled = true;
 					}
+					else
+					{
+						vint columnOffset = 0;
+						switch (arguments.code)
+						{
+						case VKEY::_LEFT:
+							columnOffset = -1;
+							arguments.handled = true;
+							break;
+						case VKEY::_RIGHT:
+							columnOffset = 1;
+							arguments.handled = true;
+							break;
+						default:
+							return;
+						}
 
-					vint column = selectedCell.column + columnOffset;
-					if (column < 0)
-					{
-						column = 0;
+						vint column = selectedCell.column + columnOffset;
+						if (column < 0)
+						{
+							column = 0;
+						}
+						else if (column >= listViewItemView->GetColumnCount())
+						{
+							column = listViewItemView->GetColumnCount();
+						}
+						SelectCell({ selectedCell.row, column }, false);
 					}
-					else if (column >= listViewItemView->GetColumnCount())
-					{
-						column = listViewItemView->GetColumnCount();
-					}
-					SelectCell({ selectedCell.row, column }, false);
 				}
 			}
 
 			void GuiVirtualDataGrid::OnKeyUp(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if (!arguments.handled)
-				{
-					switch (arguments.code)
-					{
-					case VKEY::_RETURN:
-						if (selectedCell.row != -1 && selectedCell.column != -1)
-						{
-							if (currentEditor)
-							{
-								StopEdit(false);
-							}
-							else
-							{
-								StartEdit(selectedCell.row, selectedCell.column);
-							}
-						}
-						break;
-					}
-				}
 			}
 
 			GuiVirtualDataGrid::GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
@@ -617,7 +609,7 @@ GuiVirtualDataGrid
 				{
 					if (currentEditor && !openEditor)
 					{
-						StopEdit(false);
+						StopEdit();
 					}
 					else if (!currentEditor && openEditor)
 					{
@@ -626,7 +618,7 @@ GuiVirtualDataGrid
 					return currentEditor != nullptr;
 				}
 
-				StopEdit(openEditor);
+				StopEdit();
 				if (validPos)
 				{
 					NotifySelectCell(value.row, value.column);

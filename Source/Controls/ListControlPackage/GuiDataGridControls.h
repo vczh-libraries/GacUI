@@ -91,7 +91,7 @@ GuiVirtualDataGrid
 				void													NotifyCloseEditor();
 				void													NotifySelectCell(vint row, vint column);
 				bool													StartEdit(vint row, vint column);
-				void													StopEdit(bool forOpenNewEditor);
+				void													StopEdit();
 				void													OnColumnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													OnSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
