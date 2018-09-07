@@ -496,6 +496,26 @@ GuiVirtualDataGrid
 
 			void GuiVirtualDataGrid::OnSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
+				if (!skipOnSelectionChanged)
+				{
+					vint row = GetSelectedItemIndex();
+					if (row != -1)
+					{
+						if (selectedCell.row != row && selectedCell.column != -1)
+						{
+							SelectCell({ row,selectedCell.column }, false);
+						}
+						else
+						{
+							SelectCell({ row,0 }, false);
+						}
+					}
+					else
+					{
+						StopEdit();
+						NotifySelectCell(-1, -1);
+					}
+				}
 			}
 
 			void GuiVirtualDataGrid::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
@@ -644,7 +664,10 @@ GuiVirtualDataGrid
 						{
 							ClearSelection();
 						}
+
+						skipOnSelectionChanged = true;
 						SetSelected(value.row, true);
+						skipOnSelectionChanged = false;
 						return StartEdit(value.row, value.column);
 					}
 				}

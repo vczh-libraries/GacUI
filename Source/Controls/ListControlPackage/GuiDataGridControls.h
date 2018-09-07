@@ -80,6 +80,7 @@ GuiVirtualDataGrid
 				Ptr<list::IDataVisualizerFactory>						defaultMainColumnVisualizerFactory;
 				Ptr<list::IDataVisualizerFactory>						defaultSubColumnVisualizerFactory;
 
+				bool													skipOnSelectionChanged = false;
 				GridPos													selectedCell{ -1,-1 };
 				Ptr<list::IDataEditor>									currentEditor;
 				GridPos													currentEditorPos{ -1,-1 };
