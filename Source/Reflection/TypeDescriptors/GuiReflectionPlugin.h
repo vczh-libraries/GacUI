@@ -239,6 +239,7 @@ Type List (Templates)
 			F(presentation::controls::list::MainColumnVisualizerTemplate)\
 			F(presentation::controls::list::SubColumnVisualizerTemplate)\
 			F(presentation::controls::list::HyperlinkVisualizerTemplate)\
+			F(presentation::controls::list::FocusRectangleVisualizerTemplate)\
 			F(presentation::controls::list::CellBorderVisualizerTemplate)\
 
 #define GUIREFLECTIONTEMPLATES_TYPELIST(F)\

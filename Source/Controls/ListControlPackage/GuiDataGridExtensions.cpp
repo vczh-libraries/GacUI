@@ -222,22 +222,22 @@ DataEditorFactory
 MainColumnVisualizerTemplate
 ***********************************************************************/
 
-				void MainColumnVisualizerTemplate::OnTextChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				void MainColumnVisualizerTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					text->SetText(GetText());
 				}
 
-				void MainColumnVisualizerTemplate::OnFontChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				void MainColumnVisualizerTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					text->SetFont(GetFont());
 				}
 
-				void MainColumnVisualizerTemplate::OnTextColorChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				void MainColumnVisualizerTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					text->SetColor(GetPrimaryTextColor());
 				}
 
-				void MainColumnVisualizerTemplate::OnSmallImageChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				void MainColumnVisualizerTemplate::OnSmallImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					auto imageData = GetSmallImage();
 					if (imageData)
@@ -306,17 +306,17 @@ MainColumnVisualizerTemplate
 SubColumnVisualizerTemplate
 ***********************************************************************/
 
-				void SubColumnVisualizerTemplate::OnTextChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				void SubColumnVisualizerTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					text->SetText(GetText());
 				}
 
-				void SubColumnVisualizerTemplate::OnFontChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				void SubColumnVisualizerTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					text->SetFont(GetFont());
 				}
 
-				void SubColumnVisualizerTemplate::OnTextColorChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				void SubColumnVisualizerTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					text->SetColor(GetSecondaryTextColor());
 				}
@@ -395,6 +395,34 @@ HyperlinkVisualizerTemplate
 CellBorderVisualizerTemplate
 ***********************************************************************/
 
+				void FocusRectangleVisualizerTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					focusComposition->SetVisible(GetSelected());
+				}
+
+				FocusRectangleVisualizerTemplate::FocusRectangleVisualizerTemplate()
+				{
+					focusComposition = new GuiBoundsComposition();
+					focusComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					focusComposition->SetVisible(GetSelected());
+					{
+						auto focus = GuiFocusRectangleElement::Create();
+						focusComposition->SetOwnedElement(focus);
+					}
+					AddChild(focusComposition);
+
+					SetInternalMargin(Margin(0, 0, 1, 1));
+					SelectedChanged.AttachMethod(this, &FocusRectangleVisualizerTemplate::OnSelectedChanged);
+				}
+
+				FocusRectangleVisualizerTemplate::~FocusRectangleVisualizerTemplate()
+				{
+				}
+				
+/***********************************************************************
+CellBorderVisualizerTemplate
+***********************************************************************/
+
 				void CellBorderVisualizerTemplate::OnItemSeparatorColorChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					border1->SetColor(GetItemSeparatorColor());
@@ -420,7 +448,7 @@ CellBorderVisualizerTemplate
 						bounds2->SetAlignmentToParent(Margin(0, -1, 0, 0));
 					}
 
-					SetAlignmentToParent(Margin(0, 0, 1, 1));
+					SetInternalMargin(Margin(0, 0, 1, 1));
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					AddChild(bounds1);
 					AddChild(bounds2);

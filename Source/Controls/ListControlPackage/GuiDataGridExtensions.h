@@ -114,10 +114,10 @@ Visualizer Extensions
 					elements::GuiImageFrameElement*						image = nullptr;
 					elements::GuiSolidLabelElement*						text = nullptr;
 
-					void												OnTextChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												OnFontChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												OnTextColorChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												OnSmallImageChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnSmallImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					MainColumnVisualizerTemplate();
 					~MainColumnVisualizerTemplate();
@@ -128,9 +128,9 @@ Visualizer Extensions
 				protected:
 					elements::GuiSolidLabelElement*						text = nullptr;
 
-					void												OnTextChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												OnFontChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												OnTextColorChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void												Initialize(bool fixTextColor);
 
 					SubColumnVisualizerTemplate(bool fixTextColor);
@@ -148,6 +148,18 @@ Visualizer Extensions
 				public:
 					HyperlinkVisualizerTemplate();
 					~HyperlinkVisualizerTemplate();
+				};
+
+				class FocusRectangleVisualizerTemplate : public SubColumnVisualizerTemplate
+				{
+				protected:
+					compositions::GuiBoundsComposition*					focusComposition = nullptr;
+
+					void												OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+				public:
+					FocusRectangleVisualizerTemplate();
+					~FocusRectangleVisualizerTemplate();
 				};
 
 				class CellBorderVisualizerTemplate : public templates::GuiGridVisualizerTemplate

@@ -211,6 +211,11 @@ Type Declaration (Class)
 				CLASS_MEMBER_CONSTRUCTOR(HyperlinkVisualizerTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(HyperlinkVisualizerTemplate)
 
+			BEGIN_CLASS_MEMBER(FocusRectangleVisualizerTemplate)
+				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(FocusRectangleVisualizerTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(FocusRectangleVisualizerTemplate)
+
 			BEGIN_CLASS_MEMBER(CellBorderVisualizerTemplate)
 				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(CellBorderVisualizerTemplate*(), NO_PARAMETER)
