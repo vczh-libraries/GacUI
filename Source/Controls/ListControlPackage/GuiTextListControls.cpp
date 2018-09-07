@@ -70,7 +70,7 @@ DefaultTextListItemTemplate
 					else
 					{
 						AddChild(textComposition);
-						textComposition->SetAlignmentToParent(Margin(5, 0, 0, 0));
+						textComposition->SetAlignmentToParent(Margin(5, 2, 0, 2));
 					}
 
 					FontChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnFontChanged);

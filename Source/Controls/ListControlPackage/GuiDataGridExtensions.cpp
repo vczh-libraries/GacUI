@@ -408,12 +408,12 @@ CellBorderVisualizerTemplate
 					{
 						auto focus = GuiFocusRectangleElement::Create();
 						focusComposition->SetOwnedElement(focus);
-						focusComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						focusComposition->SetAlignmentToParent(Margin(1, 1, 1, 1));
 					}
 					auto container = new GuiBoundsComposition();
 					{
 						container->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						container->SetAlignmentToParent(Margin(1, 1, 1, 1));
+						container->SetAlignmentToParent(Margin(2, 2, 2, 2));
 					}
 
 					AddChild(focusComposition);

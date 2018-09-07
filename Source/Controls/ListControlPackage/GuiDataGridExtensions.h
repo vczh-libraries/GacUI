@@ -108,7 +108,7 @@ Extension Bases
 Visualizer Extensions
 ***********************************************************************/
 
-				class MainColumnVisualizerTemplate : public templates::GuiGridVisualizerTemplate
+				class MainColumnVisualizerTemplate : public templates::GuiGridVisualizerTemplate, public Description<MainColumnVisualizerTemplate>
 				{
 				protected:
 					elements::GuiImageFrameElement*						image = nullptr;
@@ -123,7 +123,7 @@ Visualizer Extensions
 					~MainColumnVisualizerTemplate();
 				};
 
-				class SubColumnVisualizerTemplate : public templates::GuiGridVisualizerTemplate
+				class SubColumnVisualizerTemplate : public templates::GuiGridVisualizerTemplate, public Description<SubColumnVisualizerTemplate>
 				{
 				protected:
 					elements::GuiSolidLabelElement*						text = nullptr;
@@ -139,7 +139,7 @@ Visualizer Extensions
 					~SubColumnVisualizerTemplate();
 				};
 
-				class HyperlinkVisualizerTemplate : public SubColumnVisualizerTemplate
+				class HyperlinkVisualizerTemplate : public SubColumnVisualizerTemplate, public Description<HyperlinkVisualizerTemplate>
 				{
 				protected:
 					void												label_MouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -150,7 +150,7 @@ Visualizer Extensions
 					~HyperlinkVisualizerTemplate();
 				};
 
-				class FocusRectangleVisualizerTemplate : public templates::GuiGridVisualizerTemplate
+				class FocusRectangleVisualizerTemplate : public templates::GuiGridVisualizerTemplate, public Description<FocusRectangleVisualizerTemplate>
 				{
 				protected:
 					compositions::GuiBoundsComposition*					focusComposition = nullptr;
@@ -162,7 +162,7 @@ Visualizer Extensions
 					~FocusRectangleVisualizerTemplate();
 				};
 
-				class CellBorderVisualizerTemplate : public templates::GuiGridVisualizerTemplate
+				class CellBorderVisualizerTemplate : public templates::GuiGridVisualizerTemplate, public Description<CellBorderVisualizerTemplate>
 				{
 				protected:
 					elements::GuiSolidBorderElement*					border1 = nullptr;
