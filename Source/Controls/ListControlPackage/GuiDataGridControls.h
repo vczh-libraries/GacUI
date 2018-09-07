@@ -18,6 +18,8 @@ namespace vl
 	{
 		namespace controls
 		{
+			class GuiVirtualDataGrid;
+
 			namespace list
 			{
 
@@ -37,8 +39,7 @@ DefaultDataGridItemTemplate
 					IDataVisualizerFactory*								GetDataVisualizerFactory(vint row, vint column);
 					IDataEditorFactory*									GetDataEditorFactory(vint row, vint column);
 					vint												GetCellColumnIndex(compositions::GuiGraphicsComposition* composition);
-					void												OnCellButtonUp(compositions::GuiGraphicsComposition* sender, bool openEditor);
-					bool												IsInEditor(compositions::GuiMouseEventArgs& arguments);
+					bool												IsInEditor(GuiVirtualDataGrid* dataGrid, compositions::GuiMouseEventArgs& arguments);
 					void												OnCellButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void												OnCellLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void												OnCellRightButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
@@ -92,6 +93,9 @@ GuiVirtualDataGrid
 				bool													StartEdit(vint row, vint column);
 				void													StopEdit(bool forOpenNewEditor);
 				void													OnColumnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
+				void													OnSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+				void													OnKeyUp(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
 			public:
 				templates::GuiListViewTemplate*							GetListViewControlTemplate()override;
@@ -115,9 +119,12 @@ GuiVirtualDataGrid
 				/// <summary>Get the row index and column index of the selected cell.</summary>
 				/// <returns>The row index and column index of the selected cell.</returns>
 				GridPos													GetSelectedCell();
-				/// <summary>Set the row index and column index of the selected cell.</summary>
+
+				/// <summary>Select a cell.</summary>
+				/// <returns>Returns true if the editor is opened.</returns>
 				/// <param name="value">The row index and column index of the selected cell.</param>
-				void													SetSelectedCell(const GridPos& value);
+				/// <param name="openEditor">Set to true to open an editor.</param>
+				bool													SelectCell(const GridPos& value, bool openEditor);
 			};
 		}
 	}

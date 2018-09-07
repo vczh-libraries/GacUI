@@ -1344,11 +1344,11 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(GuiVirtualListView)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiVirtualDataGrid, GuiListControl::IItemProvider*, itemProvider)
 
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedCell)
-
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(SelectedCell)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
 
 				CLASS_MEMBER_METHOD(SetViewToDefault, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SelectCell, { L"value" _ L"openEditor" })
 			END_CLASS_MEMBER(GuiVirtualDataGrid)
 
 			BEGIN_CLASS_MEMBER(GuiDatePicker)
