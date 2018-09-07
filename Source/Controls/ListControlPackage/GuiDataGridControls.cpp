@@ -501,10 +501,53 @@ GuiVirtualDataGrid
 
 			void GuiVirtualDataGrid::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (!arguments.handled && selectedCell.row != -1)
+				{
+					vint columnOffset = 0;
+					switch (arguments.code)
+					{
+					case VKEY::_LEFT:
+						columnOffset = -1;
+						break;
+					case VKEY::_RIGHT:
+						columnOffset = 1;
+						break;
+					}
+
+					vint column = selectedCell.column + columnOffset;
+					if (column < 0)
+					{
+						column = 0;
+					}
+					else if (column >= listViewItemView->GetColumnCount())
+					{
+						column = listViewItemView->GetColumnCount();
+					}
+					SelectCell({ selectedCell.row, column }, false);
+				}
 			}
 
 			void GuiVirtualDataGrid::OnKeyUp(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (!arguments.handled)
+				{
+					switch (arguments.code)
+					{
+					case VKEY::_RETURN:
+						if (selectedCell.row != -1 && selectedCell.column != -1)
+						{
+							if (currentEditor)
+							{
+								StopEdit(false);
+							}
+							else
+							{
+								StartEdit(selectedCell.row, selectedCell.column);
+							}
+						}
+						break;
+					}
+				}
 			}
 
 			GuiVirtualDataGrid::GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
@@ -569,8 +612,21 @@ GuiVirtualDataGrid
 			bool GuiVirtualDataGrid::SelectCell(const GridPos& value, bool openEditor)
 			{
 				bool validPos = 0 <= value.row && value.row < GetItemProvider()->Count() && 0 <= value.column && value.column < listViewItemView->GetColumnCount();
-				StopEdit(openEditor);
 
+				if (validPos && selectedCell == value)
+				{
+					if (currentEditor && !openEditor)
+					{
+						StopEdit(false);
+					}
+					else if (!currentEditor && openEditor)
+					{
+						StartEdit(value.row, value.column);
+					}
+					return currentEditor != nullptr;
+				}
+
+				StopEdit(openEditor);
 				if (validPos)
 				{
 					NotifySelectCell(value.row, value.column);

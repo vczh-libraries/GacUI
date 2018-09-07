@@ -49,7 +49,7 @@
             };
           ]]>
         </ref.Members>
-        <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem">
+        <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem" FocusControl-ref="comboBox">
           <ComboBox ref.Name="comboBox" ItemTemplate="demo:GenderItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             <att.ListControl>
@@ -133,7 +133,7 @@
             };
           ]]>
         </ref.Members>
-        <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem">
+        <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem" FocusControl-ref="comboBox">
           <ComboBox ref.Name="comboBox" ItemTemplate="demo:CategoryItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             <att.ListControl>
