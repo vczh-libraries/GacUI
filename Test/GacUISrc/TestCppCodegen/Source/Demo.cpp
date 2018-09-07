@@ -454,6 +454,60 @@ Closures
 
 	void __vwsnf100_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf101_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf101_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf101_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf102_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf102_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf102_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf103_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf103_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf103_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -465,12 +519,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf101_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf101_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf104_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf104_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf101_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf104_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -483,12 +537,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf102_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf102_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf105_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf105_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf102_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf105_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -501,12 +555,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf103_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_::__vwsnf103_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_(::demo::HyperlinkWindowConstructor* __vwsnctorthis_0)
+	__vwsnf106_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_::__vwsnf106_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_(::demo::HyperlinkWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf103_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf106_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetUrl(::vl::Nullable<::vl::WString>(::vl::__vwsn::This(__vwsnthis_0->textUrl)->GetText()));
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
@@ -514,12 +568,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf104_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_::__vwsnf104_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_(::demo::HyperlinkWindowConstructor* __vwsnctorthis_0)
+	__vwsnf107_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_::__vwsnf107_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_(::demo::HyperlinkWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf104_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf107_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetUrl(::vl::Nullable<::vl::WString>());
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
@@ -527,12 +581,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf105_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf105_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf108_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf108_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf105_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf108_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->dialogNotImpl)->GetTitle();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -545,47 +599,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf106_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf106_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf106_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->dialogMessage)->SetText(::vl::__vwsn::This(__vwsnthis_0->document)->GetActiveHyperlinkReference());
-		::vl::__vwsn::This(__vwsnthis_0->dialogMessage)->ShowDialog();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf107_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf107_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf107_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		if (::vl::__vwsn::This(__vwsnthis_0->dialogOpenDoc)->ShowDialog())
-		{
-			::vl::__vwsn::This(__vwsnthis_0->self)->LoadAsPrivateFormat(::vl::__vwsn::This(__vwsnthis_0->dialogOpenDoc)->GetFileName());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf108_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf108_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf108_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint32_t>(0));
-		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf109_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf109_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -593,22 +606,8 @@ Closures
 
 	void __vwsnf109_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint32_t>(1));
-		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf10_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf10_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf10_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::demo::GenderEditor());
-		}
+		::vl::__vwsn::This(__vwsnthis_0->dialogMessage)->SetText(::vl::__vwsn::This(__vwsnthis_0->document)->GetActiveHyperlinkReference());
+		::vl::__vwsn::This(__vwsnthis_0->dialogMessage)->ShowDialog();
 	}
 
 	//-------------------------------------------------------------------
@@ -620,8 +619,10 @@ Closures
 
 	void __vwsnf110_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint32_t>(2));
-		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
+		if (::vl::__vwsn::This(__vwsnthis_0->dialogOpenDoc)->ShowDialog())
+		{
+			::vl::__vwsn::This(__vwsnthis_0->self)->LoadAsPrivateFormat(::vl::__vwsn::This(__vwsnthis_0->dialogOpenDoc)->GetFileName());
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -631,7 +632,46 @@ Closures
 	{
 	}
 
-	void __vwsnf111_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf111_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint32_t>(0));
+		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf112_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf112_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf112_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint32_t>(1));
+		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf113_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf113_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf113_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint32_t>(2));
+		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf114_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf114_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf114_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUndo)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -644,24 +684,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf112_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf112_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf115_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf115_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf112_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf115_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->document)->Undo();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf113_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf113_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf116_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf116_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf113_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf116_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandRedo)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -674,24 +714,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf114_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf114_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf117_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf117_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf114_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf117_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->document)->Redo();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf115_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf115_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf118_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf118_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf115_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf118_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandCopy)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -704,24 +744,38 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf116_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf116_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf119_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf119_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf116_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf119_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->document)->Copy();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf117_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf117_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf117_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::demo::GenderEditor());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf120_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf120_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf120_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandCut)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -734,24 +788,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf118_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf118_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf121_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf121_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf118_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf121_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->document)->Cut();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf119_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf119_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf122_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf122_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf119_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf122_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandPaste)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -764,12 +818,120 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf123_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf123_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
+	void __vwsnf123_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->document)->Paste();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf124_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf124_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf124_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandDelete)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandDelete)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf125_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf125_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf125_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->document)->SetSelectionText(::vl::WString(L"", false));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf126_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf126_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf126_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->document)->SelectAll();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf127_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf127_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf127_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandInsertImage)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandInsertImage)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf128_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf128_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf128_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		if (::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->ShowDialog())
+		{
+			auto imageService = ::vl::__vwsn::This(::vl::presentation::GetCurrentController())->ImageService();
+			auto image = ::vl::__vwsn::This(imageService)->CreateImageFromFile(::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->GetFileName());
+			auto imageData = ::vl::Ptr<::vl::presentation::GuiImageData>(new ::vl::presentation::GuiImageData(image, static_cast<::vl::vint32_t>(0)));
+			::vl::__vwsn::This(__vwsnthis_0->document)->EditImage(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), imageData);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf129_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf129_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf129_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandEditHyperlink)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandEditHyperlink)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::reflection::description::Value __vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
 	{
 		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
 		if (__vwsn_update_)
@@ -785,144 +947,36 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf120_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf120_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf130_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf130_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf120_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf130_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->document)->Paste();
+		::vl::reflection::description::AsyncCoroutine::CreateAndRun(LAMBDA(::vl_workflow_global::__vwsnf131_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf121_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf121_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf131_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__::__vwsnf131_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf121_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandDelete)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandDelete)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf122_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf122_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf122_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->document)->SetSelectionText(::vl::WString(L"", false));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf123_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf123_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf123_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->document)->SelectAll();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf124_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf124_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf124_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandInsertImage)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandInsertImage)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf125_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf125_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf125_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		if (::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->ShowDialog())
-		{
-			auto imageService = ::vl::__vwsn::This(::vl::presentation::GetCurrentController())->ImageService();
-			auto image = ::vl::__vwsn::This(imageService)->CreateImageFromFile(::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->GetFileName());
-			auto imageData = ::vl::Ptr<::vl::presentation::GuiImageData>(new ::vl::presentation::GuiImageData(image, static_cast<::vl::vint32_t>(0)));
-			::vl::__vwsn::This(__vwsnthis_0->document)->EditImage(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), imageData);
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf126_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf126_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf126_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandEditHyperlink)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandEditHyperlink)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf127_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf127_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf127_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::reflection::description::AsyncCoroutine::CreateAndRun(LAMBDA(::vl_workflow_global::__vwsnf128_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__(__vwsnthis_0)));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf128_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__::__vwsnf128_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf128_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__::operator()(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_) const
+	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf131_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__::operator()(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_) const
 	{
 		return ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc51_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize____vl_reflection_description_ICoroutine(__vwsn_co_impl_, __vwsnthis_0));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf129_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf129_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf132_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf132_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf129_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf132_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandRemoveHyperlink)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -935,25 +989,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf133_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf133_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
-		return GLOBAL_NAME ToString(::vl::__vwsn::This(itemToBind.Obj())->GetGender());
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf130_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf130_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf130_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf133_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto row = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin().row;
 		auto begin = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin().column;
@@ -963,12 +1004,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf131_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf131_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf134_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf134_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf131_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf134_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandBold)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -981,12 +1022,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf132_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf132_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf135_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf135_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf132_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf135_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandBold)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -999,56 +1040,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf133_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf133_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf133_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
-		(::vl::__vwsn::This(style.Obj())->bold = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandBold)->GetSelected())));
-		::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), style);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf134_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf134_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf134_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandItalic)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf135_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf135_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf135_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetSelected();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandItalic)->SetSelected(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf136_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf136_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -1057,7 +1048,7 @@ Closures
 	void __vwsnf136_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
-		(::vl::__vwsn::This(style.Obj())->italic = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetSelected())));
+		(::vl::__vwsn::This(style.Obj())->bold = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandBold)->GetSelected())));
 		::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), style);
 	}
 
@@ -1070,13 +1061,13 @@ Closures
 
 	void __vwsnf137_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetEnabled();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandItalic)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1088,13 +1079,13 @@ Closures
 
 	void __vwsnf138_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetSelected();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->SetSelected(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandItalic)->SetSelected(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1107,7 +1098,7 @@ Closures
 	void __vwsnf139_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
-		(::vl::__vwsn::This(style.Obj())->underline = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetSelected())));
+		(::vl::__vwsn::This(style.Obj())->italic = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetSelected())));
 		::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), style);
 	}
 
@@ -1118,11 +1109,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::WString __vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		{
-			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::vl::presentation::controls::list::CellBorderVisualizerTemplate());
-		}
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
+		return GLOBAL_NAME ToString(::vl::__vwsn::This(itemToBind.Obj())->GetGender());
 	}
 
 	//-------------------------------------------------------------------
@@ -1134,13 +1124,13 @@ Closures
 
 	void __vwsnf140_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetEnabled();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandStrike)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1152,13 +1142,13 @@ Closures
 
 	void __vwsnf141_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetSelected();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandStrike)->SetSelected(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->SetSelected(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1171,7 +1161,7 @@ Closures
 	void __vwsnf142_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
-		(::vl::__vwsn::This(style.Obj())->strikeline = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetSelected())));
+		(::vl::__vwsn::This(style.Obj())->underline = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetSelected())));
 		::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), style);
 	}
 
@@ -1184,6 +1174,56 @@ Closures
 
 	void __vwsnf143_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandStrike)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf144_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf144_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf144_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetSelected();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandStrike)->SetSelected(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf145_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf145_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf145_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
+		(::vl::__vwsn::This(style.Obj())->strikeline = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetSelected())));
+		::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), style);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf146_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf146_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf146_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandFont)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -1195,12 +1235,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf144_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf144_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf147_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf147_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf144_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf147_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto begin = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin();
 		auto end = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd();
@@ -1219,12 +1259,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf145_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf145_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf148_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf148_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf145_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf148_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandColor)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1237,12 +1277,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf146_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf146_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf149_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf149_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf146_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf149_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto begin = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin();
 		auto end = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd();
@@ -1265,12 +1305,26 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf147_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf147_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf147_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::vl::presentation::controls::list::CellBorderVisualizerTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf150_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf150_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf150_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandBackColor)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1283,12 +1337,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf148_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf148_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf151_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf151_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf148_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf151_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto begin = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin();
 		auto end = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd();
@@ -1311,62 +1365,48 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf149_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf149_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf152_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf152_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf149_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf152_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::ViewOnly);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf153_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf153_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::demo::CategoryVisualizer());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf150_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf150_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf150_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf153_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Selectable);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf151_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf151_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf154_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf154_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf151_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf154_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf152_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf152_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf155_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf155_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf152_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf155_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignDefault)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1379,24 +1419,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf153_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf153_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf156_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf156_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf153_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf156_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignment(::vl::Nullable<::vl::presentation::Alignment>());
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf154_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf154_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf157_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf157_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf154_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf157_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignLeft)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1409,12 +1449,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf155_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf155_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf158_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf158_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf155_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf158_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignLeft)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1427,24 +1467,38 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf156_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf156_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf159_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf159_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf156_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf159_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignment(::vl::Nullable<::vl::presentation::Alignment>(::vl::presentation::Alignment::Left));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf157_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf157_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf15_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf15_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf157_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf15_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::vl::presentation::controls::list::FocusRectangleVisualizerTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf160_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf160_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf160_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignCenter)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1457,12 +1511,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf158_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf158_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf161_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf161_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf158_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf161_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignCenter)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1475,24 +1529,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf159_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf159_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf162_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf162_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf159_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf162_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignment(::vl::Nullable<::vl::presentation::Alignment>(::vl::presentation::Alignment::Center));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf160_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf160_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf163_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf163_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf160_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf163_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignRight)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1505,12 +1559,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf161_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf161_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf164_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf164_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf161_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf164_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignRight)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1523,24 +1577,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf162_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf162_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf165_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf165_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf162_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf165_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignment(::vl::Nullable<::vl::presentation::Alignment>(::vl::presentation::Alignment::Right));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf163_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf163_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf166_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::__vwsnf166_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf163_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf166_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetHasEditableSelection();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1553,12 +1607,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf164_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf164_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+	__vwsnf167_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf167_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf164_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf167_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::StyleGroup>>(__vwsn_item_);
 		return ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(item.Obj())->Items);
@@ -1566,12 +1620,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf165_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf165_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+	__vwsnf168_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf168_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf165_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf168_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::StyleGroup>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->Name;
@@ -1579,12 +1633,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf166_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf166_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+	__vwsnf169_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf169_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiListItemTemplate* __vwsnf166_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiListItemTemplate* __vwsnf169_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::demo::StyleItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
@@ -1597,69 +1651,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf167_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf167_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf167_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetAlignLeftSelected();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignLeftSelected(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf168_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf168_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf168_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetAlignCenterSelected();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignCenterSelected(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf169_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf169_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf169_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetAlignRightSelected();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignRightSelected(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::demo::CategoryEditor());
+			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::demo::CategoryVisualizer());
 		}
 	}
 
@@ -1672,6 +1672,60 @@ Closures
 
 	void __vwsnf170_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetAlignLeftSelected();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignLeftSelected(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf171_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf171_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf171_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetAlignCenterSelected();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignCenterSelected(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf172_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf172_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf172_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetAlignRightSelected();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignRightSelected(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf173_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf173_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf173_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13)->GetLargeImage();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::GuiImageData>>(__vwsn_value_);
 		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
@@ -1683,12 +1737,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf171_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf171_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+	__vwsnf174_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf174_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf171_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf174_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_20)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1701,12 +1755,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf172_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf172_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+	__vwsnf175_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf175_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf172_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf175_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_21)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1719,12 +1773,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf173_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf173_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+	__vwsnf176_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf176_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf173_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf176_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_22)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1737,24 +1791,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf174_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf174_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+	__vwsnf177_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf177_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf174_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf177_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->dialogMessage)->ShowDialog();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf175_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf175_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+	__vwsnf178_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf178_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf175_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf178_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->styleGallery)->GetItemSource();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
@@ -1767,12 +1821,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf176_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf176_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+	__vwsnf179_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf179_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf176_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const
+	void __vwsnf179_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const
 	{
 		if ((::vl::__vwsn::This(arguments)->itemIndex != (- static_cast<::vl::vint32_t>(1))))
 		{
@@ -1784,24 +1838,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf177_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf177_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+	__vwsnf180_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf180_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf177_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf180_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->toolstripHome)->ShowPopup(static_cast<::vl::presentation::controls::GuiControl*>(__vwsnthis_0->buttonHome), true);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf178_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf178_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
+	__vwsnf181_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::__vwsnf181_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(::demo::DocumentEditorRibbonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf178_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf181_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_92.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -1814,45 +1868,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf179_Demo_demo_DocumentEditorRibbon___vwsn_instance_ctor__::__vwsnf179_Demo_demo_DocumentEditorRibbon___vwsn_instance_ctor__(::demo::DocumentEditorRibbon* __vwsnctorthis_0)
+	__vwsnf182_Demo_demo_DocumentEditorRibbon___vwsn_instance_ctor__::__vwsnf182_Demo_demo_DocumentEditorRibbon___vwsn_instance_ctor__(::demo::DocumentEditorRibbon* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf179_Demo_demo_DocumentEditorRibbon___vwsn_instance_ctor__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf182_Demo_demo_DocumentEditorRibbon___vwsn_instance_ctor__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		__vwsnthis_0->SelectStyleName(::vl::__vwsn::This(__vwsnthis_0->document)->SummarizeStyleName(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd()));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf17_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf17_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf183_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::__vwsnf183_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(::demo::StyleItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf17_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
-		if (__vwsn_update_)
-		{
-			::vl::__vwsn::This(itemToBind.Obj())->SetCategory(::vl::__vwsn::Unbox<::demo::MyCategory>(__vwsn_value_));
-			return ::vl::reflection::description::Value();
-		}
-		else
-		{
-			return ::vl::__vwsn::Box(::vl::__vwsn::This(itemToBind.Obj())->GetCategory());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf180_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::__vwsnf180_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(::demo::StyleItemTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf180_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf183_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1865,12 +1898,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf181_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::__vwsnf181_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(::demo::StyleItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf184_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::__vwsnf184_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(::demo::StyleItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf181_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf184_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1883,12 +1916,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf182_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::__vwsnf182_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(::demo::StyleItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf185_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::__vwsnf185_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(::demo::StyleItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf182_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf185_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1901,12 +1934,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf183_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_::__vwsnf183_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_(::demo::DocumentEditorToolstripConstructor* __vwsnctorthis_0)
+	__vwsnf186_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_::__vwsnf186_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_(::demo::DocumentEditorToolstripConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf183_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf186_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_44)->GetImage();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::GuiImageData>>(__vwsn_value_);
@@ -1919,12 +1952,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf184_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_::__vwsnf184_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_(::demo::DocumentEditorToolstripConstructor* __vwsnctorthis_0)
+	__vwsnf187_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_::__vwsnf187_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_(::demo::DocumentEditorToolstripConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf184_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf187_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->buttonAlignment)->GetImage();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::GuiImageData>>(__vwsn_value_);
@@ -1937,12 +1970,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf185_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf185_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf188_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf188_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf185_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf188_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1955,12 +1988,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf186_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf186_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf189_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf189_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf186_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf189_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -1973,12 +2006,26 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf187_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf187_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf187_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::demo::CategoryEditor());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf190_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf190_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf190_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboLocales)->GetSelectedIndex();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
@@ -1991,12 +2038,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf188_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf188_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf191_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf191_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf188_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf191_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto index = ::vl::__vwsn::This(__vwsnthis_0->comboLocales)->GetSelectedIndex();
 		if ((index == (- static_cast<::vl::vint32_t>(1))))
@@ -2008,12 +2055,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf189_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf189_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf192_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf192_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf189_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf192_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2026,25 +2073,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf193_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf193_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
-		return GLOBAL_NAME ToString(::vl::__vwsn::This(itemToBind.Obj())->GetCategory());
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf190_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf190_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf190_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf193_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2057,12 +2091,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf191_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf191_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf194_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf194_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf191_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf194_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2075,12 +2109,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf192_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf192_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf195_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf195_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf192_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf195_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2093,12 +2127,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf193_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf193_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf196_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf196_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf193_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf196_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2111,12 +2145,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf194_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf194_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf197_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf197_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf194_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf197_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2129,12 +2163,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf195_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf195_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf198_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf198_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf195_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf198_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2147,12 +2181,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf196_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf196_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf199_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf199_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf196_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf199_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_17.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2165,56 +2199,23 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf197_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf197_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf19_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf19_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf197_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::reflection::description::Value __vwsnf19_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
+		if (__vwsn_update_)
 		{
-			return;
+			::vl::__vwsn::This(itemToBind.Obj())->SetCategory(::vl::__vwsn::Unbox<::demo::MyCategory>(__vwsn_value_));
+			return ::vl::reflection::description::Value();
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf198_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf198_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf198_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
+		else
 		{
-			return;
+			return ::vl::__vwsn::Box(::vl::__vwsn::This(itemToBind.Obj())->GetCategory());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf199_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf199_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf199_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_20.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_20.Obj())->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2239,6 +2240,60 @@ Closures
 
 	void __vwsnf200_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf201_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf201_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf201_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf202_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf202_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf202_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_20.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_20.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf203_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf203_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf203_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_21.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -2250,12 +2305,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf201_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf201_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf204_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf204_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf201_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf204_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2268,12 +2323,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf202_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf202_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf205_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::__vwsnf205_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(::demo::LocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf202_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf205_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::IStringResourceStrings>>(__vwsn_value_);
@@ -2286,12 +2341,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf203_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf203_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
+	__vwsnf206_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf206_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf203_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf206_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_for_begin_i = static_cast<::vl::vint32_t>(0);
@@ -2312,12 +2367,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf204_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf204_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
+	__vwsnf207_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf207_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf204_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf207_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto i = static_cast<::vl::vint32_t>(0);
 		while ((i < ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetItemsToBind().Obj())->GetCount()))
@@ -2329,12 +2384,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf205_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf205_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
+	__vwsnf208_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf208_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf205_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf208_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto i = static_cast<::vl::vint32_t>(1);
 		while ((i < ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetItemsToBind().Obj())->GetCount()))
@@ -2346,36 +2401,49 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf206_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf206_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
+	__vwsnf209_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf209_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf206_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf209_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetItemsToBind().Obj())->Clear();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf207_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf207_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
+	__vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf207_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	::vl::WString __vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
+		return GLOBAL_NAME ToString(::vl::__vwsn::This(itemToBind.Obj())->GetCategory());
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf210_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf210_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf210_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		(::vl::__vwsn::This(__vwsnthis_0->self)->counter = static_cast<::vl::vint32_t>(0));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf208_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf208_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
+	__vwsnf211_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::__vwsnf211_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(::demo::EnglishNumbersControllerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf208_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf211_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2388,12 +2456,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf209_Demo_demo_RepeatItemTemplateConstructor___vwsn_demo_RepeatItemTemplate_Initialize_::__vwsnf209_Demo_demo_RepeatItemTemplateConstructor___vwsn_demo_RepeatItemTemplate_Initialize_(::demo::RepeatItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf212_Demo_demo_RepeatItemTemplateConstructor___vwsn_demo_RepeatItemTemplate_Initialize_::__vwsnf212_Demo_demo_RepeatItemTemplateConstructor___vwsn_demo_RepeatItemTemplate_Initialize_(::demo::RepeatItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf209_Demo_demo_RepeatItemTemplateConstructor___vwsn_demo_RepeatItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf212_Demo_demo_RepeatItemTemplateConstructor___vwsn_demo_RepeatItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2406,26 +2474,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf213_Demo_demo_SharedSizeItemTemplateConstructor___vwsn_demo_SharedSizeItemTemplate_Initialize_::__vwsnf213_Demo_demo_SharedSizeItemTemplateConstructor___vwsn_demo_SharedSizeItemTemplate_Initialize_(::demo::SharedSizeItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::demo::DateEditor());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf210_Demo_demo_SharedSizeItemTemplateConstructor___vwsn_demo_SharedSizeItemTemplate_Initialize_::__vwsnf210_Demo_demo_SharedSizeItemTemplateConstructor___vwsn_demo_SharedSizeItemTemplate_Initialize_(::demo::SharedSizeItemTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf210_Demo_demo_SharedSizeItemTemplateConstructor___vwsn_demo_SharedSizeItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf213_Demo_demo_SharedSizeItemTemplateConstructor___vwsn_demo_SharedSizeItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2438,12 +2492,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf211_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::__vwsnf211_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(::demo::SharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf214_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::__vwsnf214_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(::demo::SharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf211_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf214_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2456,12 +2510,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf212_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::__vwsnf212_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(::demo::SharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf215_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::__vwsnf215_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(::demo::SharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf212_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf215_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2474,12 +2528,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf213_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::__vwsnf213_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(::demo::SharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf216_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::__vwsnf216_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(::demo::SharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf213_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf216_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -2492,36 +2546,36 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf214_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::__vwsnf214_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0)
+	__vwsnf217_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::__vwsnf217_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf214_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf217_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelUp();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf215_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::__vwsnf215_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0)
+	__vwsnf218_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::__vwsnf218_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf215_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf218_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelDown();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf216_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::__vwsnf216_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0)
+	__vwsnf219_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::__vwsnf219_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf216_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf219_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_38)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2534,12 +2588,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf217_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::__vwsnf217_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0)
+	__vwsnf220_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::__vwsnf220_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(::demo::ResponsiveGroupControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf217_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf220_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2552,36 +2606,284 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf218_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::__vwsnf218_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0)
+	__vwsnf221_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::__vwsnf221_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf218_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf221_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelUp();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf219_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::__vwsnf219_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0)
+	__vwsnf222_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::__vwsnf222_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf219_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf222_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelDown();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf21_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf21_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf223_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::__vwsnf223_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf21_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
+	void __vwsnf223_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_38)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_38)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf224_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::__vwsnf224_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf224_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf225_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf225_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf225_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf226_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf226_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf226_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf227_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf227_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf227_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf228_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf228_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf228_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_25)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_25)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf229_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf229_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf229_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelUp();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::demo::DateEditor());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf230_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf230_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf230_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelDown();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf231_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf231_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf231_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_33)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_33)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf232_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf232_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf232_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_35)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_35)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontLarger)();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_21)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_21)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf235_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf235_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf235_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontSmaller)();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf236_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf236_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf236_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()() const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(__vwsnthis_0->textBoxS)->GetFont(), static_cast<::vl::vint32_t>(5)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf237_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf237_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf237_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()() const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(__vwsnthis_0->textBoxS)->GetFont(), (- static_cast<::vl::vint32_t>(5))));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::reflection::description::Value __vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
 	{
 		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
 		if (__vwsn_update_)
@@ -2597,180 +2899,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf220_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::__vwsnf220_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0)
+	__vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf220_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_38)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_38)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf221_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::__vwsnf221_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(::demo::ResponsiveStackControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf221_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf222_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf222_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf222_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf223_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf223_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf223_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf224_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf224_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf224_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf225_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf225_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf225_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_25)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_25)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf226_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf226_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf226_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelUp();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf227_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf227_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf227_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelDown();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf228_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf228_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf228_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_33)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_33)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf229_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::__vwsnf229_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(::demo::ResponsiveViewControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf229_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_35)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_35)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::WString __vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
 		return GLOBAL_NAME ToString(::vl::__vwsn::This(itemToBind.Obj())->GetBirthday());
@@ -2778,95 +2912,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf230_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf230_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf25_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf25_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf230_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontLarger)();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf231_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf231_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf231_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_21)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_21)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf232_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf232_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf232_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontSmaller)();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()() const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(__vwsnthis_0->textBoxS)->GetFont(), static_cast<::vl::vint32_t>(5)));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()() const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(__vwsnthis_0->textBoxS)->GetFont(), (- static_cast<::vl::vint32_t>(5))));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf25_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::vl::presentation::controls::list::CellBorderVisualizerTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::vl::presentation::controls::list::HyperlinkVisualizerTemplate());
 		}
 	}
 
@@ -2877,10 +2931,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf26_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf26_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::demo::TextEditor());
+			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::vl::presentation::controls::list::FocusRectangleVisualizerTemplate());
 		}
 	}
 
@@ -2891,7 +2945,48 @@ Closures
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf27_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
+	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf27_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::vl::presentation::controls::list::HyperlinkVisualizerTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::demo::TextEditor());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf2_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf2_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf2_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(itemToBind.Obj())->GetLargeImage();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf30_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf30_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::reflection::description::Value __vwsnf30_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
 	{
 		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
 		if (__vwsn_update_)
@@ -2907,12 +3002,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf28_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf28_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf31_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf31_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf28_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf31_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(itemToBind.Obj())->GetWebsite();
@@ -2920,12 +3015,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf32_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf32_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf32_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_switch_0 = ::vl::__vwsn::This(__vwsnthis_0->comboView)->GetSelectedIndex();
@@ -2962,67 +3057,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf2_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf2_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf2_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_item_);
-		return ::vl::__vwsn::This(itemToBind.Obj())->GetLargeImage();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::__vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::This(itemToBind.Obj())->GetSmallImage();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf31_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::__vwsnf31_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf31_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::This(itemToBind.Obj())->GetLargeImage();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf32_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::__vwsnf32_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::WString __vwsnf32_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::This(itemToBind.Obj())->GetText();
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::__vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(static_cast<::vl::vint32_t>(0)));
+		return ::vl::__vwsn::This(itemToBind.Obj())->GetSmallImage();
 	}
 
 	//-------------------------------------------------------------------
@@ -3032,10 +3075,10 @@ Closures
 	{
 	}
 
-	::vl::WString __vwsnf34_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf34_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(static_cast<::vl::vint32_t>(1)));
+		return ::vl::__vwsn::This(itemToBind.Obj())->GetLargeImage();
 	}
 
 	//-------------------------------------------------------------------
@@ -3048,7 +3091,7 @@ Closures
 	::vl::WString __vwsnf35_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(static_cast<::vl::vint32_t>(2)));
+		return ::vl::__vwsn::This(itemToBind.Obj())->GetText();
 	}
 
 	//-------------------------------------------------------------------
@@ -3058,7 +3101,46 @@ Closures
 	{
 	}
 
-	void __vwsnf36_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	::vl::WString __vwsnf36_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(static_cast<::vl::vint32_t>(0)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf37_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::__vwsnf37_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf37_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(static_cast<::vl::vint32_t>(1)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf38_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::__vwsnf38_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf38_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(static_cast<::vl::vint32_t>(2)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf39_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::__vwsnf39_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf39_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_switch_1 = ::vl::__vwsn::This(__vwsnthis_0->comboView)->GetSelectedIndex();
@@ -3097,37 +3179,37 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf37_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::__vwsnf37_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(::demo::ListViewTabPage* __vwsnctorthis_0)
+	__vwsnf40_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::__vwsnf40_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(::demo::ListViewTabPage* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf37_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::operator()(::vl::Ptr<::vl::presentation::controls::list::ListViewItem> item) const
+	void __vwsnf40_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::operator()(::vl::Ptr<::vl::presentation::controls::list::ListViewItem> item) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf38_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::__vwsnf38_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsnctor_itemsToBind, ::demo::ListViewTabPage* __vwsnctorthis_0)
+	__vwsnf41_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::__vwsnf41_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsnctor_itemsToBind, ::demo::ListViewTabPage* __vwsnctorthis_0)
 		:itemsToBind(__vwsnctor_itemsToBind)
 		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf38_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::operator()(::vl::Ptr<::vl::presentation::controls::list::ListViewItem> item) const
+	void __vwsnf41_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::operator()(::vl::Ptr<::vl::presentation::controls::list::ListViewItem> item) const
 	{
 		::vl::__vwsn::This(this->itemsToBind.Obj())->Add(::vl::__vwsn::Box(item));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf39_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_::__vwsnf39_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf42_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_::__vwsnf42_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf39_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf42_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_17)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -3140,12 +3222,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf40_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_::__vwsnf40_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf43_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_::__vwsnf43_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf40_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf43_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -3158,69 +3240,20 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf41_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::__vwsnf41_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(::demo::RepeatTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiTemplate* __vwsnf41_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::demo::MyTextItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
-			{
-				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::demo::RepeatItemTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_viewModel_)));
-			}
-		}
-		throw ::vl::Exception(::vl::WString(L"Cannot find a matched control template to create.", false));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf42_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::__vwsnf42_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(::demo::RepeatTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiTemplate* __vwsnf42_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::demo::MyTextItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
-			{
-				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::demo::RepeatItemTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_viewModel_)));
-			}
-		}
-		throw ::vl::Exception(::vl::WString(L"Cannot find a matched control template to create.", false));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf43_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::__vwsnf43_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(::demo::RepeatTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiTemplate* __vwsnf43_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::demo::MyTextItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
-			{
-				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::demo::SharedSizeItemTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_viewModel_)));
-			}
-		}
-		throw ::vl::Exception(::vl::WString(L"Cannot find a matched control template to create.", false));
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::__vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(::demo::RepeatTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::presentation::templates::GuiTemplate* __vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
-		return ::vl::__vwsn::This(item.Obj())->GetName();
+		{
+			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::demo::MyTextItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			{
+				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::demo::RepeatItemTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_viewModel_)));
+			}
+		}
+		throw ::vl::Exception(::vl::WString(L"Cannot find a matched control template to create.", false));
 	}
 
 	//-------------------------------------------------------------------
@@ -3230,12 +3263,12 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiListItemTemplate* __vwsnf45_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTemplate* __vwsnf45_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::demo::MyTextItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
 			{
-				return static_cast<::vl::presentation::templates::GuiListItemTemplate*>(new ::demo::SharedSizeTextItemTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_viewModel_)));
+				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::demo::RepeatItemTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_viewModel_)));
 			}
 		}
 		throw ::vl::Exception(::vl::WString(L"Cannot find a matched control template to create.", false));
@@ -3248,7 +3281,56 @@ Closures
 	{
 	}
 
-	void __vwsnf46_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiTemplate* __vwsnf46_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::demo::MyTextItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			{
+				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::demo::SharedSizeItemTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_viewModel_)));
+			}
+		}
+		throw ::vl::Exception(::vl::WString(L"Cannot find a matched control template to create.", false));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf47_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::__vwsnf47_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(::demo::RepeatTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiListItemTemplate* __vwsnf47_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::demo::MyTextItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			{
+				return static_cast<::vl::presentation::templates::GuiListItemTemplate*>(new ::demo::SharedSizeTextItemTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_viewModel_)));
+			}
+		}
+		throw ::vl::Exception(::vl::WString(L"Cannot find a matched control template to create.", false));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf48_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::__vwsnf48_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(::demo::RepeatTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf48_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->GetName();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf49_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::__vwsnf49_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(::demo::RepeatTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf49_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_27)->GetPosition();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
@@ -3257,69 +3339,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_27)->SetPosition(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf47_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf47_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	bool __vwsnf47_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
-	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
-		if (__vwsn_update_)
-		{
-			::vl::__vwsn::This(item.Obj())->SetChecked(__vwsn_value_);
-			return false;
-		}
-		else
-		{
-			return ::vl::__vwsn::This(item.Obj())->GetChecked();
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf48_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf48_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::WString __vwsnf48_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
-		return ::vl::__vwsn::This(item.Obj())->GetName();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf49_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf49_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf49_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		{
-			auto __vwsn_switch_2 = ::vl::__vwsn::This(__vwsnthis_0->comboView)->GetSelectedIndex();
-			if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(0)))
-			{
-				::vl::__vwsn::This(__vwsnthis_0->textList)->SetView(::vl::presentation::controls::TextListView::Text);
-				::vl::__vwsn::This(__vwsnthis_0->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Text);
-			}
-			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(1)))
-			{
-				::vl::__vwsn::This(__vwsnthis_0->textList)->SetView(::vl::presentation::controls::TextListView::Check);
-				::vl::__vwsn::This(__vwsnthis_0->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Check);
-			}
-			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(2)))
-			{
-				::vl::__vwsn::This(__vwsnthis_0->textList)->SetView(::vl::presentation::controls::TextListView::Radio);
-				::vl::__vwsn::This(__vwsnthis_0->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Radio);
-			}
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -3343,7 +3362,70 @@ Closures
 	{
 	}
 
-	void __vwsnf50_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	bool __vwsnf50_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
+		if (__vwsn_update_)
+		{
+			::vl::__vwsn::This(item.Obj())->SetChecked(__vwsn_value_);
+			return false;
+		}
+		else
+		{
+			return ::vl::__vwsn::This(item.Obj())->GetChecked();
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->GetName();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		{
+			auto __vwsn_switch_2 = ::vl::__vwsn::This(__vwsnthis_0->comboView)->GetSelectedIndex();
+			if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(0)))
+			{
+				::vl::__vwsn::This(__vwsnthis_0->textList)->SetView(::vl::presentation::controls::TextListView::Text);
+				::vl::__vwsn::This(__vwsnthis_0->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Text);
+			}
+			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(1)))
+			{
+				::vl::__vwsn::This(__vwsnthis_0->textList)->SetView(::vl::presentation::controls::TextListView::Check);
+				::vl::__vwsn::This(__vwsnthis_0->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Check);
+			}
+			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(2)))
+			{
+				::vl::__vwsn::This(__vwsnthis_0->textList)->SetView(::vl::presentation::controls::TextListView::Radio);
+				::vl::__vwsn::This(__vwsnthis_0->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Radio);
+			}
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf53_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf53_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf53_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_for_begin_i = static_cast<::vl::vint32_t>(0);
@@ -3377,12 +3459,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf54_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf54_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf54_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto i = static_cast<::vl::vint32_t>(0);
@@ -3404,12 +3486,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf55_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf55_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf55_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto i = static_cast<::vl::vint32_t>(1);
@@ -3431,12 +3513,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf53_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf53_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf56_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::__vwsnf56_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf53_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf56_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->textList)->GetItems()).Obj())->Clear();
 		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->itemsToBind.Obj())->Clear();
@@ -3444,12 +3526,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf54_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::__vwsnf54_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf57_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::__vwsnf57_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf54_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf57_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto nodeToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>>(__vwsn_item_);
 		return ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(nodeToBind.Obj())->Children()));
@@ -3457,12 +3539,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf55_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::__vwsnf55_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf58_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::__vwsnf58_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf55_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf58_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto nodeToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>>(__vwsn_item_);
 		return ::vl::__vwsn::This(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(nodeToBind.Obj())->GetData().Obj()).Obj())->image;
@@ -3470,69 +3552,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf56_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::__vwsnf56_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf59_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::__vwsnf59_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf56_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf59_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto nodeToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>>(__vwsn_item_);
 		return ::vl::__vwsn::This(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(nodeToBind.Obj())->GetData().Obj()).Obj())->text;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf57_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf57_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf57_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetColor1();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->SetColor1(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf58_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf58_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf58_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetColor2();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->SetColor2(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf59_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf59_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf59_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3565,6 +3593,60 @@ Closures
 
 	void __vwsnf60_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetColor1();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->SetColor1(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf61_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf61_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf61_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetColor2();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->SetColor2(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf62_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf62_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf62_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->SetColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf63_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf63_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf63_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->GetThickness();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -3576,49 +3658,49 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf61_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf61_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf64_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf64_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf61_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf64_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->PerformGradientAnimation(::demo::ColorDef::Dark());
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf62_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf62_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf65_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf65_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf62_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf65_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->PerformGradientAnimation(::demo::ColorDef::Light());
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf63_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf63_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf66_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::__vwsnf66_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(::demo::AnimationTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf63_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf66_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->PerformGradientAnimation(::demo::ColorDef::Sink());
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf64_Demo_demo_AnimationTabPage_BallAnimation_::__vwsnf64_Demo_demo_AnimationTabPage_BallAnimation_(::vl::presentation::compositions::GuiBoundsComposition* __vwsnctor_ball, ::vl::presentation::compositions::GuiBoundsComposition* __vwsnctor_container)
+	__vwsnf67_Demo_demo_AnimationTabPage_BallAnimation_::__vwsnf67_Demo_demo_AnimationTabPage_BallAnimation_(::vl::presentation::compositions::GuiBoundsComposition* __vwsnctor_ball, ::vl::presentation::compositions::GuiBoundsComposition* __vwsnctor_container)
 		:ball(__vwsnctor_ball)
 		, container(__vwsnctor_container)
 	{
 	}
 
-	void __vwsnf64_Demo_demo_AnimationTabPage_BallAnimation_::operator()(::vl::vuint64_t time) const
+	void __vwsnf67_Demo_demo_AnimationTabPage_BallAnimation_::operator()(::vl::vuint64_t time) const
 	{
 		auto circleRatio = GLOBAL_NAME G((static_cast<double>(time) / static_cast<double>(static_cast<::vl::vint32_t>(2000))));
 		auto angle = (((circleRatio * ::vl::reflection::description::Math::Pi()) * static_cast<double>(static_cast<::vl::vint32_t>(2))) + (::vl::reflection::description::Math::Pi() * static_cast<double>(1.5)));
@@ -3651,59 +3733,28 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf65_Demo_demo_AnimationTabPage_BallAnimationWithDelay_::__vwsnf65_Demo_demo_AnimationTabPage_BallAnimationWithDelay_(::vl::presentation::compositions::GuiBoundsComposition* __vwsnctor_ball, ::vl::presentation::compositions::GuiBoundsComposition* __vwsnctor_container, ::vl::vint32_t __vwsnctor_delay)
+	__vwsnf68_Demo_demo_AnimationTabPage_BallAnimationWithDelay_::__vwsnf68_Demo_demo_AnimationTabPage_BallAnimationWithDelay_(::vl::presentation::compositions::GuiBoundsComposition* __vwsnctor_ball, ::vl::presentation::compositions::GuiBoundsComposition* __vwsnctor_container, ::vl::vint32_t __vwsnctor_delay)
 		:ball(__vwsnctor_ball)
 		, container(__vwsnctor_container)
 		, delay(__vwsnctor_delay)
 	{
 	}
 
-	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf65_Demo_demo_AnimationTabPage_BallAnimationWithDelay_::operator()(::vl::presentation::controls::IGuiAnimationCoroutine::IImpl* __vwsn_co_impl_) const
+	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf68_Demo_demo_AnimationTabPage_BallAnimationWithDelay_::operator()(::vl::presentation::controls::IGuiAnimationCoroutine::IImpl* __vwsn_co_impl_) const
 	{
 		return ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc13_Demo_demo_AnimationTabPage_BallAnimationWithDelay___vl_reflection_description_ICoroutine(__vwsn_co_impl_, ball, container, delay));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf66_Demo_demo_AnimationTabPage_WaitingAnimation_::__vwsnf66_Demo_demo_AnimationTabPage_WaitingAnimation_(::vl::presentation::compositions::GuiBoundsComposition* __vwsnctor_container)
+	__vwsnf69_Demo_demo_AnimationTabPage_WaitingAnimation_::__vwsnf69_Demo_demo_AnimationTabPage_WaitingAnimation_(::vl::presentation::compositions::GuiBoundsComposition* __vwsnctor_container)
 		:container(__vwsnctor_container)
 	{
 	}
 
-	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf66_Demo_demo_AnimationTabPage_WaitingAnimation_::operator()(::vl::presentation::controls::IGuiAnimationCoroutine::IImpl* __vwsn_co_impl_) const
+	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf69_Demo_demo_AnimationTabPage_WaitingAnimation_::operator()(::vl::presentation::controls::IGuiAnimationCoroutine::IImpl* __vwsn_co_impl_) const
 	{
 		return ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc14_Demo_demo_AnimationTabPage_WaitingAnimation___vl_reflection_description_ICoroutine(__vwsn_co_impl_, container));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf68_Demo_demo_ColorAnimation_CreateAnimation_::__vwsnf68_Demo_demo_ColorAnimation_CreateAnimation_(::vl::vuint64_t __vwsnctor___vwsn_ani_time, ::demo::ColorAnimation* __vwsnctorthis_0)
-		:__vwsn_ani_time(__vwsnctor___vwsn_ani_time)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf68_Demo_demo_ColorAnimation_CreateAnimation_::operator()(::vl::vuint64_t __vwsn_ani_currentTime) const
-	{
-		__vwsnthis_0->Interpolate((static_cast<double>(__vwsn_ani_currentTime) / static_cast<double>(__vwsn_ani_time)));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf69_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_::__vwsnf69_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_(::demo::DateEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf69_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedDate();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::DateTime>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetSelectedDate(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3721,12 +3772,43 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf70_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_::__vwsnf70_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_(::demo::DateEditorConstructor* __vwsnctorthis_0)
+	__vwsnf71_Demo_demo_ColorAnimation_CreateAnimation_::__vwsnf71_Demo_demo_ColorAnimation_CreateAnimation_(::vl::vuint64_t __vwsnctor___vwsn_ani_time, ::demo::ColorAnimation* __vwsnctorthis_0)
+		:__vwsn_ani_time(__vwsnctor___vwsn_ani_time)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf71_Demo_demo_ColorAnimation_CreateAnimation_::operator()(::vl::vuint64_t __vwsn_ani_currentTime) const
+	{
+		__vwsnthis_0->Interpolate((static_cast<double>(__vwsn_ani_currentTime) / static_cast<double>(__vwsn_ani_time)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf72_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_::__vwsnf72_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_(::demo::DateEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf70_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf72_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedDate();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::DateTime>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetSelectedDate(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf73_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_::__vwsnf73_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_(::demo::DateEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf73_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetCellValue();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(__vwsn_value_);
@@ -3735,48 +3817,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetCellValue(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf71_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::__vwsnf71_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(::demo::DateFilterConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf71_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf72_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::__vwsnf72_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(::demo::DateFilterConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf72_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->dateFrom)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->dateFrom)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf73_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::__vwsnf73_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(::demo::DateFilterConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf73_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
 	}
 
 	//-------------------------------------------------------------------
@@ -3800,13 +3840,13 @@ Closures
 
 	void __vwsnf75_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->dateTo)->GetEnabled();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->dateFrom)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->dateTo)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->dateFrom)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3823,56 +3863,44 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf77_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_::__vwsnf77_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_(::demo::TextEditorConstructor* __vwsnctorthis_0)
+	__vwsnf77_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::__vwsnf77_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(::demo::DateFilterConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf77_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf77_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf78_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_::__vwsnf78_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_(::demo::TextEditorConstructor* __vwsnctorthis_0)
+	__vwsnf78_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::__vwsnf78_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(::demo::DateFilterConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf78_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf78_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetCellValue();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(__vwsn_value_);
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->dateTo)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetCellValue(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->dateTo)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf79_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::__vwsnf79_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0)
+	__vwsnf79_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::__vwsnf79_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(::demo::DateFilterConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf79_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf79_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
 	}
 
 	//-------------------------------------------------------------------
@@ -3891,12 +3919,66 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf80_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::__vwsnf80_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0)
+	__vwsnf80_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_::__vwsnf80_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_(::demo::TextEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf80_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf80_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf81_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_::__vwsnf81_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_(::demo::TextEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf81_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetCellValue();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetCellValue(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf82_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::__vwsnf82_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf82_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf83_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::__vwsnf83_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf83_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -3909,12 +3991,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf81_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::__vwsnf81_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0)
+	__vwsnf84_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::__vwsnf84_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf81_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf84_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -3927,12 +4009,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf82_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::__vwsnf82_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(::demo::CategoryEditorConstructor* __vwsnctorthis_0)
+	__vwsnf85_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::__vwsnf85_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(::demo::CategoryEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiListItemTemplate* __vwsnf82_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiListItemTemplate* __vwsnf85_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::demo::MyCategory>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
@@ -3945,12 +4027,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf83_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::__vwsnf83_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(::demo::CategoryEditorConstructor* __vwsnctorthis_0)
+	__vwsnf86_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::__vwsnf86_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(::demo::CategoryEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiTemplate* __vwsnf83_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTemplate* __vwsnf86_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::demo::MyCategory>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
@@ -3963,12 +4045,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf84_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::__vwsnf84_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(::demo::CategoryEditorConstructor* __vwsnctorthis_0)
+	__vwsnf87_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::__vwsnf87_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(::demo::CategoryEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf84_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf87_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedIndex();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
@@ -3981,12 +4063,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf85_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::__vwsnf85_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(::demo::CategoryEditorConstructor* __vwsnctorthis_0)
+	__vwsnf88_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::__vwsnf88_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(::demo::CategoryEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf85_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf88_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetCellValue();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(__vwsn_value_);
@@ -3999,12 +4081,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf86_Demo_demo_CategoryItemTemplateConstructor___vwsn_demo_CategoryItemTemplate_Initialize_::__vwsnf86_Demo_demo_CategoryItemTemplateConstructor___vwsn_demo_CategoryItemTemplate_Initialize_(::demo::CategoryItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf89_Demo_demo_CategoryItemTemplateConstructor___vwsn_demo_CategoryItemTemplate_Initialize_::__vwsnf89_Demo_demo_CategoryItemTemplateConstructor___vwsn_demo_CategoryItemTemplate_Initialize_(::demo::CategoryItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf86_Demo_demo_CategoryItemTemplateConstructor___vwsn_demo_CategoryItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf89_Demo_demo_CategoryItemTemplateConstructor___vwsn_demo_CategoryItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -4013,60 +4095,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf87_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_::__vwsnf87_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_(::demo::CategoryVisualizerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf87_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf88_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_::__vwsnf88_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_(::demo::CategoryVisualizerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf88_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetCategory();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::demo::MyCategory>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetCategory(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf89_Demo_demo_GenderDisplayerConstructor___vwsn_demo_GenderDisplayer_Initialize_::__vwsnf89_Demo_demo_GenderDisplayerConstructor___vwsn_demo_GenderDisplayer_Initialize_(::demo::GenderDisplayerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf89_Demo_demo_GenderDisplayerConstructor___vwsn_demo_GenderDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetImage();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::INativeImage>>(__vwsn_value_);
-		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->SetImage(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -4079,18 +4107,72 @@ Closures
 	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf8_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::demo::GenderVisualizer());
+			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::vl::presentation::controls::list::FocusRectangleVisualizerTemplate());
 		}
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf90_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::__vwsnf90_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(::demo::GenderEditorConstructor* __vwsnctorthis_0)
+	__vwsnf90_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_::__vwsnf90_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_(::demo::CategoryVisualizerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiListItemTemplate* __vwsnf90_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	void __vwsnf90_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf91_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_::__vwsnf91_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_(::demo::CategoryVisualizerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf91_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetCategory();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::demo::MyCategory>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetCategory(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf92_Demo_demo_GenderDisplayerConstructor___vwsn_demo_GenderDisplayer_Initialize_::__vwsnf92_Demo_demo_GenderDisplayerConstructor___vwsn_demo_GenderDisplayer_Initialize_(::demo::GenderDisplayerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf92_Demo_demo_GenderDisplayerConstructor___vwsn_demo_GenderDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetImage();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::INativeImage>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->SetImage(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf93_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::__vwsnf93_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(::demo::GenderEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiListItemTemplate* __vwsnf93_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::demo::MyGender>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
@@ -4103,12 +4185,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf91_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::__vwsnf91_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(::demo::GenderEditorConstructor* __vwsnctorthis_0)
+	__vwsnf94_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::__vwsnf94_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(::demo::GenderEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiTemplate* __vwsnf91_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTemplate* __vwsnf94_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::demo::MyGender>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
@@ -4121,12 +4203,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf92_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::__vwsnf92_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(::demo::GenderEditorConstructor* __vwsnctorthis_0)
+	__vwsnf95_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::__vwsnf95_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(::demo::GenderEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf92_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf95_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedIndex();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
@@ -4139,12 +4221,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf93_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::__vwsnf93_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(::demo::GenderEditorConstructor* __vwsnctorthis_0)
+	__vwsnf96_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::__vwsnf96_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(::demo::GenderEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf93_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf96_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetCellValue();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(__vwsn_value_);
@@ -4157,12 +4239,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf94_Demo_demo_GenderVisualizerConstructor___vwsn_demo_GenderVisualizer_Initialize_::__vwsnf94_Demo_demo_GenderVisualizerConstructor___vwsn_demo_GenderVisualizer_Initialize_(::demo::GenderVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf97_Demo_demo_GenderVisualizerConstructor___vwsn_demo_GenderVisualizer_Initialize_::__vwsnf97_Demo_demo_GenderVisualizerConstructor___vwsn_demo_GenderVisualizer_Initialize_(::demo::GenderVisualizerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf94_Demo_demo_GenderVisualizerConstructor___vwsn_demo_GenderVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf97_Demo_demo_GenderVisualizerConstructor___vwsn_demo_GenderVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetGender();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::demo::MyGender>(__vwsn_value_);
@@ -4175,12 +4257,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf95_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf95_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf98_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf98_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf95_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf98_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -4193,12 +4275,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf96_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf96_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf99_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf99_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf96_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf99_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -4211,93 +4293,66 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf97_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf97_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf9_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::__vwsnf9_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf97_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf9_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return;
+			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::demo::GenderVisualizer());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf98_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf98_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf98_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf99_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::__vwsnf99_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(::demo::DatePickerTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf99_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsno15_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::__vwsno15_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(::vl::presentation::controls::list::IDataSorter* __vwsnctorthis_0, ::demo::DataGridTabPageConstructor* __vwsnctorthis_1)
+	__vwsno10_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::__vwsno10_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(::vl::presentation::controls::list::IDataSorter* __vwsnctorthis_0, ::demo::DataGridTabPageConstructor* __vwsnctorthis_1)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 		, __vwsnthis_1(::vl::__vwsn::This(__vwsnctorthis_1))
 	{
 	}
 
-	::vl::vint32_t __vwsno15_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::operator()(::vl::Ptr<::demo::MyDataItem> __vwsno_1, ::vl::Ptr<::demo::MyDataItem> __vwsno_2) const
+	::vl::vint32_t __vwsno10_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::operator()(::vl::Ptr<::demo::MyDataItem> __vwsno_1, ::vl::Ptr<::demo::MyDataItem> __vwsno_2) const
+	{
+		return ::vl::reflection::description::Sys::Compare(static_cast<::vl::vuint64_t>(::vl::__vwsn::This(__vwsno_1.Obj())->GetGender()), static_cast<::vl::vuint64_t>(::vl::__vwsn::This(__vwsno_2.Obj())->GetGender()));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsno17_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::__vwsno17_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(::vl::presentation::controls::list::IDataSorter* __vwsnctorthis_0, ::demo::DataGridTabPageConstructor* __vwsnctorthis_1)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+		, __vwsnthis_1(::vl::__vwsn::This(__vwsnctorthis_1))
+	{
+	}
+
+	::vl::vint32_t __vwsno17_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::operator()(::vl::Ptr<::demo::MyDataItem> __vwsno_1, ::vl::Ptr<::demo::MyDataItem> __vwsno_2) const
 	{
 		return ::vl::reflection::description::Sys::Compare(static_cast<::vl::vuint64_t>(::vl::__vwsn::This(__vwsno_1.Obj())->GetCategory()), static_cast<::vl::vuint64_t>(::vl::__vwsn::This(__vwsno_2.Obj())->GetCategory()));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsno19_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::__vwsno19_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(::vl::presentation::controls::list::IDataSorter* __vwsnctorthis_0, ::demo::DataGridTabPageConstructor* __vwsnctorthis_1)
+	__vwsno21_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::__vwsno21_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(::vl::presentation::controls::list::IDataSorter* __vwsnctorthis_0, ::demo::DataGridTabPageConstructor* __vwsnctorthis_1)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 		, __vwsnthis_1(::vl::__vwsn::This(__vwsnctorthis_1))
 	{
 	}
 
-	::vl::vint32_t __vwsno19_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::operator()(::vl::Ptr<::demo::MyDataItem> __vwsno_1, ::vl::Ptr<::demo::MyDataItem> __vwsno_2) const
+	::vl::vint32_t __vwsno21_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::operator()(::vl::Ptr<::demo::MyDataItem> __vwsno_1, ::vl::Ptr<::demo::MyDataItem> __vwsno_2) const
 	{
 		return ::vl::reflection::description::Sys::Compare(::vl::__vwsn::This(__vwsno_1.Obj())->GetBirthday(), ::vl::__vwsn::This(__vwsno_2.Obj())->GetBirthday());
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsno25_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::__vwsno25_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(::vl::presentation::controls::list::IDataSorter* __vwsnctorthis_0, ::demo::DataGridTabPageConstructor* __vwsnctorthis_1)
+	__vwsno28_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::__vwsno28_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(::vl::presentation::controls::list::IDataSorter* __vwsnctorthis_0, ::demo::DataGridTabPageConstructor* __vwsnctorthis_1)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 		, __vwsnthis_1(::vl::__vwsn::This(__vwsnctorthis_1))
 	{
 	}
 
-	::vl::vint32_t __vwsno25_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::operator()(::vl::Ptr<::demo::MyDataItem> __vwsno_1, ::vl::Ptr<::demo::MyDataItem> __vwsno_2) const
+	::vl::vint32_t __vwsno28_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::operator()(::vl::Ptr<::demo::MyDataItem> __vwsno_1, ::vl::Ptr<::demo::MyDataItem> __vwsno_2) const
 	{
 		return ::vl::reflection::description::Sys::Compare(::vl::__vwsn::This(__vwsno_1.Obj())->GetWebsite(), ::vl::__vwsn::This(__vwsno_2.Obj())->GetWebsite());
 	}
@@ -4317,26 +4372,13 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsno67_Demo_demo_ColorAnimation_::__vwsno67_Demo_demo_ColorAnimation_()
+	__vwsno70_Demo_demo_ColorAnimation_::__vwsno70_Demo_demo_ColorAnimation_()
 	{
 	}
 
-	double __vwsno67_Demo_demo_ColorAnimation_::operator()(double __vwsno_1) const
+	double __vwsno70_Demo_demo_ColorAnimation_::operator()(double __vwsno_1) const
 	{
 		return __vwsno_1;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsno9_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::__vwsno9_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(::vl::presentation::controls::list::IDataSorter* __vwsnctorthis_0, ::demo::DataGridTabPageConstructor* __vwsnctorthis_1)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-		, __vwsnthis_1(::vl::__vwsn::This(__vwsnctorthis_1))
-	{
-	}
-
-	::vl::vint32_t __vwsno9_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_::operator()(::vl::Ptr<::demo::MyDataItem> __vwsno_1, ::vl::Ptr<::demo::MyDataItem> __vwsno_2) const
-	{
-		return ::vl::reflection::description::Sys::Compare(static_cast<::vl::vuint64_t>(::vl::__vwsn::This(__vwsno_1.Obj())->GetGender()), static_cast<::vl::vuint64_t>(::vl::__vwsn::This(__vwsno_2.Obj())->GetGender()));
 	}
 
 	//-------------------------------------------------------------------
@@ -7159,7 +7201,7 @@ Closures
 
 	::vl::vint32_t __vwsnc2_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize__vl_presentation_controls_list_IDataSorter::Compare(const ::vl::reflection::description::Value& __vwsn_row1_, const ::vl::reflection::description::Value& __vwsn_row2_)
 	{
-		return LAMBDA(::vl_workflow_global::__vwsno9_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(this, __vwsnthis_0))(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row1_), ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row2_));
+		return LAMBDA(::vl_workflow_global::__vwsno10_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(this, __vwsnthis_0))(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row1_), ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row2_));
 	}
 
 	//-------------------------------------------------------------------
@@ -7785,7 +7827,7 @@ Closures
 
 	::vl::vint32_t __vwsnc3_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize__vl_presentation_controls_list_IDataSorter::Compare(const ::vl::reflection::description::Value& __vwsn_row1_, const ::vl::reflection::description::Value& __vwsn_row2_)
 	{
-		return LAMBDA(::vl_workflow_global::__vwsno15_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(this, __vwsnthis_0))(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row1_), ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row2_));
+		return LAMBDA(::vl_workflow_global::__vwsno17_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(this, __vwsnthis_0))(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row1_), ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row2_));
 	}
 
 	//-------------------------------------------------------------------
@@ -8395,7 +8437,7 @@ Closures
 
 	::vl::vint32_t __vwsnc4_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize__vl_presentation_controls_list_IDataSorter::Compare(const ::vl::reflection::description::Value& __vwsn_row1_, const ::vl::reflection::description::Value& __vwsn_row2_)
 	{
-		return LAMBDA(::vl_workflow_global::__vwsno19_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(this, __vwsnthis_0))(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row1_), ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row2_));
+		return LAMBDA(::vl_workflow_global::__vwsno21_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(this, __vwsnthis_0))(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row1_), ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row2_));
 	}
 
 	//-------------------------------------------------------------------
@@ -9116,7 +9158,7 @@ Closures
 
 	::vl::vint32_t __vwsnc5_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize__vl_presentation_controls_list_IDataSorter::Compare(const ::vl::reflection::description::Value& __vwsn_row1_, const ::vl::reflection::description::Value& __vwsn_row2_)
 	{
-		return LAMBDA(::vl_workflow_global::__vwsno25_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(this, __vwsnthis_0))(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row1_), ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row2_));
+		return LAMBDA(::vl_workflow_global::__vwsno28_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_Compare_(this, __vwsnthis_0))(::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row1_), ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyDataItem>>(__vwsn_row2_));
 	}
 
 	//-------------------------------------------------------------------
@@ -11976,40 +12018,41 @@ namespace demo
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc9_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf57_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc10_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf58_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf59_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc12_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf60_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf61_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc10_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf61_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf62_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc12_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf63_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf64_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_10)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf62_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf65_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_13)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf63_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf66_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_16)->Clicked, __vwsn_event_handler_);
 		}
 	}
 
 	AnimationTabPageConstructor::AnimationTabPageConstructor()
 		: self(static_cast<::demo::AnimationTabPage*>(nullptr))
+		, animationBackground(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiTab*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
@@ -12030,7 +12073,6 @@ namespace demo
 		, __vwsn_precompile_17(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_18(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
 		, __vwsn_precompile_19(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
-		, animationBackground(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -12040,17 +12082,17 @@ Class (::demo::AnimationTabPage)
 
 	::vl::Ptr<::vl::presentation::controls::IGuiAnimation> AnimationTabPage::BallAnimation(::vl::presentation::compositions::GuiBoundsComposition* container, ::vl::presentation::compositions::GuiBoundsComposition* ball)
 	{
-		return ::vl::presentation::controls::IGuiAnimation::CreateAnimation(LAMBDA(::vl_workflow_global::__vwsnf64_Demo_demo_AnimationTabPage_BallAnimation_(ball, container)), static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(2000)));
+		return ::vl::presentation::controls::IGuiAnimation::CreateAnimation(LAMBDA(::vl_workflow_global::__vwsnf67_Demo_demo_AnimationTabPage_BallAnimation_(ball, container)), static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(2000)));
 	}
 
 	::vl::Ptr<::vl::presentation::controls::IGuiAnimation> AnimationTabPage::BallAnimationWithDelay(::vl::presentation::compositions::GuiBoundsComposition* container, ::vl::presentation::compositions::GuiBoundsComposition* ball, ::vl::vint32_t delay)
 	{
-		return ::vl::presentation::controls::IGuiAnimationCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf65_Demo_demo_AnimationTabPage_BallAnimationWithDelay_(ball, container, delay)));
+		return ::vl::presentation::controls::IGuiAnimationCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf68_Demo_demo_AnimationTabPage_BallAnimationWithDelay_(ball, container, delay)));
 	}
 
 	::vl::Ptr<::vl::presentation::controls::IGuiAnimation> AnimationTabPage::WaitingAnimation(::vl::presentation::compositions::GuiBoundsComposition* container)
 	{
-		return ::vl::presentation::controls::IGuiAnimationCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf66_Demo_demo_AnimationTabPage_WaitingAnimation_(container)));
+		return ::vl::presentation::controls::IGuiAnimationCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf69_Demo_demo_AnimationTabPage_WaitingAnimation_(container)));
 	}
 
 	void AnimationTabPage::PerformGradientAnimation(::vl::Ptr<::demo::ColorDef> target)
@@ -12092,10 +12134,10 @@ Class (::demo::CategoryDisplayerConstructor)
 		(this->self = __vwsn_this_);
 		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(2); __vwsn_temp__.top = static_cast<::vl::vint32_t>(2); __vwsn_temp__.right = static_cast<::vl::vint32_t>(2); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(2); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(2); __vwsn_temp__.top = static_cast<::vl::vint32_t>(2); __vwsn_temp__.right = static_cast<::vl::vint32_t>(2); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(2); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(3), static_cast<::vl::vint32_t>(4));
@@ -12138,16 +12180,16 @@ Class (::demo::CategoryDisplayerConstructor)
 		}
 		(this->__vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetEllipse(true);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FF8000", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_6));
@@ -12160,17 +12202,17 @@ Class (::demo::CategoryDisplayerConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc22_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf79_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf82_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc23_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf80_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf83_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc24_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf81_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf84_Demo_demo_CategoryDisplayerConstructor___vwsn_demo_CategoryDisplayer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -12230,19 +12272,19 @@ Class (::demo::CategoryEditorConstructor)
 			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf85_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(this)));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetVerticalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetHorizontalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf82_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(this)));
-		}
-		{
 			(this->comboBox = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_0)));
 		}
 		{
-			::vl::__vwsn::This(this->comboBox)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf83_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(this)));
+			::vl::__vwsn::This(this->comboBox)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf86_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->comboBox)->GetBoundsComposition());
 		{
@@ -12256,21 +12298,21 @@ Class (::demo::CategoryEditorConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc25_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf84_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf87_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc26_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf85_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf88_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	CategoryEditorConstructor::CategoryEditorConstructor()
 		: self(static_cast<::demo::CategoryEditor*>(nullptr))
+		, comboBox(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, comboBox(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
 	{
 	}
 
@@ -12313,7 +12355,7 @@ Class (::demo::CategoryItemTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc27_Demo_demo_CategoryItemTemplateConstructor___vwsn_demo_CategoryItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf86_Demo_demo_CategoryItemTemplateConstructor___vwsn_demo_CategoryItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf89_Demo_demo_CategoryItemTemplateConstructor___vwsn_demo_CategoryItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -12323,9 +12365,9 @@ Class (::demo::CategoryItemTemplateConstructor)
 
 	CategoryItemTemplateConstructor::CategoryItemTemplateConstructor()
 		: self(static_cast<::demo::CategoryItemTemplate*>(nullptr))
+		, SelectedCategory(static_cast<::demo::MyCategory>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0))))
 		, __vwsn_precompile_0(static_cast<::demo::CategoryDisplayer*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, SelectedCategory(static_cast<::demo::MyCategory>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0))))
 	{
 	}
 
@@ -12370,12 +12412,12 @@ Class (::demo::CategoryVisualizerConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc28_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf87_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf90_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc29_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf88_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf91_Demo_demo_CategoryVisualizerConstructor___vwsn_demo_CategoryVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -12552,7 +12594,7 @@ Class (::demo::ColorAnimation)
 		::vl::__vwsn::This(this->GetBegin().Obj())->SetShadow(::vl::__vwsn::This(this->GetCurrent().Obj())->GetShadow());
 		::vl::__vwsn::This(this->GetBegin().Obj())->SetThickness(::vl::__vwsn::This(this->GetCurrent().Obj())->GetThickness());
 		this->SetEnd(__vwsn_ani_target);
-		return ::vl::presentation::controls::IGuiAnimation::CreateAnimation(LAMBDA(::vl_workflow_global::__vwsnf68_Demo_demo_ColorAnimation_CreateAnimation_(__vwsn_ani_time, this)), __vwsn_ani_time);
+		return ::vl::presentation::controls::IGuiAnimation::CreateAnimation(LAMBDA(::vl_workflow_global::__vwsnf71_Demo_demo_ColorAnimation_CreateAnimation_(__vwsn_ani_time, this)), __vwsn_ani_time);
 	}
 
 	ColorAnimation::ColorAnimation(::vl::Ptr<::demo::ColorDef> __vwsn_ani_current)
@@ -12560,7 +12602,7 @@ Class (::demo::ColorAnimation)
 		, __vwsn_prop_End(::vl::Ptr<::demo::ColorDef>())
 		, __vwsn_prop_Current(::vl::Ptr<::demo::ColorDef>())
 		, __vwsn_ani_int_(::vl::Func<double(double)>(GLOBAL_OBJ, &GLOBAL_SYMBOL G))
-		, __vwsn_ani_int_Thickness(LAMBDA(::vl_workflow_global::__vwsno67_Demo_demo_ColorAnimation_()))
+		, __vwsn_ani_int_Thickness(LAMBDA(::vl_workflow_global::__vwsno70_Demo_demo_ColorAnimation_()))
 	{
 		this->SetBegin(::vl::Ptr<::demo::ColorDef>(new ::demo::ColorDef()));
 		::vl::__vwsn::This(this->GetBegin().Obj())->SetTop(::vl::__vwsn::This(__vwsn_ani_current.Obj())->GetTop());
@@ -12826,10 +12868,10 @@ Class (::demo::DataGridTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetValueProperty(LAMBDA(::vl_workflow_global::__vwsnf5_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf6_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetSize(static_cast<::vl::vint32_t>(120));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetSize(static_cast<::vl::vint32_t>(120));
+			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf6_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetText(::vl::WString(L"Name", false));
@@ -12840,22 +12882,22 @@ Class (::demo::DataGridTabPageConstructor)
 		}
 		(this->__vwsn_precompile_13 = ::vl::Ptr<::vl::presentation::controls::list::DataColumn>(new ::vl::presentation::controls::list::DataColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetVisualizerFactory(::vl::Ptr<::vl::presentation::controls::list::IDataVisualizerFactory>(::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf7_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf8_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>()))))));
+			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetVisualizerFactory(::vl::Ptr<::vl::presentation::controls::list::IDataVisualizerFactory>(::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf7_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf8_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf9_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>()))))))));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetSorter(::vl::Ptr<::vl::presentation::controls::list::IDataSorter>(new ::vl_workflow_global::__vwsnc2_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize__vl_presentation_controls_list_IDataSorter(this)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetEditorFactory(::vl::Ptr<::vl::presentation::controls::list::IDataEditorFactory>(::vl::Ptr<::vl::presentation::controls::list::DataEditorFactory>(new ::vl::presentation::controls::list::DataEditorFactory(LAMBDA(::vl_workflow_global::__vwsnf10_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this))))));
+			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetEditorFactory(::vl::Ptr<::vl::presentation::controls::list::IDataEditorFactory>(::vl::Ptr<::vl::presentation::controls::list::DataEditorFactory>(new ::vl::presentation::controls::list::DataEditorFactory(LAMBDA(::vl_workflow_global::__vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this))))));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetValueProperty(LAMBDA(::vl_workflow_global::__vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetValueProperty(LAMBDA(::vl_workflow_global::__vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetSize(static_cast<::vl::vint32_t>(80));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetText(::vl::WString(L"Gender", false));
@@ -12866,22 +12908,22 @@ Class (::demo::DataGridTabPageConstructor)
 		}
 		(this->__vwsn_precompile_14 = ::vl::Ptr<::vl::presentation::controls::list::DataColumn>(new ::vl::presentation::controls::list::DataColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14.Obj())->SetVisualizerFactory(::vl::Ptr<::vl::presentation::controls::list::IDataVisualizerFactory>(::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>()))))));
+			::vl::__vwsn::This(this->__vwsn_precompile_14.Obj())->SetVisualizerFactory(::vl::Ptr<::vl::presentation::controls::list::IDataVisualizerFactory>(::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf15_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>()))))))));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_14.Obj())->SetSorter(::vl::Ptr<::vl::presentation::controls::list::IDataSorter>(new ::vl_workflow_global::__vwsnc3_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize__vl_presentation_controls_list_IDataSorter(this)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14.Obj())->SetEditorFactory(::vl::Ptr<::vl::presentation::controls::list::IDataEditorFactory>(::vl::Ptr<::vl::presentation::controls::list::DataEditorFactory>(new ::vl::presentation::controls::list::DataEditorFactory(LAMBDA(::vl_workflow_global::__vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this))))));
+			::vl::__vwsn::This(this->__vwsn_precompile_14.Obj())->SetEditorFactory(::vl::Ptr<::vl::presentation::controls::list::IDataEditorFactory>(::vl::Ptr<::vl::presentation::controls::list::DataEditorFactory>(new ::vl::presentation::controls::list::DataEditorFactory(LAMBDA(::vl_workflow_global::__vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this))))));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14.Obj())->SetValueProperty(LAMBDA(::vl_workflow_global::__vwsnf17_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf18_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_14.Obj())->SetValueProperty(LAMBDA(::vl_workflow_global::__vwsnf19_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_14.Obj())->SetSize(static_cast<::vl::vint32_t>(80));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_14.Obj())->SetText(::vl::WString(L"Category", false));
@@ -12909,16 +12951,16 @@ Class (::demo::DataGridTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetSorter(::vl::Ptr<::vl::presentation::controls::list::IDataSorter>(new ::vl_workflow_global::__vwsnc4_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize__vl_presentation_controls_list_IDataSorter(this)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetEditorFactory(::vl::Ptr<::vl::presentation::controls::list::IDataEditorFactory>(::vl::Ptr<::vl::presentation::controls::list::DataEditorFactory>(new ::vl::presentation::controls::list::DataEditorFactory(LAMBDA(::vl_workflow_global::__vwsnf20_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this))))));
+			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetEditorFactory(::vl::Ptr<::vl::presentation::controls::list::IDataEditorFactory>(::vl::Ptr<::vl::presentation::controls::list::DataEditorFactory>(new ::vl::presentation::controls::list::DataEditorFactory(LAMBDA(::vl_workflow_global::__vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this))))));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetValueProperty(LAMBDA(::vl_workflow_global::__vwsnf21_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf22_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetValueProperty(LAMBDA(::vl_workflow_global::__vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetSize(static_cast<::vl::vint32_t>(80));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetText(::vl::WString(L"Birthday", false));
@@ -12929,22 +12971,22 @@ Class (::demo::DataGridTabPageConstructor)
 		}
 		(this->__vwsn_precompile_18 = ::vl::Ptr<::vl::presentation::controls::list::DataColumn>(new ::vl::presentation::controls::list::DataColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetVisualizerFactory(::vl::Ptr<::vl::presentation::controls::list::IDataVisualizerFactory>(::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>()))))));
+			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetVisualizerFactory(::vl::Ptr<::vl::presentation::controls::list::IDataVisualizerFactory>(::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf25_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf26_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(LAMBDA(::vl_workflow_global::__vwsnf27_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>()))))))));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetSorter(::vl::Ptr<::vl::presentation::controls::list::IDataSorter>(new ::vl_workflow_global::__vwsnc5_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize__vl_presentation_controls_list_IDataSorter(this)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetEditorFactory(::vl::Ptr<::vl::presentation::controls::list::IDataEditorFactory>(::vl::Ptr<::vl::presentation::controls::list::DataEditorFactory>(new ::vl::presentation::controls::list::DataEditorFactory(LAMBDA(::vl_workflow_global::__vwsnf26_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this))))));
+			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetEditorFactory(::vl::Ptr<::vl::presentation::controls::list::IDataEditorFactory>(::vl::Ptr<::vl::presentation::controls::list::DataEditorFactory>(new ::vl::presentation::controls::list::DataEditorFactory(LAMBDA(::vl_workflow_global::__vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this))))));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetValueProperty(LAMBDA(::vl_workflow_global::__vwsnf27_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf28_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetValueProperty(LAMBDA(::vl_workflow_global::__vwsnf30_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetSize(static_cast<::vl::vint32_t>(160));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf31_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetText(::vl::WString(L"Website", false));
@@ -12963,7 +13005,7 @@ Class (::demo::DataGridTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf29_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf32_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->comboView)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 		{
@@ -12973,6 +13015,9 @@ Class (::demo::DataGridTabPageConstructor)
 
 	DataGridTabPageConstructor::DataGridTabPageConstructor()
 		: self(static_cast<::demo::DataGridTabPage*>(nullptr))
+		, comboView(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
+		, dataGrid(static_cast<::vl::presentation::controls::GuiBindableDataGrid*>(nullptr))
+		, dateFilter(static_cast<::demo::DateFilter*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiTextList*>(nullptr))
@@ -12993,9 +13038,6 @@ Class (::demo::DataGridTabPageConstructor)
 		, __vwsn_precompile_17(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_18(::vl::Ptr<::vl::presentation::controls::list::DataColumn>())
 		, __vwsn_precompile_19(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, comboView(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
-		, dataGrid(static_cast<::vl::presentation::controls::GuiBindableDataGrid*>(nullptr))
-		, dateFilter(static_cast<::demo::DateFilter*>(nullptr))
 	{
 	}
 
@@ -13057,12 +13099,12 @@ Class (::demo::DateEditorConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc15_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf69_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf72_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc16_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf70_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf73_Demo_demo_DateEditorConstructor___vwsn_demo_DateEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -13072,8 +13114,8 @@ Class (::demo::DateEditorConstructor)
 
 	DateEditorConstructor::DateEditorConstructor()
 		: self(static_cast<::demo::DateEditor*>(nullptr))
-		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, comboBox(static_cast<::vl::presentation::controls::GuiDateComboBox*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -13103,13 +13145,13 @@ Class (::demo::DateFilterConstructor)
 		(this->self = __vwsn_this_);
 		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(2));
@@ -13194,35 +13236,39 @@ Class (::demo::DateFilterConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf71_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf74_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->checkFrom)->SelectedChanged, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc17_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf72_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf73_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->dateFrom)->SelectedDateChanged, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf74_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->checkTo)->SelectedChanged, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf75_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf76_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->dateFrom)->SelectedDateChanged, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf77_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->checkTo)->SelectedChanged, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf78_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf79_Demo_demo_DateFilterConstructor___vwsn_demo_DateFilter_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->dateTo)->SelectedDateChanged, __vwsn_event_handler_);
 		}
 	}
 
 	DateFilterConstructor::DateFilterConstructor()
 		: self(static_cast<::demo::DateFilter*>(nullptr))
+		, checkFrom(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, dateFrom(static_cast<::vl::presentation::controls::GuiDateComboBox*>(nullptr))
+		, checkTo(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, dateTo(static_cast<::vl::presentation::controls::GuiDateComboBox*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
@@ -13230,10 +13276,6 @@ Class (::demo::DateFilterConstructor)
 		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, checkFrom(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
-		, dateFrom(static_cast<::vl::presentation::controls::GuiDateComboBox*>(nullptr))
-		, checkTo(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
-		, dateTo(static_cast<::vl::presentation::controls::GuiDateComboBox*>(nullptr))
 	{
 	}
 
@@ -13393,6 +13435,9 @@ Class (::demo::DatePickerTabPageConstructor)
 		}
 		(this->__vwsn_precompile_10 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
@@ -13400,9 +13445,6 @@ Class (::demo::DatePickerTabPageConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		(this->__vwsn_precompile_12 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
@@ -13459,48 +13501,52 @@ Class (::demo::DatePickerTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc34_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf95_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc35_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf96_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc36_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf97_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc37_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf98_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc38_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc35_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf99_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc39_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc36_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf100_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc40_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc37_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf101_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc41_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc38_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf102_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc39_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf103_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc40_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf104_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc41_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf105_Demo_demo_DatePickerTabPageConstructor___vwsn_demo_DatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	DatePickerTabPageConstructor::DatePickerTabPageConstructor()
 		: self(static_cast<::demo::DatePickerTabPage*>(nullptr))
+		, dp1(static_cast<::vl::presentation::controls::GuiDatePicker*>(nullptr))
+		, dp2(static_cast<::vl::presentation::controls::GuiDatePicker*>(nullptr))
+		, dc1(static_cast<::vl::presentation::controls::GuiDateComboBox*>(nullptr))
+		, dc2(static_cast<::vl::presentation::controls::GuiDateComboBox*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
@@ -13520,10 +13566,6 @@ Class (::demo::DatePickerTabPageConstructor)
 		, __vwsn_precompile_16(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 		, __vwsn_precompile_17(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_18(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
-		, dp1(static_cast<::vl::presentation::controls::GuiDatePicker*>(nullptr))
-		, dp2(static_cast<::vl::presentation::controls::GuiDatePicker*>(nullptr))
-		, dc1(static_cast<::vl::presentation::controls::GuiDateComboBox*>(nullptr))
-		, dc2(static_cast<::vl::presentation::controls::GuiDateComboBox*>(nullptr))
 	{
 	}
 
@@ -13904,11 +13946,11 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc42_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf105_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf108_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf106_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf109_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->document)->ActiveHyperlinkExecuted, __vwsn_event_handler_);
 		}
 		{
@@ -13918,7 +13960,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->commandLoadPrivate)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/FormatPrivateLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf107_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf110_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandLoadPrivate)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -13928,7 +13970,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->commandSavePrivate)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/FormatPrivateLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf108_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf111_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSavePrivate)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -13938,7 +13980,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->commandSaveRtf)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/FormatRtfLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf109_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf112_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSaveRtf)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -13948,7 +13990,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->commandSaveHtml)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/FormatHtmlLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf110_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf113_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSaveHtml)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -13956,14 +13998,14 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc43_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf111_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf114_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandUndo)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/UndoLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf112_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf115_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandUndo)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -13971,14 +14013,14 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc44_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf113_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf116_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandRedo)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/RedoLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf114_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf117_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandRedo)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -13986,14 +14028,14 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc45_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf115_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf118_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandCopy)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/CopyLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf116_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf119_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandCopy)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14001,14 +14043,14 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc46_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf117_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf120_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandCut)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/CutLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf118_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf121_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandCut)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14016,14 +14058,14 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc47_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf119_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf122_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandPaste)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/PasteLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf120_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf123_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandPaste)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14031,18 +14073,18 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc48_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf121_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf124_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandDelete)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/RemoveLinkLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf122_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf125_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandDelete)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf123_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf126_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSelect)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14050,14 +14092,14 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc49_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf124_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf127_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandInsertImage)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/ImageLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf125_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf128_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandInsertImage)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14065,14 +14107,14 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc50_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf126_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf129_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandEditHyperlink)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/LinkLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf127_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf130_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandEditHyperlink)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14080,14 +14122,14 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc52_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf129_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf132_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandRemoveHyperlink)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/RemoveLinkLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf130_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf133_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandRemoveHyperlink)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14095,16 +14137,16 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc53_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf131_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf134_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc54_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf132_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf135_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf133_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf136_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandBold)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14112,16 +14154,16 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc55_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf134_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf137_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc56_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf135_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf138_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf136_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf139_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandItalic)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14129,16 +14171,16 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc57_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf137_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf140_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc58_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf138_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf141_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf139_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf142_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandUnderline)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14146,16 +14188,16 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc59_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf140_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf143_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc60_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf141_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf144_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf142_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf145_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandStrike)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14163,11 +14205,11 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc61_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf143_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf146_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf144_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf147_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandFont)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14175,11 +14217,11 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc62_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf145_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf148_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf146_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf149_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandColor)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14187,11 +14229,11 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc63_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf147_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf150_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf148_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf151_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandBackColor)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14201,7 +14243,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->commandViewOnly)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/ViewOnlyLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf149_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf152_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandViewOnly)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14211,7 +14253,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->commandSelectable)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/SelectableLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf150_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf153_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSelectable)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14221,7 +14263,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->commandEditable)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/EditableLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf151_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf154_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandEditable)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14229,11 +14271,11 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc64_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf152_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf155_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf153_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf156_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandAlignDefault)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14241,19 +14283,19 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc65_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf154_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc66_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf155_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf157_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandAlignLeft)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/TextAlignLeftLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf156_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc66_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf158_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf159_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandAlignLeft)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14261,19 +14303,19 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc67_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf157_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc68_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf158_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf160_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandAlignCenter)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/TextAlignCenterLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf159_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc68_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf161_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf162_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandAlignCenter)->Executed, __vwsn_event_handler_);
 		}
 		{
@@ -14281,33 +14323,30 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc69_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf160_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc70_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf161_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf163_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->commandAlignRight)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/TextAlignRightLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf162_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc70_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf164_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf165_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandAlignRight)->Executed, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc71_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf163_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf166_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	DocumentEditorBaseConstructor::DocumentEditorBaseConstructor()
 		: self(static_cast<::demo::DocumentEditorBase*>(nullptr))
-		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
-		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
-		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, dialogMessage(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))
 		, dialogNotImpl(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))
 		, dialogOpen(static_cast<::vl::presentation::controls::GuiOpenFileDialog*>(nullptr))
@@ -14346,6 +14385,9 @@ Class (::demo::DocumentEditorBaseConstructor)
 		, commandAlignLeft(static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr))
 		, commandAlignCenter(static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr))
 		, commandAlignRight(static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -14363,13 +14405,13 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		(this->__vwsn_precompile_89 = ::vl::__vwsn::This(this->__vwsn_precompile_8)->GetAfterHeaders());
 		(this->__vwsn_precompile_90 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_90)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_90)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Horizontal);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_90)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = (- static_cast<::vl::vint32_t>(1)); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_90)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_91 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
@@ -14377,13 +14419,13 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		}
 		(this->__vwsn_precompile_92 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_92.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_92.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_92.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_92.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_92.Obj())->SetText(::vl::WString(L"Search:", false));
@@ -14872,10 +14914,10 @@ Class (::demo::DocumentEditorRibbonConstructor)
 			(this->styleGallery = new ::vl::presentation::controls::GuiBindableRibbonGalleryList(::vl::presentation::theme::ThemeName::RibbonGalleryList));
 		}
 		{
-			::vl::__vwsn::This(this->styleGallery)->SetGroupChildrenProperty(LAMBDA(::vl_workflow_global::__vwsnf164_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::This(this->styleGallery)->SetGroupChildrenProperty(LAMBDA(::vl_workflow_global::__vwsnf167_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->styleGallery)->SetGroupTitleProperty(LAMBDA(::vl_workflow_global::__vwsnf165_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::This(this->styleGallery)->SetGroupTitleProperty(LAMBDA(::vl_workflow_global::__vwsnf168_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->styleGallery)->SetVisibleItemCount(static_cast<::vl::vint32_t>(5));
@@ -14887,7 +14929,7 @@ Class (::demo::DocumentEditorRibbonConstructor)
 			::vl::__vwsn::This(this->styleGallery)->SetMinCount(static_cast<::vl::vint32_t>(2));
 		}
 		{
-			::vl::__vwsn::This(this->styleGallery)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf166_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::This(this->styleGallery)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf169_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_72 = ::vl::__vwsn::This(this->styleGallery)->GetSubMenu());
 		{
@@ -14988,6 +15030,9 @@ Class (::demo::DocumentEditorRibbonConstructor)
 			(this->__vwsn_precompile_81 = new ::vl::presentation::controls::GuiRibbonTabPage(::vl::presentation::theme::ThemeName::CustomControl));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_81)->SetHighlighted(true);
+		}
+		{
 			(this->__vwsn_precompile_82 = new ::vl::presentation::controls::GuiRibbonGroup(::vl::presentation::theme::ThemeName::RibbonGroup));
 		}
 		{
@@ -15024,9 +15069,6 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_81)->GetGroups());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_82));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_81)->SetHighlighted(true);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_81)->SetText(::vl::WString(L"Insert", false));
@@ -15129,17 +15171,17 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc72_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf167_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf170_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc73_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf168_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf171_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc74_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf169_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf172_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -15153,12 +15195,12 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc75_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf170_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf173_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc76_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf171_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf174_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -15166,7 +15208,7 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc77_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf172_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf175_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -15174,7 +15216,7 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc78_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf173_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf176_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -15184,7 +15226,7 @@ Class (::demo::DocumentEditorRibbonConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"ToolbarImages/EditableLarge", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf174_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf177_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_12)->ExpandButtonClicked, __vwsn_event_handler_);
 		}
 		{
@@ -15255,11 +15297,11 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc79_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf175_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf178_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf176_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf179_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->styleGallery)->ItemApplied, __vwsn_event_handler_);
 		}
 		{
@@ -15275,18 +15317,22 @@ Class (::demo::DocumentEditorRibbonConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_86)->SetCommand(::vl::__vwsn::This(this->self)->commandRemoveHyperlink);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf177_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf180_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->buttonHome)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc80_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf178_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf181_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	DocumentEditorRibbonConstructor::DocumentEditorRibbonConstructor()
 		: self(static_cast<::demo::DocumentEditorRibbon*>(nullptr))
+		, dialogMessage(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))
+		, toolstripHome(static_cast<::vl::presentation::controls::GuiToolstripMenu*>(nullptr))
+		, buttonHome(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, styleGallery(static_cast<::vl::presentation::controls::GuiBindableRibbonGalleryList*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiToolstripGroupContainer*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::controls::GuiToolstripGroup*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
@@ -15311,10 +15357,6 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		, __vwsn_precompile_21(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_22(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_23(static_cast<::vl::presentation::controls::GuiRibbonGroup*>(nullptr))
-		, dialogMessage(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))
-		, toolstripHome(static_cast<::vl::presentation::controls::GuiToolstripMenu*>(nullptr))
-		, buttonHome(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, styleGallery(static_cast<::vl::presentation::controls::GuiBindableRibbonGalleryList*>(nullptr))
 		, __vwsn_precompile_24(static_cast<::vl::presentation::controls::GuiRibbonButtons*>(nullptr))
 		, __vwsn_precompile_25(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_26(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
@@ -15538,7 +15580,7 @@ Class (::demo::DocumentEditorRibbon)
 	void DocumentEditorRibbon::__vwsn_instance_ctor_()
 	{
 		this->SetStyleGroups(this->GenerateStyleGroups());
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->document)->SelectionChanged, LAMBDA(::vl_workflow_global::__vwsnf179_Demo_demo_DocumentEditorRibbon___vwsn_instance_ctor__(this)));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->document)->SelectionChanged, LAMBDA(::vl_workflow_global::__vwsnf182_Demo_demo_DocumentEditorRibbon___vwsn_instance_ctor__(this)));
 	}
 
 	DocumentEditorRibbon::~DocumentEditorRibbon()
@@ -16213,7 +16255,7 @@ Class (::demo::DocumentEditorToolstripConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc84_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf183_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf186_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -16230,7 +16272,7 @@ Class (::demo::DocumentEditorToolstripConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc85_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf184_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf187_Demo_demo_DocumentEditorToolstripConstructor___vwsn_demo_DocumentEditorToolstrip_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -16288,6 +16330,7 @@ Class (::demo::DocumentEditorToolstripConstructor)
 
 	DocumentEditorToolstripConstructor::DocumentEditorToolstripConstructor()
 		: self(static_cast<::demo::DocumentEditorToolstrip*>(nullptr))
+		, buttonAlignment(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::controls::GuiToolstripMenuBar*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
@@ -16312,7 +16355,6 @@ Class (::demo::DocumentEditorToolstripConstructor)
 		, __vwsn_precompile_21(static_cast<::vl::presentation::controls::GuiToolstripGroup*>(nullptr))
 		, __vwsn_precompile_22(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_23(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
-		, buttonAlignment(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_24(static_cast<::vl::presentation::controls::GuiToolstripMenu*>(nullptr))
 		, __vwsn_precompile_25(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_26(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
@@ -16601,13 +16643,13 @@ Class (::demo::ElementTabPageConstructor)
 		}
 		(this->__vwsn_precompile_22 = ::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiGradientBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_22.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::Ellipse; return __vwsn_temp__; }());
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_22.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#0000FF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_22.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_22.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::Ellipse; return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_22.Obj())->SetDirection(::vl::presentation::elements::GuiGradientBackgroundElement::Direction::Horizontal);
@@ -16624,13 +16666,13 @@ Class (::demo::ElementTabPageConstructor)
 		}
 		(this->__vwsn_precompile_24 = ::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiGradientBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::Ellipse; return __vwsn_temp__; }());
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#0000FF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::Ellipse; return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetDirection(::vl::presentation::elements::GuiGradientBackgroundElement::Direction::Vertical);
@@ -16647,13 +16689,13 @@ Class (::demo::ElementTabPageConstructor)
 		}
 		(this->__vwsn_precompile_26 = ::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiGradientBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::Ellipse; return __vwsn_temp__; }());
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#0000FF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::Ellipse; return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetDirection(::vl::presentation::elements::GuiGradientBackgroundElement::Direction::Slash);
@@ -16670,13 +16712,13 @@ Class (::demo::ElementTabPageConstructor)
 		}
 		(this->__vwsn_precompile_28 = ::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiGradientBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_28.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::Ellipse; return __vwsn_temp__; }());
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_28.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#0000FF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_28.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_28.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::Ellipse; return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_28.Obj())->SetDirection(::vl::presentation::elements::GuiGradientBackgroundElement::Direction::Backslash);
@@ -16693,13 +16735,13 @@ Class (::demo::ElementTabPageConstructor)
 		}
 		(this->__vwsn_precompile_30 = ::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiGradientBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_30.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::RoundRect; __vwsn_temp__.radiusX = static_cast<::vl::vint32_t>(10); __vwsn_temp__.radiusY = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_30.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#0000FF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_30.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_30.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::RoundRect; __vwsn_temp__.radiusX = static_cast<::vl::vint32_t>(10); __vwsn_temp__.radiusY = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_30.Obj())->SetDirection(::vl::presentation::elements::GuiGradientBackgroundElement::Direction::Horizontal);
@@ -16716,13 +16758,13 @@ Class (::demo::ElementTabPageConstructor)
 		}
 		(this->__vwsn_precompile_32 = ::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiGradientBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_32.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::RoundRect; __vwsn_temp__.radiusX = static_cast<::vl::vint32_t>(10); __vwsn_temp__.radiusY = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_32.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#0000FF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_32.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_32.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::RoundRect; __vwsn_temp__.radiusX = static_cast<::vl::vint32_t>(10); __vwsn_temp__.radiusY = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_32.Obj())->SetDirection(::vl::presentation::elements::GuiGradientBackgroundElement::Direction::Vertical);
@@ -16739,13 +16781,13 @@ Class (::demo::ElementTabPageConstructor)
 		}
 		(this->__vwsn_precompile_34 = ::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiGradientBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_34.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::RoundRect; __vwsn_temp__.radiusX = static_cast<::vl::vint32_t>(10); __vwsn_temp__.radiusY = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_34.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#0000FF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_34.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_34.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::RoundRect; __vwsn_temp__.radiusX = static_cast<::vl::vint32_t>(10); __vwsn_temp__.radiusY = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_34.Obj())->SetDirection(::vl::presentation::elements::GuiGradientBackgroundElement::Direction::Slash);
@@ -16762,13 +16804,13 @@ Class (::demo::ElementTabPageConstructor)
 		}
 		(this->__vwsn_precompile_36 = ::vl::Ptr<::vl::presentation::elements::GuiGradientBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiGradientBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_36.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::RoundRect; __vwsn_temp__.radiusX = static_cast<::vl::vint32_t>(10); __vwsn_temp__.radiusY = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_36.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#0000FF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_36.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFF00", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_36.Obj())->SetShape([&](){ ::vl::presentation::elements::ElementShape __vwsn_temp__; __vwsn_temp__.shapeType = ::vl::presentation::elements::ElementShapeType::RoundRect; __vwsn_temp__.radiusX = static_cast<::vl::vint32_t>(10); __vwsn_temp__.radiusY = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_36.Obj())->SetDirection(::vl::presentation::elements::GuiGradientBackgroundElement::Direction::Backslash);
@@ -16998,15 +17040,18 @@ Class (::demo::EnglishNumbersControllerConstructor)
 		{
 			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiControl(::vl::presentation::theme::ThemeName::GroupBox));
 		}
-		(this->__vwsn_precompile_18 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
+		(this->__vwsn_precompile_18 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetContainerComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = (- static_cast<::vl::vint32_t>(1)); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetInternalMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
-		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetContainerComposition());
+		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetInternalMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = (- static_cast<::vl::vint32_t>(1)); return __vwsn_temp__; }());
 		}
 		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiStackComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetPadding(static_cast<::vl::vint32_t>(5));
 		}
@@ -17015,9 +17060,6 @@ Class (::demo::EnglishNumbersControllerConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
@@ -17126,28 +17168,28 @@ Class (::demo::EnglishNumbersControllerConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(this->__vwsn_precompile_0);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf203_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf206_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_3)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf204_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf207_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf205_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf208_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_9)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf206_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf209_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_12)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf207_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf210_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_15)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc103_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf208_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf211_Demo_demo_EnglishNumbersControllerConstructor___vwsn_demo_EnglishNumbersController_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -17171,8 +17213,8 @@ Class (::demo::EnglishNumbersControllerConstructor)
 		, __vwsn_precompile_14(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_15(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 		, __vwsn_precompile_16(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_17(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
-		, __vwsn_precompile_18(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_17(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_18(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
 	{
 	}
 
@@ -17372,10 +17414,10 @@ Class (::demo::EnglishNumbersControllerTabPageConstructor)
 		(this->__vwsn_precompile_0 = __vwsn_this_);
 		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetRowsAndColumns(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(2));
@@ -17415,11 +17457,11 @@ Class (::demo::EnglishNumbersControllerTabPageConstructor)
 
 	EnglishNumbersControllerTabPageConstructor::EnglishNumbersControllerTabPageConstructor()
 		: content(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, controller(static_cast<::demo::EnglishNumbersController*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::demo::EnglishNumbersControllerTabPage*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, controller(static_cast<::demo::EnglishNumbersController*>(nullptr))
 	{
 	}
 
@@ -17477,10 +17519,10 @@ Class (::demo::GenderDisplayerConstructor)
 		(this->self = __vwsn_this_);
 		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(2); __vwsn_temp__.top = static_cast<::vl::vint32_t>(2); __vwsn_temp__.right = static_cast<::vl::vint32_t>(2); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(2); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElement);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElement);
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(2); __vwsn_temp__.top = static_cast<::vl::vint32_t>(2); __vwsn_temp__.right = static_cast<::vl::vint32_t>(2); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(2); return __vwsn_temp__; }());
 		}
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>()));
 		{
@@ -17497,7 +17539,7 @@ Class (::demo::GenderDisplayerConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc30_Demo_demo_GenderDisplayerConstructor___vwsn_demo_GenderDisplayer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf89_Demo_demo_GenderDisplayerConstructor___vwsn_demo_GenderDisplayer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf92_Demo_demo_GenderDisplayerConstructor___vwsn_demo_GenderDisplayer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -17552,19 +17594,19 @@ Class (::demo::GenderEditorConstructor)
 			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf93_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(this)));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetVerticalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetHorizontalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf90_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(this)));
-		}
-		{
 			(this->comboBox = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_0)));
 		}
 		{
-			::vl::__vwsn::This(this->comboBox)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf91_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(this)));
+			::vl::__vwsn::This(this->comboBox)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf94_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->comboBox)->GetBoundsComposition());
 		{
@@ -17578,21 +17620,21 @@ Class (::demo::GenderEditorConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc31_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf92_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf95_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc32_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf93_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf96_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	GenderEditorConstructor::GenderEditorConstructor()
 		: self(static_cast<::demo::GenderEditor*>(nullptr))
+		, comboBox(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, comboBox(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
 	{
 	}
 
@@ -17639,10 +17681,10 @@ Class (::demo::GenderItemTemplateConstructor)
 	}
 
 	GenderItemTemplateConstructor::GenderItemTemplateConstructor()
-		: __vwsn_precompile_0(static_cast<::demo::GenderItemTemplate*>(nullptr))
+		: SelectedGender(static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0))))
+		, __vwsn_precompile_0(static_cast<::demo::GenderItemTemplate*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::demo::GenderDisplayer*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, SelectedGender(static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0))))
 	{
 	}
 
@@ -17687,7 +17729,7 @@ Class (::demo::GenderVisualizerConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc33_Demo_demo_GenderVisualizerConstructor___vwsn_demo_GenderVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf94_Demo_demo_GenderVisualizerConstructor___vwsn_demo_GenderVisualizer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf97_Demo_demo_GenderVisualizerConstructor___vwsn_demo_GenderVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -17735,12 +17777,12 @@ Class (::demo::HyperlinkWindowConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetSizeBox(false);
 		}
-		{
-			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(320); __vwsn_temp__.y = static_cast<::vl::vint32_t>(80); return __vwsn_temp__; }());
-		}
 		(this->__vwsn_precompile_13 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(320); __vwsn_temp__.y = static_cast<::vl::vint32_t>(80); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(320); __vwsn_temp__.y = static_cast<::vl::vint32_t>(80); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString(L"Hyperlink", false));
@@ -17771,10 +17813,10 @@ Class (::demo::HyperlinkWindowConstructor)
 		}
 		(this->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetRowsAndColumns(static_cast<::vl::vint32_t>(3), static_cast<::vl::vint32_t>(1));
@@ -17866,17 +17908,18 @@ Class (::demo::HyperlinkWindowConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf103_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf106_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_8)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf104_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf107_Demo_demo_HyperlinkWindowConstructor___vwsn_demo_HyperlinkWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_11)->Clicked, __vwsn_event_handler_);
 		}
 	}
 
 	HyperlinkWindowConstructor::HyperlinkWindowConstructor()
 		: self(static_cast<::demo::HyperlinkWindow*>(nullptr))
+		, textUrl(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
@@ -17891,7 +17934,6 @@ Class (::demo::HyperlinkWindowConstructor)
 		, __vwsn_precompile_11(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 		, __vwsn_precompile_12(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_13(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, textUrl(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
 	{
 	}
 
@@ -18113,10 +18155,10 @@ Class (::demo::ListViewTabPageConstructor)
 			(this->bindableListView = new ::vl::presentation::controls::GuiBindableListView(::vl::presentation::theme::ThemeName::ListView));
 		}
 		{
-			::vl::__vwsn::This(this->bindableListView)->SetSmallImageProperty(LAMBDA(::vl_workflow_global::__vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->bindableListView)->SetSmallImageProperty(LAMBDA(::vl_workflow_global::__vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->bindableListView)->SetLargeImageProperty(LAMBDA(::vl_workflow_global::__vwsnf31_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->bindableListView)->SetLargeImageProperty(LAMBDA(::vl_workflow_global::__vwsnf34_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->bindableListView)->GetDataColumns());
@@ -18145,7 +18187,7 @@ Class (::demo::ListViewTabPageConstructor)
 		}
 		(this->__vwsn_precompile_17 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_17.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf32_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_17.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf35_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_17.Obj())->SetText(::vl::WString(L"Id", false));
@@ -18156,7 +18198,7 @@ Class (::demo::ListViewTabPageConstructor)
 		}
 		(this->__vwsn_precompile_18 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf33_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf36_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetText(::vl::WString(L"Category", false));
@@ -18167,7 +18209,7 @@ Class (::demo::ListViewTabPageConstructor)
 		}
 		(this->__vwsn_precompile_19 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf34_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_19.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf37_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_19.Obj())->SetText(::vl::WString(L"Size", false));
@@ -18178,7 +18220,7 @@ Class (::demo::ListViewTabPageConstructor)
 		}
 		(this->__vwsn_precompile_20 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_20.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf35_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_20.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf38_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_20.Obj())->SetText(::vl::WString(L"File", false));
@@ -18197,13 +18239,16 @@ Class (::demo::ListViewTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf36_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf39_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->comboView)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 	}
 
 	ListViewTabPageConstructor::ListViewTabPageConstructor()
 		: self(static_cast<::demo::ListViewTabPage*>(nullptr))
+		, comboView(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
+		, listView(static_cast<::vl::presentation::controls::GuiListView*>(nullptr))
+		, bindableListView(static_cast<::vl::presentation::controls::GuiBindableListView*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiTextList*>(nullptr))
@@ -18226,9 +18271,6 @@ Class (::demo::ListViewTabPageConstructor)
 		, __vwsn_precompile_19(::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>())
 		, __vwsn_precompile_20(::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>())
 		, __vwsn_precompile_21(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, comboView(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
-		, listView(static_cast<::vl::presentation::controls::GuiListView*>(nullptr))
-		, bindableListView(static_cast<::vl::presentation::controls::GuiBindableListView*>(nullptr))
 	{
 	}
 
@@ -18248,9 +18290,9 @@ Class (::demo::ListViewTabPage)
 
 	void ListViewTabPage::__vwsn_instance_ctor_()
 	{
-		GLOBAL_NAME LoadListView(static_cast<::vl::presentation::controls::GuiInstanceRootObject*>(this), LAMBDA(::vl_workflow_global::__vwsnf37_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(this)));
+		GLOBAL_NAME LoadListView(static_cast<::vl::presentation::controls::GuiInstanceRootObject*>(this), LAMBDA(::vl_workflow_global::__vwsnf40_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(this)));
 		auto itemsToBind = ::vl::reflection::description::IValueObservableList::Create();
-		GLOBAL_NAME LoadListView(static_cast<::vl::presentation::controls::GuiInstanceRootObject*>(this), LAMBDA(::vl_workflow_global::__vwsnf38_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(itemsToBind, this)));
+		GLOBAL_NAME LoadListView(static_cast<::vl::presentation::controls::GuiInstanceRootObject*>(this), LAMBDA(::vl_workflow_global::__vwsnf41_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(itemsToBind, this)));
 		::vl::__vwsn::This(this->bindableListView)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(itemsToBind));
 	}
 
@@ -18287,10 +18329,10 @@ Class (::demo::LocalizedStringsTabPageConstructor)
 		}
 		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
+			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
@@ -18428,97 +18470,99 @@ Class (::demo::LocalizedStringsTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc86_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf185_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf188_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc87_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf186_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc88_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf187_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf188_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->comboLocales)->SelectedIndexChanged, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc89_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf189_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc90_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc88_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf190_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc91_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf191_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf191_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->comboLocales)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc92_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc89_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf192_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc93_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc90_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf193_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc94_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc91_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf194_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc95_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc92_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf195_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc96_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc93_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf196_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc97_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc94_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf197_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc98_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc95_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf198_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc99_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc96_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf199_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc100_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc97_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf200_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc101_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc98_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf201_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc102_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc99_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf202_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc100_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf203_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc101_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf204_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc102_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf205_Demo_demo_LocalizedStringsTabPageConstructor___vwsn_demo_LocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	LocalizedStringsTabPageConstructor::LocalizedStringsTabPageConstructor()
 		: self(static_cast<::demo::LocalizedStringsTabPage*>(nullptr))
+		, comboLocales(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
+		, listLocales(static_cast<::vl::presentation::controls::GuiTextList*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
@@ -18541,8 +18585,6 @@ Class (::demo::LocalizedStringsTabPageConstructor)
 		, __vwsn_precompile_19(::vl::Ptr<::vl::presentation::controls::list::TextItem>())
 		, __vwsn_precompile_20(::vl::Ptr<::vl::presentation::controls::list::TextItem>())
 		, __vwsn_precompile_21(::vl::Ptr<::vl::presentation::controls::list::TextItem>())
-		, comboLocales(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
-		, listLocales(static_cast<::vl::presentation::controls::GuiTextList*>(nullptr))
 	{
 	}
 
@@ -18608,12 +18650,12 @@ Class (::demo::MainWindowConstructor)
 	void MainWindowConstructor::__vwsn_demo_MainWindow_Initialize(::demo::MainWindow* __vwsn_this_)
 	{
 		(this->self = __vwsn_this_);
-		{
-			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
-		}
 		(this->__vwsn_precompile_29 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_29)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString(L"GacUI 完整控件测试", false));
@@ -18846,18 +18888,20 @@ Class (::demo::MainWindowConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc6_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf39_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf42_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc7_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf40_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf43_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	MainWindowConstructor::MainWindowConstructor()
 		: self(static_cast<::demo::MainWindow*>(nullptr))
+		, editorRibbon(static_cast<::demo::DocumentEditorRibbon*>(nullptr))
+		, editorToolstrip(static_cast<::demo::DocumentEditorToolstrip*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiTab*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
@@ -18882,8 +18926,6 @@ Class (::demo::MainWindowConstructor)
 		, __vwsn_precompile_21(static_cast<::demo::TextBoxTabPage*>(nullptr))
 		, __vwsn_precompile_22(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
 		, __vwsn_precompile_23(static_cast<::vl::presentation::controls::GuiTab*>(nullptr))
-		, editorRibbon(static_cast<::demo::DocumentEditorRibbon*>(nullptr))
-		, editorToolstrip(static_cast<::demo::DocumentEditorToolstrip*>(nullptr))
 		, __vwsn_precompile_24(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_25(static_cast<::demo::ElementTabPage*>(nullptr))
 		, __vwsn_precompile_26(static_cast<::demo::AnimationTabPage*>(nullptr))
@@ -19047,16 +19089,16 @@ Class (::demo::RepeatItemTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc104_Demo_demo_RepeatItemTemplateConstructor___vwsn_demo_RepeatItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf209_Demo_demo_RepeatItemTemplateConstructor___vwsn_demo_RepeatItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf212_Demo_demo_RepeatItemTemplateConstructor___vwsn_demo_RepeatItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	RepeatItemTemplateConstructor::RepeatItemTemplateConstructor()
-		: __vwsn_precompile_0(static_cast<::demo::RepeatItemTemplate*>(nullptr))
+		: ViewModel(::vl::Ptr<::demo::MyTextItem>())
+		, __vwsn_precompile_0(static_cast<::demo::RepeatItemTemplate*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, ViewModel(::vl::Ptr<::demo::MyTextItem>())
 	{
 	}
 
@@ -19135,22 +19177,22 @@ Class (::demo::RepeatTabPageConstructor)
 		}
 		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiRepeatStackComposition());
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetExtraMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf41_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetExtraMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_5)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_6));
@@ -19191,16 +19233,16 @@ Class (::demo::RepeatTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetRowPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf42_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetExtraMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf45_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_9)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_10));
@@ -19235,10 +19277,10 @@ Class (::demo::RepeatTabPageConstructor)
 		}
 		(this->__vwsn_precompile_14 = new ::vl::presentation::compositions::GuiSharedSizeRootComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		(this->__vwsn_precompile_15 = new ::vl::presentation::compositions::GuiRepeatFlowComposition());
 		{
@@ -19248,16 +19290,16 @@ Class (::demo::RepeatTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetRowPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf43_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetExtraMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf46_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_14)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_15));
@@ -19282,25 +19324,25 @@ Class (::demo::RepeatTabPageConstructor)
 		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->sharedSizeListTabPage)->GetContentComposition());
 		(this->__vwsn_precompile_18 = new ::vl::presentation::compositions::GuiSharedSizeRootComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
 			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf44_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf47_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf48_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetVerticalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetHorizontalAlwaysVisible(false);
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf45_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_20 = ::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition());
 		{
@@ -19470,13 +19512,18 @@ Class (::demo::RepeatTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc8_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf46_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf49_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	RepeatTabPageConstructor::RepeatTabPageConstructor()
 		: self(static_cast<::demo::RepeatTabPage*>(nullptr))
+		, repeatStackTabPage(static_cast<::demo::EnglishNumbersControllerTabPage*>(nullptr))
+		, repeatFlowTabPage(static_cast<::demo::EnglishNumbersControllerTabPage*>(nullptr))
+		, sharedSizeFlowTabPage(static_cast<::demo::EnglishNumbersControllerTabPage*>(nullptr))
+		, sharedSizeListTabPage(static_cast<::demo::EnglishNumbersControllerTabPage*>(nullptr))
+		, hTracker(static_cast<::vl::presentation::controls::GuiScroll*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiTab*>(nullptr))
@@ -19501,11 +19548,6 @@ Class (::demo::RepeatTabPageConstructor)
 		, __vwsn_precompile_21(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_22(static_cast<::vl::presentation::controls::GuiScroll*>(nullptr))
 		, __vwsn_precompile_23(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, repeatStackTabPage(static_cast<::demo::EnglishNumbersControllerTabPage*>(nullptr))
-		, repeatFlowTabPage(static_cast<::demo::EnglishNumbersControllerTabPage*>(nullptr))
-		, sharedSizeFlowTabPage(static_cast<::demo::EnglishNumbersControllerTabPage*>(nullptr))
-		, sharedSizeListTabPage(static_cast<::demo::EnglishNumbersControllerTabPage*>(nullptr))
-		, hTracker(static_cast<::vl::presentation::controls::GuiScroll*>(nullptr))
 		, __vwsn_precompile_24(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_25(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_26(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
@@ -19550,13 +19592,13 @@ Class (::demo::ResponsiveGroupControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetBorderVisible(false);
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(5), static_cast<::vl::vint32_t>(2));
@@ -19589,6 +19631,9 @@ Class (::demo::ResponsiveGroupControlConstructor)
 		(this->responsive = new ::vl::presentation::compositions::GuiResponsiveGroupComposition());
 		(this->__vwsn_precompile_4 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetPadding(static_cast<::vl::vint32_t>(10));
 		}
 		{
@@ -19596,9 +19641,6 @@ Class (::demo::ResponsiveGroupControlConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiResponsiveViewComposition());
@@ -19846,27 +19888,28 @@ Class (::demo::ResponsiveGroupControlConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf214_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf217_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_34)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf215_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf218_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_36)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc109_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf216_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf219_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc110_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf217_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf220_Demo_demo_ResponsiveGroupControlConstructor___vwsn_demo_ResponsiveGroupControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	ResponsiveGroupControlConstructor::ResponsiveGroupControlConstructor()
 		: self(static_cast<::demo::ResponsiveGroupControl*>(nullptr))
+		, responsive(static_cast<::vl::presentation::compositions::GuiResponsiveGroupComposition*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
@@ -19891,7 +19934,6 @@ Class (::demo::ResponsiveGroupControlConstructor)
 		, __vwsn_precompile_21(static_cast<::vl::presentation::compositions::GuiResponsiveFixedComposition*>(nullptr))
 		, __vwsn_precompile_22(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, __vwsn_precompile_23(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, responsive(static_cast<::vl::presentation::compositions::GuiResponsiveGroupComposition*>(nullptr))
 		, __vwsn_precompile_24(static_cast<::vl::presentation::compositions::GuiResponsiveViewComposition*>(nullptr))
 		, __vwsn_precompile_25(static_cast<::vl::presentation::compositions::GuiResponsiveFixedComposition*>(nullptr))
 		, __vwsn_precompile_26(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
@@ -19942,13 +19984,13 @@ Class (::demo::ResponsiveStackControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetBorderVisible(false);
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(5), static_cast<::vl::vint32_t>(2));
@@ -19981,6 +20023,9 @@ Class (::demo::ResponsiveStackControlConstructor)
 		(this->responsive = new ::vl::presentation::compositions::GuiResponsiveStackComposition());
 		(this->__vwsn_precompile_4 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetPadding(static_cast<::vl::vint32_t>(10));
 		}
 		{
@@ -19988,9 +20033,6 @@ Class (::demo::ResponsiveStackControlConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiResponsiveViewComposition());
@@ -20238,27 +20280,28 @@ Class (::demo::ResponsiveStackControlConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf218_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf221_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_34)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf219_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf222_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_36)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc111_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf220_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf223_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc112_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf221_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf224_Demo_demo_ResponsiveStackControlConstructor___vwsn_demo_ResponsiveStackControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	ResponsiveStackControlConstructor::ResponsiveStackControlConstructor()
 		: self(static_cast<::demo::ResponsiveStackControl*>(nullptr))
+		, responsive(static_cast<::vl::presentation::compositions::GuiResponsiveStackComposition*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
@@ -20283,7 +20326,6 @@ Class (::demo::ResponsiveStackControlConstructor)
 		, __vwsn_precompile_21(static_cast<::vl::presentation::compositions::GuiResponsiveFixedComposition*>(nullptr))
 		, __vwsn_precompile_22(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, __vwsn_precompile_23(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, responsive(static_cast<::vl::presentation::compositions::GuiResponsiveStackComposition*>(nullptr))
 		, __vwsn_precompile_24(static_cast<::vl::presentation::compositions::GuiResponsiveViewComposition*>(nullptr))
 		, __vwsn_precompile_25(static_cast<::vl::presentation::compositions::GuiResponsiveFixedComposition*>(nullptr))
 		, __vwsn_precompile_26(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
@@ -20487,13 +20529,13 @@ Class (::demo::ResponsiveViewControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetBorderVisible(false);
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(5), static_cast<::vl::vint32_t>(2));
@@ -20527,6 +20569,9 @@ Class (::demo::ResponsiveViewControlConstructor)
 		(this->__vwsn_precompile_4 = new ::vl::presentation::compositions::GuiResponsiveFixedComposition());
 		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
@@ -20534,9 +20579,6 @@ Class (::demo::ResponsiveViewControlConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
@@ -20569,6 +20611,9 @@ Class (::demo::ResponsiveViewControlConstructor)
 		(this->__vwsn_precompile_10 = new ::vl::presentation::compositions::GuiResponsiveFixedComposition());
 		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
@@ -20576,9 +20621,6 @@ Class (::demo::ResponsiveViewControlConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_12 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
@@ -20611,6 +20653,9 @@ Class (::demo::ResponsiveViewControlConstructor)
 		(this->__vwsn_precompile_16 = new ::vl::presentation::compositions::GuiResponsiveFixedComposition());
 		(this->__vwsn_precompile_17 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
@@ -20618,9 +20663,6 @@ Class (::demo::ResponsiveViewControlConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_18 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
@@ -20653,6 +20695,9 @@ Class (::demo::ResponsiveViewControlConstructor)
 		(this->__vwsn_precompile_22 = new ::vl::presentation::compositions::GuiResponsiveFixedComposition());
 		(this->__vwsn_precompile_23 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_23)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_23)->SetPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
@@ -20660,9 +20705,6 @@ Class (::demo::ResponsiveViewControlConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_23)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_23)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_24 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
@@ -20777,7 +20819,7 @@ Class (::demo::ResponsiveViewControlConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc113_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf222_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf225_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -20785,7 +20827,7 @@ Class (::demo::ResponsiveViewControlConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc114_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf223_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf226_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -20793,7 +20835,7 @@ Class (::demo::ResponsiveViewControlConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc115_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf224_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf227_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -20801,34 +20843,36 @@ Class (::demo::ResponsiveViewControlConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc116_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf225_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf228_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_27)->SetShared(static_cast<::vl::presentation::controls::GuiControl*>(this->documentBox));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf226_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf229_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_29)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf227_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf230_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_31)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc117_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf228_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf231_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc118_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf229_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf232_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	ResponsiveViewControlConstructor::ResponsiveViewControlConstructor()
 		: self(static_cast<::demo::ResponsiveViewControl*>(nullptr))
+		, responsive(static_cast<::vl::presentation::compositions::GuiResponsiveViewComposition*>(nullptr))
+		, documentBox(static_cast<::vl::presentation::controls::GuiDocumentLabel*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
@@ -20853,8 +20897,6 @@ Class (::demo::ResponsiveViewControlConstructor)
 		, __vwsn_precompile_21(static_cast<::vl::presentation::compositions::GuiResponsiveSharedComposition*>(nullptr))
 		, __vwsn_precompile_22(static_cast<::vl::presentation::compositions::GuiResponsiveFixedComposition*>(nullptr))
 		, __vwsn_precompile_23(static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr))
-		, responsive(static_cast<::vl::presentation::compositions::GuiResponsiveViewComposition*>(nullptr))
-		, documentBox(static_cast<::vl::presentation::controls::GuiDocumentLabel*>(nullptr))
 		, __vwsn_precompile_24(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_25(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, __vwsn_precompile_26(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
@@ -20924,17 +20966,17 @@ Class (::demo::SharedSizeItemTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc105_Demo_demo_SharedSizeItemTemplateConstructor___vwsn_demo_SharedSizeItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf210_Demo_demo_SharedSizeItemTemplateConstructor___vwsn_demo_SharedSizeItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf213_Demo_demo_SharedSizeItemTemplateConstructor___vwsn_demo_SharedSizeItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	SharedSizeItemTemplateConstructor::SharedSizeItemTemplateConstructor()
-		: __vwsn_precompile_0(static_cast<::demo::SharedSizeItemTemplate*>(nullptr))
+		: ViewModel(::vl::Ptr<::demo::MyTextItem>())
+		, __vwsn_precompile_0(static_cast<::demo::SharedSizeItemTemplate*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiSharedSizeItemComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, ViewModel(::vl::Ptr<::demo::MyTextItem>())
 	{
 	}
 
@@ -20992,26 +21034,26 @@ Class (::demo::SharedSizeTextItemTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc106_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf211_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf214_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc107_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf212_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf215_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc108_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf213_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf216_Demo_demo_SharedSizeTextItemTemplateConstructor___vwsn_demo_SharedSizeTextItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
 	SharedSizeTextItemTemplateConstructor::SharedSizeTextItemTemplateConstructor()
 		: self(static_cast<::demo::SharedSizeTextItemTemplate*>(nullptr))
+		, ViewModel(::vl::Ptr<::demo::MyTextItem>())
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiSharedSizeItemComposition*>(nullptr))
 		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
-		, ViewModel(::vl::Ptr<::demo::MyTextItem>())
 	{
 	}
 
@@ -21111,10 +21153,10 @@ Class (::demo::StyleItemTemplateConstructor)
 		(this->self = __vwsn_this_);
 		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
 		{
-			::vl::__vwsn::This(this->self)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(72); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->self)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(72); return __vwsn_temp__; }());
 		}
 		{
 			(this->containerControl = new ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl));
@@ -21124,10 +21166,10 @@ Class (::demo::StyleItemTemplateConstructor)
 		}
 		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
 		(this->__vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
@@ -21148,13 +21190,13 @@ Class (::demo::StyleItemTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(1));
@@ -21168,16 +21210,16 @@ Class (::demo::StyleItemTemplateConstructor)
 		}
 		(this->styleLabel = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
-			::vl::__vwsn::This(this->styleLabel.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
-		}
-		{
-			::vl::__vwsn::This(this->styleLabel.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
-		}
-		{
 			::vl::__vwsn::This(this->styleLabel.Obj())->SetEllipse(true);
 		}
 		{
 			::vl::__vwsn::This(this->styleLabel.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+		}
+		{
+			::vl::__vwsn::This(this->styleLabel.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
+		}
+		{
+			::vl::__vwsn::This(this->styleLabel.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->styleLabel.Obj())->SetText(::vl::WString(L"AaBbCc", false));
@@ -21194,10 +21236,10 @@ Class (::demo::StyleItemTemplateConstructor)
 		}
 		(this->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetEllipse(true);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetEllipse(true);
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
@@ -21213,12 +21255,12 @@ Class (::demo::StyleItemTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc81_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf180_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf183_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc82_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf181_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf184_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -21226,7 +21268,7 @@ Class (::demo::StyleItemTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc83_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf182_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf185_Demo_demo_StyleItemTemplateConstructor___vwsn_demo_StyleItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -21236,6 +21278,9 @@ Class (::demo::StyleItemTemplateConstructor)
 
 	StyleItemTemplateConstructor::StyleItemTemplateConstructor()
 		: self(static_cast<::demo::StyleItemTemplate*>(nullptr))
+		, ViewModel(::vl::Ptr<::demo::StyleItem>())
+		, containerControl(static_cast<::vl::presentation::controls::GuiCustomControl*>(nullptr))
+		, styleLabel(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
@@ -21244,9 +21289,6 @@ Class (::demo::StyleItemTemplateConstructor)
 		, __vwsn_precompile_5(static_cast<::vl::presentation::controls::GuiCustomControl*>(nullptr))
 		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_7(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
-		, ViewModel(::vl::Ptr<::demo::StyleItem>())
-		, containerControl(static_cast<::vl::presentation::controls::GuiCustomControl*>(nullptr))
-		, styleLabel(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -21598,30 +21640,35 @@ Class (::demo::TextBoxTabPageConstructor)
 			::vl::__vwsn::This(this->documentLabel)->SetDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"TextBoxComponents/DocRelative", false), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf230_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_19)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc119_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf231_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf232_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf235_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_21)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf236_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->OnMakeFontLarger, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf237_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->OnMakeFontSmaller, __vwsn_event_handler_);
 		}
 	}
 
 	TextBoxTabPageConstructor::TextBoxTabPageConstructor()
 		: self(static_cast<::demo::TextBoxTabPage*>(nullptr))
+		, textBoxS(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
+		, textBoxM(static_cast<::vl::presentation::controls::GuiMultilineTextBox*>(nullptr))
+		, documentTextBox(static_cast<::vl::presentation::controls::GuiDocumentLabel*>(nullptr))
+		, documentViewer(static_cast<::vl::presentation::controls::GuiDocumentViewer*>(nullptr))
+		, documentLabel(static_cast<::vl::presentation::controls::GuiDocumentLabel*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiTab*>(nullptr))
@@ -21644,11 +21691,6 @@ Class (::demo::TextBoxTabPageConstructor)
 		, __vwsn_precompile_19(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 		, __vwsn_precompile_20(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_21(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, textBoxS(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
-		, textBoxM(static_cast<::vl::presentation::controls::GuiMultilineTextBox*>(nullptr))
-		, documentTextBox(static_cast<::vl::presentation::controls::GuiDocumentLabel*>(nullptr))
-		, documentViewer(static_cast<::vl::presentation::controls::GuiDocumentViewer*>(nullptr))
-		, documentLabel(static_cast<::vl::presentation::controls::GuiDocumentLabel*>(nullptr))
 	{
 	}
 
@@ -21699,12 +21741,12 @@ Class (::demo::TextEditorConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc20_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf77_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf80_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc21_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf78_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf81_Demo_demo_TextEditorConstructor___vwsn_demo_TextEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -21714,8 +21756,8 @@ Class (::demo::TextEditorConstructor)
 
 	TextEditorConstructor::TextEditorConstructor()
 		: self(static_cast<::demo::TextEditor*>(nullptr))
-		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, textBox(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
@@ -21854,18 +21896,21 @@ Class (::demo::TextListTabPageConstructor)
 		{
 			(this->__vwsn_precompile_10 = new ::vl::presentation::controls::GuiControl(::vl::presentation::theme::ThemeName::GroupBox));
 		}
-		(this->__vwsn_precompile_37 = ::vl::__vwsn::This(this->__vwsn_precompile_10)->GetBoundsComposition());
+		(this->__vwsn_precompile_37 = ::vl::__vwsn::This(this->__vwsn_precompile_10)->GetContainerComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_37)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = (- static_cast<::vl::vint32_t>(1)); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_37)->SetInternalMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
-		(this->__vwsn_precompile_36 = ::vl::__vwsn::This(this->__vwsn_precompile_10)->GetContainerComposition());
+		(this->__vwsn_precompile_36 = ::vl::__vwsn::This(this->__vwsn_precompile_10)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_36)->SetInternalMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_36)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = (- static_cast<::vl::vint32_t>(1)); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetText(::vl::WString(L"Operations", false));
 		}
 		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiStackComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetPadding(static_cast<::vl::vint32_t>(5));
 		}
@@ -21874,9 +21919,6 @@ Class (::demo::TextListTabPageConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_12 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
@@ -22043,10 +22085,10 @@ Class (::demo::TextListTabPageConstructor)
 			(this->bindableTextList = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
 		}
 		{
-			::vl::__vwsn::This(this->bindableTextList)->SetCheckedProperty(LAMBDA(::vl_workflow_global::__vwsnf47_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->bindableTextList)->SetCheckedProperty(LAMBDA(::vl_workflow_global::__vwsnf50_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->bindableTextList)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf48_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->bindableTextList)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->bindableTextList)->SetVerticalAlwaysVisible(false);
@@ -22071,23 +22113,23 @@ Class (::demo::TextListTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf49_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->comboView)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf50_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf53_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_13)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf51_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf54_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_16)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf52_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf55_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_19)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf53_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf56_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_22)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -22103,6 +22145,10 @@ Class (::demo::TextListTabPageConstructor)
 
 	TextListTabPageConstructor::TextListTabPageConstructor()
 		: self(static_cast<::demo::TextListTabPage*>(nullptr))
+		, mutexGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::MutexGroupController*>(nullptr))
+		, comboView(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
+		, textList(static_cast<::vl::presentation::controls::GuiTextList*>(nullptr))
+		, bindableTextList(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiTextList*>(nullptr))
@@ -22127,10 +22173,6 @@ Class (::demo::TextListTabPageConstructor)
 		, __vwsn_precompile_21(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_22(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 		, __vwsn_precompile_23(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, mutexGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::MutexGroupController*>(nullptr))
-		, comboView(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
-		, textList(static_cast<::vl::presentation::controls::GuiTextList*>(nullptr))
-		, bindableTextList(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
 		, __vwsn_precompile_24(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_25(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, __vwsn_precompile_26(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
@@ -22143,8 +22185,8 @@ Class (::demo::TextListTabPageConstructor)
 		, __vwsn_precompile_33(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_34(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, __vwsn_precompile_35(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_36(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
-		, __vwsn_precompile_37(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_36(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_37(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
 		, __vwsn_precompile_38(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_39(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
@@ -22407,13 +22449,13 @@ Class (::demo::TreeViewTabPageConstructor)
 			(this->bindableTreeView = new ::vl::presentation::controls::GuiBindableTreeView(::vl::presentation::theme::ThemeName::TreeView));
 		}
 		{
-			::vl::__vwsn::This(this->bindableTreeView)->SetChildrenProperty(LAMBDA(::vl_workflow_global::__vwsnf54_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->bindableTreeView)->SetChildrenProperty(LAMBDA(::vl_workflow_global::__vwsnf57_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->bindableTreeView)->SetImageProperty(LAMBDA(::vl_workflow_global::__vwsnf55_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->bindableTreeView)->SetImageProperty(LAMBDA(::vl_workflow_global::__vwsnf58_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->bindableTreeView)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf56_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->bindableTreeView)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf59_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->bindableTreeView)->SetVerticalAlwaysVisible(false);
@@ -22441,6 +22483,8 @@ Class (::demo::TreeViewTabPageConstructor)
 
 	TreeViewTabPageConstructor::TreeViewTabPageConstructor()
 		: self(static_cast<::demo::TreeViewTabPage*>(nullptr))
+		, treeView(static_cast<::vl::presentation::controls::GuiTreeView*>(nullptr))
+		, bindableTreeView(static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
@@ -22465,8 +22509,6 @@ Class (::demo::TreeViewTabPageConstructor)
 		, __vwsn_precompile_21(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
 		, __vwsn_precompile_22(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
 		, __vwsn_precompile_23(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
-		, treeView(static_cast<::vl::presentation::controls::GuiTreeView*>(nullptr))
-		, bindableTreeView(static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr))
 		, __vwsn_precompile_24(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_25(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_26(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))

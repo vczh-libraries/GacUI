@@ -30,8 +30,8 @@ namespace demo
 		friend class ::demo::MainWindowConstructor;
 		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc7_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf39_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf40_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf42_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf43_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindow>;
 #endif

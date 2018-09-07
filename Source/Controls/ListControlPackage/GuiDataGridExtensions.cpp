@@ -402,6 +402,8 @@ CellBorderVisualizerTemplate
 
 				FocusRectangleVisualizerTemplate::FocusRectangleVisualizerTemplate()
 				{
+					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
 					focusComposition = new GuiBoundsComposition();
 					{
 						auto focus = GuiFocusRectangleElement::Create();
@@ -411,7 +413,7 @@ CellBorderVisualizerTemplate
 					auto container = new GuiBoundsComposition();
 					{
 						container->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						container->SetAlignmentToParent(Margin(0, 0, 1, 1));
+						container->SetAlignmentToParent(Margin(1, 1, 1, 1));
 					}
 
 					AddChild(focusComposition);
