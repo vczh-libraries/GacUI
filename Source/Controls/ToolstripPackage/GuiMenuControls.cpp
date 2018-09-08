@@ -303,7 +303,10 @@ GuiMenuButton
 				{
 					return subMenu->QueryTypedService<IGuiAltActionHost>();
 				}
-				return 0;
+				else
+				{
+					return GuiSelectableButton::GetActivatingAltHost();
+				}
 			}
 
 			void GuiMenuButton::OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

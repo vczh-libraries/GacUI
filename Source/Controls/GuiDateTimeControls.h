@@ -24,7 +24,7 @@ DatePicker
 ***********************************************************************/
 
 			/// <summary>Date picker control that display a calendar.</summary>
-			class GuiDatePicker : public GuiControl, protected compositions::IGuiAltActionHost, public Description<GuiDatePicker>
+			class GuiDatePicker : public GuiControl, protected compositions::GuiAltActionHostBase, public Description<GuiDatePicker>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DatePickerTemplate, GuiControl)
 			protected:
@@ -51,11 +51,6 @@ DatePicker
 				void													UpdateText();
 				bool													IsAltAvailable()override;
 				compositions::IGuiAltActionHost*						GetActivatingAltHost()override;
-				compositions::GuiGraphicsComposition*					GetAltComposition()override;
-				compositions::IGuiAltActionHost*						GetPreviousAltHost()override;
-				void													OnActivatedAltHost(IGuiAltActionHost* previousHost)override;
-				void													OnDeactivatedAltHost()override;
-				void													CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
 
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
@@ -74,8 +69,6 @@ DatePicker
 				compositions::GuiNotifyEvent							DateFormatChanged;
 				/// <summary>Date locale changed event.</summary>
 				compositions::GuiNotifyEvent							DateLocaleChanged;
-
-				IDescriptable*											QueryService(const WString& identifier)override;
 				
 				/// <summary>Get the displayed date.</summary>
 				/// <returns>The date.</returns>

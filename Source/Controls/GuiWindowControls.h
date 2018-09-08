@@ -212,7 +212,7 @@ Window
 			/// <summary>
 			/// Represents a normal window.
 			/// </summary>
-			class GuiWindow : public GuiControlHost, protected compositions::IGuiAltActionHost, public AggregatableDescription<GuiWindow>
+			class GuiWindow : public GuiControlHost, protected compositions::GuiAltActionHostBase, public AggregatableDescription<GuiWindow>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
@@ -230,12 +230,6 @@ Window
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
 				virtual void							MouseClickedOnOtherWindow(GuiWindow* window);
-
-				compositions::GuiGraphicsComposition*	GetAltComposition()override;
-				compositions::IGuiAltActionHost*		GetPreviousAltHost()override;
-				void									OnActivatedAltHost(IGuiAltActionHost* previousHost)override;
-				void									OnDeactivatedAltHost()override;
-				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
 				
 				void									OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

@@ -146,6 +146,27 @@ Alt-Combined Shortcut Key Interfaces
 				virtual void							CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions) = 0;
 			};
 
+			/// <summary>Default implementation for <see cref="IGuiAltActionHost"/></summary>
+			class GuiAltActionHostBase : public virtual IGuiAltActionHost
+			{
+			private:
+				GuiGraphicsComposition*					composition = nullptr;
+				controls::GuiControl*					control = nullptr;
+				bool									includeControl = true;
+				IGuiAltActionHost*						previousHost = nullptr;
+
+			protected:
+				void									SetAltComposition(GuiGraphicsComposition* _composition);
+				void									SetAltControl(controls::GuiControl* _control, bool _includeControl);
+
+			public:
+				GuiGraphicsComposition*					GetAltComposition()override;
+				IGuiAltActionHost*						GetPreviousAltHost()override;
+				void									OnActivatedAltHost(IGuiAltActionHost* _previousHost)override;
+				void									OnDeactivatedAltHost()override;
+				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
+			};
+
 /***********************************************************************
 Host
 ***********************************************************************/

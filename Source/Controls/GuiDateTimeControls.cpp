@@ -91,31 +91,6 @@ GuiDatePicker
 				}
 			}
 
-			compositions::GuiGraphicsComposition* GuiDatePicker::GetAltComposition()
-			{
-				return boundsComposition;
-			}
-
-			compositions::IGuiAltActionHost* GuiDatePicker::GetPreviousAltHost()
-			{
-				return previousAltHost;
-			}
-
-			void GuiDatePicker::OnActivatedAltHost(IGuiAltActionHost* previousHost)
-			{
-				previousAltHost = previousHost;
-			}
-
-			void GuiDatePicker::OnDeactivatedAltHost()
-			{
-				previousAltHost = 0;
-			}
-
-			void GuiDatePicker::CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)
-			{
-				IGuiAltActionHost::CollectAltActionsFromControl(this, false, actions);
-			}
-
 			GuiDatePicker::GuiDatePicker(theme::ThemeName themeName, bool _nestedAlt)
 				:GuiControl(themeName)
 				, nestedAlt(_nestedAlt)
@@ -123,6 +98,8 @@ GuiDatePicker
 				commandExecutor = new CommandExecutor(this);
 				SetDateLocale(Locale::UserDefault());
 				SetDate(DateTime::LocalTime());
+				SetAltComposition(boundsComposition);
+				SetAltControl(this, false);
 
 				DateChanged.SetAssociatedComposition(boundsComposition);
 				DateNavigated.SetAssociatedComposition(boundsComposition);
@@ -135,18 +112,6 @@ GuiDatePicker
 
 			GuiDatePicker::~GuiDatePicker()
 			{
-			}
-
-			IDescriptable* GuiDatePicker::QueryService(const WString& identifier)
-			{
-				if (identifier == IGuiAltActionHost::Identifier && nestedAlt)
-				{
-					return (IGuiAltActionHost*)this;
-				}
-				else
-				{
-					return GuiControl::QueryService(identifier);
-				}
 			}
 
 			const DateTime& GuiDatePicker::GetDate()

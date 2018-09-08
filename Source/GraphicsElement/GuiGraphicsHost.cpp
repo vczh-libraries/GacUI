@@ -64,6 +64,10 @@ IGuiAltAction
 				return true;
 			}
 
+/***********************************************************************
+IGuiAltActionHost
+***********************************************************************/
+
 			void IGuiAltActionHost::CollectAltActionsFromControl(controls::GuiControl* control, bool includeThisControl, collections::Group<WString, IGuiAltAction*>& actions)
 			{
 				List<GuiControl*> controls;
@@ -105,6 +109,48 @@ IGuiAltAction
 						controls.Add(current->GetChild(i));
 					}
 				}
+			}
+
+/***********************************************************************
+GuiAltActionHostBase
+***********************************************************************/
+
+			void GuiAltActionHostBase::SetAltComposition(GuiGraphicsComposition* _composition)
+			{
+				composition = _composition;
+			}
+
+			void GuiAltActionHostBase::SetAltControl(controls::GuiControl* _control, bool _includeControl)
+			{
+				control = _control;
+				includeControl = _includeControl;
+			}
+
+			GuiGraphicsComposition* GuiAltActionHostBase::GetAltComposition()
+			{
+				CHECK_ERROR(composition, L"GuiAltActionHostBase::GetAltComposition()#Need to call SetAltComposition.");
+				return composition;
+			}
+
+			IGuiAltActionHost* GuiAltActionHostBase::GetPreviousAltHost()
+			{
+				return previousHost;
+			}
+
+			void GuiAltActionHostBase::OnActivatedAltHost(IGuiAltActionHost* _previousHost)
+			{
+				previousHost = _previousHost;
+			}
+
+			void GuiAltActionHostBase::OnDeactivatedAltHost()
+			{
+				previousHost = nullptr;
+			}
+
+			void GuiAltActionHostBase::CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)
+			{
+				CHECK_ERROR(control, L"GuiAltActionHostBase::CollectAltActions(Group<WString, IGuiAltAction*>&)#Need to call SetAltControl.");
+				CollectAltActionsFromControl(control, includeControl, actions);
 			}
 
 /***********************************************************************

@@ -69,6 +69,7 @@ GuiVirtualDataGrid
 			/// <summary>Data grid control in virtual mode.</summary>
 			class GuiVirtualDataGrid
 				: public GuiVirtualListView
+				, protected compositions::GuiAltActionHostBase
 				, private list::IDataGridContext
 				, public Description<GuiVirtualDataGrid>
 			{
@@ -86,6 +87,7 @@ GuiVirtualDataGrid
 				GridPos													currentEditorPos{ -1,-1 };
 				bool													currentEditorOpeningEditor = false;
 
+				compositions::IGuiAltActionHost*						GetActivatingAltHost()override;
 				void													OnItemModified(vint start, vint count, vint newCount)override;
 				void													OnStyleUninstalled(ItemStyle* style)override;
 

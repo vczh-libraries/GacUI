@@ -337,6 +337,28 @@ GuiVirtualDataGrid (Editor)
 
 			using namespace list;
 
+			compositions::IGuiAltActionHost* GuiVirtualDataGrid::GetActivatingAltHost()
+			{
+				if (currentEditor)
+				{
+					if (auto focusControl = currentEditor->GetTemplate()->GetFocusControl())
+					{
+						if (auto action = focusControl->QueryTypedService<IGuiAltAction>())
+						{
+							if (action->IsAltAvailable() && action->IsAltEnabled())
+							{
+								SetAltComposition(currentEditor->GetTemplate());
+								SetAltControl(focusControl, true);
+								return this;
+							}
+						}
+					}
+				}
+				SetAltComposition(nullptr);
+				SetAltControl(nullptr, false);
+				return GuiVirtualListView::GetActivatingAltHost();
+			}
+
 			void GuiVirtualDataGrid::OnItemModified(vint start, vint count, vint newCount)
 			{
 				GuiVirtualListView::OnItemModified(start, count, newCount);
@@ -400,6 +422,10 @@ GuiVirtualDataGrid (Editor)
 						currentEditorOpeningEditor = true;
 						currentEditorPos = { row,column };
 						currentEditor = factory->CreateEditor(this);
+						if (auto focusControl = currentEditor->GetTemplate()->GetFocusControl())
+						{
+							focusControl->SetAlt(L"E");
+						}
 						currentEditor->BeforeEditCell(GetItemProvider(), row, column);
 						itemStyle->NotifyOpenEditor(column, currentEditor.Obj());
 						currentEditorOpeningEditor = false;
@@ -425,6 +451,8 @@ GuiVirtualDataGrid (Editor)
 						}
 					}
 				}
+				SetAltComposition(nullptr);
+				SetAltControl(nullptr, false);
 				currentEditor = nullptr;
 				currentEditorPos = { -1,-1 };
 			}
@@ -607,6 +635,7 @@ GuiVirtualDataGrid
 				CHECK_ERROR(dataGridView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleController*, GuiListControl::IItemProvider*)#Missing IDataGridView from item provider.");
 
 				SetViewToDefault();
+
 				ColumnClicked.AttachMethod(this, &GuiVirtualDataGrid::OnColumnClicked);
 				SelectionChanged.AttachMethod(this, &GuiVirtualDataGrid::OnSelectionChanged);
 				focusableComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiVirtualDataGrid::OnKeyDown);

@@ -669,31 +669,6 @@ GuiWindow
 			{
 			}
 
-			compositions::GuiGraphicsComposition* GuiWindow::GetAltComposition()
-			{
-				return boundsComposition;
-			}
-
-			compositions::IGuiAltActionHost* GuiWindow::GetPreviousAltHost()
-			{
-				return previousAltHost;
-			}
-
-			void GuiWindow::OnActivatedAltHost(IGuiAltActionHost* previousHost)
-			{
-				previousAltHost = previousHost;
-			}
-
-			void GuiWindow::OnDeactivatedAltHost()
-			{
-				previousAltHost = 0;
-			}
-
-			void GuiWindow::CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)
-			{
-				IGuiAltActionHost::CollectAltActionsFromControl(this, true, actions);
-			}
-
 			void GuiWindow::OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if (auto ct = GetControlTemplateObject(false))
@@ -713,7 +688,10 @@ GuiWindow
 			GuiWindow::GuiWindow(theme::ThemeName themeName)
 				:GuiControlHost(themeName)
 			{
-				INativeWindow* window=GetCurrentController()->WindowService()->CreateNativeWindow();
+				SetAltComposition(boundsComposition);
+				SetAltControl(this, true);
+
+				INativeWindow* window = GetCurrentController()->WindowService()->CreateNativeWindow();
 				SetNativeWindow(window);
 				GetApplication()->RegisterWindow(this);
 				ClipboardUpdated.SetAssociatedComposition(boundsComposition);
