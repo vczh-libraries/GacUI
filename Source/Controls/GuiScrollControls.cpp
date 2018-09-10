@@ -103,6 +103,7 @@ GuiScroll
 						commandExecutor->SmallIncrease();
 						arguments.handled = true;
 						break;
+					default:;
 					}
 				}
 			}

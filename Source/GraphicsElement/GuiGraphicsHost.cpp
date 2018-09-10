@@ -55,7 +55,7 @@ IGuiAltAction
 				for (vint i = 0; i < alt.Length(); i++)
 				{
 					auto c = alt[i];
-					if ('A' <= c && c <= 'Z' || '0' <= c && c <= '9')
+					if (('A' <= c && c <= 'Z') || ('0' <= c && c <= '9'))
 					{
 						continue;
 					}

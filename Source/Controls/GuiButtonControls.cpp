@@ -164,6 +164,7 @@ GuiButton
 						}
 						arguments.handled = true;
 						break;
+					default:;
 					}
 				}
 			}
@@ -183,6 +184,7 @@ GuiButton
 						}
 						arguments.handled = true;
 						break;
+					default:;
 					}
 				}
 			}

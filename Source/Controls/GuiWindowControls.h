@@ -112,7 +112,7 @@ Control Host
 				void											SetEnabled(bool value)override;
 				/// <summary>Test is the window focused.</summary>
 				/// <returns>Returns true if the window is focused.</returns>
-				bool											GetFocused();
+				bool											GetFocused()override;
 				/// <summary>Focus the window.</summary>
 				void											SetFocused();
 				/// <summary>Test is the window activated.</summary>

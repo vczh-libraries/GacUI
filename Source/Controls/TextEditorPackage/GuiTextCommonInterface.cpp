@@ -420,6 +420,7 @@ GuiTextBoxCommonInterface
 						return true;
 					}
 					break;
+				default:;
 				}
 				return false;
 			}

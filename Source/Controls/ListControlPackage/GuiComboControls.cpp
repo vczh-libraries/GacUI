@@ -206,6 +206,7 @@ GuiComboBoxListControl
 						GetSubMenu()->Hide();
 						arguments.handled = true;
 						break;
+					default:;
 					}
 				}
 			}
