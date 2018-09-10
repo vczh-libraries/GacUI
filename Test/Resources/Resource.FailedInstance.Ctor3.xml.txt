@@ -7,7 +7,7 @@ i1 # .\Resource.FailedInstance.Ctor3.xml
 (11, 11): Precompile: Property "ListControl" of type "presentation::controls::GuiComboBox" cannot be assigned using binding "-bind". Because it is a non-bindable constructor argument.
 (15, 23): Precompile: Property "Text" of type "presentation::controls::tree::TreeNode" cannot be assigned using binding "-bind". Because it is a constructor argument, and this binding does not apply to any constructor argument.
 (19, 11): Precompile: Property "Text" of type "presentation::controls::GuiBindableDataGrid" cannot be assigned using an unexisting binding "-NotExists".
-(20, 11): Precompile: Binder "bind" requires the text value of property "SelectedCell".
+(20, 11): Precompile: Binder "bind" requires the text value of property "Font".
 (25, 16): The appropriate IGuiInstanceEventBinder of binding "-NotExists" cannot be found.
 (26, 11): Precompile: When you assign to property "Columns" of type "presentation::compositions::GuiTableComposition", the following missing properties are required: "Rows".
 (27, 13): Precompile: Reference name "notAReferenceType" cannot be added to a non-reference instance of type "presentation::compositions::GuiCellOption".

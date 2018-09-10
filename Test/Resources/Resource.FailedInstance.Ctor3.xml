@@ -17,9 +17,9 @@
         </TreeView>
         <BindableDataGrid>
           <att.Text-NotExists>Binder Not Exists</att.Text-NotExists>
-          <att.SelectedCell-bind>
+          <att.Font-bind>
             <Button Text="Not A String"/>
-          </att.SelectedCell-bind>
+          </att.Font-bind>
         </BindableDataGrid>
 
         <Table ev.BoundsChanged-NotExists="Binder Not Exists">
