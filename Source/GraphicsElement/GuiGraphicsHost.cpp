@@ -352,6 +352,11 @@ GuiGraphicsHost
 				}
 			}
 
+			controls::GuiControl* GuiGraphicsHost::GetNextFocusControl(controls::GuiControl* focusedControl)
+			{
+				return nullptr;
+			}
+
 			void GuiGraphicsHost::RefreshRelatedHostRecord(INativeWindow* nativeWindow)
 			{
 				hostRecord.nativeWindow = nativeWindow;
@@ -816,13 +821,11 @@ GuiGraphicsHost
 						}
 					}
 
-					if (focusedControl)
+					if (auto next = GetNextFocusControl(focusedControl))
 					{
+						next->SetFocus();
+						return;
 					}
-					else
-					{
-					}
-					return;
 				}
 
 			GENERATE_KEY_EVENT:

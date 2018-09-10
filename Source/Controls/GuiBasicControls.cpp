@@ -467,6 +467,16 @@ GuiControl
 				acceptTabInput = value;
 			}
 
+			vint GuiControl::GetTabPriority()
+			{
+				return tabPriority;
+			}
+
+			void GuiControl::SetTabPriority(vint value)
+			{
+				tabPriority = value < 0 ? -1 : value;
+			}
+
 			bool GuiControl::GetEnabled()
 			{
 				return isEnabled;

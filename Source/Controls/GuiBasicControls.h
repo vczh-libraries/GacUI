@@ -80,6 +80,7 @@ Basic Construction
 				Ptr<IGuiGraphicsEventHandler>			lostFocusHandler;
 
 				bool									acceptTabInput = false;
+				vint									tabPriority = -1;
 				bool									isEnabled = true;
 				bool									isVisuallyEnabled = true;
 				bool									isVisible = true;
@@ -224,6 +225,12 @@ Basic Construction
 				/// <summary>Set if this control accepts tab character input.</summary>
 				/// <param name="value">Set to true to make this control accept tab character input.</param>
 				void									SetAcceptTabInput(bool value);
+				/// <summary>Get the tab priority associated with this control.</summary>
+				/// <returns>Returns he tab priority associated with this control.</returns>
+				vint									GetTabPriority();
+				/// <summary>Associate a tab priority with this control.</summary>
+				/// <param name="value">The tab priority to associate. TAB key will go through controls in the order of priority: 0, 1, 2, ..., -1. All negative numbers will be converted to -1. The priority of containers affects all children if it is not -1.</param>
+				void									SetTabPriority(vint value);
 				/// <summary>Test if this control is enabled.</summary>
 				/// <returns>Returns true if this control is enabled.</returns>
 				virtual bool							GetEnabled();
@@ -241,7 +248,7 @@ Basic Construction
 				virtual const WString&					GetAlt()override;
 				/// <summary>Associate a Alt-combined shortcut key with this control.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="value">The Alt-combined shortcut key to associate. Only zero, sigle or multiple upper case letters are legal.</param>
+				/// <param name="value">The Alt-combined shortcut key to associate. The key should contain only upper-case letters or digits.</param>
 				virtual bool							SetAlt(const WString& value);
 				/// <summary>Make the control as the parent of multiple Alt-combined shortcut key activatable controls.</summary>
 				/// <param name="host">The alt action host object.</param>

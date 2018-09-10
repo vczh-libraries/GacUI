@@ -214,6 +214,7 @@ Host
 				vint									FilterTitles();
 				void									ClearAltHost();
 				void									CloseAltHost();
+				controls::GuiControl*					GetNextFocusControl(controls::GuiControl* focusedControl);
 				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 
 				void									DisconnectCompositionInternal(GuiGraphicsComposition* composition);
