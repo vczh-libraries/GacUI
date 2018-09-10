@@ -803,6 +803,21 @@ GuiGraphicsHost
 				{
 					return;
 				}
+
+				if (info.code == VKEY::_TAB)
+				{
+					if (focusedComposition)
+					{
+						auto focusedControl = focusedComposition->GetRelatedControl();
+						if (focusedControl && focusedControl->GetAcceptTabInput())
+						{
+							goto GENERATE_KEY_EVENT;
+						}
+					}
+					return;
+				}
+
+			GENERATE_KEY_EVENT:
 				if(focusedComposition && focusedComposition->HasEventReceiver())
 				{
 					OnKeyInput(info, focusedComposition, &GuiGraphicsEventReceiver::keyDown);
