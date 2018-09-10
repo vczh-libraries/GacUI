@@ -457,6 +457,16 @@ GuiControl
 				return isFocused;
 			}
 
+			bool GuiControl::GetAcceptTabInput()
+			{
+				return acceptTabInput;
+			}
+
+			void GuiControl::SetAcceptTabInput(bool value)
+			{
+				acceptTabInput = value;
+			}
+
 			bool GuiControl::GetEnabled()
 			{
 				return isEnabled;

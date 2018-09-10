@@ -495,7 +495,11 @@ GuiTextBoxCommonInterface
 				}
 				if (textControl->GetVisuallyEnabled() && arguments.compositionSource == arguments.eventSource)
 				{
-					if (!readonly && arguments.code != (wchar_t)VKEY::_ESCAPE && arguments.code != (wchar_t)VKEY::_BACK && !arguments.ctrl)
+					if (!readonly &&
+						arguments.code != (wchar_t)VKEY::_ESCAPE &&
+						arguments.code != (wchar_t)VKEY::_BACK &&
+						(arguments.code != (wchar_t)VKEY::_TAB || textControl->GetAcceptTabInput()) &&
+						!arguments.ctrl)
 					{
 						SetSelectionTextAsKeyInput(WString(arguments.code));
 					}

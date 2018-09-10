@@ -79,6 +79,7 @@ Basic Construction
 				Ptr<IGuiGraphicsEventHandler>			gotFocusHandler;
 				Ptr<IGuiGraphicsEventHandler>			lostFocusHandler;
 
+				bool									acceptTabInput = false;
 				bool									isEnabled = true;
 				bool									isVisuallyEnabled = true;
 				bool									isVisible = true;
@@ -217,6 +218,12 @@ Basic Construction
 				/// <summary>Test if this control is focused.</summary>
 				/// <returns>Returns true if this control is focused.</returns>
 				virtual bool							GetFocused();
+				/// <summary>Test if this control accepts tab character input.</summary>
+				/// <returns>Returns true if this control accepts tab character input.</returns>
+				bool									GetAcceptTabInput();
+				/// <summary>Set if this control accepts tab character input.</summary>
+				/// <param name="value">Set to true to make this control accept tab character input.</param>
+				void									SetAcceptTabInput(bool value);
 				/// <summary>Test if this control is enabled.</summary>
 				/// <returns>Returns true if this control is enabled.</returns>
 				virtual bool							GetEnabled();

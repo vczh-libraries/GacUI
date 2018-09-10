@@ -164,6 +164,7 @@ GuiMultilineTextBox
 				callback = new TextElementOperatorCallback(this);
 				commandExecutor = new CommandExecutor(this);
 
+				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
 				Install(textElement, textComposition, this, boundsComposition, focusableComposition);
 				SetCallback(callback.Obj());
@@ -335,6 +336,7 @@ GuiSinglelineTextBox
 				textComposition->SetSite(1, 0, 1, 1);
 
 				callback = new TextElementOperatorCallback(this);
+				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
 				Install(textElement, textComposition, this, boundsComposition, focusableComposition);
 				SetCallback(callback.Obj());

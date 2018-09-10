@@ -427,6 +427,7 @@ GuiDocumentCommonInterface
 						arguments.code != (wchar_t)VKEY::_ESCAPE &&
 						arguments.code != (wchar_t)VKEY::_BACK &&
 						arguments.code != (wchar_t)VKEY::_RETURN &&
+						(arguments.code != (wchar_t)VKEY::_TAB || documentControl->GetAcceptTabInput()) &&
 						!arguments.ctrl)
 					{
 						Array<WString> text(1);
@@ -1182,6 +1183,7 @@ GuiDocumentViewer
 			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName)
 				:GuiScrollContainer(themeName)
 			{
+				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
 				InstallDocumentViewer(this, containerComposition, boundsComposition, focusableComposition);
 
@@ -1227,6 +1229,7 @@ GuiDocumentLabel
 			GuiDocumentLabel::GuiDocumentLabel(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
+				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
 				InstallDocumentViewer(this, containerComposition, boundsComposition, focusableComposition);
 			}
