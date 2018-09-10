@@ -170,12 +170,17 @@ namespace vl_workflow_global
 	struct __vwsnf230_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_;
 	struct __vwsnf231_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_;
 	struct __vwsnf232_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize_;
-	struct __vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-	struct __vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-	struct __vwsnf235_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-	struct __vwsnf236_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-	struct __vwsnf237_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+	struct __vwsnf233_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_;
+	struct __vwsnf234_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_;
+	struct __vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_;
+	struct __vwsnf236_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+	struct __vwsnf237_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+	struct __vwsnf238_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+	struct __vwsnf239_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
 	struct __vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_;
+	struct __vwsnf240_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+	struct __vwsnf241_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+	struct __vwsnf242_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
 	struct __vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_;
 	struct __vwsnf25_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_;
 	struct __vwsnf26_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_;
@@ -283,10 +288,15 @@ namespace vl_workflow_global
 	class __vwsnc116_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc117_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc118_Demo_demo_ResponsiveViewControlConstructor___vwsn_demo_ResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc119_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc119_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc11_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc120_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
-	class __vwsnc121_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
+	class __vwsnc120_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc121_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
+	class __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
 	class __vwsnc12_Demo_demo_AnimationTabPageConstructor___vwsn_demo_AnimationTabPage_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc13_Demo_demo_AnimationTabPage_BallAnimationWithDelay___vl_reflection_description_ICoroutine;
 	class __vwsnc14_Demo_demo_AnimationTabPage_WaitingAnimation___vl_reflection_description_ICoroutine;
@@ -433,6 +443,8 @@ namespace demo
 	class DateFilter;
 	class DatePickerTabPageConstructor;
 	class DatePickerTabPage;
+	class DocumentBoxSubTabPageConstructor;
+	class DocumentBoxSubTabPage;
 	class DocumentEditorBaseConstructor;
 	class DocumentEditorBase;
 	class DocumentEditorRibbonConstructor;
@@ -485,6 +497,8 @@ namespace demo
 	class StyleItem;
 	class StyleItemTemplateConstructor;
 	class StyleItemTemplate;
+	class TextBoxSubTabPageConstructor;
+	class TextBoxSubTabPage;
 	class TextBoxTabPageConstructor;
 	class TextBoxTabPage;
 	class TextEditorConstructor;
@@ -1078,6 +1092,51 @@ namespace demo
 	public:
 		DatePickerTabPage();
 		~DatePickerTabPage();
+	};
+
+	class DocumentBoxSubTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentBoxSubTabPageConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc119_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc120_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc121_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf233_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf234_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentBoxSubTabPageConstructor>;
+#endif
+	protected:
+		::demo::DocumentBoxSubTabPage* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiDocumentLabel* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiDocumentLabel* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
+		void __vwsn_demo_DocumentBoxSubTabPage_Initialize(::demo::DocumentBoxSubTabPage* __vwsn_this_);
+	public:
+		DocumentBoxSubTabPageConstructor();
+	};
+
+	class DocumentBoxSubTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::DocumentBoxSubTabPageConstructor, public ::vl::reflection::Description<DocumentBoxSubTabPage>
+	{
+		friend class ::demo::DocumentBoxSubTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc119_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc120_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc121_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf233_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf234_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentBoxSubTabPage>;
+#endif
+	public:
+		DocumentBoxSubTabPage();
+		~DocumentBoxSubTabPage();
 	};
 
 	class DocumentEditorBaseConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentEditorBaseConstructor>
@@ -2593,8 +2652,8 @@ namespace demo
 
 	class StringResource : public ::vl::Object, public ::vl::reflection::Description<StringResource>
 	{
-		friend class ::vl_workflow_global::__vwsnc120_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
-		friend class ::vl_workflow_global::__vwsnc121_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
+		friend class ::vl_workflow_global::__vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
+		friend class ::vl_workflow_global::__vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<StringResource>;
 #endif
@@ -2675,46 +2734,69 @@ namespace demo
 		~StyleItemTemplate();
 	};
 
+	class TextBoxSubTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextBoxSubTabPageConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf236_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf237_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxSubTabPageConstructor>;
+#endif
+	protected:
+		::demo::TextBoxSubTabPage* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiMultilineTextBox* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		void __vwsn_demo_TextBoxSubTabPage_Initialize(::demo::TextBoxSubTabPage* __vwsn_this_);
+	public:
+		TextBoxSubTabPageConstructor();
+	};
+
+	class TextBoxSubTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextBoxSubTabPageConstructor, public ::vl::reflection::Description<TextBoxSubTabPage>
+	{
+		friend class ::demo::TextBoxSubTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf236_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf237_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxSubTabPage>;
+#endif
+	public:
+		TextBoxSubTabPage();
+		~TextBoxSubTabPage();
+	};
+
 	class TextBoxTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextBoxTabPageConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc119_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf235_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf236_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf237_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend class ::vl_workflow_global::__vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf238_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf239_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf240_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf241_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf242_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxTabPageConstructor>;
 #endif
 	protected:
 		::demo::TextBoxTabPage* self;
-		::vl::presentation::controls::GuiSinglelineTextBox* textBoxS;
-		::vl::presentation::controls::GuiMultilineTextBox* textBoxM;
-		::vl::presentation::controls::GuiDocumentLabel* documentTextBox;
-		::vl::presentation::controls::GuiDocumentViewer* documentViewer;
-		::vl::presentation::controls::GuiDocumentLabel* documentLabel;
+		::demo::TextBoxSubTabPage* t1;
+		::demo::TextBoxSubTabPage* t2;
+		::demo::DocumentBoxSubTabPage* d1;
+		::demo::DocumentBoxSubTabPage* d2;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_4;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_5;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_10;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_11;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_13;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_14;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_16;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_18;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_19;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_20;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_21;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_7;
 		void __vwsn_demo_TextBoxTabPage_Initialize(::demo::TextBoxTabPage* __vwsn_this_);
 	public:
 		TextBoxTabPageConstructor();
@@ -2723,12 +2805,12 @@ namespace demo
 	class TextBoxTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextBoxTabPageConstructor, public ::vl::reflection::Description<TextBoxTabPage>
 	{
 		friend class ::demo::TextBoxTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc119_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf235_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf236_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf237_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend class ::vl_workflow_global::__vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf238_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf239_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf240_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf241_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf242_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxTabPage>;
 #endif
@@ -4266,49 +4348,67 @@ Closures
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	struct __vwsnf233_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_
 	{
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+		::demo::DocumentBoxSubTabPageConstructor* __vwsnthis_0;
 
-		__vwsnf233_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
-	};
-
-	struct __vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
-	{
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
-
-		__vwsnf234_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf233_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf235_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	struct __vwsnf234_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_
+	{
+		::demo::DocumentBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf234_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_
+	{
+		::demo::DocumentBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf236_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_
+	{
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf236_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf237_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_
+	{
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf237_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf238_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
 	{
 		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
 
-		__vwsnf235_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf238_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf236_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	struct __vwsnf239_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
 	{
 		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
 
-		__vwsnf236_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf239_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()() const;
-	};
-
-	struct __vwsnf237_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
-	{
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
-
-		__vwsnf237_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
-
-		void operator()() const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_
@@ -4318,6 +4418,33 @@ Closures
 		__vwsnf23_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
 		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const;
+	};
+
+	struct __vwsnf240_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf240_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf241_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf241_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf242_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf242_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
 	};
 
 	struct __vwsnf24_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_
@@ -5466,14 +5593,14 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc119_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc119_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+		::demo::DocumentBoxSubTabPageConstructor* __vwsnthis_0;
 
-		__vwsnc119_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnc119_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentBoxSubTabPage* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
@@ -5505,12 +5632,102 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc120_Demo_demo_StringResource_Get__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
+	class __vwsnc120_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::DocumentBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnc120_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		::demo::DocumentBoxSubTabPage* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc121_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::DocumentBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnc121_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		::demo::DocumentBoxSubTabPage* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		::demo::TextBoxSubTabPage* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		::demo::TextBoxSubTabPage* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		::demo::TextBoxSubTabPage* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
 	{
 	public:
 		::vl::Locale __vwsn_ls_locale;
 
-		__vwsnc120_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
+		__vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
 
 		::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) override;
 		::vl::WString DateFormat(::vl::DateTime __vwsn_ls_0) override;
@@ -5526,12 +5743,12 @@ Closures
 		::vl::WString YearMonthDate(::vl::DateTime __vwsn_ls_0) override;
 	};
 
-	class __vwsnc121_Demo_demo_StringResource_Get__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
+	class __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
 	{
 	public:
 		::vl::Locale __vwsn_ls_locale;
 
-		__vwsnc121_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
+		__vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
 
 		::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) override;
 		::vl::WString DateFormat(::vl::DateTime __vwsn_ls_0) override;

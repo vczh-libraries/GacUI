@@ -75,8 +75,70 @@ So as I pray, unlimited blade works.]]>
     </Workflow>
   </Script>
 
+  <Instance name="TextBoxSubTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TextBoxSubTabPage">
+      <TabPage ref.Name="self">
+        <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <SinglelineTextBox Font-bind="self.Font" Text="Archer" Alt="S">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <MultilineTextBox Font-bind="self.Font" Text-uri="res://TextBoxComponents/Text" Alt="M" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </MultilineTextBox>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="DocumentBoxSubTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DocumentBoxSubTabPage">
+      <TabPage ref.Name="self">
+        <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0 columnSpan:2">
+            <DocumentTextBox Font-bind="self.Font" EditMode="Editable" Text="Archer" Alt="T">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </DocumentTextBox>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <DocumentViewer Font-bind="self.Font" EditMode="Editable" Document-uri="res://TextBoxComponents/DocFixed" Alt="V">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </DocumentViewer>
+          </Cell>
+          <Cell Site="row:1 column:1">
+            <DocumentLabel Font-bind="self.Font" EditMode="Editable" Document-uri="res://TextBoxComponents/DocRelative" Alt="L">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </DocumentLabel>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
   <Instance name="TextBoxTabPageResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::TextBoxTabPage">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TextBoxTabPage" xmlns:demo="demo::*">
       <ref.Members>
         <![CDATA[
           @cpp:Protected
@@ -88,23 +150,22 @@ So as I pray, unlimited blade works.]]>
           @cpp:Protected
           func UpdateFont(newFont : FontProperties) : void
           {
-            textBoxS.Font = newFont;
-            textBoxM.Font = newFont;
-            documentTextBox.Font = newFont;
-            documentViewer.Font = newFont;
-            documentLabel.Font = newFont;
+            t1.Font = newFont;
+            t2.Font = newFont;
+            d1.Font = newFont;
+            d2.Font = newFont;
           }
         ]]>
       </ref.Members>
       <TabPage ref.Name="self" Text="TextBox">
         <ev.OnMakeFontLarger-eval>
           <![CDATA[
-            self.UpdateFont(ChangeFontSize(textBoxS.Font, 5));
+            self.UpdateFont(ChangeFontSize(t1.Font, 5));
           ]]>
         </ev.OnMakeFontLarger-eval>
         <ev.OnMakeFontSmaller-eval>
           <![CDATA[
-            self.UpdateFont(ChangeFontSize(textBoxS.Font, -5));
+            self.UpdateFont(ChangeFontSize(t1.Font, -5));
           ]]>
         </ev.OnMakeFontSmaller-eval>
 
@@ -125,59 +186,10 @@ So as I pray, unlimited blade works.]]>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
 
               <att.Pages>
-                <TabPage Text="TextBox" Alt="T">
-                  <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                    <att.Rows>
-                      <CellOption>composeType:MinSize</CellOption>
-                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
-                    </att.Rows>
-                    <att.Columns>
-                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
-                    </att.Columns>
-
-                    <Cell Site="row:0 column:0">
-                      <SinglelineTextBox ref.Name="textBoxS" Text="Archer" Alt="S">
-                        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                      </SinglelineTextBox>
-                    </Cell>
-
-                    <Cell Site="row:1 column:0">
-                      <MultilineTextBox ref.Name="textBoxM" Text-uri="res://TextBoxComponents/Text" Alt="M" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                      </MultilineTextBox>
-                    </Cell>
-                  </Table>
-                </TabPage>
-
-                <TabPage Text="Document" Alt="D">
-                  <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                    <att.Rows>
-                      <CellOption>composeType:MinSize</CellOption>
-                      <CellOption>composeType:Percentage percentage:1.0</CellOption>
-                    </att.Rows>
-                    <att.Columns>
-                      <CellOption>composeType:Percentage percentage:0.5</CellOption>
-                      <CellOption>composeType:Percentage percentage:0.5</CellOption>
-                    </att.Columns>
-
-                    <Cell Site="row:0 column:0 columnSpan:2">
-                      <DocumentTextBox ref.Name="documentTextBox" EditMode="Editable" Text="Archer" Alt="T">
-                        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                      </DocumentTextBox>
-                    </Cell>
-
-                    <Cell Site="row:1 column:0">
-                      <DocumentViewer ref.Name="documentViewer" EditMode="Editable" Document-uri="res://TextBoxComponents/DocFixed" Alt="V">
-                        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                      </DocumentViewer>
-                    </Cell>
-                    <Cell Site="row:1 column:1">
-                      <DocumentLabel ref.Name="documentLabel" EditMode="Editable" Document-uri="res://TextBoxComponents/DocRelative" Alt="L">
-                        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                      </DocumentLabel>
-                    </Cell>
-                  </Table>
-                </TabPage>
+                <demo:TextBoxSubTabPage ref.Name="t1" Text="TextBox" Alt="T"/>
+                <demo:TextBoxSubTabPage ref.Name="t2" Text="TextBox (No Tab)" Alt="T"/>
+                <demo:DocumentBoxSubTabPage ref.Name="d1" Text="Document" Alt="D"/>
+                <demo:DocumentBoxSubTabPage ref.Name="d2" Text="Document (No Tab)" Alt="D"/>
               </att.Pages>
             </Tab>
           </Cell>
@@ -186,7 +198,7 @@ So as I pray, unlimited blade works.]]>
             <Button Text="Make Font Larger" Alt="L" ev.Clicked-eval="self.OnMakeFontLarger();"/>
           </Cell>
           <Cell Site="row:1 column:1">
-            <Button Text="Make Font Smaller" Alt="S" Enabled-bind="textBoxS.Font.size &gt; 5" ev.Clicked-eval="self.OnMakeFontSmaller();"/>
+            <Button Text="Make Font Smaller" Alt="S" Enabled-bind="t1.Font.size &gt; 5" ev.Clicked-eval="self.OnMakeFontSmaller();"/>
           </Cell>
         </Table>
       </TabPage>
