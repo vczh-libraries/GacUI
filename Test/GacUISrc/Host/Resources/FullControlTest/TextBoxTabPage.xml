@@ -77,6 +77,11 @@ So as I pray, unlimited blade works.]]>
 
   <Instance name="TextBoxSubTabPageResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TextBoxSubTabPage">
+      <ref.Members>
+        <![CDATA[
+          prop TextBoxAcceptTabInput : bool = true {}
+        ]]>
+      </ref.Members>
       <TabPage ref.Name="self">
         <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
@@ -88,13 +93,13 @@ So as I pray, unlimited blade works.]]>
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <SinglelineTextBox Font-bind="self.Font" Text="Archer" Alt="S">
+            <SinglelineTextBox Font-bind="self.Font" AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text="Archer" Alt="S">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </SinglelineTextBox>
           </Cell>
 
           <Cell Site="row:1 column:0">
-            <MultilineTextBox Font-bind="self.Font" Text-uri="res://TextBoxComponents/Text" Alt="M" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+            <MultilineTextBox Font-bind="self.Font" AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text-uri="res://TextBoxComponents/Text" Alt="M" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </MultilineTextBox>
           </Cell>
@@ -105,6 +110,11 @@ So as I pray, unlimited blade works.]]>
 
   <Instance name="DocumentBoxSubTabPageResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::DocumentBoxSubTabPage">
+      <ref.Members>
+        <![CDATA[
+          prop TextBoxAcceptTabInput : bool = true {}
+        ]]>
+      </ref.Members>
       <TabPage ref.Name="self">
         <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
@@ -117,18 +127,18 @@ So as I pray, unlimited blade works.]]>
           </att.Columns>
 
           <Cell Site="row:0 column:0 columnSpan:2">
-            <DocumentTextBox Font-bind="self.Font" EditMode="Editable" Text="Archer" Alt="T">
+            <DocumentTextBox Font-bind="self.Font" AcceptTabInput-bind="self.TextBoxAcceptTabInput" EditMode="Editable" Text="Archer" Alt="T">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </DocumentTextBox>
           </Cell>
 
           <Cell Site="row:1 column:0">
-            <DocumentViewer Font-bind="self.Font" EditMode="Editable" Document-uri="res://TextBoxComponents/DocFixed" Alt="V">
+            <DocumentViewer Font-bind="self.Font" AcceptTabInput-bind="self.TextBoxAcceptTabInput" EditMode="Editable" Document-uri="res://TextBoxComponents/DocFixed" Alt="V">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </DocumentViewer>
           </Cell>
           <Cell Site="row:1 column:1">
-            <DocumentLabel Font-bind="self.Font" EditMode="Editable" Document-uri="res://TextBoxComponents/DocRelative" Alt="L">
+            <DocumentLabel Font-bind="self.Font" AcceptTabInput-bind="self.TextBoxAcceptTabInput" EditMode="Editable" Document-uri="res://TextBoxComponents/DocRelative" Alt="L">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </DocumentLabel>
           </Cell>
@@ -187,9 +197,9 @@ So as I pray, unlimited blade works.]]>
 
               <att.Pages>
                 <demo:TextBoxSubTabPage ref.Name="t1" Text="TextBox" Alt="T"/>
-                <demo:TextBoxSubTabPage ref.Name="t2" Text="TextBox (No Tab)" Alt="T"/>
+                <demo:TextBoxSubTabPage ref.Name="t2" Text="TextBox (No Tab)" Alt="T" TextBoxAcceptTabInput="false"/>
                 <demo:DocumentBoxSubTabPage ref.Name="d1" Text="Document" Alt="D"/>
-                <demo:DocumentBoxSubTabPage ref.Name="d2" Text="Document (No Tab)" Alt="D"/>
+                <demo:DocumentBoxSubTabPage ref.Name="d2" Text="Document (No Tab)" Alt="D" TextBoxAcceptTabInput="false"/>
               </att.Pages>
             </Tab>
           </Cell>

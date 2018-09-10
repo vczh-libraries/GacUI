@@ -2837,6 +2837,24 @@ Closures
 
 	void __vwsnf234_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetAcceptTabInput();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetAcceptTabInput(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_::__vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -2848,12 +2866,30 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_::__vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf236_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_::__vwsnf236_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf236_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->GetAcceptTabInput();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->SetAcceptTabInput(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf237_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_::__vwsnf237_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf237_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -2866,12 +2902,30 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf236_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::__vwsnf236_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf238_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_::__vwsnf238_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf236_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf238_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetAcceptTabInput();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->SetAcceptTabInput(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf239_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::__vwsnf239_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf239_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -2880,54 +2934,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf237_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::__vwsnf237_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf237_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf238_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf238_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf238_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontLarger)();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf239_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf239_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf239_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2953,36 +2959,120 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf240_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf240_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf240_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::__vwsnf240_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf240_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf240_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetAcceptTabInput();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetAcceptTabInput(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf241_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::__vwsnf241_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf241_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf242_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::__vwsnf242_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf242_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->GetAcceptTabInput();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->SetAcceptTabInput(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf243_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf243_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf243_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontLarger)();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf244_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf244_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf244_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf245_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf245_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf245_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontSmaller)();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf241_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf241_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf246_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf246_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf241_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()() const
+	void __vwsnf246_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()() const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(__vwsnthis_0->t1)->GetFont(), static_cast<::vl::vint32_t>(5)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf242_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf242_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf247_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::__vwsnf247_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf242_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()() const
+	void __vwsnf247_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_::operator()() const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(__vwsnthis_0->t1)->GetFont(), (- static_cast<::vl::vint32_t>(5))));
 	}
@@ -5825,11 +5915,11 @@ Closures
 
 	void __vwsnc120_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTextBoxAcceptTabInput();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc120_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc120_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -5840,7 +5930,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::demo::DocumentBoxSubTabPage*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc120_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAcceptTabInputChanged, ::vl::Func<void()>(this, &__vwsnc120_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -5863,7 +5953,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAcceptTabInputChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::demo::DocumentBoxSubTabPage*>(nullptr));
@@ -5936,39 +6026,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
+	__vwsnc122_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsnc122_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::demo::TextBoxSubTabPage*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::demo::DocumentBoxSubTabPage*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc122_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTextBoxAcceptTabInput();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc122_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc122_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::demo::TextBoxSubTabPage*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::demo::DocumentBoxSubTabPage*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAcceptTabInputChanged, ::vl::Func<void()>(this, &__vwsnc122_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc122_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -5978,7 +6068,190 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc122_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAcceptTabInputChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::demo::DocumentBoxSubTabPage*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc123_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsnc123_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::demo::DocumentBoxSubTabPage*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc123_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc123_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc123_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::demo::DocumentBoxSubTabPage*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc123_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc123_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc123_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::demo::DocumentBoxSubTabPage*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc124_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsnc124_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::demo::DocumentBoxSubTabPage*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc124_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTextBoxAcceptTabInput();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc124_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc124_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::demo::DocumentBoxSubTabPage*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAcceptTabInputChanged, ::vl::Func<void()>(this, &__vwsnc124_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc124_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc124_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAcceptTabInputChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::demo::DocumentBoxSubTabPage*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc125_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsnc125_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::demo::TextBoxSubTabPage*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc125_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc125_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc125_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::demo::TextBoxSubTabPage*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc125_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc125_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc125_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -5997,7 +6270,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
+	__vwsnc126_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsnc126_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::demo::TextBoxSubTabPage*>(nullptr);
@@ -6006,30 +6279,30 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc126_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTextBoxAcceptTabInput();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc126_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc126_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::demo::TextBoxSubTabPage*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAcceptTabInputChanged, ::vl::Func<void()>(this, &__vwsnc126_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc126_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -6039,7 +6312,68 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc126_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAcceptTabInputChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::demo::TextBoxSubTabPage*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc127_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsnc127_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::demo::TextBoxSubTabPage*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc127_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc127_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc127_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::demo::TextBoxSubTabPage*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc127_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc127_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc127_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -6058,7 +6392,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+	__vwsnc128_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsnc128_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::demo::TextBoxSubTabPage*>(nullptr);
@@ -6067,30 +6401,91 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc128_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTextBoxAcceptTabInput();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc128_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc128_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::demo::TextBoxSubTabPage*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAcceptTabInputChanged, ::vl::Func<void()>(this, &__vwsnc128_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc128_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc128_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAcceptTabInputChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::demo::TextBoxSubTabPage*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc129_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsnc129_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::demo::TextBoxSubTabPage*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc129_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont().size > static_cast<::vl::vint32_t>(5));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc129_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc129_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->t1; } catch(...){ return static_cast<::demo::TextBoxSubTabPage*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc129_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc129_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -6100,7 +6495,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc129_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -6115,160 +6510,6 @@ Closures
 			return true;
 		}
 		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::__vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale)
-		:__vwsn_ls_locale(__vwsnctor___vwsn_ls_locale)
-	{
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Currency(const ::vl::WString& __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatCurrency(__vwsn_ls_locale, __vwsn_ls_0);
-		return (::vl::WString(L"货币：", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::DateFormat(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::vl::WString(L"yyyy", false), __vwsn_ls_0);
-		return (::vl::WString(L"日期格式：", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Label()
-	{
-		return ::vl::WString(L"语言设置：", false);
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongDate(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
-		return (::vl::WString(L"长日期：", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongTime(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
-		return (::vl::WString(L"长时间：", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Number(const ::vl::WString& __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatNumber(__vwsn_ls_locale, __vwsn_ls_0);
-		return (::vl::WString(L"数字：", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Sentence(const ::vl::WString& __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = __vwsn_ls_0;
-		return ((::vl::WString(L"$", false) + __vwsn_ls__0) + ::vl::WString(L"，早上好！$", false));
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortDate(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
-		return (::vl::WString(L"短日期：", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortTime(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
-		return (::vl::WString(L"短时间：", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::TimeFormat(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::vl::WString(L"HH", false), __vwsn_ls_0);
-		return (::vl::WString(L"时间格式： ", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Title()
-	{
-		return ::vl::WString(L"本地化", false);
-	}
-
-	::vl::WString __vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings::YearMonthDate(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetYearMonthDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
-		return (::vl::WString(L"年月：", false) + __vwsn_ls__0);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::__vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale)
-		:__vwsn_ls_locale(__vwsnctor___vwsn_ls_locale)
-	{
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Currency(const ::vl::WString& __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatCurrency(__vwsn_ls_locale, __vwsn_ls_0);
-		return (::vl::WString(L"Currency: ", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::DateFormat(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::vl::WString(L"yyyy", false), __vwsn_ls_0);
-		return (::vl::WString(L"DateFormat: ", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Label()
-	{
-		return ::vl::WString(L"Selected Locale:", false);
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongDate(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
-		return (::vl::WString(L"LongDate: ", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongTime(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
-		return (::vl::WString(L"LongTime: ", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Number(const ::vl::WString& __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatNumber(__vwsn_ls_locale, __vwsn_ls_0);
-		return (::vl::WString(L"Number: ", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Sentence(const ::vl::WString& __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = __vwsn_ls_0;
-		return ((::vl::WString(L"$Good morning, ", false) + __vwsn_ls__0) + ::vl::WString(L"!$", false));
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortDate(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
-		return (::vl::WString(L"ShortDate: ", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortTime(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
-		return (::vl::WString(L"ShortTime: ", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::TimeFormat(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::vl::WString(L"HH", false), __vwsn_ls_0);
-		return (::vl::WString(L"TimeFormat: ", false) + __vwsn_ls__0);
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Title()
-	{
-		return ::vl::WString(L"Localization", false);
-	}
-
-	::vl::WString __vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings::YearMonthDate(::vl::DateTime __vwsn_ls_0)
-	{
-		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetYearMonthDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
-		return (::vl::WString(L"YearMonthDate: ", false) + __vwsn_ls__0);
 	}
 
 	//-------------------------------------------------------------------
@@ -6353,6 +6594,160 @@ Closures
 			return true;
 		}
 		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::__vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale)
+		:__vwsn_ls_locale(__vwsnctor___vwsn_ls_locale)
+	{
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Currency(const ::vl::WString& __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatCurrency(__vwsn_ls_locale, __vwsn_ls_0);
+		return (::vl::WString(L"货币：", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::DateFormat(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::vl::WString(L"yyyy", false), __vwsn_ls_0);
+		return (::vl::WString(L"日期格式：", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Label()
+	{
+		return ::vl::WString(L"语言设置：", false);
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongDate(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		return (::vl::WString(L"长日期：", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongTime(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		return (::vl::WString(L"长时间：", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Number(const ::vl::WString& __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatNumber(__vwsn_ls_locale, __vwsn_ls_0);
+		return (::vl::WString(L"数字：", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Sentence(const ::vl::WString& __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = __vwsn_ls_0;
+		return ((::vl::WString(L"$", false) + __vwsn_ls__0) + ::vl::WString(L"，早上好！$", false));
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortDate(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		return (::vl::WString(L"短日期：", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortTime(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		return (::vl::WString(L"短时间：", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::TimeFormat(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::vl::WString(L"HH", false), __vwsn_ls_0);
+		return (::vl::WString(L"时间格式： ", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Title()
+	{
+		return ::vl::WString(L"本地化", false);
+	}
+
+	::vl::WString __vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings::YearMonthDate(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetYearMonthDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		return (::vl::WString(L"年月：", false) + __vwsn_ls__0);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::__vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale)
+		:__vwsn_ls_locale(__vwsnctor___vwsn_ls_locale)
+	{
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Currency(const ::vl::WString& __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatCurrency(__vwsn_ls_locale, __vwsn_ls_0);
+		return (::vl::WString(L"Currency: ", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::DateFormat(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::vl::WString(L"yyyy", false), __vwsn_ls_0);
+		return (::vl::WString(L"DateFormat: ", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Label()
+	{
+		return ::vl::WString(L"Selected Locale:", false);
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongDate(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		return (::vl::WString(L"LongDate: ", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::LongTime(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetLongTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		return (::vl::WString(L"LongTime: ", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Number(const ::vl::WString& __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatNumber(__vwsn_ls_locale, __vwsn_ls_0);
+		return (::vl::WString(L"Number: ", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Sentence(const ::vl::WString& __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = __vwsn_ls_0;
+		return ((::vl::WString(L"$Good morning, ", false) + __vwsn_ls__0) + ::vl::WString(L"!$", false));
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortDate(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		return (::vl::WString(L"ShortDate: ", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::ShortTime(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetShortTimeFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		return (::vl::WString(L"ShortTime: ", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::TimeFormat(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatTime(__vwsn_ls_locale, ::vl::WString(L"HH", false), __vwsn_ls_0);
+		return (::vl::WString(L"TimeFormat: ", false) + __vwsn_ls__0);
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::Title()
+	{
+		return ::vl::WString(L"Localization", false);
+	}
+
+	::vl::WString __vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings::YearMonthDate(::vl::DateTime __vwsn_ls_0)
+	{
+		auto __vwsn_ls__0 = ::vl::reflection::description::Localization::FormatDate(__vwsn_ls_locale, ::demo::StringResource::__vwsn_ls_First(::vl::reflection::description::Localization::GetYearMonthDateFormats(__vwsn_ls_locale)), __vwsn_ls_0);
+		return (::vl::WString(L"YearMonthDate: ", false) + __vwsn_ls__0);
 	}
 
 	//-------------------------------------------------------------------
@@ -14092,11 +14487,26 @@ Class (::demo::DocumentBoxSubTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc121_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc122_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf236_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"TextBoxComponents/DocFixed", false), true).Obj())));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc121_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf235_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc123_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf237_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc124_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf238_Demo_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -14123,8 +14533,22 @@ Class (::demo::DocumentBoxSubTabPageConstructor)
 Class (::demo::DocumentBoxSubTabPage)
 ***********************************************************************/
 
+	bool DocumentBoxSubTabPage::GetTextBoxAcceptTabInput()
+	{
+		return this->__vwsn_prop_TextBoxAcceptTabInput;
+	}
+	void DocumentBoxSubTabPage::SetTextBoxAcceptTabInput(bool __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_TextBoxAcceptTabInput != __vwsn_value_))
+		{
+			(this->__vwsn_prop_TextBoxAcceptTabInput = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->TextBoxAcceptTabInputChanged)();
+		}
+	}
+
 	DocumentBoxSubTabPage::DocumentBoxSubTabPage()
 		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_TextBoxAcceptTabInput(true)
 	{
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::DocumentBoxSubTabPage", false));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
@@ -21658,9 +22082,9 @@ Class (::demo::StringResource)
 	{
 		if (::vl::__vwsn::InSet(::vl::__vwsn::ToString(__vwsn_ls_locale), (::vl::__vwsn::CreateList().Add(::vl::WString(L"zh-CN", false))).list))
 		{
-			return ::vl::Ptr<::demo::IStringResourceStrings>(new ::vl_workflow_global::__vwsnc125_Demo_demo_StringResource_Get__demo_IStringResourceStrings(__vwsn_ls_locale));
+			return ::vl::Ptr<::demo::IStringResourceStrings>(new ::vl_workflow_global::__vwsnc130_Demo_demo_StringResource_Get__demo_IStringResourceStrings(__vwsn_ls_locale));
 		}
-		return ::vl::Ptr<::demo::IStringResourceStrings>(new ::vl_workflow_global::__vwsnc126_Demo_demo_StringResource_Get__demo_IStringResourceStrings(__vwsn_ls_locale));
+		return ::vl::Ptr<::demo::IStringResourceStrings>(new ::vl_workflow_global::__vwsnc131_Demo_demo_StringResource_Get__demo_IStringResourceStrings(__vwsn_ls_locale));
 	}
 
 	StringResource::StringResource()
@@ -21992,16 +22416,26 @@ Class (::demo::TextBoxSubTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc122_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf236_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc125_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf239_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc126_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf240_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetText(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiTextData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"TextBoxComponents/Text", false), true).Obj())).Obj())->GetText());
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc123_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf237_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc127_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf241_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc128_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf242_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -22022,8 +22456,22 @@ Class (::demo::TextBoxSubTabPageConstructor)
 Class (::demo::TextBoxSubTabPage)
 ***********************************************************************/
 
+	bool TextBoxSubTabPage::GetTextBoxAcceptTabInput()
+	{
+		return this->__vwsn_prop_TextBoxAcceptTabInput;
+	}
+	void TextBoxSubTabPage::SetTextBoxAcceptTabInput(bool __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_TextBoxAcceptTabInput != __vwsn_value_))
+		{
+			(this->__vwsn_prop_TextBoxAcceptTabInput = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->TextBoxAcceptTabInputChanged)();
+		}
+	}
+
 	TextBoxSubTabPage::TextBoxSubTabPage()
 		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_TextBoxAcceptTabInput(true)
 	{
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::TextBoxSubTabPage", false));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
@@ -22082,6 +22530,9 @@ Class (::demo::TextBoxTabPageConstructor)
 		}
 		(this->t2 = new ::demo::TextBoxSubTabPage());
 		{
+			::vl::__vwsn::This(this->t2)->SetTextBoxAcceptTabInput(false);
+		}
+		{
 			::vl::__vwsn::This(this->t2)->SetAlt(::vl::WString(L"T", false));
 		}
 		{
@@ -22103,6 +22554,9 @@ Class (::demo::TextBoxTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->d1));
 		}
 		(this->d2 = new ::demo::DocumentBoxSubTabPage());
+		{
+			::vl::__vwsn::This(this->d2)->SetTextBoxAcceptTabInput(false);
+		}
 		{
 			::vl::__vwsn::This(this->d2)->SetAlt(::vl::WString(L"D", false));
 		}
@@ -22165,24 +22619,24 @@ Class (::demo::TextBoxTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf238_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf243_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_5)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc124_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf239_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc129_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf244_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf240_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf245_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_7)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf241_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf246_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->OnMakeFontLarger, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf242_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf247_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->OnMakeFontSmaller, __vwsn_event_handler_);
 		}
 	}

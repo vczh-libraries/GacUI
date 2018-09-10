@@ -414,6 +414,11 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
 				CLASS_MEMBER_BASE(::demo::DocumentBoxSubTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::DocumentBoxSubTabPage*(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetTextBoxAcceptTabInput, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetTextBoxAcceptTabInput, { L"__vwsn_value_" })
+				CLASS_MEMBER_EVENT(TextBoxAcceptTabInputChanged)
+				CLASS_MEMBER_FIELD(__vwsn_prop_TextBoxAcceptTabInput)
+				CLASS_MEMBER_PROPERTY_EVENT(TextBoxAcceptTabInput, GetTextBoxAcceptTabInput, SetTextBoxAcceptTabInput, TextBoxAcceptTabInputChanged)
 			END_CLASS_MEMBER(::demo::DocumentBoxSubTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::DocumentBoxSubTabPageConstructor)
@@ -1544,6 +1549,11 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
 				CLASS_MEMBER_BASE(::demo::TextBoxSubTabPageConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::TextBoxSubTabPage*(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetTextBoxAcceptTabInput, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetTextBoxAcceptTabInput, { L"__vwsn_value_" })
+				CLASS_MEMBER_EVENT(TextBoxAcceptTabInputChanged)
+				CLASS_MEMBER_FIELD(__vwsn_prop_TextBoxAcceptTabInput)
+				CLASS_MEMBER_PROPERTY_EVENT(TextBoxAcceptTabInput, GetTextBoxAcceptTabInput, SetTextBoxAcceptTabInput, TextBoxAcceptTabInputChanged)
 			END_CLASS_MEMBER(::demo::TextBoxSubTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::TextBoxSubTabPageConstructor)
