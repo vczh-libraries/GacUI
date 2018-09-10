@@ -806,13 +806,21 @@ GuiGraphicsHost
 
 				if (info.code == VKEY::_TAB)
 				{
+					GuiControl* focusedControl = nullptr;
 					if (focusedComposition)
 					{
-						auto focusedControl = focusedComposition->GetRelatedControl();
+						focusedControl = focusedComposition->GetRelatedControl();
 						if (focusedControl && focusedControl->GetAcceptTabInput())
 						{
 							goto GENERATE_KEY_EVENT;
 						}
+					}
+
+					if (focusedControl)
+					{
+					}
+					else
+					{
 					}
 					return;
 				}
