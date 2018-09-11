@@ -37,6 +37,7 @@ Buttons
 
 				void									OnParentLineChanged()override;
 				void									OnActiveAlt()override;
+				bool									IsTabAvailable()override;
 				void									UpdateControlState();
 				void									CheckAndClick(compositions::GuiEventArgs& arguments);
 				void									OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);

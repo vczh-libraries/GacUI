@@ -216,7 +216,7 @@ GuiControl
 				}
 			}
 
-			bool GuiControl::IsAltEnabled()
+			bool GuiControl::IsControlVisibleAndEnabled()
 			{
 				GuiControl* control = this;
 				while (control)
@@ -227,13 +227,17 @@ GuiControl
 					}
 					control = control->GetParent();
 				}
-
 				return true;
+			}
+
+			bool GuiControl::IsAltEnabled()
+			{
+				return IsControlVisibleAndEnabled();
 			}
 
 			bool GuiControl::IsAltAvailable()
 			{
-				return focusableComposition != 0 && alt != L"";
+				return focusableComposition != nullptr && alt != L"";
 			}
 
 			compositions::GuiGraphicsComposition* GuiControl::GetAltComposition()
@@ -249,6 +253,16 @@ GuiControl
 			void GuiControl::OnActiveAlt()
 			{
 				SetFocus();
+			}
+
+			bool GuiControl::IsTabEnabled()
+			{
+				return IsControlVisibleAndEnabled();
+			}
+
+			bool GuiControl::IsTabAvailable()
+			{
+				return focusableComposition != nullptr;
 			}
 
 			bool GuiControl::SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing)
@@ -650,6 +664,10 @@ GuiControl
 				else if (identifier == IGuiAltActionContainer::Identifier)
 				{
 					return nullptr;
+				}
+				else if (identifier == IGuiTabAction::Identifier)
+				{
+					return (IGuiTabAction*)this;
 				}
 				else
 				{

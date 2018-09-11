@@ -54,7 +54,11 @@ Basic Construction
 			/// If you want to manually destroy a control, you should first remove it from its parent.
 			/// The only way to remove a control from a parent control, is to remove the bounds composition from its parent composition. The same to inserting a control.
 			/// </summary>
-			class GuiControl : public Object, protected compositions::IGuiAltAction, public Description<GuiControl>
+			class GuiControl
+				: public Object
+				, protected compositions::IGuiAltAction
+				, protected compositions::IGuiTabAction
+				, public Description<GuiControl>
 			{
 				friend class compositions::GuiGraphicsComposition;
 
@@ -116,11 +120,14 @@ Basic Construction
 				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
 
+				bool									IsControlVisibleAndEnabled();
 				bool									IsAltEnabled()override;
 				bool									IsAltAvailable()override;
 				compositions::GuiGraphicsComposition*	GetAltComposition()override;
 				compositions::IGuiAltActionHost*		GetActivatingAltHost()override;
 				void									OnActiveAlt()override;
+				bool									IsTabEnabled()override;
+				bool									IsTabAvailable()override;
 
 				static bool								SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
 
@@ -221,13 +228,13 @@ Basic Construction
 				virtual bool							GetFocused();
 				/// <summary>Test if this control accepts tab character input.</summary>
 				/// <returns>Returns true if this control accepts tab character input.</returns>
-				bool									GetAcceptTabInput();
+				virtual bool							GetAcceptTabInput()override;
 				/// <summary>Set if this control accepts tab character input.</summary>
 				/// <param name="value">Set to true to make this control accept tab character input.</param>
 				void									SetAcceptTabInput(bool value);
 				/// <summary>Get the tab priority associated with this control.</summary>
 				/// <returns>Returns he tab priority associated with this control.</returns>
-				vint									GetTabPriority();
+				virtual vint							GetTabPriority()override;
 				/// <summary>Associate a tab priority with this control.</summary>
 				/// <param name="value">The tab priority to associate. TAB key will go through controls in the order of priority: 0, 1, 2, ..., -1. All negative numbers will be converted to -1. The priority of containers affects all children if it is not -1.</param>
 				void									SetTabPriority(vint value);

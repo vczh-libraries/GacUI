@@ -45,6 +45,11 @@ GuiButton
 				Clicked.Execute(GetNotifyEventArguments());
 			}
 
+			bool GuiButton::IsTabAvailable()
+			{
+				return autoFocus && GuiControl::IsTabAvailable();
+			}
+
 			void GuiButton::UpdateControlState()
 			{
 				auto newControlState = ButtonState::Normal;

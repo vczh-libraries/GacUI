@@ -71,6 +71,11 @@ GuiScroll
 				}
 			}
 
+			bool GuiScroll::IsTabAvailable()
+			{
+				return autoFocus && GuiControl::IsTabAvailable();
+			}
+
 			void GuiScroll::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
 				if (arguments.eventSource == focusableComposition)

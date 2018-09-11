@@ -171,6 +171,15 @@ Type Declaration (Extra)
 				CLASS_MEMBER_EXTERNALMETHOD(CollectAltActions, {L"actions"}, void(IGuiAltActionHost::*)(List<IGuiAltAction*>&), vl::reflection::description::IGuiAltActionHost_CollectAltActions)
 			END_INTERFACE_MEMBER(IGuiAltActionHost)
 
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiTabAction)
+				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiTabAction)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AcceptTabInput)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TabPriority)
+				CLASS_MEMBER_METHOD(IsTabEnabled, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(IsTabAvailable, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IGuiTabAction)
+
 /***********************************************************************
 Type Declaration (Class)
 ***********************************************************************/

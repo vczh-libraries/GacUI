@@ -56,6 +56,7 @@ Scrolls
 				bool									autoFocus = true;
 
 				void									OnActiveAlt()override;
+				bool									IsTabAvailable()override;
 				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 				void									OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:

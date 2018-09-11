@@ -13,6 +13,11 @@ namespace vl
 			using namespace elements;
 			using namespace theme;
 
+			const wchar_t* const IGuiAltAction::Identifier = L"vl::presentation::compositions::IGuiAltAction";
+			const wchar_t* const IGuiAltActionContainer::Identifier = L"vl::presentation::compositions::IGuiAltAction";
+			const wchar_t* const IGuiAltActionHost::Identifier = L"vl::presentation::compositions::IGuiAltAction";
+			const wchar_t* const IGuiTabAction::Identifier = L"vl::presentation::compositions::IGuiTabAction";
+
 /***********************************************************************
 GuiGraphicsTimerManager
 ***********************************************************************/
@@ -45,10 +50,6 @@ GuiGraphicsTimerManager
 /***********************************************************************
 IGuiAltAction
 ***********************************************************************/
-
-			const wchar_t* const IGuiAltAction::Identifier = L"vl::presentation::compositions::IGuiAltAction";
-			const wchar_t* const IGuiAltActionContainer::Identifier = L"vl::presentation::compositions::IGuiAltAction";
-			const wchar_t* const IGuiAltActionHost::Identifier = L"vl::presentation::compositions::IGuiAltAction";
 
 			bool IGuiAltAction::IsLegalAlt(const WString& alt)
 			{

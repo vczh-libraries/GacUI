@@ -156,6 +156,7 @@ Type List (Compositions)
 			F(presentation::compositions::IGuiAltAction)\
 			F(presentation::compositions::IGuiAltActionContainer)\
 			F(presentation::compositions::IGuiAltActionHost)\
+			F(presentation::compositions::IGuiTabAction)\
 
 #define GUIREFLECTIONCOMPOSITION_CLASS_TYPELIST(F)\
 			F(presentation::compositions::GuiGraphicsComposition)\

@@ -168,6 +168,23 @@ Alt-Combined Shortcut Key Interfaces
 			};
 
 /***********************************************************************
+Tab-Combined Shortcut Key Interfaces
+***********************************************************************/
+			
+			/// <summary>IGuiTabAction is the handler when an tab-combined shortcut key is activated.</summary>
+			class IGuiTabAction : public virtual IDescriptable
+			{
+			public:
+				/// <summary>The identifier for this service.</summary>
+				static const wchar_t* const				Identifier;
+
+				virtual bool							GetAcceptTabInput() = 0;
+				virtual vint							GetTabPriority() = 0;
+				virtual bool							IsTabEnabled() = 0;
+				virtual bool							IsTabAvailable() = 0;
+			};
+
+/***********************************************************************
 Host
 ***********************************************************************/
 
