@@ -94,6 +94,9 @@
     <Filter Include="GacUI\Resources\DocumentClipboard">
       <UniqueIdentifier>{d604a797-bc1e-4c85-bbc9-bf7efd9bedd5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GacUI\GraphicsHost">
+      <UniqueIdentifier>{20826bcb-4800-4efd-a68e-a4445bb875d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Import\Vlpp.cpp">
@@ -202,9 +205,6 @@
       <Filter>GacUI\GraphicsElement</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\GraphicsElement\GuiGraphicsElement.cpp">
-      <Filter>GacUI\GraphicsElement</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\GraphicsElement\GuiGraphicsHost.cpp">
       <Filter>GacUI\GraphicsElement</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.cpp">
@@ -513,6 +513,12 @@
     <ClCompile Include="..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp">
       <Filter>GacUI\Resources\DocumentClipboard</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost.cpp">
+      <Filter>GacUI\GraphicsHost</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_ShortcutKey.cpp">
+      <Filter>GacUI\GraphicsHost</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
@@ -636,9 +642,6 @@
       <Filter>GacUI\GraphicsElement</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\GraphicsElement\GuiGraphicsElementInterfaces.h">
-      <Filter>GacUI\GraphicsElement</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\GraphicsElement\GuiGraphicsHost.h">
       <Filter>GacUI\GraphicsElement</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.h">
@@ -832,6 +835,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Resources\GuiDocumentClipboard.h">
       <Filter>GacUI\Resources\DocumentClipboard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost.h">
+      <Filter>GacUI\GraphicsHost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_ShortcutKey.h">
+      <Filter>GacUI\GraphicsHost</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

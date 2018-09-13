@@ -1,4 +1,4 @@
-#include "../GraphicsElement/GuiGraphicsHost.h"
+#include "../GraphicsHost/GuiGraphicsHost.h"
 
 namespace vl
 {
