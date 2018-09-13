@@ -49,6 +49,7 @@ Tab-Combined Shortcut Key Interfaces Helpers
 				GuiTabActionManager(controls::GuiControlHost* _controlHost);
 				~GuiTabActionManager();
 
+				void									InvalidateTabOrderCache();
 				bool									Execute(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition);
 			};
 		}

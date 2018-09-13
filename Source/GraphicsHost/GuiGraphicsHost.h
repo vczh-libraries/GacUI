@@ -150,6 +150,8 @@ Host
 				/// <summary>Request a rendering</summary>
 				void									RequestRender();
 
+				/// <summary>Invalidte the internal tab order control list. Next time when TAB is pressed it will be rebuilt.</summary>
+				void									InvalidateTabOrderCache();
 				/// <summary>Get the <see cref="IGuiShortcutKeyManager"/> attached with this graphics host.</summary>
 				/// <returns>The shortcut key manager.</returns>
 				IGuiShortcutKeyManager*					GetShortcutKeyManager();

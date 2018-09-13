@@ -30,6 +30,10 @@ GuiTabActionManager
 			{
 			}
 
+			void GuiTabActionManager::InvalidateTabOrderCache()
+			{
+			}
+
 			bool GuiTabActionManager::Execute(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition)
 			{
 				if (info.code == VKEY::_TAB)

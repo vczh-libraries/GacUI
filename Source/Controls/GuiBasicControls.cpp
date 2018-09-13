@@ -83,6 +83,11 @@ GuiControl
 				control->parent=this;
 				control->OnParentChanged(oldParent, control->parent);
 				control->UpdateVisuallyEnabled();
+
+				if (auto host = boundsComposition->GetRelatedGraphicsHost())
+				{
+					host->InvalidateTabOrderCache();
+				}
 			}
 
 			void GuiControl::OnChildRemoved(GuiControl* control)
@@ -91,6 +96,11 @@ GuiControl
 				control->parent=0;
 				children.Remove(control);
 				control->OnParentChanged(oldParent, control->parent);
+
+				if (auto host = boundsComposition->GetRelatedGraphicsHost())
+				{
+					host->InvalidateTabOrderCache();
+				}
 			}
 
 			void GuiControl::OnParentChanged(GuiControl* oldParent, GuiControl* newParent)
@@ -488,7 +498,15 @@ GuiControl
 
 			void GuiControl::SetTabPriority(vint value)
 			{
-				tabPriority = value < 0 ? -1 : value;
+				vint newTabPriority = value < 0 ? -1 : value;
+				if (tabPriority != newTabPriority)
+				{
+					tabPriority = newTabPriority;
+					if (auto host = boundsComposition->GetRelatedGraphicsHost())
+					{
+						host->InvalidateTabOrderCache();
+					}
+				}
 			}
 
 			bool GuiControl::GetEnabled()
@@ -598,10 +616,9 @@ GuiControl
 
 			void GuiControl::SetFocus()
 			{
-				if(focusableComposition)
+				if (focusableComposition)
 				{
-					GuiGraphicsHost* host=focusableComposition->GetRelatedGraphicsHost();
-					if(host)
+					if (auto host = focusableComposition->GetRelatedGraphicsHost())
 					{
 						host->SetFocus(focusableComposition);
 					}

@@ -670,6 +670,11 @@ GuiGraphicsHost
 				needRender = true;
 			}
 
+			void GuiGraphicsHost::InvalidateTabOrderCache()
+			{
+				tabActionManager->InvalidateTabOrderCache();
+			}
+
 			IGuiShortcutKeyManager* GuiGraphicsHost::GetShortcutKeyManager()
 			{
 				return shortcutKeyManager;
