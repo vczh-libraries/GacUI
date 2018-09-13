@@ -522,6 +522,9 @@
     <ClCompile Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_Alt.cpp">
       <Filter>GacUI\GraphicsHost</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_Tab.cpp">
+      <Filter>GacUI\GraphicsHost</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
@@ -846,6 +849,9 @@
       <Filter>GacUI\GraphicsHost</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_Alt.h">
+      <Filter>GacUI\GraphicsHost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_Tab.h">
       <Filter>GacUI\GraphicsHost</Filter>
     </ClInclude>
   </ItemGroup>

@@ -15,11 +15,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		namespace controls
-		{
-			class GuiWindow;
-		}
-
 		namespace compositions
 		{
 

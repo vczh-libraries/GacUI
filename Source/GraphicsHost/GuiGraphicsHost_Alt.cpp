@@ -10,7 +10,6 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace controls;
-			using namespace elements;
 			using namespace theme;
 
 			const wchar_t* const IGuiAltAction::Identifier = L"vl::presentation::compositions::IGuiAltAction";

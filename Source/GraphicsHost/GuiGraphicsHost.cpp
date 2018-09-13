@@ -13,8 +13,6 @@ namespace vl
 			using namespace elements;
 			using namespace theme;
 
-			const wchar_t* const IGuiTabAction::Identifier = L"vl::presentation::compositions::IGuiTabAction";
-
 /***********************************************************************
 GuiGraphicsTimerManager
 ***********************************************************************/
@@ -45,120 +43,8 @@ GuiGraphicsTimerManager
 			}
 
 /***********************************************************************
-IGuiAltAction
-***********************************************************************/
-
-			bool IGuiAltAction::IsLegalAlt(const WString& alt)
-			{
-				for (vint i = 0; i < alt.Length(); i++)
-				{
-					auto c = alt[i];
-					if (('A' <= c && c <= 'Z') || ('0' <= c && c <= '9'))
-					{
-						continue;
-					}
-					return false;
-				}
-				return true;
-			}
-
-/***********************************************************************
-IGuiAltActionHost
-***********************************************************************/
-
-			void IGuiAltActionHost::CollectAltActionsFromControl(controls::GuiControl* control, bool includeThisControl, collections::Group<WString, IGuiAltAction*>& actions)
-			{
-				List<GuiControl*> controls;
-				controls.Add(control);
-				vint index = 0;
-
-				while (index < controls.Count())
-				{
-					auto current = controls[index++];
-
-					if (current != control || includeThisControl)
-					{
-						if (auto container = current->QueryTypedService<IGuiAltActionContainer>())
-						{
-							vint count = container->GetAltActionCount();
-							for (vint i = 0; i < count; i++)
-							{
-								auto action = container->GetAltAction(i);
-								actions.Add(action->GetAlt(), action);
-							}
-							continue;
-						}
-						else if (auto action = current->QueryTypedService<IGuiAltAction>())
-						{
-							if (action->IsAltAvailable())
-							{
-								if (action->IsAltEnabled())
-								{
-									actions.Add(action->GetAlt(), action);
-									continue;
-								}
-							}
-						}
-					}
-
-					vint count = current->GetChildrenCount();
-					for (vint i = 0; i < count; i++)
-					{
-						controls.Add(current->GetChild(i));
-					}
-				}
-			}
-
-/***********************************************************************
-GuiAltActionHostBase
-***********************************************************************/
-
-			void GuiAltActionHostBase::SetAltComposition(GuiGraphicsComposition* _composition)
-			{
-				composition = _composition;
-			}
-
-			void GuiAltActionHostBase::SetAltControl(controls::GuiControl* _control, bool _includeControl)
-			{
-				control = _control;
-				includeControl = _includeControl;
-			}
-
-			GuiGraphicsComposition* GuiAltActionHostBase::GetAltComposition()
-			{
-				CHECK_ERROR(composition, L"GuiAltActionHostBase::GetAltComposition()#Need to call SetAltComposition.");
-				return composition;
-			}
-
-			IGuiAltActionHost* GuiAltActionHostBase::GetPreviousAltHost()
-			{
-				return previousHost;
-			}
-
-			void GuiAltActionHostBase::OnActivatedAltHost(IGuiAltActionHost* _previousHost)
-			{
-				previousHost = _previousHost;
-			}
-
-			void GuiAltActionHostBase::OnDeactivatedAltHost()
-			{
-				previousHost = nullptr;
-			}
-
-			void GuiAltActionHostBase::CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)
-			{
-				CHECK_ERROR(control, L"GuiAltActionHostBase::CollectAltActions(Group<WString, IGuiAltAction*>&)#Need to call SetAltControl.");
-				CollectAltActionsFromControl(control, includeControl, actions);
-			}
-
-/***********************************************************************
 GuiGraphicsHost
 ***********************************************************************/
-
-			controls::GuiControl* GuiGraphicsHost::GetNextFocusControl(controls::GuiControl* focusedControl)
-			{
-				return nullptr;
-			}
 
 			void GuiGraphicsHost::RefreshRelatedHostRecord(INativeWindow* nativeWindow)
 			{
@@ -577,33 +463,18 @@ GuiGraphicsHost
 				{
 					return;
 				}
+
+				if (tabActionManager->Execute(info, focusedComposition))
+				{
+					return;
+				}
 				
 				if(shortcutKeyManager && shortcutKeyManager->Execute(info))
 				{
 					return;
 				}
 
-				if (info.code == VKEY::_TAB)
-				{
-					GuiControl* focusedControl = nullptr;
-					if (focusedComposition)
-					{
-						focusedControl = focusedComposition->GetRelatedControl();
-						if (focusedControl && focusedControl->GetAcceptTabInput())
-						{
-							goto GENERATE_KEY_EVENT;
-						}
-					}
-
-					if (auto next = GetNextFocusControl(focusedControl))
-					{
-						next->SetFocus();
-						return;
-					}
-				}
-
-			GENERATE_KEY_EVENT:
-				if(focusedComposition && focusedComposition->HasEventReceiver())
+				if (focusedComposition && focusedComposition->HasEventReceiver())
 				{
 					OnKeyInput(info, focusedComposition, &GuiGraphicsEventReceiver::keyDown);
 				}

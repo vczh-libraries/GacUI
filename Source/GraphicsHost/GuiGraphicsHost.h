@@ -9,9 +9,9 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST
 #define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST
 
-#include "../GraphicsComposition/GuiGraphicsComposition.h"
 #include "GuiGraphicsHost_ShortcutKey.h"
 #include "GuiGraphicsHost_Alt.h"
+#include "GuiGraphicsHost_Tab.h"
 
 namespace vl
 {
@@ -61,23 +61,6 @@ Animation
 			};
 
 /***********************************************************************
-Tab-Combined Shortcut Key Interfaces
-***********************************************************************/
-			
-			/// <summary>IGuiTabAction is the handler when an tab-combined shortcut key is activated.</summary>
-			class IGuiTabAction : public virtual IDescriptable
-			{
-			public:
-				/// <summary>The identifier for this service.</summary>
-				static const wchar_t* const				Identifier;
-
-				virtual bool							GetAcceptTabInput() = 0;
-				virtual vint							GetTabPriority() = 0;
-				virtual bool							IsTabEnabled() = 0;
-				virtual bool							IsTabAvailable() = 0;
-			};
-
-/***********************************************************************
 Host
 ***********************************************************************/
 
@@ -96,6 +79,7 @@ Host
 				bool									needRender = true;
 
 				GuiAltActionManager*					altActionManager = nullptr;
+				GuiTabActionManager*					tabActionManager = nullptr;
 				IGuiShortcutKeyManager*					shortcutKeyManager = nullptr;
 
 				controls::GuiControlHost*				controlHost = nullptr;
@@ -109,7 +93,6 @@ Host
 				GuiGraphicsTimerManager					timerManager;
 				GuiGraphicsComposition*					mouseCaptureComposition = nullptr;
 				CompositionList							mouseEnterCompositions;
-				controls::GuiControl*					GetNextFocusControl(controls::GuiControl* focusedControl);
 				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 
 				void									DisconnectCompositionInternal(GuiGraphicsComposition* composition);
