@@ -6,8 +6,8 @@ GacUI::Graphics Composition Host
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSHOST
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSHOST
+#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_SHORTCUTKEY
+#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_SHORTCUTKEY
 
 #include "../GraphicsComposition/GuiGraphicsComposition.h"
 

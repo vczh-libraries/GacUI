@@ -6,8 +6,8 @@ GacUI::Composition System
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSCOMPOSITIONBASE
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSCOMPOSITIONBASE
+#ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
+#define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
 
 #include "../GraphicsElement/GuiGraphicsElement.h"
 #include "../GraphicsElement/GuiGraphicsTextElement.h"

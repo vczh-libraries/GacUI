@@ -13,9 +13,6 @@ namespace vl
 			using namespace elements;
 			using namespace theme;
 
-			const wchar_t* const IGuiAltAction::Identifier = L"vl::presentation::compositions::IGuiAltAction";
-			const wchar_t* const IGuiAltActionContainer::Identifier = L"vl::presentation::compositions::IGuiAltAction";
-			const wchar_t* const IGuiAltActionHost::Identifier = L"vl::presentation::compositions::IGuiAltAction";
 			const wchar_t* const IGuiTabAction::Identifier = L"vl::presentation::compositions::IGuiTabAction";
 
 /***********************************************************************
@@ -157,201 +154,6 @@ GuiAltActionHostBase
 /***********************************************************************
 GuiGraphicsHost
 ***********************************************************************/
-
-			void GuiGraphicsHost::EnterAltHost(IGuiAltActionHost* host)
-			{
-				ClearAltHost();
-
-				Group<WString, IGuiAltAction*> actions;
-				host->CollectAltActions(actions);
-				if (actions.Count() == 0)
-				{
-					CloseAltHost();
-					return;
-				}
-
-				host->OnActivatedAltHost(currentAltHost);
-				currentAltHost = host;
-				CreateAltTitles(actions);
-			}
-
-			void GuiGraphicsHost::LeaveAltHost()
-			{
-				if (currentAltHost)
-				{
-					ClearAltHost();
-					auto previousHost = currentAltHost->GetPreviousAltHost();
-					currentAltHost->OnDeactivatedAltHost();
-					currentAltHost = previousHost;
-
-					if (currentAltHost)
-					{
-						Group<WString, IGuiAltAction*> actions;
-						currentAltHost->CollectAltActions(actions);
-						CreateAltTitles(actions);
-					}
-				}
-			}
-
-			bool GuiGraphicsHost::EnterAltKey(wchar_t key)
-			{
-				currentAltPrefix += key;
-				vint index = currentActiveAltActions.Keys().IndexOf(currentAltPrefix);
-				if (index == -1)
-				{
-					if (FilterTitles() == 0)
-					{
-						currentAltPrefix = currentAltPrefix.Left(currentAltPrefix.Length() - 1);
-						FilterTitles();
-					}
-				}
-				else
-				{
-					auto action = currentActiveAltActions.Values()[index];
-					if (action->GetActivatingAltHost())
-					{
-						EnterAltHost(action->GetActivatingAltHost());
-					}
-					else
-					{
-						CloseAltHost();
-					}
-					action->OnActiveAlt();
-					return true;
-				}
-				return false;
-			}
-
-			void GuiGraphicsHost::LeaveAltKey()
-			{
-				if (currentAltPrefix.Length() >= 1)
-				{
-					currentAltPrefix = currentAltPrefix.Left(currentAltPrefix.Length() - 1);
-				}
-				FilterTitles();
-			}
-
-			void GuiGraphicsHost::CreateAltTitles(const collections::Group<WString, IGuiAltAction*>& actions)
-			{
-				if (currentAltHost)
-				{
-					vint count = actions.Count();
-					for (vint i = 0; i < count; i++)
-					{
-						WString key = actions.Keys()[i];
-						const auto& values = actions.GetByIndex(i);
-						vint numberLength = 0;
-						if (values.Count() == 1 && key.Length() > 0)
-						{
-							numberLength = 0;
-						}
-						else if (values.Count() <= 10)
-						{
-							numberLength = 1;
-						}
-						else if (values.Count() <= 100)
-						{
-							numberLength = 2;
-						}
-						else if (values.Count() <= 1000)
-						{
-							numberLength = 3;
-						}
-						else
-						{
-							continue;
-						}
-
-						FOREACH_INDEXER(IGuiAltAction*, action, index, values)
-						{
-							WString key = actions.Keys()[i];
-							if (numberLength > 0)
-							{
-								WString number = itow(index);
-								while (number.Length() < numberLength)
-								{
-									number = L"0" + number;
-								}
-								key += number;
-							}
-							currentActiveAltActions.Add(key, action);
-						}
-					}
-
-					count = currentActiveAltActions.Count();
-					auto window = dynamic_cast<GuiWindow*>(currentAltHost->GetAltComposition()->GetRelatedControlHost());
-					for (vint i = 0; i < count; i++)
-					{
-						auto key = currentActiveAltActions.Keys()[i];
-						auto composition = currentActiveAltActions.Values()[i]->GetAltComposition();
-
-						auto label = new GuiLabel(theme::ThemeName::ShortcutKey);
-						if (auto labelStyle = window->GetControlTemplateObject(true)->GetShortcutKeyTemplate())
-						{
-							label->SetControlTemplate(labelStyle);
-						}
-						label->SetText(key);
-						composition->AddChild(label->GetBoundsComposition());
-						currentActiveAltTitles.Add(key, label);
-					}
-
-					FilterTitles();
-				}
-			}
-
-			vint GuiGraphicsHost::FilterTitles()
-			{
-				vint count = currentActiveAltTitles.Count();
-				vint visibles = 0;
-				for (vint i = 0; i < count; i++)
-				{
-					auto key = currentActiveAltTitles.Keys()[i];
-					auto value = currentActiveAltTitles.Values()[i];
-					if (key.Length() >= currentAltPrefix.Length() && key.Left(currentAltPrefix.Length()) == currentAltPrefix)
-					{
-						value->SetVisible(true);
-						if (currentAltPrefix.Length() <= key.Length())
-						{
-							value->SetText(
-								key
-								.Insert(currentAltPrefix.Length(), L"[")
-								.Insert(currentAltPrefix.Length() + 2, L"]")
-								);
-						}
-						else
-						{
-							value->SetText(key);
-						}
-						visibles++;
-					}
-					else
-					{
-						value->SetVisible(false);
-					}
-				}
-				return visibles;
-			}
-
-			void GuiGraphicsHost::ClearAltHost()
-			{
-				FOREACH(GuiControl*, title, currentActiveAltTitles.Values())
-				{
-					SafeDeleteControl(title);
-				}
-				currentActiveAltActions.Clear();
-				currentActiveAltTitles.Clear();
-				currentAltPrefix = L"";
-			}
-
-			void GuiGraphicsHost::CloseAltHost()
-			{
-				ClearAltHost();
-				while (currentAltHost)
-				{
-					currentAltHost->OnDeactivatedAltHost();
-					currentAltHost = currentAltHost->GetPreviousAltHost();
-				}
-			}
 
 			controls::GuiControl* GuiGraphicsHost::GetNextFocusControl(controls::GuiControl* focusedControl)
 			{
@@ -624,7 +426,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::LeftButtonDown(const NativeWindowMouseInfo& info)
 			{
-				CloseAltHost();
+				altActionManager->CloseAltHost();
 				MouseCapture(info);
 				OnMouseInput(info, &GuiGraphicsEventReceiver::leftButtonDown);
 			}
@@ -643,7 +445,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::RightButtonDown(const NativeWindowMouseInfo& info)
 			{
-				CloseAltHost();
+				altActionManager->CloseAltHost();
 				MouseCapture(info);
 				OnMouseInput(info, &GuiGraphicsEventReceiver::rightButtonDown);
 			}
@@ -662,7 +464,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::MiddleButtonDown(const NativeWindowMouseInfo& info)
 			{
-				CloseAltHost();
+				altActionManager->CloseAltHost();
 				MouseCapture(info);
 				OnMouseInput(info, &GuiGraphicsEventReceiver::middleButtonDown);
 			}
@@ -771,36 +573,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::KeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && currentAltHost)
-				{
-					if (info.code == VKEY::_ESCAPE)
-					{
-						LeaveAltHost();
-						return;
-					}
-					else if (info.code == VKEY::_BACK)
-					{
-						LeaveAltKey();
-					}
-					else if (VKEY::_NUMPAD0 <= info.code && info.code <= VKEY::_NUMPAD9)
-					{
-						if (EnterAltKey((wchar_t)(L'0' + ((vint)info.code - (vint)VKEY::_NUMPAD0))))
-						{
-							supressAltKey = info.code;
-							return;
-						}
-					}
-					else if ((VKEY::_0 <= info.code && info.code <= VKEY::_9) || (VKEY::_A <= info.code && info.code <= VKEY::_Z))
-					{
-						if (EnterAltKey((wchar_t)info.code))
-						{
-							supressAltKey = info.code;
-							return;
-						}
-					}
-				}
-
-				if (currentAltHost)
+				if (altActionManager->KeyDown(info))
 				{
 					return;
 				}
@@ -838,9 +611,8 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::KeyUp(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == supressAltKey)
+				if (altActionManager->KeyUp(info))
 				{
-					supressAltKey = VKEY::_UNKNOWN;
 					return;
 				}
 
@@ -852,21 +624,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && !currentAltHost)
-				{
-					if (auto window = dynamic_cast<GuiWindow*>(windowComposition->Children()[0]->GetRelatedControlHost()))
-					{
-						if (auto altHost = window->QueryTypedService<IGuiAltActionHost>())
-						{
-							if (!altHost->GetPreviousAltHost())
-							{
-								EnterAltHost(altHost);
-							}
-						}
-					}
-				}
-
-				if (currentAltHost)
+				if (altActionManager->SysKeyDown(info))
 				{
 					return;
 				}
@@ -879,6 +637,11 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyUp(const NativeWindowKeyInfo& info)
 			{
+				if (altActionManager->SysKeyUp(info))
+				{
+					return;
+				}
+
 				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && hostRecord.nativeWindow)
 				{
 					if (hostRecord.nativeWindow)
@@ -895,12 +658,14 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Char(const NativeWindowCharInfo& info)
 			{
-				if (!currentAltHost && supressAltKey == VKEY::_UNKNOWN)
+				if (altActionManager->Char(info))
 				{
-					if(focusedComposition && focusedComposition->HasEventReceiver())
-					{
-						OnCharInput(info, focusedComposition, &GuiGraphicsEventReceiver::charInput);
-					}
+					return;
+				}
+
+				if(focusedComposition && focusedComposition->HasEventReceiver())
+				{
+					OnCharInput(info, focusedComposition, &GuiGraphicsEventReceiver::charInput);
 				}
 			}
 
@@ -924,6 +689,7 @@ GuiGraphicsHost
 			GuiGraphicsHost::GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition)
 				:controlHost(_controlHost)
 			{
+				altActionManager = new GuiAltActionManager(controlHost);
 				hostRecord.host = this;
 				windowComposition=new GuiWindowComposition;
 				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -935,11 +701,14 @@ GuiGraphicsHost
 			{
 				windowComposition->RemoveChild(windowComposition->Children()[0]);
 				NotifyFinalizeInstance(windowComposition);
-				if(shortcutKeyManager)
+
+				delete altActionManager;
+				if (shortcutKeyManager)
 				{
 					delete shortcutKeyManager;
-					shortcutKeyManager=0;
+					shortcutKeyManager = nullptr;
 				}
+
 				delete windowComposition;
 			}
 

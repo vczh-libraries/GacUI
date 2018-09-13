@@ -6,10 +6,12 @@ GacUI::Graphics Composition Host
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSHOST
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSHOST
+#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST
+#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST
 
 #include "../GraphicsComposition/GuiGraphicsComposition.h"
+#include "GuiGraphicsHost_ShortcutKey.h"
+#include "GuiGraphicsHost_Alt.h"
 
 namespace vl
 {
@@ -59,115 +61,6 @@ Animation
 			};
 
 /***********************************************************************
-Shortcut Key Manager
-***********************************************************************/
-
-			class IGuiShortcutKeyManager;
-
-			/// <summary>Shortcut key item.</summary>
-			class IGuiShortcutKeyItem : public virtual IDescriptable, public Description<IGuiShortcutKeyItem>
-			{
-			public:
-				/// <summary>Shortcut key executed event.</summary>
-				GuiNotifyEvent							Executed;
-
-				/// <summary>Get the associated <see cref="IGuiShortcutKeyManager"/> object.</summary>
-				/// <returns>The associated shortcut key manager.</returns>
-				virtual IGuiShortcutKeyManager*			GetManager()=0;
-				/// <summary>Get the name represents the shortcut key combination for this item.</summary>
-				/// <returns>The name represents the shortcut key combination for this item.</returns>
-				virtual WString							GetName()=0;
-			};
-			
-			/// <summary>Shortcut key manager item.</summary>
-			class IGuiShortcutKeyManager : public virtual IDescriptable, public Description<IGuiShortcutKeyManager>
-			{
-			public:
-				/// <summary>Get the number of shortcut key items that already attached to the manager.</summary>
-				/// <returns>T number of shortcut key items that already attached to the manager.</returns>
-				virtual vint							GetItemCount()=0;
-				/// <summary>Get the <see cref="IGuiShortcutKeyItem"/> associated with the index.</summary>
-				/// <returns>The shortcut key item.</returns>
-				/// <param name="index">The index.</param>
-				virtual IGuiShortcutKeyItem*			GetItem(vint index)=0;
-				/// <summary>Execute shortcut key items using a key event info.</summary>
-				/// <returns>Returns true if at least one shortcut key item is executed.</returns>
-				/// <param name="info">The key event info.</param>
-				virtual bool							Execute(const NativeWindowKeyInfo& info)=0;
-			};
-
-/***********************************************************************
-Alt-Combined Shortcut Key Interfaces
-***********************************************************************/
-
-			class IGuiAltActionHost;
-			
-			/// <summary>IGuiAltAction is the handler when an alt-combined shortcut key is activated.</summary>
-			class IGuiAltAction : public virtual IDescriptable
-			{
-			public:
-				/// <summary>The identifier for this service.</summary>
-				static const wchar_t* const				Identifier;
-
-				static bool								IsLegalAlt(const WString& alt);
-
-				virtual const WString&					GetAlt() = 0;
-				virtual bool							IsAltEnabled() = 0;
-				virtual bool							IsAltAvailable() = 0;
-				virtual GuiGraphicsComposition*			GetAltComposition() = 0;
-				virtual IGuiAltActionHost*				GetActivatingAltHost() = 0;
-				virtual void							OnActiveAlt() = 0;
-			};
-			
-			/// <summary>IGuiAltActionContainer enumerates multiple <see cref="IGuiAltAction"/>.</summary>
-			class IGuiAltActionContainer : public virtual IDescriptable
-			{
-			public:
-				/// <summary>The identifier for this service.</summary>
-				static const wchar_t* const				Identifier;
-
-				virtual vint							GetAltActionCount() = 0;
-				virtual IGuiAltAction*					GetAltAction(vint index) = 0;
-			};
-			
-			/// <summary>IGuiAltActionHost is an alt-combined shortcut key host. A host can also be entered or leaved, with multiple sub actions enabled or disabled.</summary>
-			class IGuiAltActionHost : public virtual IDescriptable
-			{
-			public:
-				/// <summary>The identifier for this service.</summary>
-				static const wchar_t* const				Identifier;
-
-				static void								CollectAltActionsFromControl(controls::GuiControl* control, bool includeThisControl, collections::Group<WString, IGuiAltAction*>& actions);
-				
-				virtual GuiGraphicsComposition*			GetAltComposition() = 0;
-				virtual IGuiAltActionHost*				GetPreviousAltHost() = 0;
-				virtual void							OnActivatedAltHost(IGuiAltActionHost* previousHost) = 0;
-				virtual void							OnDeactivatedAltHost() = 0;
-				virtual void							CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions) = 0;
-			};
-
-			/// <summary>Default implementation for <see cref="IGuiAltActionHost"/></summary>
-			class GuiAltActionHostBase : public virtual IGuiAltActionHost
-			{
-			private:
-				GuiGraphicsComposition*					composition = nullptr;
-				controls::GuiControl*					control = nullptr;
-				bool									includeControl = true;
-				IGuiAltActionHost*						previousHost = nullptr;
-
-			protected:
-				void									SetAltComposition(GuiGraphicsComposition* _composition);
-				void									SetAltControl(controls::GuiControl* _control, bool _includeControl);
-
-			public:
-				GuiGraphicsComposition*					GetAltComposition()override;
-				IGuiAltActionHost*						GetPreviousAltHost()override;
-				void									OnActivatedAltHost(IGuiAltActionHost* _previousHost)override;
-				void									OnDeactivatedAltHost()override;
-				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
-			};
-
-/***********************************************************************
 Tab-Combined Shortcut Key Interfaces
 ***********************************************************************/
 			
@@ -194,8 +87,6 @@ Host
 			class GuiGraphicsHost : public Object, private INativeWindowListener, private INativeControllerListener, public Description<GuiGraphicsHost>
 			{
 				typedef collections::List<GuiGraphicsComposition*>							CompositionList;
-				typedef collections::Dictionary<WString, IGuiAltAction*>					AltActionMap;
-				typedef collections::Dictionary<WString, controls::GuiControl*>				AltControlMap;
 				typedef GuiGraphicsComposition::GraphicsHostRecord							HostRecord;
 			public:
 				static const vuint64_t					CaretInterval = 500;
@@ -204,7 +95,9 @@ Host
 				bool									supressPaint = false;
 				bool									needRender = true;
 
+				GuiAltActionManager*					altActionManager = nullptr;
 				IGuiShortcutKeyManager*					shortcutKeyManager = nullptr;
+
 				controls::GuiControlHost*				controlHost = nullptr;
 				GuiWindowComposition*					windowComposition = nullptr;
 				GuiGraphicsComposition*					focusedComposition = nullptr;
@@ -216,21 +109,6 @@ Host
 				GuiGraphicsTimerManager					timerManager;
 				GuiGraphicsComposition*					mouseCaptureComposition = nullptr;
 				CompositionList							mouseEnterCompositions;
-
-				IGuiAltActionHost*						currentAltHost = nullptr;
-				AltActionMap							currentActiveAltActions;
-				AltControlMap							currentActiveAltTitles;
-				WString									currentAltPrefix;
-				VKEY									supressAltKey = VKEY::_UNKNOWN;
-
-				void									EnterAltHost(IGuiAltActionHost* host);
-				void									LeaveAltHost();
-				bool									EnterAltKey(wchar_t key);
-				void									LeaveAltKey();
-				void									CreateAltTitles(const collections::Group<WString, IGuiAltAction*>& actions);
-				vint									FilterTitles();
-				void									ClearAltHost();
-				void									CloseAltHost();
 				controls::GuiControl*					GetNextFocusControl(controls::GuiControl* focusedControl);
 				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 
@@ -317,72 +195,6 @@ Host
 				/// <summary>Notify that a composition is going to disconnect from this graphics host. Generally this happens when a composition's parent line changes.</summary>
 				/// <param name="composition">The composition to disconnect</param>
 				void									DisconnectComposition(GuiGraphicsComposition* composition);
-			};
-
-/***********************************************************************
-Shortcut Key Manager Helpers
-***********************************************************************/
-
-			class GuiShortcutKeyManager;
-
-			class GuiShortcutKeyItem : public Object, public IGuiShortcutKeyItem
-			{
-			protected:
-				GuiShortcutKeyManager*			shortcutKeyManager;
-				bool							ctrl;
-				bool							shift;
-				bool							alt;
-				VKEY							key;
-
-				void							AttachManager(GuiShortcutKeyManager* manager);
-				void							DetachManager(GuiShortcutKeyManager* manager);
-			public:
-				GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, VKEY _key);
-				~GuiShortcutKeyItem();
-
-				IGuiShortcutKeyManager*			GetManager()override;
-				WString							GetName()override;
-				bool							CanActivate(const NativeWindowKeyInfo& info);
-				bool							CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key);
-			};
-
-			/// <summary>A default implementation for <see cref="IGuiShortcutKeyManager"/>.</summary>
-			class GuiShortcutKeyManager : public Object, public IGuiShortcutKeyManager, public Description<GuiShortcutKeyManager>
-			{
-				typedef collections::List<Ptr<GuiShortcutKeyItem>>		ShortcutKeyItemList;
-			protected:
-				ShortcutKeyItemList				shortcutKeyItems;
-
-			public:
-				/// <summary>Create the shortcut key manager.</summary>
-				GuiShortcutKeyManager();
-				~GuiShortcutKeyManager();
-
-				vint							GetItemCount()override;
-				IGuiShortcutKeyItem*			GetItem(vint index)override;
-				bool							Execute(const NativeWindowKeyInfo& info)override;
-
-				/// <summary>Create a shortcut key item using a key combination. If the item for the key combination exists, this function returns the item that is created before.</summary>
-				/// <returns>The created shortcut key item.</returns>
-				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
-				/// <param name="shift">Set to true if the SHIFT key is required.</param>
-				/// <param name="alt">Set to true if the ALT key is required.</param>
-				/// <param name="key">The non-control key.</param>
-				IGuiShortcutKeyItem*			CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key);
-				/// <summary>Destroy a shortcut key item using a key combination</summary>
-				/// <returns>Returns true if the manager destroyed a existing shortcut key item.</returns>
-				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
-				/// <param name="shift">Set to true if the SHIFT key is required.</param>
-				/// <param name="alt">Set to true if the ALT key is required.</param>
-				/// <param name="key">The non-control key.</param>
-				bool							DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key);
-				/// <summary>Get a shortcut key item using a key combination. If the item for the key combination does not exist, this function returns null.</summary>
-				/// <returns>The shortcut key item.</returns>
-				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
-				/// <param name="shift">Set to true if the SHIFT key is required.</param>
-				/// <param name="alt">Set to true if the ALT key is required.</param>
-				/// <param name="key">The non-control key.</param>
-				IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key);
 			};
 		}
 	}

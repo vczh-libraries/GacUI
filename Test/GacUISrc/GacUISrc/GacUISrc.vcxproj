@@ -407,6 +407,7 @@
     <ClCompile Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsUniscribe.cpp" />
     <ClCompile Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsWindowsGDI.cpp" />
     <ClCompile Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_Alt.cpp" />
     <ClCompile Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_ShortcutKey.cpp" />
     <ClCompile Include="..\..\..\Source\NativeWindow\GuiNativeWindow.cpp" />
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\Direct2D\WinDirect2DApplication.cpp" />
@@ -611,6 +612,7 @@
     <ClInclude Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsUniscribe.h" />
     <ClInclude Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsWindowsGDI.h" />
     <ClInclude Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_Alt.h" />
     <ClInclude Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_ShortcutKey.h" />
     <ClInclude Include="..\..\..\Source\GuiTypes.h" />
     <ClInclude Include="..\..\..\Source\NativeWindow\GuiNativeWindow.h" />
