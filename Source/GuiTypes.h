@@ -16,6 +16,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace reflection;
 
 /***********************************************************************
 Enumerations

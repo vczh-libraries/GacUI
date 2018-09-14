@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSFLOWCOMPOSITION
 #define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSFLOWCOMPOSITION
 
-#include "GuiGraphicsBasicComposition.h"
+#include "IncludeForward.h"
 #include "GuiGraphicsAxis.h"
 
 namespace vl
@@ -18,9 +18,6 @@ namespace vl
 	{
 		namespace compositions
 		{
-			class GuiFlowComposition;
-			class GuiFlowItemComposition;
-
 /***********************************************************************
 Flow Compositions
 ***********************************************************************/

@@ -15,8 +15,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		using namespace reflection;
-
 		extern bool										WriteErrors(
 															collections::List<GuiResourceError>& errors,
 															const filesystem::FilePath& errorPath

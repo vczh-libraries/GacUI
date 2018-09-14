@@ -22,8 +22,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		using namespace reflection;
-
 		namespace types
 		{
 			struct ResolvingResult;

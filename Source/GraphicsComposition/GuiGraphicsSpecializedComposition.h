@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSSPECIALIZEDCOMPOSITION
 #define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSSPECIALIZEDCOMPOSITION
 
-#include "GuiGraphicsCompositionBase.h"
+#include "IncludeForward.h"
 
 namespace vl
 {

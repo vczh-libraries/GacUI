@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSSTACKCOMPOSITION
 #define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSSTACKCOMPOSITION
 
-#include "GuiGraphicsBasicComposition.h"
+#include "IncludeForward.h"
 
 namespace vl
 {
@@ -21,9 +21,6 @@ namespace vl
 /***********************************************************************
 Stack Compositions
 ***********************************************************************/
-
-			class GuiStackComposition;
-			class GuiStackItemComposition;
 
 			/// <summary>
 			/// Represents a stack composition.

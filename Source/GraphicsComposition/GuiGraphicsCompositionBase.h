@@ -9,15 +9,28 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
 #define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
 
-#include "../GraphicsElement/GuiGraphicsElement.h"
-#include "../GraphicsElement/GuiGraphicsTextElement.h"
-#include "../GraphicsElement/GuiGraphicsDocumentElement.h"
+#include "../GraphicsElement/GuiGraphicsElementInterfaces.h"
+#include "../NativeWindow/GuiNativeWindow.h"
 #include "GuiGraphicsEventReceiver.h"
 
 namespace vl
 {
 	namespace presentation
 	{
+		template<typename T>
+		using ItemProperty = Func<T(const reflection::description::Value&)>;
+
+		template<typename T>
+		using WritableItemProperty = Func<T(const reflection::description::Value&, T, bool)>;
+
+		template<typename T>
+		using TemplateProperty = Func<T*(const reflection::description::Value&)>;
+
+		namespace templates
+		{
+			class GuiTemplate;
+		}
+
 		namespace controls
 		{
 			class GuiControl;

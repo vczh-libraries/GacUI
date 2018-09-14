@@ -183,9 +183,6 @@
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsBasicComposition.cpp">
       <Filter>GacUI\GraphicsComposition</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsComposition.cpp">
-      <Filter>GacUI\GraphicsComposition</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsCompositionBase.cpp">
       <Filter>GacUI\GraphicsComposition</Filter>
     </ClCompile>
@@ -525,6 +522,12 @@
     <ClCompile Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_Tab.cpp">
       <Filter>GacUI\GraphicsHost</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsSharedSizeComposition.cpp">
+      <Filter>GacUI\GraphicsComposition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition.cpp">
+      <Filter>GacUI\GraphicsComposition</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
@@ -618,9 +621,6 @@
       <Filter>GacUI\Controls\ToolstripPackage</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsBasicComposition.h">
-      <Filter>GacUI\GraphicsComposition</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsComposition.h">
       <Filter>GacUI\GraphicsComposition</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsCompositionBase.h">
@@ -853,6 +853,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\GraphicsHost\GuiGraphicsHost_Tab.h">
       <Filter>GacUI\GraphicsHost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsSharedSizeComposition.h">
+      <Filter>GacUI\GraphicsComposition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition.h">
+      <Filter>GacUI\GraphicsComposition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\IncludeAll.h">
+      <Filter>GacUI\GraphicsComposition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\IncludeForward.h">
+      <Filter>GacUI\GraphicsComposition</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

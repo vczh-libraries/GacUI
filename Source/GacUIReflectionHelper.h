@@ -10,6 +10,11 @@ GacUI Reflection Helper
 
 #include "Resources/GuiResourceManager.h"
 #include "Resources/GuiDocumentClipboard.h"
+
+#include "GraphicsElement/GuiGraphicsTextElement.h"
+#include "GraphicsElement/GuiGraphicsDocumentElement.h"
+#include "GraphicsComposition/IncludeAll.h"
+
 #include "Controls/Templates/GuiThemeStyleFactory.h"
 #include "Controls/Templates/GuiAnimation.h"
 #include "Controls/GuiApplication.h"

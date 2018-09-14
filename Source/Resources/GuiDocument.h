@@ -15,8 +15,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		using namespace reflection;
-
 		class DocumentTextRun;
 		class DocumentStylePropertiesRun;
 		class DocumentStyleApplicationRun;

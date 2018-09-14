@@ -20,8 +20,6 @@ namespace vl
 
 	namespace presentation
 	{
-		using namespace reflection;
-
 		class GuiResourceItem;
 		class GuiResourceFolder;
 		class GuiResource;

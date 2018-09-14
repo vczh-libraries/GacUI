@@ -15,8 +15,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		using namespace reflection;
-
 		namespace compositions
 		{
 			class GuiGraphicsComposition;
