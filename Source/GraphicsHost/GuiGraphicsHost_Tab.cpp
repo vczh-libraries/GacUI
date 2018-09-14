@@ -29,15 +29,29 @@ GuiTabActionManager
 					available = true;
 				}
 
-				vint index = controlsInOrder.IndexOf(focusedControl);
-				if (index == -1)
+				if (controlsInOrder.Count() == 0) return nullptr;
+				vint startIndex = controlsInOrder.IndexOf(focusedControl);
+				startIndex =
+					startIndex == -1 ? 0 :
+					startIndex == controlsInOrder.Count() - 1 ? 0 :
+					startIndex + 1;
+
+				vint index = 0;
+				do
 				{
-					return controlsInOrder.Count() == 0 ? nullptr : controlsInOrder[0];
-				}
-				else
-				{
-					return controlsInOrder[(index + 1) % controlsInOrder.Count()];
-				}
+					auto control = controlsInOrder[index];
+					if (auto tabAction = control->QueryTypedService<IGuiTabAction>())
+					{
+						if (tabAction->IsTabAvailable() && tabAction->IsTabEnabled())
+						{
+							return control;
+						}
+					}
+
+					index = (index + 1) % controlsInOrder.Count();
+				} while (index != startIndex);
+
+				return nullptr;
 			}
 
 			GuiTabActionManager::GuiTabActionManager(controls::GuiControlHost* _controlHost)
