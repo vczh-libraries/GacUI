@@ -9,38 +9,13 @@ GacUI Reflection Helper
 #define VCZH_PRESENTATION_GACUIREFLECTIONHELPER
 
 #include "Resources/GuiResourceManager.h"
-#include "Resources/GuiDocumentClipboard.h"
-
 #include "GraphicsElement/GuiGraphicsTextElement.h"
 #include "GraphicsElement/GuiGraphicsDocumentElement.h"
 #include "GraphicsComposition/IncludeAll.h"
-
-#include "Controls/Templates/GuiThemeStyleFactory.h"
+#include "Controls/IncludeAll.h"
 #include "Controls/Templates/GuiAnimation.h"
-#include "Controls/GuiApplication.h"
-#include "Controls/GuiBasicControls.h"
-#include "Controls/GuiLabelControls.h"
-#include "Controls/GuiButtonControls.h"
-#include "Controls/GuiScrollControls.h"
-#include "Controls/GuiWindowControls.h"
-#include "Controls/GuiContainerControls.h"
-#include "Controls/GuiDateTimeControls.h"
-#include "Controls/GuiDialogs.h"
-#include "Controls/TextEditorPackage/GuiTextControls.h"
-#include "Controls/TextEditorPackage/GuiDocumentViewer.h"
-#include "Controls/ListControlPackage/GuiListControls.h"
-#include "Controls/ListControlPackage/GuiTextListControls.h"
-#include "Controls/ListControlPackage/GuiListViewControls.h"
-#include "Controls/ListControlPackage/GuiTreeViewControls.h"
-#include "Controls/ListControlPackage/GuiComboControls.h"
-#include "Controls/ListControlPackage/GuiDataGridControls.h"
-#include "Controls/ListControlPackage/GuiDataGridExtensions.h"
-#include "Controls/ListControlPackage/GuiBindableListControls.h"
-#include "Controls/ListControlPackage/GuiBindableDataGrid.h"
-#include "Controls/ToolstripPackage/GuiMenuControls.h"
-#include "Controls/ToolstripPackage/GuiToolstripMenu.h"
-#include "Controls/ToolstripPackage/GuiRibbonControls.h"
-#include "Controls/ToolstripPackage/GuiRibbonGalleryList.h"
+#include "Controls/Templates/GuiCommonTemplates.h"
+#include "Controls/Templates/GuiThemeStyleFactory.h"
 
 namespace vl
 {

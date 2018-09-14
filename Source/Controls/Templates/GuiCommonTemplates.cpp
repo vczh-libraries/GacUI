@@ -1,6 +1,8 @@
 #include "GuiCommonTemplates.h"
 #include "GuiThemeStyleFactory.h"
 #include "../ListControlPackage/GuiComboControls.h"
+#include "../../GraphicsComposition/GuiGraphicsTableComposition.h"
+#include "../../GraphicsComposition/GuiGraphicsSpecializedComposition.h"
 
 namespace vl
 {

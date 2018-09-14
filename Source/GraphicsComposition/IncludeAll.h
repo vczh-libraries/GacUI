@@ -18,5 +18,6 @@ Interfaces:
 #include "GuiGraphicsResponsiveComposition.h"
 #include "GuiGraphicsSharedSizeComposition.h"
 #include "GuiGraphicsRepeatComposition.h"
+#include "GuiGraphicsAxis.h"
 
 #endif

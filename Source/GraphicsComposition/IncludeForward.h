@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_COMPOSITION_INCLUDEFORWARD
 
 #include "GuiGraphicsBasicComposition.h"
+#include "GuiGraphicsAxis.h"
 
 namespace vl
 {

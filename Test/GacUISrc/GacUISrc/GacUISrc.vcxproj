@@ -555,6 +555,8 @@
     <ClInclude Include="..\..\..\Source\Controls\GuiLabelControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\GuiScrollControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\GuiWindowControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\IncludeAll.h" />
+    <ClInclude Include="..\..\..\Source\Controls\IncludeForward.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiComboControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.h" />

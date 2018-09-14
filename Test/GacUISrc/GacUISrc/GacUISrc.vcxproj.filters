@@ -866,6 +866,12 @@
     <ClInclude Include="..\..\..\Source\GraphicsComposition\IncludeForward.h">
       <Filter>GacUI\GraphicsComposition</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\IncludeAll.h">
+      <Filter>GacUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\IncludeForward.h">
+      <Filter>GacUI\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.parser.txt">
