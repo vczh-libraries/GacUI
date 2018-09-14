@@ -48,7 +48,7 @@ Tab-Combined Shortcut Key Interfaces Helpers
 				bool									available = true;
 
 				void									BuildControlList();
-				controls::GuiControl*					GetNextFocusControl(controls::GuiControl* focusedControl);
+				controls::GuiControl*					GetNextFocusControl(controls::GuiControl* focusedControl, vint offset);
 			public:
 				GuiTabActionManager(controls::GuiControlHost* _controlHost);
 				~GuiTabActionManager();

@@ -71,20 +71,20 @@ GuiTabActionManager
 				}
 			}
 
-			controls::GuiControl* GuiTabActionManager::GetNextFocusControl(controls::GuiControl* focusedControl)
+			controls::GuiControl* GuiTabActionManager::GetNextFocusControl(controls::GuiControl* focusedControl, vint offset)
 			{
 				if (!available)
 				{
 					BuildControlList();
 					available = true;
 				}
+#define STEP_AND_NORMALIZE(INDEX) (((INDEX) + offset + controlsInOrder.Count()) % controlsInOrder.Count())
 
 				if (controlsInOrder.Count() == 0) return nullptr;
 				vint startIndex = controlsInOrder.IndexOf(focusedControl);
 				startIndex =
 					startIndex == -1 ? 0 :
-					startIndex == controlsInOrder.Count() - 1 ? 0 :
-					startIndex + 1;
+					STEP_AND_NORMALIZE(startIndex);
 
 				vint index = startIndex;
 				do
@@ -98,8 +98,10 @@ GuiTabActionManager
 						}
 					}
 
-					index = (index + 1) % controlsInOrder.Count();
+					index = STEP_AND_NORMALIZE(index);
 				} while (index != startIndex);
+
+#undef STEP_AND_NORMALIZE
 
 				return nullptr;
 			}
@@ -121,7 +123,7 @@ GuiTabActionManager
 
 			bool GuiTabActionManager::Execute(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition)
 			{
-				if (info.code == VKEY::_TAB)
+				if (!info.ctrl && !info.alt && info.code == VKEY::_TAB)
 				{
 					GuiControl* focusedControl = nullptr;
 					if (focusedComposition)
@@ -133,7 +135,7 @@ GuiTabActionManager
 						}
 					}
 
-					if (auto next = GetNextFocusControl(focusedControl))
+					if (auto next = GetNextFocusControl(focusedControl, (info.shift ? -1 : 1)))
 					{
 						next->SetFocus();
 						return true;
