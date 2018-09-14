@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUITEXTCONTROLS
 
 #include "GuiTextCommonInterface.h"
+#include "../GuiContainerControls.h"
 
 namespace vl
 {

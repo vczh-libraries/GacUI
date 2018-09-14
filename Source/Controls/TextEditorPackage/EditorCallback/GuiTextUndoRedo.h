@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUITEXTUNDOREDO
 
 #include "GuiTextGeneralOperations.h"
+#include "../../../GraphicsElement/GuiGraphicsDocumentElement.h"
 
 namespace vl
 {
@@ -17,7 +18,6 @@ namespace vl
 	{
 		namespace controls
 		{
-
 			class GuiTextBoxCommonInterface;
 
 /***********************************************************************

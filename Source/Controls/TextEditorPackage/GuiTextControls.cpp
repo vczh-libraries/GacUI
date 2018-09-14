@@ -1,4 +1,5 @@
 #include "GuiTextControls.h"
+#include "../../GraphicsComposition/GuiGraphicsTableComposition.h"
 
 namespace vl
 {
