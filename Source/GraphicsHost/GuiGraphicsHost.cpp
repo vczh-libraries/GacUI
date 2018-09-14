@@ -459,20 +459,9 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::KeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (altActionManager->KeyDown(info))
-				{
-					return;
-				}
-
-				if (tabActionManager->Execute(info, focusedComposition))
-				{
-					return;
-				}
-				
-				if(shortcutKeyManager && shortcutKeyManager->Execute(info))
-				{
-					return;
-				}
+				if (altActionManager->KeyDown(info)) { return; }
+				if (tabActionManager->KeyDown(info, focusedComposition)) { return; }
+				if(shortcutKeyManager && shortcutKeyManager->Execute(info)) { return; }
 
 				if (focusedComposition && focusedComposition->HasEventReceiver())
 				{
@@ -482,10 +471,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::KeyUp(const NativeWindowKeyInfo& info)
 			{
-				if (altActionManager->KeyUp(info))
-				{
-					return;
-				}
+				if (altActionManager->KeyUp(info)) { return; }
 
 				if(focusedComposition && focusedComposition->HasEventReceiver())
 				{
@@ -495,10 +481,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (altActionManager->SysKeyDown(info))
-				{
-					return;
-				}
+				if (altActionManager->SysKeyDown(info)) { return; }
 
 				if(focusedComposition && focusedComposition->HasEventReceiver())
 				{
@@ -508,10 +491,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyUp(const NativeWindowKeyInfo& info)
 			{
-				if (altActionManager->SysKeyUp(info))
-				{
-					return;
-				}
+				if (altActionManager->SysKeyUp(info)) { return; }
 
 				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && hostRecord.nativeWindow)
 				{
@@ -529,10 +509,8 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Char(const NativeWindowCharInfo& info)
 			{
-				if (altActionManager->Char(info))
-				{
-					return;
-				}
+				if (altActionManager->Char(info)) { return; }
+				if (tabActionManager->Char(info)) { return; }
 
 				if(focusedComposition && focusedComposition->HasEventReceiver())
 				{

@@ -46,6 +46,7 @@ Tab-Combined Shortcut Key Interfaces Helpers
 				controls::GuiControlHost*				controlHost = nullptr;
 				ControlList								controlsInOrder;
 				bool									available = true;
+				bool									supressTabOnce = false;
 
 				void									BuildControlList();
 				controls::GuiControl*					GetNextFocusControl(controls::GuiControl* focusedControl, vint offset);
@@ -54,7 +55,8 @@ Tab-Combined Shortcut Key Interfaces Helpers
 				~GuiTabActionManager();
 
 				void									InvalidateTabOrderCache();
-				bool									Execute(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition);
+				bool									KeyDown(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition);
+				bool									Char(const NativeWindowCharInfo& info);
 			};
 		}
 	}

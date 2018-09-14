@@ -121,7 +121,7 @@ GuiTabActionManager
 				controlsInOrder.Clear();
 			}
 
-			bool GuiTabActionManager::Execute(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition)
+			bool GuiTabActionManager::KeyDown(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition)
 			{
 				if (!info.ctrl && !info.alt && info.code == VKEY::_TAB)
 				{
@@ -138,10 +138,18 @@ GuiTabActionManager
 					if (auto next = GetNextFocusControl(focusedControl, (info.shift ? -1 : 1)))
 					{
 						next->SetFocus();
+						supressTabOnce = true;
 						return true;
 					}
 				}
 				return false;
+			}
+
+			bool GuiTabActionManager::Char(const NativeWindowCharInfo& info)
+			{
+				bool supress = supressTabOnce;
+				supressTabOnce = false;
+				return supress && info.code == L'\t';
 			}
 		}
 	}
