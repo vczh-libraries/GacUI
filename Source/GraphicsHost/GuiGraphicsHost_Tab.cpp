@@ -23,7 +23,7 @@ GuiTabActionManager
 					if (includeCurrent)
 					{
 						auto tabAction = current->QueryTypedService<IGuiTabAction>();
-						if (tabAction && tabAction->IsTabAvailable())
+						if (tabAction && (tabAction->IsTabAvailable() || tabAction->GetTabPriority() != -1))
 						{
 							vint priority = tabAction->GetTabPriority();
 							vuint64_t normalized = priority < 0 ? ~(vuint64_t)0 : (vuint64_t)priority;
@@ -67,7 +67,7 @@ GuiTabActionManager
 				{
 					Group<vuint64_t, GuiControl*> prioritized;
 					CollectControls(controlsInOrder[i], false, prioritized);
-					InsertPrioritized(controlsInOrder, i, prioritized);
+					InsertPrioritized(controlsInOrder, i + 1, prioritized);
 				}
 			}
 
@@ -86,7 +86,7 @@ GuiTabActionManager
 					startIndex == controlsInOrder.Count() - 1 ? 0 :
 					startIndex + 1;
 
-				vint index = 0;
+				vint index = startIndex;
 				do
 				{
 					auto control = controlsInOrder[index];

@@ -561,6 +561,7 @@ GuiGraphicsHost
 				:controlHost(_controlHost)
 			{
 				altActionManager = new GuiAltActionManager(controlHost);
+				tabActionManager = new GuiTabActionManager(controlHost);
 				hostRecord.host = this;
 				windowComposition=new GuiWindowComposition;
 				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -574,6 +575,7 @@ GuiGraphicsHost
 				NotifyFinalizeInstance(windowComposition);
 
 				delete altActionManager;
+				delete tabActionManager;
 				if (shortcutKeyManager)
 				{
 					delete shortcutKeyManager;
