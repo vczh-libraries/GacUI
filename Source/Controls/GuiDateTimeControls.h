@@ -112,7 +112,6 @@ DateComboBox
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				/// <param name="_datePicker">The date picker control to show in the popup.</param>
 				GuiDateComboBox(theme::ThemeName themeName);
 				~GuiDateComboBox();
 				
