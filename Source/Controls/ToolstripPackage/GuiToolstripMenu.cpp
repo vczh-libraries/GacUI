@@ -1,5 +1,7 @@
 #include "GuiToolstripMenu.h"
 #include "../Templates/GuiThemeStyleFactory.h"
+#include "../../GraphicsComposition/GuiGraphicsStackComposition.h"
+#include "../../GraphicsComposition/GuiGraphicsSharedSizeComposition.h"
 
 namespace vl
 {

@@ -1,6 +1,7 @@
 #include "GuiCommonTemplates.h"
 #include "GuiThemeStyleFactory.h"
 #include "../ListControlPackage/GuiComboControls.h"
+#include "../ListControlPackage/GuiTextListControls.h"
 #include "../../GraphicsComposition/GuiGraphicsTableComposition.h"
 #include "../../GraphicsComposition/GuiGraphicsSpecializedComposition.h"
 

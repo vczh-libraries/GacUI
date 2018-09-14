@@ -11,7 +11,7 @@ Interfaces:
 
 #include "..\GuiGraphicsElement.h"
 #include "..\GuiGraphicsTextElement.h"
-#include "..\..\GraphicsComposition\GuiGraphicsComposition.h"
+#include "..\..\GraphicsComposition\IncludeForward.h"
 #include "..\..\NativeWindow\Windows\GDI\WinGDI.h"
 #include <wincodec.h>
 #include <MLang.h>

@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUIRIBBONIMPL
 
 #include "../ListControlPackage/GuiListControlItemArrangers.h"
+#include "../../GraphicsComposition/GuiGraphicsResponsiveComposition.h"
 
 namespace vl
 {

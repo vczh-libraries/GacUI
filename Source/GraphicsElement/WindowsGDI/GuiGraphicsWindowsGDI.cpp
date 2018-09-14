@@ -2,6 +2,7 @@
 #include "GuiGraphicsRenderersWindowsGDI.h"
 #include "GuiGraphicsLayoutProviderWindowsGDI.h"
 #include "..\..\Controls\GuiApplication.h"
+#include "..\..\GraphicsElement\GuiGraphicsDocumentElement.h"
 
 namespace vl
 {

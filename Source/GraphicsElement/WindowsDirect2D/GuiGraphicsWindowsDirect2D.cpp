@@ -2,6 +2,7 @@
 #include "GuiGraphicsRenderersWindowsDirect2D.h"
 #include "GuiGraphicsLayoutProviderWindowsDirect2D.h"
 #include "..\..\NativeWindow\Windows\ServicesImpl\WindowsImageService.h"
+#include "..\..\GraphicsElement\GuiGraphicsDocumentElement.h"
 #include "..\..\Controls\GuiApplication.h"
 #include "..\..\NativeWindow\Windows\GDI\WinGDI.h"
 #include <math.h>
