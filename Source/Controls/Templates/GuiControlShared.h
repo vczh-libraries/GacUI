@@ -9,7 +9,8 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLSHARED
 #define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLSHARED
 
-#include "../../GraphicsComposition/GuiGraphicsComposition.h"
+#include "../../GraphicsComposition/IncludeForward.h"
+#include "../../Resources/GuiResource.h"
 
 namespace vl
 {

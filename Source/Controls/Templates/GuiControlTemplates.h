@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATES
 
 #include "GuiControlShared.h"
+#include "../../GraphicsElement/GuiGraphicsTextElement.h"
 
 namespace vl
 {

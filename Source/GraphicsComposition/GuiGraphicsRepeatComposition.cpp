@@ -1,5 +1,5 @@
 #include "GuiGraphicsRepeatComposition.h"
-#include "../Controls/Templates/GuiCommonTemplates.h"
+#include "../Controls/Templates/GuiControlTemplates.h"
 
 namespace vl
 {
