@@ -15,6 +15,12 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace compositions
+		{
+			class IGuiShortcutKeyManager;
+			class GuiGraphicsTimerManager;
+		}
+
 		namespace controls
 		{
 

@@ -16,6 +16,11 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace compositions
+		{
+			class GuiShortcutKeyManager;
+		}
+
 		namespace controls
 		{
 

@@ -9,7 +9,8 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUIBASICCONTROLS
 #define VCZH_PRESENTATION_CONTROLS_GUIBASICCONTROLS
 
-#include "../GraphicsHost/GuiGraphicsHost.h"
+#include "../GraphicsHost/GuiGraphicsHost_Alt.h"
+#include "../GraphicsHost/GuiGraphicsHost_Tab.h"
 #include "Templates/GuiControlTemplates.h"
 
 namespace vl

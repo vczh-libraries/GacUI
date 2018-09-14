@@ -15,6 +15,11 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace compositions
+		{
+			class IGuiShortcutKeyItem;
+		}
+
 		namespace controls
 		{
 			/// <summary>A command for toolstrip controls.</summary>
