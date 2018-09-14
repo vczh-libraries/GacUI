@@ -4023,15 +4023,17 @@ Tab-Combined Shortcut Key Interfaces Helpers
 				controls::GuiControlHost*				controlHost = nullptr;
 				ControlList								controlsInOrder;
 				bool									available = true;
+				bool									supressTabOnce = false;
 
 				void									BuildControlList();
-				controls::GuiControl*					GetNextFocusControl(controls::GuiControl* focusedControl);
+				controls::GuiControl*					GetNextFocusControl(controls::GuiControl* focusedControl, vint offset);
 			public:
 				GuiTabActionManager(controls::GuiControlHost* _controlHost);
 				~GuiTabActionManager();
 
 				void									InvalidateTabOrderCache();
-				bool									Execute(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition);
+				bool									KeyDown(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition);
+				bool									Char(const NativeWindowCharInfo& info);
 			};
 		}
 	}
@@ -8414,7 +8416,7 @@ Basic Construction
 
 				/// <summary>Add a service to this control dynamically. The added service cannot override existing services.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="identifier">The identifier. You are suggested to fill this parameter using the value from the interface's GetIdentifier function, or <see cref="QueryTypedService"/> will not work on this service.</param>
+				/// <param name="identifier">The identifier. You are suggested to fill this parameter using the value from the interface's GetIdentifier function, or <see cref="QueryTypedService`1"/> will not work on this service.</param>
 				/// <param name="value">The service.</param>
 				bool									AddService(const WString& identifier, Ptr<IDescriptable> value);
 
@@ -13783,7 +13785,6 @@ DateComboBox
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				/// <param name="_datePicker">The date picker control to show in the popup.</param>
 				GuiDateComboBox(theme::ThemeName themeName);
 				~GuiDateComboBox();
 				

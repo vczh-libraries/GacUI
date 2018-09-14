@@ -31504,20 +31504,9 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::KeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (altActionManager->KeyDown(info))
-				{
-					return;
-				}
-
-				if (tabActionManager->Execute(info, focusedComposition))
-				{
-					return;
-				}
-				
-				if(shortcutKeyManager && shortcutKeyManager->Execute(info))
-				{
-					return;
-				}
+				if (altActionManager->KeyDown(info)) { return; }
+				if (tabActionManager->KeyDown(info, focusedComposition)) { return; }
+				if(shortcutKeyManager && shortcutKeyManager->Execute(info)) { return; }
 
 				if (focusedComposition && focusedComposition->HasEventReceiver())
 				{
@@ -31527,10 +31516,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::KeyUp(const NativeWindowKeyInfo& info)
 			{
-				if (altActionManager->KeyUp(info))
-				{
-					return;
-				}
+				if (altActionManager->KeyUp(info)) { return; }
 
 				if(focusedComposition && focusedComposition->HasEventReceiver())
 				{
@@ -31540,10 +31526,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (altActionManager->SysKeyDown(info))
-				{
-					return;
-				}
+				if (altActionManager->SysKeyDown(info)) { return; }
 
 				if(focusedComposition && focusedComposition->HasEventReceiver())
 				{
@@ -31553,10 +31536,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyUp(const NativeWindowKeyInfo& info)
 			{
-				if (altActionManager->SysKeyUp(info))
-				{
-					return;
-				}
+				if (altActionManager->SysKeyUp(info)) { return; }
 
 				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && hostRecord.nativeWindow)
 				{
@@ -31574,10 +31554,8 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Char(const NativeWindowCharInfo& info)
 			{
-				if (altActionManager->Char(info))
-				{
-					return;
-				}
+				if (altActionManager->Char(info)) { return; }
+				if (tabActionManager->Char(info)) { return; }
 
 				if(focusedComposition && focusedComposition->HasEventReceiver())
 				{
@@ -31606,6 +31584,7 @@ GuiGraphicsHost
 				:controlHost(_controlHost)
 			{
 				altActionManager = new GuiAltActionManager(controlHost);
+				tabActionManager = new GuiTabActionManager(controlHost);
 				hostRecord.host = this;
 				windowComposition=new GuiWindowComposition;
 				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -31619,6 +31598,7 @@ GuiGraphicsHost
 				NotifyFinalizeInstance(windowComposition);
 
 				delete altActionManager;
+				delete tabActionManager;
 				if (shortcutKeyManager)
 				{
 					delete shortcutKeyManager;
@@ -32370,28 +32350,94 @@ namespace vl
 GuiTabActionManager
 ***********************************************************************/
 
+			namespace tab_focus
+			{
+				void CollectControls(GuiControl* current, bool includeCurrent, Group<vuint64_t, GuiControl*>& prioritized)
+				{
+					if (includeCurrent)
+					{
+						auto tabAction = current->QueryTypedService<IGuiTabAction>();
+						if (tabAction && (tabAction->IsTabAvailable() || tabAction->GetTabPriority() != -1))
+						{
+							vint priority = tabAction->GetTabPriority();
+							vuint64_t normalized = priority < 0 ? ~(vuint64_t)0 : (vuint64_t)priority;
+							prioritized.Add(normalized, current);
+							return;
+						}
+					}
+
+					vint count = current->GetChildrenCount();
+					for (vint i = 0; i < count; i++)
+					{
+						CollectControls(current->GetChild(i), true, prioritized);
+					}
+				}
+
+				void InsertPrioritized(List<GuiControl*>& controls, vint index, Group<vuint64_t, GuiControl*>& prioritized)
+				{
+					vint count = prioritized.Count();
+					for (vint i = 0; i < count; i++)
+					{
+						auto& values = prioritized.GetByIndex(i);
+						for (vint j = 0; j < values.Count(); j++)
+						{
+							controls.Insert(index++, values[j]);
+						}
+					}
+				}
+			}
+			using namespace tab_focus;
+
 			void GuiTabActionManager::BuildControlList()
 			{
+				controlsInOrder.Clear();
+				{
+					Group<vuint64_t, GuiControl*> prioritized;
+					CollectControls(controlHost, false, prioritized);
+					InsertPrioritized(controlsInOrder, 0, prioritized);
+				}
 
+				for (vint i = 0; i < controlsInOrder.Count(); i++)
+				{
+					Group<vuint64_t, GuiControl*> prioritized;
+					CollectControls(controlsInOrder[i], false, prioritized);
+					InsertPrioritized(controlsInOrder, i + 1, prioritized);
+				}
 			}
 
-			controls::GuiControl* GuiTabActionManager::GetNextFocusControl(controls::GuiControl* focusedControl)
+			controls::GuiControl* GuiTabActionManager::GetNextFocusControl(controls::GuiControl* focusedControl, vint offset)
 			{
 				if (!available)
 				{
 					BuildControlList();
 					available = true;
 				}
+#define STEP_AND_NORMALIZE(INDEX) (((INDEX) + offset + controlsInOrder.Count()) % controlsInOrder.Count())
 
-				vint index = controlsInOrder.IndexOf(focusedControl);
-				if (index == -1)
+				if (controlsInOrder.Count() == 0) return nullptr;
+				vint startIndex = controlsInOrder.IndexOf(focusedControl);
+				startIndex =
+					startIndex == -1 ? 0 :
+					STEP_AND_NORMALIZE(startIndex);
+
+				vint index = startIndex;
+				do
 				{
-					return controlsInOrder.Count() == 0 ? nullptr : controlsInOrder[0];
-				}
-				else
-				{
-					return controlsInOrder[(index + 1) % controlsInOrder.Count()];
-				}
+					auto control = controlsInOrder[index];
+					if (auto tabAction = control->QueryTypedService<IGuiTabAction>())
+					{
+						if (tabAction->IsTabAvailable() && tabAction->IsTabEnabled())
+						{
+							return control;
+						}
+					}
+
+					index = STEP_AND_NORMALIZE(index);
+				} while (index != startIndex);
+
+#undef STEP_AND_NORMALIZE
+
+				return nullptr;
 			}
 
 			GuiTabActionManager::GuiTabActionManager(controls::GuiControlHost* _controlHost)
@@ -32409,9 +32455,9 @@ GuiTabActionManager
 				controlsInOrder.Clear();
 			}
 
-			bool GuiTabActionManager::Execute(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition)
+			bool GuiTabActionManager::KeyDown(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition)
 			{
-				if (info.code == VKEY::_TAB)
+				if (!info.ctrl && !info.alt && info.code == VKEY::_TAB)
 				{
 					GuiControl* focusedControl = nullptr;
 					if (focusedComposition)
@@ -32423,13 +32469,21 @@ GuiTabActionManager
 						}
 					}
 
-					if (auto next = GetNextFocusControl(focusedControl))
+					if (auto next = GetNextFocusControl(focusedControl, (info.shift ? -1 : 1)))
 					{
 						next->SetFocus();
+						supressTabOnce = true;
 						return true;
 					}
 				}
 				return false;
+			}
+
+			bool GuiTabActionManager::Char(const NativeWindowCharInfo& info)
+			{
+				bool supress = supressTabOnce;
+				supressTabOnce = false;
+				return supress && info.code == L'\t';
 			}
 		}
 	}
