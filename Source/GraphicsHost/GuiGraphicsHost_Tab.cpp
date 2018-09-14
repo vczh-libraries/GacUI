@@ -16,9 +16,59 @@ namespace vl
 GuiTabActionManager
 ***********************************************************************/
 
+			namespace tab_focus
+			{
+				void CollectControls(GuiControl* current, bool includeCurrent, Group<vuint64_t, GuiControl*>& prioritized)
+				{
+					if (includeCurrent)
+					{
+						auto tabAction = current->QueryTypedService<IGuiTabAction>();
+						if (tabAction && tabAction->IsTabAvailable())
+						{
+							vint priority = tabAction->GetTabPriority();
+							vuint64_t normalized = priority < 0 ? ~(vuint64_t)0 : (vuint64_t)priority;
+							prioritized.Add(normalized, current);
+							return;
+						}
+					}
+
+					vint count = current->GetChildrenCount();
+					for (vint i = 0; i < count; i++)
+					{
+						CollectControls(current->GetChild(i), true, prioritized);
+					}
+				}
+
+				void InsertPrioritized(List<GuiControl*>& controls, vint index, Group<vuint64_t, GuiControl*>& prioritized)
+				{
+					vint count = prioritized.Count();
+					for (vint i = 0; i < count; i++)
+					{
+						auto& values = prioritized.GetByIndex(i);
+						for (vint j = 0; j < values.Count(); j++)
+						{
+							controls.Insert(index++, values[j]);
+						}
+					}
+				}
+			}
+			using namespace tab_focus;
+
 			void GuiTabActionManager::BuildControlList()
 			{
+				controlsInOrder.Clear();
+				{
+					Group<vuint64_t, GuiControl*> prioritized;
+					CollectControls(controlHost, false, prioritized);
+					InsertPrioritized(controlsInOrder, 0, prioritized);
+				}
 
+				for (vint i = 0; i < controlsInOrder.Count(); i++)
+				{
+					Group<vuint64_t, GuiControl*> prioritized;
+					CollectControls(controlsInOrder[i], false, prioritized);
+					InsertPrioritized(controlsInOrder, i, prioritized);
+				}
 			}
 
 			controls::GuiControl* GuiTabActionManager::GetNextFocusControl(controls::GuiControl* focusedControl)
