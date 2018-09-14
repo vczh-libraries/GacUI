@@ -16,9 +16,28 @@ namespace vl
 GuiTabActionManager
 ***********************************************************************/
 
+			void GuiTabActionManager::BuildControlList()
+			{
+
+			}
+
 			controls::GuiControl* GuiTabActionManager::GetNextFocusControl(controls::GuiControl* focusedControl)
 			{
-				return nullptr;
+				if (!available)
+				{
+					BuildControlList();
+					available = true;
+				}
+
+				vint index = controlsInOrder.IndexOf(focusedControl);
+				if (index == -1)
+				{
+					return controlsInOrder.Count() == 0 ? nullptr : controlsInOrder[0];
+				}
+				else
+				{
+					return controlsInOrder[(index + 1) % controlsInOrder.Count()];
+				}
 			}
 
 			GuiTabActionManager::GuiTabActionManager(controls::GuiControlHost* _controlHost)
@@ -32,6 +51,8 @@ GuiTabActionManager
 
 			void GuiTabActionManager::InvalidateTabOrderCache()
 			{
+				available = false;
+				controlsInOrder.Clear();
 			}
 
 			bool GuiTabActionManager::Execute(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition)

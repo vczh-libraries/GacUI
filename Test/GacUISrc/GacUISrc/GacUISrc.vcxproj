@@ -370,7 +370,6 @@
     <ClCompile Include="..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextAutoComplete.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextColorizer.cpp" />
-    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextGeneralOperations.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\GuiDocumentViewer.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\GuiTextCommonInterface.cpp" />

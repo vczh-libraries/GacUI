@@ -156,9 +156,6 @@
     <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextColorizer.cpp">
       <Filter>GacUI\Controls\TextEditorPackage\EditorCallback</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextGeneralOperations.cpp">
-      <Filter>GacUI\Controls\TextEditorPackage\EditorCallback</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp">
       <Filter>GacUI\Controls\TextEditorPackage\EditorCallback</Filter>
     </ClCompile>

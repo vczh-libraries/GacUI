@@ -39,15 +39,9 @@ Common Operations
 					/// <summary>The text of the selection after replacing. This field can be modified.</summary>
 					WString								inputText;
 					/// <summary>The base edit version.</summary>
-					vuint								editVersion;
+					vuint								editVersion = 0;
 					/// <summary>True if this modification is raised by the keyboard.</summary>
-					bool								keyInput;
-
-					TextEditPreviewStruct()
-						:editVersion(0)
-						,keyInput(false)
-					{
-					}
+					bool								keyInput = false;
 				};
 
 				/// <summary>Callback data for text editing.</summary>
@@ -66,15 +60,9 @@ Common Operations
 					/// <summary>The text of the selection after replacing.</summary>
 					WString								inputText;
 					/// <summary>The created edit version.</summary>
-					vuint								editVersion;
+					vuint								editVersion = 0;
 					/// <summary>True if this modification is raised by the keyboard.</summary>
-					bool								keyInput;
-
-					TextEditNotifyStruct()
-						:editVersion(0)
-						,keyInput(false)
-					{
-					}
+					bool								keyInput = false;
 				};
 				
 				/// <summary>Callback data for text caret changing.</summary>
@@ -89,12 +77,7 @@ Common Operations
 					/// <summary>The end position of the selection after caret changing.</summary>
 					TextPos								newEnd;
 					/// <summary>The current edit version.</summary>
-					vuint								editVersion;
-
-					TextCaretChangedStruct()
-						:editVersion(0)
-					{
-					}
+					vuint								editVersion = 0;
 				};
 
 				/// <summary>Called when the callback is attached to a text box control.</summary>

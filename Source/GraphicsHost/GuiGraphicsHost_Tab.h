@@ -41,9 +41,13 @@ Tab-Combined Shortcut Key Interfaces Helpers
 
 			class GuiTabActionManager : public Object
 			{
+				using ControlList = collections::List<controls::GuiControl*>;
 			protected:
 				controls::GuiControlHost*				controlHost = nullptr;
+				ControlList								controlsInOrder;
+				bool									available = true;
 
+				void									BuildControlList();
 				controls::GuiControl*					GetNextFocusControl(controls::GuiControl* focusedControl);
 			public:
 				GuiTabActionManager(controls::GuiControlHost* _controlHost);
