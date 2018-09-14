@@ -17,6 +17,7 @@ namespace vl
 	{
 		namespace controls
 		{
+			class GuiWindow;
 
 /***********************************************************************
 Dialogs

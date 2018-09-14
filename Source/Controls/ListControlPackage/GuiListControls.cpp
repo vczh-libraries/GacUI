@@ -204,7 +204,7 @@ GuiListControl
 			{
 				if(GetVisuallyEnabled())
 				{
-					boundsComposition->GetRelatedGraphicsHost()->SetFocus(boundsComposition);
+					SetFocus();
 				}
 			}
 

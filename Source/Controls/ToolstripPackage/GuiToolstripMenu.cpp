@@ -2,6 +2,7 @@
 #include "../Templates/GuiThemeStyleFactory.h"
 #include "../../GraphicsComposition/GuiGraphicsStackComposition.h"
 #include "../../GraphicsComposition/GuiGraphicsSharedSizeComposition.h"
+#include "../../GraphicsHost/GuiGraphicsHost_ShortcutKey.h"
 
 namespace vl
 {

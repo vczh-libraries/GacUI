@@ -1,4 +1,5 @@
 #include "GuiTextCommonInterface.h"
+#include "../../GraphicsHost/GuiGraphicsHost.h"
 #include <math.h>
 
 namespace vl

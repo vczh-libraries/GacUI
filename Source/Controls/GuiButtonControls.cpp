@@ -107,7 +107,7 @@ GuiButton
 					mousePressing=true;
 					if (autoFocus)
 					{
-						boundsComposition->GetRelatedGraphicsHost()->SetFocus(boundsComposition);
+						SetFocus();
 					}
 					UpdateControlState();
 					if(!clickOnMouseUp)

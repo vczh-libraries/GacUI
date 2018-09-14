@@ -1,5 +1,6 @@
 #include "GuiGraphicsCompositionBase.h"
 #include "../Controls/GuiWindowControls.h"
+#include "../GraphicsHost/GuiGraphicsHost.h"
 
 namespace vl
 {

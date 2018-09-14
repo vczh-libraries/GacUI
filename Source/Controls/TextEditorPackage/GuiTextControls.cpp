@@ -147,7 +147,7 @@ GuiMultilineTextBox
 			{
 				if(GetVisuallyEnabled())
 				{
-					boundsComposition->GetRelatedGraphicsHost()->SetFocus(boundsComposition);
+					SetFocus();
 				}
 			}
 
@@ -310,7 +310,7 @@ GuiSinglelineTextBox
 			{
 				if(GetVisuallyEnabled())
 				{
-					boundsComposition->GetRelatedGraphicsHost()->SetFocus(boundsComposition);
+					SetFocus();
 				}
 			}
 
