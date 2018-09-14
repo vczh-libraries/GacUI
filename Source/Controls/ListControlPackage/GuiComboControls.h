@@ -10,9 +10,8 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUICOMBOCONTROLS
 
 #include "../GuiWindowControls.h"
-#include "GuiTextListControls.h"
-#include "GuiListViewControls.h"
-#include "GuiTreeViewControls.h"
+#include "GuiListControls.h"
+#include "../ToolstripPackage/GuiMenuControls.h"
 
 namespace vl
 {

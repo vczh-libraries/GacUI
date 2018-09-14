@@ -1,5 +1,6 @@
 #include "GuiDataGridControls.h"
 #include "GuiDataGridExtensions.h"
+#include "../../GraphicsComposition/GuiGraphicsTableComposition.h"
 
 namespace vl
 {

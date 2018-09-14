@@ -12,7 +12,6 @@ Interfaces:
 #include "GuiTextListControls.h"
 #include "GuiListViewControls.h"
 #include "GuiTreeViewControls.h"
-#include "GuiDataGridControls.h"
 
 namespace vl
 {

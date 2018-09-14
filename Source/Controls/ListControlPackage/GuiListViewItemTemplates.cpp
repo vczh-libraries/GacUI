@@ -1,4 +1,5 @@
 #include "GuiListViewItemTemplates.h"
+#include "../../GraphicsComposition/GuiGraphicsTableComposition.h"
 
 namespace vl
 {
