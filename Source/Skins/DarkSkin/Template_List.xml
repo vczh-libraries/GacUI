@@ -3,7 +3,7 @@
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ItemBackgroundTemplate" ref.Styles="res://DarkSkin/Style">
       <SelectableButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground ref.Style="itemBackground"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:3 right:0 bottom:3"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
       </SelectableButtonTemplate>
     </Instance>
   </Instance>

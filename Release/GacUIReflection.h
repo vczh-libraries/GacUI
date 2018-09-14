@@ -224,6 +224,7 @@ Type List (Compositions)
 			F(presentation::compositions::IGuiAltAction)\
 			F(presentation::compositions::IGuiAltActionContainer)\
 			F(presentation::compositions::IGuiAltActionHost)\
+			F(presentation::compositions::IGuiTabAction)\
 
 #define GUIREFLECTIONCOMPOSITION_CLASS_TYPELIST(F)\
 			F(presentation::compositions::GuiGraphicsComposition)\
@@ -307,6 +308,7 @@ Type List (Templates)
 			F(presentation::controls::list::MainColumnVisualizerTemplate)\
 			F(presentation::controls::list::SubColumnVisualizerTemplate)\
 			F(presentation::controls::list::HyperlinkVisualizerTemplate)\
+			F(presentation::controls::list::FocusRectangleVisualizerTemplate)\
 			F(presentation::controls::list::CellBorderVisualizerTemplate)\
 
 #define GUIREFLECTIONTEMPLATES_TYPELIST(F)\

@@ -991,12 +991,22 @@ Type Declaration (Extra)
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltActionHost)
 				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiAltActionHost)
 
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AltComposition)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(PreviousAltHost)
 
 				CLASS_MEMBER_METHOD(OnActivatedAltHost, { L"previousHost" })
 				CLASS_MEMBER_METHOD(OnDeactivatedAltHost, NO_PARAMETER)
 				CLASS_MEMBER_EXTERNALMETHOD(CollectAltActions, {L"actions"}, void(IGuiAltActionHost::*)(List<IGuiAltAction*>&), vl::reflection::description::IGuiAltActionHost_CollectAltActions)
 			END_INTERFACE_MEMBER(IGuiAltActionHost)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiTabAction)
+				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiTabAction)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AcceptTabInput)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TabPriority)
+				CLASS_MEMBER_METHOD(IsTabEnabled, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(IsTabAvailable, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IGuiTabAction)
 
 /***********************************************************************
 Type Declaration (Class)
@@ -2049,6 +2059,8 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(RelatedControlHost, RenderTargetChanged)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(VisuallyEnabled)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Focused)
+				CLASS_MEMBER_PROPERTY_FAST(AcceptTabInput)
+				CLASS_MEMBER_PROPERTY_FAST(TabPriority)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Enabled)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Visible)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Alt)
@@ -2329,6 +2341,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(GuiPopup)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiMenu, GuiControl*, owner)
 
+				CLASS_MEMBER_PROPERTY_FAST(HideOnDeactivateAltHost)
 				CLASS_MEMBER_METHOD(UpdateMenuService, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiMenu)
 
@@ -2678,11 +2691,11 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(GuiVirtualListView)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiVirtualDataGrid, GuiListControl::IItemProvider*, itemProvider)
 
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedCell)
-
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(SelectedCell)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
 
 				CLASS_MEMBER_METHOD(SetViewToDefault, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SelectCell, { L"value" _ L"openEditor" })
 			END_CLASS_MEMBER(GuiVirtualDataGrid)
 
 			BEGIN_CLASS_MEMBER(GuiDatePicker)
@@ -2699,7 +2712,7 @@ Type Declaration (Class)
 
 			BEGIN_CLASS_MEMBER(GuiDateComboBox)
 				CLASS_MEMBER_BASE(GuiComboBoxBase)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiDateComboBox, GuiDatePicker*, datePicker)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE(GuiDateComboBox)
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedDate)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DatePicker)
@@ -3538,6 +3551,11 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(SubColumnVisualizerTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(HyperlinkVisualizerTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(HyperlinkVisualizerTemplate)
+
+			BEGIN_CLASS_MEMBER(FocusRectangleVisualizerTemplate)
+				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(FocusRectangleVisualizerTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(FocusRectangleVisualizerTemplate)
 
 			BEGIN_CLASS_MEMBER(CellBorderVisualizerTemplate)
 				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)

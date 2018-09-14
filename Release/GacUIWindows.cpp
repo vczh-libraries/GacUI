@@ -8006,7 +8006,7 @@ WindowsForm
 				void InternalSetExStyle(LONG_PTR exStyle)
 				{
 					LONG_PTR result = SetWindowLongPtr(handle, GWL_EXSTYLE, exStyle);
-					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 				}
 
 				bool GetExStyle(LONG_PTR exStyle)
@@ -8047,7 +8047,7 @@ WindowsForm
 						Long &= ~style;
 					}
 					SetWindowLongPtr(handle, GWL_STYLE, Long);
-					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 				}
 #pragma push_macro("_CONTROL")
 #if defined _CONTROL
