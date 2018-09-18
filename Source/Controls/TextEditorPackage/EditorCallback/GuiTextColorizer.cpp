@@ -192,7 +192,7 @@ GuiTextBoxRegexColorizer
 
 			void GuiTextBoxRegexColorizer::ColorizerProc(void* argument, vint start, vint length, vint token)
 			{
-				GuiTextBoxRegexColorizerProcData& data=*(GuiTextBoxRegexColorizerProcData*)argument;
+				GuiTextBoxRegexColorizerProcData& data=**(GuiTextBoxRegexColorizerProcData**)argument;
 				data.colorizer->ColorizeTokenContextSensitive(data.lineIndex, data.text, start, length, token, data.contextState);
 				for(vint i=0;i<length;i++)
 				{
