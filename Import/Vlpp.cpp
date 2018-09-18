@@ -13309,26 +13309,26 @@ ParsingTable
 					tokens.Add(info.regex);
 				}
 
-				vint regexTokenIndex=0;
-				for(vint i=UserTokenStart;i<tokenInfos.Count();i++)
+				vint regexTokenIndex = 0;
+				for (vint i = UserTokenStart; i < tokenInfos.Count(); i++)
 				{
-					tokenInfos[i].regexTokenIndex=regexTokenIndex++;
+					tokenInfos[i].regexTokenIndex = regexTokenIndex++;
 				}
-				for(vint i=0;i<discardTokenInfos.Count();i++)
+				for (vint i = 0; i < discardTokenInfos.Count(); i++)
 				{
-					discardTokenInfos[i].regexTokenIndex=regexTokenIndex++;
+					discardTokenInfos[i].regexTokenIndex = regexTokenIndex++;
 				}
-				lexer=new RegexLexer(tokens);
+				lexer = new RegexLexer(tokens, {});
 
 				ruleMap.Clear();
 				FOREACH_INDEXER(RuleInfo, rule, index, ruleInfos)
 				{
 					ruleMap.Add(rule.name, index);
 				}
-				for(vint i=0;i<stateInfos.Count();i++)
+				for (vint i = 0; i < stateInfos.Count(); i++)
 				{
-					StateInfo& info=stateInfos[i];
-					info.ruleAmbiguousType=ruleInfos[ruleMap[info.ruleName]].ambiguousType;
+					StateInfo& info = stateInfos[i];
+					info.ruleAmbiguousType = ruleInfos[ruleMap[info.ruleName]].ambiguousType;
 				}
 
 				treeTypeInfoMap.Clear();
@@ -20107,45 +20107,45 @@ RegexTokens
 		{
 		protected:
 			RegexToken				token;
-			vint					index;
+			vint					index = -1;
 
 			PureInterpretor*		pure;
 			const Array<vint>&		stateTokens;
 			const wchar_t*			start;
 			vint					codeIndex;
+			RegexProc				proc;
 
 			const wchar_t*			reading;
-			vint					rowStart;
-			vint					columnStart;
-			bool					cacheAvailable;
+			vint					rowStart = 0;
+			vint					columnStart = 0;
+			bool					cacheAvailable = false;
 			RegexToken				cacheToken;
 
 		public:
 			RegexTokenEnumerator(const RegexTokenEnumerator& enumerator)
 				:token(enumerator.token)
-				,index(enumerator.index)
-				,pure(enumerator.pure)
-				,stateTokens(enumerator.stateTokens)
-				,reading(enumerator.reading)
-				,start(enumerator.start)
-				,rowStart(enumerator.rowStart)
-				,columnStart(enumerator.columnStart)
-				,codeIndex(enumerator.codeIndex)
-				,cacheAvailable(enumerator.cacheAvailable)
-				,cacheToken(enumerator.cacheToken)
+				, index(enumerator.index)
+				, pure(enumerator.pure)
+				, stateTokens(enumerator.stateTokens)
+				, proc(enumerator.proc)
+				, reading(enumerator.reading)
+				, start(enumerator.start)
+				, rowStart(enumerator.rowStart)
+				, columnStart(enumerator.columnStart)
+				, codeIndex(enumerator.codeIndex)
+				, cacheAvailable(enumerator.cacheAvailable)
+				, cacheToken(enumerator.cacheToken)
 			{
 			}
 
-			RegexTokenEnumerator(PureInterpretor* _pure, const Array<vint>& _stateTokens, const wchar_t* _start, vint _codeIndex)
+			RegexTokenEnumerator(PureInterpretor* _pure, const Array<vint>& _stateTokens, const wchar_t* _start, vint _codeIndex, RegexProc _proc)
 				:index(-1)
-				,pure(_pure)
-				,stateTokens(_stateTokens)
-				,reading(_start)
-				,start(_start)
-				,rowStart(0)
-				,columnStart(0)
-				,codeIndex(_codeIndex)
-				,cacheAvailable(false)
+				, pure(_pure)
+				, stateTokens(_stateTokens)
+				, start(_start)
+				, codeIndex(_codeIndex)
+				, proc(_proc)
+				, reading(_start)
 			{
 			}
 
@@ -20166,80 +20166,95 @@ RegexTokens
 
 			bool Next()
 			{
-				if(!cacheAvailable && !*reading) return false;
-				if(cacheAvailable)
+				if (!cacheAvailable && !*reading) return false;
+				if (cacheAvailable)
 				{
-					token=cacheToken;
-					cacheAvailable=false;
+					token = cacheToken;
+					cacheAvailable = false;
 				}
 				else
 				{
-					token.reading=reading;
-					token.start=0;
-					token.length=0;
-					token.token=-2;
-					token.completeToken=true;
+					token.reading = reading;
+					token.start = 0;
+					token.length = 0;
+					token.token = -2;
+					token.completeToken = true;
 				}
-				token.rowStart=rowStart;
-				token.columnStart=columnStart;
-				token.rowEnd=rowStart;
-				token.columnEnd=columnStart;
-				token.codeIndex=codeIndex;
+
+				token.rowStart = rowStart;
+				token.columnStart = columnStart;
+				token.rowEnd = rowStart;
+				token.columnEnd = columnStart;
+				token.codeIndex = codeIndex;
 
 				PureResult result;
-				while(*reading)
+				while (*reading)
 				{
-					vint id=-1;
-					bool completeToken=true;
-					if(!pure->MatchHead(reading, start, result))
+					vint id = -1;
+					bool completeToken = true;
+					if (!pure->MatchHead(reading, start, result))
 					{
-						result.start=reading-start;
+						result.start = reading - start;
 
-						if(id==-1 && result.terminateState!=-1)
+						if (id == -1 && result.terminateState != -1)
 						{
-							vint state=pure->GetRelatedFinalState(result.terminateState);
-							if(state!=-1)
+							vint state = pure->GetRelatedFinalState(result.terminateState);
+							if (state != -1)
 							{
-								id=stateTokens[state];
+								id = stateTokens[state];
 							}
 						}
 
-						if(id==-1)
+						if (id == -1)
 						{
-							result.length=1;
+							result.length = 1;
 						}
 						else
 						{
-							completeToken=false;
+							completeToken = false;
 						}
 					}
 					else
 					{
-						id=stateTokens.Get(result.finalState);
+						id = stateTokens.Get(result.finalState);
 					}
-					if(token.token==-2)
+
+					if (id != -1 && proc.extendProc)
 					{
-						token.start=result.start;
-						token.length=result.length;
-						token.token=id;
-						token.completeToken=completeToken;
+						RegexProcessingToken token(result.start, result.length, id, completeToken, nullptr);
+						proc.extendProc(proc.argument, reading, -1, true, token);
+#if _DEBUG
+						CHECK_ERROR(token.interTokenState == nullptr, L"RegexTokenEnumerator::Next()#The extendProc is only allowed to create interTokenState in RegexLexerColorizer.");
+#endif
+						result.length = token.length;
+						id = token.token;
+						completeToken = token.completeToken;
 					}
-					else if(token.token==id && id==-1)
+
+					if (token.token == -2)
 					{
-						token.length+=result.length;
+						token.start = result.start;
+						token.length = result.length;
+						token.token = id;
+						token.completeToken = completeToken;
+					}
+					else if (token.token == id && id == -1)
+					{
+						token.length += result.length;
 					}
 					else
 					{
-						cacheAvailable=true;
-						cacheToken.reading=reading;
-						cacheToken.start=result.start;
-						cacheToken.length=result.length;
-						cacheToken.codeIndex=codeIndex;
-						cacheToken.token=id;
-						cacheToken.completeToken=completeToken;
+						cacheAvailable = true;
+						cacheToken.reading = reading;
+						cacheToken.start = result.start;
+						cacheToken.length = result.length;
+						cacheToken.codeIndex = codeIndex;
+						cacheToken.token = id;
+						cacheToken.completeToken = completeToken;
 					}
-					reading+=result.length;
-					if(cacheAvailable)
+					reading += result.length;
+
+					if (cacheAvailable)
 					{
 						break;
 					}
@@ -20247,14 +20262,14 @@ RegexTokens
 
 				index++;
 
-				for(vint i=0;i<token.length;i++)
+				for (vint i = 0; i < token.length; i++)
 				{
-					token.rowEnd=rowStart;
-					token.columnEnd=columnStart;
-					if(token.reading[i]==L'\n')
+					token.rowEnd = rowStart;
+					token.columnEnd = columnStart;
+					if (token.reading[i] == L'\n')
 					{
 						rowStart++;
-						columnStart=0;
+						columnStart = 0;
 					}
 					else
 					{
@@ -20266,16 +20281,16 @@ RegexTokens
 
 			void Reset()
 			{
-				index=-1;
-				reading=start;
-				cacheAvailable=false;
+				index = -1;
+				reading = start;
+				cacheAvailable = false;
 			}
 
 			void ReadToEnd(List<RegexToken>& tokens, bool(*discard)(vint))
 			{
-				while(Next())
+				while (Next())
 				{
-					if(!discard(token.token))
+					if (!discard(token.token))
 					{
 						tokens.Add(token);
 					}
@@ -20283,25 +20298,27 @@ RegexTokens
 			}
 		};
 
-		RegexTokens::RegexTokens(PureInterpretor* _pure, const Array<vint>& _stateTokens, const WString& _code, vint _codeIndex)
+		RegexTokens::RegexTokens(PureInterpretor* _pure, const Array<vint>& _stateTokens, const WString& _code, vint _codeIndex, RegexProc _proc)
 			:pure(_pure)
-			,stateTokens(_stateTokens)
-			,code(_code)
-			,codeIndex(_codeIndex)
+			, stateTokens(_stateTokens)
+			, code(_code)
+			, codeIndex(_codeIndex)
+			, proc(_proc)
 		{
 		}
 
 		RegexTokens::RegexTokens(const RegexTokens& tokens)
 			:pure(tokens.pure)
-			,stateTokens(tokens.stateTokens)
-			,code(tokens.code)
-			,codeIndex(tokens.codeIndex)
+			, stateTokens(tokens.stateTokens)
+			, code(tokens.code)
+			, codeIndex(tokens.codeIndex)
+			, proc(tokens.proc)
 		{
 		}
 
 		IEnumerator<RegexToken>* RegexTokens::CreateEnumerator()const
 		{
-			return new RegexTokenEnumerator(pure, stateTokens, code.Buffer(), codeIndex);
+			return new RegexTokenEnumerator(pure, stateTokens, code.Buffer(), codeIndex, proc);
 		}
 
 		bool DefaultDiscard(vint token)
@@ -20315,7 +20332,7 @@ RegexTokens
 			{
 				discard=&DefaultDiscard;
 			}
-			RegexTokenEnumerator(pure, stateTokens, code.Buffer(), codeIndex).ReadToEnd(tokens, discard);
+			RegexTokenEnumerator(pure, stateTokens, code.Buffer(), codeIndex, proc).ReadToEnd(tokens, discard);
 		}
 
 /***********************************************************************
@@ -20324,17 +20341,21 @@ RegexLexerWalker
 
 		RegexLexerWalker::RegexLexerWalker(PureInterpretor* _pure, const Array<vint>& _stateTokens)
 			:pure(_pure)
-			,stateTokens(_stateTokens)
+			, stateTokens(_stateTokens)
 		{
 		}
 
-		RegexLexerWalker::RegexLexerWalker(const RegexLexerWalker& walker)
-			:pure(walker.pure)
-			,stateTokens(walker.stateTokens)
+		RegexLexerWalker::RegexLexerWalker(const RegexLexerWalker& tokens)
+			: pure(tokens.pure)
+			, stateTokens(tokens.stateTokens)
 		{
 		}
 
 		RegexLexerWalker::~RegexLexerWalker()
+		{
+		}
+
+		RegexTokens::~RegexTokens()
 		{
 		}
 
@@ -20418,15 +20439,17 @@ RegexLexerWalker
 RegexLexerColorizer
 ***********************************************************************/
 
-		RegexLexerColorizer::RegexLexerColorizer(const RegexLexerWalker& _walker)
+		RegexLexerColorizer::RegexLexerColorizer(const RegexLexerWalker& _walker, RegexProc _proc)
 			:walker(_walker)
-			,currentState(_walker.GetStartState())
+			, proc(_proc)
 		{
+			internalState.currentState = walker.GetStartState();
 		}
 
 		RegexLexerColorizer::RegexLexerColorizer(const RegexLexerColorizer& colorizer)
 			:walker(colorizer.walker)
-			,currentState(colorizer.currentState)
+			, proc(colorizer.proc)
+			, internalState(colorizer.internalState)
 		{
 		}
 
@@ -20434,14 +20457,18 @@ RegexLexerColorizer
 		{
 		}
 
-		void RegexLexerColorizer::Reset(vint state)
+		RegexLexerColorizer::InternalState RegexLexerColorizer::GetInternalState()
 		{
-			currentState=state;
+			return internalState;
+		}
+		void RegexLexerColorizer::SetInternalState(InternalState state)
+		{
+			internalState = state;
 		}
 
 		void RegexLexerColorizer::Pass(wchar_t input)
 		{
-			currentState=walker.Walk(input, currentState);
+			WalkOneToken(&input, 1, 0, false);
 		}
 
 		vint RegexLexerColorizer::GetStartState()const
@@ -20449,133 +20476,208 @@ RegexLexerColorizer
 			return walker.GetStartState();
 		}
 
-		vint RegexLexerColorizer::GetCurrentState()const
+		void RegexLexerColorizer::CallExtendProcAndColorizeProc(const wchar_t* input, vint length, RegexProcessingToken& token, bool colorize)
 		{
-			return currentState;
+			vint oldTokenLength = token.length;
+			proc.extendProc(proc.argument, input + token.start, length - token.start, false, token);
+#if _DEBUG
+			{
+				bool pausedAtTheEnd = token.start + token.length == length && !token.completeToken;
+				CHECK_ERROR(
+					token.completeToken || pausedAtTheEnd,
+					L"RegexLexerColorizer::WalkOneToken(const wchar_t*, vint, vint, bool)#The extendProc is not allowed pause before the end of the input."
+				);
+				CHECK_ERROR(
+					token.completeToken || token.token != -1,
+					L"RegexLexerColorizer::WalkOneToken(const wchar_t*, vint, vint, bool)#The extendProc is not allowed to pause without a valid token id."
+				);
+				CHECK_ERROR(
+					oldTokenLength <= token.length,
+					L"RegexLexerColorizer::WalkOneToken(const wchar_t*, vint, vint, bool)#The extendProc is not allowed to decrease the token length."
+				);
+				CHECK_ERROR(
+					(token.interTokenState == nullptr) == !pausedAtTheEnd,
+					L"RegexLexerColorizer::Colorize(const wchar_t*, vint, void*)#The extendProc should return an inter token state object if and only if a valid token does not end at the end of the input."
+				);
+			}
+#endif
+			if ((internalState.interTokenState = token.interTokenState))
+			{
+				internalState.interTokenId = token.token;
+				internalState.currentState = walker.GetStartState();
+			}
+			if (colorize)
+			{
+				proc.colorizeProc(proc.argument, token.start, token.length, token.token);
+			}
 		}
 
-		void RegexLexerColorizer::Colorize(const wchar_t* input, vint length, TokenProc tokenProc, void* tokenProcArgument)
+		vint RegexLexerColorizer::WalkOneToken(const wchar_t* input, vint length, vint start, bool colorize)
 		{
-			vint start=0;
-			vint stop=0;
-			vint state=-1;
-			vint token=-1;
-			
-			vint index=0;
-			vint currentToken=-1;
-			bool finalState=false;
-			bool previousTokenStop=false;
-
-			while(index<length)
+			if (internalState.interTokenState)
 			{
-				currentToken=-1;
-				finalState=false;
-				previousTokenStop=false;
-				walker.Walk(input[index], currentState, currentToken, finalState, previousTokenStop);
-				
-				if(previousTokenStop)
+				RegexProcessingToken token(-1, -1, internalState.interTokenId, false, internalState.interTokenState);
+				proc.extendProc(proc.argument, input, length, false, token);
+#if _DEBUG
 				{
-					vint tokenLength=stop-start;
-					if(tokenLength>0)
-					{
-						tokenProc(tokenProcArgument, start, tokenLength, token);
-						currentState=state;
-						start=stop;
-						index=stop-1;
-						state=-1;
-						token=-1;
-						finalState=false;
-					}
-					else if(stop<index)
-					{
-						stop=index+1;
-						tokenProc(tokenProcArgument, start, stop-start, -1);
-						start=index+1;
-						state=-1;
-						token=-1;
-					}
+					bool pausedAtTheEnd = token.length == length && !token.completeToken;
+					CHECK_ERROR(
+						token.completeToken || pausedAtTheEnd,
+						L"RegexLexerColorizer::WalkOneToken(const wchar_t*, vint, vint, bool)#The extendProc is not allowed to pause before the end of the input."
+					);
+					CHECK_ERROR(
+						token.completeToken || token.token == internalState.interTokenId,
+						L"RegexLexerColorizer::WalkOneToken(const wchar_t*, vint, vint, bool)#The extendProc is not allowed to continue pausing with a different token id."
+					);
+					CHECK_ERROR(
+						(token.interTokenState == nullptr) == !pausedAtTheEnd,
+						L"RegexLexerColorizer::Colorize(const wchar_t*, vint, void*)#The extendProc should return an inter token state object if and only if a valid token does not end at the end of the input."
+					);
 				}
-				if(finalState)
+#endif
+				if (colorize)
 				{
-					stop=index+1;
-					state=currentState;
-					token=currentToken;
+					proc.colorizeProc(proc.argument, 0, token.length, token.token);
+				}
+				if (!(internalState.interTokenState = token.interTokenState))
+				{
+					internalState.interTokenId = -1;
+				}
+				return token.length;
+			}
+
+			vint lastFinalStateLength = 0;
+			vint lastFinalStateToken = -1;
+
+			for (vint i = start; i < length; i++)
+			{
+				vint currentToken = -1;
+				bool finalState = false;
+				bool previousTokenStop = false;
+				walker.Walk(input[i], internalState.currentState, currentToken, finalState, previousTokenStop);
+
+				if (previousTokenStop)
+				{
+					internalState.currentState = walker.GetStartState();
+					if (proc.extendProc && lastFinalStateToken != -1)
+					{
+						RegexProcessingToken token(start, lastFinalStateLength, lastFinalStateToken, true, nullptr);
+						CallExtendProcAndColorizeProc(input, length, token, colorize);
+						return start + token.length;
+					}
+					else if (i == start)
+					{
+						if (colorize)
+						{
+							proc.colorizeProc(proc.argument, start, 1, -1);
+						}
+						return i + 1;
+					}
+					else
+					{
+						if (colorize)
+						{
+							proc.colorizeProc(proc.argument, start, lastFinalStateLength, lastFinalStateToken);
+						}
+						return start + lastFinalStateLength;
+					}
 				}
 
-				index++;
+				if (finalState)
+				{
+					lastFinalStateLength = i + 1 - start;
+					lastFinalStateToken = currentToken;
+				}
 			}
-			if(start<length)
+
+			if (lastFinalStateToken != -1)
 			{
-				if(finalState)
+				if (proc.extendProc)
 				{
-					tokenProc(tokenProcArgument, start, length-start, token);
+					RegexProcessingToken token(start, lastFinalStateLength, lastFinalStateToken, true, nullptr);
+					CallExtendProcAndColorizeProc(input, length, token, colorize);
 				}
-				else
+				else if (colorize)
 				{
-					tokenProc(tokenProcArgument, start, length-start, walker.GetRelatedToken(currentState));
+					proc.colorizeProc(proc.argument, start, lastFinalStateLength, lastFinalStateToken);
 				}
 			}
+			else if (colorize)
+			{
+				proc.colorizeProc(proc.argument, start, length - start, walker.GetRelatedToken(internalState.currentState));
+			}
+			return length;
+		}
+
+		void* RegexLexerColorizer::Colorize(const wchar_t* input, vint length)
+		{
+			vint index = 0;
+			while (index != length)
+			{
+				index = WalkOneToken(input, length, index, true);
+			}
+			return internalState.interTokenState;
 		}
 
 /***********************************************************************
 RegexLexer
 ***********************************************************************/
 
-		RegexLexer::RegexLexer(const collections::IEnumerable<WString>& tokens)
-			:pure(0)
+		RegexLexer::RegexLexer(const collections::IEnumerable<WString>& tokens, RegexProc _proc)
+			:proc(_proc)
 		{
 			// Build DFA for all tokens
 			List<Expression::Ref> expressions;
 			List<Automaton::Ref> dfas;
 			CharRange::List subsets;
-			Ptr<IEnumerator<WString>> enumerator=tokens.CreateEnumerator();
-			while(enumerator->Next())
+			Ptr<IEnumerator<WString>> enumerator = tokens.CreateEnumerator();
+			while (enumerator->Next())
 			{
-				const WString& code=enumerator->Current();
+				const WString& code = enumerator->Current();
 
-				RegexExpression::Ref regex=ParseRegexExpression(code);
-				Expression::Ref expression=regex->Merge();
+				RegexExpression::Ref regex = ParseRegexExpression(code);
+				Expression::Ref expression = regex->Merge();
 				expression->CollectCharSet(subsets);
 				expressions.Add(expression);
 			}
-			for(vint i=0;i<expressions.Count();i++)
+			for (vint i = 0; i < expressions.Count(); i++)
 			{
 				Dictionary<State*, State*> nfaStateMap;
 				Group<State*, State*> dfaStateMap;
-				Expression::Ref expression=expressions[i];
+				Expression::Ref expression = expressions[i];
 				expression->ApplyCharSet(subsets);
-				Automaton::Ref eNfa=expression->GenerateEpsilonNfa();
-				Automaton::Ref nfa=EpsilonNfaToNfa(eNfa, PureEpsilonChecker, nfaStateMap);
-				Automaton::Ref dfa=NfaToDfa(nfa, dfaStateMap);
+				Automaton::Ref eNfa = expression->GenerateEpsilonNfa();
+				Automaton::Ref nfa = EpsilonNfaToNfa(eNfa, PureEpsilonChecker, nfaStateMap);
+				Automaton::Ref dfa = NfaToDfa(nfa, dfaStateMap);
 				dfas.Add(dfa);
 			}
 
 			// Mark all states in DFAs
-			for(vint i=0;i<dfas.Count();i++)
+			for (vint i = 0; i < dfas.Count(); i++)
 			{
-				Automaton::Ref dfa=dfas[i];
-				for(vint j=0;j<dfa->states.Count();j++)
+				Automaton::Ref dfa = dfas[i];
+				for (vint j = 0; j < dfa->states.Count(); j++)
 				{
-					if(dfa->states[j]->finalState)
+					if (dfa->states[j]->finalState)
 					{
-						dfa->states[j]->userData=(void*)i;
+						dfa->states[j]->userData = (void*)i;
 					}
 					else
 					{
-						dfa->states[j]->userData=(void*)dfas.Count();
+						dfa->states[j]->userData = (void*)dfas.Count();
 					}
 				}
 			}
 
 			// Connect all DFAs to an e-NFA
-			Automaton::Ref bigEnfa=new Automaton;
-			for(vint i=0;i<dfas.Count();i++)
+			Automaton::Ref bigEnfa = new Automaton;
+			for (vint i = 0; i < dfas.Count(); i++)
 			{
 				CopyFrom(bigEnfa->states, dfas[i]->states);
 				CopyFrom(bigEnfa->transitions, dfas[i]->transitions);
 			}
-			bigEnfa->startState=bigEnfa->NewState();
-			for(vint i=0;i<dfas.Count();i++)
+			bigEnfa->startState = bigEnfa->NewState();
+			for (vint i = 0; i < dfas.Count(); i++)
 			{
 				bigEnfa->NewEpsilon(bigEnfa->startState, dfas[i]->startState);
 			}
@@ -20583,46 +20685,46 @@ RegexLexer
 			// Build a single DFA out of the e-NFA
 			Dictionary<State*, State*> nfaStateMap;
 			Group<State*, State*> dfaStateMap;
-			Automaton::Ref bigNfa=EpsilonNfaToNfa(bigEnfa, PureEpsilonChecker, nfaStateMap);
-			for(vint i=0;i<nfaStateMap.Keys().Count();i++)
+			Automaton::Ref bigNfa = EpsilonNfaToNfa(bigEnfa, PureEpsilonChecker, nfaStateMap);
+			for (vint i = 0; i < nfaStateMap.Keys().Count(); i++)
 			{
-				void* userData=nfaStateMap.Values().Get(i)->userData;
-				nfaStateMap.Keys()[i]->userData=userData;
+				void* userData = nfaStateMap.Values().Get(i)->userData;
+				nfaStateMap.Keys()[i]->userData = userData;
 			}
-			Automaton::Ref bigDfa=NfaToDfa(bigNfa, dfaStateMap);
-			for(vint i=0;i<dfaStateMap.Keys().Count();i++)
+			Automaton::Ref bigDfa = NfaToDfa(bigNfa, dfaStateMap);
+			for (vint i = 0; i < dfaStateMap.Keys().Count(); i++)
 			{
-				void* userData=dfaStateMap.GetByIndex(i).Get(0)->userData;
-				for(vint j=1;j<dfaStateMap.GetByIndex(i).Count();j++)
+				void* userData = dfaStateMap.GetByIndex(i).Get(0)->userData;
+				for (vint j = 1; j < dfaStateMap.GetByIndex(i).Count(); j++)
 				{
-					void* newData=dfaStateMap.GetByIndex(i).Get(j)->userData;
-					if(userData>newData)
+					void* newData = dfaStateMap.GetByIndex(i).Get(j)->userData;
+					if (userData > newData)
 					{
-						userData=newData;
+						userData = newData;
 					}
 				}
-				dfaStateMap.Keys()[i]->userData=userData;
+				dfaStateMap.Keys()[i]->userData = userData;
 			}
 
 			// Build state machine
-			pure=new PureInterpretor(bigDfa, subsets);
+			pure = new PureInterpretor(bigDfa, subsets);
 			stateTokens.Resize(bigDfa->states.Count());
-			for(vint i=0;i<stateTokens.Count();i++)
+			for (vint i = 0; i < stateTokens.Count(); i++)
 			{
-				void* userData=bigDfa->states[i]->userData;
-				stateTokens[i]=(vint)userData;
+				void* userData = bigDfa->states[i]->userData;
+				stateTokens[i] = (vint)userData;
 			}
 		}
 
 		RegexLexer::~RegexLexer()
 		{
-			if(pure)delete pure;
+			if (pure)delete pure;
 		}
 
 		RegexTokens RegexLexer::Parse(const WString& code, vint codeIndex)const
 		{
 			pure->PrepareForRelatedFinalStateTable();
-			return RegexTokens(pure, stateTokens, code, codeIndex);
+			return RegexTokens(pure, stateTokens, code, codeIndex, proc);
 		}
 
 		RegexLexerWalker RegexLexer::Walk()const
@@ -20633,7 +20735,7 @@ RegexLexer
 
 		RegexLexerColorizer RegexLexer::Colorize()const
 		{
-			return RegexLexerColorizer(Walk());
+			return RegexLexerColorizer(Walk(), proc);
 		}
 	}
 }
