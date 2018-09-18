@@ -82,6 +82,7 @@ GuiTextBoxRegexColorizer
 			protected:
 				Ptr<regex::RegexLexer>										lexer;
 				Ptr<regex::RegexLexerColorizer>								colorizer;
+				void*														colorizerArgument[1] { nullptr };
 				ColorArray													colors;
 
 				elements::text::ColorEntry									defaultColor;

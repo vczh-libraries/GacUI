@@ -17807,25 +17807,30 @@ GuiTextBoxRegexColorizer
 
 			void GuiTextBoxRegexColorizer::Setup()
 			{
-				if(lexer || tokenRegexes.Count()==0)
+				if (lexer || tokenRegexes.Count() == 0)
 				{
 					colors.Resize(1);
-					colors[0]=defaultColor;
+					colors[0] = defaultColor;
 				}
 				else
 				{
-					lexer=new regex::RegexLexer(tokenRegexes);
-					colors.Resize(1+tokenRegexes.Count()+extraTokenColors.Count());
-					colors[0]=defaultColor;
-					for(vint i=0;i<tokenColors.Count();i++)
 					{
-						colors[i+1]=tokenColors[i];
+						regex::RegexProc proc;
+						proc.colorizeProc = &GuiTextBoxRegexColorizer::ColorizerProc;
+						proc.argument = colorizerArgument;
+						lexer = new regex::RegexLexer(tokenRegexes, proc);
 					}
-					for(vint i=0;i<extraTokenColors.Count();i++)
+					colors.Resize(1 + tokenRegexes.Count() + extraTokenColors.Count());
+					colors[0] = defaultColor;
+					for (vint i = 0; i < tokenColors.Count(); i++)
 					{
-						colors[i+1+tokenColors.Count()]=extraTokenColors[i];
+						colors[i + 1] = tokenColors[i];
 					}
-					colorizer=new regex::RegexLexerColorizer(lexer->Colorize());
+					for (vint i = 0; i < extraTokenColors.Count(); i++)
+					{
+						colors[i + 1 + tokenColors.Count()] = extraTokenColors[i];
+					}
+					colorizer = new regex::RegexLexerColorizer(lexer->Colorize());
 				}
 			}
 
@@ -17846,25 +17851,28 @@ GuiTextBoxRegexColorizer
 			void GuiTextBoxRegexColorizer::ColorizeLineWithCRLF(vint lineIndex, const wchar_t* text, vuint32_t* colors, vint length, vint& lexerState, vint& contextState)
 			{
 				memset(colors, 0, sizeof(*colors)*length);
-				if(lexer)
+				if (lexer)
 				{
 					GuiTextBoxRegexColorizerProcData data;
-					data.colorizer=this;
-					data.lineIndex=lineIndex;
-					data.text=text;
-					data.colors=colors;
-					data.contextState=contextState;
+					data.colorizer = this;
+					data.lineIndex = lineIndex;
+					data.text = text;
+					data.colors = colors;
+					data.contextState = contextState;
 
-					colorizer->Reset(lexerState);
-					colorizer->Colorize(text, length, &GuiTextBoxRegexColorizer::ColorizerProc, &data);
+					regex::RegexLexerColorizer::InternalState internalState;
+					internalState.currentState = lexerState;
+					colorizer->SetInternalState(internalState);
+					colorizerArgument[0] = &data;
+					colorizer->Colorize(text, length);
 
-					lexerState=colorizer->GetCurrentState();
-					contextState=data.contextState;
+					lexerState = colorizer->GetInternalState().currentState;
+					contextState = data.contextState;
 				}
 				else
 				{
-					lexerState=-1;
-					contextState=-1;
+					lexerState = -1;
+					contextState = -1;
 				}
 			}
 
