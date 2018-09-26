@@ -346,17 +346,18 @@ WindowsForm
 						}
 						break;
 					case WM_SHOWWINDOW:
+						if (lParam == 0)
 						{
-							if(wParam==TRUE)
+							if (wParam == TRUE)
 							{
-								for(vint i=0;i<listeners.Count();i++)
+								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									listeners[i]->Opened();
 								}
 							}
 							else
 							{
-								for(vint i=0;i<listeners.Count();i++)
+								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									listeners[i]->Closed();
 								}
