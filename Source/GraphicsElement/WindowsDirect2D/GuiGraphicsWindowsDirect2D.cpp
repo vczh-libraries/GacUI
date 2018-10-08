@@ -587,8 +587,7 @@ WindowsDirect2DRenderTarget
 								if (wicEffectBitmap)
 								{
 									ID2D1Bitmap* d2dEffectBitmap = nullptr;
-									auto properties = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
-									hr = d2dRenderTarget->CreateBitmapFromWicBitmap(wicEffectBitmap, &properties, &d2dEffectBitmap);
+									hr = d2dRenderTarget->CreateBitmapFromWicBitmap(wicEffectBitmap, &d2dEffectBitmap);
 									if (d2dEffectBitmap)
 									{
 										ID2D1Effect* d2dEffect = nullptr;
