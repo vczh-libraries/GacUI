@@ -22,7 +22,7 @@
     <ProjectGuid>{07328A1E-E71E-4F90-9BD7-7F0FD7B73053}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>GacGen</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
