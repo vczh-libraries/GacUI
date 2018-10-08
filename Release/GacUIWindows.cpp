@@ -3295,14 +3295,20 @@ WindowsDirect2DRenderTarget
 						{
 							if (auto wicFactory = GetWICImagingFactory())
 							{
-								BYTE effectMask[] = { 255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255 };
-								IWICBitmap* wicEffectBitmap = nullptr;
-								hr = wicFactory->CreateBitmapFromMemory(2, 2, GUID_WICPixelFormat32bppBGRA, 8, 16, effectMask, &wicEffectBitmap);
+								// this is the content of EffectBuffer.png in the same folder where this cpp file is in
+								static const char EffectBuffer[] =
+									"\x89\x50\x4E\x47\x0D\x0A\x1A\x0A\x00\x00\x00\x0D\x49\x48\x44\x52\x00\x00\x00\x08\x00\x00\x00\x08\x08\x06\x00\x00"
+									"\x00\xC4\x0F\xBE\x8B\x00\x00\x00\x01\x73\x52\x47\x42\x00\xAE\xCE\x1C\xE9\x00\x00\x00\x04\x67\x41\x4D\x41\x00\x00"
+									"\xB1\x8F\x0B\xFC\x61\x05\x00\x00\x00\x09\x70\x48\x59\x73\x00\x00\x0E\xC3\x00\x00\x0E\xC3\x01\xC7\x6F\xA8\x64\x00"
+									"\x00\x00\x2F\x49\x44\x41\x54\x28\x53\x75\xC8\xB1\x0D\x00\x30\x0C\x02\x41\xEF\xBF\x34\xB1\x68\xA2\x47\xF8\x9B\x13"
+									"\x8C\xB6\xD9\x2E\x5D\x9E\x10\xA3\xE8\xF2\x84\x18\x45\x97\x27\xC4\x28\xBA\x3C\xBF\xD2\x03\xC2\xD7\x7F\x81\x23\x94"
+									"\x3E\x1F\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82";
+								auto effectImage = GetCurrentController()->ImageService()->CreateImageFromMemory((void*)EffectBuffer, (vint)(sizeof(EffectBuffer) - 1));
+								IWICBitmap* wicEffectBitmap = effectImage ? GetWICBitmap(effectImage->GetFrame(0)) : nullptr;
 								if (wicEffectBitmap)
 								{
 									ID2D1Bitmap* d2dEffectBitmap = nullptr;
-									auto properties = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
-									hr = d2dRenderTarget->CreateBitmapFromWicBitmap(wicEffectBitmap, &properties, &d2dEffectBitmap);
+									hr = d2dRenderTarget->CreateBitmapFromWicBitmap(wicEffectBitmap, &d2dEffectBitmap);
 									if (d2dEffectBitmap)
 									{
 										ID2D1Effect* d2dEffect = nullptr;
@@ -3315,7 +3321,6 @@ WindowsDirect2DRenderTarget
 										}
 										d2dEffectBitmap->Release();
 									}
-									wicEffectBitmap->Release();
 								}
 							}
 							d2dDeviceContext->Release();
@@ -8263,17 +8268,18 @@ WindowsForm
 						}
 						break;
 					case WM_SHOWWINDOW:
+						if (lParam == 0)
 						{
-							if(wParam==TRUE)
+							if (wParam == TRUE)
 							{
-								for(vint i=0;i<listeners.Count();i++)
+								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									listeners[i]->Opened();
 								}
 							}
 							else
 							{
-								for(vint i=0;i<listeners.Count();i++)
+								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									listeners[i]->Closed();
 								}

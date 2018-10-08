@@ -20590,7 +20590,7 @@ RegexLexerColorizer
 				}
 			}
 
-			if (lastFinalStateToken != -1)
+			if (lastFinalStateToken != -1 && start + lastFinalStateLength == length)
 			{
 				if (proc.extendProc)
 				{
