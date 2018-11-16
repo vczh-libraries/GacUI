@@ -448,6 +448,7 @@ Predefined ItemProvider
 				protected:
 					collections::List<GuiListControl::IItemProviderCallback*>	callbacks;
 					vint														editingCounter = 0;
+					bool														callingOnItemModified = false;
 
 					virtual void								InvokeOnItemModified(vint start, vint count, vint newCount);
 				public:
