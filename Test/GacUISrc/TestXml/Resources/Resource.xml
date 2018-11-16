@@ -131,6 +131,7 @@
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Rows>
           <att.Columns>
@@ -173,7 +174,8 @@
             <Button Text="$Await ShowModalAsync">
               <ev.Clicked-eval>
                 <![CDATA[
-                  $Async{
+                  $Async
+                  {
                     var window = new TestWindow*();
                     window.MoveToScreenCenter();
                     $Await window.ShowModalAsync(self);
@@ -188,16 +190,43 @@
             <Button Text="Close">
               <ev.Clicked-eval>
                 <![CDATA[
-                 {
-                    self.Close();
+                  {
+                   self.Close();
                   }
                 ]]>
               </ev.Clicked-eval>
             </Button>
           </Cell>
 
-          <Cell Site="row:4 column:0 columnSpan:2">
-            <BindableTreeView HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="demo::Node^">
+          <Cell Site="row:4 column:0">
+            <Button Text="Async add tree items">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    var root = cast (demo::Node^) treeView.ItemSource;
+                    for (i in range [1, 10])
+                    {
+                      Application::GetApplication().InvokeInMainThread(self,
+                        func():void
+                        {
+                          var header = new Node^("Header " & i);
+                          root.Children.Insert(i - 1, header);
+              
+                          for (j in range [1, 10])
+                          {
+                            var item = new Node^("Item " & j);
+                            header.Children.Add(item);
+                          }
+                        });
+                    }
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:5 column:0 columnSpan:2">
+            <BindableTreeView ref.Name="treeView" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="demo::Node^">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.TextProperty>Text</att.TextProperty>
               <att.ChildrenProperty>Children</att.ChildrenProperty>
