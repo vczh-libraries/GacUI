@@ -1337,7 +1337,6 @@ WindowsController
 				Dictionary<HWND, WindowsForm*>		windows;
 				INativeWindow*						mainWindow;
 				HWND								mainWindowHandle;
-				static vint							handleMessageLevelCounter;
 
 				WindowsCallbackService				callbackService;
 				WindowsResourceService				resourceService;
@@ -1382,7 +1381,6 @@ WindowsController
 				bool HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
 					bool skipDefaultProcedure=false;
-					handleMessageLevelCounter++;
 					{
 						vint index = windows.Keys().IndexOf(hwnd);
 						if (index != -1)
@@ -1423,11 +1421,6 @@ WindowsController
 							}
 							PostQuitMessage(0);
 						}
-					}
-					handleMessageLevelCounter--;
-					if (handleMessageLevelCounter == 0)
-					{
-						asyncService.ExecuteAsyncTasks();
 					}
 					return skipDefaultProcedure;
 				}
@@ -1472,26 +1465,6 @@ WindowsController
 						DispatchMessage(&message);
 						asyncService.ExecuteAsyncTasks();
 					}
-
-					//while (true)
-					//{
-					//	handleMessageLevelCounter++;
-					//	BOOL result = GetMessage(&message, NULL, 0, 0);
-					//	if (result)
-					//	{
-					//		TranslateMessage(&message);
-					//		DispatchMessage(&message);
-					//	}
-					//	handleMessageLevelCounter--;
-					//	if (handleMessageLevelCounter == 0)
-					//	{
-					//		asyncService.ExecuteAsyncTasks();
-					//	}
-					//	if (!result)
-					//	{
-					//		break;
-					//	}
-					//}
 				}
 
 				INativeWindow* GetWindow(Point location)override
@@ -1582,7 +1555,6 @@ WindowsController
 					callbackService.InvokeClipboardUpdated();
 				}
 			};
-			vint WindowsController::handleMessageLevelCounter = 0;
 
 /***********************************************************************
 Windows Procedure
