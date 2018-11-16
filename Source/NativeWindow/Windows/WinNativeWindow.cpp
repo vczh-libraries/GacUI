@@ -1337,7 +1337,7 @@ WindowsController
 				Dictionary<HWND, WindowsForm*>		windows;
 				INativeWindow*						mainWindow;
 				HWND								mainWindowHandle;
-				vint								handleMessageLevelCounter = 0;
+				static vint							handleMessageLevelCounter;
 
 				WindowsCallbackService				callbackService;
 				WindowsResourceService				resourceService;
@@ -1582,6 +1582,7 @@ WindowsController
 					callbackService.InvokeClipboardUpdated();
 				}
 			};
+			vint WindowsController::handleMessageLevelCounter = 0;
 
 /***********************************************************************
 Windows Procedure
