@@ -161,6 +161,7 @@
                 <![CDATA[
                   {
                     var window = new TestWindow*();
+                    window.MoveToScreenCenter();
                     window.ShowModalAndDelete(self, func():void{});
                   }
                 ]]>
@@ -174,6 +175,7 @@
                 <![CDATA[
                   $Async{
                     var window = new TestWindow*();
+                    window.MoveToScreenCenter();
                     $Await window.ShowModalAsync(self);
                     delete window;
                   }

@@ -1422,6 +1422,7 @@ WindowsController
 							PostQuitMessage(0);
 						}
 					}
+					asyncService.ExecuteAsyncTasks();
 					return skipDefaultProcedure;
 				}
 
