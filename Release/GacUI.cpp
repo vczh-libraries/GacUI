@@ -4327,7 +4327,7 @@ GuiWindow
 					{
 						WindowClosed.Detach(container->handler);
 						container->handler = nullptr;
-						GetNativeWindow()->SetParent(0);
+						GetNativeWindow()->SetParent(nullptr);
 						callback();
 						owner->SetEnabled(true);
 						owner->SetActivated();
@@ -4507,11 +4507,23 @@ GuiPopup
 			{
 				auto window = GetNativeWindow();
 				UpdateClientSizeAfterRendering(window->GetBounds().GetSize());
+
+				INativeWindow* controlWindow = nullptr;
 				switch (popupType)
 				{
-				case 2: window->SetParent(popupInfo._2.controlWindow); break;
-				case 3: window->SetParent(popupInfo._3.controlWindow); break;
-				case 4: window->SetParent(popupInfo._4.controlWindow); break;
+				case 2: controlWindow = popupInfo._2.controlWindow; break;
+				case 3: controlWindow = popupInfo._3.controlWindow; break;
+				case 4: controlWindow = popupInfo._4.controlWindow; break;
+				}
+
+				if (controlWindow)
+				{
+					window->SetParent(controlWindow);
+					window->SetTopMost(controlWindow->GetTopMost());
+				}
+				else
+				{
+					window->SetTopMost(false);
 				}
 				ShowDeactivated();
 			}
@@ -9848,10 +9860,13 @@ ItemProviderBase
 
 				void ItemProviderBase::InvokeOnItemModified(vint start, vint count, vint newCount)
 				{
+					CHECK_ERROR(!callingOnItemModified, L"ItemProviderBase::InvokeOnItemModified(vint, vint, vint)#Canning modify the observable data source during its item modified event, which will cause this event to be executed recursively.");
+					callingOnItemModified = true;
 					for (vint i = 0; i < callbacks.Count(); i++)
 					{
 						callbacks[i]->OnItemModified(start, count, newCount);
 					}
+					callingOnItemModified = false;
 				}
 
 				ItemProviderBase::ItemProviderBase()

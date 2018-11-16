@@ -5558,8 +5558,6 @@ CompareEnumerable
 				{
 					return 1;
 				}
-				ator->Next();
-				btor->Next();
 			}
 			return 0;
 		}

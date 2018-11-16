@@ -9259,7 +9259,6 @@ WindowsController
 				Dictionary<HWND, WindowsForm*>		windows;
 				INativeWindow*						mainWindow;
 				HWND								mainWindowHandle;
-				vint								handleMessageLevelCounter = 0;
 
 				WindowsCallbackService				callbackService;
 				WindowsResourceService				resourceService;
@@ -9304,7 +9303,6 @@ WindowsController
 				bool HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
 					bool skipDefaultProcedure=false;
-					handleMessageLevelCounter++;
 					{
 						vint index = windows.Keys().IndexOf(hwnd);
 						if (index != -1)
@@ -9345,11 +9343,6 @@ WindowsController
 							}
 							PostQuitMessage(0);
 						}
-					}
-					handleMessageLevelCounter--;
-					if (handleMessageLevelCounter == 0)
-					{
-						asyncService.ExecuteAsyncTasks();
 					}
 					return skipDefaultProcedure;
 				}
