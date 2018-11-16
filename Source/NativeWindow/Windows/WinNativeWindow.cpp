@@ -1472,6 +1472,26 @@ WindowsController
 						DispatchMessage(&message);
 						asyncService.ExecuteAsyncTasks();
 					}
+
+					//while (true)
+					//{
+					//	handleMessageLevelCounter++;
+					//	BOOL result = GetMessage(&message, NULL, 0, 0);
+					//	if (result)
+					//	{
+					//		TranslateMessage(&message);
+					//		DispatchMessage(&message);
+					//	}
+					//	handleMessageLevelCounter--;
+					//	if (handleMessageLevelCounter == 0)
+					//	{
+					//		asyncService.ExecuteAsyncTasks();
+					//	}
+					//	if (!result)
+					//	{
+					//		break;
+					//	}
+					//}
 				}
 
 				INativeWindow* GetWindow(Point location)override
