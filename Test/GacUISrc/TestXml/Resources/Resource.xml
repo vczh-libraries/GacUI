@@ -28,23 +28,6 @@
               Text = text;
             }
           }
-          
-          func CreateNode() : Node^
-          {
-            var root = new Node^("");
-            for (i in range [1, 10])
-            {
-              var header = new Node^("Header " & i);
-              root.Children.Add(header);
-              
-              for (j in range [1, 10])
-              {
-                var item = new Node^("Item " & j);
-                header.Children.Add(item);
-              }
-            }
-            return root;
-          }
         }
       ]]>
     </Workflow>
@@ -209,7 +192,7 @@
                       Application::GetApplication().InvokeInMainThread(self,
                         func():void
                         {
-                          var header = new Node^("Header " & i);
+                          var header = new Node^("Header " & (1 + root.Children.Count));
                           root.Children.Insert(i - 1, header);
               
                           for (j in range [1, 10])
@@ -230,7 +213,7 @@
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.TextProperty>Text</att.TextProperty>
               <att.ChildrenProperty>Children</att.ChildrenProperty>
-              <att.ItemSource-eval>demo::CreateNode()</att.ItemSource-eval>
+              <att.ItemSource-eval>new demo::Node^("")</att.ItemSource-eval>
               <att.ItemTemplate>demo::TreeItemTemplate</att.ItemTemplate>
             </BindableTreeView>
           </Cell>
