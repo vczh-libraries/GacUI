@@ -306,10 +306,13 @@ GuiScrollView
 				{
 					if (auto scroll = GetControlTemplateObject(true)->GetHorizontalScroll())
 					{
-						vint position = scroll->GetPosition();
-						vint move = scroll->GetSmallMove();
-						position -= move * arguments.wheel / 60;
-						scroll->SetPosition(position);
+						if (scroll->GetEnabled())
+						{
+							vint position = scroll->GetPosition();
+							vint move = scroll->GetSmallMove();
+							position -= move * arguments.wheel / 60;
+							scroll->SetPosition(position);
+						}
 					}
 				}
 			}
@@ -320,10 +323,13 @@ GuiScrollView
 				{
 					if (auto scroll = GetControlTemplateObject(true)->GetVerticalScroll())
 					{
-						vint position = scroll->GetPosition();
-						vint move = scroll->GetSmallMove();
-						position -= move * arguments.wheel / 60;
-						scroll->SetPosition(position);
+						if (scroll->GetEnabled())
+						{
+							vint position = scroll->GetPosition();
+							vint move = scroll->GetSmallMove();
+							position -= move * arguments.wheel / 60;
+							scroll->SetPosition(position);
+						}
 					}
 				}
 			}
