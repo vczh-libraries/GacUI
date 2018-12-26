@@ -1,4 +1,9 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::ListViewTabPage">
+  <ref.Members>
+    <![CDATA[
+      var itemsToBind : observe ListViewItem^[] = {};
+    ]]>
+  </ref.Members>
   <ref.Ctor>
     <![CDATA[
       {
@@ -7,7 +12,6 @@
           listView.Items.Add(item);
         });
         
-        var itemsToBind : observe ListViewItem^[] = {};
         LoadListView(this, func(item : ListViewItem^):void
         {
           itemsToBind.Add(item);
@@ -19,6 +23,7 @@
   <TabPage ref.Name="self" Text="ListView">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
       <att.Rows>
+        <_>composeType:MinSize</_>
         <_>composeType:MinSize</_>
         <_>composeType:Percentage percentage:1.0</_>
       </att.Rows>
@@ -84,7 +89,27 @@
         </ComboBox>
       </Cell>
 
-      <Cell Site="row:1 column:0">
+      <Cell Site="row:1 column:0 columnSpan:2">
+        <Button Alt="X" Text="Rotate Item Source -->">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <ev.Clicked-eval>
+            <![CDATA[
+              {
+                if (bindableListView.ItemSource is not null)
+                {
+                  bindableListView.ItemSource = null;
+                }
+                else
+                {
+                  bindableListView.ItemSource = self.itemToBind;
+                }
+              }
+            ]]>
+          </ev.Clicked-eval>
+        </Button>
+      </Cell>
+
+      <Cell Site="row:2 column:0">
         <ListView ref.Name="listView" Alt="L" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
 
@@ -103,7 +128,7 @@
         </ListView>
       </Cell>
 
-      <Cell Site="row:1 column:1">
+      <Cell Site="row:2 column:1">
         <BindableListView ref.Name="bindableListView" Alt="L" env.ItemType="ListViewItem^" env.ItemName="itemToBind" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.LargeImageProperty>LargeImage</att.LargeImageProperty>

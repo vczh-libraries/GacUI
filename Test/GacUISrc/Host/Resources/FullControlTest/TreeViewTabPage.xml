@@ -12,6 +12,7 @@
   <TabPage ref.Name="self" Text="TreeView">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
       <att.Rows>
+        <_>composeType:MinSize</_>
         <_>composeType:Percentage percentage:1.0</_>
       </att.Rows>
       <att.Columns>
@@ -19,7 +20,27 @@
         <_>composeType:Percentage percentage:0.5</_>
       </att.Columns>
 
-      <Cell Site="row:0 column:0">
+      <Cell Site="row:1 column:0 columnSpan:2">
+        <Button Alt="X" Text="Rotate Item Source -->">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <ev.Clicked-eval>
+            <![CDATA[
+              {
+                if (bindableTreeView.ItemSource is not null)
+                {
+                  bindableTreeView.ItemSource = null;
+                }
+                else
+                {
+                  bindableTreeView.ItemSource = self.nodesToBind;
+                }
+              }
+            ]]>
+          </ev.Clicked-eval>
+        </Button>
+      </Cell>
+
+      <Cell Site="row:1 column:0">
         <TreeView ref.Name="treeView" Alt="L" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
 
@@ -54,7 +75,7 @@
         </TreeView>
       </Cell>
 
-      <Cell Site="row:0 column:1">
+      <Cell Site="row:1 column:1">
         <BindableTreeView ref.Name="bindableTreeView" Alt="L" env.ItemType="MemoryNodeProvider^" env.ItemName="nodeToBind" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.TextProperty>(nodeToBind.Data as TreeViewItem^).text</att.TextProperty>

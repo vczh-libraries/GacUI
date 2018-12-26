@@ -163,6 +163,25 @@
               </Button>
             </StackItem>
             <StackItem>
+              <Button Alt="X" Text="Rotate Item Source -->">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      if (bindableTextList.ItemSource is not null)
+                      {
+                        bindableTextList.ItemSource = null;
+                      }
+                      else
+                      {
+                        bindableTextList.ItemSource = self.itemsToBind;
+                      }
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
               <CheckBox Text="Dummy">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               </CheckBox>
