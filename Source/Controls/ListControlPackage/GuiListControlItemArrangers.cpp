@@ -373,7 +373,7 @@ FreeHeightItemArranger
 					EnsureOffsetForItem(heights.Count() - 1);
 					if (forMoving)
 					{
-						for (vint i = 0; i < heights.Count() < 0; i++)
+						for (vint i = 0; i < heights.Count(); i++)
 						{
 							if (offsets[i] + heights[i] >= newBounds.Top())
 							{
@@ -386,21 +386,29 @@ FreeHeightItemArranger
 
 				void FreeHeightItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
-					vint styleHeight = callback->GetStylePreferredSize(GetStyleBounds(style)).y;
+					vint styleHeight = 0;
+					{
+						auto composition = GetStyleBounds(style);
+						auto currentBounds = callback->GetStyleBounds(composition);
+						callback->SetStyleBounds(composition, Rect(bounds.LeftTop(), Size(viewBounds.Width(), bounds.Height())));
+						styleHeight = callback->GetStylePreferredSize(GetStyleBounds(style)).y;
+						callback->SetStyleBounds(composition, currentBounds);
+					}
+
 					if (heights[index] != styleHeight)
 					{
 						heights[index] = styleHeight;
 						pim_heightUpdated = true;
 					}
 
-					vint styleOffset = index == 0 ? 0 : offsets[index - 1] + styleHeight;
+					vint styleOffset = index == 0 ? 0 : offsets[index - 1] + heights[index - 1];
 					if (availableOffsetCount <= index || offsets[index] != styleOffset)
 					{
 						offsets[index] = styleOffset;
 						availableOffsetCount = index;
 					}
 
-					bounds = Rect(Point(0, offsets[index]), Size(0, heights[index]));
+					bounds = Rect(Point(0, offsets[index]), Size(viewBounds.Width(), heights[index]));
 				}
 
 				bool FreeHeightItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
@@ -430,7 +438,7 @@ FreeHeightItemArranger
 				{
 					if (heights.Count() == 0) return Size(0, 0);
 					EnsureOffsetForItem(heights.Count());
-					return Size(0, offsets[heights.Count() - 1] + heights[heights.Count() - 1]);
+					return Size(viewBounds.Width(), offsets[heights.Count() - 1] + heights[heights.Count() - 1]);
 				}
 
 				FreeHeightItemArranger::FreeHeightItemArranger()
