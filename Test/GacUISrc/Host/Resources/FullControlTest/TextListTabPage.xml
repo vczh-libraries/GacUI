@@ -163,7 +163,7 @@
               </Button>
             </StackItem>
             <StackItem>
-              <Button Alt="X" Text="Rotate Item Source -->">
+              <Button Alt="X" Text="Rotate Item Source --&gt;">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <ev.Clicked-eval>
                   <![CDATA[

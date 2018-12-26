@@ -1,9 +1,7 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::DataGridTabPage" xmlns:demo="demo::*">
   <ref.Members>
     <![CDATA[
-      {
-        var tempData : observe MyDataItem^[] = null;
-      }
+      var tempData : observe MyDataItem^[] = null;
     ]]>
   </ref.Members>
   <ref.Ctor>
@@ -96,7 +94,7 @@
       </Cell>
 
       <Cell Site="row:1 column:0">
-        <Button Alt="X" Text="Rotate Item Source -->">
+        <Button Alt="X" Text="Rotate Item Source">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <ev.Clicked-eval>
             <![CDATA[
