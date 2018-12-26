@@ -95,7 +95,7 @@
 
       <Cell Site="row:1 column:0">
         <Button Alt="X" Text="Rotate Item Source">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.BoundsComposition-set/>
           <ev.Clicked-eval>
             <![CDATA[
               {
