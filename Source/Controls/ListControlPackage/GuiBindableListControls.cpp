@@ -730,6 +730,10 @@ GuiBindableTreeView::ItemSourceNode
 					return 1;
 				}
 
+				if (!childrenVirtualList)
+				{
+					PrepareChildren(PrepareValueList(itemSource));
+				}
 				vint count = 1;
 				FOREACH(Ptr<ItemSourceNode>, child, children)
 				{
@@ -740,6 +744,10 @@ GuiBindableTreeView::ItemSourceNode
 
 			vint GuiBindableTreeView::ItemSourceNode::GetChildCount()
 			{
+				if (!childrenVirtualList)
+				{
+					PrepareChildren(PrepareValueList(itemSource));
+				}
 				return children.Count();
 			}
 
@@ -750,6 +758,10 @@ GuiBindableTreeView::ItemSourceNode
 
 			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetChild(vint index)
 			{
+				if (!childrenVirtualList)
+				{
+					PrepareChildren(PrepareValueList(itemSource));
+				}
 				if (0 <= index && index < children.Count())
 				{
 					return children[index];
