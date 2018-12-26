@@ -312,7 +312,8 @@ GuiBindableTreeView
 					Ptr<description::IValueReadonlyList>			childrenVirtualList;
 					NodeList										children;
 
-					void											PrepareChildren();
+					Ptr<description::IValueReadonlyList>			PrepareValueList(const description::Value& inputItemSource);
+					void											PrepareChildren(Ptr<description::IValueReadonlyList> newValueList);
 					void											UnprepareChildren();
 				public:
 					ItemSourceNode(const description::Value& _itemSource, ItemSourceNode* _parent);

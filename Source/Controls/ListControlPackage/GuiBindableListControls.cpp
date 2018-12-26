@@ -595,41 +595,48 @@ GuiBindableListView
 GuiBindableTreeView::ItemSourceNode
 ***********************************************************************/
 
-			void GuiBindableTreeView::ItemSourceNode::PrepareChildren()
+			Ptr<description::IValueReadonlyList> GuiBindableTreeView::ItemSourceNode::PrepareValueList(const description::Value& inputItemSource)
+			{
+				if (auto value = ReadProperty(inputItemSource, rootProvider->childrenProperty))
+				{
+					if (auto ol = value.Cast<IValueObservableList>())
+					{
+						return ol;
+					}
+					else if (auto rl = value.Cast<IValueReadonlyList>())
+					{
+						return rl;
+					}
+					else
+					{
+						return IValueList::Create(GetLazyList<Value>(value));
+					}
+				}
+				else
+				{
+					return IValueList::Create();
+				}
+			}
+
+			void GuiBindableTreeView::ItemSourceNode::PrepareChildren(Ptr<description::IValueReadonlyList> newValueList)
 			{
 				if (!childrenVirtualList)
 				{
-					if (auto value = ReadProperty(itemSource, rootProvider->childrenProperty))
+					childrenVirtualList = newValueList;
+					if (auto ol = childrenVirtualList.Cast<IValueObservableList>())
 					{
-						if (auto ol = value.Cast<IValueObservableList>())
+						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
 						{
-							itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
+							callback->OnBeforeItemModified(this, start, oldCount, newCount);
+							children.RemoveRange(start, oldCount);
+							for (vint i = 0; i < newCount; i++)
 							{
-								callback->OnBeforeItemModified(this, start, oldCount, newCount);
-								children.RemoveRange(start, oldCount);
-								for (vint i = 0; i < newCount; i++)
-								{
-									Value value = childrenVirtualList->Get(start + i);
-									auto node = new ItemSourceNode(value, this);
-									children.Insert(start + i, node);
-								}
-								callback->OnAfterItemModified(this, start, oldCount, newCount);
-							});
-							childrenVirtualList = ol;
-						}
-						else if (auto rl = value.Cast<IValueReadonlyList>())
-						{
-							childrenVirtualList = rl;
-						}
-						else
-						{
-							childrenVirtualList = IValueList::Create(GetLazyList<Value>(value));
-						}
-					}
-
-					if (!childrenVirtualList)
-					{
-						childrenVirtualList = IValueList::Create();
+								Value value = childrenVirtualList->Get(start + i);
+								auto node = new ItemSourceNode(value, this);
+								children.Insert(start + i, node);
+							}
+							callback->OnAfterItemModified(this, start, oldCount, newCount);
+						});
 					}
 
 					vint count = childrenVirtualList->GetCount();
@@ -684,11 +691,14 @@ GuiBindableTreeView::ItemSourceNode
 
 			void GuiBindableTreeView::ItemSourceNode::SetItemSource(const description::Value& _itemSource)
 			{
-				vint oldCount = GetChildCount();
+				auto newVirtualList = PrepareValueList(_itemSource);
+				vint oldCount = childrenVirtualList ? childrenVirtualList->GetCount() : 0;
+				vint newCount = newVirtualList->GetCount();
+
+				callback->OnBeforeItemModified(this, 0, oldCount, newCount);
 				UnprepareChildren();
 				itemSource = _itemSource;
-				vint newCount = GetChildCount();
-				callback->OnBeforeItemModified(this, 0, oldCount, newCount);
+				PrepareChildren(newVirtualList);
 				callback->OnAfterItemModified(this, 0, oldCount, newCount);
 			}
 
@@ -720,7 +730,6 @@ GuiBindableTreeView::ItemSourceNode
 					return 1;
 				}
 
-				PrepareChildren();
 				vint count = 1;
 				FOREACH(Ptr<ItemSourceNode>, child, children)
 				{
@@ -731,7 +740,6 @@ GuiBindableTreeView::ItemSourceNode
 
 			vint GuiBindableTreeView::ItemSourceNode::GetChildCount()
 			{
-				PrepareChildren();
 				return children.Count();
 			}
 
@@ -742,7 +750,6 @@ GuiBindableTreeView::ItemSourceNode
 
 			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetChild(vint index)
 			{
-				PrepareChildren();
 				if (0 <= index && index < children.Count())
 				{
 					return children[index];
