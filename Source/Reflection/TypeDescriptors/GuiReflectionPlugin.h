@@ -271,6 +271,7 @@ Type List (Controls)
 			F(presentation::controls::GuiListControl::IItemArranger)\
 			F(presentation::controls::list::ItemProviderBase)\
 			F(presentation::controls::list::RangedItemArrangerBase)\
+			F(presentation::controls::list::FreeHeightItemArranger)\
 			F(presentation::controls::list::FixedHeightItemArranger)\
 			F(presentation::controls::list::FixedSizeMultiColumnItemArranger)\
 			F(presentation::controls::list::FixedHeightMultiColumnItemArranger)\

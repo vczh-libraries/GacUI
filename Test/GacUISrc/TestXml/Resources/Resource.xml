@@ -41,6 +41,9 @@
         <TextList ref.Name="textList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:8 right:0 bottom:0"/>
           <att.ItemTemplate>demo::TextListItemTemplate</att.ItemTemplate>
+          <att.Arranger>
+            <FreeHeightItemArranger/>
+          </att.Arranger>
         </TextList>
       </Window>
     </Instance>

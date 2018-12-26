@@ -236,6 +236,11 @@ Type Declaration (Extra)
 				CLASS_MEMBER_BASE(GuiListControl::IItemArranger)
 			END_CLASS_MEMBER(RangedItemArrangerBase)
 
+			BEGIN_CLASS_MEMBER(FreeHeightItemArranger)
+				CLASS_MEMBER_BASE(RangedItemArrangerBase)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<FreeHeightItemArranger>(), NO_PARAMETER)
+			END_CLASS_MEMBER(FreeHeightItemArranger)
+
 			BEGIN_CLASS_MEMBER(FixedHeightItemArranger)
 				CLASS_MEMBER_BASE(RangedItemArrangerBase)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<FixedHeightItemArranger>(), NO_PARAMETER)

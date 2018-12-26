@@ -348,6 +348,128 @@ RangedItemArrangerBase
 				}
 
 /***********************************************************************
+FreeHeightItemArranger
+***********************************************************************/
+
+				void FreeHeightItemArranger::EnsureOffsetForItem(vint itemIndex)
+				{
+					if (heights.Count() == 0) return;
+
+					if (availableOffsetCount == 0)
+					{
+						availableOffsetCount = 1;
+						offsets[0] = 0;
+					}
+
+					for (vint i = availableOffsetCount; i < itemIndex && i < heights.Count(); i++)
+					{
+						offsets[i] = offsets[i - 1] + heights[i - 1];
+					}
+				}
+
+				void FreeHeightItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
+				{
+				}
+
+				void FreeHeightItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				{
+				}
+
+				bool FreeHeightItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
+				{
+				}
+
+				bool FreeHeightItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+				{
+				}
+
+				void FreeHeightItemArranger::InvalidateItemSizeCache()
+				{
+					availableOffsetCount = 0;
+					for (vint i = 0; i < heights.Count(); i++)
+					{
+						heights[i] = 0;
+					}
+				}
+
+				Size FreeHeightItemArranger::OnCalculateTotalSize()
+				{
+					if (heights.Count() == 0) return Size(0, 0);
+					EnsureOffsetForItem(heights.Count());
+					return Size(0, offsets[heights.Count() - 1] + heights[heights.Count() - 1]);
+				}
+
+				FreeHeightItemArranger::FreeHeightItemArranger()
+				{
+				}
+
+				FreeHeightItemArranger::~FreeHeightItemArranger()
+				{
+				}
+
+				vint FreeHeightItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
+				{
+					vint count = itemProvider->Count();
+					if (count == 0) return -1;
+					switch (key)
+					{
+					case KeyDirection::Up:
+						itemIndex--;
+						break;
+					case KeyDirection::Down:
+						itemIndex++;
+						break;
+					case KeyDirection::Home:
+						itemIndex = 0;
+						break;
+					case KeyDirection::End:
+						itemIndex = count;
+						break;
+					case KeyDirection::PageUp:
+						EnsureOffsetForItem(itemIndex);
+						while (true)
+						{
+							--itemIndex;
+							if (itemIndex < 0) break;
+							if (offsets[itemIndex] + heights[itemIndex] <= viewBounds.Top()) break;
+						}
+						break;
+					case KeyDirection::PageDown:
+						while (true)
+						{
+							++itemIndex;
+							if (itemIndex > offsets.Count()) break;
+							EnsureOffsetForItem(itemIndex);
+							if (offsets[itemIndex] > -viewBounds.Bottom()) break;
+						}
+						break;
+					default:
+						return -1;
+					}
+
+					if (itemIndex < 0) return 0;
+					else if (itemIndex >= count) return count - 1;
+					else return itemIndex;
+				}
+
+				bool FreeHeightItemArranger::EnsureItemVisible(vint itemIndex)
+				{
+					if (callback)
+					{
+						return true;
+					}
+					return false;
+				}
+
+				Size FreeHeightItemArranger::GetAdoptedSize(Size expectedSize)
+				{
+					if (itemProvider)
+					{
+					}
+					return expectedSize;
+				}
+
+/***********************************************************************
 FixedHeightItemArranger
 ***********************************************************************/
 
