@@ -426,15 +426,25 @@ FreeHeightItemArranger
 
 				void FreeHeightItemArranger::OnAttached(GuiListControl::IItemProvider* provider)
 				{
-					vint itemCount = provider->Count();
-					heights.Resize(itemCount);
-					offsets.Resize(itemCount);
-					if (heights.Count() > 0)
+					if (provider)
 					{
-						memset(&heights[0], 0, sizeof(vint) * itemCount);
-						memset(&offsets[0], 0, sizeof(vint) * itemCount);
+						vint itemCount = provider->Count();
+						heights.Resize(itemCount);
+						offsets.Resize(itemCount);
+						if (heights.Count() > 0)
+						{
+							memset(&heights[0], 0, sizeof(vint) * itemCount);
+							memset(&offsets[0], 0, sizeof(vint) * itemCount);
+						}
+						availableOffsetCount = 0;
 					}
-					availableOffsetCount = 0;
+					else
+					{
+						heights.Resize(0);
+						offsets.Resize(0);
+						availableOffsetCount = 0;
+					}
+					RangedItemArrangerBase::OnAttached(provider);
 				}
 
 				void FreeHeightItemArranger::OnItemModified(vint start, vint count, vint newCount)
