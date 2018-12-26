@@ -994,7 +994,7 @@ GuiPopup
 				}
 				else
 				{
-					window->SetTopMost(false);
+					window->SetTopMost(true);
 				}
 				ShowDeactivated();
 			}

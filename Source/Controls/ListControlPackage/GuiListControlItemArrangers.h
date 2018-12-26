@@ -79,8 +79,8 @@ Predefined ItemArranger
 				class FreeHeightItemArranger : public RangedItemArrangerBase, public Description<FreeHeightItemArranger>
 				{
 				protected:
-					collections::List<vint>						heights;
-					collections::List<vint>						offsets;
+					collections::Array<vint>					heights;
+					collections::Array<vint>					offsets;
 					vint										availableOffsetCount = 0;
 
 					void										EnsureOffsetForItem(vint itemIndex);
@@ -96,6 +96,8 @@ Predefined ItemArranger
 					FreeHeightItemArranger();
 					~FreeHeightItemArranger();
 
+					void										OnAttached(GuiListControl::IItemProvider* provider)override;
+					void										OnItemModified(vint start, vint count, vint newCount)override;
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 					bool										EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;

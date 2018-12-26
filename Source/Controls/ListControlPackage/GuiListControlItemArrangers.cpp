@@ -397,6 +397,7 @@ FreeHeightItemArranger
 
 				bool FreeHeightItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
 				{
+					return false;
 				}
 
 				void FreeHeightItemArranger::InvalidateItemSizeCache()
@@ -421,6 +422,33 @@ FreeHeightItemArranger
 
 				FreeHeightItemArranger::~FreeHeightItemArranger()
 				{
+				}
+
+				void FreeHeightItemArranger::OnAttached(GuiListControl::IItemProvider* provider)
+				{
+					vint itemCount = provider->Count();
+					heights.Resize(itemCount);
+					offsets.Resize(itemCount);
+					if (heights.Count() > 0)
+					{
+						memset(&heights[0], 0, sizeof(vint) * itemCount);
+						memset(&offsets[0], 0, sizeof(vint) * itemCount);
+					}
+					availableOffsetCount = 0;
+				}
+
+				void FreeHeightItemArranger::OnItemModified(vint start, vint count, vint newCount)
+				{
+					availableOffsetCount = start;
+					vint itemCount = heights.Count() + newCount - count;
+					heights.Resize(itemCount);
+					offsets.Resize(itemCount);
+					if (start < itemCount)
+					{
+						memset(&heights[start], 0, sizeof(vint) * (itemCount - start));
+						memset(&offsets[start], 0, sizeof(vint) * (itemCount - start));
+					}
+					RangedItemArrangerBase::OnItemModified(start, count, newCount);
 				}
 
 				vint FreeHeightItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
