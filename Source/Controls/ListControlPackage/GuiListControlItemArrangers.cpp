@@ -369,14 +369,30 @@ FreeHeightItemArranger
 
 				void FreeHeightItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
 				{
+					EnsureOffsetForItem(newStartIndex - 1);
 				}
 
 				void FreeHeightItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
+					vint styleHeight = callback->GetStylePreferredSize(GetStyleBounds(style)).y;
+					if (heights[index] != styleHeight)
+					{
+						heights[index] = styleHeight;
+					}
+
+					vint styleOffset = index == 0 ? 0 : offsets[index - 1] + styleHeight;
+					if (availableOffsetCount <= index || offsets[index] != styleOffset)
+					{
+						offsets[index] = styleOffset;
+						availableOffsetCount = index;
+					}
+
+					bounds = Rect(Point(0, offsets[index]), Size(0, heights[index]));
 				}
 
 				bool FreeHeightItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
 				{
+					return bounds.Top() >= viewBounds.Bottom();
 				}
 
 				bool FreeHeightItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
