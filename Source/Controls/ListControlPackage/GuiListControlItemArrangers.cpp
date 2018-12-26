@@ -369,7 +369,19 @@ FreeHeightItemArranger
 
 				void FreeHeightItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
 				{
-					EnsureOffsetForItem(newStartIndex - 1);
+					pim_heightUpdated = false;
+					EnsureOffsetForItem(heights.Count() - 1);
+					if (forMoving)
+					{
+						for (vint i = 0; i < heights.Count() < 0; i++)
+						{
+							if (offsets[i] + heights[i] >= newBounds.Top())
+							{
+								newStartIndex = i;
+								break;
+							}
+						}
+					}
 				}
 
 				void FreeHeightItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
@@ -378,6 +390,7 @@ FreeHeightItemArranger
 					if (heights[index] != styleHeight)
 					{
 						heights[index] = styleHeight;
+						pim_heightUpdated = true;
 					}
 
 					vint styleOffset = index == 0 ? 0 : offsets[index - 1] + styleHeight;
@@ -397,6 +410,10 @@ FreeHeightItemArranger
 
 				bool FreeHeightItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
 				{
+					if (forMoving)
+					{
+						return pim_heightUpdated;
+					}
 					return false;
 				}
 
@@ -405,7 +422,7 @@ FreeHeightItemArranger
 					availableOffsetCount = 0;
 					for (vint i = 0; i < heights.Count(); i++)
 					{
-						heights[i] = 0;
+						heights[i] = 1;
 					}
 				}
 
@@ -431,10 +448,9 @@ FreeHeightItemArranger
 						vint itemCount = provider->Count();
 						heights.Resize(itemCount);
 						offsets.Resize(itemCount);
-						if (heights.Count() > 0)
+						for (vint i = 0; i < heights.Count(); i++)
 						{
-							memset(&heights[0], 0, sizeof(vint) * itemCount);
-							memset(&offsets[0], 0, sizeof(vint) * itemCount);
+							heights[i] = 1;
 						}
 						availableOffsetCount = 0;
 					}
@@ -453,10 +469,9 @@ FreeHeightItemArranger
 					vint itemCount = heights.Count() + newCount - count;
 					heights.Resize(itemCount);
 					offsets.Resize(itemCount);
-					if (start < itemCount)
+					for (vint i = 0; i < newCount; i++)
 					{
-						memset(&heights[start], 0, sizeof(vint) * (itemCount - start));
-						memset(&offsets[start], 0, sizeof(vint) * (itemCount - start));
+						heights[start + i] = 1;
 					}
 					RangedItemArrangerBase::OnItemModified(start, count, newCount);
 				}
@@ -517,9 +532,8 @@ FreeHeightItemArranger
 
 				Size FreeHeightItemArranger::GetAdoptedSize(Size expectedSize)
 				{
-					if (itemProvider)
-					{
-					}
+					vint h = expectedSize.x * 2;
+					if (expectedSize.y < h) expectedSize.y = h;
 					return expectedSize;
 				}
 

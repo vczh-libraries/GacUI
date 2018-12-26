@@ -78,6 +78,9 @@ Predefined ItemArranger
 				/// <summary>Free height item arranger. This arranger will cache heights of all items.</summary>
 				class FreeHeightItemArranger : public RangedItemArrangerBase, public Description<FreeHeightItemArranger>
 				{
+				private:
+					bool										pim_heightUpdated = false;
+
 				protected:
 					collections::Array<vint>					heights;
 					collections::Array<vint>					offsets;
