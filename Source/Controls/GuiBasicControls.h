@@ -91,7 +91,8 @@ Basic Construction
 				bool									isVisible = true;
 				WString									alt;
 				WString									text;
-				FontProperties							font;
+				Nullable<FontProperties>				font;
+				FontProperties							displayFont;
 				description::Value						context;
 				compositions::IGuiAltActionHost*		activatingAltHost = nullptr;
 				ControlServiceMap						controlServices;
@@ -117,6 +118,7 @@ Basic Construction
 				virtual void							OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget);
 				virtual void							OnBeforeReleaseGraphicsHost();
 				virtual void							UpdateVisuallyEnabled();
+				virtual void							UpdateDisplayFont();
 				void									OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
@@ -163,6 +165,8 @@ Basic Construction
 				compositions::GuiNotifyEvent			TextChanged;
 				/// <summary>Font changed event. This event will be raised when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			FontChanged;
+				/// <summary>Display font changed event. This event will be raised when the display font of the control is changed.</summary>
+				compositions::GuiNotifyEvent			DisplayFontChanged;
 				/// <summary>Context changed event. This event will be raised when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			ContextChanged;
 
@@ -267,12 +271,15 @@ Basic Construction
 				/// <summary>Set the text to display on the control.</summary>
 				/// <param name="value">The text to display on the control.</param>
 				virtual void							SetText(const WString& value);
-				/// <summary>Get the font to render the text.</summary>
+				/// <summary>Get the font of this control.</summary>
+				/// <returns>The font of this control.</returns>
+				virtual const Nullable<FontProperties>&	GetFont();
+				/// <summary>Set the font of this control.</summary>
+				/// <param name="value">The font of this control.</param>
+				virtual void							SetFont(const Nullable<FontProperties>& value);
+				/// <summary>Get the font to render the text. If the font of this control is null, then the display font is either the parent control's display font, or the system's default font when there is no parent control.</summary>
 				/// <returns>The font to render the text.</returns>
-				virtual const FontProperties&			GetFont();
-				/// <summary>Set the font to render the text.</summary>
-				/// <param name="value">The font to render the text.</param>
-				virtual void							SetFont(const FontProperties& value);
+				virtual const FontProperties&			GetDisplayFont();
 				/// <summary>Get the context of this control. The control template and all item templates (if it has) will see this context property.</summary>
 				/// <returns>The context of this context.</returns>
 				virtual description::Value				GetContext();

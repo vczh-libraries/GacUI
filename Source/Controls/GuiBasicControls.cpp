@@ -25,7 +25,7 @@ GuiControl
 			void GuiControl::AfterControlTemplateInstalled(bool initialize)
 			{
 				controlTemplateObject->SetText(text);
-				controlTemplateObject->SetFont(font);
+				controlTemplateObject->SetFont(displayFont);
 				controlTemplateObject->SetContext(context);
 				controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
 				controlTemplateObject->SetFocusableComposition(focusableComposition);
@@ -84,6 +84,7 @@ GuiControl
 				control->parent=this;
 				control->OnParentChanged(oldParent, control->parent);
 				control->UpdateVisuallyEnabled();
+				control->UpdateDisplayFont();
 
 				if (auto host = boundsComposition->GetRelatedGraphicsHost())
 				{
@@ -165,6 +166,29 @@ GuiControl
 					for (vint i = 0; i < children.Count(); i++)
 					{
 						children[i]->UpdateVisuallyEnabled();
+					}
+				}
+			}
+
+			void GuiControl::UpdateDisplayFont()
+			{
+				auto newValue =
+					font ? font.Value() :
+					parent ? parent->GetDisplayFont() :
+					GetCurrentController()->ResourceService()->GetDefaultFont();
+
+				if (displayFont != newValue)
+				{
+					displayFont = newValue;
+					if (controlTemplateObject)
+					{
+						controlTemplateObject->SetFont(displayFont);
+					}
+					DisplayFontChanged.Execute(GetNotifyEventArguments());
+
+					for (vint i = 0; i < children.Count(); i++)
+					{
+						children[i]->UpdateDisplayFont();
 					}
 				}
 			}
@@ -289,6 +313,7 @@ GuiControl
 
 			GuiControl::GuiControl(theme::ThemeName themeName)
 				:controlThemeName(themeName)
+				, displayFont(GetCurrentController()->ResourceService()->GetDefaultFont())
 				, flagDisposed(new bool(false))
 			{
 				{
@@ -311,6 +336,7 @@ GuiControl
 					EnabledChanged.SetAssociatedComposition(boundsComposition);
 					FocusedChanged.SetAssociatedComposition(boundsComposition);
 					VisuallyEnabledChanged.SetAssociatedComposition(boundsComposition);
+					DisplayFontChanged.SetAssociatedComposition(boundsComposition);
 					AltChanged.SetAssociatedComposition(boundsComposition);
 					TextChanged.SetAssociatedComposition(boundsComposition);
 					FontChanged.SetAssociatedComposition(boundsComposition);
@@ -579,22 +605,24 @@ GuiControl
 				}
 			}
 
-			const FontProperties& GuiControl::GetFont()
+			const Nullable<FontProperties>& GuiControl::GetFont()
 			{
 				return font;
 			}
 
-			void GuiControl::SetFont(const FontProperties& value)
+			void GuiControl::SetFont(const Nullable<FontProperties>& value)
 			{
 				if (font != value)
 				{
 					font = value;
-					if (controlTemplateObject)
-					{
-						controlTemplateObject->SetFont(font);
-					}
 					FontChanged.Execute(GetNotifyEventArguments());
+					UpdateDisplayFont();
 				}
+			}
+
+			const FontProperties& GuiControl::GetDisplayFont()
+			{
+				return displayFont;
 			}
 			
 			description::Value GuiControl::GetContext()
