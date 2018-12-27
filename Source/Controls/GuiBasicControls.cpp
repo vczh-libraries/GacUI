@@ -342,7 +342,6 @@ GuiControl
 					FontChanged.SetAssociatedComposition(boundsComposition);
 					ContextChanged.SetAssociatedComposition(boundsComposition);
 				}
-				font = GetCurrentController()->ResourceService()->GetDefaultFont();
 				sharedPtrDestructorProc = &GuiControl::SharedPtrDestructorProc;
 			}
 

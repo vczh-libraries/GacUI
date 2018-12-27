@@ -38,13 +38,51 @@
         ]]>
       </ref.Ctor>
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480" TopMost="true">
-        <TextList ref.Name="textList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:8 right:0 bottom:0"/>
-          <att.ItemTemplate>demo::TextListItemTemplate</att.ItemTemplate>
-          <att.Arranger>
-            <FreeHeightItemArranger/>
-          </att.Arranger>
-        </TextList>
+        <Table AlignmentToParent="left:0 top:8 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <Button Enabled-bind="self.Font is null" Text="Set Font to &quot;Lucida Calligraphy&quot;">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    self.Font = {fontFamily:"Lucida Calligraphy" size:20};
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:0 column:1">
+            <Button Enabled-bind="self.Font is not null" Text-format="Set Font to default ($(INativeController::GetCurrentController().ResourceService().DefaultFont.fontFamily))">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    self.Font = null;
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:1 column:0 columnSpan:3">
+            <TextList ref.Name="textList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ItemTemplate>demo::TextListItemTemplate</att.ItemTemplate>
+              <att.Arranger>
+                <FreeHeightItemArranger/>
+              </att.Arranger>
+            </TextList>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>
