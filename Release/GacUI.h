@@ -13837,6 +13837,7 @@ Predefined ItemArranger
 
 			namespace list
 			{
+
 				/// <summary>Ranged item arranger. This arranger implements most of the common functionality for those arrangers that display a continuing subset of item at a time.</summary>
 				class RangedItemArrangerBase : public Object, virtual public GuiListControl::IItemArranger, public Description<RangedItemArrangerBase>
 				{
@@ -13886,6 +13887,36 @@ Predefined ItemArranger
 					vint										GetVisibleIndex(GuiListControl::ItemStyle* style)override;
 					void										ReloadVisibleStyles()override;
 					void										OnViewChanged(Rect bounds)override;
+				};
+				/// <summary>Free height item arranger. This arranger will cache heights of all items.</summary>
+				class FreeHeightItemArranger : public RangedItemArrangerBase, public Description<FreeHeightItemArranger>
+				{
+				private:
+					bool										pim_heightUpdated = false;
+
+				protected:
+					collections::Array<vint>					heights;
+					collections::Array<vint>					offsets;
+					vint										availableOffsetCount = 0;
+
+					void										EnsureOffsetForItem(vint itemIndex);
+
+					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
+					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+					void										InvalidateItemSizeCache()override;
+					Size										OnCalculateTotalSize()override;
+				public:
+					/// <summary>Create the arranger.</summary>
+					FreeHeightItemArranger();
+					~FreeHeightItemArranger();
+
+					void										OnAttached(GuiListControl::IItemProvider* provider)override;
+					void										OnItemModified(vint start, vint count, vint newCount)override;
+					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
+					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 				
 				/// <summary>Fixed height item arranger. This arranger lists all item with the same height value. This value is the maximum height of all minimum heights of displayed items.</summary>
@@ -14795,7 +14826,8 @@ GuiBindableTreeView
 					Ptr<description::IValueReadonlyList>			childrenVirtualList;
 					NodeList										children;
 
-					void											PrepareChildren();
+					Ptr<description::IValueReadonlyList>			PrepareValueList(const description::Value& inputItemSource);
+					void											PrepareChildren(Ptr<description::IValueReadonlyList> newValueList);
 					void											UnprepareChildren();
 				public:
 					ItemSourceNode(const description::Value& _itemSource, ItemSourceNode* _parent);

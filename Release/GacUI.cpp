@@ -2147,10 +2147,13 @@ GuiScrollView
 				{
 					if (auto scroll = GetControlTemplateObject(true)->GetHorizontalScroll())
 					{
-						vint position = scroll->GetPosition();
-						vint move = scroll->GetSmallMove();
-						position -= move * arguments.wheel / 60;
-						scroll->SetPosition(position);
+						if (scroll->GetEnabled())
+						{
+							vint position = scroll->GetPosition();
+							vint move = scroll->GetSmallMove();
+							position -= move * arguments.wheel / 60;
+							scroll->SetPosition(position);
+						}
 					}
 				}
 			}
@@ -2161,10 +2164,13 @@ GuiScrollView
 				{
 					if (auto scroll = GetControlTemplateObject(true)->GetVerticalScroll())
 					{
-						vint position = scroll->GetPosition();
-						vint move = scroll->GetSmallMove();
-						position -= move * arguments.wheel / 60;
-						scroll->SetPosition(position);
+						if (scroll->GetEnabled())
+						{
+							vint position = scroll->GetPosition();
+							vint move = scroll->GetSmallMove();
+							position -= move * arguments.wheel / 60;
+							scroll->SetPosition(position);
+						}
 					}
 				}
 			}
@@ -4523,7 +4529,7 @@ GuiPopup
 				}
 				else
 				{
-					window->SetTopMost(false);
+					window->SetTopMost(true);
 				}
 				ShowDeactivated();
 			}
@@ -6266,41 +6272,48 @@ GuiBindableListView
 GuiBindableTreeView::ItemSourceNode
 ***********************************************************************/
 
-			void GuiBindableTreeView::ItemSourceNode::PrepareChildren()
+			Ptr<description::IValueReadonlyList> GuiBindableTreeView::ItemSourceNode::PrepareValueList(const description::Value& inputItemSource)
+			{
+				if (auto value = ReadProperty(inputItemSource, rootProvider->childrenProperty))
+				{
+					if (auto ol = value.Cast<IValueObservableList>())
+					{
+						return ol;
+					}
+					else if (auto rl = value.Cast<IValueReadonlyList>())
+					{
+						return rl;
+					}
+					else
+					{
+						return IValueList::Create(GetLazyList<Value>(value));
+					}
+				}
+				else
+				{
+					return IValueList::Create();
+				}
+			}
+
+			void GuiBindableTreeView::ItemSourceNode::PrepareChildren(Ptr<description::IValueReadonlyList> newValueList)
 			{
 				if (!childrenVirtualList)
 				{
-					if (auto value = ReadProperty(itemSource, rootProvider->childrenProperty))
+					childrenVirtualList = newValueList;
+					if (auto ol = childrenVirtualList.Cast<IValueObservableList>())
 					{
-						if (auto ol = value.Cast<IValueObservableList>())
+						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
 						{
-							itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
+							callback->OnBeforeItemModified(this, start, oldCount, newCount);
+							children.RemoveRange(start, oldCount);
+							for (vint i = 0; i < newCount; i++)
 							{
-								callback->OnBeforeItemModified(this, start, oldCount, newCount);
-								children.RemoveRange(start, oldCount);
-								for (vint i = 0; i < newCount; i++)
-								{
-									Value value = childrenVirtualList->Get(start + i);
-									auto node = new ItemSourceNode(value, this);
-									children.Insert(start + i, node);
-								}
-								callback->OnAfterItemModified(this, start, oldCount, newCount);
-							});
-							childrenVirtualList = ol;
-						}
-						else if (auto rl = value.Cast<IValueReadonlyList>())
-						{
-							childrenVirtualList = rl;
-						}
-						else
-						{
-							childrenVirtualList = IValueList::Create(GetLazyList<Value>(value));
-						}
-					}
-
-					if (!childrenVirtualList)
-					{
-						childrenVirtualList = IValueList::Create();
+								Value value = childrenVirtualList->Get(start + i);
+								auto node = new ItemSourceNode(value, this);
+								children.Insert(start + i, node);
+							}
+							callback->OnAfterItemModified(this, start, oldCount, newCount);
+						});
 					}
 
 					vint count = childrenVirtualList->GetCount();
@@ -6355,11 +6368,14 @@ GuiBindableTreeView::ItemSourceNode
 
 			void GuiBindableTreeView::ItemSourceNode::SetItemSource(const description::Value& _itemSource)
 			{
-				vint oldCount = GetChildCount();
+				auto newVirtualList = PrepareValueList(_itemSource);
+				vint oldCount = childrenVirtualList ? childrenVirtualList->GetCount() : 0;
+				vint newCount = newVirtualList->GetCount();
+
+				callback->OnBeforeItemModified(this, 0, oldCount, newCount);
 				UnprepareChildren();
 				itemSource = _itemSource;
-				vint newCount = GetChildCount();
-				callback->OnBeforeItemModified(this, 0, oldCount, newCount);
+				PrepareChildren(newVirtualList);
 				callback->OnAfterItemModified(this, 0, oldCount, newCount);
 			}
 
@@ -6391,7 +6407,10 @@ GuiBindableTreeView::ItemSourceNode
 					return 1;
 				}
 
-				PrepareChildren();
+				if (!childrenVirtualList)
+				{
+					PrepareChildren(PrepareValueList(itemSource));
+				}
 				vint count = 1;
 				FOREACH(Ptr<ItemSourceNode>, child, children)
 				{
@@ -6402,7 +6421,10 @@ GuiBindableTreeView::ItemSourceNode
 
 			vint GuiBindableTreeView::ItemSourceNode::GetChildCount()
 			{
-				PrepareChildren();
+				if (!childrenVirtualList)
+				{
+					PrepareChildren(PrepareValueList(itemSource));
+				}
 				return children.Count();
 			}
 
@@ -6413,7 +6435,10 @@ GuiBindableTreeView::ItemSourceNode
 
 			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetChild(vint index)
 			{
-				PrepareChildren();
+				if (!childrenVirtualList)
+				{
+					PrepareChildren(PrepareValueList(itemSource));
+				}
 				if (0 <= index && index < children.Count())
 				{
 					return children[index];
@@ -8453,6 +8478,204 @@ RangedItemArrangerBase
 						}
 						suppressOnViewChanged = false;
 					}
+				}
+
+/***********************************************************************
+FreeHeightItemArranger
+***********************************************************************/
+
+				void FreeHeightItemArranger::EnsureOffsetForItem(vint itemIndex)
+				{
+					if (heights.Count() == 0) return;
+
+					if (availableOffsetCount == 0)
+					{
+						availableOffsetCount = 1;
+						offsets[0] = 0;
+					}
+
+					for (vint i = availableOffsetCount; i < itemIndex && i < heights.Count(); i++)
+					{
+						offsets[i] = offsets[i - 1] + heights[i - 1];
+					}
+				}
+
+				void FreeHeightItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
+				{
+					pim_heightUpdated = false;
+					EnsureOffsetForItem(heights.Count() - 1);
+					if (forMoving)
+					{
+						for (vint i = 0; i < heights.Count(); i++)
+						{
+							if (offsets[i] + heights[i] >= newBounds.Top())
+							{
+								newStartIndex = i;
+								break;
+							}
+						}
+					}
+				}
+
+				void FreeHeightItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				{
+					vint styleHeight = 0;
+					{
+						auto composition = GetStyleBounds(style);
+						auto currentBounds = callback->GetStyleBounds(composition);
+						callback->SetStyleBounds(composition, Rect(bounds.LeftTop(), Size(viewBounds.Width(), bounds.Height())));
+						styleHeight = callback->GetStylePreferredSize(GetStyleBounds(style)).y;
+						callback->SetStyleBounds(composition, currentBounds);
+					}
+
+					if (heights[index] != styleHeight)
+					{
+						heights[index] = styleHeight;
+						pim_heightUpdated = true;
+					}
+
+					vint styleOffset = index == 0 ? 0 : offsets[index - 1] + heights[index - 1];
+					if (availableOffsetCount <= index || offsets[index] != styleOffset)
+					{
+						offsets[index] = styleOffset;
+						availableOffsetCount = index;
+					}
+
+					bounds = Rect(Point(0, offsets[index]), Size(viewBounds.Width(), heights[index]));
+				}
+
+				bool FreeHeightItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
+				{
+					return bounds.Top() >= viewBounds.Bottom();
+				}
+
+				bool FreeHeightItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+				{
+					if (forMoving)
+					{
+						return pim_heightUpdated;
+					}
+					return false;
+				}
+
+				void FreeHeightItemArranger::InvalidateItemSizeCache()
+				{
+					availableOffsetCount = 0;
+					for (vint i = 0; i < heights.Count(); i++)
+					{
+						heights[i] = 1;
+					}
+				}
+
+				Size FreeHeightItemArranger::OnCalculateTotalSize()
+				{
+					if (heights.Count() == 0) return Size(0, 0);
+					EnsureOffsetForItem(heights.Count());
+					return Size(viewBounds.Width(), offsets[heights.Count() - 1] + heights[heights.Count() - 1]);
+				}
+
+				FreeHeightItemArranger::FreeHeightItemArranger()
+				{
+				}
+
+				FreeHeightItemArranger::~FreeHeightItemArranger()
+				{
+				}
+
+				void FreeHeightItemArranger::OnAttached(GuiListControl::IItemProvider* provider)
+				{
+					if (provider)
+					{
+						vint itemCount = provider->Count();
+						heights.Resize(itemCount);
+						offsets.Resize(itemCount);
+						for (vint i = 0; i < heights.Count(); i++)
+						{
+							heights[i] = 1;
+						}
+						availableOffsetCount = 0;
+					}
+					else
+					{
+						heights.Resize(0);
+						offsets.Resize(0);
+						availableOffsetCount = 0;
+					}
+					RangedItemArrangerBase::OnAttached(provider);
+				}
+
+				void FreeHeightItemArranger::OnItemModified(vint start, vint count, vint newCount)
+				{
+					availableOffsetCount = start;
+					vint itemCount = heights.Count() + newCount - count;
+					heights.Resize(itemCount);
+					offsets.Resize(itemCount);
+					for (vint i = 0; i < newCount; i++)
+					{
+						heights[start + i] = 1;
+					}
+					RangedItemArrangerBase::OnItemModified(start, count, newCount);
+				}
+
+				vint FreeHeightItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
+				{
+					vint count = itemProvider->Count();
+					if (count == 0) return -1;
+					switch (key)
+					{
+					case KeyDirection::Up:
+						itemIndex--;
+						break;
+					case KeyDirection::Down:
+						itemIndex++;
+						break;
+					case KeyDirection::Home:
+						itemIndex = 0;
+						break;
+					case KeyDirection::End:
+						itemIndex = count;
+						break;
+					case KeyDirection::PageUp:
+						EnsureOffsetForItem(itemIndex);
+						while (true)
+						{
+							--itemIndex;
+							if (itemIndex < 0) break;
+							if (offsets[itemIndex] + heights[itemIndex] <= viewBounds.Top()) break;
+						}
+						break;
+					case KeyDirection::PageDown:
+						while (true)
+						{
+							++itemIndex;
+							if (itemIndex > offsets.Count()) break;
+							EnsureOffsetForItem(itemIndex);
+							if (offsets[itemIndex] > -viewBounds.Bottom()) break;
+						}
+						break;
+					default:
+						return -1;
+					}
+
+					if (itemIndex < 0) return 0;
+					else if (itemIndex >= count) return count - 1;
+					else return itemIndex;
+				}
+
+				bool FreeHeightItemArranger::EnsureItemVisible(vint itemIndex)
+				{
+					if (callback)
+					{
+						return true;
+					}
+					return false;
+				}
+
+				Size FreeHeightItemArranger::GetAdoptedSize(Size expectedSize)
+				{
+					vint h = expectedSize.x * 2;
+					if (expectedSize.y < h) expectedSize.y = h;
+					return expectedSize;
 				}
 
 /***********************************************************************
