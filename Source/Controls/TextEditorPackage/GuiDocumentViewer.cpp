@@ -362,7 +362,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::MergeBaselineAndDefaultFont(Ptr<DocumentModel> document)
 			{
-				document->MergeDefaultFont(documentControl->GetFont());
+				document->MergeDefaultFont(documentControl->GetDisplayFont());
 				if (baselineDocument)
 				{
 					document->MergeBaselineStyles(baselineDocument);
