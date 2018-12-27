@@ -59,6 +59,7 @@ ComboBox with GuiListControl
 				templates::GuiTemplate*						itemStyleController = nullptr;
 				Ptr<compositions::IGuiGraphicsEventHandler>	boundsChangedHandler;
 
+				void										UpdateDisplayFont()override;
 				void										BeforeControlTemplateUninstalled()override;
 				void										AfterControlTemplateInstalled(bool initialize)override;
 				void										RemoveStyleController();
@@ -66,7 +67,6 @@ ComboBox with GuiListControl
 				virtual void								DisplaySelectedContent(vint itemIndex);
 				void										AdoptSubMenuSize();
 				void										OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

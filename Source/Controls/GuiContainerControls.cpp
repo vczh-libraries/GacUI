@@ -276,6 +276,12 @@ GuiScrollView
 				CalculateView();
 			}
 
+			void GuiScrollView::UpdateDisplayFont()
+			{
+				GuiControl::UpdateDisplayFont();
+				CalculateView();
+			}
+
 			void GuiScrollView::OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				InvokeOrDelayIfRendering([=]()
@@ -397,7 +403,7 @@ GuiScrollView
 
 			vint GuiScrollView::GetSmallMove()
 			{
-				return GetFont().size * 2;
+				return GetDisplayFont().size * 2;
 			}
 
 			Size GuiScrollView::GetBigMove()
@@ -407,12 +413,6 @@ GuiScrollView
 			
 			GuiScrollView::~GuiScrollView()
 			{
-			}
-
-			void GuiScrollView::SetFont(const FontProperties& value)
-			{
-				GuiControl::SetFont(value);
-				CalculateView();
 			}
 
 			void GuiScrollView::CalculateView()

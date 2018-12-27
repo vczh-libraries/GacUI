@@ -157,7 +157,7 @@ GuiListControl
 
 			void GuiListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style)
 			{
-				style->SetFont(GetFont());
+				style->SetFont(GetDisplayFont());
 				style->SetContext(GetContext());
 				style->SetText(itemProvider->GetTextValue(itemIndex));
 				style->SetVisuallyEnabled(GetVisuallyEnabled());
@@ -239,6 +239,15 @@ GuiListControl
 				CalculateView();
 			}
 
+			void GuiListControl::UpdateDisplayFont()
+			{
+				GuiControl::UpdateDisplayFont();
+				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				{
+					style->SetFont(GetDisplayFont());
+				}
+			}
+
 			void GuiListControl::OnClientBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				auto args = GetNotifyEventArguments();
@@ -250,14 +259,6 @@ GuiListControl
 				FOREACH(ItemStyle*, style, visibleStyles.Keys())
 				{
 					style->SetVisuallyEnabled(GetVisuallyEnabled());
-				}
-			}
-
-			void GuiListControl::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				FOREACH(ItemStyle*, style, visibleStyles.Keys())
-				{
-					style->SetFont(GetFont());
 				}
 			}
 
@@ -378,7 +379,6 @@ GuiListControl
 				:GuiScrollView(themeName)
 				, itemProvider(_itemProvider)
 			{
-				FontChanged.AttachMethod(this, &GuiListControl::OnFontChanged);
 				ContextChanged.AttachMethod(this, &GuiListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
 				containerComposition->BoundsChanged.AttachMethod(this, &GuiListControl::OnClientBoundsChanged);

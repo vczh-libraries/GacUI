@@ -118,7 +118,7 @@ DateComboBox
 				/// <summary>Selected data changed event.</summary>
 				compositions::GuiNotifyEvent							SelectedDateChanged;
 				
-				void													SetFont(const FontProperties& value)override;
+				void													SetFont(const Nullable<FontProperties>& value)override;
 				/// <summary>Get the displayed date.</summary>
 				/// <returns>The date.</returns>
 				const DateTime&											GetSelectedDate();

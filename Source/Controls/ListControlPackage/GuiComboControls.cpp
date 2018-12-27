@@ -49,6 +49,16 @@ GuiComboBoxBase
 GuiComboBoxListControl
 ***********************************************************************/
 
+			void GuiComboBoxListControl::UpdateDisplayFont()
+			{
+				GuiControl::UpdateDisplayFont();
+				if (itemStyleController)
+				{
+					itemStyleController->SetFont(GetDisplayFont());
+				}
+				AdoptSubMenuSize();
+			}
+
 			void GuiComboBoxListControl::BeforeControlTemplateUninstalled()
 			{
 				GuiComboBoxBase::BeforeControlTemplateUninstalled();
@@ -82,7 +92,7 @@ GuiComboBoxListControl
 							{
 								itemStyleController = style;
 								itemStyleController->SetText(GetText());
-								itemStyleController->SetFont(GetFont());
+								itemStyleController->SetFont(GetDisplayFont());
 								itemStyleController->SetContext(GetContext());
 								itemStyleController->SetVisuallyEnabled(GetVisuallyEnabled());
 								itemStyleController->SetAlignmentToParent(Margin(0, 0, 0, 0));
@@ -116,7 +126,7 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::AdoptSubMenuSize()
 			{
-				Size expectedSize(0, GetFont().size * 20);
+				Size expectedSize(0, GetDisplayFont().size * 20);
 				Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
 
 				Size clientSize = GetPreferredMenuClientSize();
@@ -135,15 +145,6 @@ GuiComboBoxListControl
 				{
 					itemStyleController->SetText(GetText());
 				}
-			}
-
-			void GuiComboBoxListControl::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				if (itemStyleController)
-				{
-					itemStyleController->SetFont(GetFont());
-				}
-				AdoptSubMenuSize();
 			}
 
 			void GuiComboBoxListControl::OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -235,7 +236,6 @@ GuiComboBoxListControl
 				, containedListControl(_containedListControl)
 			{
 				TextChanged.AttachMethod(this, &GuiComboBoxListControl::OnTextChanged);
-				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
 				ContextChanged.AttachMethod(this, &GuiComboBoxListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiComboBoxListControl::OnVisuallyEnabledChanged);
 				AfterSubMenuOpening.AttachMethod(this, &GuiComboBoxListControl::OnAfterSubMenuOpening);

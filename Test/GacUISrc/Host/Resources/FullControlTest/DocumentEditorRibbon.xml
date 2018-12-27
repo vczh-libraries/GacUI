@@ -103,7 +103,7 @@
             </Cell>
 
             <Cell Site="row:1 column:0">
-              <SolidLabel Text-bind="ViewModel.Name" Font-eval="containerControl.Font" Ellipse="true" HorizontalAlignment="Center">
+              <SolidLabel Text-bind="ViewModel.Name" Font-eval="containerControl.DisplayFont" Ellipse="true" HorizontalAlignment="Center">
                 <att.Color-bind>
                   <![CDATA[cast Color (self.Selected ? "#FFFFFF" : "#808080")]]>
                 </att.Color-bind>
@@ -114,7 +114,7 @@
           <att.TooltipControl>
             <CustomControl>
               <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
-                <SolidLabel Text-bind="ViewModel.Name" Color="#FFFFFF" Font-eval="containerControl.Font"/>
+                <SolidLabel Text-bind="ViewModel.Name" Color="#FFFFFF" Font-eval="containerControl.DisplayFont"/>
               </Bounds>
             </CustomControl>
           </att.TooltipControl>

@@ -236,7 +236,7 @@ GuiDateComboBox
 			{
 			}
 
-			void GuiDateComboBox::SetFont(const FontProperties& value)
+			void GuiDateComboBox::SetFont(const Nullable<FontProperties>& value)
 			{
 				GuiComboBoxBase::SetFont(value);
 				datePicker->SetFont(value);

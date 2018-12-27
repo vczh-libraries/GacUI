@@ -61,11 +61,12 @@ MultilineTextBox
 				elements::GuiColorizedTextElement*			textElement = nullptr;
 				compositions::GuiBoundsComposition*			textComposition = nullptr;
 
-				void										CalculateViewAndSetScroll();
+				void										UpdateVisuallyEnabled()override;
+				void										UpdateDisplayFont()override;
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
 				Size										QueryFullSize()override;
 				void										UpdateView(Rect viewBounds)override;
-				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										CalculateViewAndSetScroll();
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
@@ -75,7 +76,6 @@ MultilineTextBox
 
 				const WString&								GetText()override;
 				void										SetText(const WString& value)override;
-				void										SetFont(const FontProperties& value)override;
 			};
 
 /***********************************************************************
@@ -107,9 +107,10 @@ SinglelineTextBox
 				compositions::GuiTableComposition*			textCompositionTable = nullptr;
 				compositions::GuiCellComposition*			textComposition = nullptr;
 				
+				void										UpdateVisuallyEnabled()override;
+				void										UpdateDisplayFont()override;
 				void										RearrangeTextElement();
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
-				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
@@ -119,7 +120,6 @@ SinglelineTextBox
 
 				const WString&								GetText()override;
 				void										SetText(const WString& value)override;
-				void										SetFont(const FontProperties& value)override;
 
 				/// <summary>
 				/// Get the password mode displaying character.
