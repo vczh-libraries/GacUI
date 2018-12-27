@@ -91,7 +91,7 @@
             </Cell>
 
             <Cell Site="row:0 column:3 rowSpan:3">
-              <SolidLabel Color="#FF8000" Text-bind="ToString(self.Category)" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center" Ellipse="true"/>
+              <SolidLabel Color="#FF8000" Text-bind="ToString(self.Category)" Font-bind="self.DisplayFont" HorizontalAlignment="Left" VerticalAlignment="Center" Ellipse="true"/>
             </Cell>
           </Table>
         </CustomControl>

@@ -170,12 +170,12 @@ So as I pray, unlimited blade works.]]>
       <TabPage ref.Name="self" Text="TextBox">
         <ev.OnMakeFontLarger-eval>
           <![CDATA[
-            self.UpdateFont(ChangeFontSize(t1.Font, 5));
+            self.UpdateFont(ChangeFontSize(t1.DisplayFont, 5));
           ]]>
         </ev.OnMakeFontLarger-eval>
         <ev.OnMakeFontSmaller-eval>
           <![CDATA[
-            self.UpdateFont(ChangeFontSize(t1.Font, -5));
+            self.UpdateFont(ChangeFontSize(t1.DisplayFont, -5));
           ]]>
         </ev.OnMakeFontSmaller-eval>
 
