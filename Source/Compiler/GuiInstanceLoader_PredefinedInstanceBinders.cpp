@@ -325,18 +325,8 @@ GuiLocalizedStringInstanceBinder (str)
 
 					if (errorCount == errors.Count())
 					{
-						auto stringExpr = MakePtr<WfStringExpression>();
-						stringExpr->value.value = L"";
-						stringExpr->codeRange = expression->codeRange;
-
-						auto recoveryExpr = MakePtr<WfBinaryExpression>();
-						recoveryExpr->op = WfBinaryOperator::FailedThen;
-						recoveryExpr->first = expression;
-						recoveryExpr->second = stringExpr;
-						recoveryExpr->codeRange = expression->codeRange;
-
 						auto bindExpr = MakePtr<WfBindExpression>();
-						bindExpr->expression = recoveryExpr;
+						bindExpr->expression = expression;
 						bindExpr->codeRange = expression->codeRange;
 
 						return Workflow_InstallBindProperty(precompileContext, resolvingResult, variableName, propertyInfo, bindExpr);
