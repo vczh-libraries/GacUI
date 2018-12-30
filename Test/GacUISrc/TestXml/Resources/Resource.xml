@@ -9,47 +9,31 @@
       </ThemeTemplates>
     </Instance>
   </Instance>
-  
-  <Script name="ViewModelResource">
-    <Workflow>
-      <![CDATA[
-        module viewmodel;
-        
-        using system::*;
-        
-        class NodeViewModel
-        {
-          prop Text : string = "" {}
-          prop Children : observe NodeViewModel^[] = null {not observe}
-        
-          static func CreateNode(prefix : string, level: int, index: int) : NodeViewModel^
-          {
-            var nodePrefix =
-              level == 0 ? "" :
-              level == 1 ? $"$(index)" :
-              $"$(prefix)-$(index)"
-              ;
-            var node = new NodeViewModel^();
-            node.Text = $"$(nodePrefix): $(Sys::LoremIpsumSentence(50))";
-            if (level < 3)
-            {
-              node.Children = {};
-              for (i in range[0, 20))
-              {
-                node.Children.Add(CreateNode(nodePrefix, level + 1, i));
-              }
-            }
-            return node;
-          }
-        }
-      ]]>
-    </Workflow>
-  </Script>
 
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
+      <ref.Members>
+        <![CDATA[
+          func GetLocaleIndex(locale: Locale): int
+          {
+            for (i in range (0, listLocales.Items.Count))
+            {
+              if (listLocales.Items[i].Text == locale)
+              {
+                return i;
+              }
+            }
+            return 0;
+          }
+          
+          var dateTime: DateTime = Sys::GetLocalTime();
+          var number: int = 2147483647;
+          var currency: double = 1342177.28;
+        ]]>
+      </ref.Members>
+      <ref.LocalizedStrings Name="Strings" Class="demo::StringResource" Default="true"/>
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480" TopMost="true">
-        <Table AlignmentToParent="left:0 top:8 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
@@ -61,39 +45,54 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Button Enabled-bind="self.Font is null" Text="Set Font to &quot;Lucida Calligraphy&quot;">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    self.Font = {fontFamily:"Lucida Calligraphy" size:20};
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
+            <SolidLabel Font-bind="self.DisplayFont" Color="#FFFFFF" Text-str="Label()" VerticalAlignment="Center"/>
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <Button Enabled-bind="self.Font is not null" Text-format="Set Font to default ($(INativeController::GetCurrentController().ResourceService().DefaultFont.fontFamily))">
-              <ev.Clicked-eval>
+            <ComboBox ref.Name="comboLocales">
+              <att.BoundsComposition-set PreferredMinSize="x:120"/>
+              <att.SelectedIndex-bind>self.GetLocaleIndex(Application::GetApplication().Locale)</att.SelectedIndex-bind>
+              <ev.SelectedIndexChanged-eval>
                 <![CDATA[
                   {
-                    self.Font = null;
+                    var index = comboLocales.SelectedIndex;
+                    if (index == -1)
+                    {
+                      index = 0;
+                    }
+                    Application::GetApplication().Locale = cast Locale listLocales.Items[index].Text;
                   }
                 ]]>
-              </ev.Clicked-eval>
-            </Button>
+              </ev.SelectedIndexChanged-eval>
+              <att.ListControl>
+                <TextList ref.Name="listLocales" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <_ Text="en-US"/>
+                    <_ Text="zh-CN"/>
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+            </ComboBox>
           </Cell>
 
           <Cell Site="row:1 column:0 columnSpan:3">
-            <BindableTreeView ref.Name="textList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="NodeViewModel^">
+            <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <att.ItemSource-eval>NodeViewModel::CreateNode("", 0, 0)</att.ItemSource-eval>
-              <att.TextProperty>Text</att.TextProperty>
-              <att.ChildrenProperty>Children</att.ChildrenProperty>
-              <att.Arranger>
-                <FreeHeightItemArranger/>
-              </att.Arranger>
-            </BindableTreeView>
+              <att.Items>
+                <_ Text-str="ShortDate(self.dateTime)"/>
+                <_ Text-str="LongDate(self.dateTime)"/>
+                <_ Text-str="YearMonthDate(self.dateTime)"/>
+                <_ Text-str="ShortTime(self.dateTime)"/>
+                <_ Text-str="LongTime(self.dateTime)"/>
+                <_ Text-str="DateFormat(self.dateTime)"/>
+                <_ Text-str="TimeFormat(self.dateTime)"/>
+                <_ Text-str="Number(self.number)"/>
+                <_ Text-str="Currency(self.currency)"/>
+                <_ Text-str="Sentence('John Smith')"/>
+                <_ Text-str="Strings.Sentence('John Smith')"/>
+                <_ Text-bind="self.Strings.Sentence('John Smith')"/>
+              </att.Items>
+            </TextList>
           </Cell>
         </Table>
       </Window>
