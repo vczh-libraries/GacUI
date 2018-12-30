@@ -24,7 +24,11 @@
         
           static func CreateNode(prefix : string, level: int, index: int) : NodeViewModel^
           {
-            var nodePrefix = $"$(prefix)-$(index)";
+            var nodePrefix =
+              level == 0 ? "" :
+              level == 1 ? $"$(index)" :
+              $"$(prefix)-$(index)"
+              ;
             var node = new NodeViewModel^();
             node.Text = $"$(nodePrefix): $(Sys::LoremIpsumSentence(50))";
             if (level < 3)

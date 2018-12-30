@@ -475,12 +475,30 @@ FreeHeightItemArranger
 				{
 					availableOffsetCount = start;
 					vint itemCount = heights.Count() + newCount - count;
-					heights.Resize(itemCount);
-					offsets.Resize(itemCount);
+
+					if (count < newCount)
+					{
+						heights.Resize(itemCount);
+						if (start + newCount < itemCount)
+						{
+							memmove(&heights[start + newCount], &heights[start + count], sizeof(vint) * (itemCount - start - newCount));
+						}
+					}
+					else if (count > newCount)
+					{
+						if (start + newCount < itemCount)
+						{
+							memmove(&heights[start + newCount], &heights[start + count], sizeof(vint) * (itemCount - start - newCount));
+						}
+						heights.Resize(itemCount);
+					}
+
 					for (vint i = 0; i < newCount; i++)
 					{
 						heights[start + i] = 1;
 					}
+					offsets.Resize(itemCount);
+
 					RangedItemArrangerBase::OnItemModified(start, count, newCount);
 				}
 
