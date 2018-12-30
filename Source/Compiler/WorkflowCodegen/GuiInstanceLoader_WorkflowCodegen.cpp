@@ -683,9 +683,22 @@ Workflow_GenerateInstanceClass
 						prop->configConst = WfAPConst::Writable;
 						prop->configObserve = WfAPObserve::Observable;
 
-						auto nullExpr = MakePtr<WfLiteralExpression>();
-						nullExpr->value = WfLiteralValue::Null;
-						prop->expression = nullExpr;
+						auto localeNameExpr = MakePtr<WfStringExpression>();
+						localeNameExpr->value.value = L"en-US";
+
+						auto defaultLocalExpr = MakePtr<WfTypeCastingExpression>();
+						defaultLocalExpr->strategy = WfTypeCastingStrategy::Strong;
+						defaultLocalExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
+						defaultLocalExpr->expression = localeNameExpr;
+
+						auto getExpr = MakePtr<WfChildExpression>();
+						getExpr->parent = GetExpressionFromTypeDescriptor(lsTd);
+						getExpr->name.value = L"Get";
+
+						auto callExpr = MakePtr<WfCallExpression>();
+						callExpr->function = getExpr;
+						callExpr->arguments.Add(defaultLocalExpr);
+						prop->expression = callExpr;
 					}
 					else
 					{
