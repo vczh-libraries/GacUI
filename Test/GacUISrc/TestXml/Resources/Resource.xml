@@ -9,34 +9,41 @@
       </ThemeTemplates>
     </Instance>
   </Instance>
-
-  <Instance name="TextListItemTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::TextListItemTemplate">
-      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds AlignmentToParent="left:0 top:2 right:0 bottom:2" MinSizeLimitation="LimitToElementAndChildren">
-          <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF" WrapLine="true" WrapLineHeightCalculation="true"/>
-        </Bounds>
-        <Bounds AlignmentToParent="left:0 top:-1 right:0 bottom:0" PreferredMinSize="y:1">
-          <SolidBackground Color="#0080FF"/>
-        </Bounds>
-      </TextListItemTemplate>
-    </Instance>
-  </Instance>
+  
+  <Script name="ViewModelResource">
+    <Workflow>
+      <![CDATA[
+        module viewmodel;
+        
+        using system::*;
+        
+        class NodeViewModel
+        {
+          prop Text : string = "" {}
+          prop Children : observe NodeViewModel^[] = null {not observe}
+        
+          static func CreateNode(prefix : string, level: int, index: int) : NodeViewModel^
+          {
+            var nodePrefix = $"$(prefix)-$(index)";
+            var node = new NodeViewModel^();
+            node.Text = $"$(nodePrefix): $(Sys::LoremIpsumSentence(50))";
+            if (level < 3)
+            {
+              node.Children = {};
+              for (i in range[0, 20))
+              {
+                node.Children.Add(CreateNode(nodePrefix, level + 1, i));
+              }
+            }
+            return node;
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
 
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
-      <ref.Ctor>
-        <![CDATA[
-          {
-            for (i in range [0, 100))
-            {
-              var item = new TextItem^();
-              item.Text = Sys::LoremIpsumSentence(i * 5);
-              textList.Items.Add(item);
-            }
-          }
-        ]]>
-      </ref.Ctor>
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480" TopMost="true">
         <Table AlignmentToParent="left:0 top:8 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
@@ -74,13 +81,15 @@
           </Cell>
 
           <Cell Site="row:1 column:0 columnSpan:3">
-            <TextList ref.Name="textList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+            <BindableTreeView ref.Name="textList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="NodeViewModel^">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <att.ItemTemplate>demo::TextListItemTemplate</att.ItemTemplate>
+              <att.ItemSource-eval>NodeViewModel::CreateNode("", 0, 0)</att.ItemSource-eval>
+              <att.TextProperty>Text</att.TextProperty>
+              <att.ChildrenProperty>Children</att.ChildrenProperty>
               <att.Arranger>
                 <FreeHeightItemArranger/>
               </att.Arranger>
-            </TextList>
+            </BindableTreeView>
           </Cell>
         </Table>
       </Window>
