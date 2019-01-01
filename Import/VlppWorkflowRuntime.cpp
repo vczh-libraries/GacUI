@@ -573,12 +573,22 @@ namespace vl
 	{
 		namespace internal
 		{
+			struct WfDeserializationException
+			{
+			};
+
 			struct WfReaderContext
 			{
 				Dictionary<vint, ITypeDescriptor*>				tdIndex;
 				Dictionary<vint, IMethodInfo*>					miIndex;
 				Dictionary<vint, IPropertyInfo*>				piIndex;
 				Dictionary<vint, IEventInfo*>					eiIndex;
+				WfAssemblyLoadErrors&							errors;
+
+				WfReaderContext(WfAssemblyLoadErrors& _errors)
+					:errors(_errors)
+				{
+				}
 			};
 
 			struct WfWriterContextPrepare
@@ -874,7 +884,10 @@ Serizliation (ITypeDescriptor)
 					WString id;
 					reader << id;
 					value = GetTypeDescriptor(id);
-					CHECK_ERROR(value, L"Failed to load type.");
+					if (!value)
+					{
+						reader.context->errors.unresolvedTypes.Add(id);
+					}
 				}
 					
 				static void IO(WfWriter& writer, ITypeDescriptor*& value)
@@ -1004,19 +1017,28 @@ Serizliation (Metadata)
 
 					if (!group)
 					{
-						CHECK_ERROR(value, L"Failed to load method.");
+						reader.context->errors.unresolvedMembers.Add(L"method: " + type->GetTypeName() + L"::" + name + L"(...): *");
+						return;
 					}
 
 					vint methodFlag = -1;
 					reader << methodFlag;
-					CHECK_ERROR(0 <= methodFlag && methodFlag <= 3, L"Failed to load method.");
+					if (0 > methodFlag || methodFlag > 3)
+					{
+						reader.context->errors.unresolvedMembers.Add(L"method: " + type->GetTypeName() + L"::" + name + L"(...): *");
+						return;
+					}
 
 					vint methodCount = group->GetMethodCount();
 					switch (methodFlag)
 					{
 					case 0:
 						{
-							CHECK_ERROR(methodCount == 1, L"Failed to load method.");
+							if (methodCount > 1)
+							{
+								reader.context->errors.unresolvedMembers.Add(L"method: " + type->GetTypeName() + L"::" + name + L"(...): *; This is caused by a change to this class. When the current assembly was compiled, this imported method didn't have overloadings.");
+								return;
+							}
 							value = group->GetMethod(0);
 						}
 						break;
@@ -1024,14 +1046,38 @@ Serizliation (Metadata)
 						{
 							vint count = -1;
 							reader << count;
+
+							WString parameters;
+							for (vint i = 0; i < count; i++)
+							{
+								if (i == 0)
+								{
+									parameters = L"*";
+								}
+								else
+								{
+									parameters += L", *";
+								}
+							}
+
 							for (vint i = 0; i < methodCount; i++)
 							{
 								auto method = group->GetMethod(i);
 								if (method->GetParameterCount() == count)
 								{
-									CHECK_ERROR(!value, L"Failed to load method.");
+									if (value)
+									{
+										reader.context->errors.unresolvedMembers.Add(L"method: " + type->GetTypeName() + L"::" + name + L"(" + parameters + L"): *; This is caused by a change to this class. When the current assembly was compiled, this imported method didn't have overloadings with the same amount of parameters.");
+										return;
+									}
 									value = method;
 								}
+							}
+
+							if (!value)
+							{
+								reader.context->errors.unresolvedMembers.Add(L"method: " + type->GetTypeName() + L"::" + name + L"(" + parameters + L"): *; A qualified method doesn't exist.");
+								return;
 							}
 						}
 						break;
@@ -1045,9 +1091,19 @@ Serizliation (Metadata)
 								auto method = group->GetMethod(i);
 								if (method->GetReturn()->GetTypeFriendlyName() == signature)
 								{
-									CHECK_ERROR(!value, L"Failed to load method.");
+									if (value)
+									{
+										reader.context->errors.unresolvedMembers.Add(L"method: " + type->GetTypeName() + L"::" + name + L"(...): " + signature + L"; This is caused by a change to this class. When the current assembly was compiled, this imported method didn't have overloadings with the same return type.");
+										return;
+									}
 									value = method;
 								}
+							}
+
+							if (!value)
+							{
+								reader.context->errors.unresolvedMembers.Add(L"method: " + type->GetTypeName() + L"::" + name + L"(...): " + signature + L"; A qualified method doesn't exist.");
+								return;
 							}
 						}
 						break;
@@ -1061,6 +1117,19 @@ Serizliation (Metadata)
 								Ptr<ITypeInfo> type;
 								Serialization<ITypeInfo>::IOType(reader, type);
 								signatures.Add(type->GetTypeFriendlyName());
+							}
+
+							WString parameters;
+							for (vint i = 0; i < count; i++)
+							{
+								if (i == 0)
+								{
+									parameters = signatures[0];
+								}
+								else
+								{
+									parameters += L", " + signatures[i];
+								}
 							}
 
 							for (vint i = 0; i < methodCount; i++)
@@ -1080,10 +1149,20 @@ Serizliation (Metadata)
 
 									if (found)
 									{
-										CHECK_ERROR(!value, L"Failed to load method.");
+										if (value)
+										{
+											reader.context->errors.unresolvedMembers.Add(L"method: " + type->GetTypeName() + L"::" + name + L"(" + parameters + L"): *; This is caused by a change to this class. When the current assembly was compiled, this imported method didn't have overloadings with the same parameter types.");
+											return;
+										}
 										value = method;
 									}
 								}
+							}
+
+							if (!value)
+							{
+								reader.context->errors.unresolvedMembers.Add(L"method: " + type->GetTypeName() + L"::" + name + L"(" + parameters + L"): *; A qualified method doesn't exist.");
+								return;
 							}
 						}
 						break;
@@ -1166,7 +1245,10 @@ Serizliation (Metadata)
 					reader << typeIndex << name;
 					auto type = reader.context->tdIndex[typeIndex];
 					value = type->GetPropertyByName(name, false);
-					CHECK_ERROR(value, L"Failed to load property.");
+					if (!value)
+					{
+						reader.context->errors.unresolvedMembers.Add(L"property: " + type->GetTypeName() + L"::" + name);
+					}
 				}
 					
 				static void IO(WfWriter& writer, IPropertyInfo*& value)
@@ -1188,7 +1270,10 @@ Serizliation (Metadata)
 					reader << typeIndex << name;
 					auto type = reader.context->tdIndex[typeIndex];
 					value = type->GetEventByName(name, false);
-					CHECK_ERROR(value, L"Failed to load event.");
+					if (!value)
+					{
+						reader.context->errors.unresolvedMembers.Add(L"event: " + type->GetTypeName() + L"::" + name);
+					}
 				}
 					
 				static void IO(WfWriter& writer, IEventInfo*& value)
@@ -1978,6 +2063,10 @@ Serialization (Assembly)
 				{
 					bool isFlags;
 					WString typeName;
+					if (GetTypeDescriptor(typeName))
+					{
+						reader.context->errors.duplicatedTypes.Add(typeName);
+					}
 					reader << isFlags << typeName;
 					type = MakePtr<WfEnum>(isFlags, typeName);
 				}
@@ -1994,6 +2083,10 @@ Serialization (Assembly)
 				{
 					WString typeName;
 					reader << typeName;
+					if (GetTypeDescriptor(typeName))
+					{
+						reader.context->errors.duplicatedTypes.Add(typeName);
+					}
 					type = MakePtr<TType>(typeName);
 				}
 
@@ -2045,9 +2138,9 @@ Serialization (Assembly)
 
 				//----------------------------------------------------
 
-				static void IOPrepare(WfReader& reader, WfAssembly& value)
+				static void IOPrepare(WfReader& reader, WfAssembly& value, WfAssemblyLoadErrors& errors)
 				{
-					reader.context = new WfReaderContext;
+					reader.context = new WfReaderContext(errors);
 					bool hasTypeImpl = false;
 					reader << hasTypeImpl;
 					if (hasTypeImpl)
@@ -2069,6 +2162,11 @@ Serialization (Assembly)
 						ITypeDescriptor* td = nullptr;
 						reader << td;
 						reader.context->tdIndex.Add(i, td);
+					}
+
+					if (errors.unresolvedTypes.Count() + errors.duplicatedTypes.Count() > 0)
+					{
+						throw WfDeserializationException();
 					}
 
 					if (hasTypeImpl)
@@ -2095,9 +2193,14 @@ Serialization (Assembly)
 						reader << ei;
 						reader.context->eiIndex.Add(i, ei);
 					}
+
+					if (errors.unresolvedMembers.Count() > 0)
+					{
+						throw WfDeserializationException();
+					}
 				}
 
-				static void IOPrepare(WfWriter& writer, WfAssembly& value)
+				static void IOPrepare(WfWriter& writer, WfAssembly& value, WfAssemblyLoadErrors&)
 				{
 					writer.context = new WfWriterContext;
 					bool hasTypeImpl = value.typeImpl != nullptr;
@@ -2158,9 +2261,9 @@ Serialization (Assembly)
 				//----------------------------------------------------
 
 				template<typename TIO>
-				static void IO(TIO& io, WfAssembly& value)
+				static void IO(TIO& io, WfAssembly& value, WfAssemblyLoadErrors& errors)
 				{
-					IOPrepare(io, value);
+					IOPrepare(io, value, errors);
 					io	<< value.insBeforeCodegen
 						<< value.insAfterCodegen
 						<< value.variableNames
@@ -2206,23 +2309,33 @@ WfAssembly
 			{
 			}
 
-			WfAssembly::WfAssembly(stream::IStream& input)
-			{
-				stream::internal::WfReader reader(input);
-				stream::internal::Serialization<WfAssembly>::IO(reader, *this);
-				Initialize();
-			}
-
 			void WfAssembly::Initialize()
 			{
 				insBeforeCodegen->Initialize();
 				insAfterCodegen->Initialize();
 			}
 
+			Ptr<WfAssembly> WfAssembly::Deserialize(stream::IStream& input, WfAssemblyLoadErrors& errors)
+			{
+				try
+				{
+					auto assembly = MakePtr<WfAssembly>();
+					stream::internal::WfReader reader(input);
+					stream::internal::Serialization<WfAssembly>::IO(reader, *assembly.Obj(), errors);
+					assembly->Initialize();
+					return assembly;
+				}
+				catch (stream::internal::WfDeserializationException)
+				{
+					return {};
+				}
+			}
+
 			void WfAssembly::Serialize(stream::IStream& output)
 			{
+				WfAssemblyLoadErrors dummy;
 				stream::internal::WfWriter writer(output);
-				stream::internal::Serialization<WfAssembly>::IO(writer, *this);
+				stream::internal::Serialization<WfAssembly>::IO(writer, *this, dummy);
 			}
 		}
 	}
