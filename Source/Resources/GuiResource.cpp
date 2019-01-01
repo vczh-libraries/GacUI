@@ -967,7 +967,7 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::InitializeResourceFolder(GuiResourceInitializeContext& context)
+		void GuiResourceFolder::InitializeResourceFolder(GuiResourceInitializeContext& context, GuiResourceError::List& errors)
 		{
 			if (importUri != L"") return;
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
@@ -975,13 +975,13 @@ GuiResourceFolder
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto initialize = typeResolver->Initialize())
 				{
-					initialize->Initialize(item, context);
+					initialize->Initialize(item, context, errors);
 				}
 			}
 
 			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
 			{
-				folder->InitializeResourceFolder(context);
+				folder->InitializeResourceFolder(context, errors);
 			}
 		}
 
@@ -1477,7 +1477,7 @@ GuiResource
 			return context.targetFolder;
 		}
 
-		void GuiResource::Initialize(GuiResourceUsage usage)
+		void GuiResource::Initialize(GuiResourceUsage usage, GuiResourceError::List& errors)
 		{
 			auto precompiledFolder = GetFolder(L"Precompiled");
 			if (!precompiledFolder)
@@ -1496,7 +1496,7 @@ GuiResource
 			for (vint i = 0; i <= maxPass; i++)
 			{
 				context.passIndex = i;
-				InitializeResourceFolder(context);
+				InitializeResourceFolder(context, errors);
 			}
 		}
 

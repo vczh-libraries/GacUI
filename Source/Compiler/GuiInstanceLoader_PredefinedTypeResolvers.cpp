@@ -165,7 +165,11 @@ namespace vl
 				if (manager->errors.Count() == 0)
 				{
 					compiled->assembly = GenerateAssembly(manager, compilerCallback);
-					compiled->Initialize(true);
+					WfAssemblyLoadErrors loadErrors;
+					if (!compiled->Initialize(true, loadErrors))
+					{
+						manager->errors.Add(new ParsingError(L"Internal error happened during loading an assembly that just passed type verification."));
+					}
 				}
 				else
 				{

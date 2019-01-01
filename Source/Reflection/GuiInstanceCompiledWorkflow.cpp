@@ -13,11 +13,15 @@ namespace vl
 GuiInstanceSharedScript
 ***********************************************************************/
 
-		void GuiInstanceCompiledWorkflow::Initialize(bool initializeContext)
+		bool GuiInstanceCompiledWorkflow::Initialize(bool initializeContext, workflow::runtime::WfAssemblyLoadErrors& loadErrors)
 		{
 			if (binaryToLoad)
 			{
-				assembly = new WfAssembly(*binaryToLoad.Obj());
+				assembly = WfAssembly::Deserialize(*binaryToLoad.Obj(), loadErrors);
+				if (!assembly)
+				{
+					return false;
+				}
 				context = nullptr;
 				binaryToLoad = nullptr;
 			}
@@ -27,6 +31,7 @@ GuiInstanceSharedScript
 				context = new WfRuntimeGlobalContext(assembly);
 				LoadFunction<void()>(context, L"<initialize>")();
 			}
+			return true;
 		}
 
 /***********************************************************************
@@ -60,7 +65,7 @@ Compiled Workflow Type Resolver (Workflow)
 				return 1;
 			}
 
-			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context)override
+			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context, GuiResourceError::List& errors)override
 			{
 				if (auto compiled = resource->GetContent().Cast<GuiInstanceCompiledWorkflow>())
 				{
@@ -71,7 +76,22 @@ Compiled Workflow Type Resolver (Workflow)
 						{
 							if (context.usage == GuiResourceUsage::InstanceClass)
 							{
-								compiled->Initialize(true);
+								WfAssemblyLoadErrors loadErrors;
+								if (!compiled->Initialize(true, loadErrors))
+								{
+									FOREACH(WString, loadError, loadErrors.duplicatedTypes)
+									{
+										errors.Add({ {resource},L"Failed to add an existing type: " + loadError });
+									}
+									FOREACH(WString, loadError, loadErrors.unresolvedTypes)
+									{
+										errors.Add({ {resource},L"Unable to resolve type: " + loadError });
+									}
+									FOREACH(WString, loadError, loadErrors.unresolvedMembers)
+									{
+										errors.Add({ {resource},L"Unable to resolve member: " + loadError });
+									}
+								}
 							}
 						}
 						break;

@@ -119,20 +119,28 @@ IGuiInstanceResourceManager
 				resourceManager = nullptr;
 			}
 
-			bool SetResource(Ptr<GuiResource> resource, GuiResourceUsage usage)override
+			void SetResource(Ptr<GuiResource> resource, GuiResourceError::List& errors, GuiResourceUsage usage)override
 			{
 				auto metadata = resource->GetMetadata();
 				if (metadata->name == L"")
 				{
-					if (anonymousResources.Contains(resource.Obj())) return false;
-					resource->Initialize(usage);
+					if (anonymousResources.Contains(resource.Obj())) return;
+					resource->Initialize(usage, errors);
+					if (errors.Count() > 0)
+					{
+						return;
+					}
 					anonymousResources.Add(resource);
 				}
 				else
 				{
 					CHECK_ERROR(!resources.Keys().Contains(metadata->name), L"GuiResourceManager::SetResource(Ptr<GuiResource>, GuiResourceUsage)#A resource with the same name has been loaded.");
 
-					resource->Initialize(usage);
+					resource->Initialize(usage, errors);
+					if (errors.Count() > 0)
+					{
+						return;
+					}
 					resources.Add(metadata->name, resource);
 				}
 				
@@ -159,12 +167,11 @@ IGuiInstanceResourceManager
 							if (pr->dependencies.Count() == 0)
 							{
 								pendingResources.Remove(pr.Obj());
-								SetResource(pr->LoadResource(), pr->usage);
+								SetResource(pr->LoadResource(), errors, pr->usage);
 							}
 						}
 					}
 				}
-				return true;
 			}
 
 			Ptr<GuiResource> GetResource(const WString& name)override
@@ -198,7 +205,7 @@ IGuiInstanceResourceManager
 				}
 			}
 
-			void LoadResourceOrPending(stream::IStream& stream, GuiResourceUsage usage = GuiResourceUsage::DataOnly)override
+			void LoadResourceOrPending(stream::IStream& stream, GuiResourceError::List& errors, GuiResourceUsage usage)override
 			{
 				auto pr = MakePtr<PendingResource>();
 				pr->usage = usage;
@@ -227,7 +234,7 @@ IGuiInstanceResourceManager
 
 				if (pr->dependencies.Count() == 0)
 				{
-					SetResource(pr->LoadResource(), pr->usage);
+					SetResource(pr->LoadResource(), errors, pr->usage);
 				}
 				else
 				{
@@ -237,6 +244,13 @@ IGuiInstanceResourceManager
 						depToPendings.Add(dep, pr);
 					}
 				}
+			}
+
+			void LoadResourceOrPending(stream::IStream& stream, GuiResourceUsage usage)override
+			{
+				GuiResourceError::List errors;
+				LoadResourceOrPending(stream, errors, usage);
+				CHECK_ERROR(errors.Count() == 0, L"GuiResourceManager::LoadResourceOrPending(stream::IStream&, GuiResourceUsage)#Error happened.");
 			}
 
 			void GetPendingResourceNames(collections::List<WString>& names)override
