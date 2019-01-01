@@ -3030,18 +3030,8 @@ GuiLocalizedStringInstanceBinder (str)
 
 					if (errorCount == errors.Count())
 					{
-						auto stringExpr = MakePtr<WfStringExpression>();
-						stringExpr->value.value = L"";
-						stringExpr->codeRange = expression->codeRange;
-
-						auto recoveryExpr = MakePtr<WfBinaryExpression>();
-						recoveryExpr->op = WfBinaryOperator::FailedThen;
-						recoveryExpr->first = expression;
-						recoveryExpr->second = stringExpr;
-						recoveryExpr->codeRange = expression->codeRange;
-
 						auto bindExpr = MakePtr<WfBindExpression>();
-						bindExpr->expression = recoveryExpr;
+						bindExpr->expression = expression;
 						bindExpr->codeRange = expression->codeRange;
 
 						return Workflow_InstallBindProperty(precompileContext, resolvingResult, variableName, propertyInfo, bindExpr);
@@ -4139,16 +4129,21 @@ namespace vl
 				if (manager->errors.Count() == 0)
 				{
 					compiled->assembly = GenerateAssembly(manager, compilerCallback);
-					compiled->Initialize(true);
+					WfAssemblyLoadErrors loadErrors;
+					if (!compiled->Initialize(true, loadErrors))
+					{
+						manager->errors.Add(new ParsingError(L"Internal error happened during loading an assembly that just passed type verification."));
+					}
 				}
 				else
 				{
-					WorkflowVirtualScriptPositionVisitor visitor(context);
 					for (vint i = 0; i < compiled->modules.Count(); i++)
 					{
 						auto module = compiled->modules[i];
-						visitor.VisitField(module.module.Obj());
 						Workflow_RecordScriptPosition(context, module.position, module.module);
+
+						WorkflowVirtualScriptPositionVisitor visitor(context);
+						visitor.VisitField(module.module.Obj());
 					}
 
 					auto sp = Workflow_GetScriptPosition(context);
@@ -10480,9 +10475,22 @@ Workflow_GenerateInstanceClass
 						prop->configConst = WfAPConst::Writable;
 						prop->configObserve = WfAPObserve::Observable;
 
-						auto nullExpr = MakePtr<WfLiteralExpression>();
-						nullExpr->value = WfLiteralValue::Null;
-						prop->expression = nullExpr;
+						auto localeNameExpr = MakePtr<WfStringExpression>();
+						localeNameExpr->value.value = L"en-US";
+
+						auto defaultLocalExpr = MakePtr<WfTypeCastingExpression>();
+						defaultLocalExpr->strategy = WfTypeCastingStrategy::Strong;
+						defaultLocalExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
+						defaultLocalExpr->expression = localeNameExpr;
+
+						auto getExpr = MakePtr<WfChildExpression>();
+						getExpr->parent = GetExpressionFromTypeDescriptor(lsTd);
+						getExpr->name.value = L"Get";
+
+						auto callExpr = MakePtr<WfCallExpression>();
+						callExpr->function = getExpr;
+						callExpr->arguments.Add(defaultLocalExpr);
+						prop->expression = callExpr;
 					}
 					else
 					{

@@ -57,7 +57,7 @@ namespace vl
 			Ptr<workflow::runtime::WfAssembly>					assembly;
 			Ptr<workflow::runtime::WfRuntimeGlobalContext>		context;
 
-			void												Initialize(bool initializeContext);
+			bool												Initialize(bool initializeContext, workflow::runtime::WfAssemblyLoadErrors& loadErrors);
 		};
 	}
 }

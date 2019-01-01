@@ -4345,7 +4345,7 @@ Resource Structure
 			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::ContextFreeReader& reader, collections::List<WString>& typeNames, GuiResourceError::List& errors);
 			void									SaveResourceFolderToBinary(stream::internal::ContextFreeWriter& writer, collections::List<WString>& typeNames);
 			void									PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors);
-			void									InitializeResourceFolder(GuiResourceInitializeContext& context);
+			void									InitializeResourceFolder(GuiResourceInitializeContext& context, GuiResourceError::List& errors);
 			void									ImportFromUri(const WString& uri, GuiResourceTextPos position, GuiResourceError::List& errors);
 		public:
 			/// <summary>Create a resource folder.</summary>
@@ -4499,7 +4499,8 @@ Resource
 
 			/// <summary>Initialize a precompiled resource.</summary>
 			/// <param name="usage">In which role an application is initializing this resource.</param>
-			void									Initialize(GuiResourceUsage usage);
+			/// <param name="errors">All collected errors during initializing a resource.</param>
+			void									Initialize(GuiResourceUsage usage, GuiResourceError::List& errors);
 			
 			/// <summary>Get a contained document model using a path like "Packages\Application\Name". If the path does not exists or the type does not match, an exception will be thrown.</summary>
 			/// <returns>The containd resource object.</returns>
@@ -4718,7 +4719,7 @@ Resource Type Resolver
 			/// <summary>Initialize the resource item.</summary>
 			/// <param name="resource">The resource to initializer.</param>
 			/// <param name="context">The context for initializing.</param>
-			virtual void										Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context) = 0;
+			virtual void										Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context, GuiResourceError::List& errors) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource without a preload type.</summary>
@@ -8192,7 +8193,8 @@ Basic Construction
 				bool									isVisible = true;
 				WString									alt;
 				WString									text;
-				FontProperties							font;
+				Nullable<FontProperties>				font;
+				FontProperties							displayFont;
 				description::Value						context;
 				compositions::IGuiAltActionHost*		activatingAltHost = nullptr;
 				ControlServiceMap						controlServices;
@@ -8218,6 +8220,7 @@ Basic Construction
 				virtual void							OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget);
 				virtual void							OnBeforeReleaseGraphicsHost();
 				virtual void							UpdateVisuallyEnabled();
+				virtual void							UpdateDisplayFont();
 				void									OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
@@ -8264,6 +8267,8 @@ Basic Construction
 				compositions::GuiNotifyEvent			TextChanged;
 				/// <summary>Font changed event. This event will be raised when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			FontChanged;
+				/// <summary>Display font changed event. This event will be raised when the display font of the control is changed.</summary>
+				compositions::GuiNotifyEvent			DisplayFontChanged;
 				/// <summary>Context changed event. This event will be raised when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			ContextChanged;
 
@@ -8368,12 +8373,15 @@ Basic Construction
 				/// <summary>Set the text to display on the control.</summary>
 				/// <param name="value">The text to display on the control.</param>
 				virtual void							SetText(const WString& value);
-				/// <summary>Get the font to render the text.</summary>
+				/// <summary>Get the font of this control.</summary>
+				/// <returns>The font of this control.</returns>
+				virtual const Nullable<FontProperties>&	GetFont();
+				/// <summary>Set the font of this control.</summary>
+				/// <param name="value">The font of this control.</param>
+				virtual void							SetFont(const Nullable<FontProperties>& value);
+				/// <summary>Get the font to render the text. If the font of this control is null, then the display font is either the parent control's display font, or the system's default font when there is no parent control.</summary>
 				/// <returns>The font to render the text.</returns>
-				virtual const FontProperties&			GetFont();
-				/// <summary>Set the font to render the text.</summary>
-				/// <param name="value">The font to render the text.</param>
-				virtual void							SetFont(const FontProperties& value);
+				virtual const FontProperties&			GetDisplayFont();
 				/// <summary>Get the context of this control. The control template and all item templates (if it has) will see this context property.</summary>
 				/// <returns>The context of this context.</returns>
 				virtual description::Value				GetContext();
@@ -9512,10 +9520,11 @@ IGuiResourceManager
 		class IGuiResourceManager : public IDescriptable, public Description<IGuiResourceManager>
 		{
 		public:
-			virtual bool								SetResource(Ptr<GuiResource> resource, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
+			virtual void								SetResource(Ptr<GuiResource> resource, GuiResourceError::List& errors, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
 			virtual Ptr<GuiResource>					GetResourceFromClassName(const WString& classFullName) = 0;
 			virtual void								UnloadResource(const WString& name) = 0;
+			virtual void								LoadResourceOrPending(stream::IStream& stream, GuiResourceError::List& errors, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual void								LoadResourceOrPending(stream::IStream& stream, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual void								GetPendingResourceNames(collections::List<WString>& names) = 0;
 		};
@@ -11592,6 +11601,8 @@ Scroll View
 				bool									horizontalAlwaysVisible = true;
 				bool									verticalAlwaysVisible = true;
 
+				void									UpdateDisplayFont()override;
+
 				void									OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnHorizontalScroll(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnVerticalScroll(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -11618,8 +11629,6 @@ Scroll View
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiScrollView(theme::ThemeName themeName);
 				~GuiScrollView();
-
-				virtual void							SetFont(const FontProperties& value)override;
 
 				/// <summary>Force to update contents and scroll bars.</summary>
 				void									CalculateView();
@@ -12300,9 +12309,9 @@ List Control
 				friend class collections::ArrayBase<Ptr<VisibleStyleHelper>>;
 				collections::Dictionary<ItemStyle*, Ptr<VisibleStyleHelper>>		visibleStyles;
 
+				void											UpdateDisplayFont()override;
 				void											OnClientBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void											OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void											OnItemNotifyEvent(compositions::GuiItemNotifyEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -13606,6 +13615,7 @@ ComboBox with GuiListControl
 				templates::GuiTemplate*						itemStyleController = nullptr;
 				Ptr<compositions::IGuiGraphicsEventHandler>	boundsChangedHandler;
 
+				void										UpdateDisplayFont()override;
 				void										BeforeControlTemplateUninstalled()override;
 				void										AfterControlTemplateInstalled(bool initialize)override;
 				void										RemoveStyleController();
@@ -13613,7 +13623,6 @@ ComboBox with GuiListControl
 				virtual void								DisplaySelectedContent(vint itemIndex);
 				void										AdoptSubMenuSize();
 				void										OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -13792,7 +13801,7 @@ DateComboBox
 				/// <summary>Selected data changed event.</summary>
 				compositions::GuiNotifyEvent							SelectedDateChanged;
 				
-				void													SetFont(const FontProperties& value)override;
+				void													SetFont(const Nullable<FontProperties>& value)override;
 				/// <summary>Get the displayed date.</summary>
 				/// <returns>The date.</returns>
 				const DateTime&											GetSelectedDate();
@@ -17442,11 +17451,12 @@ MultilineTextBox
 				elements::GuiColorizedTextElement*			textElement = nullptr;
 				compositions::GuiBoundsComposition*			textComposition = nullptr;
 
-				void										CalculateViewAndSetScroll();
+				void										UpdateVisuallyEnabled()override;
+				void										UpdateDisplayFont()override;
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
 				Size										QueryFullSize()override;
 				void										UpdateView(Rect viewBounds)override;
-				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										CalculateViewAndSetScroll();
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
@@ -17456,7 +17466,6 @@ MultilineTextBox
 
 				const WString&								GetText()override;
 				void										SetText(const WString& value)override;
-				void										SetFont(const FontProperties& value)override;
 			};
 
 /***********************************************************************
@@ -17488,9 +17497,10 @@ SinglelineTextBox
 				compositions::GuiTableComposition*			textCompositionTable = nullptr;
 				compositions::GuiCellComposition*			textComposition = nullptr;
 				
+				void										UpdateVisuallyEnabled()override;
+				void										UpdateDisplayFont()override;
 				void										RearrangeTextElement();
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
-				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
@@ -17500,7 +17510,6 @@ SinglelineTextBox
 
 				const WString&								GetText()override;
 				void										SetText(const WString& value)override;
-				void										SetFont(const FontProperties& value)override;
 
 				/// <summary>
 				/// Get the password mode displaying character.
