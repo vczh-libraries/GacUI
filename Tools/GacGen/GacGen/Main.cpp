@@ -171,7 +171,7 @@ LoadConfigResult LoadConfig(FilePath inputPath)
 	return result;
 }
 
-bool LoadDependencies(Ptr<CodegenConfig> config, Dictionary<WString, FilePath>& resourceMappings, const WString& logFolderPostfix)
+bool LoadDependencies(Ptr<CodegenConfig> config, Dictionary<WString, FilePath>& resourceMappings, const WString& logFolderPostfix, FilePath errorFilePath)
 {
 	if (config->metadata->version == L"")
 	{
@@ -247,7 +247,13 @@ bool LoadDependencies(Ptr<CodegenConfig> config, Dictionary<WString, FilePath>& 
 		}
 
 		resourceStream.SeekFromBegin(0);
-		GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+		GuiResourceError::List errors;
+		GetResourceManager()->LoadResourceOrPending(resourceStream, errors, GuiResourceUsage::InstanceClass);
+		if (errors.Count() > 0)
+		{
+			SaveErrors(errorFilePath, errors);
+			return false;
+		}
 	}
 
 	List<WString> pendings;
@@ -271,6 +277,11 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 #else
 	WString logFolderPostfix = L".log/x32";
 #endif
+
+	FilePath logFolderPath = inputPath.GetFullPath() + logFolderPostfix;
+	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
+	FilePath errorFilePath = logFolderPath / L"Errors.txt";
+	FilePath workingDir = inputPath.GetFolder();
 
 	{
 		auto loadConfigResult = LoadConfig(inputPath);
@@ -311,16 +322,12 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 			}
 		}
 
-		if (!LoadDependencies(loadConfigResult.config, resourceMappings, logFolderPostfix))
+		if (!LoadDependencies(loadConfigResult.config, resourceMappings, logFolderPostfix, errorFilePath))
 		{
 			return;
 		}
 	}
 
-	FilePath logFolderPath = inputPath.GetFullPath() + logFolderPostfix;
-	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
-	FilePath errorFilePath = logFolderPath / L"Errors.txt";
-	FilePath workingDir = inputPath.GetFolder();
 	if (partialMode)
 	{
 		PrintInformationMessage(L"gacgen> Partial mode activated, all output files will be put under " + logFolderPath.GetFullPath());
