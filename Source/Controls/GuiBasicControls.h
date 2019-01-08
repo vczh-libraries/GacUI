@@ -50,6 +50,24 @@ Basic Construction
 ***********************************************************************/
 
 			/// <summary>
+			/// A helper object to test if a control has been deleted or not.
+			/// </summary>
+			class GuiDisposedFlag : public Object, public Description<GuiDisposedFlag>
+			{
+				friend class GuiControl;
+			protected:
+				GuiControl*								owner = nullptr;
+				bool									disposed = false;
+
+				void									SetDisposed();
+			public:
+				GuiDisposedFlag(GuiControl* _owner);
+				~GuiDisposedFlag();
+
+				bool									IsDisposed();
+			};
+
+			/// <summary>
 			/// The base class of all controls.
 			/// When the control is destroyed, it automatically destroys sub controls, and the bounds composition from the style controller.
 			/// If you want to manually destroy a control, you should first remove it from its parent.
@@ -73,6 +91,10 @@ Basic Construction
 				theme::ThemeName						controlThemeName;
 				ControlTemplatePropertyType				controlTemplate;
 				templates::GuiControlTemplate*			controlTemplateObject = nullptr;
+				Ptr<GuiDisposedFlag>					disposedFlag;
+
+			public:
+				Ptr<GuiDisposedFlag>					GetDisposedFlag();
 
 			protected:
 				compositions::GuiBoundsComposition*		boundsComposition = nullptr;
@@ -102,8 +124,6 @@ Basic Construction
 				description::Value						tag;
 				GuiControl*								tooltipControl = nullptr;
 				vint									tooltipWidth = 0;
-
-				Ptr<bool>								flagDisposed;
 
 				virtual void							BeforeControlTemplateUninstalled();
 				virtual void							AfterControlTemplateInstalled(bool initialize);

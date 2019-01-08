@@ -378,7 +378,7 @@
                 var end = document.CaretEnd;
                 var style = document.SummarizeStyle(begin, end);
             
-                var baselineFont = document.Font;
+                var baselineFont = document.DisplayFont;
                 dialogFont.SelectedFont = 
                 {
                   fontFamily:   ( style.face is null ? baselineFont.fontFamily : cast string style.face   )

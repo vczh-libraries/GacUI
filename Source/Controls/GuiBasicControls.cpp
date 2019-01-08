@@ -15,8 +15,40 @@ namespace vl
 			using namespace reflection::description;
 
 /***********************************************************************
+GuiDisposedFlag
+***********************************************************************/
+
+			void GuiDisposedFlag::SetDisposed()
+			{
+				disposed = true;
+			}
+
+			GuiDisposedFlag::GuiDisposedFlag(GuiControl* _owner)
+				:owner(_owner)
+			{
+			}
+
+			GuiDisposedFlag::~GuiDisposedFlag()
+			{
+			}
+
+			bool GuiDisposedFlag::IsDisposed()
+			{
+				return disposed;
+			}
+
+/***********************************************************************
 GuiControl
 ***********************************************************************/
+
+			Ptr<GuiDisposedFlag> GuiControl::GetDisposedFlag()
+			{
+				if (!disposedFlag)
+				{
+					disposedFlag = new GuiDisposedFlag(this);
+				}
+				return disposedFlag;
+			}
 
 			void GuiControl::BeforeControlTemplateUninstalled()
 			{
@@ -314,7 +346,6 @@ GuiControl
 			GuiControl::GuiControl(theme::ThemeName themeName)
 				:controlThemeName(themeName)
 				, displayFont(GetCurrentController()->ResourceService()->GetDefaultFont())
-				, flagDisposed(new bool(false))
 			{
 				{
 					boundsComposition = new GuiBoundsComposition;
@@ -347,7 +378,10 @@ GuiControl
 
 			GuiControl::~GuiControl()
 			{
-				*flagDisposed.Obj() = true;
+				if (disposedFlag)
+				{
+					disposedFlag->SetDisposed();
+				}
 				// prevent a root bounds composition from notifying its dead controls
 				if (!parent)
 				{
@@ -382,10 +416,10 @@ GuiControl
 				auto controlHost = GetRelatedControlHost();
 				if (controlHost && boundsComposition->IsRendering())
 				{
-					auto flag = flagDisposed;
+					auto flag = GetDisposedFlag();
 					GetApplication()->InvokeInMainThread(controlHost, [=]()
 					{
-						if (!*flag.Obj())
+						if (!flag->IsDisposed())
 						{
 							proc();
 						}

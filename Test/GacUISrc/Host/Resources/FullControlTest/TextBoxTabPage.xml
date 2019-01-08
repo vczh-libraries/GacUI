@@ -208,7 +208,7 @@ So as I pray, unlimited blade works.]]>
             <Button Text="Make Font Larger" Alt="L" ev.Clicked-eval="self.OnMakeFontLarger();"/>
           </Cell>
           <Cell Site="row:1 column:1">
-            <Button Text="Make Font Smaller" Alt="S" Enabled-bind="t1.Font.size &gt; 5" ev.Clicked-eval="self.OnMakeFontSmaller();"/>
+            <Button Text="Make Font Smaller" Alt="S" Enabled-bind="t1.DisplayFont.size &gt; 5" ev.Clicked-eval="self.OnMakeFontSmaller();"/>
           </Cell>
         </Table>
       </TabPage>

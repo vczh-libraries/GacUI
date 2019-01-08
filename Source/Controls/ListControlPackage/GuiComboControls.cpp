@@ -178,10 +178,10 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				auto flag = flagDisposed;
+				auto flag = GetDisposedFlag();
 				GetApplication()->InvokeLambdaInMainThread(GetRelatedControlHost(), [=]()
 				{
-					if (!*flag.Obj())
+					if (!flag->IsDisposed())
 					{
 						AdoptSubMenuSize();
 					}

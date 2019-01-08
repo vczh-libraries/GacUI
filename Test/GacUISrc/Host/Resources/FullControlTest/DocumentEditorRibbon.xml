@@ -46,7 +46,7 @@
             var styles = ViewModel.Style.styles;
             if (styles.color is not null) { styleLabel.Color = cast Color styles.color; }
 
-            var font = containerControl.Font;
+            var font = containerControl.DisplayFont;
             var fontFamily = font.fontFamily;
             var bold = font.bold;
             var italic = font.italic;

@@ -335,6 +335,7 @@ Type List (Controls)
 			F(presentation::controls::list::DataProvider)\
 
 #define GUIREFLECTIONCONTROLS_CLASS_TYPELIST(F)\
+			F(presentation::controls::GuiDisposedFlag)\
 			F(presentation::controls::GuiControl)\
 			F(presentation::controls::GuiCustomControl)\
 			F(presentation::controls::GuiLabel)\
