@@ -24,7 +24,7 @@ GalleryItemArranger
 					}
 				}
 
-				void GalleryItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				void GalleryItemArranger::PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
 					alignmentToParent = Margin(-1, 0, -1, 0);
 					bounds = Rect(Point((index - firstIndex) * itemWidth, 0), Size(itemWidth, 0));

@@ -658,7 +658,7 @@ GuiGraphicsHost
 					{
 						ProcMap procs;
 						CopyFrom(procs, afterRenderKeyedProcs);
-						afterRenderProcs.Clear();
+						afterRenderKeyedProcs.Clear();
 						for (vint i = 0; i < procs.Count(); i++)
 						{
 							procs.Values()[i]();
