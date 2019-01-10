@@ -268,6 +268,7 @@ Type List (Controls)
 			F(presentation::controls::GuiListControl::IItemProviderCallback)\
 			F(presentation::controls::GuiListControl::IItemArrangerCallback)\
 			F(presentation::controls::GuiListControl::IItemProvider)\
+			F(presentation::controls::GuiListControl::EnsureItemVisibleResult)\
 			F(presentation::controls::GuiListControl::IItemArranger)\
 			F(presentation::controls::list::ItemProviderBase)\
 			F(presentation::controls::list::RangedItemArrangerBase)\
@@ -784,7 +785,7 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY(FindItem, itemIndex, key);
 				}
 
-				bool EnsureItemVisible(vint itemIndex)override
+				presentation::controls::GuiListControl::EnsureItemVisibleResult EnsureItemVisible(vint itemIndex)override
 				{
 					INVOKEGET_INTERFACE_PROXY(EnsureItemVisible, itemIndex);
 				}

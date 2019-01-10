@@ -471,7 +471,10 @@ GuiListControl
 				{
 					return false;
 				}
-				return itemArranger ? itemArranger->EnsureItemVisible(itemIndex) : false;
+
+				if (!itemArranger) return false;
+				auto result = itemArranger->EnsureItemVisible(itemIndex);
+				return result != EnsureItemVisibleResult::ItemNotExists;
 			}
 
 			Size GuiListControl::GetAdoptedSize(Size expectedSize)

@@ -197,6 +197,12 @@ Type Declaration (Extra)
 				CLASS_MEMBER_METHOD(OnTotalSizeChanged, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiListControl::IItemArrangerCallback)
 
+			BEGIN_ENUM_ITEM(GuiListControl::EnsureItemVisibleResult)
+				ENUM_CLASS_ITEM(ItemNotExists)
+				ENUM_CLASS_ITEM(Moved)
+				ENUM_CLASS_ITEM(NotMoved)
+			END_ENUM_ITEM(GuiListControl::EnsureItemVisibleResult)
+
 			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
 

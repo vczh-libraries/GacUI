@@ -535,15 +535,16 @@ FreeHeightItemArranger
 					else return itemIndex;
 				}
 
-				bool FreeHeightItemArranger::EnsureItemVisible(vint itemIndex)
+				GuiListControl::EnsureItemVisibleResult FreeHeightItemArranger::EnsureItemVisible(vint itemIndex)
 				{
 					if (callback)
 					{
+						bool moved = false;
 						while (true)
 						{
 							if (itemIndex < 0 || itemIndex >= itemProvider->Count())
 							{
-								return false;
+								return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
 							}
 
 							EnsureOffsetForItem(itemIndex);
@@ -552,22 +553,25 @@ FreeHeightItemArranger
 							vint bottom = top + heights[itemIndex];
 							vint height = viewBounds.Height();
 
+							Point location = viewBounds.LeftTop();
 							if (offset > top)
 							{
-								callback->SetViewLocation({ 0,top });
+								location.y = top;
 							}
 							else if (offset < bottom - height)
 							{
-								callback->SetViewLocation({ 0,bottom - height });
+								location.y = bottom - height;
 							}
 							else
 							{
 								break;
 							}
+							callback->SetViewLocation(location);
+							moved |= viewBounds.LeftTop() != location;
 						}
-						return true;
+						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}
-					return false;
+					return GuiListControl::EnsureItemVisibleResult::NotMoved;
 				}
 
 				Size FreeHeightItemArranger::GetAdoptedSize(Size expectedSize)
@@ -699,14 +703,15 @@ FixedHeightItemArranger
 					else return itemIndex;
 				}
 
-				bool FixedHeightItemArranger::EnsureItemVisible(vint itemIndex)
+				GuiListControl::EnsureItemVisibleResult FixedHeightItemArranger::EnsureItemVisible(vint itemIndex)
 				{
 					if (callback)
 					{
 						if (itemIndex < 0 || itemIndex >= itemProvider->Count())
 						{
-							return false;
+							return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
 						}
+						bool moved = false;
 						while (true)
 						{
 							vint yOffset = GetYOffset();
@@ -735,10 +740,11 @@ FixedHeightItemArranger
 								break;
 							}
 							callback->SetViewLocation(location);
+							moved |= viewBounds.LeftTop() != location;
 						}
-						return true;
+						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}
-					return false;
+					return GuiListControl::EnsureItemVisibleResult::NotMoved;
 				}
 
 				Size FixedHeightItemArranger::GetAdoptedSize(Size expectedSize)
@@ -889,14 +895,15 @@ FixedSizeMultiColumnItemArranger
 					else return itemIndex;
 				}
 
-				bool FixedSizeMultiColumnItemArranger::EnsureItemVisible(vint itemIndex)
+				GuiListControl::EnsureItemVisibleResult FixedSizeMultiColumnItemArranger::EnsureItemVisible(vint itemIndex)
 				{
 					if (callback)
 					{
 						if (itemIndex < 0 || itemIndex >= itemProvider->Count())
 						{
-							return false;
+							return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
 						}
+						bool moved = false;
 						while (true)
 						{
 							vint rowHeight = itemSize.y;
@@ -929,10 +936,11 @@ FixedSizeMultiColumnItemArranger
 								break;
 							}
 							callback->SetViewLocation(location);
+							moved |= viewBounds.LeftTop() != location;
 						}
-						return true;
+						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}
-					return false;
+					return GuiListControl::EnsureItemVisibleResult::NotMoved;
 				}
 
 				Size FixedSizeMultiColumnItemArranger::GetAdoptedSize(Size expectedSize)
@@ -1077,14 +1085,15 @@ FixedHeightMultiColumnItemArranger
 					else return itemIndex;
 				}
 
-				bool FixedHeightMultiColumnItemArranger::EnsureItemVisible(vint itemIndex)
+				GuiListControl::EnsureItemVisibleResult FixedHeightMultiColumnItemArranger::EnsureItemVisible(vint itemIndex)
 				{
 					if (callback)
 					{
 						if (itemIndex < 0 || itemIndex >= itemProvider->Count())
 						{
-							return false;
+							return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
 						}
+						bool moved = false;
 						while (true)
 						{
 							vint rowCount = viewBounds.Height() / itemHeight;
@@ -1127,10 +1136,11 @@ FixedHeightMultiColumnItemArranger
 								break;
 							}
 							callback->SetViewLocation(location);
+							moved |= viewBounds.LeftTop() != location;
 						}
-						return true;
+						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}
-					return false;
+					return GuiListControl::EnsureItemVisibleResult::NotMoved;
 				}
 
 				Size FixedHeightMultiColumnItemArranger::GetAdoptedSize(Size expectedSize)

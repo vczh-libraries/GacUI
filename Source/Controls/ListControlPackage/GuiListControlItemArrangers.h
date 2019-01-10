@@ -102,7 +102,7 @@ Predefined ItemArranger
 					void										OnAttached(GuiListControl::IItemProvider* provider)override;
 					void										OnItemModified(vint start, vint count, vint newCount)override;
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
+					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 				
@@ -131,7 +131,7 @@ Predefined ItemArranger
 					~FixedHeightItemArranger();
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
+					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 
@@ -158,7 +158,7 @@ Predefined ItemArranger
 					~FixedSizeMultiColumnItemArranger();
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
+					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 				
@@ -187,7 +187,7 @@ Predefined ItemArranger
 					~FixedHeightMultiColumnItemArranger();
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
+					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 			}

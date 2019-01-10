@@ -48,7 +48,7 @@ GalleryItemArranger
 					~GalleryItemArranger();
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
+					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;
 
 					void										ScrollUp();

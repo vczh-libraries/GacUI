@@ -139,6 +139,17 @@ List Control
 				//-----------------------------------------------------------
 				// Item Layout Interfaces
 				//-----------------------------------------------------------
+
+				/// <summary>EnsureItemVisible result for item arranger.</summary>
+				enum class EnsureItemVisibleResult
+				{
+					/// <summary>The requested item does not exist.</summary>
+					ItemNotExists,
+					/// <summary>The view location is moved.</summary>
+					Moved,
+					/// <summary>The view location is not moved.</summary>
+					NotMoved,
+				};
 				
 				/// <summary>Item arranger for a <see cref="GuiListControl"/>. Item arranger decides how to arrange and item controls. When implementing an item arranger, <see cref="IItemArrangerCallback"/> is suggested to use when calculating locations and sizes for item controls.</summary>
 				class IItemArranger : public virtual IItemProviderCallback, public Description<IItemArranger>
@@ -177,9 +188,9 @@ List Control
 					/// <param name="key">The key direction.</param>
 					virtual vint								FindItem(vint itemIndex, compositions::KeyDirection key) = 0;
 					/// <summary>Adjust the view location to make an item visible.</summary>
-					/// <returns>Returns true if this operation succeeded.</returns>
+					/// <returns>Returns the result of this operation.</returns>
 					/// <param name="itemIndex">The item index of the item to be made visible.</param>
-					virtual bool								EnsureItemVisible(vint itemIndex) = 0;
+					virtual EnsureItemVisibleResult				EnsureItemVisible(vint itemIndex) = 0;
 					/// <summary>Get the adopted size for the view bounds.</summary>
 					/// <returns>The adopted size, making the vids bounds just enough to display several items.</returns>
 					/// <param name="expectedSize">The expected size, to provide a guidance.</param>
