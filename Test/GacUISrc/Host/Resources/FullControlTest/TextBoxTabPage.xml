@@ -93,13 +93,13 @@ So as I pray, unlimited blade works.]]>
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <SinglelineTextBox Font-bind="self.Font" AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text="Archer" Alt="S">
+            <SinglelineTextBox AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text="Archer" Alt="S">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </SinglelineTextBox>
           </Cell>
 
           <Cell Site="row:1 column:0">
-            <MultilineTextBox Font-bind="self.Font" AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text-uri="res://TextBoxComponents/Text" Alt="M" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+            <MultilineTextBox AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text-uri="res://TextBoxComponents/Text" Alt="M" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </MultilineTextBox>
           </Cell>
@@ -127,18 +127,18 @@ So as I pray, unlimited blade works.]]>
           </att.Columns>
 
           <Cell Site="row:0 column:0 columnSpan:2">
-            <DocumentTextBox Font-bind="self.Font" AcceptTabInput-bind="self.TextBoxAcceptTabInput" EditMode="Editable" Text="Archer" Alt="T">
+            <DocumentTextBox AcceptTabInput-bind="self.TextBoxAcceptTabInput" EditMode="Editable" Text="Archer" Alt="T">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </DocumentTextBox>
           </Cell>
 
           <Cell Site="row:1 column:0">
-            <DocumentViewer Font-bind="self.Font" AcceptTabInput-bind="self.TextBoxAcceptTabInput" EditMode="Editable" Document-uri="res://TextBoxComponents/DocFixed" Alt="V">
+            <DocumentViewer AcceptTabInput-bind="self.TextBoxAcceptTabInput" EditMode="Editable" Document-uri="res://TextBoxComponents/DocFixed" Alt="V">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </DocumentViewer>
           </Cell>
           <Cell Site="row:1 column:1">
-            <DocumentLabel Font-bind="self.Font" AcceptTabInput-bind="self.TextBoxAcceptTabInput" EditMode="Editable" Document-uri="res://TextBoxComponents/DocRelative" Alt="L">
+            <DocumentLabel AcceptTabInput-bind="self.TextBoxAcceptTabInput" EditMode="Editable" Document-uri="res://TextBoxComponents/DocRelative" Alt="L">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </DocumentLabel>
           </Cell>

@@ -176,10 +176,9 @@ namespace vl
 					for (vint i = 0; i < compiled->modules.Count(); i++)
 					{
 						auto module = compiled->modules[i];
-						Workflow_RecordScriptPosition(context, module.position, module.module);
-
 						WorkflowVirtualScriptPositionVisitor visitor(context);
 						visitor.VisitField(module.module.Obj());
+						Workflow_RecordScriptPosition(context, module.position, module.module);
 					}
 
 					auto sp = Workflow_GetScriptPosition(context);

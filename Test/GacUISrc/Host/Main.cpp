@@ -82,7 +82,7 @@ void GuiMain()
 #define BINARY_FOLDER L"../TestCppCodegen/"
 #define SOURCE_FOLDER L"../TestCppCodegen/Source/"
 //#define COMPILE_DARKSKIN
-//#define COMPILE_DEMO
+#define COMPILE_DEMO
 
 	List<WString> dependencies;
 #ifdef COMPILE_DARKSKIN
