@@ -46,6 +46,10 @@ Macros:
 #endif
 #endif
 
+#if defined VCZH_CLANG_AST_DUMP
+#define abstract
+#endif
+
 #if defined VCZH_MSVC
 #include <intrin.h>
 #elif defined VCZH_GCC
@@ -14428,11 +14432,7 @@ ParameterAccessor<Func<R(TArgs...)>>
 							{
 								Ptr<IValueList> arguments = IValueList::Create();
 								internal_helper::AddValueToList(arguments, ForwardValue<TArgs>(args)...);
-#if defined VCZH_MSVC
-								typedef TypeInfoRetriver<R>::TempValueType ResultType;
-#elif defined VCZH_GCC
 								typedef typename TypeInfoRetriver<R>::TempValueType ResultType;
-#endif
 								ResultType proxyResult;
 								description::UnboxParameter<ResultType>(functionProxy->Invoke(arguments), proxyResult);
 								return proxyResult;

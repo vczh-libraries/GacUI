@@ -719,8 +719,40 @@ namespace vl
 			using namespace reflection::description;
 
 /***********************************************************************
+GuiDisposedFlag
+***********************************************************************/
+
+			void GuiDisposedFlag::SetDisposed()
+			{
+				disposed = true;
+			}
+
+			GuiDisposedFlag::GuiDisposedFlag(GuiControl* _owner)
+				:owner(_owner)
+			{
+			}
+
+			GuiDisposedFlag::~GuiDisposedFlag()
+			{
+			}
+
+			bool GuiDisposedFlag::IsDisposed()
+			{
+				return disposed;
+			}
+
+/***********************************************************************
 GuiControl
 ***********************************************************************/
+
+			Ptr<GuiDisposedFlag> GuiControl::GetDisposedFlag()
+			{
+				if (!disposedFlag)
+				{
+					disposedFlag = new GuiDisposedFlag(this);
+				}
+				return disposedFlag;
+			}
 
 			void GuiControl::BeforeControlTemplateUninstalled()
 			{
@@ -1018,7 +1050,6 @@ GuiControl
 			GuiControl::GuiControl(theme::ThemeName themeName)
 				:controlThemeName(themeName)
 				, displayFont(GetCurrentController()->ResourceService()->GetDefaultFont())
-				, flagDisposed(new bool(false))
 			{
 				{
 					boundsComposition = new GuiBoundsComposition;
@@ -1051,7 +1082,10 @@ GuiControl
 
 			GuiControl::~GuiControl()
 			{
-				*flagDisposed.Obj() = true;
+				if (disposedFlag)
+				{
+					disposedFlag->SetDisposed();
+				}
 				// prevent a root bounds composition from notifying its dead controls
 				if (!parent)
 				{
@@ -1086,10 +1120,10 @@ GuiControl
 				auto controlHost = GetRelatedControlHost();
 				if (controlHost && boundsComposition->IsRendering())
 				{
-					auto flag = flagDisposed;
+					auto flag = GetDisposedFlag();
 					GetApplication()->InvokeInMainThread(controlHost, [=]()
 					{
-						if (!*flag.Obj())
+						if (!flag->IsDisposed())
 						{
 							proc();
 						}
@@ -6826,10 +6860,10 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				auto flag = flagDisposed;
+				auto flag = GetDisposedFlag();
 				GetApplication()->InvokeLambdaInMainThread(GetRelatedControlHost(), [=]()
 				{
-					if (!*flag.Obj())
+					if (!flag->IsDisposed())
 					{
 						AdoptSubMenuSize();
 					}
@@ -8277,16 +8311,13 @@ RangedItemArrangerBase
 					StyleList newVisibleStyles;
 					for (vint i = newStartIndex; i < itemCount; i++)
 					{
-						auto style
-							= startIndex <= i && i <= endIndex
-							? visibleStyles[i - startIndex]
-							: CreateStyle(i)
-							;
+						bool reuseOldStyle = startIndex <= i && i <= endIndex;
+						auto style = reuseOldStyle ? visibleStyles[i - startIndex] : CreateStyle(i);
 						newVisibleStyles.Add(style);
 
 						Rect bounds;
 						Margin alignmentToParent;
-						PlaceItem(true, i, style, newBounds, bounds, alignmentToParent);
+						PlaceItem(true, !reuseOldStyle, i, style, newBounds, bounds, alignmentToParent);
 						if (IsItemOutOfViewBounds(i, style, bounds, newBounds))
 						{
 							break;
@@ -8326,7 +8357,7 @@ RangedItemArrangerBase
 						auto style = visibleStyles[i];
 						Rect bounds;
 						Margin alignmentToParent(-1, -1, -1, -1);
-						PlaceItem(false, startIndex + i, style, viewBounds, bounds, alignmentToParent);
+						PlaceItem(false, false, startIndex + i, style, viewBounds, bounds, alignmentToParent);
 
 						bounds.x1 -= viewBounds.x1;
 						bounds.x2 -= viewBounds.x1;
@@ -8470,7 +8501,7 @@ RangedItemArrangerBase
 					}
 					else
 					{
-						return 0;
+						return nullptr;
 					}
 				}
 
@@ -8544,15 +8575,20 @@ FreeHeightItemArranger
 					}
 				}
 
-				void FreeHeightItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				void FreeHeightItemArranger::PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
-					vint styleHeight = 0;
+					vint styleHeight = heights[index];
 					{
 						auto composition = GetStyleBounds(style);
 						auto currentBounds = callback->GetStyleBounds(composition);
 						callback->SetStyleBounds(composition, Rect(bounds.LeftTop(), Size(viewBounds.Width(), bounds.Height())));
-						styleHeight = callback->GetStylePreferredSize(GetStyleBounds(style)).y;
+						vint newStyleHeight = callback->GetStylePreferredSize(composition).y;
 						callback->SetStyleBounds(composition, currentBounds);
+
+						if (!newCreatedStyle || styleHeight < newStyleHeight)
+						{
+							styleHeight = newStyleHeight;
+						}
 					}
 
 					if (heights[index] != styleHeight)
@@ -8681,22 +8717,10 @@ FreeHeightItemArranger
 						itemIndex = count;
 						break;
 					case KeyDirection::PageUp:
-						EnsureOffsetForItem(itemIndex);
-						while (true)
-						{
-							--itemIndex;
-							if (itemIndex < 0) break;
-							if (offsets[itemIndex] + heights[itemIndex] <= viewBounds.Top()) break;
-						}
+						itemIndex -= visibleStyles.Count();
 						break;
 					case KeyDirection::PageDown:
-						while (true)
-						{
-							++itemIndex;
-							if (itemIndex > offsets.Count()) break;
-							EnsureOffsetForItem(itemIndex);
-							if (offsets[itemIndex] > -viewBounds.Bottom()) break;
-						}
+						itemIndex += visibleStyles.Count();
 						break;
 					default:
 						return -1;
@@ -8707,13 +8731,46 @@ FreeHeightItemArranger
 					else return itemIndex;
 				}
 
-				bool FreeHeightItemArranger::EnsureItemVisible(vint itemIndex)
+				GuiListControl::EnsureItemVisibleResult FreeHeightItemArranger::EnsureItemVisible(vint itemIndex)
 				{
 					if (callback)
 					{
-						return true;
+						bool moved = false;
+						while (true)
+						{
+							if (itemIndex < 0 || itemIndex >= itemProvider->Count())
+							{
+								return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
+							}
+
+							EnsureOffsetForItem(itemIndex);
+							vint offset = viewBounds.y1;
+							vint top = offsets[itemIndex];
+							vint bottom = top + heights[itemIndex];
+							vint height = viewBounds.Height();
+
+							Point location = viewBounds.LeftTop();
+							if (offset > top)
+							{
+								location.y = top;
+							}
+							else if (offset < bottom - height)
+							{
+								location.y = bottom - height;
+							}
+							else
+							{
+								break;
+							}
+
+							auto oldLeftTop = viewBounds.LeftTop();
+							callback->SetViewLocation(location);
+							moved |= viewBounds.LeftTop() != oldLeftTop;
+							if (viewBounds.LeftTop() != location) break;
+						}
+						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}
-					return false;
+					return GuiListControl::EnsureItemVisibleResult::NotMoved;
 				}
 
 				Size FreeHeightItemArranger::GetAdoptedSize(Size expectedSize)
@@ -8747,7 +8804,7 @@ FixedHeightItemArranger
 					}
 				}
 
-				void FixedHeightItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				void FixedHeightItemArranger::PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
 					vint top = GetYOffset() + index * rowHeight;
 					if (pi_width == -1)
@@ -8845,14 +8902,15 @@ FixedHeightItemArranger
 					else return itemIndex;
 				}
 
-				bool FixedHeightItemArranger::EnsureItemVisible(vint itemIndex)
+				GuiListControl::EnsureItemVisibleResult FixedHeightItemArranger::EnsureItemVisible(vint itemIndex)
 				{
 					if (callback)
 					{
 						if (itemIndex < 0 || itemIndex >= itemProvider->Count())
 						{
-							return false;
+							return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
 						}
+						bool moved = false;
 						while (true)
 						{
 							vint yOffset = GetYOffset();
@@ -8880,11 +8938,15 @@ FixedHeightItemArranger
 							{
 								break;
 							}
+
+							auto oldLeftTop = viewBounds.LeftTop();
 							callback->SetViewLocation(location);
+							moved |= viewBounds.LeftTop() != oldLeftTop;
+							if (viewBounds.LeftTop() != location) break;
 						}
-						return true;
+						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}
-					return false;
+					return GuiListControl::EnsureItemVisibleResult::NotMoved;
 				}
 
 				Size FixedHeightItemArranger::GetAdoptedSize(Size expectedSize)
@@ -8916,7 +8978,7 @@ FixedSizeMultiColumnItemArranger
 					}
 				}
 
-				void FixedSizeMultiColumnItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				void FixedSizeMultiColumnItemArranger::PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
 					vint rowItems = viewBounds.Width() / itemSize.x;
 					if (rowItems < 1) rowItems = 1;
@@ -9035,14 +9097,15 @@ FixedSizeMultiColumnItemArranger
 					else return itemIndex;
 				}
 
-				bool FixedSizeMultiColumnItemArranger::EnsureItemVisible(vint itemIndex)
+				GuiListControl::EnsureItemVisibleResult FixedSizeMultiColumnItemArranger::EnsureItemVisible(vint itemIndex)
 				{
 					if (callback)
 					{
 						if (itemIndex < 0 || itemIndex >= itemProvider->Count())
 						{
-							return false;
+							return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
 						}
+						bool moved = false;
 						while (true)
 						{
 							vint rowHeight = itemSize.y;
@@ -9074,11 +9137,15 @@ FixedSizeMultiColumnItemArranger
 							{
 								break;
 							}
+
+							auto oldLeftTop = viewBounds.LeftTop();
 							callback->SetViewLocation(location);
+							moved |= viewBounds.LeftTop() != oldLeftTop;
+							if (viewBounds.LeftTop() != location) break;
 						}
-						return true;
+						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}
-					return false;
+					return GuiListControl::EnsureItemVisibleResult::NotMoved;
 				}
 
 				Size FixedSizeMultiColumnItemArranger::GetAdoptedSize(Size expectedSize)
@@ -9121,7 +9188,7 @@ FixedHeightMultiColumnItemArranger
 					}
 				}
 
-				void FixedHeightMultiColumnItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				void FixedHeightMultiColumnItemArranger::PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
 					vint rows = viewBounds.Height() / itemHeight;
 					if (rows < 1) rows = 1;
@@ -9223,14 +9290,15 @@ FixedHeightMultiColumnItemArranger
 					else return itemIndex;
 				}
 
-				bool FixedHeightMultiColumnItemArranger::EnsureItemVisible(vint itemIndex)
+				GuiListControl::EnsureItemVisibleResult FixedHeightMultiColumnItemArranger::EnsureItemVisible(vint itemIndex)
 				{
 					if (callback)
 					{
 						if (itemIndex < 0 || itemIndex >= itemProvider->Count())
 						{
-							return false;
+							return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
 						}
+						bool moved = false;
 						while (true)
 						{
 							vint rowCount = viewBounds.Height() / itemHeight;
@@ -9272,11 +9340,15 @@ FixedHeightMultiColumnItemArranger
 							{
 								break;
 							}
+
+							auto oldLeftTop = viewBounds.LeftTop();
 							callback->SetViewLocation(location);
+							moved |= viewBounds.LeftTop() != oldLeftTop;
+							if (viewBounds.LeftTop() != location) break;
 						}
-						return true;
+						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}
-					return false;
+					return GuiListControl::EnsureItemVisibleResult::NotMoved;
 				}
 
 				Size FixedHeightMultiColumnItemArranger::GetAdoptedSize(Size expectedSize)
@@ -9767,7 +9839,24 @@ GuiListControl
 				{
 					return false;
 				}
-				return itemArranger ? itemArranger->EnsureItemVisible(itemIndex) : false;
+
+				if (!itemArranger) return false;
+				auto result = itemArranger->EnsureItemVisible(itemIndex);
+				if (result == EnsureItemVisibleResult::Moved)
+				{
+					if (auto host = GetBoundsComposition()->GetRelatedGraphicsHost())
+					{
+						auto flag = GetDisposedFlag();
+						host->InvokeAfterRendering([=]()
+						{
+							if (!flag->IsDisposed())
+							{
+								EnsureItemVisible(itemIndex);
+							}
+						}, { this,0 });
+					}
+				}
+				return result != EnsureItemVisibleResult::ItemNotExists;
 			}
 
 			Size GuiListControl::GetAdoptedSize(Size expectedSize)
@@ -22638,7 +22727,7 @@ GalleryItemArranger
 					}
 				}
 
-				void GalleryItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				void GalleryItemArranger::PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
 					alignmentToParent = Margin(-1, 0, -1, 0);
 					bounds = Rect(Point((index - firstIndex) * itemWidth, 0), Size(itemWidth, 0));
@@ -22731,24 +22820,31 @@ GalleryItemArranger
 					else return itemIndex;
 				}
 
-				bool GalleryItemArranger::EnsureItemVisible(vint itemIndex)
+				GuiListControl::EnsureItemVisibleResult GalleryItemArranger::EnsureItemVisible(vint itemIndex)
 				{
-					if (callback && 0 <= itemIndex && itemIndex < itemProvider->Count())
+					if (callback)
 					{
-						vint groupCount = viewBounds.Width() / itemWidth;
-						if (itemIndex < firstIndex)
+						if (0 <= itemIndex && itemIndex < itemProvider->Count())
 						{
-							firstIndex = itemIndex;
-							callback->OnTotalSizeChanged();
+							vint groupCount = viewBounds.Width() / itemWidth;
+							if (itemIndex < firstIndex)
+							{
+								firstIndex = itemIndex;
+								callback->OnTotalSizeChanged();
+							}
+							else if (itemIndex >= firstIndex + groupCount)
+							{
+								firstIndex = itemIndex - groupCount + 1;
+								callback->OnTotalSizeChanged();
+							}
+							return GuiListControl::EnsureItemVisibleResult::NotMoved;
 						}
-						else if (itemIndex >= firstIndex + groupCount)
+						else
 						{
-							firstIndex = itemIndex - groupCount + 1;
-							callback->OnTotalSizeChanged();
+							return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
 						}
-						return true;
 					}
-					return false;
+					return GuiListControl::EnsureItemVisibleResult::NotMoved;
 				}
 
 				Size GalleryItemArranger::GetAdoptedSize(Size expectedSize)
@@ -31979,11 +32075,45 @@ GuiGraphicsHost
 					default:;
 					}
 				}
+
+				if (!needRender)
+				{
+					{
+						ProcList procs;
+						CopyFrom(procs, afterRenderProcs);
+						afterRenderProcs.Clear();
+						for (vint i = 0; i < procs.Count(); i++)
+						{
+							procs[i]();
+						}
+					}
+					{
+						ProcMap procs;
+						CopyFrom(procs, afterRenderKeyedProcs);
+						afterRenderKeyedProcs.Clear();
+						for (vint i = 0; i < procs.Count(); i++)
+						{
+							procs.Values()[i]();
+						}
+					}
+				}
 			}
 
 			void GuiGraphicsHost::RequestRender()
 			{
 				needRender = true;
+			}
+
+			void GuiGraphicsHost::InvokeAfterRendering(const Func<void()>& proc, ProcKey key)
+			{
+				if (key.key == nullptr)
+				{
+					afterRenderProcs.Add(proc);
+				}
+				else
+				{
+					afterRenderKeyedProcs.Set(key, proc);
+				}
 			}
 
 			void GuiGraphicsHost::InvalidateTabOrderCache()

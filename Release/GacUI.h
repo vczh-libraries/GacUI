@@ -8152,6 +8152,24 @@ Basic Construction
 ***********************************************************************/
 
 			/// <summary>
+			/// A helper object to test if a control has been deleted or not.
+			/// </summary>
+			class GuiDisposedFlag : public Object, public Description<GuiDisposedFlag>
+			{
+				friend class GuiControl;
+			protected:
+				GuiControl*								owner = nullptr;
+				bool									disposed = false;
+
+				void									SetDisposed();
+			public:
+				GuiDisposedFlag(GuiControl* _owner);
+				~GuiDisposedFlag();
+
+				bool									IsDisposed();
+			};
+
+			/// <summary>
 			/// The base class of all controls.
 			/// When the control is destroyed, it automatically destroys sub controls, and the bounds composition from the style controller.
 			/// If you want to manually destroy a control, you should first remove it from its parent.
@@ -8175,6 +8193,10 @@ Basic Construction
 				theme::ThemeName						controlThemeName;
 				ControlTemplatePropertyType				controlTemplate;
 				templates::GuiControlTemplate*			controlTemplateObject = nullptr;
+				Ptr<GuiDisposedFlag>					disposedFlag;
+
+			public:
+				Ptr<GuiDisposedFlag>					GetDisposedFlag();
 
 			protected:
 				compositions::GuiBoundsComposition*		boundsComposition = nullptr;
@@ -8204,8 +8226,6 @@ Basic Construction
 				description::Value						tag;
 				GuiControl*								tooltipControl = nullptr;
 				vint									tooltipWidth = 0;
-
-				Ptr<bool>								flagDisposed;
 
 				virtual void							BeforeControlTemplateUninstalled();
 				virtual void							AfterControlTemplateInstalled(bool initialize);
@@ -11019,12 +11039,18 @@ Host
 			{
 				typedef collections::List<GuiGraphicsComposition*>							CompositionList;
 				typedef GuiGraphicsComposition::GraphicsHostRecord							HostRecord;
+				typedef collections::Pair<DescriptableObject*, vint>						ProcKey;
+				typedef collections::List<Func<void()>>										ProcList;
+				typedef collections::Dictionary<ProcKey, Func<void()>>						ProcMap;
 			public:
 				static const vuint64_t					CaretInterval = 500;
+
 			protected:
 				HostRecord								hostRecord;
 				bool									supressPaint = false;
 				bool									needRender = true;
+				ProcList								afterRenderProcs;
+				ProcMap									afterRenderKeyedProcs;
 
 				GuiAltActionManager*					altActionManager = nullptr;
 				GuiTabActionManager*					tabActionManager = nullptr;
@@ -11097,6 +11123,10 @@ Host
 				void									Render(bool forceUpdate);
 				/// <summary>Request a rendering</summary>
 				void									RequestRender();
+				/// <summary>Invoke a specified function after rendering.</summary>
+				/// <param name="proc">The specified function.</param>
+				/// <param name="key">A key to cancel a previous binded key if not null.</param>
+				void									InvokeAfterRendering(const Func<void()>& proc, ProcKey key = { nullptr,-1 });
 
 				/// <summary>Invalidte the internal tab order control list. Next time when TAB is pressed it will be rebuilt.</summary>
 				void									InvalidateTabOrderCache();
@@ -12176,6 +12206,17 @@ List Control
 				//-----------------------------------------------------------
 				// Item Layout Interfaces
 				//-----------------------------------------------------------
+
+				/// <summary>EnsureItemVisible result for item arranger.</summary>
+				enum class EnsureItemVisibleResult
+				{
+					/// <summary>The requested item does not exist.</summary>
+					ItemNotExists,
+					/// <summary>The view location is moved.</summary>
+					Moved,
+					/// <summary>The view location is not moved.</summary>
+					NotMoved,
+				};
 				
 				/// <summary>Item arranger for a <see cref="GuiListControl"/>. Item arranger decides how to arrange and item controls. When implementing an item arranger, <see cref="IItemArrangerCallback"/> is suggested to use when calculating locations and sizes for item controls.</summary>
 				class IItemArranger : public virtual IItemProviderCallback, public Description<IItemArranger>
@@ -12214,9 +12255,9 @@ List Control
 					/// <param name="key">The key direction.</param>
 					virtual vint								FindItem(vint itemIndex, compositions::KeyDirection key) = 0;
 					/// <summary>Adjust the view location to make an item visible.</summary>
-					/// <returns>Returns true if this operation succeeded.</returns>
+					/// <returns>Returns the result of this operation.</returns>
 					/// <param name="itemIndex">The item index of the item to be made visible.</param>
-					virtual bool								EnsureItemVisible(vint itemIndex) = 0;
+					virtual EnsureItemVisibleResult				EnsureItemVisible(vint itemIndex) = 0;
 					/// <summary>Get the adopted size for the view bounds.</summary>
 					/// <returns>The adopted size, making the vids bounds just enough to display several items.</returns>
 					/// <param name="expectedSize">The expected size, to provide a guidance.</param>
@@ -13875,7 +13916,7 @@ Predefined ItemArranger
 					virtual void								RearrangeItemBounds();
 
 					virtual void								BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex) = 0;
-					virtual void								PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
+					virtual void								PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
 					virtual bool								IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) = 0;
 					virtual bool								EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) = 0;
 					virtual void								InvalidateItemSizeCache() = 0;
@@ -13911,7 +13952,7 @@ Predefined ItemArranger
 					void										EnsureOffsetForItem(vint itemIndex);
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					void										PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
 					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
 					void										InvalidateItemSizeCache()override;
@@ -13924,7 +13965,7 @@ Predefined ItemArranger
 					void										OnAttached(GuiListControl::IItemProvider* provider)override;
 					void										OnItemModified(vint start, vint count, vint newCount)override;
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
+					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 				
@@ -13942,7 +13983,7 @@ Predefined ItemArranger
 					virtual vint								GetYOffset();
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					void										PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
 					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
 					void										InvalidateItemSizeCache()override;
@@ -13953,7 +13994,7 @@ Predefined ItemArranger
 					~FixedHeightItemArranger();
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
+					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 
@@ -13969,7 +14010,7 @@ Predefined ItemArranger
 					void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					void										PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
 					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
 					void										InvalidateItemSizeCache()override;
@@ -13980,7 +14021,7 @@ Predefined ItemArranger
 					~FixedSizeMultiColumnItemArranger();
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
+					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 				
@@ -13998,7 +14039,7 @@ Predefined ItemArranger
 					void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					void										PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
 					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
 					void										InvalidateItemSizeCache()override;
@@ -14009,7 +14050,7 @@ Predefined ItemArranger
 					~FixedHeightMultiColumnItemArranger();
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
+					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 			}
@@ -19516,7 +19557,7 @@ GalleryItemArranger
 					vint										firstIndex = 0;
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					void										PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
 					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
 					void										InvalidateItemSizeCache()override;
@@ -19526,7 +19567,7 @@ GalleryItemArranger
 					~GalleryItemArranger();
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
+					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
 					Size										GetAdoptedSize(Size expectedSize)override;
 
 					void										ScrollUp();
