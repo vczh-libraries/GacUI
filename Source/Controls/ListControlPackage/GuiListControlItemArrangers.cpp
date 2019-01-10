@@ -310,7 +310,7 @@ RangedItemArrangerBase
 					}
 					else
 					{
-						return 0;
+						return nullptr;
 					}
 				}
 
@@ -551,6 +551,32 @@ FreeHeightItemArranger
 				{
 					if (callback)
 					{
+						while (true)
+						{
+							if (itemIndex < 0 || itemIndex >= itemProvider->Count())
+							{
+								return false;
+							}
+
+							EnsureOffsetForItem(itemIndex);
+							vint offset = viewBounds.y1;
+							vint top = offsets[itemIndex];
+							vint bottom = top + heights[itemIndex];
+							vint height = viewBounds.Height();
+
+							if (offset > top)
+							{
+								callback->SetViewLocation({ 0,top });
+							}
+							else if (offset < bottom - height)
+							{
+								callback->SetViewLocation({ 0,bottom - height });
+							}
+							else
+							{
+								break;
+							}
+						}
 						return true;
 					}
 					return false;
