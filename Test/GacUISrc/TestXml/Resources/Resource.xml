@@ -10,44 +10,79 @@
     </Instance>
   </Instance>
 
-  <Instance name="ButtonTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::ButtonTemplate">
-      <ref.Members>
-        <![CDATA[
-          prop Counter : int = 0 {}
-        ]]>
-      </ref.Members>
-      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <ev.leftButtonUp-eval>
-            <![CDATA[
-            {
-              self.Counter = self.Counter + 1;
-            }
-          ]]>
-          </ev.leftButtonUp-eval>
-          <Button ref.Name="button" Text-format="$(self.Text): $(self.Counter)">
-            <att.BoundsComposition-set AlignmentToParent="left:20 top:20 right:20 bottom:20"/>
-          </Button>
+  <Instance name="TextListItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TextListItemTemplate">
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Bounds AlignmentToParent="left:0 top:2 right:0 bottom:2" MinSizeLimitation="LimitToElementAndChildren">
+          <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF" WrapLine="true" WrapLineHeightCalculation="true"/>
         </Bounds>
-        <SolidBorder Color="#FFFF00"/>
-      </ButtonTemplate>
+        <Bounds AlignmentToParent="left:0 top:-1 right:0 bottom:0" PreferredMinSize="y:1">
+          <SolidBackground Color="#0080FF"/>
+        </Bounds>
+      </TextListItemTemplate>
     </Instance>
   </Instance>
 
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
+      <ref.Ctor>
+        <![CDATA[
+          {
+            for (i in range [0, 100))
+            {
+              var item = new TextItem^();
+              item.Text = Sys::LoremIpsumSentence(i * 20);
+              textList.Items.Add(item);
+            }
+          }
+        ]]>
+      </ref.Ctor>
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480" TopMost="true">
-        <Button ref.Name="button" Text="0" ControlTemplate="demo::ButtonTemplate">
-          <ev.Clicked-eval>
-            <![CDATA[
-              {
-                button.Text = (cast int button.Text) + 1;
-              }
-            ]]>
-          </ev.Clicked-eval>
-          <att.BoundsComposition-set AlignmentToParent="left:50 top:50 right:50 bottom:50"/>
-        </Button>
+        <Table AlignmentToParent="left:0 top:8 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <Button Enabled-bind="self.Font is null" Text="Set Font to &quot;Lucida Calligraphy&quot;">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    self.Font = {fontFamily:"Lucida Calligraphy" size:20};
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:0 column:1">
+            <Button Enabled-bind="self.Font is not null" Text-format="Set Font to default ($(INativeController::GetCurrentController().ResourceService().DefaultFont.fontFamily))">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    self.Font = null;
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:1 column:0 columnSpan:3">
+            <TextList ref.Name="textList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ItemTemplate>demo::TextListItemTemplate</att.ItemTemplate>
+              <att.Arranger>
+                <FreeHeightItemArranger/>
+              </att.Arranger>
+            </TextList>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>
