@@ -10,91 +10,44 @@
     </Instance>
   </Instance>
 
-  <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
+  <Instance name="ButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::ButtonTemplate">
       <ref.Members>
         <![CDATA[
-          func GetLocaleIndex(locale: Locale): int
-          {
-            for (i in range (0, listLocales.Items.Count))
-            {
-              if (listLocales.Items[i].Text == locale)
-              {
-                return i;
-              }
-            }
-            return 0;
-          }
-          
-          var dateTime: DateTime = Sys::GetLocalTime();
-          var number: int = 2147483647;
-          var currency: double = 1342177.28;
+          prop Counter : int = 0 {}
         ]]>
       </ref.Members>
-      <ref.LocalizedStrings Name="Strings" Class="demo::StringResource" Default="true"/>
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <ev.leftButtonUp-eval>
+            <![CDATA[
+            {
+              self.Counter = self.Counter + 1;
+            }
+          ]]>
+          </ev.leftButtonUp-eval>
+          <Button ref.Name="button" Text-format="$(self.Text): $(self.Counter)">
+            <att.BoundsComposition-set AlignmentToParent="left:20 top:20 right:20 bottom:20"/>
+          </Button>
+        </Bounds>
+        <SolidBorder Color="#FFFF00"/>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480" TopMost="true">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
-          <att.Rows>
-            <_>composeType:MinSize</_>
-            <_>composeType:Percentage percentage:1.0</_>
-          </att.Rows>
-          <att.Columns>
-            <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
-            <_>composeType:Percentage percentage:1.0</_>
-          </att.Columns>
-
-          <Cell Site="row:0 column:0">
-            <SolidLabel Font-bind="self.DisplayFont" Color="#FFFFFF" Text-str="Label()" VerticalAlignment="Center"/>
-          </Cell>
-
-          <Cell Site="row:0 column:1">
-            <ComboBox ref.Name="comboLocales">
-              <att.BoundsComposition-set PreferredMinSize="x:120"/>
-              <att.SelectedIndex-bind>self.GetLocaleIndex(Application::GetApplication().Locale)</att.SelectedIndex-bind>
-              <ev.SelectedIndexChanged-eval>
-                <![CDATA[
-                  {
-                    var index = comboLocales.SelectedIndex;
-                    if (index == -1)
-                    {
-                      index = 0;
-                    }
-                    Application::GetApplication().Locale = cast Locale listLocales.Items[index].Text;
-                  }
-                ]]>
-              </ev.SelectedIndexChanged-eval>
-              <att.ListControl>
-                <TextList ref.Name="listLocales" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                  <att.Items>
-                    <_ Text="en-US"/>
-                    <_ Text="zh-CN"/>
-                  </att.Items>
-                </TextList>
-              </att.ListControl>
-            </ComboBox>
-          </Cell>
-
-          <Cell Site="row:1 column:0 columnSpan:3">
-            <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <att.Items>
-                <_ Text-str="ShortDate(self.dateTime)"/>
-                <_ Text-str="LongDate(self.dateTime)"/>
-                <_ Text-str="YearMonthDate(self.dateTime)"/>
-                <_ Text-str="ShortTime(self.dateTime)"/>
-                <_ Text-str="LongTime(self.dateTime)"/>
-                <_ Text-str="DateFormat(self.dateTime)"/>
-                <_ Text-str="TimeFormat(self.dateTime)"/>
-                <_ Text-str="Number(self.number)"/>
-                <_ Text-str="Currency(self.currency)"/>
-                <_ Text-str="Sentence('John Smith')"/>
-                <_ Text-str="Strings.Sentence('John Smith')"/>
-                <_ Text-bind="self.Strings.Sentence('John Smith')"/>
-              </att.Items>
-            </TextList>
-          </Cell>
-        </Table>
+        <Button ref.Name="button" Text="0" ControlTemplate="demo::ButtonTemplate">
+          <ev.Clicked-eval>
+            <![CDATA[
+              {
+                button.Text = (cast int button.Text) + 1;
+              }
+            ]]>
+          </ev.Clicked-eval>
+          <att.BoundsComposition-set AlignmentToParent="left:50 top:50 right:50 bottom:50"/>
+        </Button>
       </Window>
     </Instance>
   </Instance>
