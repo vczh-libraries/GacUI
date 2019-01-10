@@ -646,12 +646,23 @@ GuiGraphicsHost
 
 				if (!needRender)
 				{
-					List<Func<void()>> procs;
-					CopyFrom(procs, afterRenderProcs);
-					afterRenderProcs.Clear();
-					for (vint i = 0; i < procs.Count(); i++)
 					{
-						procs[i]();
+						ProcList procs;
+						CopyFrom(procs, afterRenderProcs);
+						afterRenderProcs.Clear();
+						for (vint i = 0; i < procs.Count(); i++)
+						{
+							procs[i]();
+						}
+					}
+					{
+						ProcMap procs;
+						CopyFrom(procs, afterRenderKeyedProcs);
+						afterRenderProcs.Clear();
+						for (vint i = 0; i < procs.Count(); i++)
+						{
+							procs.Values()[i]();
+						}
 					}
 				}
 			}
@@ -661,9 +672,16 @@ GuiGraphicsHost
 				needRender = true;
 			}
 
-			void GuiGraphicsHost::InvokeAfterRendering(const Func<void()>& proc)
+			void GuiGraphicsHost::InvokeAfterRendering(const Func<void()>& proc, ProcKey key)
 			{
-				afterRenderProcs.Add(proc);
+				if (key.key == nullptr)
+				{
+					afterRenderProcs.Add(proc);
+				}
+				else
+				{
+					afterRenderKeyedProcs.Set(key, proc);
+				}
 			}
 
 			void GuiGraphicsHost::InvalidateTabOrderCache()

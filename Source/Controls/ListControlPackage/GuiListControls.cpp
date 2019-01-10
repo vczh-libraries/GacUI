@@ -486,7 +486,7 @@ GuiListControl
 							{
 								EnsureItemVisible(itemIndex);
 							}
-						});
+						}, { this,0 });
 					}
 				}
 				return result != EnsureItemVisibleResult::ItemNotExists;

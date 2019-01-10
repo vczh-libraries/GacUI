@@ -71,13 +71,18 @@ Host
 			{
 				typedef collections::List<GuiGraphicsComposition*>							CompositionList;
 				typedef GuiGraphicsComposition::GraphicsHostRecord							HostRecord;
+				typedef collections::Pair<DescriptableObject*, vint>						ProcKey;
+				typedef collections::List<Func<void()>>										ProcList;
+				typedef collections::Dictionary<ProcKey, Func<void()>>						ProcMap;
 			public:
 				static const vuint64_t					CaretInterval = 500;
+
 			protected:
 				HostRecord								hostRecord;
 				bool									supressPaint = false;
 				bool									needRender = true;
-				collections::List<Func<void()>>			afterRenderProcs;
+				ProcList								afterRenderProcs;
+				ProcMap									afterRenderKeyedProcs;
 
 				GuiAltActionManager*					altActionManager = nullptr;
 				GuiTabActionManager*					tabActionManager = nullptr;
@@ -152,7 +157,8 @@ Host
 				void									RequestRender();
 				/// <summary>Invoke a specified function after rendering.</summary>
 				/// <param name="proc">The specified function.</param>
-				void									InvokeAfterRendering(const Func<void()>& proc);
+				/// <param name="key">A key to cancel a previous binded key if not null.</param>
+				void									InvokeAfterRendering(const Func<void()>& proc, ProcKey key = { nullptr,-1 });
 
 				/// <summary>Invalidte the internal tab order control list. Next time when TAB is pressed it will be rebuilt.</summary>
 				void									InvalidateTabOrderCache();
