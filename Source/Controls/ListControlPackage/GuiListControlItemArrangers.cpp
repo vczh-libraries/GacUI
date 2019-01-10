@@ -391,7 +391,7 @@ FreeHeightItemArranger
 						auto composition = GetStyleBounds(style);
 						auto currentBounds = callback->GetStyleBounds(composition);
 						callback->SetStyleBounds(composition, Rect(bounds.LeftTop(), Size(viewBounds.Width(), bounds.Height())));
-						styleHeight = callback->GetStylePreferredSize(GetStyleBounds(style)).y;
+						styleHeight = callback->GetStylePreferredSize(composition).y;
 						callback->SetStyleBounds(composition, currentBounds);
 					}
 
