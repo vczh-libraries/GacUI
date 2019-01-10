@@ -31,7 +31,7 @@
             for (i in range [0, 100))
             {
               var item = new TextItem^();
-              item.Text = Sys::LoremIpsumSentence(i * 20);
+              item.Text = $"$(i + 1): $(Sys::LoremIpsumSentence(i * 20))";
               textList.Items.Add(item);
             }
           }

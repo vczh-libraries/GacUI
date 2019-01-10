@@ -521,22 +521,10 @@ FreeHeightItemArranger
 						itemIndex = count;
 						break;
 					case KeyDirection::PageUp:
-						EnsureOffsetForItem(itemIndex);
-						while (true)
-						{
-							--itemIndex;
-							if (itemIndex < 0) break;
-							if (offsets[itemIndex] + heights[itemIndex] <= viewBounds.Top()) break;
-						}
+						itemIndex -= visibleStyles.Count();
 						break;
 					case KeyDirection::PageDown:
-						while (true)
-						{
-							++itemIndex;
-							if (itemIndex > offsets.Count()) break;
-							EnsureOffsetForItem(itemIndex);
-							if (offsets[itemIndex] > -viewBounds.Bottom()) break;
-						}
+						itemIndex += visibleStyles.Count();
 						break;
 					default:
 						return -1;
