@@ -566,8 +566,8 @@ FreeHeightItemArranger
 							{
 								break;
 							}
-							callback->SetViewLocation(location);
 							moved |= viewBounds.LeftTop() != location;
+							callback->SetViewLocation(location);
 						}
 						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}
@@ -739,8 +739,8 @@ FixedHeightItemArranger
 							{
 								break;
 							}
-							callback->SetViewLocation(location);
 							moved |= viewBounds.LeftTop() != location;
+							callback->SetViewLocation(location);
 						}
 						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}
@@ -935,8 +935,8 @@ FixedSizeMultiColumnItemArranger
 							{
 								break;
 							}
-							callback->SetViewLocation(location);
 							moved |= viewBounds.LeftTop() != location;
+							callback->SetViewLocation(location);
 						}
 						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}
@@ -1135,8 +1135,8 @@ FixedHeightMultiColumnItemArranger
 							{
 								break;
 							}
-							callback->SetViewLocation(location);
 							moved |= viewBounds.LeftTop() != location;
+							callback->SetViewLocation(location);
 						}
 						return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
 					}

@@ -77,6 +77,7 @@ Host
 				HostRecord								hostRecord;
 				bool									supressPaint = false;
 				bool									needRender = true;
+				collections::List<Func<void()>>			afterRenderProcs;
 
 				GuiAltActionManager*					altActionManager = nullptr;
 				GuiTabActionManager*					tabActionManager = nullptr;
@@ -149,6 +150,9 @@ Host
 				void									Render(bool forceUpdate);
 				/// <summary>Request a rendering</summary>
 				void									RequestRender();
+				/// <summary>Invoke a specified function after rendering.</summary>
+				/// <param name="proc">The specified function.</param>
+				void									InvokeAfterRendering(const Func<void()>& proc);
 
 				/// <summary>Invalidte the internal tab order control list. Next time when TAB is pressed it will be rebuilt.</summary>
 				void									InvalidateTabOrderCache();

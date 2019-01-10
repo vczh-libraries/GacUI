@@ -1,5 +1,6 @@
 #include "GuiListControls.h"
 #include "../Templates/GuiControlTemplates.h"
+#include "../../GraphicsHost/GuiGraphicsHost.h"
 
 namespace vl
 {
@@ -474,6 +475,20 @@ GuiListControl
 
 				if (!itemArranger) return false;
 				auto result = itemArranger->EnsureItemVisible(itemIndex);
+				if (result == EnsureItemVisibleResult::Moved)
+				{
+					if (auto host = GetBoundsComposition()->GetRelatedGraphicsHost())
+					{
+						auto flag = GetDisposedFlag();
+						host->InvokeAfterRendering([=]()
+						{
+							if (!flag->IsDisposed())
+							{
+								EnsureItemVisible(itemIndex);
+							}
+						});
+					}
+				}
 				return result != EnsureItemVisibleResult::ItemNotExists;
 			}
 

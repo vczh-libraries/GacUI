@@ -643,11 +643,27 @@ GuiGraphicsHost
 					default:;
 					}
 				}
+
+				if (!needRender)
+				{
+					List<Func<void()>> procs;
+					CopyFrom(procs, afterRenderProcs);
+					afterRenderProcs.Clear();
+					for (vint i = 0; i < procs.Count(); i++)
+					{
+						procs[i]();
+					}
+				}
 			}
 
 			void GuiGraphicsHost::RequestRender()
 			{
 				needRender = true;
+			}
+
+			void GuiGraphicsHost::InvokeAfterRendering(const Func<void()>& proc)
+			{
+				afterRenderProcs.Add(proc);
 			}
 
 			void GuiGraphicsHost::InvalidateTabOrderCache()
