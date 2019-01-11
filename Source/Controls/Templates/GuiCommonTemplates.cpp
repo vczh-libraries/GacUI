@@ -71,8 +71,8 @@ GuiCommonDatePickerLook
 				wchar_t alt[] = L"D00";
 				if (monthOffset == -1) alt[0] = L'C';
 				else if (monthOffset == 1) alt[0] = L'E';
-				alt[1] = L'0' + day.day / 10;
-				alt[2] = L'0' + day.day % 10;
+				alt[1] = (wchar_t)(L'0' + day.day / 10);
+				alt[2] = (wchar_t)(L'0' + day.day % 10);
 				buttonDays[index]->SetAlt(alt);
 
 				index++;
