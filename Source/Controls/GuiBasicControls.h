@@ -340,17 +340,17 @@ Basic Construction
 				/// <param name="identifier">The identifier.</param>
 				virtual IDescriptable*					QueryService(const WString& identifier);
 
-				/// <summary>Add a service to this control dynamically. The added service cannot override existing services.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="identifier">The identifier. You are suggested to fill this parameter using the value from the interface's GetIdentifier function, or <see cref="QueryTypedService`1"/> will not work on this service.</param>
-				/// <param name="value">The service.</param>
-				bool									AddService(const WString& identifier, Ptr<IDescriptable> value);
-
 				template<typename T>
 				T* QueryTypedService()
 				{
 					return dynamic_cast<T*>(QueryService(QueryServiceHelper<T>::GetIdentifier()));
 				}
+
+				/// <summary>Add a service to this control dynamically. The added service cannot override existing services.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="identifier">The identifier. You are suggested to fill this parameter using the value from the interface's GetIdentifier function, or <see cref="QueryTypedService`1"/> will not work on this service.</param>
+				/// <param name="value">The service.</param>
+				bool									AddService(const WString& identifier, Ptr<IDescriptable> value);
 			};
 
 			/// <summary>Represnets a user customizable control.</summary>
