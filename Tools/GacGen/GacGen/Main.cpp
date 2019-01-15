@@ -663,7 +663,7 @@ void GuiMain()
 		{
 			switch (arguments->Count())
 			{
-			case 0:
+			case 1:
 				CompileResource(false, arguments->Get(0), {});
 				return;
 			}

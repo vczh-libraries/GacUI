@@ -274,6 +274,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Source\DarkSkin.h" />
     <ClInclude Include="Source\DarkSkinIncludes.h" />
     <ClInclude Include="Source\DarkSkinReflection.h" />
@@ -283,6 +284,13 @@
     <ClInclude Include="Source\DemoReflection.h" />
     <ClInclude Include="Source\DocumentEditorBase.h" />
     <ClInclude Include="Source\MainWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon2.ico" />
+    <Image Include="New.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
