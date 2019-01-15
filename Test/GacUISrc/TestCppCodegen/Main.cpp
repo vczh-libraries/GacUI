@@ -3,6 +3,7 @@
 #include "Source/DarkSkinReflection.h"
 #include "Source/DemoReflection.h"
 #include <Windows.h>
+#include "resource.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -19,6 +20,14 @@ void GuiMain()
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	LoadDemoTypes();
 #endif
+
+	auto icon = (HICON)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(MAINICON), IMAGE_ICON, 256, 256, 0);
+	ICONINFOEX info;
+	ZeroMemory(&info, sizeof(info));
+	info.cbSize = sizeof(info);
+	auto result = GetIconInfoEx(icon, &info);
+	auto error = GetLastError();
+	result = DestroyIcon(icon);
 
 	theme::RegisterTheme(MakePtr<darkskin::Theme>());
 	{
