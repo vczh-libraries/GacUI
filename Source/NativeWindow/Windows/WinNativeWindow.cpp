@@ -19,6 +19,14 @@ namespace vl
 		{
 			using namespace collections;
 
+			LPCWSTR defaultIconResourceName = nullptr;
+
+			void SetWindowDefaultIcon(UINT resourceId)
+			{
+				CHECK_ERROR(defaultIconResourceName == nullptr, L"vl::presentation::windows::SetWindowDefaultIcon(UINT)#This function can only be called once.");
+				defaultIconResourceName = MAKEINTRESOURCE(resourceId);
+			}
+
 			HWND GetHWNDFromNativeWindowHandle(INativeWindow* window)
 			{
 				if(!window) return NULL;
@@ -42,13 +50,17 @@ WindowsClass
 				WinClass(WString _name, bool shadow, bool ownDC, WNDPROC procedure, HINSTANCE hInstance)
 				{
 					name=_name;
+					ZeroMemory(&windowClass, sizeof(windowClass));
 					windowClass.cbSize=sizeof(windowClass);
 					windowClass.style=CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | (shadow?CS_DROPSHADOW:0) | (ownDC?CS_OWNDC:0);
 					windowClass.lpfnWndProc=procedure;
 					windowClass.cbClsExtra=0;
 					windowClass.cbWndExtra=0;
 					windowClass.hInstance=hInstance;
-					windowClass.hIcon=LoadIcon(NULL,IDI_APPLICATION);
+					if (defaultIconResourceName)
+					{
+						windowClass.hIcon = (HICON)LoadImage(GetModuleHandle(NULL), defaultIconResourceName, IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED);
+					}
 					windowClass.hCursor=NULL;//LoadCursor(NULL,IDC_ARROW);
 					windowClass.hbrBackground=GetSysColorBrush(COLOR_BTNFACE);
 					windowClass.lpszMenuName=NULL;

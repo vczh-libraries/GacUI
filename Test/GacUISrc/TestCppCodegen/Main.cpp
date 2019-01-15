@@ -2,7 +2,7 @@
 
 #include "Source/DarkSkinReflection.h"
 #include "Source/DemoReflection.h"
-#include <Windows.h>
+#include "../../../Source/NativeWindow/Windows/WinNativeWindow.h"
 #include "resource.h"
 
 using namespace vl;
@@ -21,14 +21,7 @@ void GuiMain()
 	LoadDemoTypes();
 #endif
 
-	auto icon = (HICON)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(MAINICON), IMAGE_ICON, 256, 256, 0);
-	ICONINFOEX info;
-	ZeroMemory(&info, sizeof(info));
-	info.cbSize = sizeof(info);
-	auto result = GetIconInfoEx(icon, &info);
-	auto error = GetLastError();
-	result = DestroyIcon(icon);
-
+	windows::SetWindowDefaultIcon(MAINICON);
 	theme::RegisterTheme(MakePtr<darkskin::Theme>());
 	{
 		demo::MainWindow window;
