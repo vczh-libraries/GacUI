@@ -228,7 +228,6 @@ GuiDocumentCommonInterface
 				documentComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
 				documentComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
 
-				_sender->FontChanged.AttachMethod(this, &GuiDocumentCommonInterface::OnFontChanged);
 				focusableComposition->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiDocumentCommonInterface::OnCaretNotify);
 				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnGotFocus);
 				focusableComposition->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnLostFocus);
@@ -369,7 +368,7 @@ GuiDocumentCommonInterface
 				}
 			}
 
-			void GuiDocumentCommonInterface::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiDocumentCommonInterface::OnFontChanged()
 			{
 				auto document = documentElement->GetDocument();
 				MergeBaselineAndDefaultFont(document);
@@ -1158,6 +1157,12 @@ GuiDocumentViewer
 				}
 			}
 
+			void GuiDocumentViewer::UpdateDisplayFont()
+			{
+				GuiScrollContainer::UpdateDisplayFont();
+				OnFontChanged();
+			}
+
 			Point GuiDocumentViewer::GetDocumentViewPosition()
 			{
 				return GetViewBounds().LeftTop();
@@ -1226,6 +1231,12 @@ GuiDocumentLabel
 					documentElement->SetCaretColor(ct->GetCaretColor());
 					SetDocument(GetDocument());
 				}
+			}
+
+			void GuiDocumentLabel::UpdateDisplayFont()
+			{
+				GuiControl::UpdateDisplayFont();
+				OnFontChanged();
 			}
 
 			GuiDocumentLabel::GuiDocumentLabel(theme::ThemeName themeName)
