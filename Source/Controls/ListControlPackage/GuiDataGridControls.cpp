@@ -96,7 +96,10 @@ DefaultDataGridItemTemplate
 				{
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
-						IsInEditor(dataGrid, arguments);
+						if (IsInEditor(dataGrid, arguments))
+						{
+							arguments.handled = true;
+						}
 					}
 				}
 
