@@ -1152,13 +1152,8 @@ WindowsForm
 
 				void SetIcon(Ptr<GuiImageData> icon)
 				{
-					if (replacementHIcon != NULL)
-					{
-						DestroyIcon(replacementHIcon);
-						replacementHIcon = NULL;
-					}
-
 					replacementIcon = icon;
+					HICON newReplacementHIcon = NULL;
 					if (replacementIcon && replacementIcon->GetImage())
 					{
 						stream::MemoryStream memoryStream;
@@ -1166,8 +1161,8 @@ WindowsForm
 						replacementIcon->GetImage()->SaveToStream(memoryStream, INativeImage::Icon);
 						if (memoryStream.Size() > 0)
 						{
-							replacementHIcon = CreateIconFromResource((PBYTE)memoryStream.GetInternalBuffer(), (DWORD)memoryStream.Size(), TRUE, 0x00030000);
-							if (replacementHIcon != NULL)
+							newReplacementHIcon = CreateIconFromResource((PBYTE)memoryStream.GetInternalBuffer(), (DWORD)memoryStream.Size(), TRUE, 0x00030000);
+							if (newReplacementHIcon != NULL)
 							{
 								goto SKIP;
 							}
@@ -1240,7 +1235,7 @@ WindowsForm
 									if (himl != NULL)
 									{
 										int addResult = ImageList_Add(himl, hBitmap, NULL);
-										replacementHIcon = ImageList_GetIcon(himl, 0, ILD_NORMAL);
+										newReplacementHIcon = ImageList_GetIcon(himl, 0, ILD_NORMAL);
 										ImageList_Destroy(himl);
 									}
 									DeleteObject(hBitmap);
@@ -1250,13 +1245,28 @@ WindowsForm
 					}
 
 				SKIP:
-					SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)replacementHIcon);
-					SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)replacementHIcon);
-					if (this == GetCurrentController()->WindowService()->GetMainWindow())
 					{
-						SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)replacementHIcon);
-						SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)replacementHIcon);
+						HICON hAppIcon = newReplacementHIcon;
+						if (hAppIcon == NULL) hAppIcon = CreateWindowDefaultIcon();
+						if (hAppIcon == NULL) hAppIcon = (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED);
+						bool isVisible = IsVisible();
+						if (isVisible) SendMessage(handle, WM_SETREDRAW, (WPARAM)FALSE, NULL);
+						SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)newReplacementHIcon);
+						SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)newReplacementHIcon);
+						if (isVisible) SendMessage(handle, WM_SETREDRAW, (WPARAM)TRUE, NULL);
+
+						if (this == GetCurrentController()->WindowService()->GetMainWindow())
+						{
+							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)hAppIcon);
+							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
+						}
 					}
+
+					if (replacementHIcon != NULL)
+					{
+						DestroyIcon(replacementHIcon);
+					}
+					replacementHIcon = newReplacementHIcon;
 				}
 
 				WindowSizeState GetSizeState()
