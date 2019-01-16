@@ -29,6 +29,17 @@
           <StackItem>
             <CheckBox ref.Name="checkCustom" Text="Custom Icon" Selected="false"/>
           </StackItem>
+          <StackItem>
+            <Button Text="Create another copy">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    new TestWindow*().ShowModalAndDelete(self, func():void{});
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
         </Stack>
       </Window>
     </Instance>

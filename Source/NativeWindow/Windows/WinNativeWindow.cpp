@@ -836,6 +836,7 @@ WindowsForm
 				Margin								customFramePadding;
 				Ptr<GuiImageData>					defaultIcon;
 				Ptr<GuiImageData>					replacementIcon;
+				HICON								replacementHIcon = NULL;
 
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
@@ -1151,6 +1152,12 @@ WindowsForm
 
 				void SetIcon(Ptr<GuiImageData> icon)
 				{
+					if (replacementHIcon != NULL)
+					{
+						DestroyIcon(replacementHIcon);
+						replacementHIcon = NULL;
+					}
+
 					replacementIcon = icon;
 					if (replacementIcon && replacementIcon->GetImage())
 					{
@@ -1159,11 +1166,11 @@ WindowsForm
 						replacementIcon->GetImage()->SaveToStream(memoryStream, INativeImage::Icon);
 						if (memoryStream.Size() > 0)
 						{
-							auto icon = CreateIconFromResource((PBYTE)memoryStream.GetInternalBuffer(), (DWORD)memoryStream.Size(), TRUE, 0x00030000);
-							SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)icon);
-							SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)icon);
-							DestroyIcon(icon);
-							return;
+							replacementHIcon = CreateIconFromResource((PBYTE)memoryStream.GetInternalBuffer(), (DWORD)memoryStream.Size(), TRUE, 0x00030000);
+							if (replacementHIcon != NULL)
+							{
+								goto SKIP;
+							}
 						}
 
 						INativeImageFrame* selectedFrame = nullptr;
@@ -1233,29 +1240,23 @@ WindowsForm
 									if (himl != NULL)
 									{
 										int addResult = ImageList_Add(himl, hBitmap, NULL);
-										auto icon = ImageList_GetIcon(himl, 0, ILD_NORMAL);
-										if (icon != NULL)
-										{
-											SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)icon);
-											SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)icon);
-											succeeded = true;
-											DestroyIcon(icon);
-										}
+										replacementHIcon = ImageList_GetIcon(himl, 0, ILD_NORMAL);
 										ImageList_Destroy(himl);
 									}
 									DeleteObject(hBitmap);
 								}
 							}
-
-							if (succeeded)
-							{
-								return;
-							}
 						}
 					}
 
-					SendMessage(handle, WM_SETICON, ICON_BIG, NULL);
-					SendMessage(handle, WM_SETICON, ICON_SMALL, NULL);
+				SKIP:
+					(HICON)SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)replacementHIcon);
+					(HICON)SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)replacementHIcon);
+					if (this == GetCurrentController()->WindowService()->GetMainWindow())
+					{
+						(HICON)SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)replacementHIcon);
+						(HICON)SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)replacementHIcon);
+					}
 				}
 
 				WindowSizeState GetSizeState()
