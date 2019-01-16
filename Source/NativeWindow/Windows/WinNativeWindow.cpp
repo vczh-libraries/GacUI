@@ -1250,12 +1250,12 @@ WindowsForm
 					}
 
 				SKIP:
-					(HICON)SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)replacementHIcon);
-					(HICON)SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)replacementHIcon);
+					SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)replacementHIcon);
+					SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)replacementHIcon);
 					if (this == GetCurrentController()->WindowService()->GetMainWindow())
 					{
-						(HICON)SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)replacementHIcon);
-						(HICON)SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)replacementHIcon);
+						SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)replacementHIcon);
+						SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)replacementHIcon);
 					}
 				}
 
