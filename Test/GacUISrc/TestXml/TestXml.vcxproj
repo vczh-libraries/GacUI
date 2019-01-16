@@ -203,6 +203,7 @@
     <ClInclude Include="..\TestCppCodegen\Source\DemoReflection.h" />
     <ClInclude Include="..\TestCppCodegen\Source\DocumentEditorBase.h" />
     <ClInclude Include="..\TestCppCodegen\Source\MainWindow.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Resources\Resource.xml">
@@ -213,6 +214,9 @@
     <ProjectReference Include="..\GacUISrc\GacUISrc.vcxproj">
       <Project>{407401eb-c968-42b2-aee9-47aa1658e1ff}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

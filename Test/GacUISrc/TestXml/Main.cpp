@@ -3,7 +3,8 @@
 #include "../Host/ResourceCompiler.h"
 #include "../TestCppCodegen/Source/DarkSkinReflection.h"
 #include "../TestCppCodegen/Source/DemoReflection.h"
-#include <Windows.h>
+#include "../../../Source/NativeWindow/Windows/WinNativeWindow.h"
+#include "resource.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -138,6 +139,7 @@ void GuiMain()
 	GetResourceManager()->GetPendingResourceNames(names);
 	CHECK_ERROR(names.Count() == 0, L"Error");
 
+	windows::SetWindowDefaultIcon(MAINICON);
 	OpenMainWindow();
 #endif
 }

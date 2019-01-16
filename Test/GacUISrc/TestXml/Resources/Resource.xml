@@ -3,6 +3,10 @@
     <InstanceStyle name="Style" content="File">..\..\Host\Resources\DarkSkin\Style.xml</InstanceStyle>
   </Folder>
 
+  <Folder name="Images">
+    <Image name="CustomIcon" content="File">Annotate_Default.ico</Image>
+  </Folder>
+
   <Instance name="ThemeResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestTheme" xmlns:x="testtheme::*">
       <ThemeTemplates Name="TestSkin">
@@ -10,79 +14,22 @@
     </Instance>
   </Instance>
 
-  <Instance name="TextListItemTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::TextListItemTemplate">
-      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds AlignmentToParent="left:0 top:2 right:0 bottom:2" MinSizeLimitation="LimitToElementAndChildren">
-          <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#FFFFFF" WrapLine="true" WrapLineHeightCalculation="true"/>
-        </Bounds>
-        <Bounds AlignmentToParent="left:0 top:-1 right:0 bottom:0" PreferredMinSize="y:1">
-          <SolidBackground Color="#0080FF"/>
-        </Bounds>
-      </TextListItemTemplate>
-    </Instance>
-  </Instance>
-
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
-      <ref.Ctor>
+      <ref.Members>
         <![CDATA[
-          {
-            for (i in range [0, 100))
-            {
-              var item = new TextItem^();
-              item.Text = $"$(i + 1): $(Sys::LoremIpsumSentence(i * 20))";
-              textList.Items.Add(item);
-            }
-          }
+          prop CustomIcon : GuiImageData^ = null {}
         ]]>
-      </ref.Ctor>
-      <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480" TopMost="true">
-        <Table AlignmentToParent="left:0 top:8 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
-          <att.Rows>
-            <_>composeType:MinSize</_>
-            <_>composeType:Percentage percentage:1.0</_>
-          </att.Rows>
-          <att.Columns>
-            <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
-            <_>composeType:Percentage percentage:1.0</_>
-          </att.Columns>
-
-          <Cell Site="row:0 column:0">
-            <Button Enabled-bind="self.Font is null" Text="Set Font to &quot;Lucida Calligraphy&quot;">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    self.Font = {fontFamily:"Lucida Calligraphy" size:20};
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </Cell>
-
-          <Cell Site="row:0 column:1">
-            <Button Enabled-bind="self.Font is not null" Text-format="Set Font to default ($(INativeController::GetCurrentController().ResourceService().DefaultFont.fontFamily))">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    self.Font = null;
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </Cell>
-
-          <Cell Site="row:1 column:0 columnSpan:3">
-            <TextList ref.Name="textList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <att.ItemTemplate>demo::TextListItemTemplate</att.ItemTemplate>
-              <att.Arranger>
-                <FreeHeightItemArranger/>
-              </att.Arranger>
-            </TextList>
-          </Cell>
-        </Table>
+      </ref.Members>
+      <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480" TopMost="true" IconVisible-bind="checkVisible.Selected" Icon-bind="checkCustom.Selected ? self.CustomIcon : null" CustomIcon-uri="res://Images/CustomIcon">
+        <Stack AlignmentToParent="left:10 top:10 right:-1 bottom:-1" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
+          <StackItem>
+            <CheckBox ref.Name="checkVisible" Text="Icon Visible" Selected="true"/>
+          </StackItem>
+          <StackItem>
+            <CheckBox ref.Name="checkCustom" Text="Custom Icon" Selected="false"/>
+          </StackItem>
+        </Stack>
       </Window>
     </Instance>
   </Instance>

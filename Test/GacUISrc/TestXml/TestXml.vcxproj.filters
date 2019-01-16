@@ -22,6 +22,9 @@
     <Filter Include="Demo">
       <UniqueIdentifier>{85e46810-7bf3-48fd-9137-95c1d430d3e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Icon">
+      <UniqueIdentifier>{6d8267a0-9d4d-4932-9825-da94c39ce610}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -89,10 +92,18 @@
     <ClInclude Include="..\TestCppCodegen\Source\MainWindow.h">
       <Filter>Demo</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Icon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Resources\Resource.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>Icon</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
