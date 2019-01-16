@@ -1253,6 +1253,9 @@ WindowsForm
 							}
 						}
 					}
+
+					SendMessage(handle, WM_SETICON, ICON_BIG, NULL);
+					SendMessage(handle, WM_SETICON, ICON_SMALL, NULL);
 				}
 
 				WindowSizeState GetSizeState()

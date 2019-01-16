@@ -21,6 +21,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	int result = SetupWindowsGDIRenderer();
 #endif
 #ifdef GUI_GRAPHICS_RENDERER_DIRECT2D
+	windows::SetWindowDefaultIcon(MAINICON);
 	int result = SetupWindowsDirect2DRenderer();
 #endif
 
@@ -139,7 +140,6 @@ void GuiMain()
 	GetResourceManager()->GetPendingResourceNames(names);
 	CHECK_ERROR(names.Count() == 0, L"Error");
 
-	windows::SetWindowDefaultIcon(MAINICON);
 	OpenMainWindow();
 #endif
 }
