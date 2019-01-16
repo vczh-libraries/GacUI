@@ -83,13 +83,14 @@
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
             </att.Rows>
             <att.Columns>
+              <CellOption>composeType:MinSize</CellOption>
               <CellOption>composeType:Percentage percentage:1.0</CellOption>
               <CellOption>composeType:MinSize</CellOption>
               <CellOption>composeType:MinSize</CellOption>
               <CellOption>composeType:MinSize</CellOption>
             </att.Columns>
 
-            <Cell Site="row:0 column:1">
+            <Cell Site="row:0 column:2">
               <att.AssociatedHitTestResult-bind>self.MinimizedBox ? ButtonMinimum : NoDecision</att.AssociatedHitTestResult-bind>
               <Button AutoFocus="false" Text=" 0 " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
                 <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
@@ -97,7 +98,7 @@
                 <att.Visible-bind>self.MinimizedBox or self.MaximizedBox</att.Visible-bind>
               </Button>
             </Cell>
-            <Cell Site="row:0 column:2">
+            <Cell Site="row:0 column:3">
               <att.AssociatedHitTestResult-bind>self.MaximizedBox ? ButtonMaximum : NoDecision</att.AssociatedHitTestResult-bind>
               <Button AutoFocus="false" Text-bind="self.Maximized ? ' 1 ' : ' 2 '" Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
                 <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
@@ -105,18 +106,34 @@
                 <att.Visible-bind>self.MinimizedBox or self.MaximizedBox</att.Visible-bind>
               </Button>
             </Cell>
-            <Cell Site="row:0 column:3" AssociatedHitTestResult="ButtonClose">
+            <Cell Site="row:0 column:4" AssociatedHitTestResult="ButtonClose">
               <Button AutoFocus="false" Text=" r " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
                 <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
               </Button>
             </Cell>
 
-            <Cell Site="row:0 column:0" AssociatedHitTestResult="Title">
+            <Cell Site="row:0 column:0" MinSizeLimitation-bind="((self.Icon is not null) and self.IconVisible ? LimitToElementAndChildren : NoLimit) of (GuiGraphicsComposition::MinSizeLimitation)">
+              <Table AlignmentToParent="left:0 top:0 right:2 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                <att.Rows>
+                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                  <CellOption>composeType:Absolute absolute:16</CellOption>
+                  <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                </att.Rows>
+                <att.Columns>
+                  <CellOption>composeType:Absolute absolute:16</CellOption>
+                </att.Columns>
+
+                <Cell Site="row:1 column:0" AssociatedHitTestResult="Icon">
+                  <ImageFrame Stretch="true" Image-bind="self.Icon is not null ? self.Icon.Image : null" FrameIndex-bind="self.Icon is not null ? self.Icon.FrameIndex : -1"/>
+                </Cell>
+              </Table>
+            </Cell>
+            <Cell Site="row:0 column:1" AssociatedHitTestResult="Title">
               <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5">
                 <SolidLabel ref.Style="windowTitle" Text-bind="self.Text" Ellipse="true" Font="fontFamily:'Segoe WP SemiLight' size:14 antialias:true"/>
               </Bounds>
             </Cell>
-            <Cell Site="row:1 column:0 columnSpan:4" AssociatedHitTestResult="Client">
+            <Cell Site="row:1 column:0 columnSpan:5" AssociatedHitTestResult="Client">
               <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Cell>
           </Table>
