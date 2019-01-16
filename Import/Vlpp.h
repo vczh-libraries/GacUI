@@ -7015,7 +7015,7 @@ Tokenizer
 			/// <returns>The internal state.</returns>
 			InternalState								GetInternalState();
 			/// <summary>Restore the colorizer to a internal state.</summary>
-			/// <param name="value">The internal state.</param>
+			/// <param name="state">The internal state.</param>
 			void										SetInternalState(InternalState state);
 			/// <summary>Step forward by one character.</summary>
 			/// <param name="input">The input character.</param>

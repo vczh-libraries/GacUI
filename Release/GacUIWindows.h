@@ -1851,6 +1851,7 @@ Windows Platform Native Controller
 				virtual bool								UninstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
 			};
 
+			extern void										SetWindowDefaultIcon(UINT resourceId);
 			extern INativeController*						CreateWindowsNativeController(HINSTANCE hInstance);
 			extern IWindowsForm*							GetWindowsFormFromHandle(HWND hwnd);
 			extern IWindowsForm*							GetWindowsForm(INativeWindow* window);

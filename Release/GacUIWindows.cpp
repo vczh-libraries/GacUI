@@ -7929,9 +7929,11 @@ void RendererMainGDI()
 /***********************************************************************
 .\NATIVEWINDOW\WINDOWS\WINNATIVEWINDOW.CPP
 ***********************************************************************/
+#include <CommCtrl.h>
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "Shlwapi.lib")
+#pragma comment(lib, "Comctl32.lib")
 
 namespace vl
 {
@@ -7940,6 +7942,20 @@ namespace vl
 		namespace windows
 		{
 			using namespace collections;
+
+			LPCWSTR defaultIconResourceName = nullptr;
+
+			HICON CreateWindowDefaultIcon(vint size = 0)
+			{
+				if (!defaultIconResourceName) return NULL;
+				return (HICON)LoadImage(GetModuleHandle(NULL), defaultIconResourceName, IMAGE_ICON, size, size, (size ? 0 : LR_DEFAULTSIZE) | LR_SHARED);
+			}
+
+			void SetWindowDefaultIcon(UINT resourceId)
+			{
+				CHECK_ERROR(defaultIconResourceName == nullptr, L"vl::presentation::windows::SetWindowDefaultIcon(UINT)#This function can only be called once.");
+				defaultIconResourceName = MAKEINTRESOURCE(resourceId);
+			}
 
 			HWND GetHWNDFromNativeWindowHandle(INativeWindow* window)
 			{
@@ -7964,13 +7980,17 @@ WindowsClass
 				WinClass(WString _name, bool shadow, bool ownDC, WNDPROC procedure, HINSTANCE hInstance)
 				{
 					name=_name;
+					ZeroMemory(&windowClass, sizeof(windowClass));
 					windowClass.cbSize=sizeof(windowClass);
 					windowClass.style=CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | (shadow?CS_DROPSHADOW:0) | (ownDC?CS_OWNDC:0);
 					windowClass.lpfnWndProc=procedure;
 					windowClass.cbClsExtra=0;
 					windowClass.cbWndExtra=0;
 					windowClass.hInstance=hInstance;
-					windowClass.hIcon=LoadIcon(NULL,IDI_APPLICATION);
+					if (defaultIconResourceName)
+					{
+						windowClass.hIcon = CreateWindowDefaultIcon();
+					}
 					windowClass.hCursor=NULL;//LoadCursor(NULL,IDC_ARROW);
 					windowClass.hbrBackground=GetSysColorBrush(COLOR_BTNFACE);
 					windowClass.lpszMenuName=NULL;
@@ -8735,6 +8755,9 @@ WindowsForm
 				bool								supressingAlt = false;
 				Ptr<bool>							flagDisposed = new bool(false);
 				Margin								customFramePadding;
+				Ptr<GuiImageData>					defaultIcon;
+				Ptr<GuiImageData>					replacementIcon;
+				HICON								replacementHIcon = NULL;
 
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
@@ -8982,6 +9005,178 @@ WindowsForm
 					else
 					{
 						return Margin(0, 0, 0, 0);
+					}
+				}
+
+				Ptr<GuiImageData> GetIcon()
+				{
+					if (replacementIcon && replacementIcon->GetImage())
+					{
+						return replacementIcon;
+					}
+					else
+					{
+						if (!defaultIcon)
+						{
+							auto icon = CreateWindowDefaultIcon(16);
+							if (icon == NULL)
+							{
+								icon = (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 16, 16, LR_SHARED);
+							}
+							if (icon != NULL)
+							{
+								defaultIcon = new GuiImageData(CreateImageFromHICON(icon), 0);
+							}
+						}
+						return defaultIcon;
+					}
+				}
+
+				static double GetSizeScore(vint size)
+				{
+					if (size > 32)
+					{
+						return 32.0 / size;
+					}
+					else if (size < 32)
+					{
+						return size / 32.0 - 1;
+					}
+					else
+					{
+						return 1.0;
+					}
+				}
+
+				static vint GetBppFromFormat(const WICPixelFormatGUID& format)
+				{
+					if (format == GUID_WICPixelFormat1bppIndexed)	return 1;
+					if (format == GUID_WICPixelFormat2bppIndexed)	return 2;
+					if (format == GUID_WICPixelFormat4bppIndexed)	return 4;
+					if (format == GUID_WICPixelFormat8bppIndexed)	return 8;
+					if (format == GUID_WICPixelFormatBlackWhite)	return 1;
+					if (format == GUID_WICPixelFormat2bppGray)		return 2;
+					if (format == GUID_WICPixelFormat4bppGray)		return 4;
+					if (format == GUID_WICPixelFormat8bppGray)		return 8;
+					if (format == GUID_WICPixelFormat8bppAlpha)		return 8;
+					if (format == GUID_WICPixelFormat16bppBGR555)	return 16;
+					if (format == GUID_WICPixelFormat16bppBGR565)	return 16;
+					if (format == GUID_WICPixelFormat16bppBGRA5551)	return 16;
+					if (format == GUID_WICPixelFormat16bppGray)		return 16;
+					if (format == GUID_WICPixelFormat24bppBGR)		return 24;
+					if (format == GUID_WICPixelFormat24bppRGB)		return 24;
+					if (format == GUID_WICPixelFormat32bppBGR)		return 32;
+					if (format == GUID_WICPixelFormat32bppBGRA)		return 32;
+					if (format == GUID_WICPixelFormat32bppPBGRA)	return 32;
+					return -1;
+				}
+
+				void SetIcon(Ptr<GuiImageData> icon)
+				{
+					if (replacementHIcon != NULL)
+					{
+						DestroyIcon(replacementHIcon);
+						replacementHIcon = NULL;
+					}
+
+					replacementIcon = icon;
+					if (replacementIcon && replacementIcon->GetImage())
+					{
+						stream::MemoryStream memoryStream;
+
+						replacementIcon->GetImage()->SaveToStream(memoryStream, INativeImage::Icon);
+						if (memoryStream.Size() > 0)
+						{
+							replacementHIcon = CreateIconFromResource((PBYTE)memoryStream.GetInternalBuffer(), (DWORD)memoryStream.Size(), TRUE, 0x00030000);
+							if (replacementHIcon != NULL)
+							{
+								goto SKIP;
+							}
+						}
+
+						INativeImageFrame* selectedFrame = nullptr;
+						for (vint i = 0; i < replacementIcon->GetImage()->GetFrameCount(); i++)
+						{
+							auto frame = replacementIcon->GetImage()->GetFrame(i);
+							auto size = frame->GetSize();
+							if (size.x == size.y)
+							{
+								auto bitmap = GetWICBitmap(frame);
+								WICPixelFormatGUID format;
+								HRESULT hr = bitmap->GetPixelFormat(&format);
+								if (hr != S_OK) continue;
+
+								if (!selectedFrame)
+								{
+									selectedFrame = frame;
+								}
+								else
+								{
+									auto score = GetSizeScore(size.x);
+									auto scoreSelected = GetSizeScore(selectedFrame->GetSize().x);
+									if (score > scoreSelected)
+									{
+										selectedFrame = frame;
+									}
+									else if (score == scoreSelected)
+									{
+										WICPixelFormatGUID selectedFormat;
+										auto selectedBitmap = GetWICBitmap(selectedFrame);
+										hr = selectedBitmap->GetPixelFormat(&selectedFormat);
+
+										auto bpp = GetBppFromFormat(format);
+										auto bppSelected = GetBppFromFormat(selectedFormat);
+										if (bpp > bppSelected)
+										{
+											selectedFrame = frame;
+										}
+									}
+								}
+							}
+						}
+
+						if (selectedFrame)
+						{
+							bool succeeded = false;
+							WindowsBitmapImage newBitmap(replacementIcon->GetImage()->GetImageService(), GetWICBitmap(selectedFrame), replacementIcon->GetImage()->GetFormat());
+							newBitmap.SaveToStream(memoryStream, INativeImage::Bmp);
+							if (memoryStream.Size() > 0)
+							{
+								auto pBuffer = (char*)memoryStream.GetInternalBuffer();
+								tagBITMAPFILEHEADER bfh = *(tagBITMAPFILEHEADER*)pBuffer;
+								tagBITMAPINFOHEADER bih = *(tagBITMAPINFOHEADER*)(pBuffer + sizeof(tagBITMAPFILEHEADER));
+								RGBQUAD rgb = *(RGBQUAD*)(pBuffer + sizeof(tagBITMAPFILEHEADER) + sizeof(tagBITMAPINFOHEADER));
+
+								BITMAPINFO bi;
+								bi.bmiColors[0] = rgb;
+								bi.bmiHeader = bih;
+
+								char* pPixels = (pBuffer + bfh.bfOffBits);
+								char* ppvBits;
+								auto hBitmap = CreateDIBSection(NULL, &bi, DIB_RGB_COLORS, (void**)&ppvBits, NULL, 0);
+								if (hBitmap != NULL)
+								{
+									SetDIBits(NULL, hBitmap, 0, bih.biHeight, pPixels, &bi, DIB_RGB_COLORS);
+									auto himl = ImageList_Create(32, 32, ILC_COLOR32, 1, 1);
+									if (himl != NULL)
+									{
+										int addResult = ImageList_Add(himl, hBitmap, NULL);
+										replacementHIcon = ImageList_GetIcon(himl, 0, ILD_NORMAL);
+										ImageList_Destroy(himl);
+									}
+									DeleteObject(hBitmap);
+								}
+							}
+						}
+					}
+
+				SKIP:
+					SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)replacementHIcon);
+					SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)replacementHIcon);
+					if (this == GetCurrentController()->WindowService()->GetMainWindow())
+					{
+						SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)replacementHIcon);
+						SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)replacementHIcon);
 					}
 				}
 

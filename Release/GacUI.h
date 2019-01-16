@@ -1288,6 +1288,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		class GuiImageData;
 		class DocumentModel;
 		class INativeWindow;
 		class INativeWindowListener;
@@ -1686,6 +1687,17 @@ Native Window
 				/// <summary>Maximized.</summary>
 				Maximized,
 			};
+
+			/// <summary>
+			/// Get the icon.
+			/// </summary>
+			/// <returns>Returns the icon.</returns>
+			virtual Ptr<GuiImageData>	GetIcon()=0;
+			/// <summary>
+			/// Set the icon.
+			/// </summary>
+			/// <param name="icon">The icon. Set to null to use the default icon.</param>
+			virtual void				SetIcon(Ptr<GuiImageData> icon)=0;
 
 			/// <summary>
 			/// Get the window size state.
@@ -7933,6 +7945,7 @@ Control Template
 				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate, {})\
 				F(GuiWindowTemplate, bool, CustomFrameEnabled, true)\
 				F(GuiWindowTemplate, Margin, CustomFramePadding, {})\
+				F(GuiWindowTemplate, Ptr<GuiImageData>, Icon, {})\
 
 #define GuiMenuTemplate_PROPERTIES(F)
 
@@ -8768,6 +8781,7 @@ Window
 				bool									hasSizeBox = true;
 				bool									isIconVisible = true;
 				bool									hasTitleBar = true;
+				Ptr<GuiImageData>						icon;
 				
 				void									SyncNativeWindowProperties();
 				void									Moved()override;
@@ -8844,6 +8858,16 @@ Window
 				/// </summary>
 				/// <param name="visible">True to make the icon visible.</param>
 				void									SetIconVisible(bool visible);
+				/// <summary>
+				/// Get the icon which replaces the default one.
+				/// </summary>
+				/// <returns>Returns the icon that replaces the default one.</returns>
+				Ptr<GuiImageData>						GetIcon();
+				/// <summary>
+				/// Set the icon that replaces the default one.
+				/// </summary>
+				/// <param name="value">The icon that replaces the default one.</param>
+				void									SetIcon(Ptr<GuiImageData> value);
 				/// <summary>
 				/// Test is the title bar visible.
 				/// </summary>
