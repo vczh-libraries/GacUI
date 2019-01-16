@@ -123,8 +123,8 @@
                   <CellOption>composeType:Absolute absolute:16</CellOption>
                 </att.Columns>
 
-                <Cell Site="row:1 column:0" AssociatedHitTestResult="Icon" MinSizeLimitation="LimitToElement">
-                  <ImageFrame Image-bind="self.Icon is not null ? self.Icon.Image : null" FrameIndex-bind="self.Icon is not null ? self.Icon.FrameIndex : -1"/>
+                <Cell Site="row:1 column:0" AssociatedHitTestResult="Icon">
+                  <ImageFrame Stretch="true" Image-bind="self.Icon is not null ? self.Icon.Image : null" FrameIndex-bind="self.Icon is not null ? self.Icon.FrameIndex : -1"/>
                 </Cell>
               </Table>
             </Cell>

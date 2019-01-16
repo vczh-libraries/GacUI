@@ -22,6 +22,12 @@ namespace vl
 
 			LPCWSTR defaultIconResourceName = nullptr;
 
+			HICON CreateWindowDefaultIcon(vint size = 0)
+			{
+				if (!defaultIconResourceName) return NULL;
+				return (HICON)LoadImage(GetModuleHandle(NULL), defaultIconResourceName, IMAGE_ICON, size, size, (size ? 0 : LR_DEFAULTSIZE) | LR_SHARED);
+			}
+
 			void SetWindowDefaultIcon(UINT resourceId)
 			{
 				CHECK_ERROR(defaultIconResourceName == nullptr, L"vl::presentation::windows::SetWindowDefaultIcon(UINT)#This function can only be called once.");
@@ -60,7 +66,7 @@ WindowsClass
 					windowClass.hInstance=hInstance;
 					if (defaultIconResourceName)
 					{
-						windowClass.hIcon = (HICON)LoadImage(GetModuleHandle(NULL), defaultIconResourceName, IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED);
+						windowClass.hIcon = CreateWindowDefaultIcon();
 					}
 					windowClass.hCursor=NULL;//LoadCursor(NULL,IDC_ARROW);
 					windowClass.hbrBackground=GetSysColorBrush(COLOR_BTNFACE);
@@ -826,6 +832,8 @@ WindowsForm
 				bool								supressingAlt = false;
 				Ptr<bool>							flagDisposed = new bool(false);
 				Margin								customFramePadding;
+				Ptr<GuiImageData>					defaultIcon;
+				Ptr<GuiImageData>					replacementIcon;
 
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
@@ -1078,11 +1086,31 @@ WindowsForm
 
 				Ptr<GuiImageData> GetIcon()
 				{
-					return nullptr;
+					if (replacementIcon)
+					{
+						return replacementIcon;
+					}
+					else
+					{
+						if (!defaultIcon)
+						{
+							auto icon = CreateWindowDefaultIcon(16);
+							if (icon == NULL)
+							{
+								icon = (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 16, 16, LR_SHARED);
+							}
+							if (icon != NULL)
+							{
+								defaultIcon = new GuiImageData(CreateImageFromHICON(icon), 0);
+							}
+						}
+						return defaultIcon;
+					}
 				}
 
 				void SetIcon(Ptr<GuiImageData> icon)
 				{
+					replacementIcon = icon;
 				}
 
 				WindowSizeState GetSizeState()
