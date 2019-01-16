@@ -112,7 +112,7 @@
               </Button>
             </Cell>
 
-            <Cell Site="row:0 column:0" MinSizeLimitation-bind="((self.Icon is not null and self.IconVisible) ? LimitToElementAndChildren : NoLimit) of GuiGraphicsComposition::MinSizeLimitation">
+            <Cell Site="row:0 column:0" MinSizeLimitation-bind="((self.Icon is not null) and self.IconVisible ? LimitToElementAndChildren : NoLimit) of (GuiGraphicsComposition::MinSizeLimitation)">
               <Table AlignmentToParent="left:0 top:0 right:2 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                 <att.Rows>
                   <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -124,7 +124,7 @@
                 </att.Columns>
 
                 <Cell Site="row:1 column:0" AssociatedHitTestResult="Icon" MinSizeLimitation="LimitToElement">
-                  <ImageFrame Image-bind="self.Icon ? self.Icon.Image : null" FrameIndex="self.Icon ? self.Icon.FrameIndex : -1"/>
+                  <ImageFrame Image-bind="self.Icon is not null ? self.Icon.Image : null" FrameIndex-bind="self.Icon is not null ? self.Icon.FrameIndex : -1"/>
                 </Cell>
               </Table>
             </Cell>
