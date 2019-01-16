@@ -20,6 +20,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		class GuiImageData;
 		class DocumentModel;
 		class INativeWindow;
 		class INativeWindowListener;
@@ -418,6 +419,17 @@ Native Window
 				/// <summary>Maximized.</summary>
 				Maximized,
 			};
+
+			/// <summary>
+			/// Get the icon.
+			/// </summary>
+			/// <returns>Returns the icon.</returns>
+			virtual Ptr<GuiImageData>	GetIcon()=0;
+			/// <summary>
+			/// Set the icon.
+			/// </summary>
+			/// <param name="icon">The icon. Set to null to use the default icon.</param>
+			virtual void				SetIcon(Ptr<GuiImageData> icon)=0;
 
 			/// <summary>
 			/// Get the window size state.

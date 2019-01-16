@@ -623,6 +623,13 @@ GuiWindow
 				ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
 				ct->SetActivated(GetActivated());
 				ct->SetCustomFramePadding(Margin(8, 8, 8, 8));
+
+				auto window = GetNativeWindow();
+				if (window)
+				{
+					window->SetIcon(icon);
+				}
+				ct->SetIcon(icon ? icon : window ? window->GetIcon() : nullptr);
 				SyncNativeWindowProperties();
 			}
 
@@ -782,6 +789,30 @@ GuiWindow
 			IMPL_WINDOW_PROPERTY(hasSizeBox, SizeBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
 			IMPL_WINDOW_PROPERTY(isIconVisible, IconVisible, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
 			IMPL_WINDOW_PROPERTY(hasTitleBar, TitleBar, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
+
+			Ptr<GuiImageData> GuiWindow::GetIcon()
+			{
+				return icon;
+			}
+
+			void GuiWindow::SetIcon(Ptr<GuiImageData> value)
+			{
+				if (icon != value)
+				{
+					icon = value;
+
+					auto window = GetNativeWindow();
+					if (window)
+					{
+						window->SetIcon(icon);
+					}
+
+					if (auto ct = GetControlTemplateObject(false))
+					{
+						ct->SetIcon(icon ? icon : window ? window->GetIcon() : nullptr);
+					}
+				}
+			}
 
 #undef IMPL_WINDOW_PROPERTY_BORDER_CONDITION
 #undef IMPL_WINDOW_PROPERTY_EMPTY_CONDITION

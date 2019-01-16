@@ -1,3 +1,4 @@
+#include "..\..\Resources\GuiResource.h"
 #include "WinNativeWindow.h"
 #include "ServicesImpl\WindowsResourceService.h"
 #include "ServicesImpl\WindowsClipboardService.h"
@@ -1073,6 +1074,15 @@ WindowsForm
 					{
 						return Margin(0, 0, 0, 0);
 					}
+				}
+
+				Ptr<GuiImageData> GetIcon()
+				{
+					return nullptr;
+				}
+
+				void SetIcon(Ptr<GuiImageData> icon)
+				{
 				}
 
 				WindowSizeState GetSizeState()
