@@ -49,11 +49,6 @@ WindowListener
 					}
 				}
 
-				void DpiChanged()override
-				{
-					RecreateRenderTarget();
-				}
-
 				void ResizeRenderTarget()
 				{
 					RebuildCanvas(window->GetClientSize());

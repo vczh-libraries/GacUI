@@ -227,6 +227,13 @@ GuiGraphicsHost
 				}
 			}
 
+			void GuiGraphicsHost::RecreateRenderTarget()
+			{
+				windowComposition->UpdateRelatedHostRecord(nullptr);
+				GetGuiGraphicsResourceManager()->RecreateRenderTarget(hostRecord.nativeWindow);
+				RefreshRelatedHostRecord(hostRecord.nativeWindow);
+			}
+
 			INativeWindowListener::HitTestResult GuiGraphicsHost::HitTest(Point location)
 			{
 				Rect bounds = hostRecord.nativeWindow->GetBounds();
@@ -300,6 +307,12 @@ GuiGraphicsHost
 					minSize = windowComposition->GetPreferredBounds().GetSize();
 					needRender = true;
 				}
+			}
+
+			void GuiGraphicsHost::DpiChanged()
+			{
+				RecreateRenderTarget();
+				needRender = true;
 			}
 
 			void GuiGraphicsHost::Paint()
@@ -634,9 +647,7 @@ GuiGraphicsHost
 						break;
 					case RenderTargetFailure::LostDevice:
 						{
-							windowComposition->UpdateRelatedHostRecord(nullptr);
-							GetGuiGraphicsResourceManager()->RecreateRenderTarget(hostRecord.nativeWindow);
-							RefreshRelatedHostRecord(hostRecord.nativeWindow);
+							RecreateRenderTarget();
 							needRender = true;
 						}
 						break;

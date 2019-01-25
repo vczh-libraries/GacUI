@@ -108,11 +108,13 @@ Host
 				void									OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									OnMouseInput(const NativeWindowMouseInfo& info, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+				void									RecreateRenderTarget();
 				
 			private:
 				INativeWindowListener::HitTestResult	HitTest(Point location)override;
 				void									Moving(Rect& bounds, bool fixSizeOnly)override;
 				void									Moved()override;
+				void									DpiChanged()override;
 				void									Paint()override;
 
 				void									LeftButtonDown(const NativeWindowMouseInfo& info)override;
