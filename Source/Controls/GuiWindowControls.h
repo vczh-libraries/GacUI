@@ -165,12 +165,17 @@ Control Host
 				/// <summary>Set the client size of the window.</summary>
 				/// <param name="value">The client size of the window.</param>
 				void											SetClientSize(Size value);
-				/// <summary>Get the bounds of the window in screen space.</summary>
-				/// <returns>The bounds of the window.</returns>
-				Rect											GetBounds();
-				/// <summary>Set the bounds of the window in screen space.</summary>
-				/// <param name="value">The bounds of the window.</param>
-				void											SetBounds(Rect value);
+				/// <summary>Get the location of the window in screen space.</summary>
+				/// <returns>The location of the window.</returns>
+				NativePoint										GetLocation();
+				/// <summary>Set the location of the window in screen space.</summary>
+				/// <param name="value">The location of the window.</param>
+				void											SetLocation(NativePoint value);
+				/// <summary>Set the location in screen space and the client size of the window.</summary>
+				/// <param name="location">The location of the window.</param>
+				/// <param name="size">The client size of the window.</param>
+				void											SetBounds(NativePoint location, Size size);
+
 				GuiControlHost*									GetRelatedControlHost()override;
 				const WString&									GetText()override;
 				void											SetText(const WString& value)override;

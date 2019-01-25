@@ -50,17 +50,17 @@ GuiControlHost
 
 			void GuiControlHost::MoveIntoTooltipControl(GuiControl* tooltipControl, Point location)
 			{
-				if(tooltipLocation!=location)
+				if (tooltipLocation != location)
 				{
-					tooltipLocation=location;
+					tooltipLocation = location;
 					{
-						GuiControl* currentOwner=GetApplication()->GetTooltipOwner();
-						if(currentOwner && currentOwner!=tooltipControl)
+						GuiControl* currentOwner = GetApplication()->GetTooltipOwner();
+						if (currentOwner && currentOwner != tooltipControl)
 						{
-							if(tooltipCloseDelay)
+							if (tooltipCloseDelay)
 							{
 								tooltipCloseDelay->Cancel();
-								tooltipCloseDelay=0;
+								tooltipCloseDelay = 0;
 							}
 							GetApplication()->DelayExecuteInMainThread([=]()
 							{
@@ -68,31 +68,31 @@ GuiControlHost
 							}, TooltipDelayCloseTime);
 						}
 					}
-					if(!tooltipControl)
+					if (!tooltipControl)
 					{
-						if(tooltipOpenDelay)
+						if (tooltipOpenDelay)
 						{
 							tooltipOpenDelay->Cancel();
-							tooltipOpenDelay=0;
+							tooltipOpenDelay = 0;
 						}
 					}
-					else if(tooltipOpenDelay)
+					else if (tooltipOpenDelay)
 					{
 						tooltipOpenDelay->Delay(TooltipDelayOpenTime);
 					}
-					else if(GetApplication()->GetTooltipOwner()!=tooltipControl)
+					else if (GetApplication()->GetTooltipOwner() != tooltipControl)
 					{
-						tooltipOpenDelay=GetApplication()->DelayExecuteInMainThread([this]()
+						tooltipOpenDelay = GetApplication()->DelayExecuteInMainThread([this]()
 						{
-							GuiControl* owner=GetTooltipOwner(tooltipLocation);
-							if(owner)
+							GuiControl* owner = GetTooltipOwner(tooltipLocation);
+							if (owner)
 							{
-								Point offset=owner->GetBoundsComposition()->GetGlobalBounds().LeftTop();
-								Point p(tooltipLocation.x-offset.x, tooltipLocation.y-offset.y+24);
+								Point offset = owner->GetBoundsComposition()->GetGlobalBounds().LeftTop();
+								Point p(tooltipLocation.x - offset.x, tooltipLocation.y - offset.y + 24);
 								owner->DisplayTooltip(p);
-								tooltipOpenDelay=0;
+								tooltipOpenDelay = 0;
 
-								tooltipCloseDelay=GetApplication()->DelayExecuteInMainThread([this, owner]()
+								tooltipCloseDelay = GetApplication()->DelayExecuteInMainThread([this, owner]()
 								{
 									owner->CloseTooltip();
 								}, TooltipDelayLifeTime);
@@ -104,9 +104,9 @@ GuiControlHost
 
 			void GuiControlHost::MouseMoving(const NativeWindowMouseInfo& info)
 			{
-				if(!info.left && !info.middle && !info.right)
+				if (!info.left && !info.middle && !info.right)
 				{
-					GuiControl* tooltipControl=GetTooltipOwner(tooltipLocation);
+					GuiControl* tooltipControl = GetTooltipOwner(tooltipLocation);
 					MoveIntoTooltipControl(tooltipControl, Point(info.x, info.y));
 				}
 			}
@@ -430,9 +430,9 @@ GuiControlHost
 
 			Size GuiControlHost::GetClientSize()
 			{
-				if(host->GetNativeWindow())
+				if (auto window = host->GetNativeWindow())
 				{
-					return host->GetNativeWindow()->GetClientSize();
+					return window->Convert(window->GetClientSize());
 				}
 				else
 				{
@@ -442,29 +442,38 @@ GuiControlHost
 
 			void GuiControlHost::SetClientSize(Size value)
 			{
-				if(host->GetNativeWindow())
+				if (auto window = host->GetNativeWindow())
 				{
-					host->GetNativeWindow()->SetClientSize(value);
+					host->GetNativeWindow()->SetClientSize(window->Convert(value));
 				}
 			}
 
-			Rect GuiControlHost::GetBounds()
+			NativePoint GuiControlHost::GetLocation()
 			{
-				if(host->GetNativeWindow())
+				if(auto window = host->GetNativeWindow())
 				{
-					return host->GetNativeWindow()->GetBounds();
+					return window->GetBounds().LeftTop();
 				}
 				else
 				{
-					return Rect();
+					return NativePoint();
 				}
 			}
 
-			void GuiControlHost::SetBounds(Rect value)
+			void GuiControlHost::SetLocation(NativePoint value)
 			{
-				if(host->GetNativeWindow())
+				if (auto window = host->GetNativeWindow())
 				{
-					host->GetNativeWindow()->SetBounds(value);
+					auto bounds = window->GetBounds();
+					window->SetBounds(NativeRect(value, bounds.GetSize()));
+				}
+			}
+
+			void GuiControlHost::SetBounds(NativePoint location, Size size)
+			{
+				if (auto window = host->GetNativeWindow())
+				{
+					window->SetBounds(NativeRect(location, window->Convert(size)));
 				}
 			}
 

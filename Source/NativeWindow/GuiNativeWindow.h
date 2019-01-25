@@ -321,6 +321,30 @@ Native Window
 		{
 		public:
 			/// <summary>
+			/// Convert point from native coordinate to GUI coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual Point				Convert(NativePoint value) = 0;
+			/// <summary>
+			/// Convert point from GUI coordinate to native coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual NativePoint			Convert(Point value) = 0;
+			/// <summary>
+			/// Convert size from native coordinate to GUI coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual Size				Convert(NativeSize value) = 0;
+			/// <summary>
+			/// Convert size from GUI coordinate to native coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual NativeSize			Convert(Size value) = 0;
+
 			/// Get the bounds of the window.
 			/// </summary>
 			/// <returns>The bounds of the window.</returns>
