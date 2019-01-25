@@ -548,13 +548,13 @@ WindowsDirect2DRenderTarget
 
 				Rect GetClipper()override
 				{
-					if(clippers.Count()==0)
+					if (clippers.Count() == 0)
 					{
-						return Rect(Point(0, 0), window->GetClientSize());
+						return Rect(Point(0, 0), window->Convert(window->GetClientSize()));
 					}
 					else
 					{
-						return clippers[clippers.Count()-1];
+						return clippers[clippers.Count() - 1];
 					}
 				}
 

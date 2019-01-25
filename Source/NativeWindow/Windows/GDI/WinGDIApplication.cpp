@@ -1,5 +1,6 @@
 #include "WinGDIApplication.h"
 #include "..\..\..\GraphicsElement\WindowsGDI\GuiGraphicsWindowsGDI.h"
+#include <ShellScalingApi.h>
 
 namespace vl
 {
@@ -27,31 +28,32 @@ namespace vl
 					}
 				}
 
-				Size CalculateBufferSize()
+				NativeSize CalculateBufferSize()
 				{
-					Size windowSize=window->GetClientSize();
-					Size minBounds(windowSize.x*5/4, windowSize.y*5/4);
-					Size maxBounds(windowSize.x*3/2, windowSize.y*3/2);
-					Size currentSize=buffer?Size(buffer->GetWidth(), buffer->GetHeight()):Size(0, 0);
-					vint newWidth=DetermineBufferLength(windowSize.x, minBounds.x, maxBounds.x, currentSize.x);
-					vint newHeight=DetermineBufferLength(windowSize.y, minBounds.y, maxBounds.y, currentSize.y);
-					return Size(newWidth, newHeight);
+					NativeSize nativeWindowSize = window->GetClientSize();
+					Size windowSize(nativeWindowSize.x.value, nativeWindowSize.y.value);
+					Size minBounds(windowSize.x * 5 / 4, windowSize.y * 5 / 4);
+					Size maxBounds(windowSize.x * 3 / 2, windowSize.y * 3 / 2);
+					Size currentSize = buffer ? Size(buffer->GetWidth(), buffer->GetHeight()) : Size(0, 0);
+					vint newWidth = DetermineBufferLength(windowSize.x, minBounds.x, maxBounds.x, currentSize.x);
+					vint newHeight = DetermineBufferLength(windowSize.y, minBounds.y, maxBounds.y, currentSize.y);
+					return NativeSize(newWidth, newHeight);
 				}
 
-				void RebuildCanvas(Size size)
+				void RebuildCanvas(NativeSize size)
 				{
-					if(size.x<256)size.x=256;
-					if(size.y<256)size.y=256;
-					if(buffer)
+					if (size.x < 256)size.x = 256;
+					if (size.y < 256)size.y = 256;
+					if (buffer)
 					{
-						if(buffer->GetWidth()!=size.x || buffer->GetHeight()!=size.y)
+						if (buffer->GetWidth() != size.x.value || buffer->GetHeight() != size.y.value)
 						{
-							buffer=0;
+							buffer = 0;
 						}
 					}
-					if(!buffer)
+					if (!buffer)
 					{
-						buffer=new WinBitmap(size.x, size.y, WinBitmap::vbb32Bits, true);
+						buffer = new WinBitmap(size.x.value, size.y.value, WinBitmap::vbb32Bits, true);
 						buffer->GetWinDC()->SetBackTransparent(true);
 					}
 				}
@@ -201,6 +203,7 @@ int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)())
 
 int SetupWindowsGDIRenderer()
 {
+	InitDpiAwareness(false);
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
 	WinGDIApplicationGDIObjectProvider objectProvider;

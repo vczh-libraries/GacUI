@@ -195,9 +195,9 @@ WindowsForm
 						info.right = WinIsKeyPressing(VKEY::_RBUTTON);
 						
 						POINTS point = MAKEPOINTS(lParam);
-						Point offset = GetClientBoundsInScreen().LeftTop();
-						info.x = point.x - offset.x;
-						info.y = point.y - offset.y;
+						NativePoint offset = GetClientBoundsInScreen().LeftTop();
+						info.x = point.x - offset.x.value;
+						info.y = point.y - offset.y.value;
 					}
 					else
 					{
@@ -211,9 +211,9 @@ WindowsForm
 
 						if (wheelMessage)
 						{
-							Point offset = GetClientBoundsInScreen().LeftTop();
-							info.x = point.x - offset.x;
-							info.y = point.y - offset.y;
+							NativePoint offset = GetClientBoundsInScreen().LeftTop();
+							info.x = point.x - offset.x.value;
+							info.y = point.y - offset.y.value;
 						}
 						else
 						{
@@ -263,8 +263,8 @@ WindowsForm
 					HIMC imc = ImmGetContext(handle);
 					COMPOSITIONFORM cf;
 					cf.dwStyle = CFS_POINT;
-					cf.ptCurrentPos.x = (int)caretPoint.x;
-					cf.ptCurrentPos.y = (int)caretPoint.y;
+					cf.ptCurrentPos.x = (int)caretPoint.x.value;
+					cf.ptCurrentPos.y = (int)caretPoint.y.value;
 					ImmSetCompositionWindow(imc, &cf);
 					ImmReleaseContext(handle, imc);
 				}
@@ -293,20 +293,20 @@ WindowsForm
 					case WM_MOVING:case WM_SIZING:
 						{
 							LPRECT rawBounds=(LPRECT)lParam;
-							Rect bounds(rawBounds->left, rawBounds->top, rawBounds->right, rawBounds->bottom);
+							NativeRect bounds(rawBounds->left, rawBounds->top, rawBounds->right, rawBounds->bottom);
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->Moving(bounds, false);
 							}
-							if(		rawBounds->left!=bounds.Left()
-								||	rawBounds->top!=bounds.Top()
-								||	rawBounds->right!=bounds.Right()
-								||	rawBounds->bottom!=bounds.Bottom())
+							if(		rawBounds->left!=bounds.Left().value
+								||	rawBounds->top!=bounds.Top().value
+								||	rawBounds->right!=bounds.Right().value
+								||	rawBounds->bottom!=bounds.Bottom().value)
 							{
-								rawBounds->left=(int)bounds.Left();
-								rawBounds->top=(int)bounds.Top();
-								rawBounds->right=(int)bounds.Right();
-								rawBounds->bottom=(int)bounds.Bottom();
+								rawBounds->left=(int)bounds.Left().value;
+								rawBounds->top=(int)bounds.Top().value;
+								rawBounds->right=(int)bounds.Right().value;
+								rawBounds->bottom=(int)bounds.Bottom().value;
 								result=TRUE;
 							}
 						}
@@ -316,6 +316,18 @@ WindowsForm
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->Moved();
+							}
+						}
+						break;
+					case WM_DPICHANGED:
+						{
+							dpiX = LOWORD(wParam);
+							dpiY = HIWORD(wParam);
+							auto newRect = (RECT*)lParam;
+							MoveWindow(handle, newRect->left, newRect->top, (newRect->right - newRect->left), (newRect->bottom - newRect->top), FALSE);
+							for (vint i = 0; i < listeners.Count(); i++)
+							{
+								listeners[i]->DpiChanged();
 							}
 						}
 						break;
@@ -661,12 +673,12 @@ WindowsForm
 					case WM_NCHITTEST:
 						{
 							POINTS location=MAKEPOINTS(lParam);
-							Point windowLocation=GetBounds().LeftTop();
-							location.x-=(SHORT)windowLocation.x;
-							location.y-=(SHORT)windowLocation.y;
+							NativePoint windowLocation=GetBounds().LeftTop();
+							location.x-=(SHORT)windowLocation.x.value;
+							location.y-=(SHORT)windowLocation.y.value;
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								switch(listeners[i]->HitTest(Point(location.x, location.y)))
+								switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
 								{
 								case INativeWindowListener::BorderNoSizing:
 									result=HTBORDER;
@@ -791,7 +803,7 @@ WindowsForm
 								POINTS location = MAKEPOINTS(lParam);
 								for(vint i=0;i<listeners.Count();i++)
 								{
-									switch(listeners[i]->HitTest(Point(location.x, location.y)))
+									switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
 									{
 									case INativeWindowListener::ButtonMinimum:
 										ShowMinimized();
@@ -821,7 +833,7 @@ WindowsForm
 				HWND								handle;
 				WString								title;
 				WindowsCursor*						cursor = nullptr;
-				Point								caretPoint;
+				NativePoint							caretPoint;
 				WindowsForm*						parentWindow = nullptr;
 				bool								alwaysPassFocusToParent = false;
 				List<INativeWindowListener*>		listeners;
@@ -837,16 +849,19 @@ WindowsForm
 				Ptr<GuiImageData>					defaultIcon;
 				Ptr<GuiImageData>					replacementIcon;
 				HICON								replacementHIcon = NULL;
+				UINT								dpiX = 0;
+				UINT								dpiY = 0;
 
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
 				{
 					DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
 					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
-					handle=CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
+					handle = CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
 
 					auto padding = (vint)(GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER));
 					customFramePadding = Margin(padding, padding, padding, padding);
+					DpiAwared_GetDpiForWindow(handle, &dpiX, &dpiY);
 				}
 
 				~WindowsForm()
@@ -936,38 +951,58 @@ WindowsForm
 					return true;
 				}
 
-				Rect GetBounds()
+				Point Convert(NativePoint value)override
+				{
+					return Point((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);
+				}
+
+				NativePoint Convert(Point value)override
+				{
+					return NativePoint(value.x * dpiX / 96, value.y * dpiY / 96);
+				}
+
+				Size Convert(NativeSize value)override
+				{
+					return Size((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);
+				}
+
+				NativeSize Convert(Size value)override
+				{
+					return NativeSize(value.x * dpiX / 96, value.y * dpiY / 96);
+				}
+
+				NativeRect GetBounds()override
 				{
 					RECT rect;
 					GetWindowRect(handle, &rect);
-					return Rect(rect.left, rect.top, rect.right, rect.bottom);
+					return NativeRect(rect.left, rect.top, rect.right, rect.bottom);
 				}
 
-				void SetBounds(const Rect& bounds)
+				void SetBounds(const NativeRect& bounds)override
 				{
-					Rect newBounds=bounds;
+					NativeRect newBounds=bounds;
 					for(vint i=0;i<listeners.Count();i++)
 					{
 						listeners[i]->Moving(newBounds, true);
 					}
-					MoveWindow(handle, (int)newBounds.Left(), (int)newBounds.Top(), (int)newBounds.Width(), (int)newBounds.Height(), FALSE);
+					MoveWindow(handle, (int)newBounds.Left().value, (int)newBounds.Top().value, (int)newBounds.Width().value, (int)newBounds.Height().value, FALSE);
 				}
 
-				Size GetClientSize()
+				NativeSize GetClientSize()override
 				{
 					return GetClientBoundsInScreen().GetSize();
 				}
 
-				void SetClientSize(Size size)
+				void SetClientSize(NativeSize size)override
 				{
-					RECT required={0,0,(int)size.x,(int)size.y};
+					RECT required={0,0,(int)size.x.value,(int)size.y.value };
 					RECT bounds;
 					GetWindowRect(handle, &bounds);
-					AdjustWindowRect(&required, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE);
-					SetBounds(Rect(Point(bounds.left, bounds.top), Size(required.right-required.left, required.bottom-required.top)));
+					DpiAwared_AdjustWindowRect(&required, handle);
+					SetBounds(NativeRect(NativePoint(bounds.left, bounds.top), NativeSize(required.right-required.left, required.bottom-required.top)));
 				}
 
-				Rect GetClientBoundsInScreen()
+				NativeRect GetClientBoundsInScreen()override
 				{
 					if(customFrameMode)
 					{
@@ -978,13 +1013,13 @@ WindowsForm
 						RECT required={0,0,0,0};
 						RECT bounds;
 						GetWindowRect(handle, &bounds);
-						AdjustWindowRect(&required, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE);
-						return Rect(
-							Point(
+						DpiAwared_AdjustWindowRect(&required, handle);
+						return NativeRect(
+							NativePoint(
 								(bounds.left-required.left),
 								(bounds.top-required.top)
 								),
-							Size(
+							NativeSize(
 								(bounds.right-bounds.left)-(required.right-required.left),
 								(bounds.bottom-bounds.top)-(required.bottom-required.top)
 								)
@@ -992,23 +1027,23 @@ WindowsForm
 					}
 				}
 
-				WString GetTitle()
+				WString GetTitle()override
 				{
 					return title;
 				}
 
-				void SetTitle(WString _title)
+				void SetTitle(WString _title)override
 				{
 					title=_title;
 					SetWindowText(handle, title.Buffer());
 				}
 
-				INativeCursor* GetWindowCursor()
+				INativeCursor* GetWindowCursor()override
 				{
 					return cursor;
 				}
 
-				void SetWindowCursor(INativeCursor* _cursor)
+				void SetWindowCursor(INativeCursor* _cursor)override
 				{
 					WindowsCursor* newCursor=dynamic_cast<WindowsCursor*>(_cursor);
 					if(newCursor && cursor!=newCursor)
@@ -1021,23 +1056,23 @@ WindowsForm
 					}
 				}
 				
-				Point GetCaretPoint()
+				NativePoint GetCaretPoint()override
 				{
 					return caretPoint;
 				}
 
-				void SetCaretPoint(Point point)
+				void SetCaretPoint(NativePoint point)override
 				{
 					caretPoint=point;
 					UpdateCompositionForContent();
 				}
 
-				INativeWindow* GetParent()
+				INativeWindow* GetParent()override
 				{
 					return parentWindow;
 				}
 
-				void SetParent(INativeWindow* parent)
+				void SetParent(INativeWindow* parent)override
 				{
 					parentWindow=dynamic_cast<WindowsForm*>(parent);
 					if(parentWindow)
@@ -1050,32 +1085,32 @@ WindowsForm
 					}
 				}
 
-				bool GetAlwaysPassFocusToParent()
+				bool GetAlwaysPassFocusToParent()override
 				{
 					return alwaysPassFocusToParent;
 				}
 
-				void SetAlwaysPassFocusToParent(bool value)
+				void SetAlwaysPassFocusToParent(bool value)override
 				{
 					alwaysPassFocusToParent=value;
 				}
 
-				void EnableCustomFrameMode()
+				void EnableCustomFrameMode()override
 				{
 					customFrameMode=true;
 				}
 
-				void DisableCustomFrameMode()
+				void DisableCustomFrameMode()override
 				{
 					customFrameMode=false;
 				}
 
-				bool IsCustomFrameModeEnabled()
+				bool IsCustomFrameModeEnabled()override
 				{
 					return customFrameMode;
 				}
 
-				Margin GetCustomFramePadding()
+				Margin GetCustomFramePadding()override
 				{
 					if (GetSizeBox() || GetTitleBar())
 					{
@@ -1087,7 +1122,7 @@ WindowsForm
 					}
 				}
 
-				Ptr<GuiImageData> GetIcon()
+				Ptr<GuiImageData> GetIcon()override
 				{
 					if (replacementIcon && replacementIcon->GetImage())
 					{
@@ -1150,7 +1185,7 @@ WindowsForm
 					return -1;
 				}
 
-				void SetIcon(Ptr<GuiImageData> icon)
+				void SetIcon(Ptr<GuiImageData> icon)override
 				{
 					replacementIcon = icon;
 					HICON newReplacementHIcon = NULL;
@@ -1269,7 +1304,7 @@ WindowsForm
 					replacementHIcon = newReplacementHIcon;
 				}
 
-				WindowSizeState GetSizeState()
+				WindowSizeState GetSizeState()override
 				{
 					if(IsIconic(handle))
 					{
@@ -1285,33 +1320,33 @@ WindowsForm
 					}
 				}
 
-				void Show()
+				void Show()override
 				{
 					ShowWindow(handle, SW_SHOWNORMAL);
 				}
 
-				void ShowDeactivated()
+				void ShowDeactivated()override
 				{
 					ShowWindow(handle, SW_SHOWNOACTIVATE);
 					SetWindowPos(handle,HWND_TOP,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 				}
 
-				void ShowRestored()
+				void ShowRestored()override
 				{
 					ShowWindow(handle, SW_RESTORE);
 				}
 
-				void ShowMaximized()
+				void ShowMaximized()override
 				{
 					ShowWindow(handle, SW_SHOWMAXIMIZED);
 				}
 
-				void ShowMinimized()
+				void ShowMinimized()override
 				{
 					ShowWindow(handle, SW_SHOWMINIMIZED);
 				}
 
-				void Hide(bool closeWindow)
+				void Hide(bool closeWindow)override
 				{
 					if (closeWindow)
 					{
@@ -1323,164 +1358,164 @@ WindowsForm
 					}
 				}
 
-				bool IsVisible()
+				bool IsVisible()override
 				{
 					return IsWindowVisible(handle)!=0;
 				}
 
-				void Enable()
+				void Enable()override
 				{
 					EnableWindow(handle, TRUE);
 				}
 
-				void Disable()
+				void Disable()override
 				{
 					EnableWindow(handle, FALSE);
 				}
 
-				bool IsEnabled()
+				bool IsEnabled()override
 				{
 					return IsWindowEnabled(handle)!=0;
 				}
 
-				void SetFocus()
+				void SetFocus()override
 				{
 					::SetFocus(handle);
 				}
 
-				bool IsFocused()
+				bool IsFocused()override
 				{
 					return GetFocus()==handle;
 				}
 
-				void SetActivate()
+				void SetActivate()override
 				{
 					SetActiveWindow(handle);
 				}
 
-				bool IsActivated()
+				bool IsActivated()override
 				{
 					return GetActiveWindow()==handle;
 				}
 
-				void ShowInTaskBar()
+				void ShowInTaskBar()override
 				{
 					SetExStyle(WS_EX_APPWINDOW, true);
 				}
 
-				void HideInTaskBar()
+				void HideInTaskBar()override
 				{
 					SetExStyle(WS_EX_APPWINDOW, false);
 				}
 
-				bool IsAppearedInTaskBar()
+				bool IsAppearedInTaskBar()override
 				{
 					return GetExStyle(WS_EX_APPWINDOW);
 				}
 
-				void EnableActivate()
+				void EnableActivate()override
 				{
 					SetExStyle(WS_EX_NOACTIVATE, false);
 				}
 
-				void DisableActivate()
+				void DisableActivate()override
 				{
 					SetExStyle(WS_EX_NOACTIVATE, true);
 				}
 
-				bool IsEnabledActivate()
+				bool IsEnabledActivate()override
 				{
 					return !GetExStyle(WS_EX_NOACTIVATE);
 				}
 
-				bool RequireCapture()
+				bool RequireCapture()override
 				{
 					SetCapture(handle);
 					return true;
 				}
 
-				bool ReleaseCapture()
+				bool ReleaseCapture()override
 				{
 					::ReleaseCapture();
 					return true;
 				}
 
-				bool IsCapturing()
+				bool IsCapturing()override
 				{
 					return GetCapture()==handle;
 				}
 
-				bool GetMaximizedBox()
+				bool GetMaximizedBox()override
 				{
 					return GetStyle(WS_MAXIMIZEBOX);
 				}
 
-				void SetMaximizedBox(bool visible)
+				void SetMaximizedBox(bool visible)override
 				{
 					SetStyle(WS_MAXIMIZEBOX, visible);
 				}
 
-				bool GetMinimizedBox()
+				bool GetMinimizedBox()override
 				{
 					return GetStyle(WS_MINIMIZEBOX);
 				}
 
-				void SetMinimizedBox(bool visible)
+				void SetMinimizedBox(bool visible)override
 				{
 					SetStyle(WS_MINIMIZEBOX, visible);
 				}
 
-				bool GetBorder()
+				bool GetBorder()override
 				{
 					return GetStyle(WS_BORDER);
 				}
 
-				void SetBorder(bool visible)
+				void SetBorder(bool visible)override
 				{
 					SetStyle(WS_BORDER, visible);
 				}
 
-				bool GetSizeBox()
+				bool GetSizeBox()override
 				{
 					return GetStyle(WS_SIZEBOX);
 				}
 
-				void SetSizeBox(bool visible)
+				void SetSizeBox(bool visible)override
 				{
 					SetStyle(WS_SIZEBOX, visible);
 				}
 
-				bool GetIconVisible()
+				bool GetIconVisible()override
 				{
 					return GetStyle(WS_SYSMENU);
 				}
 
-				void SetIconVisible(bool visible)
+				void SetIconVisible(bool visible)override
 				{
 					SetStyle(WS_SYSMENU, visible);
 				}
 
-				bool GetTitleBar()
+				bool GetTitleBar()override
 				{
 					return GetStyle(WS_CAPTION);
 				}
 
-				void SetTitleBar(bool visible)
+				void SetTitleBar(bool visible)override
 				{
 					SetStyle(WS_CAPTION, visible);
 				}
 
-				bool GetTopMost()
+				bool GetTopMost()override
 				{
 					return GetExStyle(WS_EX_TOPMOST);
 				}
 
-				void SetTopMost(bool topmost)
+				void SetTopMost(bool topmost)override
 				{
 					SetWindowPos(handle, (topmost ? HWND_TOPMOST : HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_FRAMECHANGED);
 				}
 
-				void SupressAlt()
+				void SupressAlt()override
 				{
 					if (!supressingAlt)
 					{
@@ -1490,7 +1525,7 @@ WindowsForm
 					}
 				}
 
-				bool InstallListener(INativeWindowListener* listener)
+				bool InstallListener(INativeWindowListener* listener)override
 				{
 					if(listeners.Contains(listener))
 					{
@@ -1503,7 +1538,7 @@ WindowsForm
 					}
 				}
 
-				bool UninstallListener(INativeWindowListener* listener)
+				bool UninstallListener(INativeWindowListener* listener)override
 				{
 					if(listeners.Contains(listener))
 					{
@@ -1516,7 +1551,7 @@ WindowsForm
 					}
 				}
 
-				void RedrawContent()
+				void RedrawContent()override
 				{
 					if(graphicsHandler)
 					{
@@ -1673,11 +1708,11 @@ WindowsController
 					}
 				}
 
-				INativeWindow* GetWindow(Point location)override
+				INativeWindow* GetWindow(NativePoint location)override
 				{
 					POINT p;
-					p.x=(int)location.x;
-					p.y=(int)location.y;
+					p.x=(int)location.x.value;
+					p.y=(int)location.y.value;
 					HWND handle=WindowFromPoint(p);
 					vint index=windows.Keys().IndexOf(handle);
 					if(index==-1)
@@ -1746,7 +1781,7 @@ WindowsController
 
 				//=======================================================================
 
-				void InvokeMouseHook(WPARAM message, Point location)
+				void InvokeMouseHook(WPARAM message, NativePoint location)
 				{
 					callbackService.InvokeMouseHook(message, location);
 				}
@@ -1804,7 +1839,7 @@ Windows Procedure
 				if(controller)
 				{
 					MSLLHOOKSTRUCT* mouseHookStruct=(MSLLHOOKSTRUCT*)lParam;
-					Point location(mouseHookStruct->pt.x, mouseHookStruct->pt.y);
+					NativePoint location(mouseHookStruct->pt.x, mouseHookStruct->pt.y);
 					controller->InvokeMouseHook(wParam, location);
 				}
 				return CallNextHookEx(NULL,nCode,wParam,lParam);

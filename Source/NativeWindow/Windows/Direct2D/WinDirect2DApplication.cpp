@@ -1,10 +1,11 @@
+#include "WinDirect2DApplication.h"
+#include "..\..\..\GraphicsElement\WindowsDirect2D\GuiGraphicsWindowsDirect2D.h"
+#include <ShellScalingApi.h>
+
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dwrite.lib")
 #pragma comment(lib, "d3d11.lib")
-
-#include "WinDirect2DApplication.h"
-#include "..\..\..\GraphicsElement\WindowsDirect2D\GuiGraphicsWindowsDirect2D.h"
 
 namespace vl
 {
@@ -28,7 +29,7 @@ WindowListener
 				bool							rendering = false;
 				bool							movedWhileRendering = false;
 
-				virtual void					RebuildCanvas(Size size) = 0;
+				virtual void					RebuildCanvas(NativeSize size) = 0;
 			public:
 				Direct2DWindowsNativeWindowListener(INativeWindow* _window, ID2D1Factory* _d2dFactory)
 					:window(_window)
@@ -36,7 +37,7 @@ WindowListener
 				{
 				}
 
-				void Moved()
+				void Moved()override
 				{
 					if (rendering)
 					{
@@ -83,38 +84,43 @@ WindowListener 1.0
 			{
 			protected:
 				ComPtr<ID2D1HwndRenderTarget>	d2dRenderTarget;
-				Size							previousSize;
+				NativeSize						previousSize;
 
-				void RebuildCanvas(Size size)override
+				void RebuildCanvas(NativeSize size)override
 				{
 					if (size.x <= 1) size.x = 1;
 					if (size.y <= 1) size.y = 1;
-					if(!d2dRenderTarget)
+					if (!d2dRenderTarget)
 					{
-						ID2D1HwndRenderTarget* renderTarget=0;
-						IWindowsForm* form=GetWindowsForm(window);
-						D2D1_RENDER_TARGET_PROPERTIES tp=D2D1::RenderTargetProperties();
-						tp.dpiX=96;
-						tp.dpiY=96;
-						HRESULT hr=d2dFactory->CreateHwndRenderTarget(
+						ID2D1HwndRenderTarget* renderTarget = 0;
+						IWindowsForm* form = GetWindowsForm(window);
+						D2D1_RENDER_TARGET_PROPERTIES tp = D2D1::RenderTargetProperties();
+						{
+							UINT dpiX = 0;
+							UINT dpiY = 0;
+							DpiAwared_GetDpiForWindow(form->GetWindowHandle(), &dpiX, &dpiY);
+							tp.dpiX = (FLOAT)dpiX;
+							tp.dpiY = (FLOAT)dpiY;
+						}
+						HRESULT hr = d2dFactory->CreateHwndRenderTarget(
 							tp,
 							D2D1::HwndRenderTargetProperties(
 								form->GetWindowHandle(),
-								D2D1::SizeU((int)size.x, (int)size.y)
-								),
+								D2D1::SizeU((int)size.x.value, (int)size.y.value)
+							),
 							&renderTarget
-							);
-						if(!FAILED(hr))
+						);
+						if (!FAILED(hr))
 						{
-							d2dRenderTarget=renderTarget;
+							d2dRenderTarget = renderTarget;
 							d2dRenderTarget->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
 						}
 					}
-					else if(previousSize!=size)
+					else if (previousSize != size)
 					{
-						d2dRenderTarget->Resize(D2D1::SizeU((int)size.x, (int)size.y));
+						d2dRenderTarget->Resize(D2D1::SizeU((int)size.x.value, (int)size.y.value));
 					}
-					previousSize=size;
+					previousSize = size;
 				}
 			public:
 				Direct2DWindowsNativeWindowListener_1_0(INativeWindow* _window, ID2D1Factory* _d2dFactory)
@@ -154,7 +160,7 @@ WindowListener 1.1
 				ComPtr<IDXGIDevice>				dxgiDevice;
 				ComPtr<IDXGISwapChain1>			dxgiSwapChain;
 				ComPtr<ID2D1DeviceContext>		d2dDeviceContext;
-				Size							previousSize;
+				NativeSize						previousSize;
 
 				ComPtr<IDXGIDevice> GetDXGIDevice()
 				{
@@ -244,7 +250,7 @@ WindowListener 1.1
 					return d2dBitmap;
 				}
 
-				void RebuildCanvas(Size size)override
+				void RebuildCanvas(NativeSize size)override
 				{
 					if (size.x <= 1) size.x = 1;
 					if (size.y <= 1) size.y = 1;
@@ -264,7 +270,13 @@ WindowListener 1.1
 						d2dDeviceContext = CreateDeviceContext(dxgiDevice.Obj());
 						auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
 						d2dDeviceContext->SetTarget(d2dBitmap.Obj());
-						d2dDeviceContext->SetDpi(96, 96);
+						IWindowsForm* form = GetWindowsForm(window);
+						{
+							UINT dpiX = 0;
+							UINT dpiY = 0;
+							DpiAwared_GetDpiForWindow(form->GetWindowHandle(), &dpiX, &dpiY);
+							d2dDeviceContext->SetDpi((FLOAT)dpiX, (FLOAT)dpiY);
+						}
 					}
 					else if(previousSize!=size)
 					{
@@ -612,6 +624,7 @@ int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)())
 
 int SetupWindowsDirect2DRenderer()
 {
+	InitDpiAwareness(true);
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
 	WinDirect2DApplicationDirect2DObjectProvider objectProvider;

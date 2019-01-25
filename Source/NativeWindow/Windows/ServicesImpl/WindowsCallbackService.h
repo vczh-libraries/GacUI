@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
 
 #include "..\..\GuiNativeWindow.h"
-#include <windows.h>
+#include "..\WinNativeDpiAwareness.h"
 
 namespace vl
 {
@@ -29,7 +29,7 @@ namespace vl
 				bool											InstallListener(INativeControllerListener* listener)override;
 				bool											UninstallListener(INativeControllerListener* listener)override;
 
-				void											InvokeMouseHook(WPARAM message, Point location);
+				void											InvokeMouseHook(WPARAM message, NativePoint location);
 				void											InvokeGlobalTimer();
 				void											InvokeClipboardUpdated();
 				void											InvokeNativeWindowCreated(INativeWindow* window);

@@ -76,12 +76,13 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::MouseCapture(const NativeWindowMouseInfo& info)
 			{
-				if(hostRecord.nativeWindow && (info.left || info.middle || info.right))
+				if (hostRecord.nativeWindow && (info.left || info.middle || info.right))
 				{
-					if(!hostRecord.nativeWindow->IsCapturing() && !info.nonClient)
+					if (!hostRecord.nativeWindow->IsCapturing() && !info.nonClient)
 					{
 						hostRecord.nativeWindow->RequireCapture();
-						mouseCaptureComposition=windowComposition->FindComposition(Point(info.x, info.y), true);
+						auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
+						mouseCaptureComposition = windowComposition->FindComposition(point, true);
 					}
 				}
 			}
@@ -207,32 +208,48 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::OnMouseInput(const NativeWindowMouseInfo& info, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
 			{
-				GuiGraphicsComposition* composition=0;
-				if(mouseCaptureComposition)
+				GuiGraphicsComposition* composition = 0;
+				if (mouseCaptureComposition)
 				{
-					composition=mouseCaptureComposition;
+					composition = mouseCaptureComposition;
 				}
 				else
 				{
-					composition=windowComposition->FindComposition(Point(info.x, info.y), true);
+					auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
+					composition = windowComposition->FindComposition(point, true);
 				}
-				if(composition)
+				if (composition)
 				{
-					Rect bounds=composition->GetGlobalBounds();
+					Rect bounds = composition->GetGlobalBounds();
+					Point point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
 					GuiMouseEventArgs arguments;
-					(NativeWindowMouseInfo&)arguments=info;
-					arguments.x-=bounds.x1;
-					arguments.y-=bounds.y1;
+					arguments.ctrl = info.ctrl;
+					arguments.shift = info.shift;
+					arguments.left = info.left;
+					arguments.middle = info.middle;
+					arguments.right = info.right;
+					arguments.wheel = info.wheel;
+					arguments.nonClient = info.nonClient;
+					arguments.x = point.x - bounds.x1;
+					arguments.y = point.y - bounds.y1;
 					RaiseMouseEvent(arguments, composition, eventReceiverEvent);
 				}
 			}
 
-			INativeWindowListener::HitTestResult GuiGraphicsHost::HitTest(Point location)
+			void GuiGraphicsHost::RecreateRenderTarget()
 			{
-				Rect bounds = hostRecord.nativeWindow->GetBounds();
-				Rect clientBounds = hostRecord.nativeWindow->GetClientBoundsInScreen();
-				Point clientLocation(location.x + bounds.x1 - clientBounds.x1, location.y + bounds.y1 - clientBounds.y1);
-				GuiGraphicsComposition* hitComposition = windowComposition->FindComposition(clientLocation, false);
+				windowComposition->UpdateRelatedHostRecord(nullptr);
+				GetGuiGraphicsResourceManager()->RecreateRenderTarget(hostRecord.nativeWindow);
+				RefreshRelatedHostRecord(hostRecord.nativeWindow);
+			}
+
+			INativeWindowListener::HitTestResult GuiGraphicsHost::HitTest(NativePoint location)
+			{
+				NativeRect bounds = hostRecord.nativeWindow->GetBounds();
+				NativeRect clientBounds = hostRecord.nativeWindow->GetClientBoundsInScreen();
+				NativePoint clientLocation(location.x + bounds.x1 - clientBounds.x1, location.y + bounds.y1 - clientBounds.y1);
+				auto point = hostRecord.nativeWindow->Convert(clientLocation);
+				GuiGraphicsComposition* hitComposition = windowComposition->FindComposition(point, false);
 				while (hitComposition)
 				{
 					INativeWindowListener::HitTestResult result = hitComposition->GetAssociatedHitTestResult();
@@ -248,11 +265,11 @@ GuiGraphicsHost
 				return INativeWindowListener::NoDecision;
 			}
 
-			void GuiGraphicsHost::Moving(Rect& bounds, bool fixSizeOnly)
+			void GuiGraphicsHost::Moving(NativeRect& bounds, bool fixSizeOnly)
 			{
-				Rect oldBounds = hostRecord.nativeWindow->GetBounds();
+				NativeRect oldBounds = hostRecord.nativeWindow->GetBounds();
 				minSize = windowComposition->GetPreferredBounds().GetSize();
-				Size minWindowSize = minSize + (oldBounds.GetSize() - hostRecord.nativeWindow->GetClientSize());
+				NativeSize minWindowSize = hostRecord.nativeWindow->Convert(minSize) + (oldBounds.GetSize() - hostRecord.nativeWindow->GetClientSize());
 				if (bounds.Width() < minWindowSize.x)
 				{
 					if (fixSizeOnly)
@@ -293,13 +310,19 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Moved()
 			{
-				Size size = hostRecord.nativeWindow->GetClientSize();
+				NativeSize size = hostRecord.nativeWindow->GetClientSize();
 				if (previousClientSize != size)
 				{
 					previousClientSize = size;
 					minSize = windowComposition->GetPreferredBounds().GetSize();
 					needRender = true;
 				}
+			}
+
+			void GuiGraphicsHost::DpiChanged()
+			{
+				RecreateRenderTarget();
+				needRender = true;
 			}
 
 			void GuiGraphicsHost::Paint()
@@ -381,7 +404,8 @@ GuiGraphicsHost
 			{
 				CompositionList newCompositions;
 				{
-					GuiGraphicsComposition* composition = windowComposition->FindComposition(Point(info.x, info.y), true);
+					auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
+					GuiGraphicsComposition* composition = windowComposition->FindComposition(point, true);
 					while (composition)
 					{
 						newCompositions.Insert(0, composition);
@@ -584,7 +608,7 @@ GuiGraphicsHost
 						GetCurrentController()->CallbackService()->InstallListener(this);
 						previousClientSize = _nativeWindow->GetClientSize();
 						minSize = windowComposition->GetPreferredBounds().GetSize();
-						_nativeWindow->SetCaretPoint(caretPoint);
+						_nativeWindow->SetCaretPoint(_nativeWindow->Convert(caretPoint));
 						needRender = true;
 					}
 
@@ -634,9 +658,7 @@ GuiGraphicsHost
 						break;
 					case RenderTargetFailure::LostDevice:
 						{
-							windowComposition->UpdateRelatedHostRecord(nullptr);
-							GetGuiGraphicsResourceManager()->RecreateRenderTarget(hostRecord.nativeWindow);
-							RefreshRelatedHostRecord(hostRecord.nativeWindow);
+							RecreateRenderTarget();
 							needRender = true;
 						}
 						break;
@@ -745,7 +767,7 @@ GuiGraphicsHost
 				caretPoint = value;
 				if (hostRecord.nativeWindow)
 				{
-					hostRecord.nativeWindow->SetCaretPoint(caretPoint);
+					hostRecord.nativeWindow->SetCaretPoint(hostRecord.nativeWindow->Convert(caretPoint));
 				}
 			}
 

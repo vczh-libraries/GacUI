@@ -1,4 +1,5 @@
 #include "WindowsScreenService.h"
+#include <ShellScalingApi.h>
 
 namespace vl
 {
@@ -16,20 +17,20 @@ WindowsScreen
 				monitor=NULL;
 			}
 
-			Rect WindowsScreen::GetBounds()
+			NativeRect WindowsScreen::GetBounds()
 			{
 				MONITORINFOEX info;
 				info.cbSize=sizeof(MONITORINFOEX);
 				GetMonitorInfo(monitor, &info);
-				return Rect(info.rcMonitor.left, info.rcMonitor.top, info.rcMonitor.right, info.rcMonitor.bottom);
+				return NativeRect(info.rcMonitor.left, info.rcMonitor.top, info.rcMonitor.right, info.rcMonitor.bottom);
 			}
 
-			Rect WindowsScreen::GetClientBounds()
+			NativeRect WindowsScreen::GetClientBounds()
 			{
 				MONITORINFOEX info;
 				info.cbSize=sizeof(MONITORINFOEX);
 				GetMonitorInfo(monitor, &info);
-				return Rect(info.rcWork.left, info.rcWork.top, info.rcWork.right, info.rcWork.bottom);
+				return NativeRect(info.rcWork.left, info.rcWork.top, info.rcWork.right, info.rcWork.bottom);
 			}
 
 			WString WindowsScreen::GetName()
@@ -50,6 +51,20 @@ WindowsScreen
 				info.cbSize=sizeof(MONITORINFOEX);
 				GetMonitorInfo(monitor, &info);
 				return info.dwFlags==MONITORINFOF_PRIMARY;
+			}
+
+			double WindowsScreen::GetScalingX()
+			{
+				UINT x = 0, y = 0;
+				DpiAwared_GetDpiForMonitor(monitor, &x, &y);
+				return x / 96.0;
+			}
+
+			double WindowsScreen::GetScalingY()
+			{
+				UINT x = 0, y = 0;
+				DpiAwared_GetDpiForMonitor(monitor, &x, &y);
+				return y / 96.0;
 			}
 
 /***********************************************************************

@@ -151,43 +151,89 @@ GridPos
 		};
 
 /***********************************************************************
+Coordinate
+***********************************************************************/
+
+		/// <summary>
+		/// Represents a position in the local window coordinate space, which is DPI awared.
+		/// </summary>
+		using GuiCoordinate = vint;
+		
+		/// <summary>
+		/// Represents a position in the global screen coordinate space.
+		/// </summary>
+		struct NativeCoordinate
+		{
+			vint				value;
+
+			NativeCoordinate() :value(0) {}
+			NativeCoordinate(vint _value) :value(_value) {}
+			NativeCoordinate(const NativeCoordinate& _value) = default;
+			NativeCoordinate(NativeCoordinate&& _value) = default;
+			NativeCoordinate& operator=(const NativeCoordinate& _value) = default;
+			NativeCoordinate& operator=(NativeCoordinate&& _value) = default;
+
+			inline bool operator==(NativeCoordinate c)const { return value == c.value; };
+			inline bool operator!=(NativeCoordinate c)const { return value != c.value; };
+			inline bool operator<(NativeCoordinate c)const { return value < c.value; };
+			inline bool operator<=(NativeCoordinate c)const { return value <= c.value; };
+			inline bool operator>(NativeCoordinate c)const { return value > c.value; };
+			inline bool operator>=(NativeCoordinate c)const { return value >= c.value; };
+
+			inline NativeCoordinate operator+(NativeCoordinate c)const { return value + c.value; };
+			inline NativeCoordinate operator-(NativeCoordinate c)const { return value - c.value; };
+			inline NativeCoordinate operator*(NativeCoordinate c)const { return value * c.value; };
+			inline NativeCoordinate operator/(NativeCoordinate c)const { return value / c.value; };
+
+			inline NativeCoordinate& operator+=(NativeCoordinate c) { value += c.value; return *this; };
+			inline NativeCoordinate& operator-=(NativeCoordinate c) { value -= c.value; return *this; };
+			inline NativeCoordinate& operator*=(NativeCoordinate c) { value *= c.value; return *this; };
+			inline NativeCoordinate& operator/=(NativeCoordinate c) { value /= c.value; return *this; };
+		};
+
+/***********************************************************************
 Point
 ***********************************************************************/
 		
 		/// <summary>
 		/// Represents a position in a two dimensions space.
 		/// </summary>
-		struct Point
+		/// <typeparam name="T">Type of the coordinate.</typeparam>
+		template<typename T>
+		struct Point_
 		{
 			/// <summary>
 			/// Position in x dimension.
 			/// </summary>
-			vint			x;
+			T				x;
 			/// <summary>
 			/// Position in y dimension.
 			/// </summary>
-			vint			y;
+			T				y;
 
-			Point()
-				:x(0) ,y(0)
+			Point_()
+				:x(0), y(0)
 			{
 			}
 
-			Point(vint _x, vint _y)
-				:x(_x) ,y(_y)
+			Point_(T _x, T _y)
+				:x(_x), y(_y)
 			{
 			}
 
-			bool operator==(Point point)const
+			bool operator==(Point_<T> point)const
 			{
-				return x==point.x && y==point.y;
+				return x == point.x && y == point.y;
 			}
 
-			bool operator!=(Point point)const
+			bool operator!=(Point_<T> point)const
 			{
-				return x!=point.x || y!=point.y;
+				return x != point.x || y != point.y;
 			}
 		};
+
+		using Point = Point_<GuiCoordinate>;
+		using NativePoint = Point_<NativeCoordinate>;
 
 /***********************************************************************
 Size
@@ -196,37 +242,42 @@ Size
 		/// <summary>
 		/// Represents a size in a two dimensions space.
 		/// </summary>
-		struct Size
+		/// <typeparam name="T">Type of the coordinate.</typeparam>
+		template<typename T>
+		struct Size_
 		{
 			/// <summary>
 			/// Size in x dimension.
 			/// </summary>
-			vint			x;
+			T				x;
 			/// <summary>
 			/// Size in y dimension.
 			/// </summary>
-			vint			y;
+			T				y;
 
-			Size()
-				:x(0) ,y(0)
+			Size_()
+				:x(0), y(0)
 			{
 			}
 
-			Size(vint _x, vint _y)
-				:x(_x) ,y(_y)
+			Size_(T _x, T _y)
+				:x(_x), y(_y)
 			{
 			}
 
-			bool operator==(Size size)const
+			bool operator==(Size_<T> size)const
 			{
-				return x==size.x && y==size.y;
+				return x == size.x && y == size.y;
 			}
 
-			bool operator!=(Size size)const
+			bool operator!=(Size_<T> size)const
 			{
-				return x!=size.x || y!=size.y;
+				return x != size.x || y != size.y;
 			}
 		};
+
+		using Size = Size_<GuiCoordinate>;
+		using NativeSize = Size_<NativeCoordinate>;
 
 /***********************************************************************
 Rectangle
@@ -235,202 +286,219 @@ Rectangle
 		/// <summary>
 		/// Represents a bounds in a two dimensions space.
 		/// </summary>
-		struct Rect
+		/// <typeparam name="T">Type of the coordinate.</typeparam>
+		template<typename T>
+		struct Rect_
 		{
 			/// <summary>
 			/// Left.
 			/// </summary>
-			vint		x1;
+			T				x1;
 			/// <summary>
 			/// Top.
 			/// </summary>
-			vint		y1;
+			T				y1;
 			/// <summary>
 			/// Left + Width.
 			/// </summary>
-			vint		x2;
+			T				x2;
 			/// <summary>
 			/// Top + Height.
 			/// </summary>
-			vint		y2;
+			T				y2;
 
-			Rect()
+			Rect_()
 				:x1(0), y1(0), x2(0), y2(0)
 			{
 			}
 
-			Rect(vint _x1, vint _y1, vint _x2, vint _y2)
+			Rect_(T _x1, T _y1, T _x2, T _y2)
 				:x1(_x1), y1(_y1), x2(_x2), y2(_y2)
 			{
 			}
 
-			Rect(Point p, Size s)
-				:x1(p.x), y1(p.y), x2(p.x+s.x), y2(p.y+s.y)
+			Rect_(Point_<T> p, Size_<T> s)
+				:x1(p.x), y1(p.y), x2(p.x + s.x), y2(p.y + s.y)
 			{
 			}
 
-			bool operator==(Rect rect)const
+			bool operator==(Rect_<T> rect)const
 			{
-				return x1==rect.x1 && y1==rect.y1 && x2==rect.x2 && y2==rect.y2;
+				return x1 == rect.x1 && y1 == rect.y1 && x2 == rect.x2 && y2 == rect.y2;
 			}
 
-			bool operator!=(Rect rect)const
+			bool operator!=(Rect_<T> rect)const
 			{
-				return x1!=rect.x1 || y1!=rect.y1 || x2!=rect.x2 || y2!=rect.y2;
+				return x1 != rect.x1 || y1 != rect.y1 || x2 != rect.x2 || y2 != rect.y2;
 			}
 
-			Point LeftTop()const
+			Point_<T> LeftTop()const
 			{
-				return Point(x1, y1);
+				return Point_<T>(x1, y1);
 			}
 
-			Point RightBottom()const
+			Point_<T> RightBottom()const
 			{
-				return Point(x2, y2);
+				return Point_<T>(x2, y2);
 			}
 
-			Size GetSize()const
+			Size_<T> GetSize()const
 			{
-				return Size(x2-x1, y2-y1);
+				return Size_<T>(x2 - x1, y2 - y1);
 			}
 
-			vint Left()const
+			T Left()const
 			{
 				return x1;
 			}
 
-			vint Right()const
+			T Right()const
 			{
 				return x2;
 			}
 
-			vint Width()const
+			T Width()const
 			{
-				return x2-x1;
+				return x2 - x1;
 			}
 
-			vint Top()const
+			T Top()const
 			{
 				return y1;
 			}
 
-			vint Bottom()const
+			T Bottom()const
 			{
 				return y2;
 			}
 
-			vint Height()const
+			T Height()const
 			{
-				return y2-y1;
+				return y2 - y1;
 			}
 
-			void Expand(vint x, vint y)
+			void Expand(T x, T y)
 			{
-				x1-=x;
-				y1-=y;
-				x2+=x;
-				y2+=y;
+				x1 -= x;
+				y1 -= y;
+				x2 += x;
+				y2 += y;
 			}
 
-			void Expand(Size s)
+			void Expand(Size_<T> s)
 			{
-				x1-=s.x;
-				y1-=s.y;
-				x2+=s.x;
-				y2+=s.y;
+				x1 -= s.x;
+				y1 -= s.y;
+				x2 += s.x;
+				y2 += s.y;
 			}
 
-			void Move(vint x, vint y)
+			void Move(T x, T y)
 			{
-				x1+=x;
-				y1+=y;
-				x2+=x;
-				y2+=y;
+				x1 += x;
+				y1 += y;
+				x2 += x;
+				y2 += y;
 			}
 
-			void Move(Size s)
+			void Move(Size_<T> s)
 			{
-				x1+=s.x;
-				y1+=s.y;
-				x2+=s.x;
-				y2+=s.y;
+				x1 += s.x;
+				y1 += s.y;
+				x2 += s.x;
+				y2 += s.y;
 			}
 
-			bool Contains(Point p)
+			bool Contains(Point_<T> p)
 			{
-				return x1<=p.x && p.x<x2 && y1<=p.y && p.y<y2;
+				return x1 <= p.x && p.x < x2 && y1 <= p.y && p.y < y2;
 			}
 		};
+
+		using Rect = Rect_<GuiCoordinate>;
+		using NativeRect = Rect_<NativeCoordinate>;
 
 /***********************************************************************
 2D operations
 ***********************************************************************/
 
-		inline Point operator+(Point p, Size s)
+		template<typename T>
+		inline Point_<T> operator+(Point_<T> p, Size_<T> s)
 		{
-			return Point(p.x+s.x, p.y+s.y);
+			return Point_<T>(p.x + s.x, p.y + s.y);
 		}
 
-		inline Point operator+(Size s, Point p)
+		template<typename T>
+		inline Point_<T> operator+(Size_<T> s, Point_<T> p)
 		{
-			return Point(p.x+s.x, p.y+s.y);
+			return Point_<T>(p.x + s.x, p.y + s.y);
 		}
 
-		inline Point operator-(Point p, Size s)
+		template<typename T>
+		inline Point_<T> operator-(Point_<T> p, Size_<T> s)
 		{
-			return Point(p.x-s.x, p.y-s.y);
+			return Point_<T>(p.x - s.x, p.y - s.y);
 		}
 
-		inline Size operator-(Point p1, Point p2)
+		template<typename T>
+		inline Size_<T> operator-(Point_<T> p1, Point_<T> p2)
 		{
-			return Size(p1.x-p2.x, p1.y-p2.y);
+			return Size_<T>(p1.x - p2.x, p1.y - p2.y);
 		}
 
-		inline Size operator+(Size s1, Size s2)
+		template<typename T>
+		inline Size_<T> operator+(Size_<T> s1, Size_<T> s2)
 		{
-			return Size(s1.x+s2.x, s1.y+s2.y);
+			return Size_<T>(s1.x + s2.x, s1.y + s2.y);
 		}
 
-		inline Size operator-(Size s1, Size s2)
+		template<typename T>
+		inline Size_<T> operator-(Size_<T> s1, Size_<T> s2)
 		{
-			return Size(s1.x-s2.x, s1.y-s2.y);
+			return Size_<T>(s1.x - s2.x, s1.y - s2.y);
 		}
 
-		inline Size operator*(Size s, vint i)
+		template<typename T>
+		inline Size_<T> operator*(Size_<T> s, vint i)
 		{
-			return Size(s.x*i, s.y*i);
+			return Size_<T>(s.x*i, s.y*i);
 		}
 
-		inline Size operator/(Size s, vint i)
+		template<typename T>
+		inline Size_<T> operator/(Size_<T> s, vint i)
 		{
-			return Size(s.x/i, s.y/i);
+			return Size_<T>(s.x / i, s.y / i);
 		}
 
-		inline Point operator+=(Point& s1, Size s2)
+		template<typename T>
+		inline Point_<T> operator+=(Point_<T>& s1, Size_<T> s2)
 		{
-			s1.x+=s2.x;
-			s1.y+=s2.y;
+			s1.x += s2.x;
+			s1.y += s2.y;
 			return s1;
 		}
 
-		inline Point operator-=(Point& s1, Size s2)
+		template<typename T>
+		inline Point_<T> operator-=(Point_<T>& s1, Size_<T> s2)
 		{
-			s1.x-=s2.x;
-			s1.y-=s2.y;
+			s1.x -= s2.x;
+			s1.y -= s2.y;
 			return s1;
 		}
 
-		inline Size operator+=(Size& s1, Size s2)
+		template<typename T>
+		inline Size_<T> operator+=(Size_<T>& s1, Size_<T> s2)
 		{
-			s1.x+=s2.x;
-			s1.y+=s2.y;
+			s1.x += s2.x;
+			s1.y += s2.y;
 			return s1;
 		}
 
-		inline Size operator-=(Size& s1, Size s2)
+		template<typename T>
+		inline Size_<T> operator-=(Size_<T>& s1, Size_<T> s2)
 		{
-			s1.x-=s2.x;
-			s1.y-=s2.y;
+			s1.x -= s2.x;
+			s1.y -= s2.y;
 			return s1;
 		}
 

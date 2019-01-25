@@ -91,7 +91,7 @@ Host
 				controls::GuiControlHost*				controlHost = nullptr;
 				GuiWindowComposition*					windowComposition = nullptr;
 				GuiGraphicsComposition*					focusedComposition = nullptr;
-				Size									previousClientSize;
+				NativeSize								previousClientSize;
 				Size									minSize;
 				Point									caretPoint;
 				vuint64_t								lastCaretTime = 0;
@@ -108,11 +108,13 @@ Host
 				void									OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									OnMouseInput(const NativeWindowMouseInfo& info, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+				void									RecreateRenderTarget();
 				
 			private:
-				INativeWindowListener::HitTestResult	HitTest(Point location)override;
-				void									Moving(Rect& bounds, bool fixSizeOnly)override;
+				INativeWindowListener::HitTestResult	HitTest(NativePoint location)override;
+				void									Moving(NativeRect& bounds, bool fixSizeOnly)override;
 				void									Moved()override;
+				void									DpiChanged()override;
 				void									Paint()override;
 
 				void									LeftButtonDown(const NativeWindowMouseInfo& info)override;

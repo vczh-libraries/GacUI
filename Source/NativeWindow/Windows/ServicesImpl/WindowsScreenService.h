@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
 
 #include "..\..\GuiNativeWindow.h"
-#include <windows.h>
+#include "..\WinNativeDpiAwareness.h"
 
 namespace vl
 {
@@ -23,13 +23,16 @@ namespace vl
 				friend class WindowsScreenService;
 			protected:
 				HMONITOR										monitor;
+
 			public:
 				WindowsScreen();
 
-				Rect											GetBounds()override;
-				Rect											GetClientBounds()override;
+				NativeRect										GetBounds()override;
+				NativeRect										GetClientBounds()override;
 				WString											GetName()override;
 				bool											IsPrimary()override;
+				double											GetScalingX()override;
+				double											GetScalingY()override;
 			};
 
 			class WindowsScreenService : public Object, public INativeScreenService
@@ -38,12 +41,13 @@ namespace vl
 			protected:
 				collections::List<Ptr<WindowsScreen>>			screens;
 				HandleRetriver									handleRetriver;
+
 			public:
 
 				struct MonitorEnumProcData
 				{
-					WindowsScreenService*	screenService;
-					vint						currentScreen;
+					WindowsScreenService*						screenService;
+					vint										currentScreen;
 				};
 
 				WindowsScreenService(HandleRetriver _handleRetriver);

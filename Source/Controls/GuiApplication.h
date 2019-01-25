@@ -31,10 +31,10 @@ Application
 				friend class Ptr<GuiApplication>;
 			private:
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
-				void											LeftButtonDown(Point position)override;
-				void											LeftButtonUp(Point position)override;
-				void											RightButtonDown(Point position)override;
-				void											RightButtonUp(Point position)override;
+				void											LeftButtonDown(NativePoint position)override;
+				void											LeftButtonUp(NativePoint position)override;
+				void											RightButtonDown(NativePoint position)override;
+				void											RightButtonUp(NativePoint position)override;
 				void											ClipboardUpdated()override;
 			protected:
 				Locale											locale;
@@ -55,7 +55,7 @@ Application
 				void											UnregisterWindow(GuiWindow* window);
 				void											RegisterPopupOpened(GuiPopup* popup);
 				void											RegisterPopupClosed(GuiPopup* popup);
-				void											OnMouseDown(Point location);
+				void											OnMouseDown(NativePoint location);
 				void											TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											TooltipMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
@@ -81,7 +81,7 @@ Application
 				/// <summary>Get the <see cref="GuiWindow"/> instance that the mouse cursor are directly in.</summary>
 				/// <returns>The <see cref="GuiWindow"/> instance that the mouse cursor are directly in.</returns>
 				/// <param name="location">The mouse cursor.</param>
-				GuiWindow*										GetWindow(Point location);
+				GuiWindow*										GetWindow(NativePoint location);
 				/// <summary>Show a tooltip.</summary>
 				/// <param name="owner">The control that owns this tooltip temporary.</param>
 				/// <param name="tooltip">The control as the tooltip content. This control is not owned by the tooltip. User should manually release this control if no longer needed (usually when the application exit).</param>

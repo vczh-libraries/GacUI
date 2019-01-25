@@ -9,16 +9,20 @@ namespace vl
 INativeWindowListener
 ***********************************************************************/
 
-		INativeWindowListener::HitTestResult INativeWindowListener::HitTest(Point location)
+		INativeWindowListener::HitTestResult INativeWindowListener::HitTest(NativePoint location)
 		{
 			return INativeWindowListener::NoDecision;
 		}
 
-		void INativeWindowListener::Moving(Rect& bounds, bool fixSizeOnly)
+		void INativeWindowListener::Moving(NativeRect& bounds, bool fixSizeOnly)
 		{
 		}
 
 		void INativeWindowListener::Moved()
+		{
+		}
+
+		void INativeWindowListener::DpiChanged()
 		{
 		}
 
@@ -150,23 +154,23 @@ INativeWindowListener
 INativeControllerListener
 ***********************************************************************/
 
-		void INativeControllerListener::LeftButtonDown(Point position)
+		void INativeControllerListener::LeftButtonDown(NativePoint position)
 		{
 		}
 
-		void INativeControllerListener::LeftButtonUp(Point position)
+		void INativeControllerListener::LeftButtonUp(NativePoint position)
 		{
 		}
 
-		void INativeControllerListener::RightButtonDown(Point position)
+		void INativeControllerListener::RightButtonDown(NativePoint position)
 		{
 		}
 
-		void INativeControllerListener::RightButtonUp(Point position)
+		void INativeControllerListener::RightButtonUp(NativePoint position)
 		{
 		}
 
-		void INativeControllerListener::MouseMoving(Point position)
+		void INativeControllerListener::MouseMoving(NativePoint position)
 		{
 		}
 
