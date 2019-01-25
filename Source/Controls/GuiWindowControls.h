@@ -360,7 +360,7 @@ Window
 			protected:
 				union PopupInfo
 				{
-					struct _s1 { Point location; INativeScreen* screen; };
+					struct _s1 { NativePoint location; INativeScreen* screen; };
 					struct _s2 { GuiControl* control; INativeWindow* controlWindow; Rect bounds; bool preferredTopBottomSide; };
 					struct _s3 { GuiControl* control; INativeWindow* controlWindow; Point location; };
 					struct _s4 { GuiControl* control; INativeWindow* controlWindow; bool preferredTopBottomSide; };
@@ -382,12 +382,12 @@ Window
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
-				static bool								IsClippedByScreen(Size size, Point location, INativeScreen* screen);
-				static Point							CalculatePopupPosition(Size size, Point location, INativeScreen* screen);
-				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, Rect bounds, bool preferredTopBottomSide);
-				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, Point location);
-				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, bool preferredTopBottomSide);
-				static Point							CalculatePopupPosition(Size size, vint popupType, const PopupInfo& popupInfo);
+				static bool								IsClippedByScreen(NativeSize size, NativePoint location, INativeScreen* screen);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, NativePoint location, INativeScreen* screen);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, Rect bounds, bool preferredTopBottomSide);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, Point location);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, bool preferredTopBottomSide);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, vint popupType, const PopupInfo& popupInfo);
 
 				void									ShowPopupInternal();
 			public:
@@ -403,7 +403,7 @@ Window
 				/// <summary>Show the popup window with the left-top position set to a specified value. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
 				/// <param name="location">The specified left-top position.</param>
 				/// <param name="screen">The expected screen. If you don't want to specify any screen, don't set this parameter.</param>
-				void									ShowPopup(Point location, INativeScreen* screen = 0);
+				void									ShowPopup(NativePoint location, INativeScreen* screen = 0);
 				/// <summary>Show the popup window with the bounds set to a specified control-relative value. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
 				/// <param name="control">The control that owns this popup temporary. And the location is relative to this control.</param>
 				/// <param name="bounds">The specified bounds.</param>
