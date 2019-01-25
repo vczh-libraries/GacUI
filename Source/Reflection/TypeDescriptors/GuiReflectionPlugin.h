@@ -34,9 +34,13 @@ Type List (Basic)
 			F(presentation::AxisDirection)\
 			F(presentation::TextPos)\
 			F(presentation::GridPos)\
+			F(presentation::NativeCoordinate)\
 			F(presentation::Point)\
+			F(presentation::NativePoint)\
 			F(presentation::Size)\
+			F(presentation::NativeSize)\
 			F(presentation::Rect)\
+			F(presentation::NativeRect)\
 			F(presentation::Margin)\
 			F(presentation::FontProperties)\
 			F(presentation::VKEY)\
