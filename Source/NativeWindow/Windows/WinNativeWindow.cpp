@@ -13,6 +13,7 @@
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "Shlwapi.lib")
 #pragma comment(lib, "Comctl32.lib")
+#pragma comment(lib, "Shcore.lib")
 
 namespace vl
 {

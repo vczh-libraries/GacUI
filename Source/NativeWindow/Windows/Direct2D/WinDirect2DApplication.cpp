@@ -1,10 +1,11 @@
+#include "WinDirect2DApplication.h"
+#include "..\..\..\GraphicsElement\WindowsDirect2D\GuiGraphicsWindowsDirect2D.h"
+#include <ShellScalingApi.h>
+
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dwrite.lib")
 #pragma comment(lib, "d3d11.lib")
-
-#include "WinDirect2DApplication.h"
-#include "..\..\..\GraphicsElement\WindowsDirect2D\GuiGraphicsWindowsDirect2D.h"
 
 namespace vl
 {
@@ -612,6 +613,27 @@ int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)())
 
 int SetupWindowsDirect2DRenderer()
 {
+	{
+		HMODULE moduleHandle = LoadLibrary(L"user32");
+		bool available = GetProcAddress(moduleHandle, "SetProcessDpiAwarenessContext") != NULL;
+		FreeLibrary(moduleHandle);
+		if (available)
+		{
+			SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+			goto FINISH_DPI_SETTING;
+		}
+	}
+	{
+		HMODULE moduleHandle = LoadLibrary(L"Shcore");
+		bool available = GetProcAddress(moduleHandle, "SetProcessDpiAwareness") != NULL;
+		FreeLibrary(moduleHandle);
+		if (available)
+		{
+			SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+			goto FINISH_DPI_SETTING;
+		}
+	}
+FINISH_DPI_SETTING:
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
 	WinDirect2DApplicationDirect2DObjectProvider objectProvider;
