@@ -238,10 +238,11 @@ GuiGraphicsHost
 
 			INativeWindowListener::HitTestResult GuiGraphicsHost::HitTest(NativePoint location)
 			{
-				Rect bounds = hostRecord.nativeWindow->GetBounds();
-				Rect clientBounds = hostRecord.nativeWindow->GetClientBoundsInScreen();
-				Point clientLocation(location.x + bounds.x1 - clientBounds.x1, location.y + bounds.y1 - clientBounds.y1);
-				GuiGraphicsComposition* hitComposition = windowComposition->FindComposition(clientLocation, false);
+				NativeRect bounds = hostRecord.nativeWindow->GetBounds();
+				NativeRect clientBounds = hostRecord.nativeWindow->GetClientBoundsInScreen();
+				NativePoint clientLocation(location.x + bounds.x1 - clientBounds.x1, location.y + bounds.y1 - clientBounds.y1);
+				auto point = hostRecord.nativeWindow->Convert(clientLocation);
+				GuiGraphicsComposition* hitComposition = windowComposition->FindComposition(point, false);
 				while (hitComposition)
 				{
 					INativeWindowListener::HitTestResult result = hitComposition->GetAssociatedHitTestResult();
@@ -259,9 +260,9 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Moving(NativeRect& bounds, bool fixSizeOnly)
 			{
-				Rect oldBounds = hostRecord.nativeWindow->GetBounds();
+				NativeRect oldBounds = hostRecord.nativeWindow->GetBounds();
 				minSize = windowComposition->GetPreferredBounds().GetSize();
-				Size minWindowSize = minSize + (oldBounds.GetSize() - hostRecord.nativeWindow->GetClientSize());
+				NativeSize minWindowSize = hostRecord.nativeWindow->Convert(minSize) + (oldBounds.GetSize() - hostRecord.nativeWindow->GetClientSize());
 				if (bounds.Width() < minWindowSize.x)
 				{
 					if (fixSizeOnly)
