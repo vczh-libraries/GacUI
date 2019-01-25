@@ -173,17 +173,17 @@ Coordinate
 			NativeCoordinate& operator=(const NativeCoordinate& _value) = default;
 			NativeCoordinate& operator=(NativeCoordinate&& _value) = default;
 
-			inline bool operator==(NativeCoordinate c) { return value == c.value; };
-			inline bool operator!=(NativeCoordinate c) { return value != c.value; };
-			inline bool operator<(NativeCoordinate c) { return value < c.value; };
-			inline bool operator<=(NativeCoordinate c) { return value <= c.value; };
-			inline bool operator>(NativeCoordinate c) { return value > c.value; };
-			inline bool operator>=(NativeCoordinate c) { return value >= c.value; };
+			inline bool operator==(NativeCoordinate c)const { return value == c.value; };
+			inline bool operator!=(NativeCoordinate c)const { return value != c.value; };
+			inline bool operator<(NativeCoordinate c)const { return value < c.value; };
+			inline bool operator<=(NativeCoordinate c)const { return value <= c.value; };
+			inline bool operator>(NativeCoordinate c)const { return value > c.value; };
+			inline bool operator>=(NativeCoordinate c)const { return value >= c.value; };
 
-			inline NativeCoordinate operator+(NativeCoordinate c) { return value + c.value; };
-			inline NativeCoordinate operator-(NativeCoordinate c) { return value - c.value; };
-			inline NativeCoordinate operator*(NativeCoordinate c) { return value * c.value; };
-			inline NativeCoordinate operator/(NativeCoordinate c) { return value / c.value; };
+			inline NativeCoordinate operator+(NativeCoordinate c)const { return value + c.value; };
+			inline NativeCoordinate operator-(NativeCoordinate c)const { return value - c.value; };
+			inline NativeCoordinate operator*(NativeCoordinate c)const { return value * c.value; };
+			inline NativeCoordinate operator/(NativeCoordinate c)const { return value / c.value; };
 		};
 
 /***********************************************************************
@@ -312,7 +312,7 @@ Rectangle
 			{
 			}
 
-			Rect_(Point p, Size s)
+			Rect_(Point_<T> p, Size_<T> s)
 				:x1(p.x), y1(p.y), x2(p.x + s.x), y2(p.y + s.y)
 			{
 			}

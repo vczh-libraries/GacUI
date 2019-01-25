@@ -41,7 +41,7 @@ WindowsCallbackService
 				}
 			}
 
-			void WindowsCallbackService::InvokeMouseHook(WPARAM message, Point location)
+			void WindowsCallbackService::InvokeMouseHook(WPARAM message, NativePoint location)
 			{
 				switch(message)
 				{
