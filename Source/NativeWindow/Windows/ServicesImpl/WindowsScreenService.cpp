@@ -17,20 +17,20 @@ WindowsScreen
 				monitor=NULL;
 			}
 
-			Rect WindowsScreen::GetBounds()
+			NativeRect WindowsScreen::GetBounds()
 			{
 				MONITORINFOEX info;
 				info.cbSize=sizeof(MONITORINFOEX);
 				GetMonitorInfo(monitor, &info);
-				return Rect(info.rcMonitor.left, info.rcMonitor.top, info.rcMonitor.right, info.rcMonitor.bottom);
+				return NativeRect(info.rcMonitor.left, info.rcMonitor.top, info.rcMonitor.right, info.rcMonitor.bottom);
 			}
 
-			Rect WindowsScreen::GetClientBounds()
+			NativeRect WindowsScreen::GetClientBounds()
 			{
 				MONITORINFOEX info;
 				info.cbSize=sizeof(MONITORINFOEX);
 				GetMonitorInfo(monitor, &info);
-				return Rect(info.rcWork.left, info.rcWork.top, info.rcWork.right, info.rcWork.bottom);
+				return NativeRect(info.rcWork.left, info.rcWork.top, info.rcWork.right, info.rcWork.bottom);
 			}
 
 			WString WindowsScreen::GetName()

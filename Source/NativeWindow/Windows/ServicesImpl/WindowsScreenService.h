@@ -27,8 +27,8 @@ namespace vl
 			public:
 				WindowsScreen();
 
-				Rect											GetBounds()override;
-				Rect											GetClientBounds()override;
+				NativeRect										GetBounds()override;
+				NativeRect										GetClientBounds()override;
 				WString											GetName()override;
 				bool											IsPrimary()override;
 				double											GetScalingX()override;
