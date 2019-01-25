@@ -51,7 +51,7 @@ WindowListener
 
 				void DpiChanged()override
 				{
-					RebuildCanvas(window->GetClientSize());
+					RecreateRenderTarget();
 				}
 
 				void ResizeRenderTarget()
@@ -95,32 +95,37 @@ WindowListener 1.0
 				{
 					if (size.x <= 1) size.x = 1;
 					if (size.y <= 1) size.y = 1;
-					if(!d2dRenderTarget)
+					if (!d2dRenderTarget)
 					{
-						ID2D1HwndRenderTarget* renderTarget=0;
-						IWindowsForm* form=GetWindowsForm(window);
-						D2D1_RENDER_TARGET_PROPERTIES tp=D2D1::RenderTargetProperties();
-						tp.dpiX=96;
-						tp.dpiY=96;
-						HRESULT hr=d2dFactory->CreateHwndRenderTarget(
+						ID2D1HwndRenderTarget* renderTarget = 0;
+						IWindowsForm* form = GetWindowsForm(window);
+						D2D1_RENDER_TARGET_PROPERTIES tp = D2D1::RenderTargetProperties();
+						{
+							UINT dpiX = 0;
+							UINT dpiY = 0;
+							DpiAwared_GetDpiForWindow(form->GetWindowHandle(), &dpiX, &dpiY);
+							tp.dpiX = (FLOAT)dpiX;
+							tp.dpiY = (FLOAT)dpiY;
+						}
+						HRESULT hr = d2dFactory->CreateHwndRenderTarget(
 							tp,
 							D2D1::HwndRenderTargetProperties(
 								form->GetWindowHandle(),
 								D2D1::SizeU((int)size.x, (int)size.y)
-								),
+							),
 							&renderTarget
-							);
-						if(!FAILED(hr))
+						);
+						if (!FAILED(hr))
 						{
-							d2dRenderTarget=renderTarget;
+							d2dRenderTarget = renderTarget;
 							d2dRenderTarget->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
 						}
 					}
-					else if(previousSize!=size)
+					else if (previousSize != size)
 					{
 						d2dRenderTarget->Resize(D2D1::SizeU((int)size.x, (int)size.y));
 					}
-					previousSize=size;
+					previousSize = size;
 				}
 			public:
 				Direct2DWindowsNativeWindowListener_1_0(INativeWindow* _window, ID2D1Factory* _d2dFactory)
@@ -270,7 +275,13 @@ WindowListener 1.1
 						d2dDeviceContext = CreateDeviceContext(dxgiDevice.Obj());
 						auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
 						d2dDeviceContext->SetTarget(d2dBitmap.Obj());
-						d2dDeviceContext->SetDpi(96, 96);
+						IWindowsForm* form = GetWindowsForm(window);
+						{
+							UINT dpiX = 0;
+							UINT dpiY = 0;
+							DpiAwared_GetDpiForWindow(form->GetWindowHandle(), &dpiX, &dpiY);
+							d2dDeviceContext->SetDpi((FLOAT)dpiX, (FLOAT)dpiY);
+						}
 					}
 					else if(previousSize!=size)
 					{

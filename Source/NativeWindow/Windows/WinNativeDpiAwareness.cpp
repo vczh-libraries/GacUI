@@ -57,6 +57,36 @@ namespace vl
 				}
 			}
 
+			void DpiAwared_GetDpiForWindow(HWND handle, UINT* x, UINT* y)
+			{
+				static bool initialized = false;
+				static bool available_GetDpiForWindow = false;
+				if (!initialized)
+				{
+					initialized = true;
+					HMODULE moduleHandle = LoadLibrary(L"user32");
+					available_GetDpiForWindow = GetProcAddress(moduleHandle, "GetDpiForWindow") != NULL;
+					FreeLibrary(moduleHandle);
+				}
+
+				if (available_GetDpiForWindow)
+				{
+					*x = *y = GetDpiForWindow(handle);
+				}
+				else
+				{
+					HMONITOR monitor = MonitorFromWindow(handle, MONITOR_DEFAULTTONULL);
+					if (monitor == NULL)
+					{
+						*x = *y = 96;
+					}
+					else
+					{
+						DpiAwared_GetDpiForMonitor(monitor, x, y);
+					}
+				}
+			}
+
 			void DpiAwared_AdjustWindowRect(LPRECT rect, HWND handle)
 			{
 				static bool initialized = false;
