@@ -221,10 +221,17 @@ GuiGraphicsHost
 				if (composition)
 				{
 					Rect bounds = composition->GetGlobalBounds();
+					Point point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
 					GuiMouseEventArgs arguments;
-					(NativeWindowMouseInfo&)arguments = info;
-					arguments.x -= bounds.x1;
-					arguments.y -= bounds.y1;
+					arguments.ctrl = info.ctrl;
+					arguments.shift = info.shift;
+					arguments.left = info.left;
+					arguments.middle = info.middle;
+					arguments.right = info.right;
+					arguments.wheel = info.wheel;
+					arguments.nonClient = info.nonClient;
+					arguments.x = point.x - bounds.x1;
+					arguments.y = point.y - bounds.y1;
 					RaiseMouseEvent(arguments, composition, eventReceiverEvent);
 				}
 			}
