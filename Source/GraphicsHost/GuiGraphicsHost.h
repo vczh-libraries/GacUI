@@ -111,8 +111,8 @@ Host
 				void									RecreateRenderTarget();
 				
 			private:
-				INativeWindowListener::HitTestResult	HitTest(Point location)override;
-				void									Moving(Rect& bounds, bool fixSizeOnly)override;
+				INativeWindowListener::HitTestResult	HitTest(NativePoint location)override;
+				void									Moving(NativeRect& bounds, bool fixSizeOnly)override;
 				void									Moved()override;
 				void									DpiChanged()override;
 				void									Paint()override;

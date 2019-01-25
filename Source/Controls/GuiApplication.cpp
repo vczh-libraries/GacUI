@@ -30,21 +30,21 @@ GuiApplication
 				}
 			}
 
-			void GuiApplication::LeftButtonDown(Point position)
+			void GuiApplication::LeftButtonDown(NativePoint position)
 			{
 				OnMouseDown(position);
 			}
 
-			void GuiApplication::LeftButtonUp(Point position)
+			void GuiApplication::LeftButtonUp(NativePoint position)
 			{
 			}
 
-			void GuiApplication::RightButtonDown(Point position)
+			void GuiApplication::RightButtonDown(NativePoint position)
 			{
 				OnMouseDown(position);
 			}
 
-			void GuiApplication::RightButtonUp(Point position)
+			void GuiApplication::RightButtonUp(NativePoint position)
 			{
 			}
 
@@ -113,7 +113,7 @@ GuiApplication
 				}
 			}
 
-			void GuiApplication::OnMouseDown(Point location)
+			void GuiApplication::OnMouseDown(NativePoint location)
 			{
 				GuiWindow* window=GetWindow(location);
 				for(vint i=0;i<windows.Count();i++)
@@ -173,7 +173,7 @@ GuiApplication
 				return windows;
 			}
 
-			GuiWindow* GuiApplication::GetWindow(Point location)
+			GuiWindow* GuiApplication::GetWindow(NativePoint location)
 			{
 				INativeWindow* nativeWindow = GetCurrentController()->WindowService()->GetWindow(location);
 				if (nativeWindow)

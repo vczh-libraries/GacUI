@@ -234,7 +234,7 @@ GuiGraphicsHost
 				RefreshRelatedHostRecord(hostRecord.nativeWindow);
 			}
 
-			INativeWindowListener::HitTestResult GuiGraphicsHost::HitTest(Point location)
+			INativeWindowListener::HitTestResult GuiGraphicsHost::HitTest(NativePoint location)
 			{
 				Rect bounds = hostRecord.nativeWindow->GetBounds();
 				Rect clientBounds = hostRecord.nativeWindow->GetClientBoundsInScreen();
@@ -255,7 +255,7 @@ GuiGraphicsHost
 				return INativeWindowListener::NoDecision;
 			}
 
-			void GuiGraphicsHost::Moving(Rect& bounds, bool fixSizeOnly)
+			void GuiGraphicsHost::Moving(NativeRect& bounds, bool fixSizeOnly)
 			{
 				Rect oldBounds = hostRecord.nativeWindow->GetBounds();
 				minSize = windowComposition->GetPreferredBounds().GetSize();
