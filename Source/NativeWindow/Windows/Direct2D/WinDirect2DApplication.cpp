@@ -29,7 +29,7 @@ WindowListener
 				bool							rendering = false;
 				bool							movedWhileRendering = false;
 
-				virtual void					RebuildCanvas(Size size) = 0;
+				virtual void					RebuildCanvas(NativeSize size) = 0;
 			public:
 				Direct2DWindowsNativeWindowListener(INativeWindow* _window, ID2D1Factory* _d2dFactory)
 					:window(_window)
@@ -84,9 +84,9 @@ WindowListener 1.0
 			{
 			protected:
 				ComPtr<ID2D1HwndRenderTarget>	d2dRenderTarget;
-				Size							previousSize;
+				NativeSize						previousSize;
 
-				void RebuildCanvas(Size size)override
+				void RebuildCanvas(NativeSize size)override
 				{
 					if (size.x <= 1) size.x = 1;
 					if (size.y <= 1) size.y = 1;
@@ -106,7 +106,7 @@ WindowListener 1.0
 							tp,
 							D2D1::HwndRenderTargetProperties(
 								form->GetWindowHandle(),
-								D2D1::SizeU((int)size.x, (int)size.y)
+								D2D1::SizeU((int)size.x.value, (int)size.y.value)
 							),
 							&renderTarget
 						);
@@ -118,7 +118,7 @@ WindowListener 1.0
 					}
 					else if (previousSize != size)
 					{
-						d2dRenderTarget->Resize(D2D1::SizeU((int)size.x, (int)size.y));
+						d2dRenderTarget->Resize(D2D1::SizeU((int)size.x.value, (int)size.y.value));
 					}
 					previousSize = size;
 				}
@@ -160,7 +160,7 @@ WindowListener 1.1
 				ComPtr<IDXGIDevice>				dxgiDevice;
 				ComPtr<IDXGISwapChain1>			dxgiSwapChain;
 				ComPtr<ID2D1DeviceContext>		d2dDeviceContext;
-				Size							previousSize;
+				NativeSize						previousSize;
 
 				ComPtr<IDXGIDevice> GetDXGIDevice()
 				{
@@ -250,7 +250,7 @@ WindowListener 1.1
 					return d2dBitmap;
 				}
 
-				void RebuildCanvas(Size size)override
+				void RebuildCanvas(NativeSize size)override
 				{
 					if (size.x <= 1) size.x = 1;
 					if (size.y <= 1) size.y = 1;
