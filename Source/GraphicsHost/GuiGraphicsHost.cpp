@@ -76,12 +76,13 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::MouseCapture(const NativeWindowMouseInfo& info)
 			{
-				if(hostRecord.nativeWindow && (info.left || info.middle || info.right))
+				if (hostRecord.nativeWindow && (info.left || info.middle || info.right))
 				{
-					if(!hostRecord.nativeWindow->IsCapturing() && !info.nonClient)
+					if (!hostRecord.nativeWindow->IsCapturing() && !info.nonClient)
 					{
 						hostRecord.nativeWindow->RequireCapture();
-						mouseCaptureComposition=windowComposition->FindComposition(Point(info.x, info.y), true);
+						auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
+						mouseCaptureComposition = windowComposition->FindComposition(point, true);
 					}
 				}
 			}
@@ -207,22 +208,23 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::OnMouseInput(const NativeWindowMouseInfo& info, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
 			{
-				GuiGraphicsComposition* composition=0;
-				if(mouseCaptureComposition)
+				GuiGraphicsComposition* composition = 0;
+				if (mouseCaptureComposition)
 				{
-					composition=mouseCaptureComposition;
+					composition = mouseCaptureComposition;
 				}
 				else
 				{
-					composition=windowComposition->FindComposition(Point(info.x, info.y), true);
+					auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
+					composition = windowComposition->FindComposition(point, true);
 				}
-				if(composition)
+				if (composition)
 				{
-					Rect bounds=composition->GetGlobalBounds();
+					Rect bounds = composition->GetGlobalBounds();
 					GuiMouseEventArgs arguments;
-					(NativeWindowMouseInfo&)arguments=info;
-					arguments.x-=bounds.x1;
-					arguments.y-=bounds.y1;
+					(NativeWindowMouseInfo&)arguments = info;
+					arguments.x -= bounds.x1;
+					arguments.y -= bounds.y1;
 					RaiseMouseEvent(arguments, composition, eventReceiverEvent);
 				}
 			}
@@ -300,7 +302,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Moved()
 			{
-				Size size = hostRecord.nativeWindow->GetClientSize();
+				NativeSize size = hostRecord.nativeWindow->GetClientSize();
 				if (previousClientSize != size)
 				{
 					previousClientSize = size;
@@ -394,7 +396,8 @@ GuiGraphicsHost
 			{
 				CompositionList newCompositions;
 				{
-					GuiGraphicsComposition* composition = windowComposition->FindComposition(Point(info.x, info.y), true);
+					auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
+					GuiGraphicsComposition* composition = windowComposition->FindComposition(point, true);
 					while (composition)
 					{
 						newCompositions.Insert(0, composition);
@@ -597,7 +600,7 @@ GuiGraphicsHost
 						GetCurrentController()->CallbackService()->InstallListener(this);
 						previousClientSize = _nativeWindow->GetClientSize();
 						minSize = windowComposition->GetPreferredBounds().GetSize();
-						_nativeWindow->SetCaretPoint(caretPoint);
+						_nativeWindow->SetCaretPoint(_nativeWindow->Convert(caretPoint));
 						needRender = true;
 					}
 
@@ -756,7 +759,7 @@ GuiGraphicsHost
 				caretPoint = value;
 				if (hostRecord.nativeWindow)
 				{
-					hostRecord.nativeWindow->SetCaretPoint(caretPoint);
+					hostRecord.nativeWindow->SetCaretPoint(hostRecord.nativeWindow->Convert(caretPoint));
 				}
 			}
 

@@ -91,7 +91,7 @@ Host
 				controls::GuiControlHost*				controlHost = nullptr;
 				GuiWindowComposition*					windowComposition = nullptr;
 				GuiGraphicsComposition*					focusedComposition = nullptr;
-				Size									previousClientSize;
+				NativeSize								previousClientSize;
 				Size									minSize;
 				Point									caretPoint;
 				vuint64_t								lastCaretTime = 0;
