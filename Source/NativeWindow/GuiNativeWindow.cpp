@@ -22,6 +22,10 @@ INativeWindowListener
 		{
 		}
 
+		void INativeWindowListener::DpiChanged()
+		{
+		}
+
 		void INativeWindowListener::Enabled()
 		{
 		}

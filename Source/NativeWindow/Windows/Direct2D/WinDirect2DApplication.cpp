@@ -37,7 +37,7 @@ WindowListener
 				{
 				}
 
-				void Moved()
+				void Moved()override
 				{
 					if (rendering)
 					{
@@ -47,6 +47,11 @@ WindowListener
 					{
 						ResizeRenderTarget();
 					}
+				}
+
+				void DpiChanged()override
+				{
+					RebuildCanvas(window->GetClientSize());
 				}
 
 				void ResizeRenderTarget()

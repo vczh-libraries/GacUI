@@ -767,6 +767,10 @@ Native Window
 			/// </summary>
 			virtual void				Moved();
 			/// <summary>
+			/// Called when the dpi associated with this window is changed.
+			/// </summary>
+			virtual void				DpiChanged();
+			/// <summary>
 			/// Called when the window is enabled.
 			/// </summary>
 			virtual void				Enabled();

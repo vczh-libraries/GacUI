@@ -325,7 +325,11 @@ WindowsForm
 							vint dpiX = LOWORD(wParam);
 							vint dpiY = HIWORD(wParam);
 							auto newRect = (RECT*)lParam;
-							int a = 0;
+							MoveWindow(handle, newRect->left, newRect->top, (newRect->right - newRect->left), (newRect->bottom - newRect->top), FALSE);
+							for (vint i = 0; i < listeners.Count(); i++)
+							{
+								listeners[i]->DpiChanged();
+							}
 						}
 						break;
 					// ************************************** state
@@ -846,6 +850,7 @@ WindowsForm
 				Ptr<GuiImageData>					defaultIcon;
 				Ptr<GuiImageData>					replacementIcon;
 				HICON								replacementHIcon = NULL;
+				bool								supportHighDpi = false;
 
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
@@ -856,6 +861,10 @@ WindowsForm
 
 					auto padding = (vint)(GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER));
 					customFramePadding = Margin(padding, padding, padding, padding);
+
+					HMODULE moduleHandle = LoadLibrary(L"user32");
+					supportHighDpi = GetProcAddress(moduleHandle, "GetDpiForWindow") != NULL && GetProcAddress(moduleHandle, "AdjustWindowRectExForDpi") != NULL;
+					FreeLibrary(moduleHandle);
 				}
 
 				~WindowsForm()
@@ -972,7 +981,14 @@ WindowsForm
 					RECT required={0,0,(int)size.x,(int)size.y};
 					RECT bounds;
 					GetWindowRect(handle, &bounds);
-					AdjustWindowRect(&required, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE);
+					if (supportHighDpi)
+					{
+						AdjustWindowRectExForDpi(&required, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE, (DWORD)GetWindowLongPtr(handle, GWL_EXSTYLE), GetDpiForWindow(handle));
+					}
+					else
+					{
+						AdjustWindowRect(&required, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE);
+					}
 					SetBounds(Rect(Point(bounds.left, bounds.top), Size(required.right-required.left, required.bottom-required.top)));
 				}
 
@@ -987,7 +1003,14 @@ WindowsForm
 						RECT required={0,0,0,0};
 						RECT bounds;
 						GetWindowRect(handle, &bounds);
-						AdjustWindowRect(&required, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE);
+						if (supportHighDpi)
+						{
+							AdjustWindowRectExForDpi(&required, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE, (DWORD)GetWindowLongPtr(handle, GWL_EXSTYLE), GetDpiForWindow(handle));
+						}
+						else
+						{
+							AdjustWindowRect(&required, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE);
+						}
 						return Rect(
 							Point(
 								(bounds.left-required.left),
