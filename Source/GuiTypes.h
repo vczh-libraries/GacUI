@@ -184,6 +184,11 @@ Coordinate
 			inline NativeCoordinate operator-(NativeCoordinate c)const { return value - c.value; };
 			inline NativeCoordinate operator*(NativeCoordinate c)const { return value * c.value; };
 			inline NativeCoordinate operator/(NativeCoordinate c)const { return value / c.value; };
+
+			inline NativeCoordinate& operator+=(NativeCoordinate c) { value += c.value; return *this; };
+			inline NativeCoordinate& operator-=(NativeCoordinate c) { value -= c.value; return *this; };
+			inline NativeCoordinate& operator*=(NativeCoordinate c) { value *= c.value; return *this; };
+			inline NativeCoordinate& operator/=(NativeCoordinate c) { value /= c.value; return *this; };
 		};
 
 /***********************************************************************

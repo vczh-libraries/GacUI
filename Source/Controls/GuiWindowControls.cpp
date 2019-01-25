@@ -924,26 +924,26 @@ GuiPopup
 				return !screenBounds.Contains(windowBounds.LeftTop()) || !screenBounds.Contains(windowBounds.RightBottom());
 			}
 
-			Point GuiPopup::CalculatePopupPosition(NativeSize windowSize, NativePoint location, INativeScreen* screen)
+			NativePoint GuiPopup::CalculatePopupPosition(NativeSize windowSize, NativePoint location, INativeScreen* screen)
 			{
-				Rect screenBounds = screen->GetClientBounds();
+				NativeRect screenBounds = screen->GetClientBounds();
 
 				if (location.x < screenBounds.x1)
 				{
 					location.x = screenBounds.x1;
 				}
-				else if (location.x + size.x > screenBounds.x2)
+				else if (location.x + windowSize.x > screenBounds.x2)
 				{
-					location.x = screenBounds.x2 - size.x;
+					location.x = screenBounds.x2 - windowSize.x;
 				}
 
 				if (location.y < screenBounds.y1)
 				{
 					location.y = screenBounds.y1;
 				}
-				else if (location.y + size.y > screenBounds.y2)
+				else if (location.y + windowSize.y > screenBounds.y2)
 				{
-					location.y = screenBounds.y2 - size.y;
+					location.y = screenBounds.y2 - windowSize.y;
 				}
 
 				return location;
@@ -951,55 +951,55 @@ GuiPopup
 
 			NativePoint GuiPopup::CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, Rect bounds, bool preferredTopBottomSide)
 			{
-				Point controlClientOffset = control->GetBoundsComposition()->GetGlobalBounds().LeftTop();
-				Point controlWindowOffset = controlWindow->GetClientBoundsInScreen().LeftTop();
-				bounds.x1 += controlClientOffset.x + controlWindowOffset.x;
-				bounds.x2 += controlClientOffset.x + controlWindowOffset.x;
-				bounds.y1 += controlClientOffset.y + controlWindowOffset.y;
-				bounds.y2 += controlClientOffset.y + controlWindowOffset.y;
+				NativePoint controlClientOffset = controlWindow->Convert(control->GetBoundsComposition()->GetGlobalBounds().LeftTop());
+				NativePoint controlWindowOffset = controlWindow->GetClientBoundsInScreen().LeftTop();
+				NativeRect targetBounds(controlWindow->Convert(bounds.LeftTop()), controlWindow->Convert(bounds.GetSize()));
+				targetBounds.x1 += controlClientOffset.x + controlWindowOffset.x;
+				targetBounds.x2 += controlClientOffset.x + controlWindowOffset.x;
+				targetBounds.y1 += controlClientOffset.y + controlWindowOffset.y;
+				targetBounds.y2 += controlClientOffset.y + controlWindowOffset.y;
 
-				Point locations[4];
+				NativePoint locations[4];
 				if (preferredTopBottomSide)
 				{
-					locations[0] = Point(bounds.x1, bounds.y2);
-					locations[1] = Point(bounds.x2 - size.x, bounds.y2);
-					locations[2] = Point(bounds.x1, bounds.y1 - size.y);
-					locations[3] = Point(bounds.x2 - size.x, bounds.y1 - size.y);
+					locations[0] = NativePoint(targetBounds.x1, targetBounds.y2);
+					locations[1] = NativePoint(targetBounds.x2 - windowSize.x, targetBounds.y2);
+					locations[2] = NativePoint(targetBounds.x1, targetBounds.y1 - windowSize.y);
+					locations[3] = NativePoint(targetBounds.x2 - windowSize.x, targetBounds.y1 - windowSize.y);
 				}
 				else
 				{
-					locations[0] = Point(bounds.x2, bounds.y1);
-					locations[1] = Point(bounds.x2, bounds.y2 - size.y);
-					locations[2] = Point(bounds.x1 - size.x, bounds.y1);
-					locations[3] = Point(bounds.x1 - size.x, bounds.y2 - size.y);
+					locations[0] = NativePoint(targetBounds.x2, targetBounds.y1);
+					locations[1] = NativePoint(targetBounds.x2, targetBounds.y2 - windowSize.y);
+					locations[2] = NativePoint(targetBounds.x1 - windowSize.x, targetBounds.y1);
+					locations[3] = NativePoint(targetBounds.x1 - windowSize.x, targetBounds.y2 - windowSize.y);
 				}
 
 				auto screen = GetCurrentController()->ScreenService()->GetScreen(controlWindow);
 				for (vint i = 0; i < 4; i++)
 				{
-					if (!IsClippedByScreen(size, locations[i], screen))
+					if (!IsClippedByScreen(windowSize, locations[i], screen))
 					{
-						return CalculatePopupPosition(size, locations[i], screen);
+						return CalculatePopupPosition(windowSize, locations[i], screen);
 					}
 				}
-				return CalculatePopupPosition(size, locations[0], screen);
+				return CalculatePopupPosition(windowSize, locations[0], screen);
 			}
 
 			NativePoint GuiPopup::CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, Point location)
 			{
-				Point locations[4];
-				Rect controlBounds = control->GetBoundsComposition()->GetGlobalBounds();
-
-				Point controlClientOffset = controlWindow->GetClientBoundsInScreen().LeftTop();
-				vint x = controlBounds.x1 + controlClientOffset.x + location.x;
-				vint y = controlBounds.y1 + controlClientOffset.y + location.y;
-				return CalculatePopupPosition(size, Point(x, y), GetCurrentController()->ScreenService()->GetScreen(controlWindow));
+				NativePoint controlClientOffset = controlWindow->Convert(control->GetBoundsComposition()->GetGlobalBounds().LeftTop());
+				NativePoint controlWindowOffset = controlWindow->GetClientBoundsInScreen().LeftTop();
+				NativePoint targetLocation = controlWindow->Convert(location);
+				NativeCoordinate x = controlClientOffset.x + controlWindowOffset.x + targetLocation.x;
+				NativeCoordinate y = controlClientOffset.y + controlWindowOffset.y + targetLocation.y;
+				return CalculatePopupPosition(windowSize, NativePoint(x, y), GetCurrentController()->ScreenService()->GetScreen(controlWindow));
 			}
 
 			NativePoint GuiPopup::CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, bool preferredTopBottomSide)
 			{
 				Rect bounds(Point(0, 0), control->GetBoundsComposition()->GetBounds().GetSize());
-				return CalculatePopupPosition(size, control, controlWindow, bounds, preferredTopBottomSide);
+				return CalculatePopupPosition(windowSize, control, controlWindow, bounds, preferredTopBottomSide);
 			}
 
 			NativePoint GuiPopup::CalculatePopupPosition(NativeSize windowSize, vint popupType, const PopupInfo& popupInfo)
