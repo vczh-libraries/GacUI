@@ -202,27 +202,7 @@ int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)())
 
 int SetupWindowsGDIRenderer()
 {
-	{
-		HMODULE moduleHandle = LoadLibrary(L"user32");
-		bool available = GetProcAddress(moduleHandle, "SetProcessDpiAwarenessContext") != NULL;
-		FreeLibrary(moduleHandle);
-		if (available)
-		{
-			SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_UNAWARE);
-			goto FINISH_DPI_SETTING;
-		}
-	}
-	{
-		HMODULE moduleHandle = LoadLibrary(L"Shcore");
-		bool available = GetProcAddress(moduleHandle, "SetProcessDpiAwareness") != NULL;
-		FreeLibrary(moduleHandle);
-		if (available)
-		{
-			SetProcessDpiAwareness(PROCESS_DPI_UNAWARE);
-			goto FINISH_DPI_SETTING;
-		}
-	}
-FINISH_DPI_SETTING:
+	InitDpiAwareness(false);
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
 	WinGDIApplicationGDIObjectProvider objectProvider;

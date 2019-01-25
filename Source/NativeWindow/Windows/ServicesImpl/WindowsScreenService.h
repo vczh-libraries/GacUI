@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
 
 #include "..\..\GuiNativeWindow.h"
-#include <windows.h>
+#include "..\WinNativeDpiAwareness.h"
 
 namespace vl
 {
@@ -23,10 +23,9 @@ namespace vl
 				friend class WindowsScreenService;
 			protected:
 				HMONITOR										monitor;
-				bool											supportHighDpi;
 
 			public:
-				WindowsScreen(bool _supportHighDpi);
+				WindowsScreen();
 
 				Rect											GetBounds()override;
 				Rect											GetClientBounds()override;
@@ -42,7 +41,6 @@ namespace vl
 			protected:
 				collections::List<Ptr<WindowsScreen>>			screens;
 				HandleRetriver									handleRetriver;
-				bool											supportHighDpi = false;
 
 			public:
 

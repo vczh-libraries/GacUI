@@ -525,6 +525,9 @@
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition.cpp">
       <Filter>GacUI\GraphicsComposition</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\WinNativeDpiAwareness.cpp">
+      <Filter>GacUI\NativeWindow\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
@@ -868,6 +871,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\IncludeForward.h">
       <Filter>GacUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\WinNativeDpiAwareness.h">
+      <Filter>GacUI\NativeWindow\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

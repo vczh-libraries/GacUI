@@ -422,6 +422,7 @@
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsInputService.cpp" />
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsResourceService.cpp" />
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsScreenService.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\WinNativeDpiAwareness.cpp" />
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
@@ -658,6 +659,7 @@
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsInputService.h" />
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsResourceService.h" />
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsScreenService.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\WinNativeDpiAwareness.h" />
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.h" />
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
