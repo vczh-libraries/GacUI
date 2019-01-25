@@ -649,7 +649,9 @@ Native Window
 		/// <summary>
 		/// Mouse message information.
 		/// </summary>
-		struct NativeWindowMouseInfo
+		/// <typeparam name="T">Type of the coordinate.</typeparam>
+		template<typename T>
+		struct WindowMouseInfo_
 		{
 			/// <summary>True if the control button is pressed.</summary>
 			bool						ctrl;
@@ -662,14 +664,17 @@ Native Window
 			/// <summary>True if the right mouse button is pressed.</summary>
 			bool						right;
 			/// <summary>The mouse position of x dimension.</summary>
-			vint						x;
+			T							x;
 			/// <summary>The mouse position of y dimension.</summary>
-			vint						y;
+			T							y;
 			/// <summary>The delta of the wheel.</summary>
 			vint						wheel;
 			/// <summary>True if the mouse is in the non-client area.</summary>
 			bool						nonClient;
 		};
+
+		using WindowMouseInfo = WindowMouseInfo_<GuiCoordinate>;
+		using NativeWindowMouseInfo = WindowMouseInfo_<NativeCoordinate>;
 		
 		/// <summary>
 		/// Key message information.
@@ -689,6 +694,8 @@ Native Window
 			/// <summary>True if this repeated event is generated because a key is holding down.</summary>
 			bool						autoRepeatKeyDown;
 		};
+
+		using WindowKeyInfo = NativeWindowKeyInfo;
 		
 		/// <summary>
 		/// Character message information.
@@ -706,6 +713,8 @@ Native Window
 			/// <summary>True if the capslock button is pressed.</summary>
 			bool						capslock;
 		};
+
+		using WindowCharInfo = NativeWindowCharInfo;
 		
 		/// <summary>
 		/// Represents a message listener to an <see cref="INativeWindow"/>.

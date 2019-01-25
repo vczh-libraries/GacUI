@@ -264,7 +264,7 @@ Predefined Events
 			};
 			
 			/// <summary>Keyboard event arguments.</summary>
-			struct GuiKeyEventArgs : public GuiEventArgs, public NativeWindowKeyInfo, public Description<GuiKeyEventArgs>
+			struct GuiKeyEventArgs : public GuiEventArgs, public WindowKeyInfo, public Description<GuiKeyEventArgs>
 			{
 				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
 				GuiKeyEventArgs()
@@ -280,7 +280,7 @@ Predefined Events
 			};
 			
 			/// <summary>Char input event arguments.</summary>
-			struct GuiCharEventArgs : public GuiEventArgs, public NativeWindowCharInfo, public Description<GuiCharEventArgs>
+			struct GuiCharEventArgs : public GuiEventArgs, public WindowCharInfo, public Description<GuiCharEventArgs>
 			{
 				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
 				GuiCharEventArgs()
@@ -296,7 +296,7 @@ Predefined Events
 			};
 			
 			/// <summary>Mouse event arguments.</summary>
-			struct GuiMouseEventArgs : public GuiEventArgs, public NativeWindowMouseInfo, public Description<GuiMouseEventArgs>
+			struct GuiMouseEventArgs : public GuiEventArgs, public WindowMouseInfo, public Description<GuiMouseEventArgs>
 			{
 				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
 				GuiMouseEventArgs()
