@@ -34,7 +34,7 @@ System Object
 		/// <summary>
 		/// Represents a screen.
 		/// </summary>
-		class INativeScreen : public virtual IDescriptable, Description<INativeScreen>
+		class INativeScreen : public virtual IDescriptable, public Description<INativeScreen>
 		{
 		public:
 			/// <summary>
@@ -57,12 +57,20 @@ System Object
 			/// </summary>
 			/// <returns>Returns true if the screen is a primary screen.</returns>
 			virtual bool				IsPrimary()=0;
+			/// <summary>
+			/// Get the scaling for the screen's horizontal edge. For example, in Windows when you have a 96 DPI, this function returns 1.0.
+			/// </summary>
+			virtual double				GetScalingX() = 0;
+			/// <summary>
+			/// Get the scaling for the screen's vertical edge. For example, in Windows when you have a 96 DPI, this function returns 1.0.
+			/// </summary>
+			virtual double				GetScalingY() = 0;
 		};
 		
 		/// <summary>
 		/// Represents a cursor.
 		/// </summary>
-		class INativeCursor : public virtual IDescriptable, Description<INativeCursor>
+		class INativeCursor : public virtual IDescriptable, public Description<INativeCursor>
 		{
 		public:
 			/// <summary>

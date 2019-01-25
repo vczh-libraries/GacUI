@@ -320,6 +320,14 @@ WindowsForm
 							}
 						}
 						break;
+					case WM_DPICHANGED:
+						{
+							vint dpiX = LOWORD(wParam);
+							vint dpiY = HIWORD(wParam);
+							auto newRect = (RECT*)lParam;
+							int a = 0;
+						}
+						break;
 					// ************************************** state
 					case WM_ENABLE:
 						{

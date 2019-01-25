@@ -23,13 +23,17 @@ namespace vl
 				friend class WindowsScreenService;
 			protected:
 				HMONITOR										monitor;
+				bool											supportHighDpi;
+
 			public:
-				WindowsScreen();
+				WindowsScreen(bool _supportHighDpi);
 
 				Rect											GetBounds()override;
 				Rect											GetClientBounds()override;
 				WString											GetName()override;
 				bool											IsPrimary()override;
+				double											GetScalingX()override;
+				double											GetScalingY()override;
 			};
 
 			class WindowsScreenService : public Object, public INativeScreenService
@@ -38,12 +42,14 @@ namespace vl
 			protected:
 				collections::List<Ptr<WindowsScreen>>			screens;
 				HandleRetriver									handleRetriver;
+				bool											supportHighDpi = false;
+
 			public:
 
 				struct MonitorEnumProcData
 				{
-					WindowsScreenService*	screenService;
-					vint						currentScreen;
+					WindowsScreenService*						screenService;
+					vint										currentScreen;
 				};
 
 				WindowsScreenService(HandleRetriver _handleRetriver);

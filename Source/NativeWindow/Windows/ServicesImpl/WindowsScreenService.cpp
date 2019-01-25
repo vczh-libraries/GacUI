@@ -1,4 +1,5 @@
 #include "WindowsScreenService.h"
+#include <ShellScalingApi.h>
 
 namespace vl
 {
@@ -11,7 +12,8 @@ namespace vl
 WindowsScreen
 ***********************************************************************/
 
-			WindowsScreen::WindowsScreen()
+			WindowsScreen::WindowsScreen(bool _supportHighDpi)
+				:supportHighDpi(_supportHighDpi)
 			{
 				monitor=NULL;
 			}
@@ -52,6 +54,22 @@ WindowsScreen
 				return info.dwFlags==MONITORINFOF_PRIMARY;
 			}
 
+			double WindowsScreen::GetScalingX()
+			{
+				if (!supportHighDpi) return 1.0;
+				UINT x = 0, y = 0;
+				if (GetDpiForMonitor(monitor, MDT_DEFAULT, &x, &y) != S_OK) return 1.0;
+				return x / 96.0;
+			}
+
+			double WindowsScreen::GetScalingY()
+			{
+				if (!supportHighDpi) return 1.0;
+				UINT x = 0, y = 0;
+				if (GetDpiForMonitor(monitor, MDT_DEFAULT, &x, &y) != S_OK) return 1.0;
+				return y / 96.0;
+			}
+
 /***********************************************************************
 WindowsScreenService
 ***********************************************************************/
@@ -59,6 +77,9 @@ WindowsScreenService
 			WindowsScreenService::WindowsScreenService(HandleRetriver _handleRetriver)
 				:handleRetriver(_handleRetriver)
 			{
+				HMODULE moduleHandle = LoadLibrary(L"Shcore");
+				supportHighDpi = GetProcAddress(moduleHandle, "GetDpiForMonitor") != NULL;
+				FreeLibrary(moduleHandle);
 			}
 
 			BOOL CALLBACK WindowsScreenService::MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
@@ -66,7 +87,7 @@ WindowsScreenService
 				MonitorEnumProcData* data=(MonitorEnumProcData*)dwData;
 				if(data->currentScreen==data->screenService->screens.Count())
 				{
-					data->screenService->screens.Add(new WindowsScreen());
+					data->screenService->screens.Add(new WindowsScreen(data->screenService->supportHighDpi));
 				}
 				data->screenService->screens[data->currentScreen]->monitor=hMonitor;
 				data->currentScreen++;
