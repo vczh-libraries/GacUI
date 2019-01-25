@@ -154,8 +154,14 @@ GridPos
 Coordinate
 ***********************************************************************/
 
+		/// <summary>
+		/// Represents a position in the local window coordinate space, which is DPI awared.
+		/// </summary>
 		using GuiCoordinate = vint;
 		
+		/// <summary>
+		/// Represents a position in the global screen coordinate space.
+		/// </summary>
 		struct NativeCoordinate
 		{
 			vint				value;

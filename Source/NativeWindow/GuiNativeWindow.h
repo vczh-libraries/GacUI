@@ -41,12 +41,12 @@ System Object
 			/// Get the bounds of the screen.
 			/// </summary>
 			/// <returns>The bounds of the screen.</returns>
-			virtual Rect				GetBounds()=0;
+			virtual NativeRect			GetBounds()=0;
 			/// <summary>
 			/// Get the bounds of the screen client area.
 			/// </summary>
 			/// <returns>The bounds of the screen client area.</returns>
-			virtual Rect				GetClientBounds()=0;
+			virtual NativeRect			GetClientBounds()=0;
 			/// <summary>
 			/// Get the name of the screen.
 			/// </summary>
@@ -324,27 +324,27 @@ Native Window
 			/// Get the bounds of the window.
 			/// </summary>
 			/// <returns>The bounds of the window.</returns>
-			virtual Rect				GetBounds()=0;
+			virtual NativeRect			GetBounds()=0;
 			/// <summary>
 			/// Set the bounds of the window.
 			/// </summary>
 			/// <param name="bounds">The bounds of the window.</param>
-			virtual void				SetBounds(const Rect& bounds)=0;
+			virtual void				SetBounds(const NativeRect& bounds)=0;
 			/// <summary>
 			/// Get the client size of the window.
 			/// </summary>
 			/// <returns>The client size of the window.</returns>
-			virtual Size				GetClientSize()=0;
+			virtual NativeSize			GetClientSize()=0;
 			/// <summary>
 			/// Set the client size of the window.
 			/// </summary>
 			/// <param name="size">The client size of the window.</param>
-			virtual void				SetClientSize(Size size)=0;
+			virtual void				SetClientSize(NativeSize size)=0;
 			/// <summary>
 			/// Get the client bounds in screen space.
 			/// </summary>
 			/// <returns>The client bounds in screen space.</returns>
-			virtual Rect				GetClientBoundsInScreen()=0;
+			virtual NativeRect			GetClientBoundsInScreen()=0;
 			
 			/// <summary>
 			/// Get the title of the window. A title will be displayed as a name of this window.
@@ -370,12 +370,12 @@ Native Window
 			/// Get the caret point of the window. When an input method editor is opened, the input text box will be located to the caret point.
 			/// </summary>
 			/// <returns>The caret point of the window.</returns>
-			virtual Point				GetCaretPoint()=0;
+			virtual NativePoint			GetCaretPoint()=0;
 			/// <summary>
 			/// Set the caret point of the window. When an input method editor is opened, the input text box will be located to the caret point.
 			/// </summary>
 			/// <param name="point">The caret point of the window.</param>
-			virtual void				SetCaretPoint(Point point)=0;
+			virtual void				SetCaretPoint(NativePoint point)=0;
 			
 			/// <summary>
 			/// Get the parent window. A parent window doesn't contain a child window. It always displayed below the child windows. When a parent window is minimized or restored, so as its child windows.
@@ -764,13 +764,13 @@ Native Window
 			/// </summary>
 			/// <returns>Returns the hit test result. If "NoDecision" is returned, the native window provider should call the OS window layer to do the hit test.</returns>
 			/// <param name="location">The location to do the hit test. This location is in the window space (not the client space).</param>
-			virtual HitTestResult		HitTest(Point location);
+			virtual HitTestResult		HitTest(NativePoint location);
 			/// <summary>
 			/// Called when the window is moving.
 			/// </summary>
 			/// <param name="bounds">The bounds. Message handler can change the bounds.</param>
 			/// <param name="fixSizeOnly">True if the message raise only want the message handler to change the size.</param>
-			virtual void				Moving(Rect& bounds, bool fixSizeOnly);
+			virtual void				Moving(NativeRect& bounds, bool fixSizeOnly);
 			/// <summary>
 			/// Called when the window is moved.
 			/// </summary>
@@ -1157,7 +1157,7 @@ Native Window Services
 			/// </summary>
 			/// <returns>The window that under a specified position in screen space.</returns>
 			/// <param name="location">The specified position in screen space.</param>
-			virtual INativeWindow*			GetWindow(Point location) = 0;
+			virtual INativeWindow*			GetWindow(NativePoint location) = 0;
 			/// <summary>
 			/// Make the specified window a main window, show that window, and wait until the windows is closed.
 			/// </summary>
@@ -1522,27 +1522,27 @@ Native Window Controller
 			/// Called when the left mouse button is pressed. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>.
 			/// </summary>
 			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					LeftButtonDown(Point position);
+			virtual void					LeftButtonDown(NativePoint position);
 			/// <summary>
 			/// Called when the left mouse button is released. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
 			/// </summary>
 			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					LeftButtonUp(Point position);
+			virtual void					LeftButtonUp(NativePoint position);
 			/// <summary>
 			/// Called when the right mouse button is pressed. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
 			/// </summary>
 			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					RightButtonDown(Point position);
+			virtual void					RightButtonDown(NativePoint position);
 			/// <summary>
 			/// Called when the right mouse button is released. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
 			/// </summary>
 			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					RightButtonUp(Point position);
+			virtual void					RightButtonUp(NativePoint position);
 			/// <summary>
 			/// Called when the mouse is moving. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
 			/// </summary>
 			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					MouseMoving(Point position);
+			virtual void					MouseMoving(NativePoint position);
 			/// <summary>
 			/// Called when the global timer message raised. To receive or not receive this message, use <see cref="INativeInputService::StartTimer"/> or <see cref="INativeInputService::StopTimer"/>
 			/// </summary>
