@@ -63,7 +63,7 @@ Instruction
 				TestType,				// flag, typeDescriptor	: Value -> <bool>													;
 				GetType,				//						: Value -> <ITypeDescriptor*>										;
 				Jump,					// label				: () -> ()															;
-				JumpIf,					// label				: () -> ()															;
+				JumpIf,					// label				: <bool> -> ()														;
 				Invoke,					// function, count		: Value-1, ..., Value-n -> Value									;
 				InvokeWithContext,		// function, count		: Value-1, ..., Value-n -> Value									;
 				GetProperty,			// IPropertyInfo*		: Value-this -> Value												;
