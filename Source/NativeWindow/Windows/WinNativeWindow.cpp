@@ -27,7 +27,7 @@ namespace vl
 			HICON CreateWindowDefaultIcon(vint size = 0)
 			{
 				if (!defaultIconResourceName) return NULL;
-				return (HICON)LoadImage(GetModuleHandle(NULL), defaultIconResourceName, IMAGE_ICON, size, size, (size ? 0 : LR_DEFAULTSIZE) | LR_SHARED);
+				return (HICON)LoadImage(GetModuleHandle(NULL), defaultIconResourceName, IMAGE_ICON, (int)size, (int)size, (size ? 0 : LR_DEFAULTSIZE) | LR_SHARED);
 			}
 
 			void SetWindowDefaultIcon(UINT resourceId)

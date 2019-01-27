@@ -159,43 +159,89 @@ GridPos
 		};
 
 /***********************************************************************
+Coordinate
+***********************************************************************/
+
+		/// <summary>
+		/// Represents a position in the local window coordinate space, which is DPI awared.
+		/// </summary>
+		using GuiCoordinate = vint;
+		
+		/// <summary>
+		/// Represents a position in the global screen coordinate space.
+		/// </summary>
+		struct NativeCoordinate
+		{
+			vint				value;
+
+			NativeCoordinate() :value(0) {}
+			NativeCoordinate(vint _value) :value(_value) {}
+			NativeCoordinate(const NativeCoordinate& _value) = default;
+			NativeCoordinate(NativeCoordinate&& _value) = default;
+			NativeCoordinate& operator=(const NativeCoordinate& _value) = default;
+			NativeCoordinate& operator=(NativeCoordinate&& _value) = default;
+
+			inline bool operator==(NativeCoordinate c)const { return value == c.value; };
+			inline bool operator!=(NativeCoordinate c)const { return value != c.value; };
+			inline bool operator<(NativeCoordinate c)const { return value < c.value; };
+			inline bool operator<=(NativeCoordinate c)const { return value <= c.value; };
+			inline bool operator>(NativeCoordinate c)const { return value > c.value; };
+			inline bool operator>=(NativeCoordinate c)const { return value >= c.value; };
+
+			inline NativeCoordinate operator+(NativeCoordinate c)const { return value + c.value; };
+			inline NativeCoordinate operator-(NativeCoordinate c)const { return value - c.value; };
+			inline NativeCoordinate operator*(NativeCoordinate c)const { return value * c.value; };
+			inline NativeCoordinate operator/(NativeCoordinate c)const { return value / c.value; };
+
+			inline NativeCoordinate& operator+=(NativeCoordinate c) { value += c.value; return *this; };
+			inline NativeCoordinate& operator-=(NativeCoordinate c) { value -= c.value; return *this; };
+			inline NativeCoordinate& operator*=(NativeCoordinate c) { value *= c.value; return *this; };
+			inline NativeCoordinate& operator/=(NativeCoordinate c) { value /= c.value; return *this; };
+		};
+
+/***********************************************************************
 Point
 ***********************************************************************/
 		
 		/// <summary>
 		/// Represents a position in a two dimensions space.
 		/// </summary>
-		struct Point
+		/// <typeparam name="T">Type of the coordinate.</typeparam>
+		template<typename T>
+		struct Point_
 		{
 			/// <summary>
 			/// Position in x dimension.
 			/// </summary>
-			vint			x;
+			T				x;
 			/// <summary>
 			/// Position in y dimension.
 			/// </summary>
-			vint			y;
+			T				y;
 
-			Point()
-				:x(0) ,y(0)
+			Point_()
+				:x(0), y(0)
 			{
 			}
 
-			Point(vint _x, vint _y)
-				:x(_x) ,y(_y)
+			Point_(T _x, T _y)
+				:x(_x), y(_y)
 			{
 			}
 
-			bool operator==(Point point)const
+			bool operator==(Point_<T> point)const
 			{
-				return x==point.x && y==point.y;
+				return x == point.x && y == point.y;
 			}
 
-			bool operator!=(Point point)const
+			bool operator!=(Point_<T> point)const
 			{
-				return x!=point.x || y!=point.y;
+				return x != point.x || y != point.y;
 			}
 		};
+
+		using Point = Point_<GuiCoordinate>;
+		using NativePoint = Point_<NativeCoordinate>;
 
 /***********************************************************************
 Size
@@ -204,37 +250,42 @@ Size
 		/// <summary>
 		/// Represents a size in a two dimensions space.
 		/// </summary>
-		struct Size
+		/// <typeparam name="T">Type of the coordinate.</typeparam>
+		template<typename T>
+		struct Size_
 		{
 			/// <summary>
 			/// Size in x dimension.
 			/// </summary>
-			vint			x;
+			T				x;
 			/// <summary>
 			/// Size in y dimension.
 			/// </summary>
-			vint			y;
+			T				y;
 
-			Size()
-				:x(0) ,y(0)
+			Size_()
+				:x(0), y(0)
 			{
 			}
 
-			Size(vint _x, vint _y)
-				:x(_x) ,y(_y)
+			Size_(T _x, T _y)
+				:x(_x), y(_y)
 			{
 			}
 
-			bool operator==(Size size)const
+			bool operator==(Size_<T> size)const
 			{
-				return x==size.x && y==size.y;
+				return x == size.x && y == size.y;
 			}
 
-			bool operator!=(Size size)const
+			bool operator!=(Size_<T> size)const
 			{
-				return x!=size.x || y!=size.y;
+				return x != size.x || y != size.y;
 			}
 		};
+
+		using Size = Size_<GuiCoordinate>;
+		using NativeSize = Size_<NativeCoordinate>;
 
 /***********************************************************************
 Rectangle
@@ -243,202 +294,219 @@ Rectangle
 		/// <summary>
 		/// Represents a bounds in a two dimensions space.
 		/// </summary>
-		struct Rect
+		/// <typeparam name="T">Type of the coordinate.</typeparam>
+		template<typename T>
+		struct Rect_
 		{
 			/// <summary>
 			/// Left.
 			/// </summary>
-			vint		x1;
+			T				x1;
 			/// <summary>
 			/// Top.
 			/// </summary>
-			vint		y1;
+			T				y1;
 			/// <summary>
 			/// Left + Width.
 			/// </summary>
-			vint		x2;
+			T				x2;
 			/// <summary>
 			/// Top + Height.
 			/// </summary>
-			vint		y2;
+			T				y2;
 
-			Rect()
+			Rect_()
 				:x1(0), y1(0), x2(0), y2(0)
 			{
 			}
 
-			Rect(vint _x1, vint _y1, vint _x2, vint _y2)
+			Rect_(T _x1, T _y1, T _x2, T _y2)
 				:x1(_x1), y1(_y1), x2(_x2), y2(_y2)
 			{
 			}
 
-			Rect(Point p, Size s)
-				:x1(p.x), y1(p.y), x2(p.x+s.x), y2(p.y+s.y)
+			Rect_(Point_<T> p, Size_<T> s)
+				:x1(p.x), y1(p.y), x2(p.x + s.x), y2(p.y + s.y)
 			{
 			}
 
-			bool operator==(Rect rect)const
+			bool operator==(Rect_<T> rect)const
 			{
-				return x1==rect.x1 && y1==rect.y1 && x2==rect.x2 && y2==rect.y2;
+				return x1 == rect.x1 && y1 == rect.y1 && x2 == rect.x2 && y2 == rect.y2;
 			}
 
-			bool operator!=(Rect rect)const
+			bool operator!=(Rect_<T> rect)const
 			{
-				return x1!=rect.x1 || y1!=rect.y1 || x2!=rect.x2 || y2!=rect.y2;
+				return x1 != rect.x1 || y1 != rect.y1 || x2 != rect.x2 || y2 != rect.y2;
 			}
 
-			Point LeftTop()const
+			Point_<T> LeftTop()const
 			{
-				return Point(x1, y1);
+				return Point_<T>(x1, y1);
 			}
 
-			Point RightBottom()const
+			Point_<T> RightBottom()const
 			{
-				return Point(x2, y2);
+				return Point_<T>(x2, y2);
 			}
 
-			Size GetSize()const
+			Size_<T> GetSize()const
 			{
-				return Size(x2-x1, y2-y1);
+				return Size_<T>(x2 - x1, y2 - y1);
 			}
 
-			vint Left()const
+			T Left()const
 			{
 				return x1;
 			}
 
-			vint Right()const
+			T Right()const
 			{
 				return x2;
 			}
 
-			vint Width()const
+			T Width()const
 			{
-				return x2-x1;
+				return x2 - x1;
 			}
 
-			vint Top()const
+			T Top()const
 			{
 				return y1;
 			}
 
-			vint Bottom()const
+			T Bottom()const
 			{
 				return y2;
 			}
 
-			vint Height()const
+			T Height()const
 			{
-				return y2-y1;
+				return y2 - y1;
 			}
 
-			void Expand(vint x, vint y)
+			void Expand(T x, T y)
 			{
-				x1-=x;
-				y1-=y;
-				x2+=x;
-				y2+=y;
+				x1 -= x;
+				y1 -= y;
+				x2 += x;
+				y2 += y;
 			}
 
-			void Expand(Size s)
+			void Expand(Size_<T> s)
 			{
-				x1-=s.x;
-				y1-=s.y;
-				x2+=s.x;
-				y2+=s.y;
+				x1 -= s.x;
+				y1 -= s.y;
+				x2 += s.x;
+				y2 += s.y;
 			}
 
-			void Move(vint x, vint y)
+			void Move(T x, T y)
 			{
-				x1+=x;
-				y1+=y;
-				x2+=x;
-				y2+=y;
+				x1 += x;
+				y1 += y;
+				x2 += x;
+				y2 += y;
 			}
 
-			void Move(Size s)
+			void Move(Size_<T> s)
 			{
-				x1+=s.x;
-				y1+=s.y;
-				x2+=s.x;
-				y2+=s.y;
+				x1 += s.x;
+				y1 += s.y;
+				x2 += s.x;
+				y2 += s.y;
 			}
 
-			bool Contains(Point p)
+			bool Contains(Point_<T> p)
 			{
-				return x1<=p.x && p.x<x2 && y1<=p.y && p.y<y2;
+				return x1 <= p.x && p.x < x2 && y1 <= p.y && p.y < y2;
 			}
 		};
+
+		using Rect = Rect_<GuiCoordinate>;
+		using NativeRect = Rect_<NativeCoordinate>;
 
 /***********************************************************************
 2D operations
 ***********************************************************************/
 
-		inline Point operator+(Point p, Size s)
+		template<typename T>
+		inline Point_<T> operator+(Point_<T> p, Size_<T> s)
 		{
-			return Point(p.x+s.x, p.y+s.y);
+			return Point_<T>(p.x + s.x, p.y + s.y);
 		}
 
-		inline Point operator+(Size s, Point p)
+		template<typename T>
+		inline Point_<T> operator+(Size_<T> s, Point_<T> p)
 		{
-			return Point(p.x+s.x, p.y+s.y);
+			return Point_<T>(p.x + s.x, p.y + s.y);
 		}
 
-		inline Point operator-(Point p, Size s)
+		template<typename T>
+		inline Point_<T> operator-(Point_<T> p, Size_<T> s)
 		{
-			return Point(p.x-s.x, p.y-s.y);
+			return Point_<T>(p.x - s.x, p.y - s.y);
 		}
 
-		inline Size operator-(Point p1, Point p2)
+		template<typename T>
+		inline Size_<T> operator-(Point_<T> p1, Point_<T> p2)
 		{
-			return Size(p1.x-p2.x, p1.y-p2.y);
+			return Size_<T>(p1.x - p2.x, p1.y - p2.y);
 		}
 
-		inline Size operator+(Size s1, Size s2)
+		template<typename T>
+		inline Size_<T> operator+(Size_<T> s1, Size_<T> s2)
 		{
-			return Size(s1.x+s2.x, s1.y+s2.y);
+			return Size_<T>(s1.x + s2.x, s1.y + s2.y);
 		}
 
-		inline Size operator-(Size s1, Size s2)
+		template<typename T>
+		inline Size_<T> operator-(Size_<T> s1, Size_<T> s2)
 		{
-			return Size(s1.x-s2.x, s1.y-s2.y);
+			return Size_<T>(s1.x - s2.x, s1.y - s2.y);
 		}
 
-		inline Size operator*(Size s, vint i)
+		template<typename T>
+		inline Size_<T> operator*(Size_<T> s, vint i)
 		{
-			return Size(s.x*i, s.y*i);
+			return Size_<T>(s.x*i, s.y*i);
 		}
 
-		inline Size operator/(Size s, vint i)
+		template<typename T>
+		inline Size_<T> operator/(Size_<T> s, vint i)
 		{
-			return Size(s.x/i, s.y/i);
+			return Size_<T>(s.x / i, s.y / i);
 		}
 
-		inline Point operator+=(Point& s1, Size s2)
+		template<typename T>
+		inline Point_<T> operator+=(Point_<T>& s1, Size_<T> s2)
 		{
-			s1.x+=s2.x;
-			s1.y+=s2.y;
+			s1.x += s2.x;
+			s1.y += s2.y;
 			return s1;
 		}
 
-		inline Point operator-=(Point& s1, Size s2)
+		template<typename T>
+		inline Point_<T> operator-=(Point_<T>& s1, Size_<T> s2)
 		{
-			s1.x-=s2.x;
-			s1.y-=s2.y;
+			s1.x -= s2.x;
+			s1.y -= s2.y;
 			return s1;
 		}
 
-		inline Size operator+=(Size& s1, Size s2)
+		template<typename T>
+		inline Size_<T> operator+=(Size_<T>& s1, Size_<T> s2)
 		{
-			s1.x+=s2.x;
-			s1.y+=s2.y;
+			s1.x += s2.x;
+			s1.y += s2.y;
 			return s1;
 		}
 
-		inline Size operator-=(Size& s1, Size s2)
+		template<typename T>
+		inline Size_<T> operator-=(Size_<T>& s1, Size_<T> s2)
 		{
-			s1.x-=s2.x;
-			s1.y-=s2.y;
+			s1.x -= s2.x;
+			s1.y -= s2.y;
 			return s1;
 		}
 
@@ -538,45 +606,50 @@ Margin
 		/// <summary>
 		/// Represents a margin in a two dimensions space.
 		/// </summary>
-		struct Margin
+		/// <typeparam name="T">Type of the coordinate.</typeparam>
+		template<typename T>
+		struct Margin_
 		{
 			/// <summary>
 			/// The left margin.
 			/// </summary>
-			vint		left;
+			T			left;
 			/// <summary>
 			/// The top margin.
 			/// </summary>
-			vint		top;
+			T			top;
 			/// <summary>
 			/// The right margin.
 			/// </summary>
-			vint		right;
+			T			right;
 			/// <summary>
 			/// The bottom margin.
 			/// </summary>
-			vint		bottom;
+			T			bottom;
 
-			Margin()
+			Margin_()
 				:left(0), top(0), right(0), bottom(0)
 			{
 			}
 
-			Margin(vint _left, vint _top, vint _right, vint _bottom)
+			Margin_(T _left, T _top, T _right, T _bottom)
 				:left(_left), top(_top), right(_right), bottom(_bottom)
 			{
 			}
 
-			bool operator==(Margin margin)const
+			bool operator==(Margin_<T> margin)const
 			{
 				return left==margin.left && top==margin.top && right==margin.right && bottom==margin.bottom;
 			}
 
-			bool operator!=(Margin margin)const
+			bool operator!=(Margin_<T> margin)const
 			{
 				return left!=margin.left || top!=margin.top || right!=margin.right || bottom!=margin.bottom;
 			}
 		};
+
+		using Margin = Margin_<GuiCoordinate>;
+		using NativeMargin = Margin_<NativeCoordinate>;
 
 /***********************************************************************
 Resources
@@ -1302,19 +1375,19 @@ System Object
 		/// <summary>
 		/// Represents a screen.
 		/// </summary>
-		class INativeScreen : public virtual IDescriptable, Description<INativeScreen>
+		class INativeScreen : public virtual IDescriptable, public Description<INativeScreen>
 		{
 		public:
 			/// <summary>
 			/// Get the bounds of the screen.
 			/// </summary>
 			/// <returns>The bounds of the screen.</returns>
-			virtual Rect				GetBounds()=0;
+			virtual NativeRect			GetBounds()=0;
 			/// <summary>
 			/// Get the bounds of the screen client area.
 			/// </summary>
 			/// <returns>The bounds of the screen client area.</returns>
-			virtual Rect				GetClientBounds()=0;
+			virtual NativeRect			GetClientBounds()=0;
 			/// <summary>
 			/// Get the name of the screen.
 			/// </summary>
@@ -1325,12 +1398,20 @@ System Object
 			/// </summary>
 			/// <returns>Returns true if the screen is a primary screen.</returns>
 			virtual bool				IsPrimary()=0;
+			/// <summary>
+			/// Get the scaling for the screen's horizontal edge. For example, in Windows when you have a 96 DPI, this function returns 1.0.
+			/// </summary>
+			virtual double				GetScalingX() = 0;
+			/// <summary>
+			/// Get the scaling for the screen's vertical edge. For example, in Windows when you have a 96 DPI, this function returns 1.0.
+			/// </summary>
+			virtual double				GetScalingY() = 0;
 		};
 		
 		/// <summary>
 		/// Represents a cursor.
 		/// </summary>
-		class INativeCursor : public virtual IDescriptable, Description<INativeCursor>
+		class INativeCursor : public virtual IDescriptable, public Description<INativeCursor>
 		{
 		public:
 			/// <summary>
@@ -1581,30 +1662,66 @@ Native Window
 		{
 		public:
 			/// <summary>
+			/// Convert point from native coordinate to GUI coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual Point				Convert(NativePoint value) = 0;
+			/// <summary>
+			/// Convert point from GUI coordinate to native coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual NativePoint			Convert(Point value) = 0;
+			/// <summary>
+			/// Convert size from native coordinate to GUI coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual Size				Convert(NativeSize value) = 0;
+			/// <summary>
+			/// Convert size from GUI coordinate to native coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual NativeSize			Convert(Size value) = 0;
+			/// <summary>
+			/// Convert margin from native coordinate to GUI coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual Margin				Convert(NativeMargin value) = 0;
+			/// <summary>
+			/// Convert margin from GUI coordinate to native coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual NativeMargin		Convert(Margin value) = 0;
+
 			/// Get the bounds of the window.
 			/// </summary>
 			/// <returns>The bounds of the window.</returns>
-			virtual Rect				GetBounds()=0;
+			virtual NativeRect			GetBounds()=0;
 			/// <summary>
 			/// Set the bounds of the window.
 			/// </summary>
 			/// <param name="bounds">The bounds of the window.</param>
-			virtual void				SetBounds(const Rect& bounds)=0;
+			virtual void				SetBounds(const NativeRect& bounds)=0;
 			/// <summary>
 			/// Get the client size of the window.
 			/// </summary>
 			/// <returns>The client size of the window.</returns>
-			virtual Size				GetClientSize()=0;
+			virtual NativeSize			GetClientSize()=0;
 			/// <summary>
 			/// Set the client size of the window.
 			/// </summary>
 			/// <param name="size">The client size of the window.</param>
-			virtual void				SetClientSize(Size size)=0;
+			virtual void				SetClientSize(NativeSize size)=0;
 			/// <summary>
 			/// Get the client bounds in screen space.
 			/// </summary>
 			/// <returns>The client bounds in screen space.</returns>
-			virtual Rect				GetClientBoundsInScreen()=0;
+			virtual NativeRect			GetClientBoundsInScreen()=0;
 			
 			/// <summary>
 			/// Get the title of the window. A title will be displayed as a name of this window.
@@ -1630,12 +1747,12 @@ Native Window
 			/// Get the caret point of the window. When an input method editor is opened, the input text box will be located to the caret point.
 			/// </summary>
 			/// <returns>The caret point of the window.</returns>
-			virtual Point				GetCaretPoint()=0;
+			virtual NativePoint			GetCaretPoint()=0;
 			/// <summary>
 			/// Set the caret point of the window. When an input method editor is opened, the input text box will be located to the caret point.
 			/// </summary>
 			/// <param name="point">The caret point of the window.</param>
-			virtual void				SetCaretPoint(Point point)=0;
+			virtual void				SetCaretPoint(NativePoint point)=0;
 			
 			/// <summary>
 			/// Get the parent window. A parent window doesn't contain a child window. It always displayed below the child windows. When a parent window is minimized or restored, so as its child windows.
@@ -1675,7 +1792,7 @@ Native Window
 			/// Get the amount of the border. The window template may need this value to calculate where to put the client area.
 			/// </summary>
 			/// <returns>Returns the amount of the border.</returns>
-			virtual Margin				GetCustomFramePadding() = 0;
+			virtual NativeMargin		GetCustomFramePadding() = 0;
 
 			/// <summary>Window size state.</summary>
 			enum WindowSizeState
@@ -1909,7 +2026,9 @@ Native Window
 		/// <summary>
 		/// Mouse message information.
 		/// </summary>
-		struct NativeWindowMouseInfo
+		/// <typeparam name="T">Type of the coordinate.</typeparam>
+		template<typename T>
+		struct WindowMouseInfo_
 		{
 			/// <summary>True if the control button is pressed.</summary>
 			bool						ctrl;
@@ -1922,14 +2041,17 @@ Native Window
 			/// <summary>True if the right mouse button is pressed.</summary>
 			bool						right;
 			/// <summary>The mouse position of x dimension.</summary>
-			vint						x;
+			T							x;
 			/// <summary>The mouse position of y dimension.</summary>
-			vint						y;
+			T							y;
 			/// <summary>The delta of the wheel.</summary>
 			vint						wheel;
 			/// <summary>True if the mouse is in the non-client area.</summary>
 			bool						nonClient;
 		};
+
+		using WindowMouseInfo = WindowMouseInfo_<GuiCoordinate>;
+		using NativeWindowMouseInfo = WindowMouseInfo_<NativeCoordinate>;
 		
 		/// <summary>
 		/// Key message information.
@@ -1949,6 +2071,8 @@ Native Window
 			/// <summary>True if this repeated event is generated because a key is holding down.</summary>
 			bool						autoRepeatKeyDown;
 		};
+
+		using WindowKeyInfo = NativeWindowKeyInfo;
 		
 		/// <summary>
 		/// Character message information.
@@ -1966,6 +2090,8 @@ Native Window
 			/// <summary>True if the capslock button is pressed.</summary>
 			bool						capslock;
 		};
+
+		using WindowCharInfo = NativeWindowCharInfo;
 		
 		/// <summary>
 		/// Represents a message listener to an <see cref="INativeWindow"/>.
@@ -2015,17 +2141,21 @@ Native Window
 			/// </summary>
 			/// <returns>Returns the hit test result. If "NoDecision" is returned, the native window provider should call the OS window layer to do the hit test.</returns>
 			/// <param name="location">The location to do the hit test. This location is in the window space (not the client space).</param>
-			virtual HitTestResult		HitTest(Point location);
+			virtual HitTestResult		HitTest(NativePoint location);
 			/// <summary>
 			/// Called when the window is moving.
 			/// </summary>
 			/// <param name="bounds">The bounds. Message handler can change the bounds.</param>
 			/// <param name="fixSizeOnly">True if the message raise only want the message handler to change the size.</param>
-			virtual void				Moving(Rect& bounds, bool fixSizeOnly);
+			virtual void				Moving(NativeRect& bounds, bool fixSizeOnly);
 			/// <summary>
 			/// Called when the window is moved.
 			/// </summary>
 			virtual void				Moved();
+			/// <summary>
+			/// Called when the dpi associated with this window is changed.
+			/// </summary>
+			virtual void				DpiChanged();
 			/// <summary>
 			/// Called when the window is enabled.
 			/// </summary>
@@ -2404,7 +2534,7 @@ Native Window Services
 			/// </summary>
 			/// <returns>The window that under a specified position in screen space.</returns>
 			/// <param name="location">The specified position in screen space.</param>
-			virtual INativeWindow*			GetWindow(Point location) = 0;
+			virtual INativeWindow*			GetWindow(NativePoint location) = 0;
 			/// <summary>
 			/// Make the specified window a main window, show that window, and wait until the windows is closed.
 			/// </summary>
@@ -2769,27 +2899,27 @@ Native Window Controller
 			/// Called when the left mouse button is pressed. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>.
 			/// </summary>
 			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					LeftButtonDown(Point position);
+			virtual void					LeftButtonDown(NativePoint position);
 			/// <summary>
 			/// Called when the left mouse button is released. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
 			/// </summary>
 			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					LeftButtonUp(Point position);
+			virtual void					LeftButtonUp(NativePoint position);
 			/// <summary>
 			/// Called when the right mouse button is pressed. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
 			/// </summary>
 			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					RightButtonDown(Point position);
+			virtual void					RightButtonDown(NativePoint position);
 			/// <summary>
 			/// Called when the right mouse button is released. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
 			/// </summary>
 			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					RightButtonUp(Point position);
+			virtual void					RightButtonUp(NativePoint position);
 			/// <summary>
 			/// Called when the mouse is moving. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
 			/// </summary>
 			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					MouseMoving(Point position);
+			virtual void					MouseMoving(NativePoint position);
 			/// <summary>
 			/// Called when the global timer message raised. To receive or not receive this message, use <see cref="INativeInputService::StartTimer"/> or <see cref="INativeInputService::StopTimer"/>
 			/// </summary>
@@ -3093,7 +3223,7 @@ Predefined Events
 			};
 			
 			/// <summary>Keyboard event arguments.</summary>
-			struct GuiKeyEventArgs : public GuiEventArgs, public NativeWindowKeyInfo, public Description<GuiKeyEventArgs>
+			struct GuiKeyEventArgs : public GuiEventArgs, public WindowKeyInfo, public Description<GuiKeyEventArgs>
 			{
 				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
 				GuiKeyEventArgs()
@@ -3109,7 +3239,7 @@ Predefined Events
 			};
 			
 			/// <summary>Char input event arguments.</summary>
-			struct GuiCharEventArgs : public GuiEventArgs, public NativeWindowCharInfo, public Description<GuiCharEventArgs>
+			struct GuiCharEventArgs : public GuiEventArgs, public WindowCharInfo, public Description<GuiCharEventArgs>
 			{
 				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
 				GuiCharEventArgs()
@@ -3125,7 +3255,7 @@ Predefined Events
 			};
 			
 			/// <summary>Mouse event arguments.</summary>
-			struct GuiMouseEventArgs : public GuiEventArgs, public NativeWindowMouseInfo, public Description<GuiMouseEventArgs>
+			struct GuiMouseEventArgs : public GuiEventArgs, public WindowMouseInfo, public Description<GuiMouseEventArgs>
 			{
 				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
 				GuiMouseEventArgs()
@@ -8716,12 +8846,17 @@ Control Host
 				/// <summary>Set the client size of the window.</summary>
 				/// <param name="value">The client size of the window.</param>
 				void											SetClientSize(Size value);
-				/// <summary>Get the bounds of the window in screen space.</summary>
-				/// <returns>The bounds of the window.</returns>
-				Rect											GetBounds();
-				/// <summary>Set the bounds of the window in screen space.</summary>
-				/// <param name="value">The bounds of the window.</param>
-				void											SetBounds(Rect value);
+				/// <summary>Get the location of the window in screen space.</summary>
+				/// <returns>The location of the window.</returns>
+				NativePoint										GetLocation();
+				/// <summary>Set the location of the window in screen space.</summary>
+				/// <param name="value">The location of the window.</param>
+				void											SetLocation(NativePoint value);
+				/// <summary>Set the location in screen space and the client size of the window.</summary>
+				/// <param name="location">The location of the window.</param>
+				/// <param name="size">The client size of the window.</param>
+				void											SetBounds(NativePoint location, Size size);
+
 				GuiControlHost*									GetRelatedControlHost()override;
 				const WString&									GetText()override;
 				void											SetText(const WString& value)override;
@@ -8783,8 +8918,10 @@ Window
 				bool									hasTitleBar = true;
 				Ptr<GuiImageData>						icon;
 				
+				void									UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct);
 				void									SyncNativeWindowProperties();
 				void									Moved()override;
+				void									DpiChanged()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
 				virtual void							MouseClickedOnOtherWindow(GuiWindow* window);
@@ -8906,7 +9043,7 @@ Window
 			protected:
 				union PopupInfo
 				{
-					struct _s1 { Point location; INativeScreen* screen; };
+					struct _s1 { NativePoint location; INativeScreen* screen; };
 					struct _s2 { GuiControl* control; INativeWindow* controlWindow; Rect bounds; bool preferredTopBottomSide; };
 					struct _s3 { GuiControl* control; INativeWindow* controlWindow; Point location; };
 					struct _s4 { GuiControl* control; INativeWindow* controlWindow; bool preferredTopBottomSide; };
@@ -8928,12 +9065,12 @@ Window
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
-				static bool								IsClippedByScreen(Size size, Point location, INativeScreen* screen);
-				static Point							CalculatePopupPosition(Size size, Point location, INativeScreen* screen);
-				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, Rect bounds, bool preferredTopBottomSide);
-				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, Point location);
-				static Point							CalculatePopupPosition(Size size, GuiControl* control, INativeWindow* controlWindow, bool preferredTopBottomSide);
-				static Point							CalculatePopupPosition(Size size, vint popupType, const PopupInfo& popupInfo);
+				static bool								IsClippedByScreen(NativeSize size, NativePoint location, INativeScreen* screen);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, NativePoint location, INativeScreen* screen);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, Rect bounds, bool preferredTopBottomSide);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, Point location);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, bool preferredTopBottomSide);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, vint popupType, const PopupInfo& popupInfo);
 
 				void									ShowPopupInternal();
 			public:
@@ -8949,7 +9086,7 @@ Window
 				/// <summary>Show the popup window with the left-top position set to a specified value. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
 				/// <param name="location">The specified left-top position.</param>
 				/// <param name="screen">The expected screen. If you don't want to specify any screen, don't set this parameter.</param>
-				void									ShowPopup(Point location, INativeScreen* screen = 0);
+				void									ShowPopup(NativePoint location, INativeScreen* screen = 0);
 				/// <summary>Show the popup window with the bounds set to a specified control-relative value. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
 				/// <param name="control">The control that owns this popup temporary. And the location is relative to this control.</param>
 				/// <param name="bounds">The specified bounds.</param>
@@ -9036,10 +9173,10 @@ Application
 				friend class Ptr<GuiApplication>;
 			private:
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
-				void											LeftButtonDown(Point position)override;
-				void											LeftButtonUp(Point position)override;
-				void											RightButtonDown(Point position)override;
-				void											RightButtonUp(Point position)override;
+				void											LeftButtonDown(NativePoint position)override;
+				void											LeftButtonUp(NativePoint position)override;
+				void											RightButtonDown(NativePoint position)override;
+				void											RightButtonUp(NativePoint position)override;
 				void											ClipboardUpdated()override;
 			protected:
 				Locale											locale;
@@ -9060,7 +9197,7 @@ Application
 				void											UnregisterWindow(GuiWindow* window);
 				void											RegisterPopupOpened(GuiPopup* popup);
 				void											RegisterPopupClosed(GuiPopup* popup);
-				void											OnMouseDown(Point location);
+				void											OnMouseDown(NativePoint location);
 				void											TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											TooltipMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
@@ -9086,7 +9223,7 @@ Application
 				/// <summary>Get the <see cref="GuiWindow"/> instance that the mouse cursor are directly in.</summary>
 				/// <returns>The <see cref="GuiWindow"/> instance that the mouse cursor are directly in.</returns>
 				/// <param name="location">The mouse cursor.</param>
-				GuiWindow*										GetWindow(Point location);
+				GuiWindow*										GetWindow(NativePoint location);
 				/// <summary>Show a tooltip.</summary>
 				/// <param name="owner">The control that owns this tooltip temporary.</param>
 				/// <param name="tooltip">The control as the tooltip content. This control is not owned by the tooltip. User should manually release this control if no longer needed (usually when the application exit).</param>
@@ -11084,7 +11221,7 @@ Host
 				controls::GuiControlHost*				controlHost = nullptr;
 				GuiWindowComposition*					windowComposition = nullptr;
 				GuiGraphicsComposition*					focusedComposition = nullptr;
-				Size									previousClientSize;
+				NativeSize								previousClientSize;
 				Size									minSize;
 				Point									caretPoint;
 				vuint64_t								lastCaretTime = 0;
@@ -11101,11 +11238,13 @@ Host
 				void									OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									OnMouseInput(const NativeWindowMouseInfo& info, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+				void									RecreateRenderTarget();
 				
 			private:
-				INativeWindowListener::HitTestResult	HitTest(Point location)override;
-				void									Moving(Rect& bounds, bool fixSizeOnly)override;
+				INativeWindowListener::HitTestResult	HitTest(NativePoint location)override;
+				void									Moving(NativeRect& bounds, bool fixSizeOnly)override;
 				void									Moved()override;
+				void									DpiChanged()override;
 				void									Paint()override;
 
 				void									LeftButtonDown(const NativeWindowMouseInfo& info)override;

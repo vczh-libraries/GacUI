@@ -243,15 +243,29 @@ Type Declaration
 				STRUCT_MEMBER(column)
 			END_STRUCT_MEMBER(GridPos)
 
+			BEGIN_STRUCT_MEMBER(NativeCoordinate)
+				STRUCT_MEMBER(value)
+			END_STRUCT_MEMBER(NativeCoordinate)
+
 			BEGIN_STRUCT_MEMBER(Point)
 				STRUCT_MEMBER(x)
 				STRUCT_MEMBER(y)
 			END_STRUCT_MEMBER(Point)
 
+			BEGIN_STRUCT_MEMBER(NativePoint)
+				STRUCT_MEMBER(x)
+				STRUCT_MEMBER(y)
+			END_STRUCT_MEMBER(NativePoint)
+
 			BEGIN_STRUCT_MEMBER(Size)
 				STRUCT_MEMBER(x)
 				STRUCT_MEMBER(y)
 			END_STRUCT_MEMBER(Size)
+
+			BEGIN_STRUCT_MEMBER(NativeSize)
+				STRUCT_MEMBER(x)
+				STRUCT_MEMBER(y)
+			END_STRUCT_MEMBER(NativeSize)
 
 			BEGIN_STRUCT_MEMBER(Rect)
 				STRUCT_MEMBER(x1)
@@ -260,12 +274,26 @@ Type Declaration
 				STRUCT_MEMBER(y2)
 			END_STRUCT_MEMBER(Rect)
 
+			BEGIN_STRUCT_MEMBER(NativeRect)
+				STRUCT_MEMBER(x1)
+				STRUCT_MEMBER(y1)
+				STRUCT_MEMBER(x2)
+				STRUCT_MEMBER(y2)
+			END_STRUCT_MEMBER(NativeRect)
+
 			BEGIN_STRUCT_MEMBER(Margin)
 				STRUCT_MEMBER(left)
 				STRUCT_MEMBER(top)
 				STRUCT_MEMBER(right)
 				STRUCT_MEMBER(bottom)
 			END_STRUCT_MEMBER(Margin)
+
+			BEGIN_STRUCT_MEMBER(NativeMargin)
+				STRUCT_MEMBER(left)
+				STRUCT_MEMBER(top)
+				STRUCT_MEMBER(right)
+				STRUCT_MEMBER(bottom)
+			END_STRUCT_MEMBER(NativeMargin)
 
 			BEGIN_STRUCT_MEMBER(FontProperties)
 				STRUCT_MEMBER(fontFamily)
@@ -412,6 +440,8 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Bounds);
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ClientBounds);
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name);
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ScalingX);
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ScalingY);
 
 				CLASS_MEMBER_METHOD(IsPrimary, NO_PARAMETER)
 			END_INTERFACE_MEMBER(INativeScreen)
@@ -2224,7 +2254,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_FAST(EnabledActivate)
 				CLASS_MEMBER_PROPERTY_FAST(TopMost)
 				CLASS_MEMBER_PROPERTY_FAST(ClientSize)
-				CLASS_MEMBER_PROPERTY_FAST(Bounds)
+				CLASS_MEMBER_PROPERTY_FAST(Location)
 				CLASS_MEMBER_PROPERTY_FAST(ShortcutKeyManager)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedScreen)
 
@@ -2234,6 +2264,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_METHOD(SetFocused, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetActivated, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetActivated, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetBounds, {L"location" _ L"size"})
 				CLASS_MEMBER_METHOD(Show, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(ShowDeactivated, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(ShowRestored, NO_PARAMETER)
@@ -2269,7 +2300,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(GuiWindow)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiPopup)
 
-				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"location" _ L"screen"}, void(GuiPopup::*)(Point _ INativeScreen*))
+				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"location" _ L"screen"}, void(GuiPopup::*)(NativePoint _ INativeScreen*))
 				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"control" _ L"bounds" _ L"preferredTopBottomSide"}, void(GuiPopup::*)(GuiControl* _ Rect _ bool))
 				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"control" _ L"location"}, void(GuiPopup::*)(GuiControl* _ Point))
 				CLASS_MEMBER_METHOD_OVERLOAD(ShowPopup, {L"control" _ L"preferredTopBottomSide"}, void(GuiPopup::*)(GuiControl* _ bool))

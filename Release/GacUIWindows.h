@@ -501,6 +501,44 @@ namespace vl
 #endif
 
 /***********************************************************************
+.\NATIVEWINDOW\WINDOWS\WINNATIVEDPIAWARENESS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_WINNATIVEDPIAWARENESS
+#define VCZH_PRESENTATION_WINDOWS_WINNATIVEDPIAWARENESS
+
+#include <Windows.h>
+#include <ShellScalingApi.h>
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+/***********************************************************************
+DPI Awareness Functions
+***********************************************************************/
+
+			extern void				InitDpiAwareness(bool dpiAware);
+			extern void				DpiAwared_GetDpiForMonitor(HMONITOR monitor, UINT* x, UINT* y);
+			extern void				DpiAwared_GetDpiForWindow(HWND handle, UINT* x, UINT* y);
+			extern void				DpiAwared_AdjustWindowRect(LPRECT rect, HWND handle, UINT dpi);
+			extern int				DpiAwared_GetSystemMetrics(int index, UINT dpi);
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\NATIVEWINDOW\WINDOWS\GDI\WINGDI.H
 ***********************************************************************/
 /*******************************************************************************
@@ -564,7 +602,6 @@ Comments:
 #ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDI
 #define VCZH_PRESENTATION_WINDOWS_GDI_WINGDI
 
-#include<windows.h>
 
 namespace vl
 {
@@ -2140,13 +2177,16 @@ namespace vl
 				friend class WindowsScreenService;
 			protected:
 				HMONITOR										monitor;
+
 			public:
 				WindowsScreen();
 
-				Rect											GetBounds()override;
-				Rect											GetClientBounds()override;
+				NativeRect										GetBounds()override;
+				NativeRect										GetClientBounds()override;
 				WString											GetName()override;
 				bool											IsPrimary()override;
+				double											GetScalingX()override;
+				double											GetScalingY()override;
 			};
 
 			class WindowsScreenService : public Object, public INativeScreenService
@@ -2155,12 +2195,13 @@ namespace vl
 			protected:
 				collections::List<Ptr<WindowsScreen>>			screens;
 				HandleRetriver									handleRetriver;
+
 			public:
 
 				struct MonitorEnumProcData
 				{
-					WindowsScreenService*	screenService;
-					vint						currentScreen;
+					WindowsScreenService*						screenService;
+					vint										currentScreen;
 				};
 
 				WindowsScreenService(HandleRetriver _handleRetriver);
@@ -2209,7 +2250,7 @@ namespace vl
 				bool											InstallListener(INativeControllerListener* listener)override;
 				bool											UninstallListener(INativeControllerListener* listener)override;
 
-				void											InvokeMouseHook(WPARAM message, Point location);
+				void											InvokeMouseHook(WPARAM message, NativePoint location);
 				void											InvokeGlobalTimer();
 				void											InvokeClipboardUpdated();
 				void											InvokeNativeWindowCreated(INativeWindow* window);
