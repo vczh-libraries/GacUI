@@ -21,29 +21,10 @@
           prop CustomIcon : GuiImageData^ = null {}
         ]]>
       </ref.Members>
-      <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480" TopMost="true" IconVisible-bind="checkVisible.Selected" Icon-bind="checkCustom.Selected ? self.CustomIcon : null" CustomIcon-uri="res://Images/CustomIcon">
-        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-          <SolidBorder Color="#FF0000"/>
-          <Stack AlignmentToParent="left:10 top:10 right:-1 bottom:-1" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
-            <StackItem>
-              <CheckBox ref.Name="checkVisible" Text="Icon Visible" Selected="true"/>
-            </StackItem>
-            <StackItem>
-              <CheckBox ref.Name="checkCustom" Text="Custom Icon" Selected="false"/>
-            </StackItem>
-            <StackItem>
-              <Button Text="Create another copy">
-                <ev.Clicked-eval>
-                  <![CDATA[
-                  {
-                    new TestWindow*().ShowModalAndDelete(self, func():void{});
-                  }
-                ]]>
-                </ev.Clicked-eval>
-              </Button>
-            </StackItem>
-          </Stack>
-        </Bounds>
+      <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480" TopMost="true" CustomIcon-uri="res://Images/CustomIcon">
+        <Button Text="Font" Font-bind="self.Font">
+          <att.BoundsComposition-set AlignmentToParent="left:20 top:20 right:-1 bottom:-1"/>
+        </Button>
       </Window>
     </Instance>
   </Instance>
