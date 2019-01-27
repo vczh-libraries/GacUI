@@ -323,6 +323,7 @@ WindowsForm
 						{
 							dpiX = LOWORD(wParam);
 							dpiY = HIWORD(wParam);
+							UpdateDpiAwaredFields(false);
 							auto newRect = (RECT*)lParam;
 							MoveWindow(handle, newRect->left, newRect->top, (newRect->right - newRect->left), (newRect->bottom - newRect->top), FALSE);
 							for (vint i = 0; i < listeners.Count(); i++)
@@ -845,13 +846,22 @@ WindowsForm
 				List<Ptr<INativeMessageHandler>>	messageHandlers;
 				bool								supressingAlt = false;
 				Ptr<bool>							flagDisposed = new bool(false);
-				Margin								customFramePadding;
+				NativeMargin						customFramePadding;
 				Ptr<GuiImageData>					defaultIcon;
 				Ptr<GuiImageData>					replacementIcon;
 				HICON								replacementHIcon = NULL;
 				UINT								dpiX = 0;
 				UINT								dpiY = 0;
 
+				void UpdateDpiAwaredFields(bool refreshDpiXY)
+				{
+					if (refreshDpiXY)
+					{
+						DpiAwared_GetDpiForWindow(handle, &dpiX, &dpiY);
+					}
+					auto padding = (vint)(DpiAwared_GetSystemMetrics(SM_CXSIZEFRAME, dpiX) + DpiAwared_GetSystemMetrics(SM_CXPADDEDBORDER, dpiX));
+					customFramePadding = NativeMargin(padding, padding, padding, padding);
+				}
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
 				{
@@ -859,9 +869,7 @@ WindowsForm
 					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 					handle = CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
 
-					auto padding = (vint)(GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER));
-					customFramePadding = Margin(padding, padding, padding, padding);
-					DpiAwared_GetDpiForWindow(handle, &dpiX, &dpiY);
+					UpdateDpiAwaredFields(true);
 				}
 
 				~WindowsForm()
@@ -971,6 +979,26 @@ WindowsForm
 					return NativeSize(value.x * dpiX / 96, value.y * dpiY / 96);
 				}
 
+				Margin Convert(NativeMargin value)override
+				{
+					return Margin(
+						(vint)value.left.value * 96 / dpiX,
+						(vint)value.top.value * 96 / dpiY,
+						(vint)value.right.value * 96 / dpiX,
+						(vint)value.bottom.value * 96 / dpiY
+					);
+				}
+
+				NativeMargin Convert(Margin value)override
+				{
+					return NativeMargin(
+						(vint)value.left * dpiX / 96,
+						(vint)value.top * dpiY / 96,
+						(vint)value.right * dpiX / 96,
+						(vint)value.bottom * dpiY / 96
+					);
+				}
+
 				NativeRect GetBounds()override
 				{
 					RECT rect;
@@ -998,7 +1026,7 @@ WindowsForm
 					RECT required={0,0,(int)size.x.value,(int)size.y.value };
 					RECT bounds;
 					GetWindowRect(handle, &bounds);
-					DpiAwared_AdjustWindowRect(&required, handle);
+					DpiAwared_AdjustWindowRect(&required, handle, dpiX);
 					SetBounds(NativeRect(NativePoint(bounds.left, bounds.top), NativeSize(required.right-required.left, required.bottom-required.top)));
 				}
 
@@ -1013,7 +1041,7 @@ WindowsForm
 						RECT required={0,0,0,0};
 						RECT bounds;
 						GetWindowRect(handle, &bounds);
-						DpiAwared_AdjustWindowRect(&required, handle);
+						DpiAwared_AdjustWindowRect(&required, handle, dpiX);
 						return NativeRect(
 							NativePoint(
 								(bounds.left-required.left),
@@ -1110,7 +1138,7 @@ WindowsForm
 					return customFrameMode;
 				}
 
-				Margin GetCustomFramePadding()override
+				NativeMargin GetCustomFramePadding()override
 				{
 					if (GetSizeBox() || GetTitleBar())
 					{
@@ -1118,7 +1146,7 @@ WindowsForm
 					}
 					else
 					{
-						return Margin(0, 0, 0, 0);
+						return NativeMargin(0, 0, 0, 0);
 					}
 				}
 

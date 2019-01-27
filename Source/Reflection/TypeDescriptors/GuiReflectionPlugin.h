@@ -42,6 +42,7 @@ Type List (Basic)
 			F(presentation::Rect)\
 			F(presentation::NativeRect)\
 			F(presentation::Margin)\
+			F(presentation::NativeMargin)\
 			F(presentation::FontProperties)\
 			F(presentation::VKEY)\
 			F(presentation::GlobalStringKey)\

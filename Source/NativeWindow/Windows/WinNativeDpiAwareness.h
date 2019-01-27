@@ -25,7 +25,8 @@ DPI Awareness Functions
 			extern void				InitDpiAwareness(bool dpiAware);
 			extern void				DpiAwared_GetDpiForMonitor(HMONITOR monitor, UINT* x, UINT* y);
 			extern void				DpiAwared_GetDpiForWindow(HWND handle, UINT* x, UINT* y);
-			extern void				DpiAwared_AdjustWindowRect(LPRECT rect, HWND handle);
+			extern void				DpiAwared_AdjustWindowRect(LPRECT rect, HWND handle, UINT dpi);
+			extern int				DpiAwared_GetSystemMetrics(int index, UINT dpi);
 		}
 	}
 }

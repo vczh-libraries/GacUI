@@ -344,6 +344,18 @@ Native Window
 			/// <returns>The converted result.</returns>
 			/// <param name="value">The coordinate to convert.</param>
 			virtual NativeSize			Convert(Size value) = 0;
+			/// <summary>
+			/// Convert margin from native coordinate to GUI coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual Margin				Convert(NativeMargin value) = 0;
+			/// <summary>
+			/// Convert margin from GUI coordinate to native coordinate.
+			/// <summary>
+			/// <returns>The converted result.</returns>
+			/// <param name="value">The coordinate to convert.</param>
+			virtual NativeMargin		Convert(Margin value) = 0;
 
 			/// Get the bounds of the window.
 			/// </summary>
@@ -439,7 +451,7 @@ Native Window
 			/// Get the amount of the border. The window template may need this value to calculate where to put the client area.
 			/// </summary>
 			/// <returns>Returns the amount of the border.</returns>
-			virtual Margin				GetCustomFramePadding() = 0;
+			virtual NativeMargin		GetCustomFramePadding() = 0;
 
 			/// <summary>Window size state.</summary>
 			enum WindowSizeState

@@ -237,8 +237,10 @@ Window
 				bool									hasTitleBar = true;
 				Ptr<GuiImageData>						icon;
 				
+				void									UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct);
 				void									SyncNativeWindowProperties();
 				void									Moved()override;
+				void									DpiChanged()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
 				virtual void							MouseClickedOnOtherWindow(GuiWindow* window);

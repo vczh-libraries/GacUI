@@ -87,25 +87,47 @@ namespace vl
 				}
 			}
 
-			void DpiAwared_AdjustWindowRect(LPRECT rect, HWND handle)
+			void DpiAwared_AdjustWindowRect(LPRECT rect, HWND handle, UINT dpi)
 			{
 				static bool initialized = false;
-				static bool available_GetDpiForWindow_AdjustWindowRectExForDpi = false;
+				static bool available_AdjustWindowRectExForDpi = false;
 				if (!initialized)
 				{
 					initialized = true;
 					HMODULE moduleHandle = LoadLibrary(L"user32");
-					available_GetDpiForWindow_AdjustWindowRectExForDpi = GetProcAddress(moduleHandle, "GetDpiForWindow") != NULL && GetProcAddress(moduleHandle, "AdjustWindowRectExForDpi") != NULL;
+					available_AdjustWindowRectExForDpi = GetProcAddress(moduleHandle, "AdjustWindowRectExForDpi") != NULL;
 					FreeLibrary(moduleHandle);
 				}
 
-				if (available_GetDpiForWindow_AdjustWindowRectExForDpi)
+				if (available_AdjustWindowRectExForDpi)
 				{
-					AdjustWindowRectExForDpi(rect, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE, (DWORD)GetWindowLongPtr(handle, GWL_EXSTYLE), GetDpiForWindow(handle));
+					AdjustWindowRectExForDpi(rect, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE, (DWORD)GetWindowLongPtr(handle, GWL_EXSTYLE), dpi);
 				}
 				else
 				{
 					AdjustWindowRect(rect, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE);
+				}
+			}
+
+			int DpiAwared_GetSystemMetrics(int index, UINT dpi)
+			{
+				static bool initialized = false;
+				static bool available_GetSystemMetricsForDpi = false;
+				if (!initialized)
+				{
+					initialized = true;
+					HMODULE moduleHandle = LoadLibrary(L"user32");
+					available_GetSystemMetricsForDpi = GetProcAddress(moduleHandle, "GetSystemMetricsForDpi") != NULL;
+					FreeLibrary(moduleHandle);
+				}
+
+				if (available_GetSystemMetricsForDpi)
+				{
+					return GetSystemMetricsForDpi(index, dpi);
+				}
+				else
+				{
+					return GetSystemMetrics(index);
 				}
 			}
 		}

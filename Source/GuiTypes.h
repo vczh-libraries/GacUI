@@ -598,45 +598,50 @@ Margin
 		/// <summary>
 		/// Represents a margin in a two dimensions space.
 		/// </summary>
-		struct Margin
+		/// <typeparam name="T">Type of the coordinate.</typeparam>
+		template<typename T>
+		struct Margin_
 		{
 			/// <summary>
 			/// The left margin.
 			/// </summary>
-			vint		left;
+			T			left;
 			/// <summary>
 			/// The top margin.
 			/// </summary>
-			vint		top;
+			T			top;
 			/// <summary>
 			/// The right margin.
 			/// </summary>
-			vint		right;
+			T			right;
 			/// <summary>
 			/// The bottom margin.
 			/// </summary>
-			vint		bottom;
+			T			bottom;
 
-			Margin()
+			Margin_()
 				:left(0), top(0), right(0), bottom(0)
 			{
 			}
 
-			Margin(vint _left, vint _top, vint _right, vint _bottom)
+			Margin_(T _left, T _top, T _right, T _bottom)
 				:left(_left), top(_top), right(_right), bottom(_bottom)
 			{
 			}
 
-			bool operator==(Margin margin)const
+			bool operator==(Margin_<T> margin)const
 			{
 				return left==margin.left && top==margin.top && right==margin.right && bottom==margin.bottom;
 			}
 
-			bool operator!=(Margin margin)const
+			bool operator!=(Margin_<T> margin)const
 			{
 				return left!=margin.left || top!=margin.top || right!=margin.right || bottom!=margin.bottom;
 			}
 		};
+
+		using Margin = Margin_<GuiCoordinate>;
+		using NativeMargin = Margin_<NativeCoordinate>;
 
 /***********************************************************************
 Resources

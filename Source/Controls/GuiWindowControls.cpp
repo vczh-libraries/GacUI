@@ -631,15 +631,28 @@ GuiWindow
 				ct->SetTitleBar(hasTitleBar);
 				ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
 				ct->SetActivated(GetActivated());
-				ct->SetCustomFramePadding(Margin(8, 8, 8, 8));
 
 				auto window = GetNativeWindow();
 				if (window)
 				{
 					window->SetIcon(icon);
 				}
+				UpdateCustomFramePadding(window, ct);
+
 				ct->SetIcon(icon ? icon : window ? window->GetIcon() : nullptr);
 				SyncNativeWindowProperties();
+			}
+
+			void GuiWindow::UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct)
+			{
+				if (auto window = GetNativeWindow())
+				{
+					ct->SetCustomFramePadding(window->Convert(window->GetCustomFramePadding()));
+				}
+				else
+				{
+					ct->SetCustomFramePadding({8, 8, 8, 8});
+				}
 			}
 
 			void GuiWindow::SyncNativeWindowProperties()
@@ -669,6 +682,14 @@ GuiWindow
 			{
 				GuiControlHost::Moved();
 				GetControlTemplateObject(true)->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+			}
+
+			void GuiWindow::DpiChanged()
+			{
+				if (auto ct = GetControlTemplateObject(false))
+				{
+					UpdateCustomFramePadding(GetNativeWindow(), ct);
+				}
 			}
 
 			void GuiWindow::OnNativeWindowChanged()
@@ -776,16 +797,13 @@ GuiWindow
 				{ \
 					VARIABLE = visible; \
 					ct->Set ## NAME(visible); \
-					if (auto window = GetNativeWindow()) \
+					auto window = GetNativeWindow(); \
+					if (window) \
 					{ \
 						CONDITION_BREAK \
 						window->Set ## NAME(visible); \
-						ct->SetCustomFramePadding(window->GetCustomFramePadding()); \
 					} \
-					else \
-					{ \
-						ct->SetCustomFramePadding({}); \
-					} \
+					UpdateCustomFramePadding(window, ct); \
 				} \
 			} \
 

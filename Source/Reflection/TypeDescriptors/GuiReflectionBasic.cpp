@@ -104,6 +104,13 @@ Type Declaration
 				STRUCT_MEMBER(bottom)
 			END_STRUCT_MEMBER(Margin)
 
+			BEGIN_STRUCT_MEMBER(NativeMargin)
+				STRUCT_MEMBER(left)
+				STRUCT_MEMBER(top)
+				STRUCT_MEMBER(right)
+				STRUCT_MEMBER(bottom)
+			END_STRUCT_MEMBER(NativeMargin)
+
 			BEGIN_STRUCT_MEMBER(FontProperties)
 				STRUCT_MEMBER(fontFamily)
 				STRUCT_MEMBER(size)
