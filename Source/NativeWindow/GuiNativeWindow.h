@@ -357,6 +357,7 @@ Native Window
 			/// <param name="value">The coordinate to convert.</param>
 			virtual NativeMargin		Convert(Margin value) = 0;
 
+			/// <summary>
 			/// Get the bounds of the window.
 			/// </summary>
 			/// <returns>The bounds of the window.</returns>
