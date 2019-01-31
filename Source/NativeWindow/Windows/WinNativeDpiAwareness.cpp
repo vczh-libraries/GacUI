@@ -8,70 +8,48 @@ namespace vl
 	{
 		namespace windows
 		{
+#define USE_API(NAME, API) static auto proc_##API = (decltype(&API))(GetProcAddress(GetModuleHandle(L#NAME), #API))
+
 			void InitDpiAwareness(bool dpiAware)
 			{
+				USE_API(user32, SetProcessDpiAwarenessContext);
+				USE_API(shcore, SetProcessDpiAwareness);
+
+				if(proc_SetProcessDpiAwarenessContext)
 				{
-					HMODULE moduleHandle = LoadLibrary(L"user32");
-					bool available = GetProcAddress(moduleHandle, "SetProcessDpiAwarenessContext") != NULL;
-					FreeLibrary(moduleHandle);
-					if (available)
-					{
-						SetProcessDpiAwarenessContext(dpiAware ? DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2:  DPI_AWARENESS_CONTEXT_UNAWARE);
-						return;
-					}
+					proc_SetProcessDpiAwarenessContext(dpiAware ? DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2:  DPI_AWARENESS_CONTEXT_UNAWARE);
+					return;
 				}
+
+				if(proc_SetProcessDpiAwareness)
 				{
-					HMODULE moduleHandle = LoadLibrary(L"Shcore");
-					bool available = GetProcAddress(moduleHandle, "SetProcessDpiAwareness") != NULL;
-					FreeLibrary(moduleHandle);
-					if (available)
-					{
-						SetProcessDpiAwareness(dpiAware ? PROCESS_PER_MONITOR_DPI_AWARE : PROCESS_DPI_UNAWARE);
-						return;
-					}
+					proc_SetProcessDpiAwareness(dpiAware ? PROCESS_PER_MONITOR_DPI_AWARE : PROCESS_DPI_UNAWARE);
+					return;
 				}
 			}
 
 			void DpiAwared_GetDpiForMonitor(HMONITOR monitor, UINT* x, UINT* y)
 			{
-				static bool initialized = false;
-				static bool available_GetDpiForMonitor = false;
-				if (!initialized)
-				{
-					initialized = true;
-					HMODULE moduleHandle = LoadLibrary(L"Shcore");
-					available_GetDpiForMonitor = GetProcAddress(moduleHandle, "GetDpiForMonitor") != NULL;
-					FreeLibrary(moduleHandle);
-				}
+				USE_API(shcore, GetDpiForMonitor);
 
-				if (!available_GetDpiForMonitor)
+				if (proc_GetDpiForMonitor)
 				{
-					*x = 96;
-					*y = 96;
+					if (proc_GetDpiForMonitor(monitor, MDT_DEFAULT, x, y) == S_OK)
+					{
+						return;
+					}
 				}
-
-				if (GetDpiForMonitor(monitor, MDT_DEFAULT, x, y) != S_OK)
-				{
-					*x = 96;
-					*y = 96;
-				}
+				*x = 96;
+				*y = 96;
 			}
 
 			void DpiAwared_GetDpiForWindow(HWND handle, UINT* x, UINT* y)
 			{
-				static bool initialized = false;
-				static bool available_GetDpiForWindow = false;
-				if (!initialized)
-				{
-					initialized = true;
-					HMODULE moduleHandle = LoadLibrary(L"user32");
-					available_GetDpiForWindow = GetProcAddress(moduleHandle, "GetDpiForWindow") != NULL;
-					FreeLibrary(moduleHandle);
-				}
+				USE_API(user32, GetDpiForWindow);
 
-				if (available_GetDpiForWindow)
+				if (proc_GetDpiForWindow)
 				{
-					*x = *y = GetDpiForWindow(handle);
+					*x = *y = proc_GetDpiForWindow(handle);
 				}
 				else
 				{
@@ -89,19 +67,11 @@ namespace vl
 
 			void DpiAwared_AdjustWindowRect(LPRECT rect, HWND handle, UINT dpi)
 			{
-				static bool initialized = false;
-				static bool available_AdjustWindowRectExForDpi = false;
-				if (!initialized)
-				{
-					initialized = true;
-					HMODULE moduleHandle = LoadLibrary(L"user32");
-					available_AdjustWindowRectExForDpi = GetProcAddress(moduleHandle, "AdjustWindowRectExForDpi") != NULL;
-					FreeLibrary(moduleHandle);
-				}
+				USE_API(user32, AdjustWindowRectExForDpi);
 
-				if (available_AdjustWindowRectExForDpi)
+				if (proc_AdjustWindowRectExForDpi)
 				{
-					AdjustWindowRectExForDpi(rect, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE, (DWORD)GetWindowLongPtr(handle, GWL_EXSTYLE), dpi);
+					proc_AdjustWindowRectExForDpi(rect, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE, (DWORD)GetWindowLongPtr(handle, GWL_EXSTYLE), dpi);
 				}
 				else
 				{
@@ -111,25 +81,19 @@ namespace vl
 
 			int DpiAwared_GetSystemMetrics(int index, UINT dpi)
 			{
-				static bool initialized = false;
-				static bool available_GetSystemMetricsForDpi = false;
-				if (!initialized)
-				{
-					initialized = true;
-					HMODULE moduleHandle = LoadLibrary(L"user32");
-					available_GetSystemMetricsForDpi = GetProcAddress(moduleHandle, "GetSystemMetricsForDpi") != NULL;
-					FreeLibrary(moduleHandle);
-				}
+				USE_API(user32, GetSystemMetricsForDpi);
 
-				if (available_GetSystemMetricsForDpi)
+				if (proc_GetSystemMetricsForDpi)
 				{
-					return GetSystemMetricsForDpi(index, dpi);
+					return proc_GetSystemMetricsForDpi(index, dpi);
 				}
 				else
 				{
 					return GetSystemMetrics(index);
 				}
 			}
+
+#undef USE_API
 		}
 	}
 }
