@@ -3,6 +3,12 @@
 
 **Read the [LICENSE](https://github.com/vczh-libraries/GacUI/blob/master/LICENSE.md) first.**
 
+# Notice
+- The release of the GacUI project is put in [vczh-libraries/Release](https://github.com/vczh-libraries/Release).
+- **DO NOT** download source code from this repo **if you are not intended to create push request**. This is not for end users.
+
+# Content of This Project
+
 New website:
  - http://www.gaclib.net
  - https://vczh-libraries.github.io
@@ -14,7 +20,6 @@ This website is under construction, but it is somehow useable now. The old one (
 * The [DOCUMENT](http://www.gaclib.net/Document.html#~/) section show you all simple documentation organized by C++ classes and functions.
 
 ### Notice
-The release of the GacUI project is put in [vczh-libraries/Release](https://github.com/vczh-libraries/Release). **This GacUI repo is for development only**. Don't download the code from here to use, because in most of the time it does not run.
 
 Using this library requires you to use C++ source files directly in
 
