@@ -230,6 +230,10 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppOS.cpp" />
+    <ClCompile Include="..\..\..\Import\VlppParser.cpp" />
+    <ClCompile Include="..\..\..\Import\VlppReflection.cpp" />
+    <ClCompile Include="..\..\..\Import\VlppRegex.cpp" />
     <ClCompile Include="..\..\..\Import\VlppWorkflowCompiler.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -523,6 +527,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h" />
+    <ClInclude Include="..\..\..\Import\VlppOS.h" />
+    <ClInclude Include="..\..\..\Import\VlppParser.h" />
+    <ClInclude Include="..\..\..\Import\VlppReflection.h" />
+    <ClInclude Include="..\..\..\Import\VlppRegex.h" />
     <ClInclude Include="..\..\..\Import\VlppWorkflowCompiler.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClInclude>
@@ -679,9 +687,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\Source\Compiler\InstanceQuery\Codegen.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

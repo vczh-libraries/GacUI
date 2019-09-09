@@ -7,6 +7,10 @@
   </folders>
   <categories>
     <category name="vlpp" pattern="\Import\Vlpp."/>
+    <category name="vlppos" pattern="\Import\VlppOS."/>
+    <category name="vlppregex" pattern="\Import\VlppRegex."/>
+    <category name="vlppreflection" pattern="\Import\VlppReflection."/>
+    <category name="vlppparser" pattern="\Import\VlppParser."/>
     <category name="wflibrary" pattern="\Import\VlppWorkflowLibrary."/>
     <category name="wfruntime" pattern="\Import\VlppWorkflowRuntime."/>
     <category name="wfcompiler" pattern="\Import\VlppWorkflowCompiler."/>
@@ -30,6 +34,10 @@
   </categories>
   <output path=".">
     <codepair category="vlpp" filename="Vlpp" generate="false"/>
+    <codepair category="vlppos" filename="VlppOS" generate="false"/>
+    <codepair category="vlppregex" filename="VlppRegex" generate="false"/>
+    <codepair category="vlppreflection" filename="VlppReflection" generate="false"/>
+    <codepair category="vlppparser" filename="VlppParser" generate="false"/>
     <codepair category="wflibrary" filename="VlppWorkflowLibrary" generate="false"/>
     <codepair category="wfruntime" filename="VlppWorkflowRuntime" generate="false"/>
     <codepair category="wfcompiler" filename="VlppWorkflowCompiler" generate="false"/>

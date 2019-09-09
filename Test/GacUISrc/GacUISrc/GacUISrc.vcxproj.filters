@@ -528,6 +528,18 @@
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\WinNativeDpiAwareness.cpp">
       <Filter>GacUI\NativeWindow\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppOS.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppParser.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppReflection.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppRegex.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h">
@@ -875,15 +887,22 @@
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\WinNativeDpiAwareness.h">
       <Filter>GacUI\NativeWindow\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppRegex.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppOS.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppParser.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppReflection.h">
+      <Filter>Import</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.parser.txt">
       <Filter>GacUI\Compiler\InstanceQuery</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\Source\Compiler\InstanceQuery\Codegen.bat">
-      <Filter>GacUI\Compiler\InstanceQuery</Filter>
-    </None>
   </ItemGroup>
 </Project>

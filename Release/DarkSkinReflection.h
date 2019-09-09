@@ -5,8 +5,12 @@ DEVELOPER: Zihan Chen(vczh)
 #include "DarkSkin.h"
 #include "GacUIReflection.h"
 #include "GacUI.h"
-#include "Vlpp.h"
+#include "VlppParser.h"
 #include "VlppWorkflowLibrary.h"
+#include "VlppReflection.h"
+#include "VlppOS.h"
+#include "Vlpp.h"
+#include "VlppRegex.h"
 
 /***********************************************************************
 .\DARKSKINREFLECTION.H
