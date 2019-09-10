@@ -2851,7 +2851,6 @@ namespace vl
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-
 namespace vl
 {
 	using namespace threading_internal;
