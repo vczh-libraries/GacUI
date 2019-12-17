@@ -8279,7 +8279,7 @@ namespace vl
 			struct QueryServiceHelper;
 
 			template<typename T>
-			struct QueryServiceHelper<T, typename RequiresConvertable<decltype(T::Identifier), const wchar_t* const>::YesNoType>
+			struct QueryServiceHelper<T, typename PointerConvertable<decltype(T::Identifier), const wchar_t* const>::YesNoType>
 			{
 				static WString GetIdentifier()
 				{
@@ -8288,7 +8288,7 @@ namespace vl
 			};
 
 			template<typename T>
-			struct QueryServiceHelper<T, typename RequiresConvertable<decltype(T::GetIdentifier()), WString>::YesNoType>
+			struct QueryServiceHelper<T, typename PointerConvertable<decltype(T::GetIdentifier()), WString>::YesNoType>
 			{
 				static WString GetIdentifier()
 				{
