@@ -84,9 +84,9 @@ Macros:
 namespace vl
 {
 
-/***********************************************************************
-x86 and x64 Compatbility
-***********************************************************************/
+	/***********************************************************************
+	x86 and x64 Compatbility
+	***********************************************************************/
 
 #if defined VCZH_MSVC
 	/// <summary>1-byte signed integer.</summary>
@@ -168,9 +168,9 @@ x86 and x64 Compatbility
 #endif
 #endif
 
-/***********************************************************************
-Basic Types
-***********************************************************************/
+	/***********************************************************************
+	Basic Types
+	***********************************************************************/
 
 	class NotCopyable
 	{
@@ -180,7 +180,7 @@ Basic Types
 	public:
 		NotCopyable();
 	};
-	
+
 	/// <summary>Base type of all errors. An error is an exception that you are not allowed to catch. Raising it means there is a fatal error in the code.</summary>
 	class Error
 	{
@@ -193,9 +193,9 @@ Basic Types
 	};
 
 #if defined VCZH_MSVC || defined VCZH_GCC || defined _DEBUG
-	#define CHECK_ERROR(CONDITION,DESCRIPTION) do{if(!(CONDITION))throw Error(DESCRIPTION);}while(0)
+#define CHECK_ERROR(CONDITION,DESCRIPTION) do{if(!(CONDITION))throw Error(DESCRIPTION);}while(0)
 #elif defined NDEBUG
-	#define CHECK_ERROR(CONDITION,DESCRIPTION)
+#define CHECK_ERROR(CONDITION,DESCRIPTION)
 #endif
 
 #define CHECK_FAIL(DESCRIPTION) do{throw Error(DESCRIPTION);}while(0)
@@ -204,10 +204,10 @@ Basic Types
 	if(bool __scope_variable_flag__=true)\
 		for(TYPE VARIABLE = VALUE;__scope_variable_flag__;__scope_variable_flag__=false)
 
-/***********************************************************************
-Type Traits
-***********************************************************************/
-	
+	/***********************************************************************
+	Type Traits
+	***********************************************************************/
+
 	template<typename T>
 	struct RemoveReference
 	{
@@ -303,9 +303,9 @@ Type Traits
 	{
 	};
 
-/***********************************************************************
-Basic Types
-***********************************************************************/
+	/***********************************************************************
+	Basic Types
+	***********************************************************************/
 
 	/// <summary>Base type of all classes.</summary>
 	class Object
@@ -313,7 +313,7 @@ Basic Types
 	public:
 		virtual ~Object();
 	};
-	
+
 	/// <summary>Type for storing a value to wherever requiring a [T:vl.Ptr`1] to [T:vl.Object].</summary>
 	/// <typeparam name="T">Type of the value.</typeparam>
 	template<typename T>
@@ -328,52 +328,52 @@ Basic Types
 			:object(_object)
 		{
 		}
-		
+
 		/// <summary>Box a movable value.</summary>
 		/// <param name="_object">The value to box.</param>
 		ObjectBox(T&& _object)
 			:object(MoveValue(_object))
 		{
 		}
-		
+
 		/// <summary>Copy a box.</summary>
 		/// <param name="value">The box.</param>
 		ObjectBox(const ObjectBox<T>& value)
 			:object(value.object)
 		{
 		}
-		
+
 		/// <summary>Move a box.</summary>
 		/// <param name="value">The box.</param>
 		ObjectBox(ObjectBox<T>&& value)
 			:object(MoveValue(value.object))
 		{
 		}
-		
+
 		/// <summary>Box a value.</summary>
 		/// <returns>The boxed value.</returns>
 		/// <param name="_object">The value to box.</param>
 		ObjectBox<T>& operator=(const T& _object)
 		{
-			object=_object;
+			object = _object;
 			return *this;
 		}
-		
+
 		/// <summary>Copy a box.</summary>
 		/// <returns>The boxed value.</returns>
 		/// <param name="value">The box.</param>
 		ObjectBox<T>& operator=(const ObjectBox<T>& value)
 		{
-			object=value.object;
+			object = value.object;
 			return *this;
 		}
-		
+
 		/// <summary>Move a box.</summary>
 		/// <returns>The boxed value.</returns>
 		/// <param name="value">The box.</param>
 		ObjectBox<T>& operator=(ObjectBox<T>&& value)
 		{
-			object=MoveValue(value.object);
+			object = MoveValue(value.object);
 			return *this;
 		}
 
@@ -405,7 +405,7 @@ Basic Types
 			:object(new T(value))
 		{
 		}
-		
+
 		/// <summary>Create a non-null value.</summary>
 		/// <param name="value">The value to move.</param>
 		Nullable(T&& value)
@@ -416,75 +416,75 @@ Basic Types
 		/// <summary>Copy a nullable value.</summary>
 		/// <param name="nullable">The nullable value to copy.</param>
 		Nullable(const Nullable<T>& nullable)
-			:object(nullable.object?new T(*nullable.object):0)
+			:object(nullable.object ? new T(*nullable.object) : 0)
 		{
 		}
-		
+
 		/// <summary>Move a nullable value.</summary>
 		/// <param name="nullable">The nullable value to move.</param>
 		Nullable(Nullable<T>&& nullable)
 			:object(nullable.object)
 		{
-			nullable.object=0;
+			nullable.object = 0;
 		}
 
 		~Nullable()
 		{
-			if(object)
+			if (object)
 			{
 				delete object;
-				object=0;
+				object = 0;
 			}
 		}
-		
+
 		/// <summary>Create a non-null value.</summary>
 		/// <returns>The created nullable value.</returns>
 		/// <param name="value">The value to copy.</param>
 		Nullable<T>& operator=(const T& value)
 		{
-			if(object)
+			if (object)
 			{
 				delete object;
-				object=0;
+				object = 0;
 			}
-			object=new T(value);
+			object = new T(value);
 			return *this;
 		}
-		
+
 		/// <summary>Copy a nullable value.</summary>
 		/// <returns>The created nullable value.</returns>
 		/// <param name="nullable">The nullable value to copy.</param>
 		Nullable<T>& operator=(const Nullable<T>& nullable)
 		{
-			if(this!=&nullable)
+			if (this != &nullable)
 			{
-				if(object)
+				if (object)
 				{
 					delete object;
-					object=0;
+					object = 0;
 				}
-				if(nullable.object)
+				if (nullable.object)
 				{
-					object=new T(*nullable.object);
+					object = new T(*nullable.object);
 				}
 			}
 			return *this;
 		}
-		
+
 		/// <summary>Move a nullable value.</summary>
 		/// <returns>The created nullable value.</returns>
 		/// <param name="nullable">The nullable value to move.</param>
 		Nullable<T>& operator=(Nullable<T>&& nullable)
 		{
-			if(this!=&nullable)
+			if (this != &nullable)
 			{
-				if(object)
+				if (object)
 				{
 					delete object;
-					object=0;
+					object = 0;
 				}
-				object=nullable.object;
-				nullable.object=0;
+				object = nullable.object;
+				nullable.object = 0;
 			}
 			return *this;
 		}
@@ -493,24 +493,24 @@ Basic Types
 		{
 			return
 				a.object
-				?b.object
-					?*a.object==*b.object
-					:false
-				:b.object
-					?false
-					:true;
+				? b.object
+				? *a.object == *b.object
+				: false
+				: b.object
+				? false
+				: true;
 		}
 
 		static vint Compare(const Nullable<T>& a, const Nullable<T>& b)
 		{
 			return
 				a.object
-				?b.object
-					?(*a.object==*b.object?0:*a.object<*b.object?-1:1)
-					:1
-				:b.object
-					?-1
-					:0;
+				? b.object
+				? (*a.object == *b.object ? 0 : *a.object < *b.object ? -1 : 1)
+				: 1
+				: b.object
+				? -1
+				: 0;
 		}
 
 		bool operator==(const Nullable<T>& nullable)const
@@ -525,31 +525,31 @@ Basic Types
 
 		bool operator<(const Nullable<T>& nullable)const
 		{
-			return Compare(*this, nullable)<0;
+			return Compare(*this, nullable) < 0;
 		}
 
 		bool operator<=(const Nullable<T>& nullable)const
 		{
-			return Compare(*this, nullable)<=0;
+			return Compare(*this, nullable) <= 0;
 		}
 
 		bool operator>(const Nullable<T>& nullable)const
 		{
-			return Compare(*this, nullable)>0;
+			return Compare(*this, nullable) > 0;
 		}
 
 		bool operator>=(const Nullable<T>& nullable)const
 		{
-			return Compare(*this, nullable)>=0;
+			return Compare(*this, nullable) >= 0;
 		}
 
 		/// <summary>Convert the nullable value to a bool value.</summary>
 		/// <returns>Returns true if it is not null.</returns>
 		operator bool()const
 		{
-			return object!=0;
+			return object != 0;
 		}
-		
+
 		/// <summary>Unbox the value. This operation will cause an access violation of it is null.</summary>
 		/// <returns>The original value.</returns>
 		const T& Value()const
@@ -562,12 +562,12 @@ Basic Types
 	union BinaryRetriver
 	{
 		T t;
-		char binary[sizeof(T)>minSize?sizeof(T):minSize];
+		char binary[sizeof(T) > minSize ? sizeof(T) : minSize];
 	};
 
-/***********************************************************************
-Type Traits
-***********************************************************************/
+	/***********************************************************************
+	Type Traits
+	***********************************************************************/
 
 	/// <summary>Get the index type of a value for containers.</summary>
 	/// <typeparam name="T">Type of the value.</typeparam>
@@ -593,31 +593,32 @@ Type Traits
 	struct POD
 	{
 		/// <summary>Returns true if the type is a Plain-Old-Data type.</summary>
-		static const bool Result=false;
+		static const bool Result = false;
 	};
 
-	template<>struct POD<bool>{static const bool Result=true;};
-	template<>struct POD<vint8_t>{static const bool Result=true;};
-	template<>struct POD<vuint8_t>{static const bool Result=true;};
-	template<>struct POD<vint16_t>{static const bool Result=true;};
-	template<>struct POD<vuint16_t>{static const bool Result=true;};
-	template<>struct POD<vint32_t>{static const bool Result=true;};
-	template<>struct POD<vuint32_t>{static const bool Result=true;};
-	template<>struct POD<vint64_t>{static const bool Result=true;};
-	template<>struct POD<vuint64_t>{static const bool Result=true;};
-	template<>struct POD<char>{static const bool Result=true;};
-	template<>struct POD<wchar_t>{static const bool Result=true;};
-	template<typename T>struct POD<T*>{static const bool Result=true;};
-	template<typename T>struct POD<T&>{static const bool Result=true;};
-	template<typename T, typename C>struct POD<T C::*>{static const bool Result=true;};
-	template<typename T, vint _Size>struct POD<T[_Size]>{static const bool Result=POD<T>::Result;};
-	template<typename T>struct POD<const T>{static const bool Result=POD<T>::Result;};
-	template<typename T>struct POD<volatile T>{static const bool Result=POD<T>::Result;};
-	template<typename T>struct POD<const volatile T>{static const bool Result=POD<T>::Result;};
+	template<>struct POD<bool> { static const bool Result = true; };
+	template<>struct POD<vint8_t> { static const bool Result = true; };
+	template<>struct POD<vuint8_t> { static const bool Result = true; };
+	template<>struct POD<vint16_t> { static const bool Result = true; };
+	template<>struct POD<vuint16_t> { static const bool Result = true; };
+	template<>struct POD<vint32_t> { static const bool Result = true; };
+	template<>struct POD<vuint32_t> { static const bool Result = true; };
+	template<>struct POD<vint64_t> { static const bool Result = true; };
+	template<>struct POD<vuint64_t> { static const bool Result = true; };
+	template<>struct POD<char> { static const bool Result = true; };
+	template<>struct POD<wchar_t> { static const bool Result = true; };
+	template<typename T>struct POD<T*> { static const bool Result = true; };
+	template<typename T>struct POD<T&> { static const bool Result = true; };
+	template<typename T>struct POD<T&&> { static const bool Result = true; };
+	template<typename T, typename C>struct POD<T C::*> { static const bool Result = true; };
+	template<typename T, vint _Size>struct POD<T[_Size]> { static const bool Result = POD<T>::Result; };
+	template<typename T>struct POD<const T> { static const bool Result = POD<T>::Result; };
+	template<typename T>struct POD<volatile T> { static const bool Result = POD<T>::Result; };
+	template<typename T>struct POD<const volatile T> { static const bool Result = POD<T>::Result; };
 
-/***********************************************************************
-Date and Time
-***********************************************************************/
+	/***********************************************************************
+	Date and Time
+	***********************************************************************/
 
 	/// <summary>A type representing the combination of date and time.</summary>
 	struct DateTime
@@ -632,7 +633,7 @@ Date and Time
 		vint				milliseconds;
 
 		vuint64_t			totalMilliseconds;
-		
+
 		// in gcc, this will be mktime(t) * 1000 + gettimeofday().tv_usec / 1000
 		vuint64_t			filetime;
 
@@ -653,8 +654,8 @@ Date and Time
 		/// <param name="_minute">The minute.</param>
 		/// <param name="_second">The second.</param>
 		/// <param name="_milliseconds">The millisecond.</param>
-		static DateTime		FromDateTime(vint _year, vint _month, vint _day, vint _hour=0, vint _minute=0, vint _second=0, vint _milliseconds=0);
-	
+		static DateTime		FromDateTime(vint _year, vint _month, vint _day, vint _hour = 0, vint _minute = 0, vint _second = 0, vint _milliseconds = 0);
+
 		static DateTime		FromFileTime(vuint64_t filetime);
 
 		/// <summary>Create an empty date time value.</summary>
@@ -675,18 +676,18 @@ Date and Time
 		/// <param name="milliseconds">The delta in milliseconds.</param>
 		DateTime			Backward(vuint64_t milliseconds);
 
-		bool operator==(const DateTime& value)const { return filetime==value.filetime; }
-		bool operator!=(const DateTime& value)const { return filetime!=value.filetime; }
-		bool operator<(const DateTime& value)const { return filetime<value.filetime; }
-		bool operator<=(const DateTime& value)const { return filetime<=value.filetime; }
-		bool operator>(const DateTime& value)const { return filetime>value.filetime; }
-		bool operator>=(const DateTime& value)const { return filetime>=value.filetime; }
+		bool operator==(const DateTime& value)const { return filetime == value.filetime; }
+		bool operator!=(const DateTime& value)const { return filetime != value.filetime; }
+		bool operator<(const DateTime& value)const { return filetime < value.filetime; }
+		bool operator<=(const DateTime& value)const { return filetime <= value.filetime; }
+		bool operator>(const DateTime& value)const { return filetime > value.filetime; }
+		bool operator>=(const DateTime& value)const { return filetime >= value.filetime; }
 	};
 
-/***********************************************************************
-Interface
-***********************************************************************/
-	
+	/***********************************************************************
+	Interface
+	***********************************************************************/
+
 	/// <summary>Base type of all interfaces. All interface types are encouraged to be virtual inherited.</summary>
 	class Interface : private NotCopyable
 	{
@@ -694,12 +695,12 @@ Interface
 		virtual ~Interface();
 	};
 
-/***********************************************************************
-Type Traits
-***********************************************************************/
+	/***********************************************************************
+	Type Traits
+	***********************************************************************/
 
-	struct YesType{};
-	struct NoType{};
+	struct YesType {};
+	struct NoType {};
 
 	template<typename T, typename YesOrNo>
 	struct AcceptType
@@ -712,25 +713,79 @@ Type Traits
 		typedef T Type;
 	};
 
+	template<typename T1, typename T2>
+	struct YesNoAnd
+	{
+		typedef NoType Type;
+	};
+
+	template<>
+	struct YesNoAnd<YesType, YesType>
+	{
+		typedef YesType Type;
+	};
+
+	template<typename T1, typename T2>
+	struct YesNoOr
+	{
+		typedef YesType Type;
+	};
+
+	template<>
+	struct YesNoOr<NoType, NoType>
+	{
+		typedef NoType Type;
+	};
+
 	template<typename YesOrNo>
 	struct AcceptValue
 	{
-		static const bool Result=false;
+		static const bool Result = false;
 	};
 
 	template<>
 	struct AcceptValue<YesType>
 	{
-		static const bool Result=true;
+		static const bool Result = true;
 	};
 
+	template<typename T>
+	T ValueOf();
+
 	template<typename TFrom, typename TTo>
-	struct RequiresConvertable
+	struct PointerConvertable
 	{
 		static YesType Test(TTo* value);
 		static NoType Test(void* value);
-		
-		typedef decltype(Test((TFrom*)0)) YesNoType;
+
+		typedef decltype(Test(ValueOf<TFrom*>())) YesNoType;
+	};
+
+	template<typename TFrom, typename TTo>
+	struct ReturnConvertable
+	{
+		static YesType Test(TTo&& value);
+		static NoType Test(...);
+
+		typedef decltype(Test(ValueOf<TFrom&&>())) YesNoType;
+	};
+
+	template<typename TFrom>
+	struct ReturnConvertable<TFrom, void>
+	{
+		typedef YesType YesNoType;
+	};
+
+	template<typename TTo>
+	struct ReturnConvertable<void, TTo>
+	{
+		typedef NoType YesNoType;
+	};
+
+	template<>
+	struct ReturnConvertable<void, void>
+	{
+		typedef YesType YesNoType;
 	};
 
 	template<typename T, typename U>
@@ -1489,19 +1544,27 @@ Ptr
 	template<typename T>
 	class Ptr
 	{
-		 template<typename X>
-		 friend class Ptr;
+		template<typename X>
+		friend class Ptr;
 	protected:
-		typedef void		(*Destructor)(volatile vint*, void*);
+		typedef void(*Destructor)(volatile vint*, void*);
 
-		volatile vint*		counter;
-		T*					reference;
-		void*				originalReference;
-		Destructor			originalDestructor;
+		volatile vint*		counter = nullptr;
+		T*					reference = nullptr;
+		void*				originalReference = nullptr;
+		Destructor			originalDestructor = nullptr;
+
+		void SetEmptyNoIncDec()
+		{
+			counter = nullptr;
+			reference = nullptr;
+			originalReference = nullptr;
+			originalDestructor = nullptr;
+		}
 
 		void Inc()
 		{
-			if(counter)
+			if (counter)
 			{
 				INCRC(counter);
 			}
@@ -1509,18 +1572,15 @@ Ptr
 
 		void Dec(bool deleteIfZero = true)
 		{
-			if(counter)
+			if (counter)
 			{
-				if(DECRC(counter)==0)
+				if (DECRC(counter) == 0)
 				{
 					if (deleteIfZero)
 					{
 						originalDestructor(counter, originalReference);
 					}
-					counter=nullptr;
-					reference=nullptr;
-					originalReference=nullptr;
-					originalDestructor=nullptr;
+					SetEmptyNoIncDec();
 				}
 			}
 		}
@@ -1532,9 +1592,9 @@ Ptr
 
 		Ptr(volatile vint* _counter, T* _reference, void* _originalReference, Destructor _originalDestructor)
 			:counter(_counter)
-			,reference(_reference)
-			,originalReference(_originalReference)
-			,originalDestructor(_originalDestructor)
+			, reference(_reference)
+			, originalReference(_originalReference)
+			, originalDestructor(_originalDestructor)
 		{
 			Inc();
 		}
@@ -1542,74 +1602,74 @@ Ptr
 
 		/// <summary>Create a null pointer.</summary>
 		Ptr()
-			:counter(0)
-			,reference(0)
-			,originalReference(0)
-			,originalDestructor(0)
 		{
 		}
-		
+
 		/// <summary>Convert a pointer to an object to a smart pointer.</summary>
 		/// <param name="pointer">The pointer to the object.</param>
 		Ptr(T* pointer)
-			:counter(0)
-			,reference(0)
-			,originalReference(0)
-			,originalDestructor(0)
 		{
-			if(pointer)
+			if (pointer)
 			{
-				counter=ReferenceCounterOperator<T>::CreateCounter(pointer);
-				reference=pointer;
-				originalReference=pointer;
-				originalDestructor=&ReferenceCounterOperator<T>::DeleteReference;
+				counter = ReferenceCounterOperator<T>::CreateCounter(pointer);
+				reference = pointer;
+				originalReference = pointer;
+				originalDestructor = &ReferenceCounterOperator<T>::DeleteReference;
 				Inc();
 			}
 		}
-		
+
 		/// <summary>Copy a smart pointer.</summary>
 		/// <param name="pointer">The smart pointer to copy.</param>
 		Ptr(const Ptr<T>& pointer)
 			:counter(pointer.counter)
-			,reference(pointer.reference)
-			,originalReference(pointer.originalReference)
-			,originalDestructor(pointer.originalDestructor)
+			, reference(pointer.reference)
+			, originalReference(pointer.originalReference)
+			, originalDestructor(pointer.originalDestructor)
 		{
 			Inc();
 		}
-		
+
 		/// <summary>Move a smart pointer.</summary>
 		/// <param name="pointer">The smart pointer to Move.</param>
 		Ptr(Ptr<T>&& pointer)
 			:counter(pointer.counter)
-			,reference(pointer.reference)
-			,originalReference(pointer.originalReference)
-			,originalDestructor(pointer.originalDestructor)
+			, reference(pointer.reference)
+			, originalReference(pointer.originalReference)
+			, originalDestructor(pointer.originalDestructor)
 		{
-			pointer.counter=0;
-			pointer.reference=0;
-			pointer.originalReference=0;
-			pointer.originalDestructor=0;
+			pointer.SetEmptyNoIncDec();
 		}
-		
+
 		/// <summary>Cast a smart pointer.</summary>
 		/// <typeparam name="C">The type of the object before casting.</typeparam>
 		/// <param name="pointer">The smart pointer to cast.</param>
-		template<typename C>
+		template<typename C, typename = typename AcceptType<void, typename PointerConvertable<C, T>::YesNoType>::Type>
 		Ptr(const Ptr<C>& pointer)
-			:counter(0)
-			,reference(0)
-			,originalReference(0)
-			,originalDestructor(0)
 		{
-			T* converted=pointer.Obj();
-			if(converted)
+			if (auto converted = pointer.Obj())
 			{
-				counter=pointer.Counter();
-				reference=converted;
-				originalReference=pointer.originalReference;
-				originalDestructor=pointer.originalDestructor;
+				counter = pointer.Counter();
+				reference = converted;
+				originalReference = pointer.originalReference;
+				originalDestructor = pointer.originalDestructor;
 				Inc();
+			}
+		}
+
+		/// <summary>Cast a smart pointer.</summary>
+		/// <typeparam name="C">The type of the object before casting.</typeparam>
+		/// <param name="pointer">The smart pointer to cast.</param>
+		template<typename C, typename = typename AcceptType<void, typename PointerConvertable<C, T>::YesNoType>::Type>
+		Ptr(Ptr<C>&& pointer)
+		{
+			if (auto converted = pointer.Obj())
+			{
+				counter = pointer.Counter();
+				reference = converted;
+				originalReference = pointer.originalReference;
+				originalDestructor = pointer.originalDestructor;
+				pointer.SetEmptyNoIncDec();
 			}
 		}
 
@@ -1617,7 +1677,7 @@ Ptr
 		{
 			Dec();
 		}
-		
+
 		/// <summary>Detach the contained object from this smart pointer.</summary>
 		/// <returns>The detached object. Returns null if this smart pointer is empty.</returns>
 		T* Detach()
@@ -1626,171 +1686,137 @@ Ptr
 			Dec(false);
 			return detached;
 		}
-		
+
 		/// <summary>Cast a smart pointer.</summary>
 		/// <typeparam name="C">The type of the object after casting.</typeparam>
 		/// <returns>The casted smart pointer. Returns null if failed.</returns>
 		template<typename C>
 		Ptr<C> Cast()const
 		{
-			C* converted=dynamic_cast<C*>(reference);
-			return Ptr<C>((converted?counter:0), converted, originalReference, originalDestructor);
+			C* converted = dynamic_cast<C*>(reference);
+			return Ptr<C>((converted ? counter : 0), converted, originalReference, originalDestructor);
 		}
-		
+
 		/// <summary>Convert a pointer to an object to a smart pointer.</summary>
 		/// <returns>The converted smart pointer.</returns>
 		/// <param name="pointer">The pointer to the object.</param>
 		Ptr<T>& operator=(T* pointer)
 		{
 			Dec();
-			if(pointer)
+			if (pointer)
 			{
-				counter=ReferenceCounterOperator<T>::CreateCounter(pointer);
-				reference=pointer;
-				originalReference=pointer;
-				originalDestructor=&ReferenceCounterOperator<T>::DeleteReference;
+				counter = ReferenceCounterOperator<T>::CreateCounter(pointer);
+				reference = pointer;
+				originalReference = pointer;
+				originalDestructor = &ReferenceCounterOperator<T>::DeleteReference;
 				Inc();
 			}
 			else
 			{
-				counter=0;
-				reference=0;
-				originalReference=0;
-				originalDestructor=0;
+				SetEmptyNoIncDec();
 			}
 			return *this;
 		}
-		
+
 		/// <summary>Copy a smart pointer.</summary>
 		/// <returns>The copied smart pointer.</returns>
 		/// <param name="pointer">The smart pointer to copy.</param>
 		Ptr<T>& operator=(const Ptr<T>& pointer)
 		{
-			if(this!=&pointer)
+			if (this != &pointer)
 			{
 				Dec();
-				counter=pointer.counter;
-				reference=pointer.reference;
-				originalReference=pointer.originalReference;
-				originalDestructor=pointer.originalDestructor;
+				counter = pointer.counter;
+				reference = pointer.reference;
+				originalReference = pointer.originalReference;
+				originalDestructor = pointer.originalDestructor;
 				Inc();
 			}
 			return *this;
 		}
-		
+
 		/// <summary>Move a smart pointer.</summary>
 		/// <returns>The moved smart pointer.</returns>
 		/// <param name="pointer">The smart pointer to Move.</param>
 		Ptr<T>& operator=(Ptr<T>&& pointer)
 		{
-			if(this!=&pointer)
+			if (this != &pointer)
 			{
 				Dec();
-				counter=pointer.counter;
-				reference=pointer.reference;
-				originalReference=pointer.originalReference;
-				originalDestructor=pointer.originalDestructor;
-				
-				pointer.counter=0;
-				pointer.reference=0;
-				pointer.originalReference=0;
-				pointer.originalDestructor=0;
-			}
-			return *this;
-		}
-		
-		/// <summary>Cast a smart pointer.</summary>
-		/// <typeparam name="C">The type of the object before casting.</typeparam>
-		/// <returns>The smart pointer after casting.</returns>
-		/// <param name="pointer">The smart pointer to cast.</param>
-		template<typename C>
-		Ptr<T>& operator=(const Ptr<C>& pointer)
-		{
-			T* converted=pointer.Obj();
-			Dec();
-			if(converted)
-			{
-				counter=pointer.counter;
-				reference=converted;
-				originalReference=pointer.originalReference;
-				originalDestructor=pointer.originalDestructor;
-				Inc();
-			}
-			else
-			{
-				counter=0;
-				reference=0;
-				originalReference=0;
-				originalDestructor=0;
+				counter = pointer.counter;
+				reference = pointer.reference;
+				originalReference = pointer.originalReference;
+				originalDestructor = pointer.originalDestructor;
+				pointer.SetEmptyNoIncDec();
 			}
 			return *this;
 		}
 
 		bool operator==(const T* pointer)const
 		{
-			return reference==pointer;
+			return reference == pointer;
 		}
 
 		bool operator!=(const T* pointer)const
 		{
-			return reference!=pointer;
+			return reference != pointer;
 		}
 
 		bool operator>(const T* pointer)const
 		{
-			return reference>pointer;
+			return reference > pointer;
 		}
 
 		bool operator>=(const T* pointer)const
 		{
-			return reference>=pointer;
+			return reference >= pointer;
 		}
 
 		bool operator<(const T* pointer)const
 		{
-			return reference<pointer;
+			return reference < pointer;
 		}
 
 		bool operator<=(const T* pointer)const
 		{
-			return reference<=pointer;
+			return reference <= pointer;
 		}
 
 		bool operator==(const Ptr<T>& pointer)const
 		{
-			return reference==pointer.reference;
+			return reference == pointer.reference;
 		}
 
 		bool operator!=(const Ptr<T>& pointer)const
 		{
-			return reference!=pointer.reference;
+			return reference != pointer.reference;
 		}
 
 		bool operator>(const Ptr<T>& pointer)const
 		{
-			return reference>pointer.reference;
+			return reference > pointer.reference;
 		}
 
 		bool operator>=(const Ptr<T>& pointer)const
 		{
-			return reference>=pointer.reference;
+			return reference >= pointer.reference;
 		}
 
 		bool operator<(const Ptr<T>& pointer)const
 		{
-			return reference<pointer.reference;
+			return reference < pointer.reference;
 		}
 
 		bool operator<=(const Ptr<T>& pointer)const
 		{
-			return reference<=pointer.reference;
+			return reference <= pointer.reference;
 		}
 
 		/// <summary>Test if it is a null pointer.</summary>
 		/// <returns>Returns true if it is not null.</returns>
 		operator bool()const
 		{
-			return reference!=0;
+			return reference != 0;
 		}
 
 		/// <summary>Get the pointer to the object.</summary>
@@ -1799,7 +1825,7 @@ Ptr
 		{
 			return reference;
 		}
-		
+
 		/// <summary>Get the pointer to the object.</summary>
 		/// <returns>The pointer to the object.</returns>
 		T* operator->()const
@@ -2079,15 +2105,63 @@ Functions:
 #define VCZH_FUNCTION
 namespace vl
 {
- 
-/***********************************************************************
-vl::Func<R(TArgs...)>
-***********************************************************************/
 
 	template<typename T>
 	class Func
 	{
 	};
+ 
+/***********************************************************************
+vl::function_lambda::LambdaRetriveType<R(TArgs...)>
+***********************************************************************/
+ 
+	namespace function_lambda
+	{
+		template<typename T>
+		struct LambdaRetriveType
+		{
+		};
+
+		template<typename T>
+		struct FunctionObjectRetriveType
+		{
+			typedef typename LambdaRetriveType<decltype(&T::operator())>::Type Type;
+			typedef typename LambdaRetriveType<decltype(&T::operator())>::FunctionType FunctionType;
+			typedef typename LambdaRetriveType<decltype(&T::operator())>::ResultType ResultType;
+			typedef typename LambdaRetriveType<decltype(&T::operator())>::ParameterTypes ParameterTypes;
+		};
+
+		template<typename TObject, typename R, typename ...TArgs>
+		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)const>
+		{
+			typedef Func<R(TArgs...)> Type;
+			typedef R(FunctionType)(TArgs...);
+			typedef R ResultType;
+			typedef TypeTuple<TArgs...> ParameterTypes;
+		};
+
+		template<typename TObject, typename R, typename ...TArgs>
+		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)>
+		{
+			typedef Func<R(TArgs...)> Type;
+			typedef R(FunctionType)(TArgs...);
+			typedef R ResultType;
+			typedef TypeTuple<TArgs...> ParameterTypes;
+		};
+
+		template<typename R, typename ...TArgs>
+		struct FunctionObjectRetriveType<R(*)(TArgs...)>
+		{
+			typedef Func<R(TArgs...)> Type;
+			typedef R(FunctionType)(TArgs...);
+			typedef R ResultType;
+			typedef TypeTuple<TArgs...> ParameterTypes;
+		};
+	}
+ 
+/***********************************************************************
+vl::Func<R(TArgs...)>
+***********************************************************************/
 
 	namespace internal_invokers
 	{
@@ -2154,6 +2228,11 @@ vl::Func<R(TArgs...)>
 			{
 			}
 
+			ObjectInvoker(C&& _function)
+				:function(MoveValue(_function))
+			{
+			}
+
 			R Invoke(TArgs&& ...args)override
 			{
 				return function(ForwardValue<TArgs>(args)...);
@@ -2174,6 +2253,11 @@ vl::Func<R(TArgs...)>
 			{
 			}
 
+			ObjectInvoker(C&& _function)
+				:function(MoveValue(_function))
+			{
+			}
+
 			void Invoke(TArgs&& ...args)override
 			{
 				function(ForwardValue<TArgs>(args)...);
@@ -2190,6 +2274,23 @@ vl::Func<R(TArgs...)>
 	protected:
 		Ptr<internal_invokers::Invoker<R, TArgs...>>		invoker;
 
+		template<typename R2, typename ...TArgs2>
+		static bool IsEmptyFunc(const Func<R2(TArgs2...)>& function)
+		{
+			return !function;
+		}
+
+		template<typename R2, typename ...TArgs2>
+		static bool IsEmptyFunc(Func<R2(TArgs2...)>& function)
+		{
+			return !function;
+		}
+
+		template<typename C>
+		static bool IsEmptyFunc(C&&)
+		{
+			return false;
+		}
 	public:
 		typedef R FunctionType(TArgs...);
 		typedef R ResultType;
@@ -2198,21 +2299,28 @@ vl::Func<R(TArgs...)>
 		Func()
 		{
 		}
-		
+
 		/// <summary>Copy a function reference.</summary>
 		/// <param name="function">The function reference to copy.</param>
 		Func(const Func<R(TArgs...)>& function)
+			:invoker(function.invoker)
 		{
-			invoker=function.invoker;
 		}
-		
+
+		/// <summary>Move a function reference.</summary>
+		/// <param name="function">The function reference to move.</param>
+		Func(Func<R(TArgs...)>&& function)
+			:invoker(MoveValue(function.invoker))
+		{
+		}
+
 		/// <summary>Create a reference using a function pointer.</summary>
 		/// <param name="function">The function pointer.</param>
 		Func(R(*function)(TArgs...))
 		{
-			invoker=new internal_invokers::StaticInvoker<R, TArgs...>(function);
+			invoker = new internal_invokers::StaticInvoker<R, TArgs...>(function);
 		}
-		
+
 		/// <summary>Create a reference using a method.</summary>
 		/// <typeparam name="C">Type of the class that has the method.</typeparam>
 		/// <param name="sender">The object that has the method.</param>
@@ -2220,29 +2328,19 @@ vl::Func<R(TArgs...)>
 		template<typename C>
 		Func(C* sender, R(C::*function)(TArgs...))
 		{
-			invoker=new internal_invokers::MemberInvoker<C, R, TArgs...>(sender, function);
+			invoker = new internal_invokers::MemberInvoker<C, R, TArgs...>(sender, function);
 		}
 
 		/// <summary>Create a reference using a function object.</summary>
-		/// <typeparam name="R2">Return type of the function object.</typeparam>
-		/// <typeparam name="TArgs2">Argument types of the function object.</typeparam>
-		/// <param name="function">The function object.</param>
-		template<typename R2, typename ...TArgs2>
-		Func(const Func<R2(TArgs2...)>& function)
-		{
-			if (function)
-			{
-				invoker = new internal_invokers::ObjectInvoker<Func<R2(TArgs2...)>, R, TArgs...>(function);
-			}
-		}
-		
-		/// <summary>Create a reference using a function object.</summary>
 		/// <typeparam name="C">Type of the function object.</typeparam>
 		/// <param name="function">The function object. It could be a lambda expression.</param>
-		template<typename C>
-		Func(const C& function)
+		template<typename C, typename = typename AcceptType<void, typename ReturnConvertable<decltype(ValueOf<C>()(ValueOf<TArgs>()...)), R>::YesNoType>::Type>
+		Func(C&& function)
 		{
-			invoker = new internal_invokers::ObjectInvoker<C, R, TArgs...>(function);
+			if (!IsEmptyFunc(function))
+			{
+				invoker = new internal_invokers::ObjectInvoker<typename RemoveCVR<C>::Type, R, TArgs...>(ForwardValue<C&&>(function));
+			}
 		}
 
 		/// <summary>Invoke the function.</summary>
@@ -2251,6 +2349,18 @@ vl::Func<R(TArgs...)>
 		R operator()(TArgs ...args)const
 		{
 			return invoker->Invoke(ForwardValue<TArgs>(args)...);
+		}
+
+		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>& function)
+		{
+			invoker = function.invoker;
+			return *this;
+		}
+
+		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>&& function)
+		{
+			invoker = MoveValue(function.invoker);
+			return *this;
 		}
 
 		bool operator==(const Func<R(TArgs...)>& function)const
@@ -2272,51 +2382,11 @@ vl::Func<R(TArgs...)>
 	};
  
 /***********************************************************************
-vl::function_lambda::LambdaRetriveType<R(TArgs...)>
+LAMBDA
 ***********************************************************************/
  
 	namespace function_lambda
 	{
-		template<typename T>
-		struct LambdaRetriveType
-		{
-			typedef vint Type;
-			typedef vint FunctionType;
-			typedef vint ResultType;
-		};
- 
-		template<typename T>
-		struct FunctionObjectRetriveType
-		{
-			typedef typename LambdaRetriveType<decltype(&T::operator())>::Type Type;
-			typedef typename LambdaRetriveType<decltype(&T::operator())>::FunctionType FunctionType;
-			typedef typename LambdaRetriveType<decltype(&T::operator())>::ResultType ResultType;
-		};
- 
-		template<typename TObject, typename R, typename ...TArgs>
-		struct LambdaRetriveType<R (__thiscall TObject::*)(TArgs...)const>
-		{
-			typedef Func<R(TArgs...)> Type;
-			typedef R(FunctionType)(TArgs...);
-			typedef R ResultType;
-		};
- 
-		template<typename TObject, typename R, typename ...TArgs>
-		struct LambdaRetriveType<R (__thiscall TObject::*)(TArgs...)>
-		{
-			typedef Func<R(TArgs...)> Type;
-			typedef R(FunctionType)(TArgs...);
-			typedef R ResultType;
-		};
- 
-		template<typename R, typename ...TArgs>
-		struct FunctionObjectRetriveType<R(*)(TArgs...)>
-		{
-			typedef Func<R(TArgs...)> Type;
-			typedef R(FunctionType)(TArgs...);
-			typedef R ResultType;
-		};
- 
 		/// <summary>Create a function reference to a function object or a lambda expression, with all type information autotimatically inferred. You can use the macro called "LAMBDA" to refer to this function.</summary>
 		/// <typeparam name="T">Type of the function object or the lambda expression.</typeparam>
 		/// <returns>The function reference.</returns>
@@ -2326,7 +2396,7 @@ vl::function_lambda::LambdaRetriveType<R(TArgs...)>
 		{
 			return functionObject;
 		}
-		
+
 		/// <summary>Create a function reference to a function pointer, with all type information autotimatically inferred. You can use the macro called "FUNCTION" to refer to this function.</summary>
 		/// <typeparam name="T">Type of the function pointer.</typeparam>
 		/// <returns>The function reference.</returns>
@@ -5300,6 +5370,7 @@ namespace vl
 		>
 		class Group : public Object, public virtual IEnumerable<Pair<KT, VT>>
 		{
+		public:
 			typedef SortedList<KT, KK>		KeyContainer;
 			typedef List<VT, VK>			ValueContainer;
 		protected:
@@ -5672,57 +5743,6 @@ Random Access
 #endif
 
 /***********************************************************************
-.\CONSOLE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-UI::Console
-
-***********************************************************************/
-
-#ifndef VCZH_CONSOLE
-#define VCZH_CONSOLE
-
-
-namespace vl
-{
-	namespace console
-	{
-		/// <summary>A Static class for command line window operations.</summary>
-		class Console abstract
-		{
-		public:
-			/// <summary>Write to the command line window.</summary>
-			/// <param name="string">Content to write.</param>
-			/// <param name="length">Size of the content in wchar_t. The zero terminator is not included.</param>
-			static void Write(const wchar_t* string, vint length);
-
-			/// <summary>Write to the command line window.</summary>
-			/// <param name="string">Content to write.</param>
-			static void Write(const wchar_t* string);
-
-			/// <summary>Write to the command line window.</summary>
-			/// <param name="string">Content to write.</param>
-			static void Write(const WString& string);
-
-			/// <summary>Write to the command line window with a CRLF.</summary>
-			/// <param name="string">Content to write.</param>
-			static void WriteLine(const WString& string);
-
-			/// <summary>Read from the command line window.</summary>
-			/// <returns>The whole line read from the command line window.</returns>
-			static WString Read();
-
-			static void SetColor(bool red, bool green, bool blue, bool light);
-			static void SetTitle(const WString& string);
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\EXCEPTION.H
 ***********************************************************************/
 /***********************************************************************
@@ -5777,6 +5797,57 @@ namespace vl
 		const WString&				GetExpression()const;
 		vint							GetPosition()const;
 	};
+}
+
+#endif
+
+/***********************************************************************
+.\CONSOLE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+UI::Console
+
+***********************************************************************/
+
+#ifndef VCZH_CONSOLE
+#define VCZH_CONSOLE
+
+
+namespace vl
+{
+	namespace console
+	{
+		/// <summary>A Static class for command line window operations.</summary>
+		class Console abstract
+		{
+		public:
+			/// <summary>Write to the command line window.</summary>
+			/// <param name="string">Content to write.</param>
+			/// <param name="length">Size of the content in wchar_t. The zero terminator is not included.</param>
+			static void Write(const wchar_t* string, vint length);
+
+			/// <summary>Write to the command line window.</summary>
+			/// <param name="string">Content to write.</param>
+			static void Write(const wchar_t* string);
+
+			/// <summary>Write to the command line window.</summary>
+			/// <param name="string">Content to write.</param>
+			static void Write(const WString& string);
+
+			/// <summary>Write to the command line window with a CRLF.</summary>
+			/// <param name="string">Content to write.</param>
+			static void WriteLine(const WString& string);
+
+			/// <summary>Read from the command line window.</summary>
+			/// <returns>The whole line read from the command line window.</returns>
+			static WString Read();
+
+			static void SetColor(bool red, bool green, bool blue, bool light);
+			static void SetTitle(const WString& string);
+		};
+	}
 }
 
 #endif
@@ -6122,73 +6193,130 @@ UI::Console
 #define VCZH_UNITTEST
 
 
-class UnitTestError
-{
-};
-
 namespace vl
 {
 	namespace unittest
 	{
+		using UnitTestFileProc = void(*)();
+
 		/// <summary><![CDATA[
-		/// A static class containing all unit test operations. In order to run test cases, you should do the following:
-		/// 1) Write test cases in cpp files like this
-		/// TEST_CASE(<Name of the test case, which should be a legal C++ identifier>)
-		/// {
-		///		<Use TEST_ASSERT(condition) to test>
-		///		<Use TEST_ERROR(expression) if you know "expression" will cause a fatal error by using the CHECK_ERROR macro.>
-		///		<Use TEST_EXCEPTION(expression, exceptionType, assertFunction) if you know "expression" will throw an expression of "exceptionType", and then you can provide "assertFunction" to check the information provided in the exception.>
-		///		<Use TEST_PRINT(message) to print whatever to the command line window.>
-		/// }
-		/// You should call [M:vl.unittest.UnitTest.RunAndDisposeTests] in your main function to run all test cases.
+		/// A static class containing all unit test operations.
+		/// 1) Writing test cases:
+		///   TEST_FILE
+		///   {
+		///     TEST_CATEGORY(L"Category Description"){ ... });
+		///     TEST_CASE(L"Test Case Description"){ ... });
+		///   }
+		///   A category could contains other categories and cases, but a case should only contain assertions.
+		/// 2) Writing asserts:
+		///   TEST_CASE_ASSERT(condition): An assertion that is also a test case, only legal to call inside a category, with a description equivalents to the condition.
+		///   TEST_ASSERT(condition); Only legal to call inside a case. It passes when condition evaluates to true.
+		///   TEST_ERROR(condition); Only legal to call inside a case. It passes when condition throws vl::Error
+		///   TEST_EXCEPTION(statement, exception, callback); Only legal to call inside a case. It passes when an exception of the expected type is thrown, and callback(exception) passes.
+		/// 3) Other functions
+		///   TEST_PRINT(message); Print neutral message.
+		/// 4)
+		///   You should call [M:vl.unittest.UnitTest.RunAndDisposeTests] in your main function to run all test cases, and return the value from this function.
+		///   When "/D" is provided, the test program crashes at any failed assertiong.
+		///   When "/R" is provided, the test program consumes all failed assertions and run all cases. A test case stopped at the first failed assertion. Exit code will be 1 when any case fails.
+		///   When no argument is provided
+		///     In Windows, it becomes "/D" only when a debugger is attached, in other cases it becomes "/R".
+		///     In other platforms, it becomes "/R"
 		/// ]]></summary>
-		class UnitTest abstract
+		class UnitTest
 		{
 		public:
-			typedef void(*TestProc)();
+			UnitTest() = delete;
 
-			/// <summary>Print a green message.</summary>
+			enum class MessageKind
+			{
+				Info,
+				Error,
+				File,
+				Category,
+				Case,
+			};
+
+			/// <summary>Print a message with specified color.</summary>
 			/// <param name="string">The content.</param>
-			static void PrintMessage(const WString& string);
-
-			/// <summary>Print a white information.</summary>
-			/// <param name="string">The content.</param>
-			static void PrintInfo(const WString& string);
-
-			/// <summary>Print a red error.</summary>
-			/// <param name="string">The content.</param>
-			static void PrintError(const WString& string);
-
-			static void PushTest(TestProc testProc);
+			/// <param name="kind">The kind of the content.</param>
+			static void PrintMessage(const WString& string, MessageKind kind);
 
 			/// <summary>Run all test cases.</summary>
-			static void RunAndDisposeTests();
+#ifdef VCZH_MSVC
+			static int RunAndDisposeTests(int argc, wchar_t* argv[]);
+#else
+			static int RunAndDisposeTests(int argc, char* argv[]);
+#endif
+
+			static void RegisterTestFile(const char* fileName, UnitTestFileProc testProc);
+			static void RunCategoryOrCase(const WString& description, bool isCategory, Func<void()>&& callback);
+			static void EnsureLegalToAssert();
 		};
 
-#define TEST_CHECK_ERROR(CONDITION,DESCRIPTION) do{if(!(CONDITION))throw Error(DESCRIPTION);}while(0)
-#define TEST_ASSERT(CONDITION) do{TEST_CHECK_ERROR(CONDITION,L"");}while(0)
-#define TEST_ERROR(CONDITION) do{try{CONDITION;throw UnitTestError();}catch(const Error&){}catch(const UnitTestError&){TEST_CHECK_ERROR(false,L"");}}while(0)
-#define TEST_CASE(NAME)\
-		extern void TESTCASE_##NAME();														\
-		namespace vl_unittest_executors														\
-		{																					\
-			class TESTCASE_RUNNER_##NAME													\
-			{																				\
-			public:																			\
-				static void RunUnitTest()													\
-				{																			\
-					vl::unittest::UnitTest::PrintMessage(L_(#NAME));						\
-					TESTCASE_##NAME();														\
-				}																			\
-				TESTCASE_RUNNER_##NAME()													\
-				{																			\
-					vl::unittest::UnitTest::PushTest(&TESTCASE_RUNNER_##NAME::RunUnitTest);	\
-				}																			\
-			} TESTCASE_RUNNER_##NAME##_INSTANCE;											\
-		}																					\
-		void TESTCASE_##NAME()
-#define TEST_PRINT(x) vl::unittest::UnitTest::PrintInfo(x)
-#define TEST_EXCEPTION(STATEMENT,EXCEPTION,ASSERT_FUNCTION) try{STATEMENT; TEST_ASSERT(false);}catch(const EXCEPTION& e){ASSERT_FUNCTION(e);}
+		class UnitTestFile
+		{
+		public:
+			UnitTestFile(const char* fileName, UnitTestFileProc testProc)
+			{
+				UnitTest::RegisterTestFile(fileName, testProc);
+			}
+		};
+
+		struct UnitTestAssertError
+		{
+			const wchar_t*				message;
+
+			UnitTestAssertError(const wchar_t* _message) :message(_message) {}
+		};
+
+		struct UnitTestConfigError
+		{
+			const wchar_t*				message;
+
+			UnitTestConfigError(const wchar_t* _message) :message(_message) {}
+		};
+
+#define TEST_FILE\
+		static void VLPPTEST_TESTFILE();\
+		static ::vl::unittest::UnitTestFile VLPPTEST_TESTFILE_INSTANCE(__FILE__, &VLPPTEST_TESTFILE);\
+		static void VLPPTEST_TESTFILE()\
+
+#define TEST_CATEGORY(DESCRIPTION)\
+		::vl::unittest::UnitTest::RunCategoryOrCase((DESCRIPTION), true, [&]()\
+
+#define TEST_CASE(DESCRIPTION)\
+		::vl::unittest::UnitTest::RunCategoryOrCase((DESCRIPTION), false, [&]()\
+
+#define TEST_ASSERT(CONDITION)\
+		do{\
+			::vl::unittest::UnitTest::EnsureLegalToAssert();\
+			if(!(CONDITION))throw ::vl::unittest::UnitTestAssertError(L"Assertion failure: " #CONDITION);\
+		}while(0)\
+
+#define TEST_ERROR(STATEMENT)\
+		do{\
+			::vl::unittest::UnitTest::EnsureLegalToAssert();\
+			try{STATEMENT; throw ::vl::unittest::UnitTestAssertError(L"Expect an error but nothing occurred: " #STATEMENT);}\
+			catch(const ::vl::Error&){}\
+			catch(const ::vl::unittest::UnitTestAssertError&) { throw; }\
+			catch (const ::vl::unittest::UnitTestConfigError&) { throw; }\
+		}while(0)\
+
+#define TEST_EXCEPTION(STATEMENT,EXCEPTION,ASSERT_FUNCTION)\
+		do{\
+			auto __ASSERT_FUNCTION__ = ASSERT_FUNCTION;\
+			try{STATEMENT; throw ::vl::unittest::UnitTestAssertError(L"Expect [" #EXCEPTION "] but nothing occurred: " #STATEMENT);}\
+			catch(const EXCEPTION& e){ __ASSERT_FUNCTION__(e); }\
+			catch(...){ throw ::vl::unittest::UnitTestAssertError(L"Expect [" #EXCEPTION "] but get unexpected exception: " #STATEMENT); }\
+		}while(0)\
+
+#define TEST_PRINT(MESSAGE)\
+		::vl::unittest::UnitTest::PrintMessage((MESSAGE), ::vl::unittest::UnitTest::MessageKind::Info)\
+
+#define TEST_CASE_ASSERT(CONDITION)\
+		TEST_CASE(L ## # CONDITION) { TEST_ASSERT(CONDITION); })\
+
 	}
 }
 
@@ -6991,7 +7119,7 @@ LazyList
 			template<typename U>
 			LazyList<Ptr<U>> FindType()const
 			{
-				return Cast<U>().Where([](T t){return t;});
+				return Cast<U>().Where([](Ptr<U> t){return t;});
 			}
 			
 			/// <summary>Create a new lazy list with all elements sorted.</summary>

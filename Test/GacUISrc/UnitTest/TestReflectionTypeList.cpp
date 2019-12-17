@@ -34,29 +34,32 @@ void Reflection_TypeList(U&& callback)
 #define PROCESS_TYPE(TYPE) types.Remove(GetTypeDescriptor<TYPE>());
 #define GUIREFLECTIONTEMPLATES_PROCESS_TYPE(NAME, BASE) types.Remove(GetTypeDescriptor<presentation::templates::NAME>());
 
-TEST_CASE(Reflection_TypeList_Elements)
+TEST_FILE
 {
-	Reflection_TypeList<IGuiGraphicsElement>([](auto& types)
+	TEST_CASE(L"Ensure GUIREFLECTIONELEMENT_CLASS_TYPELIST has all IGuiGraphicsElement sub classes")
 	{
-		types.Remove(GetTypeDescriptor<IGuiGraphicsElement>());
-		GUIREFLECTIONELEMENT_CLASS_TYPELIST(PROCESS_TYPE);
+		Reflection_TypeList<IGuiGraphicsElement>([](auto& types)
+		{
+			types.Remove(GetTypeDescriptor<IGuiGraphicsElement>());
+			GUIREFLECTIONELEMENT_CLASS_TYPELIST(PROCESS_TYPE);
+		});
 	});
-}
 
-TEST_CASE(Reflection_TypeList_Compositions)
-{
-	Reflection_TypeList<GuiGraphicsComposition>([](auto& types)
+	TEST_CASE(L"Ensure GUIREFLECTION(COMPOSITION|TEMPLATES)_CLASS_TYPELIST has all GuiGraphicsComposition sub classes")
 	{
-		GUIREFLECTIONCOMPOSITION_CLASS_TYPELIST(PROCESS_TYPE);
-		GUIREFLECTIONTEMPLATES_CLASS_TYPELIST(PROCESS_TYPE);
+		Reflection_TypeList<GuiGraphicsComposition>([](auto& types)
+		{
+			GUIREFLECTIONCOMPOSITION_CLASS_TYPELIST(PROCESS_TYPE);
+			GUIREFLECTIONTEMPLATES_CLASS_TYPELIST(PROCESS_TYPE);
+		});
 	});
-}
 
-TEST_CASE(Reflection_TypeList_Controls)
-{
-	Reflection_TypeList<GuiControl>([](auto& types)
+	TEST_CASE(L"Ensure GUIREFLECTIONCONTROLS_CLASS_TYPELIST has all GuiControl sub classes")
 	{
-		GUIREFLECTIONCONTROLS_CLASS_TYPELIST(PROCESS_TYPE);
+		Reflection_TypeList<GuiControl>([](auto& types)
+		{
+			GUIREFLECTIONCONTROLS_CLASS_TYPELIST(PROCESS_TYPE);
+		});
 	});
 }
 

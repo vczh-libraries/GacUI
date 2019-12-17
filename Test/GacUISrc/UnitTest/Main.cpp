@@ -52,6 +52,10 @@ WString GetTestOutputPath()
 #endif
 }
 
+int UT_result = 0;
+int UT_argc = 0;
+wchar_t** UT_argv = nullptr;
+
 void GuiMain()
 {
 #if defined VCZH_MSVC
@@ -63,7 +67,7 @@ void GuiMain()
 		}
 	}
 #endif
-	unittest::UnitTest::RunAndDisposeTests();
+	UT_result = unittest::UnitTest::RunAndDisposeTests(UT_argc, UT_argv);
 }
 
 #if defined VCZH_MSVC
@@ -72,9 +76,11 @@ int wmain(int argc, wchar_t* argv[])
 int main()
 #endif
 {
-	int result = SetupWindowsDirect2DRenderer();
+	UT_argc = argc;
+	UT_argv = argv;
+	SetupWindowsDirect2DRenderer();
 #if defined VCZH_MSVC && defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
-	return result;
+	return UT_result;
 }

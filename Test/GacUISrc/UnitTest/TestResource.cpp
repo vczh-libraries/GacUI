@@ -51,120 +51,48 @@ void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 
 Ptr<GuiResource> LoadResource(const WString& resourceName, bool requireErrors)
 {
-	auto inputPath = FilePath(GetTestResourcePath()) / resourceName;
-	GuiResourceError::List errors;
+	Ptr<GuiResource> resource;
+	TEST_CASE(L"Compare compiler output for: " + resourceName)
+	{
+		auto inputPath = FilePath(GetTestResourcePath()) / resourceName;
+		GuiResourceError::List errors;
 
-	auto resource = GuiResource::LoadFromXml(inputPath.GetFullPath(), errors);
-	PRINT_ERROR;
-	resource->Precompile(nullptr, errors);
-	PRINT_ERROR;
-	TEST_ASSERT(!requireErrors);
+		resource = GuiResource::LoadFromXml(inputPath.GetFullPath(), errors);
+		PRINT_ERROR;
+		resource->Precompile(nullptr, errors);
+		PRINT_ERROR;
+		TEST_ASSERT(!requireErrors);
 
-	auto outputPath = FilePath(GetTestOutputPath()) / (resourceName + L".bin");
-	FileStream stream(outputPath.GetFullPath(), FileStream::WriteOnly);
-	resource->SavePrecompiledBinary(stream);
+		auto outputPath = FilePath(GetTestOutputPath()) / (resourceName + L".bin");
+		FileStream stream(outputPath.GetFullPath(), FileStream::WriteOnly);
+		resource->SavePrecompiledBinary(stream);
+	});
 	return resource;
 }
 
 #undef PRINT_ERROR
 
-TEST_CASE(TestResource_NotExists)
+TEST_FILE
 {
 	LoadResource(L"Resource.NotExists.xml", true);
-}
-
-TEST_CASE(TestResource_WrongSyntax)
-{
 	LoadResource(L"Resource.WrongSyntax.xml", true);
-}
-
-TEST_CASE(TestResource_WrongSyntax2)
-{
 	LoadResource(L"Resource.WrongSyntax2.xml", true);
-}
-
-TEST_CASE(TestResource_WrongDoc)
-{
 	LoadResource(L"Resource.WrongDoc.xml", true);
-}
-
-TEST_CASE(TestResource_WrongInstanceStyle)
-{
 	LoadResource(L"Resource.WrongInstanceStyle.xml", true);
-}
-
-TEST_CASE(TestResource_WrongInstance)
-{
 	LoadResource(L"Resource.WrongInstance.xml", true);
-}
-
-TEST_CASE(TestResource_FailedInstance_Ctor1)
-{
 	LoadResource(L"Resource.FailedInstance.Ctor1.xml", true);
-}
-
-TEST_CASE(TestResource_FailedInstance_Ctor2)
-{
 	LoadResource(L"Resource.FailedInstance.Ctor2.xml", true);
 	LoadResource(L"Resource.FailedInstance.Ctor2_r.xml", true);
-}
-
-TEST_CASE(TestResource_FailedInstance_Ctor3)
-{
 	LoadResource(L"Resource.FailedInstance.Ctor3.xml", true);
-}
-
-TEST_CASE(TestResource_FailedInstance_Ctor4)
-{
 	LoadResource(L"Resource.FailedInstance.Ctor4.xml", true);
-}
-
-TEST_CASE(TestResource_FailedInstance_Ctor5)
-{
 	LoadResource(L"Resource.FailedInstance.Ctor5.xml", true);
-}
-
-TEST_CASE(TestResource_FailedInstance_Control)
-{
 	LoadResource(L"Resource.FailedInstance.Control.xml", true);
-}
-
-TEST_CASE(TestResource_FailedInstance_Inheriting1)
-{
 	LoadResource(L"Resource.FailedInstance.Inheriting1.xml", true);
-}
-
-TEST_CASE(TestResource_FailedInstance_Inheriting2)
-{
 	LoadResource(L"Resource.FailedInstance.Inheriting2.xml", true);
-}
-
-TEST_CASE(Resource_FailedScript_Workflow)
-{
 	LoadResource(L"Resource.FailedScript.Workflow.xml", true);
-}
-
-TEST_CASE(Resource_FailedScript_Properties)
-{
 	LoadResource(L"Resource.FailedScript.Properties.xml", true);
-}
-
-TEST_CASE(Resource_FailedScript_Animations)
-{
 	LoadResource(L"Resource.FailedScript.Animations.xml", true);
-}
-
-TEST_CASE(Resource_FailedScript_Animations2)
-{
 	LoadResource(L"Resource.FailedScript.Animations2.xml", true);
-}
-
-TEST_CASE(Resource_FailedScript_Strings)
-{
 	LoadResource(L"Resource.FailedScript.Strings.xml", true);
-}
-
-TEST_CASE(Resource_FailedScript_Strings2)
-{
 	LoadResource(L"Resource.FailedScript.Strings2.xml", true);
 }

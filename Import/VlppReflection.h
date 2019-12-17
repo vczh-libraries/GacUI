@@ -471,7 +471,7 @@ ReferenceCounterOperator
 	}
 
 	template<typename T>
-	struct ReferenceCounterOperator<T, typename RequiresConvertable<T, reflection::DescriptableObject>::YesNoType>
+	struct ReferenceCounterOperator<T, typename PointerConvertable<T, reflection::DescriptableObject>::YesNoType>
 	{
 		static __forceinline volatile vint* CreateCounter(T* reference)
 		{
@@ -4916,7 +4916,7 @@ Class
 				protected:\
 					bool IsAggregatable()override\
 					{\
-						return AcceptValue<typename RequiresConvertable<TYPENAME, AggregatableDescription<TYPENAME>>::YesNoType>::Result;\
+						return AcceptValue<typename PointerConvertable<TYPENAME, AggregatableDescription<TYPENAME>>::YesNoType>::Result;\
 					}\
 					void LoadInternal()override\
 					{
