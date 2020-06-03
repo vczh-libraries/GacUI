@@ -48,8 +48,8 @@ Helper Functions
 		/// <param name="path">The extracted path.</param>
 		extern bool									IsResourceUrl(const WString& text, WString& protocol, WString& path);
 
-		extern void									HexToBinary(stream::IStream& stream, const WString& hexText);
-		extern WString								BinaryToHex(stream::IStream& stream);
+		extern void									HexToBinary(stream::IStream& binaryStream, const WString& hexText);
+		extern WString								BinaryToHex(stream::IStream& binaryStream);
 
 /***********************************************************************
 Global String Key
@@ -433,18 +433,18 @@ Resource
 			
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The loaded resource.</returns>
-			/// <param name="stream">The stream.</param>
+			/// <param name="binaryStream">The stream.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& stream, GuiResourceError::List& errors);
+			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& binaryStream, GuiResourceError::List& errors);
 
 			/// <summary>Load a precompiled resource from a stream. This function will hit an assert if there are errors.</summary>
 			/// <returns>The loaded resource.</returns>
-			/// <param name="stream">The stream.</param>
-			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& stream);
+			/// <param name="binaryStream">The stream.</param>
+			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& binaryStream);
 			
 			/// <summary>Save the precompiled resource to a stream.</summary>
-			/// <param name="stream">The stream.</param>
-			void									SavePrecompiledBinary(stream::IStream& stream);
+			/// <param name="binaryStream">The stream.</param>
+			void									SavePrecompiledBinary(stream::IStream& binaryStream);
 
 			/// <summary>Precompile this resource to improve performance.</summary>
 			/// <returns>The resource folder contains all precompiled result. The folder will be added to the resource if there is no error.</returns>
@@ -711,14 +711,14 @@ Resource Type Resolver
 			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="content">The content to serialize.</param>
 			/// <param name="stream">The stream.</param>
-			virtual void										SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream) = 0;
+			virtual void										SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& binaryStream) = 0;
 
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The resource.</returns>
 			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="stream">The stream.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<DescriptableObject>						ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors) = 0;
+			virtual Ptr<DescriptableObject>						ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& binaryStream, GuiResourceError::List& errors) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource with a preload type.</summary>

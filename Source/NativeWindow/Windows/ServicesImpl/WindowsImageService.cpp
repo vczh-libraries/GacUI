@@ -122,7 +122,7 @@ WindowsImageFrame
 				return frameBitmap.Obj();
 			}
 
-			void WindowsImageFrame::SaveBitmapToStream(stream::IStream& stream)
+			void WindowsImageFrame::SaveBitmapToStream(stream::IStream& imageStream)
 			{
 				UINT width = 0;
 				UINT height = 0;
@@ -136,7 +136,7 @@ WindowsImageFrame
 				rect.Height = (INT)height;
 				frameBitmap->CopyPixels(&rect, (UINT)bitmap->GetLineBytes(), (UINT)(bitmap->GetLineBytes()*height), (BYTE*)bitmap->GetScanLines()[0]);
 
-				bitmap->SaveToStream(stream, false);
+				bitmap->SaveToStream(imageStream, false);
 			}
 
 /***********************************************************************
@@ -299,7 +299,7 @@ WindowsImage
 				}
 			}
 
-			void MoveIStreamToStream(IStream* pIStream, stream::IStream& stream)
+			void MoveIStreamToStream(IStream* pIStream, stream::IStream& outputStream)
 			{
 				LARGE_INTEGER dlibMove;
 				dlibMove.QuadPart = 0;
@@ -312,7 +312,7 @@ WindowsImage
 					hr = pIStream->Read(&buffer[0], count, &read);
 					if (read > 0)
 					{
-						stream.Write(&buffer[0], (vint)read);
+						outputStream.Write(&buffer[0], (vint)read);
 					}
 					if (read != count)
 					{
@@ -321,7 +321,7 @@ WindowsImage
 				}
 			}
 
-			void WindowsImage::SaveToStream(stream::IStream& stream, FormatType formatType)
+			void WindowsImage::SaveToStream(stream::IStream& imageStream, FormatType formatType)
 			{
 				auto factory = GetWICImagingFactory();
 				GUID formatGUID;
@@ -439,7 +439,7 @@ WindowsImage
 
 					hr = bitmapEncoder->Commit();
 					bitmapEncoder->Release();
-					MoveIStreamToStream(pIStream, stream);
+					MoveIStreamToStream(pIStream, imageStream);
 					pIStream->Release();
 				}
 			FAILED:;
@@ -480,7 +480,7 @@ WindowsBitmapImage
 				return index==0?frame.Obj():0;
 			}
 
-			void WindowsBitmapImage::SaveToStream(stream::IStream& stream, FormatType formatType)
+			void WindowsBitmapImage::SaveToStream(stream::IStream& imageStream, FormatType formatType)
 			{
 				auto factory = GetWICImagingFactory();
 				if (formatType == INativeImage::Unknown)
@@ -524,7 +524,7 @@ WindowsBitmapImage
 
 					hr = bitmapEncoder->Commit();
 					bitmapEncoder->Release();
-					MoveIStreamToStream(pIStream, stream);
+					MoveIStreamToStream(pIStream, imageStream);
 					pIStream->Release();
 				}
 			FAILED:;
@@ -594,15 +594,15 @@ WindowsImageService
 				return result;
 			}
 
-			Ptr<INativeImage> WindowsImageService::CreateImageFromStream(stream::IStream& stream)
+			Ptr<INativeImage> WindowsImageService::CreateImageFromStream(stream::IStream& imageStream)
 			{
 				stream::MemoryStream memoryStream;
 				char buffer[65536];
-				while(true)
+				while (true)
 				{
-					vint length=stream.Read(buffer, sizeof(buffer));
+					vint length = imageStream.Read(buffer, sizeof(buffer));
 					memoryStream.Write(buffer, length);
-					if(length!=sizeof(buffer))
+					if (length != sizeof(buffer))
 					{
 						break;
 					}

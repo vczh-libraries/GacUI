@@ -109,37 +109,37 @@ Compiled Workflow Type Resolver (Workflow)
 				return this;
 			}
 
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& resourceStream)override
 			{
 				if (auto obj = content.Cast<GuiInstanceCompiledWorkflow>())
 				{
-					internal::ContextFreeWriter writer(stream);
+					internal::ContextFreeWriter writer(resourceStream);
 
 					vint type = (vint)obj->type;
 					writer << type;
 
 					if (obj->type == GuiInstanceCompiledWorkflow::InstanceClass)
 					{
-						MemoryStream memoryStream;
+						stream::MemoryStream memoryStream;
 						obj->assembly->Serialize(memoryStream);
-						writer << (IStream&)memoryStream;
+						writer << (stream::IStream&)memoryStream;
 					}
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& resourceStream, GuiResourceError::List& errors)override
 			{
-				internal::ContextFreeReader reader(stream);
+				internal::ContextFreeReader reader(resourceStream);
 
 				vint type;
 				reader << type;
-				
+
 				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
 				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
 				if (obj->type == GuiInstanceCompiledWorkflow::InstanceClass)
 				{
-					auto memoryStream = MakePtr<MemoryStream>();
-					reader << (IStream&)*memoryStream.Obj();
+					auto memoryStream = MakePtr<stream::MemoryStream>();
+					reader << (stream::IStream&)*memoryStream.Obj();
 					obj->binaryToLoad = memoryStream;
 				}
 				return obj;

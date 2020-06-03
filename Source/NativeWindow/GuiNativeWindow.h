@@ -278,7 +278,7 @@ Image Object
 			/// </summary>
 			/// <param name="stream">The stream.</param>
 			/// <param name="formatType">The format of the image.</param>
-			virtual void						SaveToStream(stream::IStream& stream, FormatType formatType = FormatType::Unknown) = 0;
+			virtual void						SaveToStream(stream::IStream& imageStream, FormatType formatType = FormatType::Unknown) = 0;
 		};
 		
 		/// <summary>
@@ -307,7 +307,7 @@ Image Object
 			/// </summary>
 			/// <returns>The created image.</returns>
 			/// <param name="stream">The stream.</param>
-			virtual Ptr<INativeImage>			CreateImageFromStream(stream::IStream& stream)=0;
+			virtual Ptr<INativeImage>			CreateImageFromStream(stream::IStream& imageStream)=0;
 		};
 
 /***********************************************************************

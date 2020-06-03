@@ -107,14 +107,14 @@ namespace vl
 			}
 		}
 
-		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& stream)
+		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& clipboardStream)
 		{
 			auto tempResource = MakePtr<GuiResource>();
 			auto tempResourceItem = MakePtr<GuiResourceItem>();
 			tempResource->AddItem(L"Document", tempResourceItem);
 			auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
 
-			internal::ContextFreeReader reader(stream);
+			internal::ContextFreeReader reader(clipboardStream);
 			{
 				WString title;
 				vint32_t version = 0;
@@ -153,7 +153,7 @@ namespace vl
 			return document;
 		}
 
-		void SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream)
+		void SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& clipboardStream)
 		{
 			CollectImageRunsVisitor visitor;
 			FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
@@ -161,7 +161,7 @@ namespace vl
 				paragraph->Accept(&visitor);
 			}
 
-			internal::ContextFreeWriter writer(stream);
+			internal::ContextFreeWriter writer(clipboardStream);
 			{
 				WString title = L"WCF_Document";
 				vint32_t version = 1;
@@ -193,7 +193,7 @@ namespace vl
 						imageRun->image->SaveToStream(memoryStream, format);
 					}
 					
-					writer << (IStream&)memoryStream;
+					writer << (stream::IStream&)memoryStream;
 				}
 			}
 		}

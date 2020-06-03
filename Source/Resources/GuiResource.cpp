@@ -69,7 +69,7 @@ namespace vl
 			}
 		}
 
-		void HexToBinary(stream::IStream& stream, const WString& hexText)
+		void HexToBinary(stream::IStream& binaryStream, const WString& hexText)
 		{
 			const wchar_t* buffer = hexText.Buffer();
 			vint count = hexText.Length() / 2;
@@ -77,17 +77,17 @@ namespace vl
 			{
 				vuint8_t byte = (vuint8_t)(HexToInt(buffer[0]) * 16 + HexToInt(buffer[1]));
 				buffer += 2;
-				stream.Write(&byte, 1);
+				binaryStream.Write(&byte, 1);
 			}
 		}
 
-		WString BinaryToHex(stream::IStream& stream)
+		WString BinaryToHex(stream::IStream& binaryStream)
 		{
 			stream::MemoryStream memoryStream;
 			{
 				stream::StreamWriter writer(memoryStream);
 				vuint8_t byte;
-				while (stream.Read(&byte, 1) == 1)
+				while (binaryStream.Read(&byte, 1) == 1)
 				{
 					writer.WriteChar(L"0123456789ABCDEF"[byte / 16]);
 					writer.WriteChar(L"0123456789ABCDEF"[byte % 16]);
@@ -1369,14 +1369,14 @@ GuiResource
 			return doc;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& stream, GuiResourceError::List& errors)
+		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& binaryStream, GuiResourceError::List& errors)
 		{
-			stream::internal::ContextFreeReader reader(stream);
+			stream::internal::ContextFreeReader reader(binaryStream);
 			auto resource = MakePtr<GuiResource>();
 			{
 				WString metadata;
 				reader << metadata;
-				
+
 				auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
 				auto xmlMetadata = parser->Parse({ resource }, metadata, errors);
 				if (!xmlMetadata) return nullptr;
@@ -1393,25 +1393,25 @@ GuiResource
 
 			List<WString> typeNames;
 			reader << typeNames;
-			
+
 			DelayLoadingList delayLoadings;
 			resource->LoadResourceFolderFromBinary(delayLoadings, reader, typeNames, errors);
-			
+
 			ProcessDelayLoading(resource, delayLoadings, errors);
 			return resource;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& stream)
+		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& binaryStream)
 		{
 			GuiResourceError::List errors;
-			auto resource = LoadPrecompiledBinary(stream, errors);
+			auto resource = LoadPrecompiledBinary(binaryStream, errors);
 			CHECK_ERROR(errors.Count() == 0, L"GuiResource::LoadPrecompiledBinary(IStream&)#There are errors.");
 			return resource;
 		}
 
-		void GuiResource::SavePrecompiledBinary(stream::IStream& stream)
+		void GuiResource::SavePrecompiledBinary(stream::IStream& binaryStream)
 		{
-			stream::internal::ContextFreeWriter writer(stream);
+			stream::internal::ContextFreeWriter writer(binaryStream);
 			{
 				auto xmlMetadata = metadata->SaveToXml();
 				WString xml = GenerateToStream([&](StreamWriter& writer)

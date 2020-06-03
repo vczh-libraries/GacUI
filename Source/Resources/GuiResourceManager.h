@@ -34,8 +34,8 @@ IGuiResourceManager
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
 			virtual Ptr<GuiResource>					GetResourceFromClassName(const WString& classFullName) = 0;
 			virtual void								UnloadResource(const WString& name) = 0;
-			virtual void								LoadResourceOrPending(stream::IStream& stream, GuiResourceError::List& errors, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
-			virtual void								LoadResourceOrPending(stream::IStream& stream, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
+			virtual void								LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceError::List& errors, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
+			virtual void								LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual void								GetPendingResourceNames(collections::List<WString>& names) = 0;
 		};
 

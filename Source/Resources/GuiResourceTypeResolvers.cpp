@@ -55,10 +55,10 @@ Image Type Resolver (Image)
 				return nullptr;
 			}
 
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& binaryStream)override
 			{
 				auto obj = content.Cast<GuiImageData>();
-				stream::internal::ContextFreeWriter writer(stream);
+				stream::internal::ContextFreeWriter writer(binaryStream);
 				FileStream fileStream(resource->GetFileAbsolutePath(), FileStream::ReadOnly);
 				writer << (stream::IStream&)fileStream;
 			}
@@ -83,9 +83,9 @@ Image Type Resolver (Image)
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& binaryStream, GuiResourceError::List& errors)override
 			{
-				stream::internal::ContextFreeReader reader(stream);
+				stream::internal::ContextFreeReader reader(binaryStream);
 				MemoryStream memoryStream;
 				reader << (stream::IStream&)memoryStream;
 
@@ -154,10 +154,10 @@ Text Type Resolver (Text)
 				return 0;
 			}
 
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& binaryStream)override
 			{
 				auto obj = content.Cast<GuiTextData>();
-				stream::internal::ContextFreeWriter writer(stream);
+				stream::internal::ContextFreeWriter writer(binaryStream);
 				WString text = obj->GetText();
 				writer << text;
 			}
@@ -181,9 +181,9 @@ Text Type Resolver (Text)
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& binaryStream, GuiResourceError::List& errors)override
 			{
-				stream::internal::ContextFreeReader reader(stream);
+				stream::internal::ContextFreeReader reader(binaryStream);
 				WString text;
 				reader << text;
 				return new GuiTextData(text);
@@ -238,14 +238,14 @@ Xml Type Resolver (Xml)
 				return nullptr;
 			}
 
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& binaryStream)override
 			{
 				auto obj = content.Cast<XmlDocument>();
 				WString text = GenerateToStream([&](StreamWriter& writer)
 				{
 					XmlPrint(obj, writer);
 				});
-				stream::internal::ContextFreeWriter writer(stream);
+				stream::internal::ContextFreeWriter writer(binaryStream);
 				writer << text;
 			}
 
@@ -278,11 +278,11 @@ Xml Type Resolver (Xml)
 				return nullptr;
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& binaryStream, GuiResourceError::List& errors)override
 			{
 				if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
 				{
-					stream::internal::ContextFreeReader reader(stream);
+					stream::internal::ContextFreeReader reader(binaryStream);
 					WString text;
 					reader << text;
 

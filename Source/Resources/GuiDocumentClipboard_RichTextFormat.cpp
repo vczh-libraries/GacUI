@@ -226,11 +226,11 @@ namespace vl
 			rtf = (const char*)rtfStream.GetInternalBuffer();
 		}
 
-		void SaveDocumentToRtfStream(Ptr<DocumentModel> model, stream::IStream& stream)
+		void SaveDocumentToRtfStream(Ptr<DocumentModel> model, stream::IStream& rtfStream)
 		{
 			AString rtf;
 			SaveDocumentToRtf(model, rtf);
-			stream.Write((void*)rtf.Buffer(), rtf.Length());
+			rtfStream.Write((void*)rtf.Buffer(), rtf.Length());
 		}
 	}
 }

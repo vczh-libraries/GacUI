@@ -16,14 +16,14 @@ namespace vl
 	namespace presentation
 	{
 		extern void					ModifyDocumentForClipboard(Ptr<DocumentModel> model);
-		extern Ptr<DocumentModel>	LoadDocumentFromClipboardStream(stream::IStream& stream);
-		extern void					SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream);
+		extern Ptr<DocumentModel>	LoadDocumentFromClipboardStream(stream::IStream& clipboardStream);
+		extern void					SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& clipboardStream);
 
 		extern void					SaveDocumentToRtf(Ptr<DocumentModel> model, AString& rtf);
-		extern void					SaveDocumentToRtfStream(Ptr<DocumentModel> model, stream::IStream& stream);
+		extern void					SaveDocumentToRtfStream(Ptr<DocumentModel> model, stream::IStream& rtfStream);
 
 		extern void					SaveDocumentToHtmlUtf8(Ptr<DocumentModel> model, AString& header, AString& content, AString& footer);
-		extern void					SaveDocumentToHtmlClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream);
+		extern void					SaveDocumentToHtmlClipboardStream(Ptr<DocumentModel> model, stream::IStream& clipboardStream);
 	}
 }
 

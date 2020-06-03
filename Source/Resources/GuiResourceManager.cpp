@@ -41,18 +41,18 @@ Class Name Record (ClassNameRecord)
 				return this;
 			}
 
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& binaryStream)override
 			{
 				if (auto obj = content.Cast<GuiResourceClassNameRecord>())
 				{
-					internal::ContextFreeWriter writer(stream);
+					internal::ContextFreeWriter writer(binaryStream);
 					writer << obj->classNames;
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& binaryStream, GuiResourceError::List& errors)override
 			{
-				internal::ContextFreeReader reader(stream);
+				internal::ContextFreeReader reader(binaryStream);
 
 				auto obj = MakePtr<GuiResourceClassNameRecord>();
 				reader << obj->classNames;
@@ -205,11 +205,11 @@ IGuiInstanceResourceManager
 				}
 			}
 
-			void LoadResourceOrPending(stream::IStream& stream, GuiResourceError::List& errors, GuiResourceUsage usage)override
+			void LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceError::List& errors, GuiResourceUsage usage)override
 			{
 				auto pr = MakePtr<PendingResource>();
 				pr->usage = usage;
-				CopyStream(stream, pr->memoryStream);
+				CopyStream(resourceStream, pr->memoryStream);
 
 				pr->metadata = MakePtr<GuiResourceMetadata>();
 				{
@@ -246,10 +246,10 @@ IGuiInstanceResourceManager
 				}
 			}
 
-			void LoadResourceOrPending(stream::IStream& stream, GuiResourceUsage usage)override
+			void LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceUsage usage)override
 			{
 				GuiResourceError::List errors;
-				LoadResourceOrPending(stream, errors, usage);
+				LoadResourceOrPending(resourceStream, errors, usage);
 				CHECK_ERROR(errors.Count() == 0, L"GuiResourceManager::LoadResourceOrPending(stream::IStream&, GuiResourceUsage)#Error happened.");
 			}
 
