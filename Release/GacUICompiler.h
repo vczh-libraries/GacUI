@@ -14,6 +14,314 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppWorkflowRuntime.h"
 
 /***********************************************************************
+.\GUICPPGEN.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Instance Loader
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUICPPGEN
+#define VCZH_PRESENTATION_REFLECTION_GUICPPGEN
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		extern bool										WriteErrors(
+															collections::List<GuiResourceError>& errors,
+															const filesystem::FilePath& errorPath
+															);
+
+		extern Ptr<GuiResourceFolder>					PrecompileResource(
+															Ptr<GuiResource> resource,
+															IGuiResourcePrecompileCallback* callback,
+															collections::List<GuiResourceError>& errors);
+
+		extern Ptr<GuiInstanceCompiledWorkflow>			WriteWorkflowScript(
+															Ptr<GuiResourceFolder> precompiledFolder,
+															const WString& assemblyResourcePath,
+															const filesystem::FilePath& workflowPath);
+
+		extern Ptr<workflow::cppcodegen::WfCppOutput>	WriteCppCodesToFile(
+															Ptr<GuiResource> resource,
+															Ptr<GuiInstanceCompiledWorkflow> compiled,
+															Ptr<workflow::cppcodegen::WfCppInput> cppInput,
+															const filesystem::FilePath& cppFolder,
+															collections::List<GuiResourceError>& errors);
+
+		extern bool										WriteBinaryResource(
+															Ptr<GuiResource> resource,
+															bool compress,
+															bool includeAssemblyInResource,
+															Nullable<filesystem::FilePath> resourceOutput,
+															Nullable<filesystem::FilePath> assemblyOutput);
+
+		extern bool										WriteEmbeddedResource(Ptr<GuiResource> resource,
+															Ptr<workflow::cppcodegen::WfCppInput> cppInput,
+															Ptr<workflow::cppcodegen::WfCppOutput> cppOutput,
+															bool compress,
+															const filesystem::FilePath& filePath);
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\GUIINSTANCEANIMATION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Shared Script
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCEANIMATION
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEANIMATION
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class GuiInstanceAnimation : public Object, public Description<GuiInstanceAnimation>
+		{
+		public:
+		};
+
+		class GuiInstanceGradientAnimation : public GuiInstanceAnimation, public Description<GuiInstanceGradientAnimation>
+		{
+		public:
+			struct Target
+			{
+				WString									name;
+				WString									interpolation;
+
+				GuiResourceTextPos						namePosition;
+				GuiResourceTextPos						interpolationPosition;
+			};
+
+			using EnumerateMemberAccessor = const Func<Ptr<workflow::WfExpression>(Ptr<workflow::WfExpression>)>&;
+			using EnumerateMemberCallback = const Func<void(EnumerateMemberAccessor, description::IPropertyInfo*, description::IPropertyInfo*)>&;
+
+			WString										className;
+			WString										typeName;
+			WString										interpolation;
+			collections::List<Target>					targets;
+
+			GuiResourceTextPos							tagPosition;
+			GuiResourceTextPos							classPosition;
+			GuiResourceTextPos							typePosition;
+			GuiResourceTextPos							interpolationPosition;
+
+			static Ptr<GuiInstanceGradientAnimation>	LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
+			Ptr<parsing::xml::XmlElement>				SaveToXml();
+
+			bool										IsSupportedPrimitiveType(description::ITypeDescriptor* td);
+			vint										ValidateStructMembers(GuiResourceTextPos namePosition, description::ITypeDescriptor* td, const WString& prefix, GuiResourceError::List& errors);
+			vint										ValidatePropertyType(GuiResourceTextPos namePosition, description::ITypeInfo* typeInfo, const WString& prefix, GuiResourceError::List& errors, bool rootValue = false);
+
+			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo, description::IPropertyInfo* originPropInfo);
+			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::ITypeDescriptor* td, description::IPropertyInfo* originPropInfo);
+			void										EnumerateProperties(EnumerateMemberCallback callback, description::ITypeDescriptor* td);
+			Ptr<workflow::WfExpression>					InitStruct(description::IPropertyInfo* propInfo, const WString& prefix, collections::SortedList<WString>& varNames);
+			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors);
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\GUIINSTANCEHELPERTYPES.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Instance Helper Types
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
+
+
+#if defined(__APPLE__) || defined(__APPLE_CC__)
+
+using namespace vl;
+using namespace vl::presentation;
+using namespace vl::presentation::elements;
+using namespace vl::presentation::compositions;
+using namespace vl::presentation::controls;
+using namespace vl::presentation::templates;
+using namespace vl::presentation::theme;
+
+#endif
+
+namespace vl
+{
+	namespace presentation
+	{
+
+/***********************************************************************
+Helper Types
+***********************************************************************/
+
+		namespace helper_types
+		{
+			struct SiteValue
+			{
+				vint			row = 0;
+				vint			column = 0;
+				vint			rowSpan = 1;
+				vint			columnSpan = 1;
+			};
+		}
+	}
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+Type List
+***********************************************************************/
+
+#define GUIREFLECTIONHELPERTYPES_TYPELIST(F)\
+			F(presentation::helper_types::SiteValue)\
+
+			GUIREFLECTIONHELPERTYPES_TYPELIST(DECL_TYPE_INFO)
+		}
+	}
+
+#endif
+}
+
+#endif
+
+/***********************************************************************
+.\GUIINSTANCELOCALIZEDSTRINGS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Shared Script
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOCALIZEDSTRINGS
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOCALIZEDSTRINGS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class GuiInstanceLocalizedStrings : public Object, public Description<GuiInstanceLocalizedStrings>
+		{
+		public:
+			struct StringItem
+			{
+			public:
+				WString									name;
+				WString									text;
+				GuiResourceTextPos						textPosition;
+			};
+
+			struct Strings
+			{
+				using StringItemMap = collections::Dictionary<WString, Ptr<StringItem>>;
+
+				collections::List<WString>				locales;
+				StringItemMap							items;
+				GuiResourceTextPos						tagPosition;
+
+				WString									GetLocalesName();
+			};
+
+			WString										className;
+			WString										defaultLocale;
+			collections::List<Ptr<Strings>>				strings;
+			GuiResourceTextPos							tagPosition;
+
+			using ParameterPair = collections::Pair<Ptr<reflection::description::ITypeInfo>, WString>;
+			using ParameterList = collections::List<ParameterPair>;
+			using PositionList = collections::List<vint>;
+			using TextList = collections::List<WString>;
+
+			struct TextDesc
+			{
+				ParameterList							parameters;
+				PositionList							positions;
+				TextList								texts;
+			};
+
+			using TextDescMap = collections::Dictionary<collections::Pair<Ptr<Strings>, WString>, Ptr<TextDesc>>;
+
+			static Ptr<GuiInstanceLocalizedStrings>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
+			Ptr<parsing::xml::XmlElement>				SaveToXml();
+
+			Ptr<Strings>								GetDefaultStrings();
+			WString										GetInterfaceTypeName(bool hasNamespace);
+
+			Ptr<TextDesc>								ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors);
+			void										Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors);
+			Ptr<workflow::WfFunctionDeclaration>		GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfClassMemberKind classMemberKind);
+			Ptr<workflow::WfExpression>					GenerateStrings(TextDescMap& textDescs, Ptr<Strings> ls);
+			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\GUIINSTANCESHAREDSCRIPT.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Shared Script
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCESHAREDSCRIPT
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESHAREDSCRIPT
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class GuiInstanceSharedScript :public Object, public Description<GuiInstanceSharedScript>
+		{
+		public:
+			WString										language;
+			WString										code;
+			GuiResourceTextPos							codePosition;
+
+			static Ptr<GuiInstanceSharedScript>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
+			Ptr<parsing::xml::XmlElement>				SaveToXml();
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\INSTANCEQUERY\GUIINSTANCEQUERY_AST.H
 ***********************************************************************/
 /***********************************************************************
@@ -454,77 +762,6 @@ Instance Style Context
 #endif
 
 /***********************************************************************
-.\GUIINSTANCEHELPERTYPES.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection: Instance Helper Types
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
-
-
-#if defined(__APPLE__) || defined(__APPLE_CC__)
-
-using namespace vl;
-using namespace vl::presentation;
-using namespace vl::presentation::elements;
-using namespace vl::presentation::compositions;
-using namespace vl::presentation::controls;
-using namespace vl::presentation::templates;
-using namespace vl::presentation::theme;
-
-#endif
-
-namespace vl
-{
-	namespace presentation
-	{
-
-/***********************************************************************
-Helper Types
-***********************************************************************/
-
-		namespace helper_types
-		{
-			struct SiteValue
-			{
-				vint			row = 0;
-				vint			column = 0;
-				vint			rowSpan = 1;
-				vint			columnSpan = 1;
-			};
-		}
-	}
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-
-	namespace reflection
-	{
-		namespace description
-		{
-
-/***********************************************************************
-Type List
-***********************************************************************/
-
-#define GUIREFLECTIONHELPERTYPES_TYPELIST(F)\
-			F(presentation::helper_types::SiteValue)\
-
-			GUIREFLECTIONHELPERTYPES_TYPELIST(DECL_TYPE_INFO)
-		}
-	}
-
-#endif
-}
-
-#endif
-
-/***********************************************************************
 .\GUIINSTANCELOADER.H
 ***********************************************************************/
 /***********************************************************************
@@ -741,6 +978,34 @@ Helper Functions
 #endif
 
 /***********************************************************************
+.\INSTANCEQUERY\GUIINSTANCEQUERY.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Instance Query
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_INSTANCEQUERY_GUIINSTANCEQUERY
+#define VCZH_PRESENTATION_REFLECTION_INSTANCEQUERY_GUIINSTANCEQUERY
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		extern void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& input, collections::List<Ptr<GuiConstructorRepr>>& output);
+		extern void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& output);
+		extern void ApplyStyle(Ptr<GuiInstanceStyle> style, Ptr<GuiConstructorRepr> ctor);
+		extern void GuiIqPrint(Ptr<GuiIqQuery> query, stream::StreamWriter& writer);
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\WORKFLOWCODEGEN\GUIINSTANCELOADER_WORKFLOWCODEGEN.H
 ***********************************************************************/
 /***********************************************************************
@@ -915,271 +1180,6 @@ WorkflowCompiler (ScriptPosition)
 		extern Ptr<types::ScriptPosition>						Workflow_GetScriptPosition(GuiResourcePrecompileContext& context);
 		extern void												Workflow_ClearScriptPosition(GuiResourcePrecompileContext& context);
 
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\GUICPPGEN.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection: Instance Loader
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_REFLECTION_GUICPPGEN
-#define VCZH_PRESENTATION_REFLECTION_GUICPPGEN
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		extern bool										WriteErrors(
-															collections::List<GuiResourceError>& errors,
-															const filesystem::FilePath& errorPath
-															);
-
-		extern Ptr<GuiResourceFolder>					PrecompileResource(
-															Ptr<GuiResource> resource,
-															IGuiResourcePrecompileCallback* callback,
-															collections::List<GuiResourceError>& errors);
-
-		extern Ptr<GuiInstanceCompiledWorkflow>			WriteWorkflowScript(
-															Ptr<GuiResourceFolder> precompiledFolder,
-															const WString& assemblyResourcePath,
-															const filesystem::FilePath& workflowPath);
-
-		extern Ptr<workflow::cppcodegen::WfCppOutput>	WriteCppCodesToFile(
-															Ptr<GuiResource> resource,
-															Ptr<GuiInstanceCompiledWorkflow> compiled,
-															Ptr<workflow::cppcodegen::WfCppInput> cppInput,
-															const filesystem::FilePath& cppFolder,
-															collections::List<GuiResourceError>& errors);
-
-		extern bool										WriteBinaryResource(
-															Ptr<GuiResource> resource,
-															bool compress,
-															bool includeAssemblyInResource,
-															Nullable<filesystem::FilePath> resourceOutput,
-															Nullable<filesystem::FilePath> assemblyOutput);
-
-		extern bool										WriteEmbeddedResource(Ptr<GuiResource> resource,
-															Ptr<workflow::cppcodegen::WfCppInput> cppInput,
-															Ptr<workflow::cppcodegen::WfCppOutput> cppOutput,
-															bool compress,
-															const filesystem::FilePath& filePath);
-	}
-}
-
-#endif
-
-
-/***********************************************************************
-.\GUIINSTANCEANIMATION.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection: Shared Script
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCEANIMATION
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEANIMATION
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		class GuiInstanceAnimation : public Object, public Description<GuiInstanceAnimation>
-		{
-		public:
-		};
-
-		class GuiInstanceGradientAnimation : public GuiInstanceAnimation, public Description<GuiInstanceGradientAnimation>
-		{
-		public:
-			struct Target
-			{
-				WString									name;
-				WString									interpolation;
-
-				GuiResourceTextPos						namePosition;
-				GuiResourceTextPos						interpolationPosition;
-			};
-
-			using EnumerateMemberAccessor = const Func<Ptr<workflow::WfExpression>(Ptr<workflow::WfExpression>)>&;
-			using EnumerateMemberCallback = const Func<void(EnumerateMemberAccessor, description::IPropertyInfo*, description::IPropertyInfo*)>&;
-
-			WString										className;
-			WString										typeName;
-			WString										interpolation;
-			collections::List<Target>					targets;
-
-			GuiResourceTextPos							tagPosition;
-			GuiResourceTextPos							classPosition;
-			GuiResourceTextPos							typePosition;
-			GuiResourceTextPos							interpolationPosition;
-
-			static Ptr<GuiInstanceGradientAnimation>	LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
-			Ptr<parsing::xml::XmlElement>				SaveToXml();
-
-			bool										IsSupportedPrimitiveType(description::ITypeDescriptor* td);
-			vint										ValidateStructMembers(GuiResourceTextPos namePosition, description::ITypeDescriptor* td, const WString& prefix, GuiResourceError::List& errors);
-			vint										ValidatePropertyType(GuiResourceTextPos namePosition, description::ITypeInfo* typeInfo, const WString& prefix, GuiResourceError::List& errors, bool rootValue = false);
-
-			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::IPropertyInfo* propInfo, description::IPropertyInfo* originPropInfo);
-			void										EnumerateMembers(EnumerateMemberCallback callback, EnumerateMemberAccessor accessor, description::ITypeDescriptor* td, description::IPropertyInfo* originPropInfo);
-			void										EnumerateProperties(EnumerateMemberCallback callback, description::ITypeDescriptor* td);
-			Ptr<workflow::WfExpression>					InitStruct(description::IPropertyInfo* propInfo, const WString& prefix, collections::SortedList<WString>& varNames);
-			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, bool generateImpl, GuiResourceError::List& errors);
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\INSTANCEQUERY\GUIINSTANCEQUERY.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection: Instance Query
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_REFLECTION_INSTANCEQUERY_GUIINSTANCEQUERY
-#define VCZH_PRESENTATION_REFLECTION_INSTANCEQUERY_GUIINSTANCEQUERY
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		extern void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& input, collections::List<Ptr<GuiConstructorRepr>>& output);
-		extern void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& output);
-		extern void ApplyStyle(Ptr<GuiInstanceStyle> style, Ptr<GuiConstructorRepr> ctor);
-		extern void GuiIqPrint(Ptr<GuiIqQuery> query, stream::StreamWriter& writer);
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\GUIINSTANCESHAREDSCRIPT.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection: Shared Script
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCESHAREDSCRIPT
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESHAREDSCRIPT
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		class GuiInstanceSharedScript :public Object, public Description<GuiInstanceSharedScript>
-		{
-		public:
-			WString										language;
-			WString										code;
-			GuiResourceTextPos							codePosition;
-
-			static Ptr<GuiInstanceSharedScript>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
-			Ptr<parsing::xml::XmlElement>				SaveToXml();
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\GUIINSTANCELOCALIZEDSTRINGS.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection: Shared Script
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOCALIZEDSTRINGS
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOCALIZEDSTRINGS
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		class GuiInstanceLocalizedStrings : public Object, public Description<GuiInstanceLocalizedStrings>
-		{
-		public:
-			struct StringItem
-			{
-			public:
-				WString									name;
-				WString									text;
-				GuiResourceTextPos						textPosition;
-			};
-
-			struct Strings
-			{
-				using StringItemMap = collections::Dictionary<WString, Ptr<StringItem>>;
-
-				collections::List<WString>				locales;
-				StringItemMap							items;
-				GuiResourceTextPos						tagPosition;
-
-				WString									GetLocalesName();
-			};
-
-			WString										className;
-			WString										defaultLocale;
-			collections::List<Ptr<Strings>>				strings;
-			GuiResourceTextPos							tagPosition;
-
-			using ParameterPair = collections::Pair<Ptr<reflection::description::ITypeInfo>, WString>;
-			using ParameterList = collections::List<ParameterPair>;
-			using PositionList = collections::List<vint>;
-			using TextList = collections::List<WString>;
-
-			struct TextDesc
-			{
-				ParameterList							parameters;
-				PositionList							positions;
-				TextList								texts;
-			};
-
-			using TextDescMap = collections::Dictionary<collections::Pair<Ptr<Strings>, WString>, Ptr<TextDesc>>;
-
-			static Ptr<GuiInstanceLocalizedStrings>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
-			Ptr<parsing::xml::XmlElement>				SaveToXml();
-
-			Ptr<Strings>								GetDefaultStrings();
-			WString										GetInterfaceTypeName(bool hasNamespace);
-
-			Ptr<TextDesc>								ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors);
-			void										Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors);
-			Ptr<workflow::WfFunctionDeclaration>		GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfClassMemberKind classMemberKind);
-			Ptr<workflow::WfExpression>					GenerateStrings(TextDescMap& textDescs, Ptr<Strings> ls);
-			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
-		};
 	}
 }
 

@@ -1,4 +1,4 @@
-include:"../../../Import/VlppParser.h"
+include:<VlppParser.h>
 namespace:vl.presentation
 reflection:presentation
 classPrefix:GuiIq

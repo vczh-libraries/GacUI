@@ -11,6 +11,38 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppRegex.h"
 
 /***********************************************************************
+.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements_windows_d2d
+		{
+			class WindowsDirect2DLayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
+			{
+			public:
+				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSWINDOWSDIRECT2D.H
 ***********************************************************************/
 /***********************************************************************
@@ -157,38 +189,6 @@ OS Supporting
 }
 
 extern void RendererMainDirect2D();
-
-#endif
-
-/***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace elements_windows_d2d
-		{
-			class WindowsDirect2DLayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
-			{
-			public:
-				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
-			};
-		}
-	}
-}
 
 #endif
 
@@ -1747,6 +1747,255 @@ UniscribeParagraph
 #endif
 
 /***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSASYNCSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsAsyncService : public INativeAsyncService
+			{
+			protected:
+				struct TaskItem
+				{
+					Semaphore*							semaphore;
+					Func<void()>						proc;
+
+					TaskItem();
+					TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
+					~TaskItem();
+				};
+
+				class DelayItem : public Object, public INativeDelay
+				{
+				public:
+					DelayItem(WindowsAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
+					~DelayItem();
+
+					WindowsAsyncService*				service;
+					Func<void()>						proc;
+					ExecuteStatus						status;
+					DateTime							executeTime;
+					bool								executeInMainThread;
+
+					ExecuteStatus						GetStatus()override;
+					bool								Delay(vint milliseconds)override;
+					bool								Cancel()override;
+				};
+			protected:
+				vint									mainThreadId;
+				SpinLock								taskListLock;
+				collections::List<TaskItem>				taskItems;
+				collections::List<Ptr<DelayItem>>		delayItems;
+			public:
+				WindowsAsyncService();
+				~WindowsAsyncService();
+
+				void									ExecuteAsyncTasks();
+				bool									IsInMainThread(INativeWindow* window)override;
+				void									InvokeAsync(const Func<void()>& proc)override;
+				void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
+				bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
+				Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
+				Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCALLBACKSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsCallbackService : public Object, public INativeCallbackService
+			{
+			protected:
+				collections::List<INativeControllerListener*>	listeners;
+
+			public:
+				WindowsCallbackService();
+
+				bool											InstallListener(INativeControllerListener* listener)override;
+				bool											UninstallListener(INativeControllerListener* listener)override;
+
+				void											InvokeMouseHook(WPARAM message, NativePoint location);
+				void											InvokeGlobalTimer();
+				void											InvokeClipboardUpdated();
+				void											InvokeNativeWindowCreated(INativeWindow* window);
+				void											InvokeNativeWindowDestroyed(INativeWindow* window);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCLIPBOARDSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsClipboardService;
+
+			class WindowsClipboardReader : public Object, public INativeClipboardReader
+			{
+				friend class WindowsClipboardService;
+			protected:
+				WindowsClipboardService*		service;
+				bool							ContainsFormat(UINT format);
+
+			public:
+				WindowsClipboardReader(WindowsClipboardService* _service);
+				~WindowsClipboardReader();
+
+				bool							ContainsText()override;
+				WString							GetText()override;
+
+				bool							ContainsDocument()override;
+				Ptr<DocumentModel>				GetDocument()override;
+
+				bool							ContainsImage()override;
+				Ptr<INativeImage>				GetImage()override;
+
+				void							CloseClipboard();
+			};
+
+			class WindowsClipboardWriter : public Object, public INativeClipboardWriter
+			{
+				friend class WindowsClipboardService;
+			protected:
+				WindowsClipboardService*		service;
+				Nullable<WString>				textData;
+				Ptr<DocumentModel>				documentData;
+				Ptr<INativeImage>				imageData;
+
+				void							SetClipboardData(UINT format, stream::MemoryStream& memoryStream);
+			public:
+				WindowsClipboardWriter(WindowsClipboardService* _service);
+				~WindowsClipboardWriter();
+
+				void							SetText(const WString& value)override;
+				void							SetDocument(Ptr<DocumentModel> value)override;
+				void							SetImage(Ptr<INativeImage> value)override;
+				bool							Submit()override;
+			};
+
+			class WindowsClipboardService : public Object, public INativeClipboardService
+			{
+				friend class WindowsClipboardReader;
+				friend class WindowsClipboardWriter;
+			protected:
+				HWND							ownerHandle;
+				UINT							WCF_Document;
+				UINT							WCF_RTF;
+				UINT							WCF_HTML;
+				WindowsClipboardReader*			reader = nullptr;
+
+			public:
+				WindowsClipboardService();
+
+				Ptr<INativeClipboardReader>		ReadClipboard()override;
+				Ptr<INativeClipboardWriter>		WriteClipboard()override;
+
+				void							SetOwnerHandle(HWND handle);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSDIALOGSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsDialogService : public INativeDialogService
+			{
+				typedef HWND (*HandleRetriver)(INativeWindow*);
+			protected:
+				HandleRetriver									handleRetriver;
+
+			public:
+				WindowsDialogService(HandleRetriver _handleRetriver);
+
+				MessageBoxButtonsOutput			ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal)override;
+				bool							ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors)override;
+				bool							ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist)override;
+				bool							ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options)override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSIMAGESERVICE.H
 ***********************************************************************/
 /***********************************************************************
@@ -1937,6 +2186,94 @@ extern int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)());
 #endif
 
 /***********************************************************************
+.\NATIVEWINDOW\WINDOWS\GDI\WINGDIAPPLICATION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::GDI Provider for Windows Implementation
+
+Interfaces:
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
+#define VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			extern WinDC*									GetNativeWindowDC(INativeWindow* window);
+			extern HDC										GetNativeWindowHDC(INativeWindow* window);
+		}
+	}
+}
+
+extern int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)());
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSINPUTSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
+#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			class WindowsInputService : public Object, public INativeInputService
+			{
+			protected:
+				HWND									ownerHandle;
+				HHOOK									mouseHook;
+				bool									isTimerEnabled;
+				HOOKPROC								mouseProc;
+
+				collections::Array<WString>				keyNames;
+				collections::Dictionary<WString, VKEY>	keys;
+
+				WString									GetKeyNameInternal(VKEY code);
+				void									InitializeKeyNames();
+			public:
+				WindowsInputService(HOOKPROC _mouseProc);
+
+				void									SetOwnerHandle(HWND handle);
+				void									StartHookMouse()override;
+				void									StopHookMouse()override;
+				bool									IsHookingMouse()override;
+				void									StartTimer()override;
+				void									StopTimer()override;
+				bool									IsTimerEnabled()override;
+				bool									IsKeyPressing(VKEY code)override;
+				bool									IsKeyToggled(VKEY code)override;
+				WString									GetKeyName(VKEY code)override;
+				VKEY									GetKey(const WString& name)override;
+			};
+
+			extern bool									WinIsKeyPressing(VKEY code);
+			extern bool									WinIsKeyToggled(VKEY code);
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSRESOURCESERVICE.H
 ***********************************************************************/
 /***********************************************************************
@@ -1984,170 +2321,6 @@ namespace vl
 				INativeCursor*								GetDefaultSystemCursor()override;
 				FontProperties								GetDefaultFont()override;
 				void										SetDefaultFont(const FontProperties& value)override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCLIPBOARDSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsClipboardService;
-
-			class WindowsClipboardReader : public Object, public INativeClipboardReader
-			{
-				friend class WindowsClipboardService;
-			protected:
-				WindowsClipboardService*		service;
-				bool							ContainsFormat(UINT format);
-
-			public:
-				WindowsClipboardReader(WindowsClipboardService* _service);
-				~WindowsClipboardReader();
-
-				bool							ContainsText()override;
-				WString							GetText()override;
-
-				bool							ContainsDocument()override;
-				Ptr<DocumentModel>				GetDocument()override;
-
-				bool							ContainsImage()override;
-				Ptr<INativeImage>				GetImage()override;
-
-				void							CloseClipboard();
-			};
-
-			class WindowsClipboardWriter : public Object, public INativeClipboardWriter
-			{
-				friend class WindowsClipboardService;
-			protected:
-				WindowsClipboardService*		service;
-				Nullable<WString>				textData;
-				Ptr<DocumentModel>				documentData;
-				Ptr<INativeImage>				imageData;
-
-				void							SetClipboardData(UINT format, stream::MemoryStream& memoryStream);
-			public:
-				WindowsClipboardWriter(WindowsClipboardService* _service);
-				~WindowsClipboardWriter();
-
-				void							SetText(const WString& value)override;
-				void							SetDocument(Ptr<DocumentModel> value)override;
-				void							SetImage(Ptr<INativeImage> value)override;
-				bool							Submit()override;
-			};
-
-			class WindowsClipboardService : public Object, public INativeClipboardService
-			{
-				friend class WindowsClipboardReader;
-				friend class WindowsClipboardWriter;
-			protected:
-				HWND							ownerHandle;
-				UINT							WCF_Document;
-				UINT							WCF_RTF;
-				UINT							WCF_HTML;
-				WindowsClipboardReader*			reader = nullptr;
-
-			public:
-				WindowsClipboardService();
-
-				Ptr<INativeClipboardReader>		ReadClipboard()override;
-				Ptr<INativeClipboardWriter>		WriteClipboard()override;
-
-				void							SetOwnerHandle(HWND handle);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSASYNCSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsAsyncService : public INativeAsyncService
-			{
-			protected:
-				struct TaskItem
-				{
-					Semaphore*							semaphore;
-					Func<void()>						proc;
-
-					TaskItem();
-					TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
-					~TaskItem();
-				};
-
-				class DelayItem : public Object, public INativeDelay
-				{
-				public:
-					DelayItem(WindowsAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
-					~DelayItem();
-
-					WindowsAsyncService*				service;
-					Func<void()>						proc;
-					ExecuteStatus						status;
-					DateTime							executeTime;
-					bool								executeInMainThread;
-
-					ExecuteStatus						GetStatus()override;
-					bool								Delay(vint milliseconds)override;
-					bool								Cancel()override;
-				};
-			protected:
-				vint									mainThreadId;
-				SpinLock								taskListLock;
-				collections::List<TaskItem>				taskItems;
-				collections::List<Ptr<DelayItem>>		delayItems;
-			public:
-				WindowsAsyncService();
-				~WindowsAsyncService();
-
-				void									ExecuteAsyncTasks();
-				bool									IsInMainThread(INativeWindow* window)override;
-				void									InvokeAsync(const Func<void()>& proc)override;
-				void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
-				bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
-				Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
-				Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
 			};
 		}
 	}
@@ -2219,178 +2392,5 @@ namespace vl
 		}
 	}
 }
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCALLBACKSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCALLBACKSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsCallbackService : public Object, public INativeCallbackService
-			{
-			protected:
-				collections::List<INativeControllerListener*>	listeners;
-
-			public:
-				WindowsCallbackService();
-
-				bool											InstallListener(INativeControllerListener* listener)override;
-				bool											UninstallListener(INativeControllerListener* listener)override;
-
-				void											InvokeMouseHook(WPARAM message, NativePoint location);
-				void											InvokeGlobalTimer();
-				void											InvokeClipboardUpdated();
-				void											InvokeNativeWindowCreated(INativeWindow* window);
-				void											InvokeNativeWindowDestroyed(INativeWindow* window);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSINPUTSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSINPUTSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsInputService : public Object, public INativeInputService
-			{
-			protected:
-				HWND									ownerHandle;
-				HHOOK									mouseHook;
-				bool									isTimerEnabled;
-				HOOKPROC								mouseProc;
-
-				collections::Array<WString>				keyNames;
-				collections::Dictionary<WString, VKEY>	keys;
-
-				WString									GetKeyNameInternal(VKEY code);
-				void									InitializeKeyNames();
-			public:
-				WindowsInputService(HOOKPROC _mouseProc);
-
-				void									SetOwnerHandle(HWND handle);
-				void									StartHookMouse()override;
-				void									StopHookMouse()override;
-				bool									IsHookingMouse()override;
-				void									StartTimer()override;
-				void									StopTimer()override;
-				bool									IsTimerEnabled()override;
-				bool									IsKeyPressing(VKEY code)override;
-				bool									IsKeyToggled(VKEY code)override;
-				WString									GetKeyName(VKEY code)override;
-				VKEY									GetKey(const WString& name)override;
-			};
-
-			extern bool									WinIsKeyPressing(VKEY code);
-			extern bool									WinIsKeyToggled(VKEY code);
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSDIALOGSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsDialogService : public INativeDialogService
-			{
-				typedef HWND (*HandleRetriver)(INativeWindow*);
-			protected:
-				HandleRetriver									handleRetriver;
-
-			public:
-				WindowsDialogService(HandleRetriver _handleRetriver);
-
-				MessageBoxButtonsOutput			ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal)override;
-				bool							ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors)override;
-				bool							ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist)override;
-				bool							ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options)override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\GDI\WINGDIAPPLICATION.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::GDI Provider for Windows Implementation
-
-Interfaces:
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
-#define VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			extern WinDC*									GetNativeWindowDC(INativeWindow* window);
-			extern HDC										GetNativeWindowHDC(INativeWindow* window);
-		}
-	}
-}
-
-extern int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)());
 
 #endif

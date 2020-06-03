@@ -9,8 +9,8 @@ Classes:
 #ifndef VCZH_PRESENTATION_GUITYPES
 #define VCZH_PRESENTATION_GUITYPES
 
-#include "../Import/VlppParser.h"
-#include "../Import/VlppWorkflowLibrary.h"
+#include <VlppParser.h>
+#include <VlppWorkflowLibrary.h>
 
 namespace vl
 {

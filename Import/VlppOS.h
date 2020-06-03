@@ -5,6 +5,1027 @@ DEVELOPER: Zihan Chen(vczh)
 #include "Vlpp.h"
 
 /***********************************************************************
+.\HTTPUTILITY.H
+***********************************************************************/
+#ifndef VCZH_HTTPUTILITY
+#define VCZH_HTTPUTILITY
+
+
+#ifdef VCZH_MSVC
+
+namespace vl
+{
+
+/***********************************************************************
+HTTP Utility
+***********************************************************************/
+
+	/// <summary>A type representing an http requiest.</summary>
+	class HttpRequest
+	{
+		typedef collections::Array<char>					BodyBuffer;
+		typedef collections::List<WString>					StringList;
+		typedef collections::Dictionary<WString, WString>	HeaderMap;
+	public:
+		/// <summary>Name of the server, like "gaclib.net".</summary>
+		WString				server;
+		/// <summary>Port of the server, like 80.</summary>
+		vint				port;
+		/// <summary>Query of the request, like "/GettingStart.html".</summary>
+		WString				query;
+		/// <summary>Set to true if the request uses SSL.</summary>
+		bool				secure;
+		/// <summary>User name to authorize. Set to empty if you don't want to provide it.</summary>
+		WString				username;
+		/// <summary>Password to authorize. Set to empty if you don't want to provide it.</summary>
+		WString				password;
+		/// <summary>HTTP method, like "GET", "POST", "PUT", "DELETE", etc.</summary>
+		WString				method;
+		/// <summary>Cookie. Set to empty if you don't want to provide it.</summary>
+		WString				cookie;
+		/// <summary>Request body. This is a binary array using an array container to char.</summary>
+		BodyBuffer			body;
+		/// <summary>Content type, like "text/xml".</summary>
+		WString				contentType;
+		/// <summary>Accept type list, elements of it like "text/xml".</summary>
+		StringList			acceptTypes;
+		/// <summary>A dictionary to contain extra headers.</summary>
+		HeaderMap			extraHeaders;
+
+		/// <summary>Create an empty request.</summary>
+		HttpRequest();
+
+		/// <summary>Set <see cref="server"/>, <see cref="port"/>, <see cref="query"/> and <see cref="secure"/> fields for you using an URL.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="inputQuery">The URL.</param>
+		bool				SetHost(const WString& inputQuery);
+
+		/// <summary>Fill the body with a text using UTF-8 encoding.</summary>
+		/// <param name="bodyString">The text to fill.</param>
+		void				SetBodyUtf8(const WString& bodyString);
+	};
+	
+	/// <summary>A type representing an http response.</summary>
+	class HttpResponse
+	{
+		typedef collections::Array<char>		BodyBuffer;
+	public:
+		/// <summary>Status code, like 200.</summary>
+		vint				statusCode;
+		/// <summary>Response body. This is a binary array using an array container to char.</summary>
+		BodyBuffer			body;
+		/// <summary>Returned cookie from the server.</summary>
+		WString				cookie;
+
+		HttpResponse();
+
+		/// <summary>If you believe the server returns a text in UTF-8, use it to decode the body.</summary>
+		/// <returns>The response body as text.</returns>
+		WString				GetBodyUtf8();
+	};
+
+	/// <summary>Send an http request and receive a response.</summary>
+	/// <returns>Returns true if this operation succeeded. Even the server returns 404 will be treated as success, because you get the response.</returns>
+	/// <param name="request">The request.</param>
+	/// <param name="response">The response.</param>
+	extern bool				HttpQuery(const HttpRequest& request, HttpResponse& response);
+
+	/// <summary>Encode a text as part of the url. This function can be used to create arguments in an URL.</summary>
+	/// <returns>The encoded text.</returns>
+	/// <param name="query">The text to encode.</param>
+	extern WString			UrlEncodeQuery(const WString& query);
+}
+
+#endif
+
+#endif
+
+
+/***********************************************************************
+.\LOCALE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::Locale
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_LOCALE
+#define VCZH_LOCALE
+
+
+namespace vl
+{
+	/// <summary>Locale awared operations. Macro "INVLOC" is a shortcut to get a invariant locale.</summary>
+	class Locale : public Object
+	{
+	protected:
+		WString						localeName;
+
+	public:
+		Locale(const WString& _localeName=WString::Empty);
+		~Locale();
+
+		bool operator==(const Locale& value)const { return localeName==value.localeName; }
+		bool operator!=(const Locale& value)const { return localeName!=value.localeName; }
+		bool operator<(const Locale& value)const { return localeName<value.localeName; }
+		bool operator<=(const Locale& value)const { return localeName<=value.localeName; }
+		bool operator>(const Locale& value)const { return localeName>value.localeName; }
+		bool operator>=(const Locale& value)const { return localeName>=value.localeName; }
+
+		/// <summary>Get the invariant locale.</summary>
+		/// <returns>The invariant locale.</returns>
+		static Locale				Invariant();
+		/// <summary>Get the system default locale. This locale controls the code page that used by the the system to interpret ANSI string buffers.</summary>
+		/// <returns>The system default locale.</returns>
+		static Locale				SystemDefault();
+		/// <summary>Get the user default locale. This locale reflect the user's setting.</summary>
+		/// <returns>The user default locale.</returns>
+		static Locale				UserDefault();
+		/// <summary>Get all supported locales.</summary>
+		/// <param name="locales">All supported locales.</param>
+		static void					Enumerate(collections::List<Locale>& locales);
+
+		/// <summary>Get the name of the locale.</summary>
+		/// <returns>The name of the locale.</returns>
+		const WString&				GetName()const;
+
+		/// <summary>Get all short date formats for the locale.</summary>
+		/// <param name="formats">The formats.</param>
+		void						GetShortDateFormats(collections::List<WString>& formats)const;
+		/// <summary>Get all long date formats for the locale.</summary>
+		/// <param name="formats">The formats.</param>
+		void						GetLongDateFormats(collections::List<WString>& formats)const;
+		/// <summary>Get all Year-Month date formats for the locale.</summary>
+		/// <param name="formats">The formats.</param>
+		void						GetYearMonthDateFormats(collections::List<WString>& formats)const;
+		/// <summary>Get all long time formats for the locale.</summary>
+		/// <param name="formats">The formats.</param>
+		void						GetLongTimeFormats(collections::List<WString>& formats)const;
+		/// <summary>Get all short time formats for the locale.</summary>
+		/// <param name="formats">The formats.</param>
+		void						GetShortTimeFormats(collections::List<WString>& formats)const;
+
+		/// <summary>Convert a date to a formatted string.</summary>
+		/// <returns>The formatted string.</returns>
+		/// <param name="format">The format to use.</param>
+		/// <param name="date">The date to convert.</param>
+		WString						FormatDate(const WString& format, DateTime date)const;
+		/// <summary>Convert a time to a formatted string.</summary>
+		/// <returns>The formatted string.</returns>
+		/// <param name="format">The format to use.</param>
+		/// <param name="time">The time to convert.</param>
+		WString						FormatTime(const WString& format, DateTime time)const;
+
+		/// <summary>Convert a number to a formatted string.</summary>
+		/// <returns>The formatted string.</returns>
+		/// <param name="number">The number to convert.</param>
+		WString						FormatNumber(const WString& number)const;
+		/// <summary>Convert a currency (money) to a formatted string.</summary>
+		/// <returns>The formatted string.</returns>
+		/// <param name="currency">The currency to convert.</param>
+		WString						FormatCurrency(const WString& currency)const;
+
+		/// <summary>Get the short display string of a day of week.</summary>
+		/// <returns>The display string.</returns>
+		/// <param name="dayOfWeek">Day of week, begins from 0 as Sunday.</param>
+		WString						GetShortDayOfWeekName(vint dayOfWeek)const;
+		/// <summary>Get the long display string of a day of week.</summary>
+		/// <returns>The display string.</returns>
+		/// <param name="dayOfWeek">Day of week, begins from 0 as Sunday.</param>
+		WString						GetLongDayOfWeekName(vint dayOfWeek)const;
+		/// <summary>Get the short display string of a month.</summary>
+		/// <returns>The display string.</returns>
+		/// <param name="month">Month, begins from 1 as January.</param>
+		WString						GetShortMonthName(vint month)const;
+		/// <summary>Get the long display string of a month.</summary>
+		/// <returns>The display string.</returns>
+		/// <param name="month">Month, begins from 1 as January.</param>
+		WString						GetLongMonthName(vint month)const;
+		
+#ifdef VCZH_MSVC
+		/// <summary>Convert characters to the full width.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
+		WString						ToFullWidth(const WString& str)const;
+		/// <summary>Convert characters to the half width.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
+		WString						ToHalfWidth(const WString& str)const;
+		/// <summary>Convert characters to the Hiragana.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
+		WString						ToHiragana(const WString& str)const;
+		/// <summary>Convert characters to the Katagana.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
+		WString						ToKatagana(const WString& str)const;
+#endif
+		
+		/// <summary>Convert characters to the lower case using the file system rule.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
+		WString						ToLower(const WString& str)const;
+		/// <summary>Convert characters to the upper case using the file system rule.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
+		WString						ToUpper(const WString& str)const;
+		/// <summary>Convert characters to the lower case using the linguistic rule.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
+		WString						ToLinguisticLower(const WString& str)const;
+		/// <summary>Convert characters to the upper case using the linguistic rule.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
+		WString						ToLinguisticUpper(const WString& str)const;
+
+#ifdef VCZH_MSVC
+		/// <summary>Convert characters to Simplified Chinese.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
+		WString						ToSimplifiedChinese(const WString& str)const;
+		/// <summary>Convert characters to the Traditional Chinese.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
+		WString						ToTraditionalChinese(const WString& str)const;
+		/// <summary>Convert characters to the tile case, in which the first letter of each major word is capitalized.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
+		WString						ToTileCase(const WString& str)const;
+#endif
+
+		/// <summary>Mergable flags controlling how to normalize a string.</summary>
+		enum Normalization
+		{
+			/// <summary>Do nothing.</summary>
+			None=0,
+			/// <summary>Ignore case using the file system rule.</summary>
+			IgnoreCase=1,
+#ifdef VCZH_MSVC
+			/// <summary>Ignore case using the linguistic rule.</summary>
+			IgnoreCaseLinguistic=2,
+			/// <summary>Ignore the difference between between hiragana and katakana characters.</summary>
+			IgnoreKanaType=4,
+			/// <summary>Ignore nonspacing characters.</summary>
+			IgnoreNonSpace=8,
+			/// <summary>Ignore symbols and punctuation.</summary>
+			IgnoreSymbol=16,
+			/// <summary>Ignore the difference between half-width and full-width characters.</summary>
+			IgnoreWidth=32,
+			/// <summary>Treat digits as numbers during sorting.</summary>
+			DigitsAsNumbers=64,
+			/// <summary>Treat punctuation the same as symbols.</summary>
+			StringSoft=128,
+#endif
+		};
+
+		/// <summary>Compare two strings.</summary>
+		/// <returns>Returns 0 if two strings are equal. Returns a positive number if the first string is larger. Returns a negative number if the second string is larger. When sorting strings, larger strings are put after then smaller strings.</returns>
+		/// <param name="s1">The first string to compare.</param>
+		/// <param name="s2">The second string to compare.</param>
+		/// <param name="normalization">Flags controlling how to normalize a string.</param>
+		vint									Compare(const WString& s1, const WString& s2, Normalization normalization)const;
+		/// <summary>Compare two strings to test binary equivalence.</summary>
+		/// <returns>Returns 0 if two strings are equal. Returns a positive number if the first string is larger. Returns a negative number if the second string is larger. When sorting strings, larger strings are put after then smaller strings.</returns>
+		/// <param name="s1">The first string to compare.</param>
+		/// <param name="s2">The second string to compare.</param>
+		vint									CompareOrdinal(const WString& s1, const WString& s2)const;
+		/// <summary>Compare two strings to test binary equivalence, ignoring case.</summary>
+		/// <returns>Returns 0 if two strings are equal. Returns a positive number if the first string is larger. Returns a negative number if the second string is larger. When sorting strings, larger strings are put after then smaller strings.</returns>
+		/// <param name="s1">The first string to compare.</param>
+		/// <param name="s2">The second string to compare.</param>
+		vint									CompareOrdinalIgnoreCase(const WString& s1, const WString& s2)const;
+		/// <summary>Find the first position that the sub string appears in a text.</summary>
+		/// <returns>Returns a pair of numbers, the first number indicating the position in the text, the second number indicating the size of the equivalence sub string in the text. For some normalization, the found sub string may be binary different to the string you want to find.</returns>
+		/// <param name="text">The text to find the sub string.</param>
+		/// <param name="find">The sub string to match.</param>
+		/// <param name="normalization">Flags controlling how to normalize a string.</param>
+		collections::Pair<vint, vint>			FindFirst(const WString& text, const WString& find, Normalization normalization)const;
+		/// <summary>Find the last position that the sub string appears in a text.</summary>
+		/// <returns>Returns a pair of numbers, the first number indicating the position in the text, the second number indicating the size of the equivalence sub string in the text. For some normalization, the found sub string may be binary different to the string you want to find.</returns>
+		/// <param name="text">The text to find the sub string.</param>
+		/// <param name="find">The sub string to match.</param>
+		/// <param name="normalization">Flags controlling how to normalize a string.</param>
+		collections::Pair<vint, vint>			FindLast(const WString& text, const WString& find, Normalization normalization)const;
+		/// <summary>Test is the prefix of the text equivalence to the provided sub string.</summary>
+		/// <returns>Returns true if the prefix of the text equivalence to the provided sub string.</returns>
+		/// <param name="text">The text to test the prefix.</param>
+		/// <param name="find">The sub string to match.</param>
+		/// <param name="normalization">Flags controlling how to normalize a string.</param>
+		bool									StartsWith(const WString& text, const WString& find, Normalization normalization)const;
+		/// <summary>Test is the postfix of the text equivalence to the provided sub string.</summary>
+		/// <returns>Returns true if the postfix of the text equivalence to the provided sub string.</returns>
+		/// <param name="text">The text to test the postfix.</param>
+		/// <param name="find">The sub string to match.</param>
+		/// <param name="normalization">Flags controlling how to normalize a string.</param>
+		bool									EndsWith(const WString& text, const WString& find, Normalization normalization)const;
+	};
+
+#define INVLOC vl::Locale::Invariant()
+}
+
+#endif
+
+/***********************************************************************
+.\THREADING.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::Threading
+
+Classes:
+	Thread										: Thread
+	CriticalSection
+	Mutex
+	Semaphore
+	EventObject
+***********************************************************************/
+
+#ifndef VCZH_THREADING
+#define VCZH_THREADING
+
+
+namespace vl
+{
+	
+/***********************************************************************
+Kernel Mode Objects
+***********************************************************************/
+
+	namespace threading_internal
+	{
+		struct WaitableData;
+		struct ThreadData;
+		struct MutexData;
+		struct SemaphoreData;
+		struct EventData;
+		struct CriticalSectionData;
+		struct ReaderWriterLockData;
+		struct ConditionVariableData;
+	}
+	
+	/// <summary>Base type of all synchronization objects.</summary>
+	class WaitableObject : public Object, public NotCopyable
+	{
+#if defined VCZH_MSVC
+	private:
+		threading_internal::WaitableData*			waitableData;
+	protected:
+
+		WaitableObject();
+		void										SetData(threading_internal::WaitableData* data);
+	public:
+		/// <summary>Test if the object has already been created. Some of the synchronization objects should initialize itself after the constructor. This function is only available in Windows.</summary>
+		/// <returns>Returns true if the object has already been created.</returns>
+		bool										IsCreated();
+		/// <summary>Wait for this object to signal.</summary>
+		/// <returns>Returns true if the object is signaled. Returns false if this operation failed.</returns>
+		bool										Wait();
+		/// <summary>Wait for this object to signal for a period of time. This function is only available in Windows.</summary>
+		/// <returns>Returns true if the object is signaled. Returns false if this operation failed, including time out.</returns>
+		/// <param name="ms">Time in milliseconds.</param>
+		bool										WaitForTime(vint ms);
+		
+		/// <summary>Wait for multiple objects. This function is only available in Windows.</summary>
+		/// <returns>Returns true if all objects are signaled. Returns false if this operation failed.</returns>
+		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
+		static bool									WaitAll(WaitableObject** objects, vint count);
+		/// <summary>Wait for multiple objects for a period of time. This function is only available in Windows.</summary>
+		/// <returns>Returns true if all objects are signaled. Returns false if this operation failed, including time out.</returns>
+		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
+		/// <param name="ms">Time in milliseconds.</param>
+		static bool									WaitAllForTime(WaitableObject** objects, vint count, vint ms);
+		/// <summary>Wait for one of the objects. This function is only available in Windows.</summary>
+		/// <returns>Returns the index of the first signaled or abandoned object, according to the "abandoned" parameter. Returns -1 if this operation failed.</returns>
+		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
+		/// <param name="abandoned">Returns true if the waiting is canceled by an abandoned object. An abandoned object is caused by it's owner thread existing without releasing it.</param>
+		static vint									WaitAny(WaitableObject** objects, vint count, bool* abandoned);
+		/// <summary>Wait for one of the objects for a period of time. This function is only available in Windows.</summary>
+		/// <returns>Returns the index of the first signaled or abandoned object, according to the "abandoned" parameter. Returns -1 if this operation failed, including time out.</returns>
+		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
+		/// <param name="ms">Time in milliseconds.</param>
+		/// <param name="abandoned">Returns true if the waiting is canceled by an abandoned object. An abandoned object is caused by it's owner thread existing without releasing it.</param>
+		static vint									WaitAnyForTime(WaitableObject** objects, vint count, vint ms, bool* abandoned);
+#elif defined VCZH_GCC
+		virtual bool								Wait() = 0;
+#endif
+	};
+
+	/// <summary>Representing a thread. [M:vl.Thread.CreateAndStart] is the suggested way to create threads.</summary>
+	class Thread : public WaitableObject
+	{
+		friend void InternalThreadProc(Thread* thread);
+	public:
+		/// <summary>Thread state.</summary>
+		enum ThreadState
+		{
+			/// <summary>The thread has not started.</summary>
+			NotStarted,
+			/// <summary>The thread is running.</summary>
+			Running,
+			/// <summary>The thread has been stopped.</summary>
+			Stopped
+		};
+
+		typedef void(*ThreadProcedure)(Thread*, void*);
+	protected:
+		threading_internal::ThreadData*				internalData;
+		volatile ThreadState						threadState;
+
+		virtual void								Run()=0;
+
+		Thread();
+	public:
+		~Thread();
+
+		/// <summary>Create a thread using a function pointer.</summary>
+		/// <returns>Returns the created thread.</returns>
+		/// <param name="procedure">The function pointer.</param>
+		/// <param name="argument">The argument to call the function pointer.</param>
+		/// <param name="deleteAfterStopped">Set to true (by default) to make the thread delete itself after the job is done. If you set this argument to true, you are not suggested to touch the returned thread pointer in any way.</param>
+		static Thread*								CreateAndStart(ThreadProcedure procedure, void* argument=0, bool deleteAfterStopped=true);
+		/// <summary>Create a thread using a function object or a lambda expression.</summary>
+		/// <returns>Returns the created thread.</returns>
+		/// <param name="procedure">The function object or the lambda expression.</param>
+		/// <param name="deleteAfterStopped">Set to true (by default) to make the thread delete itself after the job is done. If you set this argument to true, you are not suggested to touch the returned thread pointer in any way.</param>
+		static Thread*								CreateAndStart(const Func<void()>& procedure, bool deleteAfterStopped=true);
+		/// <summary>Pause the caller thread for a period of time.</summary>
+		/// <param name="ms">Time in milliseconds.</param>
+		static void									Sleep(vint ms);
+		/// <summary>Get the number of logical processors.</summary>
+		/// <returns>The number of logical processor.</returns>
+		static vint									GetCPUCount();
+		/// <summary>Get the current thread id.</summary>
+		/// <returns>The current thread id.</returns>
+		static vint									GetCurrentThreadId();
+
+		/// <summary>Start the thread.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		bool										Start();
+#if defined VCZH_GCC
+		bool										Wait();
+#endif
+		/// <summary>Stop the thread.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		bool										Stop();
+		/// <summary>Get the state of the thread.</summary>
+		/// <returns>The state of the thread.</returns>
+		ThreadState									GetState();
+#ifdef VCZH_MSVC
+		void										SetCPU(vint index);
+#endif
+	};
+
+	/// <summary>Mutex.</summary>
+	class Mutex : public WaitableObject
+	{
+	private:
+		threading_internal::MutexData*				internalData;
+	public:
+		Mutex();
+		~Mutex();
+
+		/// <summary>Create a mutex.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="owned">Set to true to own the created mutex.</param>
+		/// <param name="name">Name of the mutex. If it is not empty, than it is a global named mutex. This argument is ignored in Linux.</param>
+		bool										Create(bool owned=false, const WString& name=L"");
+		/// <summary>Open an existing global named mutex.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="inheritable">Set to true make the mutex visible to all all child processes. This argument is only used in Windows.</param>
+		/// <param name="name">Name of the mutex. This argument is ignored in Linux.</param>
+		bool										Open(bool inheritable, const WString& name);
+
+		/// <summary>
+		/// Release the mutex.
+		/// In the implementation for Linux, calling Release() more than once between two Wait(), or calling Wait() more than once between two Release(), will results in an undefined behavior.
+		/// </summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		bool										Release();
+#ifdef VCZH_GCC
+		bool										Wait();
+#endif
+	};
+	
+	/// <summary>Semaphore.</summary>
+	class Semaphore : public WaitableObject
+	{
+	private:
+		threading_internal::SemaphoreData*			internalData;
+	public:
+		Semaphore();
+		~Semaphore();
+		
+		/// <summary>Create a semaphore.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="initialCount">Define the counter of the semaphore.</param>
+		/// <param name="maxCount">Define the maximum value of the counter of the semaphore. This argument is only used in Windows.</param>
+		/// <param name="name">Name of the semaphore. If it is not empty, than it is a global named semaphore. This argument is ignored in Linux.</param>
+		bool										Create(vint initialCount, vint maxCount, const WString& name=L"");
+		/// <summary>Open an existing global named semaphore.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="inheritable">Set to true make the semaphore visible to all all child processes. This argument is only used in Windows.</param>
+		/// <param name="name">Name of the semaphore. This argument is ignored in Linux.</param>
+		bool										Open(bool inheritable, const WString& name);
+		
+		/// <summary> Release the semaphore once. </summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		bool										Release();
+		/// <summary> Release the semaphore multiple times. </summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="count">The amout to release.</param>
+		vint										Release(vint count);
+#ifdef VCZH_GCC
+		bool										Wait();
+#endif
+	};
+
+	/// <summary>Event.</summary>
+	class EventObject : public WaitableObject
+	{
+	private:
+		threading_internal::EventData*				internalData;
+	public:
+		EventObject();
+		~EventObject();
+		
+		/// <summary>Create an auto unsignal event. Auto unsignal means, when one thread waits for the event and succeeded, the event will become unsignaled immediately.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="signaled">Set to true make the event signaled at the beginning.</param>
+		/// <param name="name">Name of the event. If it is not empty, than it is a global named mutex. This argument is only used in Windows.</param>
+		bool										CreateAutoUnsignal(bool signaled, const WString& name=L"");
+		/// <summary>Create a manual unsignal event.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="signaled">Set to true make the event signaled at the beginning.</param>
+		/// <param name="name">Name of the event. If it is not empty, than it is a global named mutex. This argument is only used in Windows.</param>
+		bool										CreateManualUnsignal(bool signaled, const WString& name=L"");
+		/// <summary>Open an existing global named event.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="inheritable">Set to true make the event visible to all all child processes. This argument is only used in Windows.</param>
+		/// <param name="name">Name of the event. This argument is only used in Windows.</param>
+		bool										Open(bool inheritable, const WString& name);
+
+		/// <summary>Signal the event.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		bool										Signal();
+		/// <summary>Unsignal the event.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		bool										Unsignal();
+#ifdef VCZH_GCC
+		bool										Wait();
+#endif
+	};
+
+/***********************************************************************
+Thread Pool
+***********************************************************************/
+
+	/// <summary>A light-weight thread pool.</summary>
+	class ThreadPoolLite : public Object
+	{
+	private:
+		ThreadPoolLite();
+		~ThreadPoolLite();
+	public:
+		/// <summary>Queue a function pointer.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="proc">The function pointer.</param>
+		/// <param name="argument">The argument to call the function pointer.</param>
+		static bool									Queue(void(*proc)(void*), void* argument);
+		/// <summary>Queue a function object.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="proc">The function object.</param>
+		static bool									Queue(const Func<void()>& proc);
+		
+		/// <summary>Queue a lambda expression.</summary>
+		/// <typeparam name="T">The type of the lambda expression.</typeparam>
+		/// <param name="proc">The lambda expression.</param>
+		template<typename T>
+		static void QueueLambda(const T& proc)
+		{
+			Queue(Func<void()>(proc));
+		}
+
+#ifdef VCZH_GCC
+		static bool									Stop(bool discardPendingTasks);
+#endif
+	};
+
+/***********************************************************************
+Kernel Mode Objects in Process
+***********************************************************************/
+
+	/// <summary><![CDATA[
+	/// Critical section. It is similar to mutex, but in Windows, enter a owned critical section will not cause dead lock.
+	/// The macro "CS_LOCK" is encouraged to use instead of calling [M:vl.CriticalSection.Enter] and [M:vl.CriticalSection.Leave] like this:
+	/// CS_LOCK(yourCriticalSection)
+	/// {
+	///		<code>
+	/// }
+	/// ]]></summary>
+	class CriticalSection : public Object, public NotCopyable
+	{
+	private:
+		friend class ConditionVariable;
+		threading_internal::CriticalSectionData*	internalData;
+	public:
+		/// <summary>Create a critical section.</summary>
+		CriticalSection();
+		~CriticalSection();
+
+		/// <summary>Try enter a critical section. This function will return immediately.</summary>
+		/// <returns>Returns true if the current thread owned the critical section.</returns>
+		bool										TryEnter();
+		/// <summary>Enter a critical section.</summary>
+		void										Enter();
+		/// <summary>Leave a critical section.</summary>
+		void										Leave();
+
+	public:
+		class Scope : public Object, public NotCopyable
+		{
+		private:
+			CriticalSection*						criticalSection;
+		public:
+			Scope(CriticalSection& _criticalSection);
+			~Scope();
+		};
+	};
+	
+	/// <summary><![CDATA[
+	/// Reader writer lock.
+	/// The macro "READER_LOCK" and "WRITER_LOCK" are encouraged to use instead of calling [M:vl.ReaderWriterLock.EnterReader], [M:vl.ReaderWriterLock.LeaveReader], [M:vl.ReaderWriterLock.EnterWriter] and [M:vl.ReaderWriterLock.LeaveWriter] like this:
+	/// READER_LOCK(yourLock)
+	/// {
+	///		<code>
+	/// }
+	/// or
+	/// WRITER_LOCK(yourLock)
+	/// {
+	///		<code>
+	/// }
+	/// ]]></summary>
+	class ReaderWriterLock : public Object, public NotCopyable
+	{
+	private:
+		friend class ConditionVariable;
+		threading_internal::ReaderWriterLockData*	internalData;
+	public:
+		/// <summary>Create a reader writer lock.</summary>
+		ReaderWriterLock();
+		~ReaderWriterLock();
+		
+		/// <summary>Try acquire a reader lock. This function will return immediately.</summary>
+		/// <returns>Returns true if the current thread acquired the reader lock.</returns>
+		bool										TryEnterReader();
+		/// <summary>Acquire a reader lock.</summary>
+		void										EnterReader();
+		/// <summary>Release a reader lock.</summary>
+		void										LeaveReader();
+		/// <summary>Try acquire a writer lock. This function will return immediately.</summary>
+		/// <returns>Returns true if the current thread acquired the writer lock.</returns>
+		bool										TryEnterWriter();
+		/// <summary>Acquire a writer lock.</summary>
+		void										EnterWriter();
+		/// <summary>Release a writer lock.</summary>
+		void										LeaveWriter();
+	public:
+		class ReaderScope : public Object, public NotCopyable
+		{
+		private:
+			ReaderWriterLock*						lock;
+		public:
+			ReaderScope(ReaderWriterLock& _lock);
+			~ReaderScope();
+		};
+		
+		class WriterScope : public Object, public NotCopyable
+		{
+		private:
+			ReaderWriterLock*						lock;
+		public:
+			WriterScope(ReaderWriterLock& _lock);
+			~WriterScope();
+		};
+	};
+
+	/// <summary>Conditional variable.</summary>
+	class ConditionVariable : public Object, public NotCopyable
+	{
+	private:
+		threading_internal::ConditionVariableData*	internalData;
+	public:
+		/// <summary>Create a conditional variable.</summary>
+		ConditionVariable();
+		~ConditionVariable();
+
+		/// <summary>Bind a conditional variable with a owned critical section and release it. When the function returns, the condition variable is activated, and the current thread owned the critical section again.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="cs">The critical section.</param>
+		bool										SleepWith(CriticalSection& cs);
+#ifdef VCZH_MSVC
+		/// <summary>Bind a conditional variable with a owned critical section and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the critical section again. This function is only available in Windows.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="cs">The critical section.</param>
+		/// <param name="ms">Time in milliseconds.</param>
+		bool										SleepWithForTime(CriticalSection& cs, vint ms);
+		/// <summary>Bind a conditional variable with a owned reader lock and release it. When the function returns, the condition variable is activated, and the current thread owned the reader lock again. This function is only available in Windows.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="lock">The reader lock.</param>
+		bool										SleepWithReader(ReaderWriterLock& lock);
+		/// <summary>Bind a conditional variable with a owned reader lock and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the reader lock again. This function is only available in Windows.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="lock">The reader lock.</param>
+		/// <param name="ms">Time in milliseconds.</param>
+		bool										SleepWithReaderForTime(ReaderWriterLock& lock, vint ms);
+		/// <summary>Bind a conditional variable with a owned writer lock and release it. When the function returns, the condition variable is activated, and the current thread owned the writer lock again. This function is only available in Windows.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="lock">The writer lock.</param>
+		bool										SleepWithWriter(ReaderWriterLock& lock);
+		/// <summary>Bind a conditional variable with a owned writer lock and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the writer lock again. This function is only available in Windows.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="lock">The writer lock.</param>
+		/// <param name="ms">Time in milliseconds.</param>
+		bool										SleepWithWriterForTime(ReaderWriterLock& lock, vint ms);
+#endif
+		/// <summary>Wake one thread that pending on this condition variable.</summary>
+		void										WakeOnePending();
+		/// <summary>Wake all thread that pending on this condition variable.</summary>
+		void										WakeAllPendings();
+	};
+
+/***********************************************************************
+User Mode Objects
+***********************************************************************/
+
+	typedef long LockedInt;
+	
+	/// <summary><![CDATA[
+	/// Spin lock. It is similar to mutex.
+	/// The macro "SPIN_LOCK" is encouraged to use instead of calling [M:vl.SpinLock.Enter] and [M:vl.SpinLock.Leave] like this:
+	/// SPIN_LOCK(yourLock)
+	/// {
+	///		<code>
+	/// }
+	/// ]]></summary>
+	class SpinLock : public Object, public NotCopyable
+	{
+	protected:
+		volatile LockedInt							token;
+	public:
+		/// <summary>Create a spin lock.</summary>
+		SpinLock();
+		~SpinLock();
+		
+		/// <summary>Try enter a spin lock. This function will return immediately.</summary>
+		/// <returns>Returns true if the current thread owned the spin lock.</returns>
+		bool										TryEnter();
+		/// <summary>Enter a spin lock.</summary>
+		void										Enter();
+		/// <summary>Leave a spin lock.</summary>
+		void										Leave();
+
+	public:
+		class Scope : public Object, public NotCopyable
+		{
+		private:
+			SpinLock*								spinLock;
+		public:
+			Scope(SpinLock& _spinLock);
+			~Scope();
+		};
+	};
+
+#define SPIN_LOCK(LOCK) SCOPE_VARIABLE(const SpinLock::Scope&, scope, LOCK)
+#define CS_LOCK(LOCK) SCOPE_VARIABLE(const CriticalSection::Scope&, scope, LOCK)
+#define READER_LOCK(LOCK) SCOPE_VARIABLE(const ReaderWriterLock::ReaderScope&, scope, LOCK)
+#define WRITER_LOCK(LOCK) SCOPE_VARIABLE(const ReaderWriterLock::WriterScope&, scope, LOCK)
+
+/***********************************************************************
+Thread Local Storage
+
+ThreadLocalStorage and ThreadVariable<T> are designed to be used as global value types only.
+Dynamically create instances of them are undefined behavior.
+***********************************************************************/
+
+	/// <summary>Thread local storage operations.</summary>
+	class ThreadLocalStorage : public Object, private NotCopyable
+	{
+		typedef void(*Destructor)(void*);
+	protected:
+		vuint64_t								key;
+		Destructor								destructor;
+		volatile bool							disposed = false;
+		
+		static void								PushStorage(ThreadLocalStorage* storage);
+	public:
+		ThreadLocalStorage(Destructor _destructor);
+		~ThreadLocalStorage();
+
+		void*									Get();
+		void									Set(void* data);
+		void									Clear();
+		void									Dispose();
+
+		/// <summary>Fix all storage creation.</summary>
+		static void								FixStorages();
+		/// <summary>Clear all storages for the current thread. For threads that are created using [T:vl.Thread], this function will be automatically called when before the thread exit.</summary>
+		static void								ClearStorages();
+		/// <summary>Clear all storages for the current thread (should be the main thread) and clear all records. This function can only be called by the main thread when all other threads are exited. It will reduce noices when you want to detect memory leaks.</summary>
+		static void								DisposeStorages();
+	};
+
+	/// <summary>Thread local variable. This type can only be used to define global variables. Different threads can store different values to and obtain differnt values from a thread local variable.</summary>
+	/// <typeparam name="T">Type of the storage.</typeparam>
+	template<typename T>
+	class ThreadVariable : public Object, private NotCopyable
+	{
+	protected:
+		ThreadLocalStorage						storage;
+
+		static void Destructor(void* data)
+		{
+			if (data)
+			{
+				delete (T*)data;
+			}
+		}
+	public:
+		/// <summary>Create a thread local variable.</summary>
+		ThreadVariable()
+			:storage(&Destructor)
+		{
+		}
+
+		~ThreadVariable()
+		{
+		}
+
+		/// <summary>Test if the storage has data.</summary>
+		/// <returns>Returns true if the storage has data.</returns>
+		bool HasData()
+		{
+			return storage.Get() != nullptr;
+		}
+
+		/// <summary>Remove the data from this storage.</summary>
+		void Clear()
+		{
+			storage.Clear();
+		}
+
+		/// <summary>Get the stored data.</summary>
+		/// <returns>The stored ata.</returns>
+		T& Get()
+		{
+			return *(T*)storage.Get();
+		}
+
+		/// <summary>Set data to this storage.</summary>
+		/// <param name="value">The data to set.</param>
+		void Set(const T& value)
+		{
+			storage.Clear();
+			storage.Set(new T(value));
+		}
+	};
+
+	template<typename T>
+	class ThreadVariable<T*> : public Object, private NotCopyable
+	{
+	protected:
+		ThreadLocalStorage						storage;
+
+	public:
+		ThreadVariable()
+			:storage(nullptr)
+		{
+		}
+
+		~ThreadVariable()
+		{
+		}
+
+		bool HasData()
+		{
+			return storage.Get() != nullptr;
+		}
+
+		void Clear()
+		{
+			storage.Set(nullptr);
+		}
+
+		T* Get()
+		{
+			return (T*)storage.Get();
+		}
+
+		void Set(T* value)
+		{
+			storage.Set((void*)value);
+		}
+	};
+
+/***********************************************************************
+RepeatingTaskExecutor
+***********************************************************************/
+
+	/// <summary>Queued task executor. It is different from a thread pool by: 1) Task execution is single threaded, 2) If you queue a task, it will override the the unexecuted queued task.</summary>
+	/// <typeparam name="T">The type of the argument to run a task.</typeparam>
+	template<typename T>
+	class RepeatingTaskExecutor : public Object
+	{
+	private:
+		SpinLock								inputLock;
+		T										inputData;
+		volatile bool							inputDataAvailable;
+		SpinLock								executingEvent;
+		volatile bool							executing;
+
+		void ExecutingProcInternal()
+		{
+			while(true)
+			{
+				bool currentInputDataAvailable;
+				T currentInputData;
+				SPIN_LOCK(inputLock)
+				{
+					currentInputData=inputData;
+					inputData=T();
+					currentInputDataAvailable=inputDataAvailable;
+					inputDataAvailable=false;
+					if(!currentInputDataAvailable)
+					{
+						executing=false;
+						goto FINISH_EXECUTING;
+					}
+				}
+				Execute(currentInputData);
+			}
+		FINISH_EXECUTING:
+			executingEvent.Leave();
+		}
+
+		static void ExecutingProc(void* argument)
+		{
+			((RepeatingTaskExecutor<T>*)argument)->ExecutingProcInternal();
+		}
+	
+	protected:
+		/// <summary>This function is called when it is ready to execute a task. Task execution is single threaded. All task code should be put inside the function.</summary>
+		/// <param name="input">The argument to run a task.</param>
+		virtual void							Execute(const T& input)=0;
+
+	public:
+		/// <summary>Create a task executor.</summary>
+		RepeatingTaskExecutor()
+			:inputDataAvailable(false)
+			,executing(false)
+		{
+		}
+
+		~RepeatingTaskExecutor()
+		{
+			EnsureTaskFinished();
+		}
+
+		/// <summary>Wait for all tasks to finish.</summary>
+		void EnsureTaskFinished()
+		{
+			executingEvent.Enter();
+			executingEvent.Leave();
+		}
+
+		/// <summary>Queue a task. If there is a queued task that has not been executied yet, those tasks will be canceled. Only one task can be queued at the same moment.</summary>
+		/// <param name="input">The argument to run a task.</param>
+		void SubmitTask(const T& input)
+		{
+			SPIN_LOCK(inputLock)
+			{
+				inputData=input;
+				inputDataAvailable=true;
+			}
+			if(!executing)
+			{
+				executing=true;
+				executingEvent.Enter();
+				ThreadPoolLite::Queue(&ExecutingProc, this);
+			}
+		}
+	};
+}
+#endif
+
+
+/***********************************************************************
 .\STREAM\INTERFACES.H
 ***********************************************************************/
 /***********************************************************************
@@ -125,6 +1146,329 @@ namespace vl
 #endif
 
 /***********************************************************************
+.\STREAM\BROADCASTSTREAM.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Stream::BroadcastStream
+
+Interfaces:
+	BroadcastStream					: Stream that copy the written data to multiple streams
+***********************************************************************/
+
+#ifndef VCZH_STREAM_BROADCASTSTREAM
+#define VCZH_STREAM_BROADCASTSTREAM
+
+
+namespace vl
+{
+	namespace stream
+	{
+		/// <summary>A writable stream that copy written content to multiple target streams.</summary>
+		class BroadcastStream : public Object, public virtual IStream
+		{
+			typedef collections::List<IStream*>		StreamList;
+		protected:
+			bool					closed;
+			pos_t					position;
+			StreamList				streams;
+		public:
+			/// <summary>Create a strema.</summary>
+			BroadcastStream();
+			~BroadcastStream();
+
+			/// <summary>Get the list of target streams. You can add streams to this list, or remove streams from this list.</summary>
+			/// <returns>The list of target streams.</returns>
+			StreamList&				Targets();
+			bool					CanRead()const;
+			bool					CanWrite()const;
+			bool					CanSeek()const;
+			bool					CanPeek()const;
+			bool					IsLimited()const;
+			bool					IsAvailable()const;
+			void					Close();
+			pos_t					Position()const;
+			pos_t					Size()const;
+			void					Seek(pos_t _size);
+			void					SeekFromBegin(pos_t _size);
+			void					SeekFromEnd(pos_t _size);
+			vint					Read(void* _buffer, vint _size);
+			vint					Write(void* _buffer, vint _size);
+			vint					Peek(void* _buffer, vint _size);
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\STREAM\CACHESTREAM.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Stream::CacheStream
+
+Interfaces:
+	CacheStream						: Stream that provide a cache for reading and writing
+***********************************************************************/
+
+#ifndef VCZH_STREAM_CACHESTREAM
+#define VCZH_STREAM_CACHESTREAM
+
+
+namespace vl
+{
+	namespace stream
+	{
+		/// <summary>
+		/// A cache stream. Features (readable, writable, seekable, peekable) are enabled according to the target stream.
+		/// When you read from the cache strema, it will read a specified size of content from the target stream first and cache, reducing the numbers of operations on the target stream.
+		/// When you write to the cache strema, it will save them to a buffer, and write to the target stream until the buffer reaches a specified size, reducing the numbers of operations on the target stream.
+		/// </summary>
+		class CacheStream : public Object, public virtual IStream
+		{
+		protected:
+			IStream*				target;
+			vint					block;
+			pos_t					start;
+			pos_t					position;
+
+			char*					buffer;
+			vint					dirtyStart;
+			vint					dirtyLength;
+			vint					availableLength;
+			pos_t					operatedSize;
+
+			void					Flush();
+			void					Load(pos_t _position);
+			vint					InternalRead(void* _buffer, vint _size);
+			vint					InternalWrite(void* _buffer, vint _size);
+		public:
+			/// <summary>Create a cache stream using a target stream.</summary>
+			/// <param name="_target">The target stream.</param>
+			/// <param name="_block">Size of the cache.</param>
+			CacheStream(IStream& _target, vint _block=65536);
+			~CacheStream();
+
+			bool					CanRead()const;
+			bool					CanWrite()const;
+			bool					CanSeek()const;
+			bool					CanPeek()const;
+			bool					IsLimited()const;
+			bool					IsAvailable()const;
+			void					Close();
+			pos_t					Position()const;
+			pos_t					Size()const;
+			void					Seek(pos_t _size);
+			void					SeekFromBegin(pos_t _size);
+			void					SeekFromEnd(pos_t _size);
+			vint					Read(void* _buffer, vint _size);
+			vint					Write(void* _buffer, vint _size);
+			vint					Peek(void* _buffer, vint _size);
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\STREAM\COMPRESSIONSTREAM.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Stream::CharFormat
+
+Classes:
+***********************************************************************/
+
+#ifndef VCZH_STREAM_COMPRESSIONSTREAM
+#define VCZH_STREAM_COMPRESSIONSTREAM
+
+
+namespace vl
+{
+	namespace stream
+	{
+
+/***********************************************************************
+Compression
+***********************************************************************/
+
+		namespace lzw
+		{
+			static const vint						BufferSize = 1024;
+			static const vint						MaxDictionarySize = 1 << 24;
+
+			struct Code
+			{
+				typedef collections::PushOnlyAllocator<Code>			CodeAllocator;
+				typedef collections::ByteObjectMap<Code>::Allocator		MapAllocator;
+
+				vuint8_t							byte = 0;
+				vint								code = -1;
+				Code*								parent = 0;
+				vint								size = 0;
+				collections::ByteObjectMap<Code>	children;
+			};
+		}
+
+		class LzwBase : public Object
+		{
+		protected:
+			lzw::Code::CodeAllocator				codeAllocator;
+			lzw::Code::MapAllocator					mapAllocator;
+			lzw::Code*								root;
+			vint									eofIndex = -1;
+			vint									nextIndex = 0;
+			vint									indexBits = 1;
+
+			void									UpdateIndexBits();
+			lzw::Code*								CreateCode(lzw::Code* parent, vuint8_t byte);
+
+			LzwBase();
+			LzwBase(bool (&existingBytes)[256]);
+			~LzwBase();
+		};
+
+		/// <summary>An encoder to compress using Lzw algorithm.</summary>
+		class LzwEncoder : public LzwBase, public IEncoder
+		{
+		protected:
+			IStream*								stream = 0;
+
+			vuint8_t								buffer[lzw::BufferSize];
+			vint									bufferUsedBits = 0;
+			lzw::Code*								prefix;
+
+			void									Flush();
+			void									WriteNumber(vint number, vint bitSize);
+		public:
+			/// <summary>Create an encoder.</summary>
+			LzwEncoder();
+			/// <summary>Create an encoder and tell it which byte will never appear in the data before compression.</summary>
+			/// <param name="existingBytes">An array to tell the encoder which byte will never appear in the data before compression.</param>
+			LzwEncoder(bool (&existingBytes)[256]);
+			~LzwEncoder();
+
+			void									Setup(IStream* _stream)override;
+			void									Close()override;
+			vint									Write(void* _buffer, vint _size)override;
+		};
+		
+		/// <summary>An decoder to decompress using Lzw algorithm.</summary>
+		class LzwDecoder :public LzwBase, public IDecoder
+		{
+		protected:
+			IStream*								stream = 0;
+			collections::List<lzw::Code*>			dictionary;
+			lzw::Code*								lastCode = 0;
+
+			vuint8_t								inputBuffer[lzw::BufferSize];
+			vint									inputBufferSize = 0;
+			vint									inputBufferUsedBits = 0;
+
+			collections::Array<vuint8_t>			outputBuffer;
+			vint									outputBufferSize = 0;
+			vint									outputBufferUsedBytes = 0;
+
+			bool									ReadNumber(vint& number, vint bitSize);
+			void									PrepareOutputBuffer(vint size);
+			void									ExpandCodeToOutputBuffer(lzw::Code* code);
+		public:
+			/// <summary>Create an decoder.</summary>
+			LzwDecoder();
+			/// <summary>Create an decoder and tell it which byte will never appear in the data before compression.</summary>
+			/// <param name="existingBytes">An array to tell the encoder which byte will never appear in the data before compression.</param>
+			LzwDecoder(bool (&existingBytes)[256]);
+			~LzwDecoder();
+
+			void									Setup(IStream* _stream)override;
+			void									Close()override;
+			vint									Read(void* _buffer, vint _size)override;
+		};
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+		extern vint						CopyStream(stream::IStream& inputStream, stream::IStream& outputStream);
+		extern void						CompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
+		extern void						DecompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\STREAM\FILESTREAM.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Stream::FileStream
+
+Interfaces:
+	FileStream						: File stream
+***********************************************************************/
+
+#ifndef VCZH_STREAM_FILESTREAM
+#define VCZH_STREAM_FILESTREAM
+
+#include <stdio.h>
+
+namespace vl
+{
+	namespace stream
+	{
+		/// <summary>A file stream. It is readable when you use [F:vl.stream.FileStream.AccessRight.ReadOnly] or [F:vl.stream.FileStream.AccessRight.ReadWrite] to create the stream. It is writable when you use [F:vl.stream.FileStream.AccessRight.WriteOnly] or [F:vl.stream.FileStream.AccessRight.ReadWrite] to create the stream.</summary>
+		class FileStream : public Object, public virtual IStream
+		{
+		public:
+			/// <summary>Access to the file.</summary>
+			enum AccessRight
+			{
+				/// <summary>The file is opened to read.</summary>
+				ReadOnly,
+				/// <summary>The file is opened to write.</summary>
+				WriteOnly,
+				/// <summary>The file is opened to both read and write.</summary>
+				ReadWrite
+			};
+		protected:
+			AccessRight				accessRight;
+			FILE*					file;
+		public:
+			/// <summary>Create a stream.</summary>
+			/// <param name="fileName">File to operate.</param>
+			/// <param name="_accessRight">Operations want to perform on the file.</param>
+			FileStream(const WString& fileName, AccessRight _accessRight);
+			~FileStream();
+
+			bool					CanRead()const;
+			bool					CanWrite()const;
+			bool					CanSeek()const;
+			bool					CanPeek()const;
+			bool					IsLimited()const;
+			bool					IsAvailable()const;
+			void					Close();
+			pos_t					Position()const;
+			pos_t					Size()const;
+			void					Seek(pos_t _size);
+			void					SeekFromBegin(pos_t _size);
+			void					SeekFromEnd(pos_t _size);
+			vint					Read(void* _buffer, vint _size);
+			vint					Write(void* _buffer, vint _size);
+			vint					Peek(void* _buffer, vint _size);
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\STREAM\MEMORYSTREAM.H
 ***********************************************************************/
 /***********************************************************************
@@ -178,6 +1522,231 @@ namespace vl
 			vint					Peek(void* _buffer, vint _size);
 			void*					GetInternalBuffer();
 		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\STREAM\ACCESSOR.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Stream::Accessor
+
+Classes:
+	TextReader						: Text reader base class
+	TextWriter						: Text writer base class
+	StringReader					: Text reader from a string
+	StreamReader					: Text reader from a stream
+	StreamWriter					: Text writer to a stream
+	EncoderStream					: Stream that takes an encoder to translate another stream
+	DecoderStream					: Stream that takes a decoder to translate another stream
+***********************************************************************/
+
+#ifndef VCZH_STREAM_ACCESSOR
+#define VCZH_STREAM_ACCESSOR
+
+
+namespace vl
+{
+	namespace stream
+	{
+
+/***********************************************************************
+Text Related
+***********************************************************************/
+
+		/// <summary>Text reader. All line breaks are normalized to CRLF regardless the format in the source.</summary>
+		class TextReader : public Object, private NotCopyable
+		{
+		public:
+			/// <summary>Test does the reader reach the end or not.</summary>
+			/// <returns>Returns true if the reader reaches the end.</returns>
+			virtual bool				IsEnd()=0;
+			/// <summary>Read a single character.</summary>
+			/// <returns>The character.</returns>
+			virtual wchar_t				ReadChar()=0;
+			/// <summary>Read a string of a specified size.</summary>
+			/// <returns>The string.</returns>
+			/// <param name="length">Expected length of the string to read.</param>
+			virtual WString				ReadString(vint length);
+			/// <summary>Read a string until a line breaks is reached.</summary>
+			/// <returns>The string. It does not contain the line break.</returns>
+			virtual WString				ReadLine();
+			/// <summary>Read everying remain.</summary>
+			/// <returns>The string.</returns>
+			virtual WString				ReadToEnd();
+		};
+		
+		/// <summary>Text writer.</summary>
+		class TextWriter : public Object, private NotCopyable
+		{
+		public:
+			/// <summary>Write a single character.</summary>
+			/// <param name="c">The character to write.</param>
+			virtual void				WriteChar(wchar_t c)=0;
+			/// <summary>Write a string.</summary>
+			/// <param name="string">Buffer to the string to write.</param>
+			/// <param name="charCount">Size of the string in characters not including the zero terminator.</param>
+			virtual void				WriteString(const wchar_t* string, vint charCount);
+			/// <summary>Write a string.</summary>
+			/// <param name="string">Buffer to the zero terminated string to write.</param>
+			virtual void				WriteString(const wchar_t* string);
+			/// <summary>Write a string.</summary>
+			/// <param name="string">The string to write.</param>
+			virtual void				WriteString(const WString& string);
+			/// <summary>Write a string with a CRLF.</summary>
+			/// <param name="string">Buffer to the string to write.</param>
+			/// <param name="charCount">Size of the string in characters not including the zero terminator.</param>
+			virtual void				WriteLine(const wchar_t* string, vint charCount);
+			/// <summary>Write a string with a CRLF.</summary>
+			/// <param name="string">Buffer to the zero terminated string to write.</param>
+			virtual void				WriteLine(const wchar_t* string);
+			/// <summary>Write a string with a CRLF.</summary>
+			/// <param name="string">The string to write.</param>
+			virtual void				WriteLine(const WString& string);
+
+			virtual void				WriteMonospacedEnglishTable(collections::Array<WString>& tableByRow, vint rows, vint columns);
+		};
+
+		/// <summary>Text reader from a string.</summary>
+		class StringReader : public TextReader
+		{
+		protected:
+			WString						string;
+			vint						current;
+			bool						lastCallIsReadLine;
+
+			void						PrepareIfLastCallIsReadLine();
+		public:
+			/// <summary>Create a text reader.</summary>
+			/// <param name="_string">The string to read.</param>
+			StringReader(const WString& _string);
+
+			bool						IsEnd();
+			wchar_t						ReadChar();
+			WString						ReadString(vint length);
+			WString						ReadLine();
+			WString						ReadToEnd();
+		};
+		
+		/// <summary>Text reader from a stream.</summary>
+		class StreamReader : public TextReader
+		{
+		protected:
+			IStream*					stream;
+		public:
+			/// <summary>Create a text reader.</summary>
+			/// <param name="_stream">The stream to read.</param>
+			StreamReader(IStream& _stream);
+
+			bool						IsEnd();
+			wchar_t						ReadChar();
+		};
+		
+		/// <summary>Text writer to a stream.</summary>
+		class StreamWriter : public TextWriter
+		{
+		protected:
+			IStream*					stream;
+		public:
+			/// <summary>Create a text writer.</summary>
+			/// <param name="_stream">The stream to write.</param>
+			StreamWriter(IStream& _stream);
+			using TextWriter::WriteString;
+
+			void						WriteChar(wchar_t c);
+			void						WriteString(const wchar_t* string, vint charCount);
+		};
+
+/***********************************************************************
+Encoding Related
+***********************************************************************/
+
+		/// <summary>Encoder stream, a writable stream using an [T:vl.stream.IEncoder] to transform content.</summary>
+		class EncoderStream : public virtual IStream
+		{
+		protected:
+			IStream*					stream;
+			IEncoder*					encoder;
+			pos_t						position;
+
+		public:
+			/// <summary>Create a stream.</summary>
+			/// <param name="_stream">The target stream to write.</param>
+			/// <param name="_encoder">The encoder to transform content.</param>
+			EncoderStream(IStream& _stream, IEncoder& _encoder);
+			~EncoderStream();
+
+			bool						CanRead()const;
+			bool						CanWrite()const;
+			bool						CanSeek()const;
+			bool						CanPeek()const;
+			bool						IsLimited()const;
+			bool						IsAvailable()const;
+			void						Close();
+			pos_t						Position()const;
+			pos_t						Size()const;
+			void						Seek(pos_t _size);
+			void						SeekFromBegin(pos_t _size);
+			void						SeekFromEnd(pos_t _size);
+			vint						Read(void* _buffer, vint _size);
+			vint						Write(void* _buffer, vint _size);
+			vint						Peek(void* _buffer, vint _size);
+		};
+		
+		/// <summary>Decoder stream, a readable stream using an [T:vl.stream.IDecoder] to transform content.</summary>
+		class DecoderStream : public virtual IStream
+		{
+		protected:
+			IStream*					stream;
+			IDecoder*					decoder;
+			pos_t						position;
+
+		public:
+			/// <summary>Create a stream.</summary>
+			/// <param name="_stream">The target stream to read.</param>
+			/// <param name="_decoder">The decoder to transform content.</param>
+			DecoderStream(IStream& _stream, IDecoder& _decoder);
+			~DecoderStream();
+
+			bool						CanRead()const;
+			bool						CanWrite()const;
+			bool						CanSeek()const;
+			bool						CanPeek()const;
+			bool						IsLimited()const;
+			bool						IsAvailable()const;
+			void						Close();
+			pos_t						Position()const;
+			pos_t						Size()const;
+			void						Seek(pos_t _size);
+			void						SeekFromBegin(pos_t _size);
+			void						SeekFromEnd(pos_t _size);
+			vint						Read(void* _buffer, vint _size);
+			vint						Write(void* _buffer, vint _size);
+			vint						Peek(void* _buffer, vint _size);
+		};
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+		template<typename TCallback>
+		WString GenerateToStream(const TCallback& callback, vint block = 65536)
+		{
+			MemoryStream stream(block);
+			{
+				StreamWriter writer(stream);
+				callback(writer);
+			}
+			stream.SeekFromBegin(0);
+			{
+				StreamReader reader(stream);
+				return reader.ReadToEnd();
+			}
+		}
 	}
 }
 
@@ -1143,1575 +2712,6 @@ namespace vl
 
 #endif
 
-
-/***********************************************************************
-.\LOCALE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Locale
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_LOCALE
-#define VCZH_LOCALE
-
-
-namespace vl
-{
-	/// <summary>Locale awared operations. Macro "INVLOC" is a shortcut to get a invariant locale.</summary>
-	class Locale : public Object
-	{
-	protected:
-		WString						localeName;
-
-	public:
-		Locale(const WString& _localeName=WString::Empty);
-		~Locale();
-
-		bool operator==(const Locale& value)const { return localeName==value.localeName; }
-		bool operator!=(const Locale& value)const { return localeName!=value.localeName; }
-		bool operator<(const Locale& value)const { return localeName<value.localeName; }
-		bool operator<=(const Locale& value)const { return localeName<=value.localeName; }
-		bool operator>(const Locale& value)const { return localeName>value.localeName; }
-		bool operator>=(const Locale& value)const { return localeName>=value.localeName; }
-
-		/// <summary>Get the invariant locale.</summary>
-		/// <returns>The invariant locale.</returns>
-		static Locale				Invariant();
-		/// <summary>Get the system default locale. This locale controls the code page that used by the the system to interpret ANSI string buffers.</summary>
-		/// <returns>The system default locale.</returns>
-		static Locale				SystemDefault();
-		/// <summary>Get the user default locale. This locale reflect the user's setting.</summary>
-		/// <returns>The user default locale.</returns>
-		static Locale				UserDefault();
-		/// <summary>Get all supported locales.</summary>
-		/// <param name="locales">All supported locales.</param>
-		static void					Enumerate(collections::List<Locale>& locales);
-
-		/// <summary>Get the name of the locale.</summary>
-		/// <returns>The name of the locale.</returns>
-		const WString&				GetName()const;
-
-		/// <summary>Get all short date formats for the locale.</summary>
-		/// <param name="formats">The formats.</param>
-		void						GetShortDateFormats(collections::List<WString>& formats)const;
-		/// <summary>Get all long date formats for the locale.</summary>
-		/// <param name="formats">The formats.</param>
-		void						GetLongDateFormats(collections::List<WString>& formats)const;
-		/// <summary>Get all Year-Month date formats for the locale.</summary>
-		/// <param name="formats">The formats.</param>
-		void						GetYearMonthDateFormats(collections::List<WString>& formats)const;
-		/// <summary>Get all long time formats for the locale.</summary>
-		/// <param name="formats">The formats.</param>
-		void						GetLongTimeFormats(collections::List<WString>& formats)const;
-		/// <summary>Get all short time formats for the locale.</summary>
-		/// <param name="formats">The formats.</param>
-		void						GetShortTimeFormats(collections::List<WString>& formats)const;
-
-		/// <summary>Convert a date to a formatted string.</summary>
-		/// <returns>The formatted string.</returns>
-		/// <param name="format">The format to use.</param>
-		/// <param name="date">The date to convert.</param>
-		WString						FormatDate(const WString& format, DateTime date)const;
-		/// <summary>Convert a time to a formatted string.</summary>
-		/// <returns>The formatted string.</returns>
-		/// <param name="format">The format to use.</param>
-		/// <param name="time">The time to convert.</param>
-		WString						FormatTime(const WString& format, DateTime time)const;
-
-		/// <summary>Convert a number to a formatted string.</summary>
-		/// <returns>The formatted string.</returns>
-		/// <param name="number">The number to convert.</param>
-		WString						FormatNumber(const WString& number)const;
-		/// <summary>Convert a currency (money) to a formatted string.</summary>
-		/// <returns>The formatted string.</returns>
-		/// <param name="currency">The currency to convert.</param>
-		WString						FormatCurrency(const WString& currency)const;
-
-		/// <summary>Get the short display string of a day of week.</summary>
-		/// <returns>The display string.</returns>
-		/// <param name="dayOfWeek">Day of week, begins from 0 as Sunday.</param>
-		WString						GetShortDayOfWeekName(vint dayOfWeek)const;
-		/// <summary>Get the long display string of a day of week.</summary>
-		/// <returns>The display string.</returns>
-		/// <param name="dayOfWeek">Day of week, begins from 0 as Sunday.</param>
-		WString						GetLongDayOfWeekName(vint dayOfWeek)const;
-		/// <summary>Get the short display string of a month.</summary>
-		/// <returns>The display string.</returns>
-		/// <param name="month">Month, begins from 1 as January.</param>
-		WString						GetShortMonthName(vint month)const;
-		/// <summary>Get the long display string of a month.</summary>
-		/// <returns>The display string.</returns>
-		/// <param name="month">Month, begins from 1 as January.</param>
-		WString						GetLongMonthName(vint month)const;
-		
-#ifdef VCZH_MSVC
-		/// <summary>Convert characters to the full width.</summary>
-		/// <returns>The converted string.</returns>
-		/// <param name="str">The string to convert.</param>
-		WString						ToFullWidth(const WString& str)const;
-		/// <summary>Convert characters to the half width.</summary>
-		/// <returns>The converted string.</returns>
-		/// <param name="str">The string to convert.</param>
-		WString						ToHalfWidth(const WString& str)const;
-		/// <summary>Convert characters to the Hiragana.</summary>
-		/// <returns>The converted string.</returns>
-		/// <param name="str">The string to convert.</param>
-		WString						ToHiragana(const WString& str)const;
-		/// <summary>Convert characters to the Katagana.</summary>
-		/// <returns>The converted string.</returns>
-		/// <param name="str">The string to convert.</param>
-		WString						ToKatagana(const WString& str)const;
-#endif
-		
-		/// <summary>Convert characters to the lower case using the file system rule.</summary>
-		/// <returns>The converted string.</returns>
-		/// <param name="str">The string to convert.</param>
-		WString						ToLower(const WString& str)const;
-		/// <summary>Convert characters to the upper case using the file system rule.</summary>
-		/// <returns>The converted string.</returns>
-		/// <param name="str">The string to convert.</param>
-		WString						ToUpper(const WString& str)const;
-		/// <summary>Convert characters to the lower case using the linguistic rule.</summary>
-		/// <returns>The converted string.</returns>
-		/// <param name="str">The string to convert.</param>
-		WString						ToLinguisticLower(const WString& str)const;
-		/// <summary>Convert characters to the upper case using the linguistic rule.</summary>
-		/// <returns>The converted string.</returns>
-		/// <param name="str">The string to convert.</param>
-		WString						ToLinguisticUpper(const WString& str)const;
-
-#ifdef VCZH_MSVC
-		/// <summary>Convert characters to Simplified Chinese.</summary>
-		/// <returns>The converted string.</returns>
-		/// <param name="str">The string to convert.</param>
-		WString						ToSimplifiedChinese(const WString& str)const;
-		/// <summary>Convert characters to the Traditional Chinese.</summary>
-		/// <returns>The converted string.</returns>
-		/// <param name="str">The string to convert.</param>
-		WString						ToTraditionalChinese(const WString& str)const;
-		/// <summary>Convert characters to the tile case, in which the first letter of each major word is capitalized.</summary>
-		/// <returns>The converted string.</returns>
-		/// <param name="str">The string to convert.</param>
-		WString						ToTileCase(const WString& str)const;
-#endif
-
-		/// <summary>Mergable flags controlling how to normalize a string.</summary>
-		enum Normalization
-		{
-			/// <summary>Do nothing.</summary>
-			None=0,
-			/// <summary>Ignore case using the file system rule.</summary>
-			IgnoreCase=1,
-#ifdef VCZH_MSVC
-			/// <summary>Ignore case using the linguistic rule.</summary>
-			IgnoreCaseLinguistic=2,
-			/// <summary>Ignore the difference between between hiragana and katakana characters.</summary>
-			IgnoreKanaType=4,
-			/// <summary>Ignore nonspacing characters.</summary>
-			IgnoreNonSpace=8,
-			/// <summary>Ignore symbols and punctuation.</summary>
-			IgnoreSymbol=16,
-			/// <summary>Ignore the difference between half-width and full-width characters.</summary>
-			IgnoreWidth=32,
-			/// <summary>Treat digits as numbers during sorting.</summary>
-			DigitsAsNumbers=64,
-			/// <summary>Treat punctuation the same as symbols.</summary>
-			StringSoft=128,
-#endif
-		};
-
-		/// <summary>Compare two strings.</summary>
-		/// <returns>Returns 0 if two strings are equal. Returns a positive number if the first string is larger. Returns a negative number if the second string is larger. When sorting strings, larger strings are put after then smaller strings.</returns>
-		/// <param name="s1">The first string to compare.</param>
-		/// <param name="s2">The second string to compare.</param>
-		/// <param name="normalization">Flags controlling how to normalize a string.</param>
-		vint									Compare(const WString& s1, const WString& s2, Normalization normalization)const;
-		/// <summary>Compare two strings to test binary equivalence.</summary>
-		/// <returns>Returns 0 if two strings are equal. Returns a positive number if the first string is larger. Returns a negative number if the second string is larger. When sorting strings, larger strings are put after then smaller strings.</returns>
-		/// <param name="s1">The first string to compare.</param>
-		/// <param name="s2">The second string to compare.</param>
-		vint									CompareOrdinal(const WString& s1, const WString& s2)const;
-		/// <summary>Compare two strings to test binary equivalence, ignoring case.</summary>
-		/// <returns>Returns 0 if two strings are equal. Returns a positive number if the first string is larger. Returns a negative number if the second string is larger. When sorting strings, larger strings are put after then smaller strings.</returns>
-		/// <param name="s1">The first string to compare.</param>
-		/// <param name="s2">The second string to compare.</param>
-		vint									CompareOrdinalIgnoreCase(const WString& s1, const WString& s2)const;
-		/// <summary>Find the first position that the sub string appears in a text.</summary>
-		/// <returns>Returns a pair of numbers, the first number indicating the position in the text, the second number indicating the size of the equivalence sub string in the text. For some normalization, the found sub string may be binary different to the string you want to find.</returns>
-		/// <param name="text">The text to find the sub string.</param>
-		/// <param name="find">The sub string to match.</param>
-		/// <param name="normalization">Flags controlling how to normalize a string.</param>
-		collections::Pair<vint, vint>			FindFirst(const WString& text, const WString& find, Normalization normalization)const;
-		/// <summary>Find the last position that the sub string appears in a text.</summary>
-		/// <returns>Returns a pair of numbers, the first number indicating the position in the text, the second number indicating the size of the equivalence sub string in the text. For some normalization, the found sub string may be binary different to the string you want to find.</returns>
-		/// <param name="text">The text to find the sub string.</param>
-		/// <param name="find">The sub string to match.</param>
-		/// <param name="normalization">Flags controlling how to normalize a string.</param>
-		collections::Pair<vint, vint>			FindLast(const WString& text, const WString& find, Normalization normalization)const;
-		/// <summary>Test is the prefix of the text equivalence to the provided sub string.</summary>
-		/// <returns>Returns true if the prefix of the text equivalence to the provided sub string.</returns>
-		/// <param name="text">The text to test the prefix.</param>
-		/// <param name="find">The sub string to match.</param>
-		/// <param name="normalization">Flags controlling how to normalize a string.</param>
-		bool									StartsWith(const WString& text, const WString& find, Normalization normalization)const;
-		/// <summary>Test is the postfix of the text equivalence to the provided sub string.</summary>
-		/// <returns>Returns true if the postfix of the text equivalence to the provided sub string.</returns>
-		/// <param name="text">The text to test the postfix.</param>
-		/// <param name="find">The sub string to match.</param>
-		/// <param name="normalization">Flags controlling how to normalize a string.</param>
-		bool									EndsWith(const WString& text, const WString& find, Normalization normalization)const;
-	};
-
-#define INVLOC vl::Locale::Invariant()
-}
-
-#endif
-
-/***********************************************************************
-.\STREAM\FILESTREAM.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Stream::FileStream
-
-Interfaces:
-	FileStream						: File stream
-***********************************************************************/
-
-#ifndef VCZH_STREAM_FILESTREAM
-#define VCZH_STREAM_FILESTREAM
-
-#include <stdio.h>
-
-namespace vl
-{
-	namespace stream
-	{
-		/// <summary>A file stream. It is readable when you use [F:vl.stream.FileStream.AccessRight.ReadOnly] or [F:vl.stream.FileStream.AccessRight.ReadWrite] to create the stream. It is writable when you use [F:vl.stream.FileStream.AccessRight.WriteOnly] or [F:vl.stream.FileStream.AccessRight.ReadWrite] to create the stream.</summary>
-		class FileStream : public Object, public virtual IStream
-		{
-		public:
-			/// <summary>Access to the file.</summary>
-			enum AccessRight
-			{
-				/// <summary>The file is opened to read.</summary>
-				ReadOnly,
-				/// <summary>The file is opened to write.</summary>
-				WriteOnly,
-				/// <summary>The file is opened to both read and write.</summary>
-				ReadWrite
-			};
-		protected:
-			AccessRight				accessRight;
-			FILE*					file;
-		public:
-			/// <summary>Create a stream.</summary>
-			/// <param name="fileName">File to operate.</param>
-			/// <param name="_accessRight">Operations want to perform on the file.</param>
-			FileStream(const WString& fileName, AccessRight _accessRight);
-			~FileStream();
-
-			bool					CanRead()const;
-			bool					CanWrite()const;
-			bool					CanSeek()const;
-			bool					CanPeek()const;
-			bool					IsLimited()const;
-			bool					IsAvailable()const;
-			void					Close();
-			pos_t					Position()const;
-			pos_t					Size()const;
-			void					Seek(pos_t _size);
-			void					SeekFromBegin(pos_t _size);
-			void					SeekFromEnd(pos_t _size);
-			vint					Read(void* _buffer, vint _size);
-			vint					Write(void* _buffer, vint _size);
-			vint					Peek(void* _buffer, vint _size);
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\STREAM\ACCESSOR.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Stream::Accessor
-
-Classes:
-	TextReader						: Text reader base class
-	TextWriter						: Text writer base class
-	StringReader					: Text reader from a string
-	StreamReader					: Text reader from a stream
-	StreamWriter					: Text writer to a stream
-	EncoderStream					: Stream that takes an encoder to translate another stream
-	DecoderStream					: Stream that takes a decoder to translate another stream
-***********************************************************************/
-
-#ifndef VCZH_STREAM_ACCESSOR
-#define VCZH_STREAM_ACCESSOR
-
-
-namespace vl
-{
-	namespace stream
-	{
-
-/***********************************************************************
-Text Related
-***********************************************************************/
-
-		/// <summary>Text reader. All line breaks are normalized to CRLF regardless the format in the source.</summary>
-		class TextReader : public Object, private NotCopyable
-		{
-		public:
-			/// <summary>Test does the reader reach the end or not.</summary>
-			/// <returns>Returns true if the reader reaches the end.</returns>
-			virtual bool				IsEnd()=0;
-			/// <summary>Read a single character.</summary>
-			/// <returns>The character.</returns>
-			virtual wchar_t				ReadChar()=0;
-			/// <summary>Read a string of a specified size.</summary>
-			/// <returns>The string.</returns>
-			/// <param name="length">Expected length of the string to read.</param>
-			virtual WString				ReadString(vint length);
-			/// <summary>Read a string until a line breaks is reached.</summary>
-			/// <returns>The string. It does not contain the line break.</returns>
-			virtual WString				ReadLine();
-			/// <summary>Read everying remain.</summary>
-			/// <returns>The string.</returns>
-			virtual WString				ReadToEnd();
-		};
-		
-		/// <summary>Text writer.</summary>
-		class TextWriter : public Object, private NotCopyable
-		{
-		public:
-			/// <summary>Write a single character.</summary>
-			/// <param name="c">The character to write.</param>
-			virtual void				WriteChar(wchar_t c)=0;
-			/// <summary>Write a string.</summary>
-			/// <param name="string">Buffer to the string to write.</param>
-			/// <param name="charCount">Size of the string in characters not including the zero terminator.</param>
-			virtual void				WriteString(const wchar_t* string, vint charCount);
-			/// <summary>Write a string.</summary>
-			/// <param name="string">Buffer to the zero terminated string to write.</param>
-			virtual void				WriteString(const wchar_t* string);
-			/// <summary>Write a string.</summary>
-			/// <param name="string">The string to write.</param>
-			virtual void				WriteString(const WString& string);
-			/// <summary>Write a string with a CRLF.</summary>
-			/// <param name="string">Buffer to the string to write.</param>
-			/// <param name="charCount">Size of the string in characters not including the zero terminator.</param>
-			virtual void				WriteLine(const wchar_t* string, vint charCount);
-			/// <summary>Write a string with a CRLF.</summary>
-			/// <param name="string">Buffer to the zero terminated string to write.</param>
-			virtual void				WriteLine(const wchar_t* string);
-			/// <summary>Write a string with a CRLF.</summary>
-			/// <param name="string">The string to write.</param>
-			virtual void				WriteLine(const WString& string);
-
-			virtual void				WriteMonospacedEnglishTable(collections::Array<WString>& tableByRow, vint rows, vint columns);
-		};
-
-		/// <summary>Text reader from a string.</summary>
-		class StringReader : public TextReader
-		{
-		protected:
-			WString						string;
-			vint						current;
-			bool						lastCallIsReadLine;
-
-			void						PrepareIfLastCallIsReadLine();
-		public:
-			/// <summary>Create a text reader.</summary>
-			/// <param name="_string">The string to read.</param>
-			StringReader(const WString& _string);
-
-			bool						IsEnd();
-			wchar_t						ReadChar();
-			WString						ReadString(vint length);
-			WString						ReadLine();
-			WString						ReadToEnd();
-		};
-		
-		/// <summary>Text reader from a stream.</summary>
-		class StreamReader : public TextReader
-		{
-		protected:
-			IStream*					stream;
-		public:
-			/// <summary>Create a text reader.</summary>
-			/// <param name="_stream">The stream to read.</param>
-			StreamReader(IStream& _stream);
-
-			bool						IsEnd();
-			wchar_t						ReadChar();
-		};
-		
-		/// <summary>Text writer to a stream.</summary>
-		class StreamWriter : public TextWriter
-		{
-		protected:
-			IStream*					stream;
-		public:
-			/// <summary>Create a text writer.</summary>
-			/// <param name="_stream">The stream to write.</param>
-			StreamWriter(IStream& _stream);
-			using TextWriter::WriteString;
-
-			void						WriteChar(wchar_t c);
-			void						WriteString(const wchar_t* string, vint charCount);
-		};
-
-/***********************************************************************
-Encoding Related
-***********************************************************************/
-
-		/// <summary>Encoder stream, a writable stream using an [T:vl.stream.IEncoder] to transform content.</summary>
-		class EncoderStream : public virtual IStream
-		{
-		protected:
-			IStream*					stream;
-			IEncoder*					encoder;
-			pos_t						position;
-
-		public:
-			/// <summary>Create a stream.</summary>
-			/// <param name="_stream">The target stream to write.</param>
-			/// <param name="_encoder">The encoder to transform content.</param>
-			EncoderStream(IStream& _stream, IEncoder& _encoder);
-			~EncoderStream();
-
-			bool						CanRead()const;
-			bool						CanWrite()const;
-			bool						CanSeek()const;
-			bool						CanPeek()const;
-			bool						IsLimited()const;
-			bool						IsAvailable()const;
-			void						Close();
-			pos_t						Position()const;
-			pos_t						Size()const;
-			void						Seek(pos_t _size);
-			void						SeekFromBegin(pos_t _size);
-			void						SeekFromEnd(pos_t _size);
-			vint						Read(void* _buffer, vint _size);
-			vint						Write(void* _buffer, vint _size);
-			vint						Peek(void* _buffer, vint _size);
-		};
-		
-		/// <summary>Decoder stream, a readable stream using an [T:vl.stream.IDecoder] to transform content.</summary>
-		class DecoderStream : public virtual IStream
-		{
-		protected:
-			IStream*					stream;
-			IDecoder*					decoder;
-			pos_t						position;
-
-		public:
-			/// <summary>Create a stream.</summary>
-			/// <param name="_stream">The target stream to read.</param>
-			/// <param name="_decoder">The decoder to transform content.</param>
-			DecoderStream(IStream& _stream, IDecoder& _decoder);
-			~DecoderStream();
-
-			bool						CanRead()const;
-			bool						CanWrite()const;
-			bool						CanSeek()const;
-			bool						CanPeek()const;
-			bool						IsLimited()const;
-			bool						IsAvailable()const;
-			void						Close();
-			pos_t						Position()const;
-			pos_t						Size()const;
-			void						Seek(pos_t _size);
-			void						SeekFromBegin(pos_t _size);
-			void						SeekFromEnd(pos_t _size);
-			vint						Read(void* _buffer, vint _size);
-			vint						Write(void* _buffer, vint _size);
-			vint						Peek(void* _buffer, vint _size);
-		};
-
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-
-		template<typename TCallback>
-		WString GenerateToStream(const TCallback& callback, vint block = 65536)
-		{
-			MemoryStream stream(block);
-			{
-				StreamWriter writer(stream);
-				callback(writer);
-			}
-			stream.SeekFromBegin(0);
-			{
-				StreamReader reader(stream);
-				return reader.ReadToEnd();
-			}
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\HTTPUTILITY.H
-***********************************************************************/
-#ifndef VCZH_HTTPUTILITY
-#define VCZH_HTTPUTILITY
-
-
-#ifdef VCZH_MSVC
-
-namespace vl
-{
-
-/***********************************************************************
-HTTP Utility
-***********************************************************************/
-
-	/// <summary>A type representing an http requiest.</summary>
-	class HttpRequest
-	{
-		typedef collections::Array<char>					BodyBuffer;
-		typedef collections::List<WString>					StringList;
-		typedef collections::Dictionary<WString, WString>	HeaderMap;
-	public:
-		/// <summary>Name of the server, like "gaclib.net".</summary>
-		WString				server;
-		/// <summary>Port of the server, like 80.</summary>
-		vint				port;
-		/// <summary>Query of the request, like "/GettingStart.html".</summary>
-		WString				query;
-		/// <summary>Set to true if the request uses SSL.</summary>
-		bool				secure;
-		/// <summary>User name to authorize. Set to empty if you don't want to provide it.</summary>
-		WString				username;
-		/// <summary>Password to authorize. Set to empty if you don't want to provide it.</summary>
-		WString				password;
-		/// <summary>HTTP method, like "GET", "POST", "PUT", "DELETE", etc.</summary>
-		WString				method;
-		/// <summary>Cookie. Set to empty if you don't want to provide it.</summary>
-		WString				cookie;
-		/// <summary>Request body. This is a binary array using an array container to char.</summary>
-		BodyBuffer			body;
-		/// <summary>Content type, like "text/xml".</summary>
-		WString				contentType;
-		/// <summary>Accept type list, elements of it like "text/xml".</summary>
-		StringList			acceptTypes;
-		/// <summary>A dictionary to contain extra headers.</summary>
-		HeaderMap			extraHeaders;
-
-		/// <summary>Create an empty request.</summary>
-		HttpRequest();
-
-		/// <summary>Set <see cref="server"/>, <see cref="port"/>, <see cref="query"/> and <see cref="secure"/> fields for you using an URL.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="inputQuery">The URL.</param>
-		bool				SetHost(const WString& inputQuery);
-
-		/// <summary>Fill the body with a text using UTF-8 encoding.</summary>
-		/// <param name="bodyString">The text to fill.</param>
-		void				SetBodyUtf8(const WString& bodyString);
-	};
-	
-	/// <summary>A type representing an http response.</summary>
-	class HttpResponse
-	{
-		typedef collections::Array<char>		BodyBuffer;
-	public:
-		/// <summary>Status code, like 200.</summary>
-		vint				statusCode;
-		/// <summary>Response body. This is a binary array using an array container to char.</summary>
-		BodyBuffer			body;
-		/// <summary>Returned cookie from the server.</summary>
-		WString				cookie;
-
-		HttpResponse();
-
-		/// <summary>If you believe the server returns a text in UTF-8, use it to decode the body.</summary>
-		/// <returns>The response body as text.</returns>
-		WString				GetBodyUtf8();
-	};
-
-	/// <summary>Send an http request and receive a response.</summary>
-	/// <returns>Returns true if this operation succeeded. Even the server returns 404 will be treated as success, because you get the response.</returns>
-	/// <param name="request">The request.</param>
-	/// <param name="response">The response.</param>
-	extern bool				HttpQuery(const HttpRequest& request, HttpResponse& response);
-
-	/// <summary>Encode a text as part of the url. This function can be used to create arguments in an URL.</summary>
-	/// <returns>The encoded text.</returns>
-	/// <param name="query">The text to encode.</param>
-	extern WString			UrlEncodeQuery(const WString& query);
-}
-
-#endif
-
-#endif
-
-
-/***********************************************************************
-.\THREADING.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Threading
-
-Classes:
-	Thread										: Thread
-	CriticalSection
-	Mutex
-	Semaphore
-	EventObject
-***********************************************************************/
-
-#ifndef VCZH_THREADING
-#define VCZH_THREADING
-
-
-namespace vl
-{
-	
-/***********************************************************************
-Kernel Mode Objects
-***********************************************************************/
-
-	namespace threading_internal
-	{
-		struct WaitableData;
-		struct ThreadData;
-		struct MutexData;
-		struct SemaphoreData;
-		struct EventData;
-		struct CriticalSectionData;
-		struct ReaderWriterLockData;
-		struct ConditionVariableData;
-	}
-	
-	/// <summary>Base type of all synchronization objects.</summary>
-	class WaitableObject : public Object, public NotCopyable
-	{
-#if defined VCZH_MSVC
-	private:
-		threading_internal::WaitableData*			waitableData;
-	protected:
-
-		WaitableObject();
-		void										SetData(threading_internal::WaitableData* data);
-	public:
-		/// <summary>Test if the object has already been created. Some of the synchronization objects should initialize itself after the constructor. This function is only available in Windows.</summary>
-		/// <returns>Returns true if the object has already been created.</returns>
-		bool										IsCreated();
-		/// <summary>Wait for this object to signal.</summary>
-		/// <returns>Returns true if the object is signaled. Returns false if this operation failed.</returns>
-		bool										Wait();
-		/// <summary>Wait for this object to signal for a period of time. This function is only available in Windows.</summary>
-		/// <returns>Returns true if the object is signaled. Returns false if this operation failed, including time out.</returns>
-		/// <param name="ms">Time in milliseconds.</param>
-		bool										WaitForTime(vint ms);
-		
-		/// <summary>Wait for multiple objects. This function is only available in Windows.</summary>
-		/// <returns>Returns true if all objects are signaled. Returns false if this operation failed.</returns>
-		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
-		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
-		static bool									WaitAll(WaitableObject** objects, vint count);
-		/// <summary>Wait for multiple objects for a period of time. This function is only available in Windows.</summary>
-		/// <returns>Returns true if all objects are signaled. Returns false if this operation failed, including time out.</returns>
-		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
-		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
-		/// <param name="ms">Time in milliseconds.</param>
-		static bool									WaitAllForTime(WaitableObject** objects, vint count, vint ms);
-		/// <summary>Wait for one of the objects. This function is only available in Windows.</summary>
-		/// <returns>Returns the index of the first signaled or abandoned object, according to the "abandoned" parameter. Returns -1 if this operation failed.</returns>
-		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
-		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
-		/// <param name="abandoned">Returns true if the waiting is canceled by an abandoned object. An abandoned object is caused by it's owner thread existing without releasing it.</param>
-		static vint									WaitAny(WaitableObject** objects, vint count, bool* abandoned);
-		/// <summary>Wait for one of the objects for a period of time. This function is only available in Windows.</summary>
-		/// <returns>Returns the index of the first signaled or abandoned object, according to the "abandoned" parameter. Returns -1 if this operation failed, including time out.</returns>
-		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
-		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
-		/// <param name="ms">Time in milliseconds.</param>
-		/// <param name="abandoned">Returns true if the waiting is canceled by an abandoned object. An abandoned object is caused by it's owner thread existing without releasing it.</param>
-		static vint									WaitAnyForTime(WaitableObject** objects, vint count, vint ms, bool* abandoned);
-#elif defined VCZH_GCC
-		virtual bool								Wait() = 0;
-#endif
-	};
-
-	/// <summary>Representing a thread. [M:vl.Thread.CreateAndStart] is the suggested way to create threads.</summary>
-	class Thread : public WaitableObject
-	{
-		friend void InternalThreadProc(Thread* thread);
-	public:
-		/// <summary>Thread state.</summary>
-		enum ThreadState
-		{
-			/// <summary>The thread has not started.</summary>
-			NotStarted,
-			/// <summary>The thread is running.</summary>
-			Running,
-			/// <summary>The thread has been stopped.</summary>
-			Stopped
-		};
-
-		typedef void(*ThreadProcedure)(Thread*, void*);
-	protected:
-		threading_internal::ThreadData*				internalData;
-		volatile ThreadState						threadState;
-
-		virtual void								Run()=0;
-
-		Thread();
-	public:
-		~Thread();
-
-		/// <summary>Create a thread using a function pointer.</summary>
-		/// <returns>Returns the created thread.</returns>
-		/// <param name="procedure">The function pointer.</param>
-		/// <param name="argument">The argument to call the function pointer.</param>
-		/// <param name="deleteAfterStopped">Set to true (by default) to make the thread delete itself after the job is done. If you set this argument to true, you are not suggested to touch the returned thread pointer in any way.</param>
-		static Thread*								CreateAndStart(ThreadProcedure procedure, void* argument=0, bool deleteAfterStopped=true);
-		/// <summary>Create a thread using a function object or a lambda expression.</summary>
-		/// <returns>Returns the created thread.</returns>
-		/// <param name="procedure">The function object or the lambda expression.</param>
-		/// <param name="deleteAfterStopped">Set to true (by default) to make the thread delete itself after the job is done. If you set this argument to true, you are not suggested to touch the returned thread pointer in any way.</param>
-		static Thread*								CreateAndStart(const Func<void()>& procedure, bool deleteAfterStopped=true);
-		/// <summary>Pause the caller thread for a period of time.</summary>
-		/// <param name="ms">Time in milliseconds.</param>
-		static void									Sleep(vint ms);
-		/// <summary>Get the number of logical processors.</summary>
-		/// <returns>The number of logical processor.</returns>
-		static vint									GetCPUCount();
-		/// <summary>Get the current thread id.</summary>
-		/// <returns>The current thread id.</returns>
-		static vint									GetCurrentThreadId();
-
-		/// <summary>Start the thread.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		bool										Start();
-#if defined VCZH_GCC
-		bool										Wait();
-#endif
-		/// <summary>Stop the thread.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		bool										Stop();
-		/// <summary>Get the state of the thread.</summary>
-		/// <returns>The state of the thread.</returns>
-		ThreadState									GetState();
-#ifdef VCZH_MSVC
-		void										SetCPU(vint index);
-#endif
-	};
-
-	/// <summary>Mutex.</summary>
-	class Mutex : public WaitableObject
-	{
-	private:
-		threading_internal::MutexData*				internalData;
-	public:
-		Mutex();
-		~Mutex();
-
-		/// <summary>Create a mutex.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="owned">Set to true to own the created mutex.</param>
-		/// <param name="name">Name of the mutex. If it is not empty, than it is a global named mutex. This argument is ignored in Linux.</param>
-		bool										Create(bool owned=false, const WString& name=L"");
-		/// <summary>Open an existing global named mutex.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="inheritable">Set to true make the mutex visible to all all child processes. This argument is only used in Windows.</param>
-		/// <param name="name">Name of the mutex. This argument is ignored in Linux.</param>
-		bool										Open(bool inheritable, const WString& name);
-
-		/// <summary>
-		/// Release the mutex.
-		/// In the implementation for Linux, calling Release() more than once between two Wait(), or calling Wait() more than once between two Release(), will results in an undefined behavior.
-		/// </summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		bool										Release();
-#ifdef VCZH_GCC
-		bool										Wait();
-#endif
-	};
-	
-	/// <summary>Semaphore.</summary>
-	class Semaphore : public WaitableObject
-	{
-	private:
-		threading_internal::SemaphoreData*			internalData;
-	public:
-		Semaphore();
-		~Semaphore();
-		
-		/// <summary>Create a semaphore.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="initialCount">Define the counter of the semaphore.</param>
-		/// <param name="maxCount">Define the maximum value of the counter of the semaphore. This argument is only used in Windows.</param>
-		/// <param name="name">Name of the semaphore. If it is not empty, than it is a global named semaphore. This argument is ignored in Linux.</param>
-		bool										Create(vint initialCount, vint maxCount, const WString& name=L"");
-		/// <summary>Open an existing global named semaphore.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="inheritable">Set to true make the semaphore visible to all all child processes. This argument is only used in Windows.</param>
-		/// <param name="name">Name of the semaphore. This argument is ignored in Linux.</param>
-		bool										Open(bool inheritable, const WString& name);
-		
-		/// <summary> Release the semaphore once. </summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		bool										Release();
-		/// <summary> Release the semaphore multiple times. </summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="count">The amout to release.</param>
-		vint										Release(vint count);
-#ifdef VCZH_GCC
-		bool										Wait();
-#endif
-	};
-
-	/// <summary>Event.</summary>
-	class EventObject : public WaitableObject
-	{
-	private:
-		threading_internal::EventData*				internalData;
-	public:
-		EventObject();
-		~EventObject();
-		
-		/// <summary>Create an auto unsignal event. Auto unsignal means, when one thread waits for the event and succeeded, the event will become unsignaled immediately.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="signaled">Set to true make the event signaled at the beginning.</param>
-		/// <param name="name">Name of the event. If it is not empty, than it is a global named mutex. This argument is only used in Windows.</param>
-		bool										CreateAutoUnsignal(bool signaled, const WString& name=L"");
-		/// <summary>Create a manual unsignal event.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="signaled">Set to true make the event signaled at the beginning.</param>
-		/// <param name="name">Name of the event. If it is not empty, than it is a global named mutex. This argument is only used in Windows.</param>
-		bool										CreateManualUnsignal(bool signaled, const WString& name=L"");
-		/// <summary>Open an existing global named event.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="inheritable">Set to true make the event visible to all all child processes. This argument is only used in Windows.</param>
-		/// <param name="name">Name of the event. This argument is only used in Windows.</param>
-		bool										Open(bool inheritable, const WString& name);
-
-		/// <summary>Signal the event.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		bool										Signal();
-		/// <summary>Unsignal the event.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		bool										Unsignal();
-#ifdef VCZH_GCC
-		bool										Wait();
-#endif
-	};
-
-/***********************************************************************
-Thread Pool
-***********************************************************************/
-
-	/// <summary>A light-weight thread pool.</summary>
-	class ThreadPoolLite : public Object
-	{
-	private:
-		ThreadPoolLite();
-		~ThreadPoolLite();
-	public:
-		/// <summary>Queue a function pointer.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="proc">The function pointer.</param>
-		/// <param name="argument">The argument to call the function pointer.</param>
-		static bool									Queue(void(*proc)(void*), void* argument);
-		/// <summary>Queue a function object.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="proc">The function object.</param>
-		static bool									Queue(const Func<void()>& proc);
-		
-		/// <summary>Queue a lambda expression.</summary>
-		/// <typeparam name="T">The type of the lambda expression.</typeparam>
-		/// <param name="proc">The lambda expression.</param>
-		template<typename T>
-		static void QueueLambda(const T& proc)
-		{
-			Queue(Func<void()>(proc));
-		}
-
-#ifdef VCZH_GCC
-		static bool									Stop(bool discardPendingTasks);
-#endif
-	};
-
-/***********************************************************************
-Kernel Mode Objects in Process
-***********************************************************************/
-
-	/// <summary><![CDATA[
-	/// Critical section. It is similar to mutex, but in Windows, enter a owned critical section will not cause dead lock.
-	/// The macro "CS_LOCK" is encouraged to use instead of calling [M:vl.CriticalSection.Enter] and [M:vl.CriticalSection.Leave] like this:
-	/// CS_LOCK(yourCriticalSection)
-	/// {
-	///		<code>
-	/// }
-	/// ]]></summary>
-	class CriticalSection : public Object, public NotCopyable
-	{
-	private:
-		friend class ConditionVariable;
-		threading_internal::CriticalSectionData*	internalData;
-	public:
-		/// <summary>Create a critical section.</summary>
-		CriticalSection();
-		~CriticalSection();
-
-		/// <summary>Try enter a critical section. This function will return immediately.</summary>
-		/// <returns>Returns true if the current thread owned the critical section.</returns>
-		bool										TryEnter();
-		/// <summary>Enter a critical section.</summary>
-		void										Enter();
-		/// <summary>Leave a critical section.</summary>
-		void										Leave();
-
-	public:
-		class Scope : public Object, public NotCopyable
-		{
-		private:
-			CriticalSection*						criticalSection;
-		public:
-			Scope(CriticalSection& _criticalSection);
-			~Scope();
-		};
-	};
-	
-	/// <summary><![CDATA[
-	/// Reader writer lock.
-	/// The macro "READER_LOCK" and "WRITER_LOCK" are encouraged to use instead of calling [M:vl.ReaderWriterLock.EnterReader], [M:vl.ReaderWriterLock.LeaveReader], [M:vl.ReaderWriterLock.EnterWriter] and [M:vl.ReaderWriterLock.LeaveWriter] like this:
-	/// READER_LOCK(yourLock)
-	/// {
-	///		<code>
-	/// }
-	/// or
-	/// WRITER_LOCK(yourLock)
-	/// {
-	///		<code>
-	/// }
-	/// ]]></summary>
-	class ReaderWriterLock : public Object, public NotCopyable
-	{
-	private:
-		friend class ConditionVariable;
-		threading_internal::ReaderWriterLockData*	internalData;
-	public:
-		/// <summary>Create a reader writer lock.</summary>
-		ReaderWriterLock();
-		~ReaderWriterLock();
-		
-		/// <summary>Try acquire a reader lock. This function will return immediately.</summary>
-		/// <returns>Returns true if the current thread acquired the reader lock.</returns>
-		bool										TryEnterReader();
-		/// <summary>Acquire a reader lock.</summary>
-		void										EnterReader();
-		/// <summary>Release a reader lock.</summary>
-		void										LeaveReader();
-		/// <summary>Try acquire a writer lock. This function will return immediately.</summary>
-		/// <returns>Returns true if the current thread acquired the writer lock.</returns>
-		bool										TryEnterWriter();
-		/// <summary>Acquire a writer lock.</summary>
-		void										EnterWriter();
-		/// <summary>Release a writer lock.</summary>
-		void										LeaveWriter();
-	public:
-		class ReaderScope : public Object, public NotCopyable
-		{
-		private:
-			ReaderWriterLock*						lock;
-		public:
-			ReaderScope(ReaderWriterLock& _lock);
-			~ReaderScope();
-		};
-		
-		class WriterScope : public Object, public NotCopyable
-		{
-		private:
-			ReaderWriterLock*						lock;
-		public:
-			WriterScope(ReaderWriterLock& _lock);
-			~WriterScope();
-		};
-	};
-
-	/// <summary>Conditional variable.</summary>
-	class ConditionVariable : public Object, public NotCopyable
-	{
-	private:
-		threading_internal::ConditionVariableData*	internalData;
-	public:
-		/// <summary>Create a conditional variable.</summary>
-		ConditionVariable();
-		~ConditionVariable();
-
-		/// <summary>Bind a conditional variable with a owned critical section and release it. When the function returns, the condition variable is activated, and the current thread owned the critical section again.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="cs">The critical section.</param>
-		bool										SleepWith(CriticalSection& cs);
-#ifdef VCZH_MSVC
-		/// <summary>Bind a conditional variable with a owned critical section and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the critical section again. This function is only available in Windows.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="cs">The critical section.</param>
-		/// <param name="ms">Time in milliseconds.</param>
-		bool										SleepWithForTime(CriticalSection& cs, vint ms);
-		/// <summary>Bind a conditional variable with a owned reader lock and release it. When the function returns, the condition variable is activated, and the current thread owned the reader lock again. This function is only available in Windows.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="lock">The reader lock.</param>
-		bool										SleepWithReader(ReaderWriterLock& lock);
-		/// <summary>Bind a conditional variable with a owned reader lock and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the reader lock again. This function is only available in Windows.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="lock">The reader lock.</param>
-		/// <param name="ms">Time in milliseconds.</param>
-		bool										SleepWithReaderForTime(ReaderWriterLock& lock, vint ms);
-		/// <summary>Bind a conditional variable with a owned writer lock and release it. When the function returns, the condition variable is activated, and the current thread owned the writer lock again. This function is only available in Windows.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="lock">The writer lock.</param>
-		bool										SleepWithWriter(ReaderWriterLock& lock);
-		/// <summary>Bind a conditional variable with a owned writer lock and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the writer lock again. This function is only available in Windows.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="lock">The writer lock.</param>
-		/// <param name="ms">Time in milliseconds.</param>
-		bool										SleepWithWriterForTime(ReaderWriterLock& lock, vint ms);
-#endif
-		/// <summary>Wake one thread that pending on this condition variable.</summary>
-		void										WakeOnePending();
-		/// <summary>Wake all thread that pending on this condition variable.</summary>
-		void										WakeAllPendings();
-	};
-
-/***********************************************************************
-User Mode Objects
-***********************************************************************/
-
-	typedef long LockedInt;
-	
-	/// <summary><![CDATA[
-	/// Spin lock. It is similar to mutex.
-	/// The macro "SPIN_LOCK" is encouraged to use instead of calling [M:vl.SpinLock.Enter] and [M:vl.SpinLock.Leave] like this:
-	/// SPIN_LOCK(yourLock)
-	/// {
-	///		<code>
-	/// }
-	/// ]]></summary>
-	class SpinLock : public Object, public NotCopyable
-	{
-	protected:
-		volatile LockedInt							token;
-	public:
-		/// <summary>Create a spin lock.</summary>
-		SpinLock();
-		~SpinLock();
-		
-		/// <summary>Try enter a spin lock. This function will return immediately.</summary>
-		/// <returns>Returns true if the current thread owned the spin lock.</returns>
-		bool										TryEnter();
-		/// <summary>Enter a spin lock.</summary>
-		void										Enter();
-		/// <summary>Leave a spin lock.</summary>
-		void										Leave();
-
-	public:
-		class Scope : public Object, public NotCopyable
-		{
-		private:
-			SpinLock*								spinLock;
-		public:
-			Scope(SpinLock& _spinLock);
-			~Scope();
-		};
-	};
-
-#define SPIN_LOCK(LOCK) SCOPE_VARIABLE(const SpinLock::Scope&, scope, LOCK)
-#define CS_LOCK(LOCK) SCOPE_VARIABLE(const CriticalSection::Scope&, scope, LOCK)
-#define READER_LOCK(LOCK) SCOPE_VARIABLE(const ReaderWriterLock::ReaderScope&, scope, LOCK)
-#define WRITER_LOCK(LOCK) SCOPE_VARIABLE(const ReaderWriterLock::WriterScope&, scope, LOCK)
-
-/***********************************************************************
-Thread Local Storage
-
-ThreadLocalStorage and ThreadVariable<T> are designed to be used as global value types only.
-Dynamically create instances of them are undefined behavior.
-***********************************************************************/
-
-	/// <summary>Thread local storage operations.</summary>
-	class ThreadLocalStorage : public Object, private NotCopyable
-	{
-		typedef void(*Destructor)(void*);
-	protected:
-		vuint64_t								key;
-		Destructor								destructor;
-		volatile bool							disposed = false;
-		
-		static void								PushStorage(ThreadLocalStorage* storage);
-	public:
-		ThreadLocalStorage(Destructor _destructor);
-		~ThreadLocalStorage();
-
-		void*									Get();
-		void									Set(void* data);
-		void									Clear();
-		void									Dispose();
-
-		/// <summary>Fix all storage creation.</summary>
-		static void								FixStorages();
-		/// <summary>Clear all storages for the current thread. For threads that are created using [T:vl.Thread], this function will be automatically called when before the thread exit.</summary>
-		static void								ClearStorages();
-		/// <summary>Clear all storages for the current thread (should be the main thread) and clear all records. This function can only be called by the main thread when all other threads are exited. It will reduce noices when you want to detect memory leaks.</summary>
-		static void								DisposeStorages();
-	};
-
-	/// <summary>Thread local variable. This type can only be used to define global variables. Different threads can store different values to and obtain differnt values from a thread local variable.</summary>
-	/// <typeparam name="T">Type of the storage.</typeparam>
-	template<typename T>
-	class ThreadVariable : public Object, private NotCopyable
-	{
-	protected:
-		ThreadLocalStorage						storage;
-
-		static void Destructor(void* data)
-		{
-			if (data)
-			{
-				delete (T*)data;
-			}
-		}
-	public:
-		/// <summary>Create a thread local variable.</summary>
-		ThreadVariable()
-			:storage(&Destructor)
-		{
-		}
-
-		~ThreadVariable()
-		{
-		}
-
-		/// <summary>Test if the storage has data.</summary>
-		/// <returns>Returns true if the storage has data.</returns>
-		bool HasData()
-		{
-			return storage.Get() != nullptr;
-		}
-
-		/// <summary>Remove the data from this storage.</summary>
-		void Clear()
-		{
-			storage.Clear();
-		}
-
-		/// <summary>Get the stored data.</summary>
-		/// <returns>The stored ata.</returns>
-		T& Get()
-		{
-			return *(T*)storage.Get();
-		}
-
-		/// <summary>Set data to this storage.</summary>
-		/// <param name="value">The data to set.</param>
-		void Set(const T& value)
-		{
-			storage.Clear();
-			storage.Set(new T(value));
-		}
-	};
-
-	template<typename T>
-	class ThreadVariable<T*> : public Object, private NotCopyable
-	{
-	protected:
-		ThreadLocalStorage						storage;
-
-	public:
-		ThreadVariable()
-			:storage(nullptr)
-		{
-		}
-
-		~ThreadVariable()
-		{
-		}
-
-		bool HasData()
-		{
-			return storage.Get() != nullptr;
-		}
-
-		void Clear()
-		{
-			storage.Set(nullptr);
-		}
-
-		T* Get()
-		{
-			return (T*)storage.Get();
-		}
-
-		void Set(T* value)
-		{
-			storage.Set((void*)value);
-		}
-	};
-
-/***********************************************************************
-RepeatingTaskExecutor
-***********************************************************************/
-
-	/// <summary>Queued task executor. It is different from a thread pool by: 1) Task execution is single threaded, 2) If you queue a task, it will override the the unexecuted queued task.</summary>
-	/// <typeparam name="T">The type of the argument to run a task.</typeparam>
-	template<typename T>
-	class RepeatingTaskExecutor : public Object
-	{
-	private:
-		SpinLock								inputLock;
-		T										inputData;
-		volatile bool							inputDataAvailable;
-		SpinLock								executingEvent;
-		volatile bool							executing;
-
-		void ExecutingProcInternal()
-		{
-			while(true)
-			{
-				bool currentInputDataAvailable;
-				T currentInputData;
-				SPIN_LOCK(inputLock)
-				{
-					currentInputData=inputData;
-					inputData=T();
-					currentInputDataAvailable=inputDataAvailable;
-					inputDataAvailable=false;
-					if(!currentInputDataAvailable)
-					{
-						executing=false;
-						goto FINISH_EXECUTING;
-					}
-				}
-				Execute(currentInputData);
-			}
-		FINISH_EXECUTING:
-			executingEvent.Leave();
-		}
-
-		static void ExecutingProc(void* argument)
-		{
-			((RepeatingTaskExecutor<T>*)argument)->ExecutingProcInternal();
-		}
-	
-	protected:
-		/// <summary>This function is called when it is ready to execute a task. Task execution is single threaded. All task code should be put inside the function.</summary>
-		/// <param name="input">The argument to run a task.</param>
-		virtual void							Execute(const T& input)=0;
-
-	public:
-		/// <summary>Create a task executor.</summary>
-		RepeatingTaskExecutor()
-			:inputDataAvailable(false)
-			,executing(false)
-		{
-		}
-
-		~RepeatingTaskExecutor()
-		{
-			EnsureTaskFinished();
-		}
-
-		/// <summary>Wait for all tasks to finish.</summary>
-		void EnsureTaskFinished()
-		{
-			executingEvent.Enter();
-			executingEvent.Leave();
-		}
-
-		/// <summary>Queue a task. If there is a queued task that has not been executied yet, those tasks will be canceled. Only one task can be queued at the same moment.</summary>
-		/// <param name="input">The argument to run a task.</param>
-		void SubmitTask(const T& input)
-		{
-			SPIN_LOCK(inputLock)
-			{
-				inputData=input;
-				inputDataAvailable=true;
-			}
-			if(!executing)
-			{
-				executing=true;
-				executingEvent.Enter();
-				ThreadPoolLite::Queue(&ExecutingProc, this);
-			}
-		}
-	};
-}
-#endif
-
-
-/***********************************************************************
-.\STREAM\BROADCASTSTREAM.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Stream::BroadcastStream
-
-Interfaces:
-	BroadcastStream					: Stream that copy the written data to multiple streams
-***********************************************************************/
-
-#ifndef VCZH_STREAM_BROADCASTSTREAM
-#define VCZH_STREAM_BROADCASTSTREAM
-
-
-namespace vl
-{
-	namespace stream
-	{
-		/// <summary>A writable stream that copy written content to multiple target streams.</summary>
-		class BroadcastStream : public Object, public virtual IStream
-		{
-			typedef collections::List<IStream*>		StreamList;
-		protected:
-			bool					closed;
-			pos_t					position;
-			StreamList				streams;
-		public:
-			/// <summary>Create a strema.</summary>
-			BroadcastStream();
-			~BroadcastStream();
-
-			/// <summary>Get the list of target streams. You can add streams to this list, or remove streams from this list.</summary>
-			/// <returns>The list of target streams.</returns>
-			StreamList&				Targets();
-			bool					CanRead()const;
-			bool					CanWrite()const;
-			bool					CanSeek()const;
-			bool					CanPeek()const;
-			bool					IsLimited()const;
-			bool					IsAvailable()const;
-			void					Close();
-			pos_t					Position()const;
-			pos_t					Size()const;
-			void					Seek(pos_t _size);
-			void					SeekFromBegin(pos_t _size);
-			void					SeekFromEnd(pos_t _size);
-			vint					Read(void* _buffer, vint _size);
-			vint					Write(void* _buffer, vint _size);
-			vint					Peek(void* _buffer, vint _size);
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\STREAM\CACHESTREAM.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Stream::CacheStream
-
-Interfaces:
-	CacheStream						: Stream that provide a cache for reading and writing
-***********************************************************************/
-
-#ifndef VCZH_STREAM_CACHESTREAM
-#define VCZH_STREAM_CACHESTREAM
-
-
-namespace vl
-{
-	namespace stream
-	{
-		/// <summary>
-		/// A cache stream. Features (readable, writable, seekable, peekable) are enabled according to the target stream.
-		/// When you read from the cache strema, it will read a specified size of content from the target stream first and cache, reducing the numbers of operations on the target stream.
-		/// When you write to the cache strema, it will save them to a buffer, and write to the target stream until the buffer reaches a specified size, reducing the numbers of operations on the target stream.
-		/// </summary>
-		class CacheStream : public Object, public virtual IStream
-		{
-		protected:
-			IStream*				target;
-			vint					block;
-			pos_t					start;
-			pos_t					position;
-
-			char*					buffer;
-			vint					dirtyStart;
-			vint					dirtyLength;
-			vint					availableLength;
-			pos_t					operatedSize;
-
-			void					Flush();
-			void					Load(pos_t _position);
-			vint					InternalRead(void* _buffer, vint _size);
-			vint					InternalWrite(void* _buffer, vint _size);
-		public:
-			/// <summary>Create a cache stream using a target stream.</summary>
-			/// <param name="_target">The target stream.</param>
-			/// <param name="_block">Size of the cache.</param>
-			CacheStream(IStream& _target, vint _block=65536);
-			~CacheStream();
-
-			bool					CanRead()const;
-			bool					CanWrite()const;
-			bool					CanSeek()const;
-			bool					CanPeek()const;
-			bool					IsLimited()const;
-			bool					IsAvailable()const;
-			void					Close();
-			pos_t					Position()const;
-			pos_t					Size()const;
-			void					Seek(pos_t _size);
-			void					SeekFromBegin(pos_t _size);
-			void					SeekFromEnd(pos_t _size);
-			vint					Read(void* _buffer, vint _size);
-			vint					Write(void* _buffer, vint _size);
-			vint					Peek(void* _buffer, vint _size);
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\STREAM\COMPRESSIONSTREAM.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Stream::CharFormat
-
-Classes:
-***********************************************************************/
-
-#ifndef VCZH_STREAM_COMPRESSIONSTREAM
-#define VCZH_STREAM_COMPRESSIONSTREAM
-
-
-namespace vl
-{
-	namespace stream
-	{
-
-/***********************************************************************
-Compression
-***********************************************************************/
-
-		namespace lzw
-		{
-			static const vint						BufferSize = 1024;
-			static const vint						MaxDictionarySize = 1 << 24;
-
-			struct Code
-			{
-				typedef collections::PushOnlyAllocator<Code>			CodeAllocator;
-				typedef collections::ByteObjectMap<Code>::Allocator		MapAllocator;
-
-				vuint8_t							byte = 0;
-				vint								code = -1;
-				Code*								parent = 0;
-				vint								size = 0;
-				collections::ByteObjectMap<Code>	children;
-			};
-		}
-
-		class LzwBase : public Object
-		{
-		protected:
-			lzw::Code::CodeAllocator				codeAllocator;
-			lzw::Code::MapAllocator					mapAllocator;
-			lzw::Code*								root;
-			vint									eofIndex = -1;
-			vint									nextIndex = 0;
-			vint									indexBits = 1;
-
-			void									UpdateIndexBits();
-			lzw::Code*								CreateCode(lzw::Code* parent, vuint8_t byte);
-
-			LzwBase();
-			LzwBase(bool (&existingBytes)[256]);
-			~LzwBase();
-		};
-
-		/// <summary>An encoder to compress using Lzw algorithm.</summary>
-		class LzwEncoder : public LzwBase, public IEncoder
-		{
-		protected:
-			IStream*								stream = 0;
-
-			vuint8_t								buffer[lzw::BufferSize];
-			vint									bufferUsedBits = 0;
-			lzw::Code*								prefix;
-
-			void									Flush();
-			void									WriteNumber(vint number, vint bitSize);
-		public:
-			/// <summary>Create an encoder.</summary>
-			LzwEncoder();
-			/// <summary>Create an encoder and tell it which byte will never appear in the data before compression.</summary>
-			/// <param name="existingBytes">An array to tell the encoder which byte will never appear in the data before compression.</param>
-			LzwEncoder(bool (&existingBytes)[256]);
-			~LzwEncoder();
-
-			void									Setup(IStream* _stream)override;
-			void									Close()override;
-			vint									Write(void* _buffer, vint _size)override;
-		};
-		
-		/// <summary>An decoder to decompress using Lzw algorithm.</summary>
-		class LzwDecoder :public LzwBase, public IDecoder
-		{
-		protected:
-			IStream*								stream = 0;
-			collections::List<lzw::Code*>			dictionary;
-			lzw::Code*								lastCode = 0;
-
-			vuint8_t								inputBuffer[lzw::BufferSize];
-			vint									inputBufferSize = 0;
-			vint									inputBufferUsedBits = 0;
-
-			collections::Array<vuint8_t>			outputBuffer;
-			vint									outputBufferSize = 0;
-			vint									outputBufferUsedBytes = 0;
-
-			bool									ReadNumber(vint& number, vint bitSize);
-			void									PrepareOutputBuffer(vint size);
-			void									ExpandCodeToOutputBuffer(lzw::Code* code);
-		public:
-			/// <summary>Create an decoder.</summary>
-			LzwDecoder();
-			/// <summary>Create an decoder and tell it which byte will never appear in the data before compression.</summary>
-			/// <param name="existingBytes">An array to tell the encoder which byte will never appear in the data before compression.</param>
-			LzwDecoder(bool (&existingBytes)[256]);
-			~LzwDecoder();
-
-			void									Setup(IStream* _stream)override;
-			void									Close()override;
-			vint									Read(void* _buffer, vint _size)override;
-		};
-
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-
-		extern vint						CopyStream(stream::IStream& inputStream, stream::IStream& outputStream);
-		extern void						CompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
-		extern void						DecompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
-	}
-}
-
-#endif
 
 /***********************************************************************
 .\STREAM\RECORDERSTREAM.H

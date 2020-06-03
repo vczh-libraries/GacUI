@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOCALIZEDSTRINGS
 
 #include "../Resources/GuiResource.h"
-#include "../../Import/VlppWorkflowCompiler.h"
+#include <VlppWorkflowCompiler.h>
 
 namespace vl
 {

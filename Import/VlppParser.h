@@ -583,923 +583,6 @@ Logging
 
 
 /***********************************************************************
-.\PARSINGTABLE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parsing::Table
-
-Classes:
-***********************************************************************/
-
-#ifndef VCZH_PARSING_PARSINGTABLE
-#define VCZH_PARSING_PARSINGTABLE
-
-
-namespace vl
-{
-	namespace parsing
-	{
-		namespace tabling
-		{
-
-/***********************************************************************
-Parsing Table
-***********************************************************************/
-
-			/// <summary><![CDATA[
-			/// The parsing table. When you complete a grammar file, ParserGen.exe which is in the Tools project will generate the C++ code for you to create a parsing table.
-			///
-			/// Here is a brief description of the grammar file format:
-			///
-			/// include:"<releative path to the Vlpp.h>"	// (multiple)	e.g. "../Import/Vlpp.h"
-			/// classPrefix:<class prefix>					// (single)		A prefix that will be add before all generated types and function. e.g. Xml
-			/// guard:<C++ header guard>					// (single)		The C++ header guard pattern macro name. e.g. VCZH_PARSING_XML_PARSINGXML_PARSER
-			/// namespace:<C++ namespaces>					// (single)		Namespaces separated by "." to contain the generated code. e.g. vl.parsing.xml
-			/// reflection:<namespace>						// (single)		Namespaces separated by "." to contain the name of reflectable types. In most of the cases this should be the same as namespace. e.g. vl.parsing.xml
-			/// parser:<name>(<rule>)						// (multiple)	Pair a function name to a rule name. ParserGen.exe will generate a function called "<prefix><name>" to parse the input using rule named "<rule>". e.g. ParseDocument(XDocument)
-			/// ambiguity:(enabled|disabled)				// (single)		Set to "enabled" indicating that the grammar is by design to have ambiguity.
-			/// serialization:(enabled|disabled)			// (single)		Set to "enabled" to serialize the parsing table as binary in the generated C++ code, so that when the "<prefix>LoadTable" function is called to load the table, it can deserialize from the binary data directly, instead of parsing the grammar again. But the grammar text will always be contained in the generated C++ code regardless of the value of "serialization", it can always be retrived using the "<prefix>GetParserTextBuffer" function.
-			/// grammar:									// (single)		Configuration ends here. All content after "grammar:" will be treated as the grammar to define the input.
-			///
-			/// Here is the brief description of the grammar.
-			/// The grammar is formed by 3 parts: types, token definitions and rule definitions. There is only one character escaping in strings: "", which means the " character.
-			///
-			/// 1) Types:
-			///		You can write attributes like @AttributeName("argument1", "argument2", ...) in the middle of types. But attributes don't affect the parsing. All attribute definitions will be stored in the generated parsing table, and who uses the table defines how attributes work. Multiple attributes are separated by ",".
-			///
-			///		a) Enum:
-			///			enum EnumName <attributes>
-			///			{
-			///				Item1 <attributes>,
-			///				Item2 <attributes>,
-			///				... // cannot skip the last ","
-			///			}
-			///
-			///		b) Class:
-			///			class Name [ambiguous(AmbiguousType)] [: ParentType] <attributes>
-			///			{
-			///				Type name [(UnescapingFunction)] <attributes> ;
-			///			}
-			///
-			///			UnescapingFunction is a callback, which will be called when the contained type is fully constructed. The generated C++ code will define forward declarations of all unescaping functions in the cpp file. You should implement them in other places, or you will get linking errors.
-			///
-			///			If the grammar enables ambiguity, then the parsing result may contain ambiguous results for the same part of the input. For example, in C++:
-			///			A*B;
-			///			has two meaning (if we only consider context-free parsing): multiplication expression and pointer variable definition.
-			///			So if the grammar doesn't enable ambiguity, ParserGen.exe will refuce to generate C++ codes because the grammar is wrong.
-			///			If the grammar enables ambiguity, than the syntax tree should be defined like this:
-			///			
-			///			class Statement ambiguous(AmbiguousStatement)
-			///			{
-			///			}
-			///
-			///			class AmbiguousStatement : Statement // due to the definition of "Statement" class, "AmbiguousStatement" should inherit from "Statement"
-			///			{
-			///				Statement[] items; // required by naming convention
-			///			}
-			///
-			///			class ExpressionStatement : Statement
-			///			{
-			///				Expression expression;
-			///			}
-			///
-			///			class VariableDefinitionStatement : Statement
-			///			{
-			///				Type type;
-			///				token name;
-			///			}
-			///
-			///			So for the "A*B;" part in the whole input, it will becomes an AmbiguousStatement, in which the "items" field contains 2 instance of "ExpressionStatement" and "VariableDefinitionStatement".
-			///			And you can write C++ code to resolve the ambiguity in later passes.
-			///
-			///		c) Type references:
-			///			Types can be defined globally or inside classes. Generic type is not supported. When you want to refer to a specific type, it could be:
-			///				token: Store a token, which will becomes [T:vl.parsing.ParsingToken].
-			///				Type[]: Array, which will becomes [T:vl.collections.List`2] to the element type. Token cannot be the element of arrays.
-			///				ClassName: Instance of a specified type, which will becomes [T:vl.Ptr`1] to that type.
-			///				OuterClass.InnerClass: Refer to the "InnerClass" defined inside the "OuterClass".
-			///
-			/// 2) Token definitions:
-			///		token TokenName = "regular expression" <attributes>;
-			///		discardtoken TokenName = "regular expression";
-			///
-			///		"discardtoken" means if such a token is identified, it will not appear in the lexical analyzing result. And you cannot refer to names of "discardtoken" in the grammar.
-			///
-			/// 3) Rule definitions:
-			///		rule RuleType RuleName <attributes>
-			///			= Grammar1
-			///			= Grammar2
-			///			...
-			///			;
-			///
-			///		It means rule "RuleName" is defined by those grammars, and matching this rule will create an instance of "RuleType" or its whatever types that inheriting "RuleType".
-			///
-			/// 4) Grammars:
-			///		RuleName: Defines an input that matches a rule.
-			///		TokenName: Defines an input that formed by the specified token.
-			///		"StringConstant": Defins an input that formed by exactly the string constant. This constant should define a token in the token list.
-			///		Grammar : FieldName: Defines an input that matches Grammar (should be either a rule name or a token name), and the result will be stored in field "FieldName" of a class, whose type will appear later.
-			///		!Grammar: Defines an input that matches Grammar, and the rule will return the result from this grammar. The input should still match other part of the rule, but result of other parts are ignored.
-			///		[Grammar]: Defines an input that, if match Grammar, will returns the result from that grammar; if not, the result is null.
-			///		{Grammar}: Defines an input that matches 0, 1 or more Grammar.
-			///		(Grammar): Defins an input that matches the the grammar. Brackets is only for changing operator associations.
-			///		Grammar1 Grammar2: Defines an input that should match Grammar1 right before Grammar2.
-			///		Grammar1 | Grammar2: Defines an input that match either Grammar1 or Grammar2.
-			///		Grammar as Type: Defines an input that matches the Grammar, and the whole branch of the rule creates an instance of type "Type"
-			///		Grammar with { FieldName = Value }: Defins an input that matches the Grammar, and will assign "Value", which should be an enum item, to the field "FieldName" of the created instance.
-			///
-			/// 5) Example
-			///		Here is an example to parse expression containing +, -, *, /, () and numbers:\
-			///
-			///		include:"Vlpp.h"
-			///		classPrefix:Calc
-			///		guard:VCZH_CALCULATOR_PARSER
-			///		namespace:vl.calculator
-			///		reflection:vl.calculator
-			///		parser:ParseExpression(Expr)
-			///		ambiguity:disabled
-			///		serialization:enabled
-			///		grammar:
-			///
-			///		class Expression
-			///		{
-			///		}
-			///
-			///		enum BinaryOperator
-			///		{
-			///			Add, Sub, Mul, Div,
-			///		}
-			///
-			///		class NumberExpression : Expression
-			///		{
-			///			token number;
-			///		}
-			///
-			///		class BinaryExpression : Expression
-			///		{
-			///			BinaryOperator op;
-			///			Expression left;
-			///			Expression right;
-			///		}
-			///
-			///		token ADD "\+"
-			///		token SUB "-"
-			///		token MUL "\*"
-			///		token DIV "\/"
-			///		token NUMBER "\d+(.\d+)?"
-			///		token OPEN "("
-			///		token CLOSE ")"
-			///
-			///		rule Expression Factor
-			///			= NUMBER : number as NumberExpression
-			///			= "(" !Expr ")"
-			///			;
-			///		rule Expression Term
-			///			= !Factor
-			///			= Term : left "*" Factor : right as BinaryExpression with {op = "Mul"}
-			///			= Term : left "/" Factor : right as BinaryExpression with {op = "Div"}
-			///			;
-			///		rule Expression Expr
-			///			= !Term
-			///			= Expr : left "+" Term : right as BinaryExpression with {op = "Add"}
-			///			= Expr : left "-" Term : right as BinaryExpression with {op = "Sub"}
-			///			;
-			///
-			///		After using ParserGen.exe to generate C++ codes, you can do this:
-			///			auto table = CalcLoadTable(); // this table can be used several times, don't load each type for each parsing, it will have a big performance overhead.
-			///			List<Ptr<ParsingError>> errors;
-			///			auto expression = CalcParseExpression(L"(1+2) * (3+4)", table, errors); // it should be a Ptr<CalcExpression>, will returns nullptr if the input is wrong, with all errors filled into the "errors" variable.
-			///			You don't need to define the "errors" if you don't actually care how the input is wrong. There will be a overloaded version of CalcParseExpression that doesn't need the error list.
-			///
-			///		If you want to parse a wrong input and do automatic error recovering, which means if the input is not too wrong, you can still get a syntax tree, but some fields are null, with errors filled into the "error" variable. It will be a little complex:
-			///			auto table = CalcLoadTable();					// Load the table.
-			///			ParsingState state(L"(1+2) * (3+4)", table);	// Initialize a state with the input and the table.
-			///			state.Reset(L"Expr");							// Set the rule to parse.
-			///			auto parser = CreateAutoRecoverParser(table);	// Create an appropriate automatic error recoverable parser.
-			///			List<Ptr<ParsingError>> errors;					// Define an error list.
-			///			auto node = parser->Parse(state, errors);		// Parse to get an abstract syntax tree, which is a Ptr<ParsingTreeNode>.
-			///			if (node)
-			///			{
-			///				auto expression = CalcConvertParsingTreeNode(node, state.GetTokens()).Cast<CalcExpression>();
-			///			}
-			///
-			///		After you get a strong typed syntax tree, you can use the generated visitor interface to do something, like evaluate the results of the expression:
-			///			class Evaluator : public Object, public virtual CalcExpression::IVisitor
-			///			{
-			///			private:
-			///				double result;
-			///
-			///				double Call(CalcExpression* node)
-			///				{
-			///					node->Accept(this);
-			///					return result;
-			///				}
-			///
-			///			public:
-			///
-			///				static double Evaluate(CalcExpression* node)
-			///				{
-			///					return Evaluator().Call(node);
-			///				}
-			///
-			///				void Visit(CalcNumberExpression* node)override
-			///				{
-			///					return wtof(node->number.value);
-			///				}
-			///
-			///				void Visit(CalcBinaryExpression* node)override
-			///				{
-			///					auto left = Calc(node->left.Obj());
-			///					auto right = Calc(node->right.Obj());
-			///					switch (node->op)
-			///					{
-			///					case CalcBinaryOperator::Add:
-			///						result = left + right;
-			///						break;
-			///					case CalcBinaryOperator::Sub:
-			///						result = left 0 right;
-			///						break;
-			///					case CalcBinaryOperator::Mul:
-			///						result = left * right;
-			///						break;
-			///					case CalcBinaryOperator::Div:
-			///						result = left / right;
-			///						break;
-			///					}
-			///				}
-			///			};
-			///
-			///			Nullable<double> EvaluateExpression(const WString& input)
-			///			{
-			///				static auto table = CalcLoadTable();
-			///				auto expression = CalcParseExpression(input, table);
-			///				Nulllable<double> result;
-			///				if (expression)
-			///				{
-			///					result = Evaluator::Evaulate(expression.Obj());
-			///				}
-			///				return result;
-			///			}
-			///
-			/// ]]></summary>
-			class ParsingTable : public Object
-			{
-			public:
-				static const vint							TokenBegin=0;
-				static const vint							TokenFinish=1;
-				static const vint							NormalReduce=2;
-				static const vint							LeftRecursiveReduce=3;
-				static const vint							UserTokenStart=4;
-
-				class AttributeInfo : public Object
-				{
-				public:
-					WString									name;
-					collections::List<WString>				arguments;
-
-					AttributeInfo(const WString& _name = L"")
-						:name(_name)
-					{
-					}
-
-					AttributeInfo* Argument(const WString& argument)
-					{
-						arguments.Add(argument);
-						return this;
-					}
-				};
-
-				class AttributeInfoList : public Object
-				{
-				public:
-					collections::List<Ptr<AttributeInfo>>	attributes;
-
-					Ptr<AttributeInfo> FindFirst(const WString& name);
-				};
-
-				class TreeTypeInfo
-				{
-				public:
-					WString									type;
-					vint									attributeIndex;
-
-					TreeTypeInfo()
-						:attributeIndex(-1)
-					{
-					}
-
-					TreeTypeInfo(const WString& _type, vint _attributeIndex)
-						:type(_type)
-						,attributeIndex(_attributeIndex)
-					{
-					}
-				};
-
-				class TreeFieldInfo
-				{
-				public:
-					WString									type;
-					WString									field;
-					vint									attributeIndex;
-
-					TreeFieldInfo()
-						:attributeIndex(-1)
-					{
-					}
-
-					TreeFieldInfo(const WString& _type, const WString& _field, vint _attributeIndex)
-						:type(_type)
-						,field(_field)
-						,attributeIndex(_attributeIndex)
-					{
-					}
-				};
-
-				class TokenInfo
-				{
-				public:
-					WString									name;
-					WString									regex;
-					vint									regexTokenIndex;
-					vint									attributeIndex;
-
-					TokenInfo()
-						:regexTokenIndex(-1)
-						,attributeIndex(-1)
-					{
-					}
-
-					TokenInfo(const WString& _name, const WString& _regex, vint _attributeIndex)
-						:name(_name)
-						,regex(_regex)
-						,regexTokenIndex(-1)
-						,attributeIndex(_attributeIndex)
-					{
-					}
-				};
-
-				class StateInfo
-				{
-				public:
-					WString									ruleName;
-					WString									stateName;
-					WString									stateExpression;
-
-					WString									ruleAmbiguousType;		// filled in Initialize()
-
-					StateInfo()
-					{
-					}
-
-					StateInfo(const WString& _ruleName, const WString& _stateName, const WString& _stateExpression)
-						:ruleName(_ruleName)
-						,stateName(_stateName)
-						,stateExpression(_stateExpression)
-					{
-					}
-				};
-
-				class RuleInfo
-				{
-				public:
-					WString									name;
-					WString									type;
-					WString									ambiguousType;
-					vint									rootStartState;
-					vint									attributeIndex;
-
-					RuleInfo()
-						:rootStartState(-1)
-						,attributeIndex(-1)
-					{
-					}
-
-					RuleInfo(const WString& _name, const WString& _type, const WString& _ambiguousType, vint _rootStartState, vint _attributeIndex)
-						:name(_name)
-						,type(_type)
-						,ambiguousType(_ambiguousType)
-						,rootStartState(_rootStartState)
-						,attributeIndex(_attributeIndex)
-					{
-					}
-				};
-
-				class Instruction
-				{
-				public:
-					enum InstructionType
-					{
-						Create,
-						Assign,
-						Item,
-						Using,
-						Setter,
-						Shift,
-						Reduce,
-						LeftRecursiveReduce,
-					};
-
-					InstructionType							instructionType;
-					vint									stateParameter;
-					WString									nameParameter;
-					WString									value;
-					WString									creatorRule;
-
-					Instruction()
-						:instructionType(Create)
-						,stateParameter(0)
-					{
-					}
-
-					Instruction(InstructionType _instructionType, vint _stateParameter, const WString& _nameParameter, const WString& _value, const WString& _creatorRule)
-						:instructionType(_instructionType)
-						,stateParameter(_stateParameter)
-						,nameParameter(_nameParameter)
-						,value(_value)
-						,creatorRule(_creatorRule)
-					{
-					}
-				};
-
-				class LookAheadInfo
-				{
-				public:
-					collections::List<vint>					tokens;
-					vint									state;
-
-					LookAheadInfo()
-						:state(-1)
-					{
-					}
-
-					enum PrefixResult
-					{
-						Prefix,
-						Equal,
-						NotPrefix,
-					};
-
-					static PrefixResult						TestPrefix(Ptr<LookAheadInfo> a, Ptr<LookAheadInfo> b);
-					static void								WalkInternal(Ptr<ParsingTable> table, Ptr<LookAheadInfo> previous, vint state, collections::SortedList<vint>& walkedStates, collections::List<Ptr<LookAheadInfo>>& newInfos);
-					static void								Walk(Ptr<ParsingTable> table, Ptr<LookAheadInfo> previous, vint state, collections::List<Ptr<LookAheadInfo>>& newInfos);
-				};
-
-				class TransitionItem
-				{
-				public:
-					vint									token;
-					vint									targetState;
-					collections::List<Ptr<LookAheadInfo>>	lookAheads;
-					collections::List<vint>					stackPattern;
-					collections::List<Instruction>			instructions;
-
-					enum OrderResult
-					{
-						CorrectOrder,
-						WrongOrder,
-						SameOrder,
-						UnknownOrder,
-					};
-
-					TransitionItem(){}
-
-					TransitionItem(vint _token, vint _targetState)
-						:token(_token)
-						,targetState(_targetState)
-					{
-					}
-
-					static OrderResult						CheckOrder(Ptr<TransitionItem> t1, Ptr<TransitionItem> t2, OrderResult defaultResult = UnknownOrder);
-					static vint								Compare(Ptr<TransitionItem> t1, Ptr<TransitionItem> t2, OrderResult defaultResult);
-				};
-
-				class TransitionBag
-				{
-				public:
-					collections::List<Ptr<TransitionItem>>	transitionItems;
-				};
-
-			protected:
-				// metadata
-				bool																ambiguity;
-				collections::Array<Ptr<AttributeInfoList>>							attributeInfos;
-				collections::Array<TreeTypeInfo>									treeTypeInfos;
-				collections::Array<TreeFieldInfo>									treeFieldInfos;
-
-				// LALR table
-				vint																tokenCount;			// tokenInfos.Count() + discardTokenInfos.Count()
-				vint																stateCount;			// stateInfos.Count()
-				collections::Array<TokenInfo>										tokenInfos;
-				collections::Array<TokenInfo>										discardTokenInfos;
-				collections::Array<StateInfo>										stateInfos;
-				collections::Array<RuleInfo>										ruleInfos;
-				collections::Array<Ptr<TransitionBag>>								transitionBags;
-
-				// generated data
-				Ptr<regex::RegexLexer>												lexer;
-				collections::Dictionary<WString, vint>								ruleMap;
-				collections::Dictionary<WString, vint>								treeTypeInfoMap;
-				collections::Dictionary<collections::Pair<WString, WString>, vint>	treeFieldInfoMap;
-
-				template<typename TIO>
-				void IO(TIO& io);
-
-			public:
-				ParsingTable(vint _attributeInfoCount, vint _treeTypeInfoCount, vint _treeFieldInfoCount, vint _tokenCount, vint _discardTokenCount, vint _stateCount, vint _ruleCount);
-				/// <summary>Deserialize the parsing table from a stream. <see cref="Initialize"/> should be before using this table.</summary>
-				/// <param name="input">The stream.</param>
-				ParsingTable(stream::IStream& input);
-				~ParsingTable();
-
-				/// <summary>Serialize the parsing table to a stream.</summary>
-				/// <param name="output">The stream.</param>
-				void										Serialize(stream::IStream& output);
-
-				bool										GetAmbiguity();
-				void										SetAmbiguity(bool value);
-
-				vint										GetAttributeInfoCount();
-				Ptr<AttributeInfoList>						GetAttributeInfo(vint index);
-				void										SetAttributeInfo(vint index, Ptr<AttributeInfoList> info);
-
-				vint										GetTreeTypeInfoCount();
-				const TreeTypeInfo&							GetTreeTypeInfo(vint index);
-				const TreeTypeInfo&							GetTreeTypeInfo(const WString& type);
-				void										SetTreeTypeInfo(vint index, const TreeTypeInfo& info);
-
-				vint										GetTreeFieldInfoCount();
-				const TreeFieldInfo&						GetTreeFieldInfo(vint index);
-				const TreeFieldInfo&						GetTreeFieldInfo(const WString& type, const WString& field);
-				void										SetTreeFieldInfo(vint index, const TreeFieldInfo& info);
-
-				vint										GetTokenCount();
-				const TokenInfo&							GetTokenInfo(vint token);
-				void										SetTokenInfo(vint token, const TokenInfo& info);
-
-				vint										GetDiscardTokenCount();
-				const TokenInfo&							GetDiscardTokenInfo(vint token);
-				void										SetDiscardTokenInfo(vint token, const TokenInfo& info);
-
-				vint										GetStateCount();
-				const StateInfo&							GetStateInfo(vint state);
-				void										SetStateInfo(vint state, const StateInfo& info);
-
-				vint										GetRuleCount();
-				const RuleInfo&								GetRuleInfo(const WString& ruleName);
-				const RuleInfo&								GetRuleInfo(vint rule);
-				void										SetRuleInfo(vint rule, const RuleInfo& info);
-
-				const regex::RegexLexer&					GetLexer();
-				Ptr<TransitionBag>							GetTransitionBag(vint state, vint token);
-				void										SetTransitionBag(vint state, vint token, Ptr<TransitionBag> bag);
-				/// <summary>Initialize the parsing table. This function should be called after deserializing the table from a string.</summary>
-				void										Initialize();
-				bool										IsInputToken(vint regexTokenIndex);
-				vint										GetTableTokenIndex(vint regexTokenIndex);
-				vint										GetTableDiscardTokenIndex(vint regexTokenIndex);
-			};
-
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-
-			extern void										Log(Ptr<ParsingTable> table, stream::TextWriter& writer);
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\PARSINGSTATE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parsing::State
-
-Classes:
-***********************************************************************/
-
-#ifndef VCZH_PARSING_PARSINGSTATE
-#define VCZH_PARSING_PARSINGSTATE
-
-
-namespace vl
-{
-	namespace parsing
-	{
-		namespace tabling
-		{
-
-/***********************************************************************
-Syntax Analyzer
-***********************************************************************/
-			
-			class ParsingTokenWalker : public Object
-			{
-			protected:
-				class LookAheadEnumerator : public Object, public collections::IEnumerator<vint>
-				{
-				protected:
-					const ParsingTokenWalker*			walker;
-					vint								firstToken;
-					vint								currentToken;
-					vint								currentValue;
-					vint								index;
-
-				public:
-					LookAheadEnumerator(const ParsingTokenWalker* _walker, vint _currentToken);
-					LookAheadEnumerator(const LookAheadEnumerator& _enumerator);
-
-					collections::IEnumerator<vint>*		Clone()const override;
-					const vint&							Current()const override;
-					vint								Index()const override;
-					bool								Next()override;
-					void								Reset()override;
-				};
-
-				class TokenLookAhead : public Object, public collections::IEnumerable<vint>
-				{
-				protected:
-					const ParsingTokenWalker*			walker;
-				public:
-					TokenLookAhead(const ParsingTokenWalker* _talker);
-
-					collections::IEnumerator<vint>*			CreateEnumerator()const override;
-				};
-
-				class ReduceLookAhead : public Object, public collections::IEnumerable<vint>
-				{
-				protected:
-					const ParsingTokenWalker*			walker;
-				public:
-					ReduceLookAhead(const ParsingTokenWalker* _walker);
-
-					collections::IEnumerator<vint>*			CreateEnumerator()const override;
-				};
-
-			protected:
-				collections::List<regex::RegexToken>&	tokens;
-				Ptr<ParsingTable>						table;
-				vint									currentToken;
-				TokenLookAhead							tokenLookAhead;
-				ReduceLookAhead							reduceLookAhead;
-
-				vint									GetNextIndex(vint index)const;
-				vint									GetTableTokenIndex(vint index)const;
-			public:
-				ParsingTokenWalker(collections::List<regex::RegexToken>& _tokens, Ptr<ParsingTable> _table);
-				~ParsingTokenWalker();
-
-				const collections::IEnumerable<vint>&	GetTokenLookahead()const;
-				const collections::IEnumerable<vint>&	GetReduceLookahead()const;
-				void									Reset();
-				bool									Move();
-				vint									GetTableTokenIndex()const;
-				regex::RegexToken*						GetRegexToken()const;
-				vint									GetTokenIndexInStream()const;
-			};
-
-			class ParsingState : public Object
-			{
-			public:
-				struct ShiftReduceRange
-				{
-					regex::RegexToken*							shiftToken;
-					regex::RegexToken*							reduceToken;
-
-					ShiftReduceRange()
-						:shiftToken(0)
-						,reduceToken(0)
-					{
-					}
-				};
-
-				struct TransitionResult
-				{
-					enum TransitionType
-					{
-						ExecuteInstructions,
-						AmbiguityBegin,
-						AmbiguityBranch,
-						AmbiguityEnd,
-						SkipToken,
-					};
-
-					TransitionType								transitionType;
-					vint										ambiguityAffectedStackNodeCount;
-					WString										ambiguityNodeType;
-
-					vint										tableTokenIndex;
-					vint										tableStateSource;
-					vint										tableStateTarget;
-					vint										tokenIndexInStream;
-					regex::RegexToken*							token;
-
-					ParsingTable::TransitionItem*				transition;
-					vint										instructionBegin;
-					vint										instructionCount;
-					Ptr<collections::List<ShiftReduceRange>>	shiftReduceRanges;
-
-					TransitionResult(TransitionType _transitionType=ExecuteInstructions)
-						:transitionType(_transitionType)
-						,ambiguityAffectedStackNodeCount(0)
-						,tableTokenIndex(-1)
-						,tableStateSource(-1)
-						,tableStateTarget(-1)
-						,tokenIndexInStream(-1)
-						,token(0)
-						,transition(0)
-						,instructionBegin(-1)
-						,instructionCount(-1)
-					{
-					}
-
-					operator bool()const
-					{
-						return transitionType!=ExecuteInstructions || transition!=0;
-					}
-
-					void AddShiftReduceRange(regex::RegexToken* shiftToken, regex::RegexToken* reduceToken)
-					{
-						ShiftReduceRange range;
-						range.shiftToken=shiftToken;
-						range.reduceToken=reduceToken;
-						if(!shiftReduceRanges)
-						{
-							shiftReduceRanges=new collections::List<ShiftReduceRange>();
-						}
-						shiftReduceRanges->Add(range);
-					}
-				};
-
-				struct Future
-				{
-					vint									currentState;
-					vint									reduceStateCount;
-					collections::List<vint>					shiftStates;
-					regex::RegexToken*						selectedRegexToken;
-					vint									selectedToken;
-					ParsingTable::TransitionItem*			selectedItem;
-					Future*									previous;
-					Future*									next;
-
-					Future()
-						:currentState(-1)
-						,reduceStateCount(0)
-						,selectedRegexToken(0)
-						,selectedToken(-1)
-						,selectedItem(0)
-						,previous(0)
-						,next(0)
-					{
-					}
-
-					Future* Clone()
-					{
-						Future* future = new Future;
-						future->currentState = currentState;
-						future->reduceStateCount = reduceStateCount;
-						CopyFrom(future->shiftStates, shiftStates);
-						future->selectedRegexToken = selectedRegexToken;
-						future->selectedToken = selectedToken;
-						future->selectedItem = selectedItem;
-						future->previous = previous;
-						return future;
-					}
-				};
-
-				struct StateGroup
-				{
-					collections::List<vint>						stateStack;
-					vint										currentState;
-					vint										tokenSequenceIndex;
-
-					collections::List<regex::RegexToken*>		shiftTokenStack;
-					regex::RegexToken*							shiftToken;
-					regex::RegexToken*							reduceToken;
-
-					StateGroup();
-					StateGroup(const ParsingTable::RuleInfo& info);
-					StateGroup(const StateGroup& group);
-				};
-			private:
-				WString										input;
-				Ptr<ParsingTable>							table;
-				collections::List<regex::RegexToken>		tokens;
-				Ptr<ParsingTokenWalker>						walker;
-				
-				WString										parsingRule;
-				vint										parsingRuleStartState;
-				Ptr<StateGroup>								stateGroup;
-			public:
-				ParsingState(const WString& _input, Ptr<ParsingTable> _table, vint codeIndex=-1);
-				~ParsingState();
-
-				const WString&								GetInput();
-				Ptr<ParsingTable>							GetTable();
-				const collections::List<regex::RegexToken>&	GetTokens();
-				regex::RegexToken*							GetToken(vint index);
-
-				vint										Reset(const WString& rule);
-				WString										GetParsingRule();
-				vint										GetParsingRuleStartState();
-				vint										GetCurrentToken();
-				vint										GetCurrentTableTokenIndex();
-				const collections::List<vint>&				GetStateStack();
-				vint										GetCurrentState();
-				void										SkipCurrentToken();
-
-				bool										TestTransitionItemInFuture(vint tableTokenIndex, Future* future, ParsingTable::TransitionItem* item, const collections::IEnumerable<vint>* lookAheadTokens);
-				ParsingTable::TransitionItem*				MatchTokenInFuture(vint tableTokenIndex, Future* future, const collections::IEnumerable<vint>* lookAheadTokens);
-				ParsingTable::TransitionItem*				MatchToken(vint tableTokenIndex, const collections::IEnumerable<vint>* lookAheadTokens);
-				void										RunTransitionInFuture(ParsingTable::TransitionItem* transition, Future* previous, Future* now);
-				ParsingState::TransitionResult				RunTransition(ParsingTable::TransitionItem* transition, regex::RegexToken* regexToken, vint instructionBegin, vint instructionCount, bool lastPart);
-				ParsingState::TransitionResult				RunTransition(ParsingTable::TransitionItem* transition, regex::RegexToken* regexToken);
-
-				bool										ReadTokenInFuture(vint tableTokenIndex, Future* previous, Future* now, const collections::IEnumerable<vint>* lookAheadTokens);
-				TransitionResult							ReadToken(vint tableTokenIndex, regex::RegexToken* regexToken, const collections::IEnumerable<vint>* lookAheadTokens);
-				TransitionResult							ReadToken();
-
-				bool										TestExplore(vint tableTokenIndex, Future* previous);
-				bool										Explore(vint tableTokenIndex, Future* previous, collections::List<Future*>& possibilities);
-				bool										ExploreStep(collections::List<Future*>& previousFutures, vint start, vint count, collections::List<Future*>& possibilities);
-				bool										ExploreNormalReduce(collections::List<Future*>& previousFutures, vint start, vint count, collections::List<Future*>& possibilities);
-				bool										ExploreLeftRecursiveReduce(collections::List<Future*>& previousFutures, vint start, vint count, collections::List<Future*>& possibilities);
-				Future*										ExploreCreateRootFuture();
-
-				Ptr<StateGroup>								TakeSnapshot();
-				void										RestoreSnapshot(Ptr<StateGroup> group);
-			};
-
-/***********************************************************************
-AST Generating
-***********************************************************************/
-
-			class ParsingTransitionProcessor : public Object
-			{
-			public:
-				virtual void								Reset()=0;
-				virtual bool								Run(const ParsingState::TransitionResult& result)=0;
-				virtual bool								GetProcessingAmbiguityBranch()=0;
-			};
-
-			class ParsingTreeBuilder : public ParsingTransitionProcessor
-			{
-			protected:
-				Ptr<ParsingTreeNode>						createdObject;
-				Ptr<ParsingTreeObject>						operationTarget;
-				collections::List<Ptr<ParsingTreeObject>>	nodeStack;
-
-				bool										processingAmbiguityBranch;
-				Ptr<ParsingTreeNode>						ambiguityBranchCreatedObject;
-				Ptr<ParsingTreeNode>						ambiguityBranchOperationTarget;
-				vint										ambiguityBranchSharedNodeCount;
-				collections::List<Ptr<ParsingTreeObject>>	ambiguityBranchNodeStack;
-				collections::List<Ptr<ParsingTreeObject>>	ambiguityNodes;
-			public:
-				ParsingTreeBuilder();
-				~ParsingTreeBuilder();
-
-				void										Reset()override;
-				bool										Run(const ParsingState::TransitionResult& result)override;
-				bool										GetProcessingAmbiguityBranch()override;
-				Ptr<ParsingTreeObject>						GetNode()const;
-			};
-
-			class ParsingTransitionCollector : public ParsingTransitionProcessor
-			{
-				typedef collections::List<ParsingState::TransitionResult>		TransitionResultList;
-			protected:
-				vint										ambiguityBegin;
-				TransitionResultList						transitions;
-
-				collections::Dictionary<vint, vint>			ambiguityBeginToEnds;
-				collections::Group<vint, vint>				ambiguityBeginToBranches;
-				collections::Dictionary<vint, vint>			ambiguityBranchToBegins;
-			public:
-				ParsingTransitionCollector();
-				~ParsingTransitionCollector();
-
-				void										Reset()override;
-				bool										Run(const ParsingState::TransitionResult& result)override;
-				bool										GetProcessingAmbiguityBranch()override;
-
-				const TransitionResultList&					GetTransitions()const;
-				vint										GetAmbiguityEndFromBegin(vint transitionIndex)const;
-				const collections::List<vint>&				GetAmbiguityBranchesFromBegin(vint transitionIndex)const;
-				vint										GetAmbiguityBeginFromBranch(vint transitionIndex)const;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\PARSINGDEFINITIONS.H
 ***********************************************************************/
 /***********************************************************************
@@ -2185,18 +1268,18 @@ Semantic Analyzer
 
 
 /***********************************************************************
-.\PARSING.H
+.\PARSINGTABLE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-Parsing::Parser
+Parsing::Table
 
 Classes:
 ***********************************************************************/
 
-#ifndef VCZH_PARSING_PARSING
-#define VCZH_PARSING_PARSING
+#ifndef VCZH_PARSING_PARSINGTABLE
+#define VCZH_PARSING_PARSINGTABLE
 
 
 namespace vl
@@ -2207,200 +1290,567 @@ namespace vl
 		{
 
 /***********************************************************************
-Parser
+Parsing Table
 ***********************************************************************/
 
-			/// <summary>Base type of all parser strategy.</summary>
-			class ParsingGeneralParser : public Object
+			/// <summary><![CDATA[
+			/// The parsing table. When you complete a grammar file, ParserGen.exe which is in the Tools project will generate the C++ code for you to create a parsing table.
+			///
+			/// Here is a brief description of the grammar file format:
+			///
+			/// include:"<releative path to the Vlpp.h>"	// (multiple)	e.g. "../Import/Vlpp.h"
+			/// classPrefix:<class prefix>					// (single)		A prefix that will be add before all generated types and function. e.g. Xml
+			/// guard:<C++ header guard>					// (single)		The C++ header guard pattern macro name. e.g. VCZH_PARSING_XML_PARSINGXML_PARSER
+			/// namespace:<C++ namespaces>					// (single)		Namespaces separated by "." to contain the generated code. e.g. vl.parsing.xml
+			/// reflection:<namespace>						// (single)		Namespaces separated by "." to contain the name of reflectable types. In most of the cases this should be the same as namespace. e.g. vl.parsing.xml
+			/// parser:<name>(<rule>)						// (multiple)	Pair a function name to a rule name. ParserGen.exe will generate a function called "<prefix><name>" to parse the input using rule named "<rule>". e.g. ParseDocument(XDocument)
+			/// ambiguity:(enabled|disabled)				// (single)		Set to "enabled" indicating that the grammar is by design to have ambiguity.
+			/// serialization:(enabled|disabled)			// (single)		Set to "enabled" to serialize the parsing table as binary in the generated C++ code, so that when the "<prefix>LoadTable" function is called to load the table, it can deserialize from the binary data directly, instead of parsing the grammar again. But the grammar text will always be contained in the generated C++ code regardless of the value of "serialization", it can always be retrived using the "<prefix>GetParserTextBuffer" function.
+			/// grammar:									// (single)		Configuration ends here. All content after "grammar:" will be treated as the grammar to define the input.
+			///
+			/// Here is the brief description of the grammar.
+			/// The grammar is formed by 3 parts: types, token definitions and rule definitions. There is only one character escaping in strings: "", which means the " character.
+			///
+			/// 1) Types:
+			///		You can write attributes like @AttributeName("argument1", "argument2", ...) in the middle of types. But attributes don't affect the parsing. All attribute definitions will be stored in the generated parsing table, and who uses the table defines how attributes work. Multiple attributes are separated by ",".
+			///
+			///		a) Enum:
+			///			enum EnumName <attributes>
+			///			{
+			///				Item1 <attributes>,
+			///				Item2 <attributes>,
+			///				... // cannot skip the last ","
+			///			}
+			///
+			///		b) Class:
+			///			class Name [ambiguous(AmbiguousType)] [: ParentType] <attributes>
+			///			{
+			///				Type name [(UnescapingFunction)] <attributes> ;
+			///			}
+			///
+			///			UnescapingFunction is a callback, which will be called when the contained type is fully constructed. The generated C++ code will define forward declarations of all unescaping functions in the cpp file. You should implement them in other places, or you will get linking errors.
+			///
+			///			If the grammar enables ambiguity, then the parsing result may contain ambiguous results for the same part of the input. For example, in C++:
+			///			A*B;
+			///			has two meaning (if we only consider context-free parsing): multiplication expression and pointer variable definition.
+			///			So if the grammar doesn't enable ambiguity, ParserGen.exe will refuce to generate C++ codes because the grammar is wrong.
+			///			If the grammar enables ambiguity, than the syntax tree should be defined like this:
+			///			
+			///			class Statement ambiguous(AmbiguousStatement)
+			///			{
+			///			}
+			///
+			///			class AmbiguousStatement : Statement // due to the definition of "Statement" class, "AmbiguousStatement" should inherit from "Statement"
+			///			{
+			///				Statement[] items; // required by naming convention
+			///			}
+			///
+			///			class ExpressionStatement : Statement
+			///			{
+			///				Expression expression;
+			///			}
+			///
+			///			class VariableDefinitionStatement : Statement
+			///			{
+			///				Type type;
+			///				token name;
+			///			}
+			///
+			///			So for the "A*B;" part in the whole input, it will becomes an AmbiguousStatement, in which the "items" field contains 2 instance of "ExpressionStatement" and "VariableDefinitionStatement".
+			///			And you can write C++ code to resolve the ambiguity in later passes.
+			///
+			///		c) Type references:
+			///			Types can be defined globally or inside classes. Generic type is not supported. When you want to refer to a specific type, it could be:
+			///				token: Store a token, which will becomes [T:vl.parsing.ParsingToken].
+			///				Type[]: Array, which will becomes [T:vl.collections.List`2] to the element type. Token cannot be the element of arrays.
+			///				ClassName: Instance of a specified type, which will becomes [T:vl.Ptr`1] to that type.
+			///				OuterClass.InnerClass: Refer to the "InnerClass" defined inside the "OuterClass".
+			///
+			/// 2) Token definitions:
+			///		token TokenName = "regular expression" <attributes>;
+			///		discardtoken TokenName = "regular expression";
+			///
+			///		"discardtoken" means if such a token is identified, it will not appear in the lexical analyzing result. And you cannot refer to names of "discardtoken" in the grammar.
+			///
+			/// 3) Rule definitions:
+			///		rule RuleType RuleName <attributes>
+			///			= Grammar1
+			///			= Grammar2
+			///			...
+			///			;
+			///
+			///		It means rule "RuleName" is defined by those grammars, and matching this rule will create an instance of "RuleType" or its whatever types that inheriting "RuleType".
+			///
+			/// 4) Grammars:
+			///		RuleName: Defines an input that matches a rule.
+			///		TokenName: Defines an input that formed by the specified token.
+			///		"StringConstant": Defins an input that formed by exactly the string constant. This constant should define a token in the token list.
+			///		Grammar : FieldName: Defines an input that matches Grammar (should be either a rule name or a token name), and the result will be stored in field "FieldName" of a class, whose type will appear later.
+			///		!Grammar: Defines an input that matches Grammar, and the rule will return the result from this grammar. The input should still match other part of the rule, but result of other parts are ignored.
+			///		[Grammar]: Defines an input that, if match Grammar, will returns the result from that grammar; if not, the result is null.
+			///		{Grammar}: Defines an input that matches 0, 1 or more Grammar.
+			///		(Grammar): Defins an input that matches the the grammar. Brackets is only for changing operator associations.
+			///		Grammar1 Grammar2: Defines an input that should match Grammar1 right before Grammar2.
+			///		Grammar1 | Grammar2: Defines an input that match either Grammar1 or Grammar2.
+			///		Grammar as Type: Defines an input that matches the Grammar, and the whole branch of the rule creates an instance of type "Type"
+			///		Grammar with { FieldName = Value }: Defins an input that matches the Grammar, and will assign "Value", which should be an enum item, to the field "FieldName" of the created instance.
+			///
+			/// 5) Example
+			///		Here is an example to parse expression containing +, -, *, /, () and numbers:\
+			///
+			///		include:"Vlpp.h"
+			///		classPrefix:Calc
+			///		guard:VCZH_CALCULATOR_PARSER
+			///		namespace:vl.calculator
+			///		reflection:vl.calculator
+			///		parser:ParseExpression(Expr)
+			///		ambiguity:disabled
+			///		serialization:enabled
+			///		grammar:
+			///
+			///		class Expression
+			///		{
+			///		}
+			///
+			///		enum BinaryOperator
+			///		{
+			///			Add, Sub, Mul, Div,
+			///		}
+			///
+			///		class NumberExpression : Expression
+			///		{
+			///			token number;
+			///		}
+			///
+			///		class BinaryExpression : Expression
+			///		{
+			///			BinaryOperator op;
+			///			Expression left;
+			///			Expression right;
+			///		}
+			///
+			///		token ADD "\+"
+			///		token SUB "-"
+			///		token MUL "\*"
+			///		token DIV "\/"
+			///		token NUMBER "\d+(.\d+)?"
+			///		token OPEN "("
+			///		token CLOSE ")"
+			///
+			///		rule Expression Factor
+			///			= NUMBER : number as NumberExpression
+			///			= "(" !Expr ")"
+			///			;
+			///		rule Expression Term
+			///			= !Factor
+			///			= Term : left "*" Factor : right as BinaryExpression with {op = "Mul"}
+			///			= Term : left "/" Factor : right as BinaryExpression with {op = "Div"}
+			///			;
+			///		rule Expression Expr
+			///			= !Term
+			///			= Expr : left "+" Term : right as BinaryExpression with {op = "Add"}
+			///			= Expr : left "-" Term : right as BinaryExpression with {op = "Sub"}
+			///			;
+			///
+			///		After using ParserGen.exe to generate C++ codes, you can do this:
+			///			auto table = CalcLoadTable(); // this table can be used several times, don't load each type for each parsing, it will have a big performance overhead.
+			///			List<Ptr<ParsingError>> errors;
+			///			auto expression = CalcParseExpression(L"(1+2) * (3+4)", table, errors); // it should be a Ptr<CalcExpression>, will returns nullptr if the input is wrong, with all errors filled into the "errors" variable.
+			///			You don't need to define the "errors" if you don't actually care how the input is wrong. There will be a overloaded version of CalcParseExpression that doesn't need the error list.
+			///
+			///		If you want to parse a wrong input and do automatic error recovering, which means if the input is not too wrong, you can still get a syntax tree, but some fields are null, with errors filled into the "error" variable. It will be a little complex:
+			///			auto table = CalcLoadTable();					// Load the table.
+			///			ParsingState state(L"(1+2) * (3+4)", table);	// Initialize a state with the input and the table.
+			///			state.Reset(L"Expr");							// Set the rule to parse.
+			///			auto parser = CreateAutoRecoverParser(table);	// Create an appropriate automatic error recoverable parser.
+			///			List<Ptr<ParsingError>> errors;					// Define an error list.
+			///			auto node = parser->Parse(state, errors);		// Parse to get an abstract syntax tree, which is a Ptr<ParsingTreeNode>.
+			///			if (node)
+			///			{
+			///				auto expression = CalcConvertParsingTreeNode(node, state.GetTokens()).Cast<CalcExpression>();
+			///			}
+			///
+			///		After you get a strong typed syntax tree, you can use the generated visitor interface to do something, like evaluate the results of the expression:
+			///			class Evaluator : public Object, public virtual CalcExpression::IVisitor
+			///			{
+			///			private:
+			///				double result;
+			///
+			///				double Call(CalcExpression* node)
+			///				{
+			///					node->Accept(this);
+			///					return result;
+			///				}
+			///
+			///			public:
+			///
+			///				static double Evaluate(CalcExpression* node)
+			///				{
+			///					return Evaluator().Call(node);
+			///				}
+			///
+			///				void Visit(CalcNumberExpression* node)override
+			///				{
+			///					return wtof(node->number.value);
+			///				}
+			///
+			///				void Visit(CalcBinaryExpression* node)override
+			///				{
+			///					auto left = Calc(node->left.Obj());
+			///					auto right = Calc(node->right.Obj());
+			///					switch (node->op)
+			///					{
+			///					case CalcBinaryOperator::Add:
+			///						result = left + right;
+			///						break;
+			///					case CalcBinaryOperator::Sub:
+			///						result = left 0 right;
+			///						break;
+			///					case CalcBinaryOperator::Mul:
+			///						result = left * right;
+			///						break;
+			///					case CalcBinaryOperator::Div:
+			///						result = left / right;
+			///						break;
+			///					}
+			///				}
+			///			};
+			///
+			///			Nullable<double> EvaluateExpression(const WString& input)
+			///			{
+			///				static auto table = CalcLoadTable();
+			///				auto expression = CalcParseExpression(input, table);
+			///				Nulllable<double> result;
+			///				if (expression)
+			///				{
+			///					result = Evaluator::Evaulate(expression.Obj());
+			///				}
+			///				return result;
+			///			}
+			///
+			/// ]]></summary>
+			class ParsingTable : public Object
 			{
-			protected:
-				Ptr<ParsingTable>							table;
-				
 			public:
-				ParsingGeneralParser(Ptr<ParsingTable> _table);
-				~ParsingGeneralParser();
-				
-				/// <summary>Get the parser table that used to do the parsing.</summary>
-				/// <returns>The parser table that used to do the parsing.</returns>
-				Ptr<ParsingTable>							GetTable();
-				/// <summary>Initialization. It should be called before each time of parsing.</summary>
-				virtual void								BeginParse();
-				virtual ParsingState::TransitionResult		ParseStep(ParsingState& state, collections::List<Ptr<ParsingError>>& errors)=0;
-				bool										Parse(ParsingState& state, ParsingTransitionProcessor& processor, collections::List<Ptr<ParsingError>>& errors);
-				Ptr<ParsingTreeNode>						Parse(ParsingState& state, collections::List<Ptr<ParsingError>>& errors);
-				/// <summary>Parse an input and get an abstract syntax tree if no error happens or all errors are recovered.</summary>
-				/// <returns>The abstract syntax tree.</returns>
-				/// <param name="input">The input to parse.</param>
-				/// <param name="rule">The name of the rule that used to parse the input.</param>
-				/// <param name="errors">Returns all errors.</param>
-				/// <param name="codeIndex">The code index to differentiate each input. This value will be stored in every tokens and abstract syntax nodes.</param>
-				Ptr<ParsingTreeNode>						Parse(const WString& input, const WString& rule, collections::List<Ptr<ParsingError>>& errors, vint codeIndex = -1);
-			};
+				static const vint							TokenBegin=0;
+				static const vint							TokenFinish=1;
+				static const vint							NormalReduce=2;
+				static const vint							LeftRecursiveReduce=3;
+				static const vint							UserTokenStart=4;
 
-/***********************************************************************
-Parser with different strategies
-***********************************************************************/
-
-			/// <summary>A strict parse. It doesn't allow ambiguity and error recovery.</summary>
-			class ParsingStrictParser : public ParsingGeneralParser
-			{
-			protected:
-				
-				virtual bool								OnTestErrorRecoverExists();
-				virtual void								OnClearErrorRecover();
-				virtual ParsingState::TransitionResult		OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<Ptr<ParsingError>>& errors);
-			public:
-				/// <summary>Create the parse using a parsing table.</summary>
-				/// <param name="_table">The parsing table.</param>
-				ParsingStrictParser(Ptr<ParsingTable> _table=0);
-				~ParsingStrictParser();
-				
-				ParsingState::TransitionResult				ParseStep(ParsingState& state, collections::List<Ptr<ParsingError>>& errors)override;
-			};
-			
-			/// <summary>A strict parse. It doesn't allow ambiguity but allows error recovery.</summary>
-			class ParsingAutoRecoverParser : public ParsingStrictParser
-			{
-			public:
-				struct RecoverFuture
+				class AttributeInfo : public Object
 				{
-					ParsingState::Future*					future;
-					vint									insertedTokenCount;
-					vint									index;
-					vint									previousIndex;
-					vint									nextIndex;
+				public:
+					WString									name;
+					collections::List<WString>				arguments;
 
-					RecoverFuture()
-						:future(0)
-						, insertedTokenCount(0)
-						, index(-1)
-						, previousIndex(-1)
-						, nextIndex(-1)
+					AttributeInfo(const WString& _name = L"")
+						:name(_name)
+					{
+					}
+
+					AttributeInfo* Argument(const WString& argument)
+					{
+						arguments.Add(argument);
+						return this;
+					}
+				};
+
+				class AttributeInfoList : public Object
+				{
+				public:
+					collections::List<Ptr<AttributeInfo>>	attributes;
+
+					Ptr<AttributeInfo> FindFirst(const WString& name);
+				};
+
+				class TreeTypeInfo
+				{
+				public:
+					WString									type;
+					vint									attributeIndex;
+
+					TreeTypeInfo()
+						:attributeIndex(-1)
+					{
+					}
+
+					TreeTypeInfo(const WString& _type, vint _attributeIndex)
+						:type(_type)
+						,attributeIndex(_attributeIndex)
 					{
 					}
 				};
+
+				class TreeFieldInfo
+				{
+				public:
+					WString									type;
+					WString									field;
+					vint									attributeIndex;
+
+					TreeFieldInfo()
+						:attributeIndex(-1)
+					{
+					}
+
+					TreeFieldInfo(const WString& _type, const WString& _field, vint _attributeIndex)
+						:type(_type)
+						,field(_field)
+						,attributeIndex(_attributeIndex)
+					{
+					}
+				};
+
+				class TokenInfo
+				{
+				public:
+					WString									name;
+					WString									regex;
+					vint									regexTokenIndex;
+					vint									attributeIndex;
+
+					TokenInfo()
+						:regexTokenIndex(-1)
+						,attributeIndex(-1)
+					{
+					}
+
+					TokenInfo(const WString& _name, const WString& _regex, vint _attributeIndex)
+						:name(_name)
+						,regex(_regex)
+						,regexTokenIndex(-1)
+						,attributeIndex(_attributeIndex)
+					{
+					}
+				};
+
+				class StateInfo
+				{
+				public:
+					WString									ruleName;
+					WString									stateName;
+					WString									stateExpression;
+
+					WString									ruleAmbiguousType;		// filled in Initialize()
+
+					StateInfo()
+					{
+					}
+
+					StateInfo(const WString& _ruleName, const WString& _stateName, const WString& _stateExpression)
+						:ruleName(_ruleName)
+						,stateName(_stateName)
+						,stateExpression(_stateExpression)
+					{
+					}
+				};
+
+				class RuleInfo
+				{
+				public:
+					WString									name;
+					WString									type;
+					WString									ambiguousType;
+					vint									rootStartState;
+					vint									attributeIndex;
+
+					RuleInfo()
+						:rootStartState(-1)
+						,attributeIndex(-1)
+					{
+					}
+
+					RuleInfo(const WString& _name, const WString& _type, const WString& _ambiguousType, vint _rootStartState, vint _attributeIndex)
+						:name(_name)
+						,type(_type)
+						,ambiguousType(_ambiguousType)
+						,rootStartState(_rootStartState)
+						,attributeIndex(_attributeIndex)
+					{
+					}
+				};
+
+				class Instruction
+				{
+				public:
+					enum InstructionType
+					{
+						Create,
+						Assign,
+						Item,
+						Using,
+						Setter,
+						Shift,
+						Reduce,
+						LeftRecursiveReduce,
+					};
+
+					InstructionType							instructionType;
+					vint									stateParameter;
+					WString									nameParameter;
+					WString									value;
+					WString									creatorRule;
+
+					Instruction()
+						:instructionType(Create)
+						,stateParameter(0)
+					{
+					}
+
+					Instruction(InstructionType _instructionType, vint _stateParameter, const WString& _nameParameter, const WString& _value, const WString& _creatorRule)
+						:instructionType(_instructionType)
+						,stateParameter(_stateParameter)
+						,nameParameter(_nameParameter)
+						,value(_value)
+						,creatorRule(_creatorRule)
+					{
+					}
+				};
+
+				class LookAheadInfo
+				{
+				public:
+					collections::List<vint>					tokens;
+					vint									state;
+
+					LookAheadInfo()
+						:state(-1)
+					{
+					}
+
+					enum PrefixResult
+					{
+						Prefix,
+						Equal,
+						NotPrefix,
+					};
+
+					static PrefixResult						TestPrefix(Ptr<LookAheadInfo> a, Ptr<LookAheadInfo> b);
+					static void								WalkInternal(Ptr<ParsingTable> table, Ptr<LookAheadInfo> previous, vint state, collections::SortedList<vint>& walkedStates, collections::List<Ptr<LookAheadInfo>>& newInfos);
+					static void								Walk(Ptr<ParsingTable> table, Ptr<LookAheadInfo> previous, vint state, collections::List<Ptr<LookAheadInfo>>& newInfos);
+				};
+
+				class TransitionItem
+				{
+				public:
+					vint									token;
+					vint									targetState;
+					collections::List<Ptr<LookAheadInfo>>	lookAheads;
+					collections::List<vint>					stackPattern;
+					collections::List<Instruction>			instructions;
+
+					enum OrderResult
+					{
+						CorrectOrder,
+						WrongOrder,
+						SameOrder,
+						UnknownOrder,
+					};
+
+					TransitionItem(){}
+
+					TransitionItem(vint _token, vint _targetState)
+						:token(_token)
+						,targetState(_targetState)
+					{
+					}
+
+					static OrderResult						CheckOrder(Ptr<TransitionItem> t1, Ptr<TransitionItem> t2, OrderResult defaultResult = UnknownOrder);
+					static vint								Compare(Ptr<TransitionItem> t1, Ptr<TransitionItem> t2, OrderResult defaultResult);
+				};
+
+				class TransitionBag
+				{
+				public:
+					collections::List<Ptr<TransitionItem>>	transitionItems;
+				};
+
 			protected:
-				vint										maxInsertedTokenCount;
-				collections::List<RecoverFuture>			recoverFutures;
-				vint										recoveringFutureIndex;
-				
-				RecoverFuture&								GetRecoverFuture(vint index);
-				RecoverFuture&								CreateRecoverFuture(vint index, vint previousIndex);
-				bool										OnTestErrorRecoverExists()override;
-				void										OnClearErrorRecover()override;
-				ParsingState::TransitionResult				OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<Ptr<ParsingError>>& errors)override;
+				// metadata
+				bool																ambiguity;
+				collections::Array<Ptr<AttributeInfoList>>							attributeInfos;
+				collections::Array<TreeTypeInfo>									treeTypeInfos;
+				collections::Array<TreeFieldInfo>									treeFieldInfos;
+
+				// LALR table
+				vint																tokenCount;			// tokenInfos.Count() + discardTokenInfos.Count()
+				vint																stateCount;			// stateInfos.Count()
+				collections::Array<TokenInfo>										tokenInfos;
+				collections::Array<TokenInfo>										discardTokenInfos;
+				collections::Array<StateInfo>										stateInfos;
+				collections::Array<RuleInfo>										ruleInfos;
+				collections::Array<Ptr<TransitionBag>>								transitionBags;
+
+				// generated data
+				Ptr<regex::RegexLexer>												lexer;
+				collections::Dictionary<WString, vint>								ruleMap;
+				collections::Dictionary<WString, vint>								treeTypeInfoMap;
+				collections::Dictionary<collections::Pair<WString, WString>, vint>	treeFieldInfoMap;
+
+				template<typename TIO>
+				void IO(TIO& io);
+
 			public:
-				/// <summary>Create the parse using a parsing table.</summary>
-				/// <param name="_table">The parsing table.</param>
-				/// <param name="_maxInsertedTokenCount">The maximum number of tokens that allow to insert to recover an error.</param>
-				ParsingAutoRecoverParser(Ptr<ParsingTable> _table = 0, vint _maxInsertedTokenCount = -1);
-				~ParsingAutoRecoverParser();
+				ParsingTable(vint _attributeInfoCount, vint _treeTypeInfoCount, vint _treeFieldInfoCount, vint _tokenCount, vint _discardTokenCount, vint _stateCount, vint _ruleCount);
+				/// <summary>Deserialize the parsing table from a stream. <see cref="Initialize"/> should be before using this table.</summary>
+				/// <param name="input">The stream.</param>
+				ParsingTable(stream::IStream& input);
+				~ParsingTable();
 
-				void										BeginParse()override;
-			};
-			
-			/// <summary>A strict parse. It allows ambiguity but doesn't allow error recovery.</summary>
-			class ParsingAmbiguousParser : public ParsingGeneralParser
-			{
-				typedef collections::List<ParsingState::TransitionResult>		DecisionList;
-			protected:
+				/// <summary>Serialize the parsing table to a stream.</summary>
+				/// <param name="output">The stream.</param>
+				void										Serialize(stream::IStream& output);
 
-				DecisionList								decisions;
-				vint										consumedDecisionCount;
+				bool										GetAmbiguity();
+				void										SetAmbiguity(bool value);
 
-				virtual void								OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<ParsingState::Future*>& futures, vint& begin, vint& end, collections::List<Ptr<ParsingError>>& errors);
-				vint										GetResolvableFutureLevels(collections::List<ParsingState::Future*>& futures, vint begin, vint end);
-				vint										SearchPathForOneStep(ParsingState& state, collections::List<ParsingState::Future*>& futures, vint& begin, vint& end, collections::List<Ptr<ParsingError>>& errors);
-				vint										GetConflictReduceCount(collections::List<ParsingState::Future*>& futures);
-				void										GetConflictReduceIndices(collections::List<ParsingState::Future*>& futures, vint conflictReduceCount, collections::Array<vint>& conflictReduceIndices);
-				vint										GetAffectedStackNodeCount(collections::List<ParsingState::Future*>& futures, collections::Array<vint>& conflictReduceIndices);
-				void										BuildSingleDecisionPath(ParsingState& state, ParsingState::Future* future, vint lastAvailableInstructionCount);
-				void										BuildAmbiguousDecisions(ParsingState& state, collections::List<ParsingState::Future*>& futures, vint begin, vint end, vint resolvableFutureLevels, collections::List<Ptr<ParsingError>>& errors);
-				void										BuildDecisions(ParsingState& state, collections::List<ParsingState::Future*>& futures, vint begin, vint end, vint resolvableFutureLevels, collections::List<Ptr<ParsingError>>& errors);
-			public:
-				/// <summary>Create the parse using a parsing table.</summary>
-				/// <param name="_table">The parsing table.</param>
-				ParsingAmbiguousParser(Ptr<ParsingTable> _table=0);
-				~ParsingAmbiguousParser();
-				
-				ParsingState::TransitionResult				ParseStep(ParsingState& state, collections::List<Ptr<ParsingError>>& errors)override;
-				void										BeginParse()override;
-			};
-			
-			/// <summary>A strict parse. It allow both ambiguity and error recovery.</summary>
-			class ParsingAutoRecoverAmbiguousParser : public ParsingAmbiguousParser
-			{
-			protected:
-				vint										maxInsertedTokenCount;
+				vint										GetAttributeInfoCount();
+				Ptr<AttributeInfoList>						GetAttributeInfo(vint index);
+				void										SetAttributeInfo(vint index, Ptr<AttributeInfoList> info);
 
-				void										OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<ParsingState::Future*>& futures, vint& begin, vint& end, collections::List<Ptr<ParsingError>>& errors)override;
-			public:
-				/// <summary>Create the parse using a parsing table.</summary>
-				/// <param name="_table">The parsing table.</param>
-				/// <param name="_maxInsertedTokenCount">The maximum number of tokens that allow to insert to recover an error.</param>
-				ParsingAutoRecoverAmbiguousParser(Ptr<ParsingTable> _table = 0, vint _maxInsertedTokenCount = -1);
-				~ParsingAutoRecoverAmbiguousParser();
+				vint										GetTreeTypeInfoCount();
+				const TreeTypeInfo&							GetTreeTypeInfo(vint index);
+				const TreeTypeInfo&							GetTreeTypeInfo(const WString& type);
+				void										SetTreeTypeInfo(vint index, const TreeTypeInfo& info);
+
+				vint										GetTreeFieldInfoCount();
+				const TreeFieldInfo&						GetTreeFieldInfo(vint index);
+				const TreeFieldInfo&						GetTreeFieldInfo(const WString& type, const WString& field);
+				void										SetTreeFieldInfo(vint index, const TreeFieldInfo& info);
+
+				vint										GetTokenCount();
+				const TokenInfo&							GetTokenInfo(vint token);
+				void										SetTokenInfo(vint token, const TokenInfo& info);
+
+				vint										GetDiscardTokenCount();
+				const TokenInfo&							GetDiscardTokenInfo(vint token);
+				void										SetDiscardTokenInfo(vint token, const TokenInfo& info);
+
+				vint										GetStateCount();
+				const StateInfo&							GetStateInfo(vint state);
+				void										SetStateInfo(vint state, const StateInfo& info);
+
+				vint										GetRuleCount();
+				const RuleInfo&								GetRuleInfo(const WString& ruleName);
+				const RuleInfo&								GetRuleInfo(vint rule);
+				void										SetRuleInfo(vint rule, const RuleInfo& info);
+
+				const regex::RegexLexer&					GetLexer();
+				Ptr<TransitionBag>							GetTransitionBag(vint state, vint token);
+				void										SetTransitionBag(vint state, vint token, Ptr<TransitionBag> bag);
+				/// <summary>Initialize the parsing table. This function should be called after deserializing the table from a string.</summary>
+				void										Initialize();
+				bool										IsInputToken(vint regexTokenIndex);
+				vint										GetTableTokenIndex(vint regexTokenIndex);
+				vint										GetTableDiscardTokenIndex(vint regexTokenIndex);
 			};
 
 /***********************************************************************
 Helper Functions
 ***********************************************************************/
-			
-			/// <summary>Create the correct strict parser from a parsing table.</summary>
-			/// <returns>The created parse.</returns>
-			/// <param name="table">The table to create a parser.</param>
-			extern Ptr<ParsingGeneralParser>				CreateStrictParser(Ptr<ParsingTable> table);
-			/// <summary>Create the correct error recoverable parser from a parsing table.</summary>
-			/// <returns>The created parse.</returns>
-			/// <param name="table">The table to create a parser.</param>
-			extern Ptr<ParsingGeneralParser>				CreateAutoRecoverParser(Ptr<ParsingTable> table);
-			/// <summary>Create the correct strict parser to parse the grammar itself.</summary>
-			/// <returns>The created parse.</returns>
-			extern Ptr<ParsingGeneralParser>				CreateBootstrapStrictParser();
-			/// <summary>Create the correct error recoverable to parse the grammar itself.</summary>
-			/// <returns>The created parse.</returns>
-			extern Ptr<ParsingGeneralParser>				CreateBootstrapAutoRecoverParser();
-		}
-	}
-}
 
-/***********************************************************************
-Reflection for AST
-***********************************************************************/
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#define PARSINGREFLECTION_TYPELIST(F)\
-			F(parsing::ParsingTextPos)\
-			F(parsing::ParsingTextRange)\
-			F(parsing::ParsingTreeNode)\
-			F(parsing::ParsingTreeToken)\
-			F(parsing::ParsingTreeObject)\
-			F(parsing::ParsingTreeArray)\
-			F(parsing::ParsingTreeCustomBase)\
-			F(parsing::ParsingToken)\
-			F(parsing::ParsingError)\
-
-			PARSINGREFLECTION_TYPELIST(DECL_TYPE_INFO)
-		}
-	}
-}
-
-#endif
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-			extern bool								LoadParsingTypes();
+			extern void										Log(Ptr<ParsingTable> table, stream::TextWriter& writer);
 		}
 	}
 }
@@ -2640,6 +2090,556 @@ Helper: Parsing Table Generating
 #endif
 
 /***********************************************************************
+.\PARSINGSTATE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Parsing::State
+
+Classes:
+***********************************************************************/
+
+#ifndef VCZH_PARSING_PARSINGSTATE
+#define VCZH_PARSING_PARSINGSTATE
+
+
+namespace vl
+{
+	namespace parsing
+	{
+		namespace tabling
+		{
+
+/***********************************************************************
+Syntax Analyzer
+***********************************************************************/
+			
+			class ParsingTokenWalker : public Object
+			{
+			protected:
+				class LookAheadEnumerator : public Object, public collections::IEnumerator<vint>
+				{
+				protected:
+					const ParsingTokenWalker*			walker;
+					vint								firstToken;
+					vint								currentToken;
+					vint								currentValue;
+					vint								index;
+
+				public:
+					LookAheadEnumerator(const ParsingTokenWalker* _walker, vint _currentToken);
+					LookAheadEnumerator(const LookAheadEnumerator& _enumerator);
+
+					collections::IEnumerator<vint>*		Clone()const override;
+					const vint&							Current()const override;
+					vint								Index()const override;
+					bool								Next()override;
+					void								Reset()override;
+				};
+
+				class TokenLookAhead : public Object, public collections::IEnumerable<vint>
+				{
+				protected:
+					const ParsingTokenWalker*			walker;
+				public:
+					TokenLookAhead(const ParsingTokenWalker* _talker);
+
+					collections::IEnumerator<vint>*			CreateEnumerator()const override;
+				};
+
+				class ReduceLookAhead : public Object, public collections::IEnumerable<vint>
+				{
+				protected:
+					const ParsingTokenWalker*			walker;
+				public:
+					ReduceLookAhead(const ParsingTokenWalker* _walker);
+
+					collections::IEnumerator<vint>*			CreateEnumerator()const override;
+				};
+
+			protected:
+				collections::List<regex::RegexToken>&	tokens;
+				Ptr<ParsingTable>						table;
+				vint									currentToken;
+				TokenLookAhead							tokenLookAhead;
+				ReduceLookAhead							reduceLookAhead;
+
+				vint									GetNextIndex(vint index)const;
+				vint									GetTableTokenIndex(vint index)const;
+			public:
+				ParsingTokenWalker(collections::List<regex::RegexToken>& _tokens, Ptr<ParsingTable> _table);
+				~ParsingTokenWalker();
+
+				const collections::IEnumerable<vint>&	GetTokenLookahead()const;
+				const collections::IEnumerable<vint>&	GetReduceLookahead()const;
+				void									Reset();
+				bool									Move();
+				vint									GetTableTokenIndex()const;
+				regex::RegexToken*						GetRegexToken()const;
+				vint									GetTokenIndexInStream()const;
+			};
+
+			class ParsingState : public Object
+			{
+			public:
+				struct ShiftReduceRange
+				{
+					regex::RegexToken*							shiftToken;
+					regex::RegexToken*							reduceToken;
+
+					ShiftReduceRange()
+						:shiftToken(0)
+						,reduceToken(0)
+					{
+					}
+				};
+
+				struct TransitionResult
+				{
+					enum TransitionType
+					{
+						ExecuteInstructions,
+						AmbiguityBegin,
+						AmbiguityBranch,
+						AmbiguityEnd,
+						SkipToken,
+					};
+
+					TransitionType								transitionType;
+					vint										ambiguityAffectedStackNodeCount;
+					WString										ambiguityNodeType;
+
+					vint										tableTokenIndex;
+					vint										tableStateSource;
+					vint										tableStateTarget;
+					vint										tokenIndexInStream;
+					regex::RegexToken*							token;
+
+					ParsingTable::TransitionItem*				transition;
+					vint										instructionBegin;
+					vint										instructionCount;
+					Ptr<collections::List<ShiftReduceRange>>	shiftReduceRanges;
+
+					TransitionResult(TransitionType _transitionType=ExecuteInstructions)
+						:transitionType(_transitionType)
+						,ambiguityAffectedStackNodeCount(0)
+						,tableTokenIndex(-1)
+						,tableStateSource(-1)
+						,tableStateTarget(-1)
+						,tokenIndexInStream(-1)
+						,token(0)
+						,transition(0)
+						,instructionBegin(-1)
+						,instructionCount(-1)
+					{
+					}
+
+					operator bool()const
+					{
+						return transitionType!=ExecuteInstructions || transition!=0;
+					}
+
+					void AddShiftReduceRange(regex::RegexToken* shiftToken, regex::RegexToken* reduceToken)
+					{
+						ShiftReduceRange range;
+						range.shiftToken=shiftToken;
+						range.reduceToken=reduceToken;
+						if(!shiftReduceRanges)
+						{
+							shiftReduceRanges=new collections::List<ShiftReduceRange>();
+						}
+						shiftReduceRanges->Add(range);
+					}
+				};
+
+				struct Future
+				{
+					vint									currentState;
+					vint									reduceStateCount;
+					collections::List<vint>					shiftStates;
+					regex::RegexToken*						selectedRegexToken;
+					vint									selectedToken;
+					ParsingTable::TransitionItem*			selectedItem;
+					Future*									previous;
+					Future*									next;
+
+					Future()
+						:currentState(-1)
+						,reduceStateCount(0)
+						,selectedRegexToken(0)
+						,selectedToken(-1)
+						,selectedItem(0)
+						,previous(0)
+						,next(0)
+					{
+					}
+
+					Future* Clone()
+					{
+						Future* future = new Future;
+						future->currentState = currentState;
+						future->reduceStateCount = reduceStateCount;
+						CopyFrom(future->shiftStates, shiftStates);
+						future->selectedRegexToken = selectedRegexToken;
+						future->selectedToken = selectedToken;
+						future->selectedItem = selectedItem;
+						future->previous = previous;
+						return future;
+					}
+				};
+
+				struct StateGroup
+				{
+					collections::List<vint>						stateStack;
+					vint										currentState;
+					vint										tokenSequenceIndex;
+
+					collections::List<regex::RegexToken*>		shiftTokenStack;
+					regex::RegexToken*							shiftToken;
+					regex::RegexToken*							reduceToken;
+
+					StateGroup();
+					StateGroup(const ParsingTable::RuleInfo& info);
+					StateGroup(const StateGroup& group);
+				};
+			private:
+				WString										input;
+				Ptr<ParsingTable>							table;
+				collections::List<regex::RegexToken>		tokens;
+				Ptr<ParsingTokenWalker>						walker;
+				
+				WString										parsingRule;
+				vint										parsingRuleStartState;
+				Ptr<StateGroup>								stateGroup;
+			public:
+				ParsingState(const WString& _input, Ptr<ParsingTable> _table, vint codeIndex=-1);
+				~ParsingState();
+
+				const WString&								GetInput();
+				Ptr<ParsingTable>							GetTable();
+				const collections::List<regex::RegexToken>&	GetTokens();
+				regex::RegexToken*							GetToken(vint index);
+
+				vint										Reset(const WString& rule);
+				WString										GetParsingRule();
+				vint										GetParsingRuleStartState();
+				vint										GetCurrentToken();
+				vint										GetCurrentTableTokenIndex();
+				const collections::List<vint>&				GetStateStack();
+				vint										GetCurrentState();
+				void										SkipCurrentToken();
+
+				bool										TestTransitionItemInFuture(vint tableTokenIndex, Future* future, ParsingTable::TransitionItem* item, const collections::IEnumerable<vint>* lookAheadTokens);
+				ParsingTable::TransitionItem*				MatchTokenInFuture(vint tableTokenIndex, Future* future, const collections::IEnumerable<vint>* lookAheadTokens);
+				ParsingTable::TransitionItem*				MatchToken(vint tableTokenIndex, const collections::IEnumerable<vint>* lookAheadTokens);
+				void										RunTransitionInFuture(ParsingTable::TransitionItem* transition, Future* previous, Future* now);
+				ParsingState::TransitionResult				RunTransition(ParsingTable::TransitionItem* transition, regex::RegexToken* regexToken, vint instructionBegin, vint instructionCount, bool lastPart);
+				ParsingState::TransitionResult				RunTransition(ParsingTable::TransitionItem* transition, regex::RegexToken* regexToken);
+
+				bool										ReadTokenInFuture(vint tableTokenIndex, Future* previous, Future* now, const collections::IEnumerable<vint>* lookAheadTokens);
+				TransitionResult							ReadToken(vint tableTokenIndex, regex::RegexToken* regexToken, const collections::IEnumerable<vint>* lookAheadTokens);
+				TransitionResult							ReadToken();
+
+				bool										TestExplore(vint tableTokenIndex, Future* previous);
+				bool										Explore(vint tableTokenIndex, Future* previous, collections::List<Future*>& possibilities);
+				bool										ExploreStep(collections::List<Future*>& previousFutures, vint start, vint count, collections::List<Future*>& possibilities);
+				bool										ExploreNormalReduce(collections::List<Future*>& previousFutures, vint start, vint count, collections::List<Future*>& possibilities);
+				bool										ExploreLeftRecursiveReduce(collections::List<Future*>& previousFutures, vint start, vint count, collections::List<Future*>& possibilities);
+				Future*										ExploreCreateRootFuture();
+
+				Ptr<StateGroup>								TakeSnapshot();
+				void										RestoreSnapshot(Ptr<StateGroup> group);
+			};
+
+/***********************************************************************
+AST Generating
+***********************************************************************/
+
+			class ParsingTransitionProcessor : public Object
+			{
+			public:
+				virtual void								Reset()=0;
+				virtual bool								Run(const ParsingState::TransitionResult& result)=0;
+				virtual bool								GetProcessingAmbiguityBranch()=0;
+			};
+
+			class ParsingTreeBuilder : public ParsingTransitionProcessor
+			{
+			protected:
+				Ptr<ParsingTreeNode>						createdObject;
+				Ptr<ParsingTreeObject>						operationTarget;
+				collections::List<Ptr<ParsingTreeObject>>	nodeStack;
+
+				bool										processingAmbiguityBranch;
+				Ptr<ParsingTreeNode>						ambiguityBranchCreatedObject;
+				Ptr<ParsingTreeNode>						ambiguityBranchOperationTarget;
+				vint										ambiguityBranchSharedNodeCount;
+				collections::List<Ptr<ParsingTreeObject>>	ambiguityBranchNodeStack;
+				collections::List<Ptr<ParsingTreeObject>>	ambiguityNodes;
+			public:
+				ParsingTreeBuilder();
+				~ParsingTreeBuilder();
+
+				void										Reset()override;
+				bool										Run(const ParsingState::TransitionResult& result)override;
+				bool										GetProcessingAmbiguityBranch()override;
+				Ptr<ParsingTreeObject>						GetNode()const;
+			};
+
+			class ParsingTransitionCollector : public ParsingTransitionProcessor
+			{
+				typedef collections::List<ParsingState::TransitionResult>		TransitionResultList;
+			protected:
+				vint										ambiguityBegin;
+				TransitionResultList						transitions;
+
+				collections::Dictionary<vint, vint>			ambiguityBeginToEnds;
+				collections::Group<vint, vint>				ambiguityBeginToBranches;
+				collections::Dictionary<vint, vint>			ambiguityBranchToBegins;
+			public:
+				ParsingTransitionCollector();
+				~ParsingTransitionCollector();
+
+				void										Reset()override;
+				bool										Run(const ParsingState::TransitionResult& result)override;
+				bool										GetProcessingAmbiguityBranch()override;
+
+				const TransitionResultList&					GetTransitions()const;
+				vint										GetAmbiguityEndFromBegin(vint transitionIndex)const;
+				const collections::List<vint>&				GetAmbiguityBranchesFromBegin(vint transitionIndex)const;
+				vint										GetAmbiguityBeginFromBranch(vint transitionIndex)const;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\PARSING.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Parsing::Parser
+
+Classes:
+***********************************************************************/
+
+#ifndef VCZH_PARSING_PARSING
+#define VCZH_PARSING_PARSING
+
+
+namespace vl
+{
+	namespace parsing
+	{
+		namespace tabling
+		{
+
+/***********************************************************************
+Parser
+***********************************************************************/
+
+			/// <summary>Base type of all parser strategy.</summary>
+			class ParsingGeneralParser : public Object
+			{
+			protected:
+				Ptr<ParsingTable>							table;
+				
+			public:
+				ParsingGeneralParser(Ptr<ParsingTable> _table);
+				~ParsingGeneralParser();
+				
+				/// <summary>Get the parser table that used to do the parsing.</summary>
+				/// <returns>The parser table that used to do the parsing.</returns>
+				Ptr<ParsingTable>							GetTable();
+				/// <summary>Initialization. It should be called before each time of parsing.</summary>
+				virtual void								BeginParse();
+				virtual ParsingState::TransitionResult		ParseStep(ParsingState& state, collections::List<Ptr<ParsingError>>& errors)=0;
+				bool										Parse(ParsingState& state, ParsingTransitionProcessor& processor, collections::List<Ptr<ParsingError>>& errors);
+				Ptr<ParsingTreeNode>						Parse(ParsingState& state, collections::List<Ptr<ParsingError>>& errors);
+				/// <summary>Parse an input and get an abstract syntax tree if no error happens or all errors are recovered.</summary>
+				/// <returns>The abstract syntax tree.</returns>
+				/// <param name="input">The input to parse.</param>
+				/// <param name="rule">The name of the rule that used to parse the input.</param>
+				/// <param name="errors">Returns all errors.</param>
+				/// <param name="codeIndex">The code index to differentiate each input. This value will be stored in every tokens and abstract syntax nodes.</param>
+				Ptr<ParsingTreeNode>						Parse(const WString& input, const WString& rule, collections::List<Ptr<ParsingError>>& errors, vint codeIndex = -1);
+			};
+
+/***********************************************************************
+Parser with different strategies
+***********************************************************************/
+
+			/// <summary>A strict parse. It doesn't allow ambiguity and error recovery.</summary>
+			class ParsingStrictParser : public ParsingGeneralParser
+			{
+			protected:
+				
+				virtual bool								OnTestErrorRecoverExists();
+				virtual void								OnClearErrorRecover();
+				virtual ParsingState::TransitionResult		OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<Ptr<ParsingError>>& errors);
+			public:
+				/// <summary>Create the parse using a parsing table.</summary>
+				/// <param name="_table">The parsing table.</param>
+				ParsingStrictParser(Ptr<ParsingTable> _table=0);
+				~ParsingStrictParser();
+				
+				ParsingState::TransitionResult				ParseStep(ParsingState& state, collections::List<Ptr<ParsingError>>& errors)override;
+			};
+			
+			/// <summary>A strict parse. It doesn't allow ambiguity but allows error recovery.</summary>
+			class ParsingAutoRecoverParser : public ParsingStrictParser
+			{
+			public:
+				struct RecoverFuture
+				{
+					ParsingState::Future*					future;
+					vint									insertedTokenCount;
+					vint									index;
+					vint									previousIndex;
+					vint									nextIndex;
+
+					RecoverFuture()
+						:future(0)
+						, insertedTokenCount(0)
+						, index(-1)
+						, previousIndex(-1)
+						, nextIndex(-1)
+					{
+					}
+				};
+			protected:
+				vint										maxInsertedTokenCount;
+				collections::List<RecoverFuture>			recoverFutures;
+				vint										recoveringFutureIndex;
+				
+				RecoverFuture&								GetRecoverFuture(vint index);
+				RecoverFuture&								CreateRecoverFuture(vint index, vint previousIndex);
+				bool										OnTestErrorRecoverExists()override;
+				void										OnClearErrorRecover()override;
+				ParsingState::TransitionResult				OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<Ptr<ParsingError>>& errors)override;
+			public:
+				/// <summary>Create the parse using a parsing table.</summary>
+				/// <param name="_table">The parsing table.</param>
+				/// <param name="_maxInsertedTokenCount">The maximum number of tokens that allow to insert to recover an error.</param>
+				ParsingAutoRecoverParser(Ptr<ParsingTable> _table = 0, vint _maxInsertedTokenCount = -1);
+				~ParsingAutoRecoverParser();
+
+				void										BeginParse()override;
+			};
+			
+			/// <summary>A strict parse. It allows ambiguity but doesn't allow error recovery.</summary>
+			class ParsingAmbiguousParser : public ParsingGeneralParser
+			{
+				typedef collections::List<ParsingState::TransitionResult>		DecisionList;
+			protected:
+
+				DecisionList								decisions;
+				vint										consumedDecisionCount;
+
+				virtual void								OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<ParsingState::Future*>& futures, vint& begin, vint& end, collections::List<Ptr<ParsingError>>& errors);
+				vint										GetResolvableFutureLevels(collections::List<ParsingState::Future*>& futures, vint begin, vint end);
+				vint										SearchPathForOneStep(ParsingState& state, collections::List<ParsingState::Future*>& futures, vint& begin, vint& end, collections::List<Ptr<ParsingError>>& errors);
+				vint										GetConflictReduceCount(collections::List<ParsingState::Future*>& futures);
+				void										GetConflictReduceIndices(collections::List<ParsingState::Future*>& futures, vint conflictReduceCount, collections::Array<vint>& conflictReduceIndices);
+				vint										GetAffectedStackNodeCount(collections::List<ParsingState::Future*>& futures, collections::Array<vint>& conflictReduceIndices);
+				void										BuildSingleDecisionPath(ParsingState& state, ParsingState::Future* future, vint lastAvailableInstructionCount);
+				void										BuildAmbiguousDecisions(ParsingState& state, collections::List<ParsingState::Future*>& futures, vint begin, vint end, vint resolvableFutureLevels, collections::List<Ptr<ParsingError>>& errors);
+				void										BuildDecisions(ParsingState& state, collections::List<ParsingState::Future*>& futures, vint begin, vint end, vint resolvableFutureLevels, collections::List<Ptr<ParsingError>>& errors);
+			public:
+				/// <summary>Create the parse using a parsing table.</summary>
+				/// <param name="_table">The parsing table.</param>
+				ParsingAmbiguousParser(Ptr<ParsingTable> _table=0);
+				~ParsingAmbiguousParser();
+				
+				ParsingState::TransitionResult				ParseStep(ParsingState& state, collections::List<Ptr<ParsingError>>& errors)override;
+				void										BeginParse()override;
+			};
+			
+			/// <summary>A strict parse. It allow both ambiguity and error recovery.</summary>
+			class ParsingAutoRecoverAmbiguousParser : public ParsingAmbiguousParser
+			{
+			protected:
+				vint										maxInsertedTokenCount;
+
+				void										OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<ParsingState::Future*>& futures, vint& begin, vint& end, collections::List<Ptr<ParsingError>>& errors)override;
+			public:
+				/// <summary>Create the parse using a parsing table.</summary>
+				/// <param name="_table">The parsing table.</param>
+				/// <param name="_maxInsertedTokenCount">The maximum number of tokens that allow to insert to recover an error.</param>
+				ParsingAutoRecoverAmbiguousParser(Ptr<ParsingTable> _table = 0, vint _maxInsertedTokenCount = -1);
+				~ParsingAutoRecoverAmbiguousParser();
+			};
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+			
+			/// <summary>Create the correct strict parser from a parsing table.</summary>
+			/// <returns>The created parse.</returns>
+			/// <param name="table">The table to create a parser.</param>
+			extern Ptr<ParsingGeneralParser>				CreateStrictParser(Ptr<ParsingTable> table);
+			/// <summary>Create the correct error recoverable parser from a parsing table.</summary>
+			/// <returns>The created parse.</returns>
+			/// <param name="table">The table to create a parser.</param>
+			extern Ptr<ParsingGeneralParser>				CreateAutoRecoverParser(Ptr<ParsingTable> table);
+			/// <summary>Create the correct strict parser to parse the grammar itself.</summary>
+			/// <returns>The created parse.</returns>
+			extern Ptr<ParsingGeneralParser>				CreateBootstrapStrictParser();
+			/// <summary>Create the correct error recoverable to parse the grammar itself.</summary>
+			/// <returns>The created parse.</returns>
+			extern Ptr<ParsingGeneralParser>				CreateBootstrapAutoRecoverParser();
+		}
+	}
+}
+
+/***********************************************************************
+Reflection for AST
+***********************************************************************/
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#define PARSINGREFLECTION_TYPELIST(F)\
+			F(parsing::ParsingTextPos)\
+			F(parsing::ParsingTextRange)\
+			F(parsing::ParsingTreeNode)\
+			F(parsing::ParsingTreeToken)\
+			F(parsing::ParsingTreeObject)\
+			F(parsing::ParsingTreeArray)\
+			F(parsing::ParsingTreeCustomBase)\
+			F(parsing::ParsingToken)\
+			F(parsing::ParsingError)\
+
+			PARSINGREFLECTION_TYPELIST(DECL_TYPE_INFO)
+		}
+	}
+}
+
+#endif
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+			extern bool								LoadParsingTypes();
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\JSON\PARSINGJSON_AST.H
 ***********************************************************************/
 /***********************************************************************
@@ -2861,6 +2861,36 @@ namespace vl
 		}
 	}
 }
+#endif
+
+/***********************************************************************
+.\JSON\PARSINGJSON.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Parser::ParsingJson_Parser
+
+***********************************************************************/
+
+#ifndef VCZH_PARSING_JSON_PARSINGJSON
+#define VCZH_PARSING_JSON_PARSINGJSON
+
+
+namespace vl
+{
+	namespace parsing
+	{
+		namespace json
+		{
+			extern void						JsonEscapeString(const WString& text, stream::TextWriter& writer);
+			extern void						JsonUnescapeString(const WString& text, stream::TextWriter& writer);
+			extern void						JsonPrint(Ptr<JsonNode> node, stream::TextWriter& writer);
+			extern WString					JsonToString(Ptr<JsonNode> node);
+		}
+	}
+}
+
 #endif
 
 /***********************************************************************
@@ -3106,36 +3136,6 @@ namespace vl
 		}
 	}
 }
-#endif
-
-/***********************************************************************
-.\JSON\PARSINGJSON.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parser::ParsingJson_Parser
-
-***********************************************************************/
-
-#ifndef VCZH_PARSING_JSON_PARSINGJSON
-#define VCZH_PARSING_JSON_PARSINGJSON
-
-
-namespace vl
-{
-	namespace parsing
-	{
-		namespace json
-		{
-			extern void						JsonEscapeString(const WString& text, stream::TextWriter& writer);
-			extern void						JsonUnescapeString(const WString& text, stream::TextWriter& writer);
-			extern void						JsonPrint(Ptr<JsonNode> node, stream::TextWriter& writer);
-			extern WString					JsonToString(Ptr<JsonNode> node);
-		}
-	}
-}
-
 #endif
 
 /***********************************************************************
