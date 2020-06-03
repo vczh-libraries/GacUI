@@ -71,7 +71,7 @@ namespace vl
 					return themeTemplates;
 				}
 
-				TemplateProperty<templates::GuiControlTemplate> CreateStyle(ThemeName themeName)override
+				TemplateProperty<GuiControlTemplate> CreateStyle(ThemeName themeName)override
 				{
 					switch (themeName)
 					{

@@ -94,7 +94,7 @@ GuiMultilineTextBox
 			void GuiMultilineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject(true);
-				Array<text::ColorEntry> colors(1);
+				Array<ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);
 				textElement->SetCaretColor(ct->GetCaretColor());
@@ -122,7 +122,7 @@ GuiMultilineTextBox
 
 			Size GuiMultilineTextBox::QueryFullSize()
 			{
-				text::TextLines& lines = textElement->GetLines();
+				TextLines& lines = textElement->GetLines();
 				return Size(lines.GetMaxWidth() + TextMargin * 2, lines.GetMaxHeight() + TextMargin * 2);
 			}
 
@@ -280,7 +280,7 @@ GuiSinglelineTextBox
 			void GuiSinglelineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject(true);
-				Array<text::ColorEntry> colors(1);
+				Array<ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);
 				textElement->SetCaretColor(ct->GetCaretColor());
