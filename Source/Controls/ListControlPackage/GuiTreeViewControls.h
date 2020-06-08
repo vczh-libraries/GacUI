@@ -86,7 +86,6 @@ NodeItemProvider
 					/// <returns>The instance of a specified sub node.</returns>
 					/// <param name="index">The index of the sub node.</param>
 					virtual Ptr<INodeProvider>		GetChild(vint index)=0;
-					/// <summary>Increase the reference counter.</summary>
 				};
 				
 				/// <summary>Represents a root node provider.</summary>
