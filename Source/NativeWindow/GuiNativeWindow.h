@@ -58,12 +58,14 @@ System Object
 			/// <returns>Returns true if the screen is a primary screen.</returns>
 			virtual bool				IsPrimary()=0;
 			/// <summary>
-			/// Get the scaling for the screen's horizontal edge. For example, in Windows when you have a 96 DPI, this function returns 1.0.
+			/// Get the scaling for the screen's horizontal edge.
 			/// </summary>
+			/// <returns>The scaling. For example, in Windows when you have a 96 DPI, this function returns 1.0.</returns>
 			virtual double				GetScalingX() = 0;
 			/// <summary>
-			/// Get the scaling for the screen's vertical edge. For example, in Windows when you have a 96 DPI, this function returns 1.0.
+			/// Get the scaling for the screen's vertical edge.
 			/// </summary>
+			/// <returns>The scaling. For example, in Windows when you have a 96 DPI, this function returns 1.0.</returns>
 			virtual double				GetScalingY() = 0;
 		};
 		
@@ -126,6 +128,9 @@ System Object
 				/// [T:vl.presentation.INativeCursor.SystemCursorType]Sizing W-E cursor.
 				/// </summary>
 				SizeWE,
+				/// <summary>
+				/// [T:vl.presentation.INativeCursor.SystemCursorType]Number of available cursors, this is not an available cursor by itself.
+				/// </summary>
 				LastSystemCursor=SizeWE,
 			};
 
@@ -276,7 +281,7 @@ Image Object
 			/// <summary>
 			/// Save the image to a stream.
 			/// </summary>
-			/// <param name="stream">The stream.</param>
+			/// <param name="imageStream">The stream.</param>
 			/// <param name="formatType">The format of the image.</param>
 			virtual void						SaveToStream(stream::IStream& imageStream, FormatType formatType = FormatType::Unknown) = 0;
 		};
@@ -306,7 +311,7 @@ Image Object
 			/// Create an image from stream.
 			/// </summary>
 			/// <returns>The created image.</returns>
-			/// <param name="stream">The stream.</param>
+			/// <param name="imageStream">The stream.</param>
 			virtual Ptr<INativeImage>			CreateImageFromStream(stream::IStream& imageStream)=0;
 		};
 

@@ -35,7 +35,7 @@ Raw API Rendering Element
 			public:
 				/// <summary>The element that raised this event.</summary>
 				GuiGDIElement*				element;
-				/// <summary>The device context to draw. The HDC handle can be retrived using dc->GetHandle(), but it is recommended that using the WinDC class directly.</summary>
+				/// <summary>The device context to draw. The HDC handle can be retrived using dc-&gt;GetHandle(), but it is recommended that using the WinDC class directly.</summary>
 				windows::WinDC*				dc;
 				/// <summary>The range for rendering.</summary>
 				Rect						bounds;

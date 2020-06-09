@@ -710,13 +710,13 @@ Resource Type Resolver
 			/// <summary>Serialize a precompiled resource to a stream.</summary>
 			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="content">The content to serialize.</param>
-			/// <param name="stream">The stream.</param>
+			/// <param name="binaryStream">The stream.</param>
 			virtual void										SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& binaryStream) = 0;
 
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The resource.</returns>
 			/// <param name="resource">The resource item containing the resource.</param>
-			/// <param name="stream">The stream.</param>
+			/// <param name="binaryStream">The stream.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual Ptr<DescriptableObject>						ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& binaryStream, GuiResourceError::List& errors) = 0;
 		};
