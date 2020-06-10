@@ -81,55 +81,55 @@ System Object
 			enum SystemCursorType
 			{
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Small waiting cursor.
+				/// Small waiting cursor.
 				/// </summary>
 				SmallWaiting,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]large waiting cursor.
+				/// large waiting cursor.
 				/// </summary>
 				LargeWaiting,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Arrow cursor.
+				/// Arrow cursor.
 				/// </summary>
 				Arrow,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Cross cursor.
+				/// Cross cursor.
 				/// </summary>
 				Cross,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Hand cursor.
+				/// Hand cursor.
 				/// </summary>
 				Hand,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Help cursor.
+				/// Help cursor.
 				/// </summary>
 				Help,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]I beam cursor.
+				/// I beam cursor.
 				/// </summary>
 				IBeam,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Sizing in all direction cursor.
+				/// Sizing in all direction cursor.
 				/// </summary>
 				SizeAll,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Sizing NE-SW cursor.
+				/// Sizing NE-SW cursor.
 				/// </summary>
 				SizeNESW,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Sizing N-S cursor.
+				/// Sizing N-S cursor.
 				/// </summary>
 				SizeNS,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Sizing NW-SE cursor.
+				/// Sizing NW-SE cursor.
 				/// </summary>
 				SizeNWSE,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Sizing W-E cursor.
+				/// Sizing W-E cursor.
 				/// </summary>
 				SizeWE,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Number of available cursors, this is not an available cursor by itself.
+				/// Number of available cursors, this is not an available cursor by itself.
 				/// </summary>
 				LastSystemCursor=SizeWE,
 			};
@@ -224,35 +224,35 @@ Image Object
 			enum FormatType
 			{
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]Bitmap format.
+				/// Bitmap format.
 				/// </summary>
 				Bmp,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]GIF format.
+				/// GIF format.
 				/// </summary>
 				Gif,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]Icon format.
+				/// Icon format.
 				/// </summary>
 				Icon,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]JPEG format.
+				/// JPEG format.
 				/// </summary>
 				Jpeg,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]PNG format.
+				/// PNG format.
 				/// </summary>
 				Png,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]TIFF format.
+				/// TIFF format.
 				/// </summary>
 				Tiff,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]WMP format.
+				/// WMP format.
 				/// </summary>
 				Wmp,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]Unknown format.
+				/// Unknown format.
 				/// </summary>
 				Unknown,
 			};
