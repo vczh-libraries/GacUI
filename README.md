@@ -5,7 +5,7 @@
 
 # Notice
 - The release of the GacUI project is put in [vczh-libraries/Release](https://github.com/vczh-libraries/Release).
-- **DO NOT** download source code from this repo **if you are not intended to create push request**. This is not for end users.
+- **DO NOT** download source code from this repo **if you are not intended to create pull request**. This is not for end users.
 
 # Content of This Project
 
@@ -26,18 +26,18 @@ Using this library requires you to use C++ source files directly in
 * The [Release folder](https://github.com/vczh-libraries/GacUI/tree/master/Release) for Vlpp, Workflow or GacUI.
 * The [GacGen.exe](https://github.com/vczh-libraries/GacUI/tree/master/Tools/GacGen) if you prefer to use XML to build your UI.
 
-All other files are for librari development only.
+All other files are for library development only.
 
 ### Content
 This GUI library provides the following features:
-* Develop your GUI using pure C++, [Workflow](https://github.com/vczh-libraries/Workflow) script, XML or even JavaScript (under construction)
+* Develop your GUI using pure C++, [Workflow](https://github.com/vczh-libraries/Workflow) script, XML or even JavaScript (under construction).
 * Cross-platform abilities. 
     * for **Windows**: Just use the code here
     * for **Linux**: https://github.com/vczh-libraries/XGac
     * for **OSX**: https://github.com/vczh-libraries/iGac
     * for running in **Browser!**: https://github.com/vczh-libraries/GacJS (under construction)
 * Rich control library. Container controls supports MVC and virtual list mode.
-* Control template system. You can write your own 
+* Control template system. You can write your own.
 * GPU acceleration.
 * XML resource supports.
     * You can use the provided [GacGen.exe](https://github.com/vczh-libraries/GacUI/tree/master/Tools/GacGen) to generate multiple XML files with binary resources (images) into a compressed binary format.
