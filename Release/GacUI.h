@@ -1650,12 +1650,14 @@ System Object
 			/// <returns>Returns true if the screen is a primary screen.</returns>
 			virtual bool				IsPrimary()=0;
 			/// <summary>
-			/// Get the scaling for the screen's horizontal edge. For example, in Windows when you have a 96 DPI, this function returns 1.0.
+			/// Get the scaling for the screen's horizontal edge.
 			/// </summary>
+			/// <returns>The scaling. For example, in Windows when you have a 96 DPI, this function returns 1.0.</returns>
 			virtual double				GetScalingX() = 0;
 			/// <summary>
-			/// Get the scaling for the screen's vertical edge. For example, in Windows when you have a 96 DPI, this function returns 1.0.
+			/// Get the scaling for the screen's vertical edge.
 			/// </summary>
+			/// <returns>The scaling. For example, in Windows when you have a 96 DPI, this function returns 1.0.</returns>
 			virtual double				GetScalingY() = 0;
 		};
 		
@@ -1671,53 +1673,56 @@ System Object
 			enum SystemCursorType
 			{
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Small waiting cursor.
+				/// Small waiting cursor.
 				/// </summary>
 				SmallWaiting,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]large waiting cursor.
+				/// large waiting cursor.
 				/// </summary>
 				LargeWaiting,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Arrow cursor.
+				/// Arrow cursor.
 				/// </summary>
 				Arrow,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Cross cursor.
+				/// Cross cursor.
 				/// </summary>
 				Cross,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Hand cursor.
+				/// Hand cursor.
 				/// </summary>
 				Hand,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Help cursor.
+				/// Help cursor.
 				/// </summary>
 				Help,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]I beam cursor.
+				/// I beam cursor.
 				/// </summary>
 				IBeam,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Sizing in all direction cursor.
+				/// Sizing in all direction cursor.
 				/// </summary>
 				SizeAll,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Sizing NE-SW cursor.
+				/// Sizing NE-SW cursor.
 				/// </summary>
 				SizeNESW,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Sizing N-S cursor.
+				/// Sizing N-S cursor.
 				/// </summary>
 				SizeNS,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Sizing NW-SE cursor.
+				/// Sizing NW-SE cursor.
 				/// </summary>
 				SizeNWSE,
 				/// <summary>
-				/// [T:vl.presentation.INativeCursor.SystemCursorType]Sizing W-E cursor.
+				/// Sizing W-E cursor.
 				/// </summary>
 				SizeWE,
+				/// <summary>
+				/// Number of available cursors, this is not an available cursor by itself.
+				/// </summary>
 				LastSystemCursor=SizeWE,
 			};
 
@@ -1811,35 +1816,35 @@ Image Object
 			enum FormatType
 			{
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]Bitmap format.
+				/// Bitmap format.
 				/// </summary>
 				Bmp,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]GIF format.
+				/// GIF format.
 				/// </summary>
 				Gif,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]Icon format.
+				/// Icon format.
 				/// </summary>
 				Icon,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]JPEG format.
+				/// JPEG format.
 				/// </summary>
 				Jpeg,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]PNG format.
+				/// PNG format.
 				/// </summary>
 				Png,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]TIFF format.
+				/// TIFF format.
 				/// </summary>
 				Tiff,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]WMP format.
+				/// WMP format.
 				/// </summary>
 				Wmp,
 				/// <summary>
-				/// [T:vl.presentation.INativeImage.FormatType]Unknown format.
+				/// Unknown format.
 				/// </summary>
 				Unknown,
 			};
@@ -1868,9 +1873,9 @@ Image Object
 			/// <summary>
 			/// Save the image to a stream.
 			/// </summary>
-			/// <param name="stream">The stream.</param>
+			/// <param name="imageStream">The stream.</param>
 			/// <param name="formatType">The format of the image.</param>
-			virtual void						SaveToStream(stream::IStream& stream, FormatType formatType = FormatType::Unknown) = 0;
+			virtual void						SaveToStream(stream::IStream& imageStream, FormatType formatType = FormatType::Unknown) = 0;
 		};
 		
 		/// <summary>
@@ -1898,8 +1903,8 @@ Image Object
 			/// Create an image from stream.
 			/// </summary>
 			/// <returns>The created image.</returns>
-			/// <param name="stream">The stream.</param>
-			virtual Ptr<INativeImage>			CreateImageFromStream(stream::IStream& stream)=0;
+			/// <param name="imageStream">The stream.</param>
+			virtual Ptr<INativeImage>			CreateImageFromStream(stream::IStream& imageStream)=0;
 		};
 
 /***********************************************************************
@@ -6432,8 +6437,8 @@ Helper Functions
 		/// <param name="path">The extracted path.</param>
 		extern bool									IsResourceUrl(const WString& text, WString& protocol, WString& path);
 
-		extern void									HexToBinary(stream::IStream& stream, const WString& hexText);
-		extern WString								BinaryToHex(stream::IStream& stream);
+		extern void									HexToBinary(stream::IStream& binaryStream, const WString& hexText);
+		extern WString								BinaryToHex(stream::IStream& binaryStream);
 
 /***********************************************************************
 Global String Key
@@ -6817,18 +6822,18 @@ Resource
 			
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The loaded resource.</returns>
-			/// <param name="stream">The stream.</param>
+			/// <param name="binaryStream">The stream.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& stream, GuiResourceError::List& errors);
+			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& binaryStream, GuiResourceError::List& errors);
 
 			/// <summary>Load a precompiled resource from a stream. This function will hit an assert if there are errors.</summary>
 			/// <returns>The loaded resource.</returns>
-			/// <param name="stream">The stream.</param>
-			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& stream);
+			/// <param name="binaryStream">The stream.</param>
+			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& binaryStream);
 			
 			/// <summary>Save the precompiled resource to a stream.</summary>
-			/// <param name="stream">The stream.</param>
-			void									SavePrecompiledBinary(stream::IStream& stream);
+			/// <param name="binaryStream">The stream.</param>
+			void									SavePrecompiledBinary(stream::IStream& binaryStream);
 
 			/// <summary>Precompile this resource to improve performance.</summary>
 			/// <returns>The resource folder contains all precompiled result. The folder will be added to the resource if there is no error.</returns>
@@ -7094,15 +7099,15 @@ Resource Type Resolver
 			/// <summary>Serialize a precompiled resource to a stream.</summary>
 			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="content">The content to serialize.</param>
-			/// <param name="stream">The stream.</param>
-			virtual void										SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream) = 0;
+			/// <param name="binaryStream">The stream.</param>
+			virtual void										SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& binaryStream) = 0;
 
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The resource.</returns>
 			/// <param name="resource">The resource item containing the resource.</param>
-			/// <param name="stream">The stream.</param>
+			/// <param name="binaryStream">The stream.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<DescriptableObject>						ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors) = 0;
+			virtual Ptr<DescriptableObject>						ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& binaryStream, GuiResourceError::List& errors) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource with a preload type.</summary>
@@ -12984,7 +12989,6 @@ NodeItemProvider
 					/// <returns>The instance of a specified sub node.</returns>
 					/// <param name="index">The index of the sub node.</param>
 					virtual Ptr<INodeProvider>		GetChild(vint index)=0;
-					/// <summary>Increase the reference counter.</summary>
 				};
 				
 				/// <summary>Represents a root node provider.</summary>
@@ -19466,14 +19470,14 @@ namespace vl
 	namespace presentation
 	{
 		extern void					ModifyDocumentForClipboard(Ptr<DocumentModel> model);
-		extern Ptr<DocumentModel>	LoadDocumentFromClipboardStream(stream::IStream& stream);
-		extern void					SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream);
+		extern Ptr<DocumentModel>	LoadDocumentFromClipboardStream(stream::IStream& clipboardStream);
+		extern void					SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& clipboardStream);
 
 		extern void					SaveDocumentToRtf(Ptr<DocumentModel> model, AString& rtf);
-		extern void					SaveDocumentToRtfStream(Ptr<DocumentModel> model, stream::IStream& stream);
+		extern void					SaveDocumentToRtfStream(Ptr<DocumentModel> model, stream::IStream& rtfStream);
 
 		extern void					SaveDocumentToHtmlUtf8(Ptr<DocumentModel> model, AString& header, AString& content, AString& footer);
-		extern void					SaveDocumentToHtmlClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream);
+		extern void					SaveDocumentToHtmlClipboardStream(Ptr<DocumentModel> model, stream::IStream& clipboardStream);
 	}
 }
 
@@ -19734,8 +19738,8 @@ IGuiResourceManager
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
 			virtual Ptr<GuiResource>					GetResourceFromClassName(const WString& classFullName) = 0;
 			virtual void								UnloadResource(const WString& name) = 0;
-			virtual void								LoadResourceOrPending(stream::IStream& stream, GuiResourceError::List& errors, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
-			virtual void								LoadResourceOrPending(stream::IStream& stream, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
+			virtual void								LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceError::List& errors, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
+			virtual void								LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual void								GetPendingResourceNames(collections::List<WString>& names) = 0;
 		};
 

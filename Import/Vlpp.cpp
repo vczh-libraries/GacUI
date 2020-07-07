@@ -7,6 +7,11 @@ DEVELOPER: Zihan Chen(vczh)
 /***********************************************************************
 .\BASIC.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 #include <time.h>
 #if defined VCZH_MSVC
 #include <Windows.h>
@@ -109,6 +114,8 @@ DateTime
 		dt.minute = timeinfo->tm_min;
 		dt.second = timeinfo->tm_sec;
 		dt.milliseconds = milliseconds;
+
+		// in Linux and macOS, filetime will be mktime(t) * 1000 + gettimeofday().tv_usec / 1000
         dt.filetime = (vuint64_t)timer * 1000 + milliseconds;
 		dt.totalMilliseconds = (vuint64_t)timer * 1000 + milliseconds;
 		return dt;
@@ -274,6 +281,11 @@ Interface
 /***********************************************************************
 .\CONSOLE.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 #if defined VCZH_MSVC
 #elif defined VCZH_GCC
 #include <iostream>
@@ -394,6 +406,11 @@ Console
 /***********************************************************************
 .\EXCEPTION.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 
 namespace vl
 {
@@ -457,6 +474,11 @@ ParsingException
 /***********************************************************************
 .\GLOBALSTORAGE.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 
 namespace vl
 {
@@ -483,7 +505,6 @@ GlobalStorage
 ***********************************************************************/
 
 	GlobalStorage::GlobalStorage(const wchar_t* key)
-		:cleared(false)
 	{
 		InitializeGlobalStorage();
 		GetGlobalStorageManager().storages->Add(key, this);
@@ -514,21 +535,21 @@ Helper Functions
 
 	void InitializeGlobalStorage()
 	{
-		if(!GetGlobalStorageManager().storages)
+		if (!GetGlobalStorageManager().storages)
 		{
-			GetGlobalStorageManager().storages=new Dictionary<WString, GlobalStorage*>;
+			GetGlobalStorageManager().storages = new Dictionary<WString, GlobalStorage*>;
 		}
 	}
 
 	void FinalizeGlobalStorage()
 	{
-		if(GetGlobalStorageManager().storages)
+		if (GetGlobalStorageManager().storages)
 		{
-			for(vint i=0;i<GetGlobalStorageManager().storages->Count();i++)
+			for (vint i = 0; i < GetGlobalStorageManager().storages->Count(); i++)
 			{
 				GetGlobalStorageManager().storages->Values().Get(i)->ClearResource();
 			}
-			GetGlobalStorageManager().storages=0;
+			GetGlobalStorageManager().storages = nullptr;
 		}
 	}
 }
@@ -537,6 +558,11 @@ Helper Functions
 /***********************************************************************
 .\STRING.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 #if defined VCZH_MSVC
 #elif defined VCZH_GCC
 #include <stdio.h>
@@ -1082,6 +1108,11 @@ namespace vl
 /***********************************************************************
 .\COLLECTIONS\PARTIALORDERING.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 
 namespace vl
 {
@@ -1189,6 +1220,11 @@ PartialOrderingProcessor
 /***********************************************************************
 .\UNITTEST\UNITTEST.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 #ifdef VCZH_MSVC
 #endif
 
@@ -1219,7 +1255,7 @@ UnitTest
 				Category,
 				Case,
 			};
-
+			
 			struct UnitTestContext
 			{
 				UnitTestContext*			parent = nullptr;

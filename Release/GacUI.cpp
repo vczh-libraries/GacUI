@@ -14951,7 +14951,7 @@ namespace vl
 					return themeTemplates;
 				}
 
-				TemplateProperty<templates::GuiControlTemplate> CreateStyle(ThemeName themeName)override
+				TemplateProperty<GuiControlTemplate> CreateStyle(ThemeName themeName)override
 				{
 					switch (themeName)
 					{
@@ -17350,7 +17350,7 @@ GuiMultilineTextBox
 			void GuiMultilineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject(true);
-				Array<text::ColorEntry> colors(1);
+				Array<ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);
 				textElement->SetCaretColor(ct->GetCaretColor());
@@ -17378,7 +17378,7 @@ GuiMultilineTextBox
 
 			Size GuiMultilineTextBox::QueryFullSize()
 			{
-				text::TextLines& lines = textElement->GetLines();
+				TextLines& lines = textElement->GetLines();
 				return Size(lines.GetMaxWidth() + TextMargin * 2, lines.GetMaxHeight() + TextMargin * 2);
 			}
 
@@ -17536,7 +17536,7 @@ GuiSinglelineTextBox
 			void GuiSinglelineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = GetControlTemplateObject(true);
-				Array<text::ColorEntry> colors(1);
+				Array<ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);
 				textElement->SetCaretColor(ct->GetCaretColor());
@@ -33695,14 +33695,14 @@ namespace vl
 			}
 		}
 
-		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& stream)
+		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& clipboardStream)
 		{
 			auto tempResource = MakePtr<GuiResource>();
 			auto tempResourceItem = MakePtr<GuiResourceItem>();
 			tempResource->AddItem(L"Document", tempResourceItem);
 			auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
 
-			internal::ContextFreeReader reader(stream);
+			internal::ContextFreeReader reader(clipboardStream);
 			{
 				WString title;
 				vint32_t version = 0;
@@ -33741,7 +33741,7 @@ namespace vl
 			return document;
 		}
 
-		void SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream)
+		void SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& clipboardStream)
 		{
 			CollectImageRunsVisitor visitor;
 			FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
@@ -33749,7 +33749,7 @@ namespace vl
 				paragraph->Accept(&visitor);
 			}
 
-			internal::ContextFreeWriter writer(stream);
+			internal::ContextFreeWriter writer(clipboardStream);
 			{
 				WString title = L"WCF_Document";
 				vint32_t version = 1;
@@ -33781,7 +33781,7 @@ namespace vl
 						imageRun->image->SaveToStream(memoryStream, format);
 					}
 					
-					writer << (IStream&)memoryStream;
+					writer << (stream::IStream&)memoryStream;
 				}
 			}
 		}
@@ -34058,7 +34058,7 @@ namespace vl
 				;
 		}
 
-		void SaveDocumentToHtmlClipboardStream(Ptr<DocumentModel> model, stream::IStream& stream)
+		void SaveDocumentToHtmlClipboardStream(Ptr<DocumentModel> model, stream::IStream& clipboardStream)
 		{
 			AString header, content, footer;
 			SaveDocumentToHtmlUtf8(model, header, content, footer);
@@ -34079,12 +34079,12 @@ namespace vl
 			memcpy(strstr(clipboardHeader, "EndFragment:") - offsetStartString.Length() - 2, offsetStartString.Buffer(), offsetStartString.Length());
 			memcpy(clipboardHeader + sizeof(clipboardHeader) - 1 - offsetEndString.Length() - 2, offsetEndString.Buffer(), offsetEndString.Length());
 
-			stream.Write(clipboardHeader, sizeof(clipboardHeader) - 1);
-			if (header.Length() > 0) stream.Write((void*)header.Buffer(), header.Length());
-			stream.Write(commentStart, sizeof(commentStart) - 1);
-			if (content.Length() > 0) stream.Write((void*)content.Buffer(), content.Length());
-			stream.Write(commentEnd, sizeof(commentEnd) - 1);
-			if (footer.Length() > 0) stream.Write((void*)footer.Buffer(), footer.Length());
+			clipboardStream.Write(clipboardHeader, sizeof(clipboardHeader) - 1);
+			if (header.Length() > 0) clipboardStream.Write((void*)header.Buffer(), header.Length());
+			clipboardStream.Write(commentStart, sizeof(commentStart) - 1);
+			if (content.Length() > 0) clipboardStream.Write((void*)content.Buffer(), content.Length());
+			clipboardStream.Write(commentEnd, sizeof(commentEnd) - 1);
+			if (footer.Length() > 0) clipboardStream.Write((void*)footer.Buffer(), footer.Length());
 		}
 
 #undef HTML_LINE
@@ -34321,11 +34321,11 @@ namespace vl
 			rtf = (const char*)rtfStream.GetInternalBuffer();
 		}
 
-		void SaveDocumentToRtfStream(Ptr<DocumentModel> model, stream::IStream& stream)
+		void SaveDocumentToRtfStream(Ptr<DocumentModel> model, stream::IStream& rtfStream)
 		{
 			AString rtf;
 			SaveDocumentToRtf(model, rtf);
-			stream.Write((void*)rtf.Buffer(), rtf.Length());
+			rtfStream.Write((void*)rtf.Buffer(), rtf.Length());
 		}
 	}
 }
@@ -38252,7 +38252,7 @@ namespace vl
 			}
 		}
 
-		void HexToBinary(stream::IStream& stream, const WString& hexText)
+		void HexToBinary(stream::IStream& binaryStream, const WString& hexText)
 		{
 			const wchar_t* buffer = hexText.Buffer();
 			vint count = hexText.Length() / 2;
@@ -38260,17 +38260,17 @@ namespace vl
 			{
 				vuint8_t byte = (vuint8_t)(HexToInt(buffer[0]) * 16 + HexToInt(buffer[1]));
 				buffer += 2;
-				stream.Write(&byte, 1);
+				binaryStream.Write(&byte, 1);
 			}
 		}
 
-		WString BinaryToHex(stream::IStream& stream)
+		WString BinaryToHex(stream::IStream& binaryStream)
 		{
 			stream::MemoryStream memoryStream;
 			{
 				stream::StreamWriter writer(memoryStream);
 				vuint8_t byte;
-				while (stream.Read(&byte, 1) == 1)
+				while (binaryStream.Read(&byte, 1) == 1)
 				{
 					writer.WriteChar(L"0123456789ABCDEF"[byte / 16]);
 					writer.WriteChar(L"0123456789ABCDEF"[byte % 16]);
@@ -39552,14 +39552,14 @@ GuiResource
 			return doc;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& stream, GuiResourceError::List& errors)
+		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& binaryStream, GuiResourceError::List& errors)
 		{
-			stream::internal::ContextFreeReader reader(stream);
+			stream::internal::ContextFreeReader reader(binaryStream);
 			auto resource = MakePtr<GuiResource>();
 			{
 				WString metadata;
 				reader << metadata;
-				
+
 				auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
 				auto xmlMetadata = parser->Parse({ resource }, metadata, errors);
 				if (!xmlMetadata) return nullptr;
@@ -39576,25 +39576,25 @@ GuiResource
 
 			List<WString> typeNames;
 			reader << typeNames;
-			
+
 			DelayLoadingList delayLoadings;
 			resource->LoadResourceFolderFromBinary(delayLoadings, reader, typeNames, errors);
-			
+
 			ProcessDelayLoading(resource, delayLoadings, errors);
 			return resource;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& stream)
+		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& binaryStream)
 		{
 			GuiResourceError::List errors;
-			auto resource = LoadPrecompiledBinary(stream, errors);
+			auto resource = LoadPrecompiledBinary(binaryStream, errors);
 			CHECK_ERROR(errors.Count() == 0, L"GuiResource::LoadPrecompiledBinary(IStream&)#There are errors.");
 			return resource;
 		}
 
-		void GuiResource::SavePrecompiledBinary(stream::IStream& stream)
+		void GuiResource::SavePrecompiledBinary(stream::IStream& binaryStream)
 		{
-			stream::internal::ContextFreeWriter writer(stream);
+			stream::internal::ContextFreeWriter writer(binaryStream);
 			{
 				auto xmlMetadata = metadata->SaveToXml();
 				WString xml = GenerateToStream([&](StreamWriter& writer)
@@ -40070,18 +40070,18 @@ Class Name Record (ClassNameRecord)
 				return this;
 			}
 
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& binaryStream)override
 			{
 				if (auto obj = content.Cast<GuiResourceClassNameRecord>())
 				{
-					internal::ContextFreeWriter writer(stream);
+					internal::ContextFreeWriter writer(binaryStream);
 					writer << obj->classNames;
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& binaryStream, GuiResourceError::List& errors)override
 			{
-				internal::ContextFreeReader reader(stream);
+				internal::ContextFreeReader reader(binaryStream);
 
 				auto obj = MakePtr<GuiResourceClassNameRecord>();
 				reader << obj->classNames;
@@ -40234,11 +40234,11 @@ IGuiInstanceResourceManager
 				}
 			}
 
-			void LoadResourceOrPending(stream::IStream& stream, GuiResourceError::List& errors, GuiResourceUsage usage)override
+			void LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceError::List& errors, GuiResourceUsage usage)override
 			{
 				auto pr = MakePtr<PendingResource>();
 				pr->usage = usage;
-				CopyStream(stream, pr->memoryStream);
+				CopyStream(resourceStream, pr->memoryStream);
 
 				pr->metadata = MakePtr<GuiResourceMetadata>();
 				{
@@ -40275,10 +40275,10 @@ IGuiInstanceResourceManager
 				}
 			}
 
-			void LoadResourceOrPending(stream::IStream& stream, GuiResourceUsage usage)override
+			void LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceUsage usage)override
 			{
 				GuiResourceError::List errors;
-				LoadResourceOrPending(stream, errors, usage);
+				LoadResourceOrPending(resourceStream, errors, usage);
 				CHECK_ERROR(errors.Count() == 0, L"GuiResourceManager::LoadResourceOrPending(stream::IStream&, GuiResourceUsage)#Error happened.");
 			}
 
@@ -40348,10 +40348,10 @@ Image Type Resolver (Image)
 				return nullptr;
 			}
 
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& binaryStream)override
 			{
 				auto obj = content.Cast<GuiImageData>();
-				stream::internal::ContextFreeWriter writer(stream);
+				stream::internal::ContextFreeWriter writer(binaryStream);
 				FileStream fileStream(resource->GetFileAbsolutePath(), FileStream::ReadOnly);
 				writer << (stream::IStream&)fileStream;
 			}
@@ -40376,9 +40376,9 @@ Image Type Resolver (Image)
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& binaryStream, GuiResourceError::List& errors)override
 			{
-				stream::internal::ContextFreeReader reader(stream);
+				stream::internal::ContextFreeReader reader(binaryStream);
 				MemoryStream memoryStream;
 				reader << (stream::IStream&)memoryStream;
 
@@ -40447,10 +40447,10 @@ Text Type Resolver (Text)
 				return 0;
 			}
 
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& binaryStream)override
 			{
 				auto obj = content.Cast<GuiTextData>();
-				stream::internal::ContextFreeWriter writer(stream);
+				stream::internal::ContextFreeWriter writer(binaryStream);
 				WString text = obj->GetText();
 				writer << text;
 			}
@@ -40474,9 +40474,9 @@ Text Type Resolver (Text)
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& binaryStream, GuiResourceError::List& errors)override
 			{
-				stream::internal::ContextFreeReader reader(stream);
+				stream::internal::ContextFreeReader reader(binaryStream);
 				WString text;
 				reader << text;
 				return new GuiTextData(text);
@@ -40531,14 +40531,14 @@ Xml Type Resolver (Xml)
 				return nullptr;
 			}
 
-			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& binaryStream)override
 			{
 				auto obj = content.Cast<XmlDocument>();
 				WString text = GenerateToStream([&](StreamWriter& writer)
 				{
 					XmlPrint(obj, writer);
 				});
-				stream::internal::ContextFreeWriter writer(stream);
+				stream::internal::ContextFreeWriter writer(binaryStream);
 				writer << text;
 			}
 
@@ -40571,11 +40571,11 @@ Xml Type Resolver (Xml)
 				return nullptr;
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& binaryStream, GuiResourceError::List& errors)override
 			{
 				if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
 				{
-					stream::internal::ContextFreeReader reader(stream);
+					stream::internal::ContextFreeReader reader(binaryStream);
 					WString text;
 					reader << text;
 

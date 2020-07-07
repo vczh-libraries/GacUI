@@ -675,6 +675,7 @@ Images
 			class WinControlDC;
 			class WinProxyDC;
 			class WinImageDC;
+			class WinMetaFile;
 
 			class WinMetaFileBuilder : public Object
 			{
@@ -1051,7 +1052,7 @@ Raw API Rendering Element
 			public:
 				/// <summary>The element that raised this event.</summary>
 				GuiGDIElement*				element;
-				/// <summary>The device context to draw. The HDC handle can be retrived using dc->GetHandle(), but it is recommended that using the WinDC class directly.</summary>
+				/// <summary>The device context to draw. The HDC handle can be retrived using dc-&gt;GetHandle(), but it is recommended that using the WinDC class directly.</summary>
 				windows::WinDC*				dc;
 				/// <summary>The range for rendering.</summary>
 				Rect						bounds;
@@ -2035,7 +2036,7 @@ namespace vl
 				Ptr<INativeImageFrameCache>					GetCache(void* key)override;
 				Ptr<INativeImageFrameCache>					RemoveCache(void* key)override;
 				IWICBitmap*									GetFrameBitmap();
-				void										SaveBitmapToStream(stream::IStream& stream);
+				void										SaveBitmapToStream(stream::IStream& imageStream);
 			};
 
 			class WindowsImage : public Object, public INativeImage
@@ -2052,7 +2053,7 @@ namespace vl
 				FormatType									GetFormat()override;
 				vint										GetFrameCount()override;
 				INativeImageFrame*							GetFrame(vint index)override;
-				void										SaveToStream(stream::IStream& stream, FormatType formatType)override;
+				void										SaveToStream(stream::IStream& imageStream, FormatType formatType)override;
 			};
 
 			class WindowsBitmapImage : public Object, public INativeImage
@@ -2069,7 +2070,7 @@ namespace vl
 				FormatType									GetFormat()override;
 				vint										GetFrameCount()override;
 				INativeImageFrame*							GetFrame(vint index)override;
-				void										SaveToStream(stream::IStream& stream, FormatType formatType)override;
+				void										SaveToStream(stream::IStream& imageStream, FormatType formatType)override;
 			};
 
 			class WindowsImageService : public Object, public INativeImageService
@@ -2082,7 +2083,7 @@ namespace vl
 
 				Ptr<INativeImage>							CreateImageFromFile(const WString& path);
 				Ptr<INativeImage>							CreateImageFromMemory(void* buffer, vint length);
-				Ptr<INativeImage>							CreateImageFromStream(stream::IStream& stream);
+				Ptr<INativeImage>							CreateImageFromStream(stream::IStream& imageStream);
 				Ptr<INativeImage>							CreateImageFromHBITMAP(HBITMAP handle);
 				Ptr<INativeImage>							CreateImageFromHICON(HICON handle);
 				IWICImagingFactory*							GetImagingFactory();
