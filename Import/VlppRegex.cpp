@@ -7,6 +7,11 @@ DEVELOPER: Zihan Chen(vczh)
 /***********************************************************************
 .\REGEX.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 
 namespace vl
 {
@@ -177,8 +182,6 @@ Regex
 		}
 		
 		Regex::Regex(const WString& code, bool preferPure)
-			:pure(0)
-			,rich(0)
 		{
 			CharRange::List subsets;
 			RegexExpression::Ref regex=ParseRegexExpression(code);
@@ -770,7 +773,6 @@ RegexLexerColorizer
 			if ((internalState.interTokenState = token.interTokenState))
 			{
 				internalState.interTokenId = token.token;
-				internalState.currentState = walker.GetStartState();
 			}
 			if (colorize)
 			{
@@ -814,7 +816,9 @@ RegexLexerColorizer
 
 			vint lastFinalStateLength = 0;
 			vint lastFinalStateToken = -1;
+			vint lastFinalStateState = -1;
 
+			vint tokenStartState = internalState.currentState;
 			for (vint i = start; i < length; i++)
 			{
 				vint currentToken = -1;
@@ -824,20 +828,27 @@ RegexLexerColorizer
 
 				if (previousTokenStop)
 				{
-					internalState.currentState = walker.GetStartState();
 					if (proc.extendProc && lastFinalStateToken != -1)
 					{
 						RegexProcessingToken token(start, lastFinalStateLength, lastFinalStateToken, true, nullptr);
 						CallExtendProcAndColorizeProc(input, length, token, colorize);
+						if (token.completeToken)
+						{
+							internalState.currentState = walker.GetStartState();
+						}
 						return start + token.length;
 					}
 					else if (i == start)
 					{
-						if (colorize)
+						if (tokenStartState == GetStartState())
 						{
-							proc.colorizeProc(proc.argument, start, 1, -1);
+							if (colorize)
+							{
+								proc.colorizeProc(proc.argument, start, 1, -1);
+							}
+							internalState.currentState = walker.GetStartState();
+							return i + 1;
 						}
-						return i + 1;
 					}
 					else
 					{
@@ -845,6 +856,7 @@ RegexLexerColorizer
 						{
 							proc.colorizeProc(proc.argument, start, lastFinalStateLength, lastFinalStateToken);
 						}
+						internalState.currentState = lastFinalStateState;
 						return start + lastFinalStateLength;
 					}
 				}
@@ -853,6 +865,7 @@ RegexLexerColorizer
 				{
 					lastFinalStateLength = i + 1 - start;
 					lastFinalStateToken = currentToken;
+					lastFinalStateState = internalState.currentState;
 				}
 			}
 
@@ -1009,6 +1022,11 @@ RegexLexer
 /***********************************************************************
 .\REGEXAUTOMATON.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 
 namespace vl
 {
@@ -1370,6 +1388,11 @@ Helpers
 /***********************************************************************
 .\REGEXDATA.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 
 namespace vl
 {
@@ -1458,6 +1481,11 @@ CharRange
 /***********************************************************************
 .\REGEXEXPRESSION.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 
 namespace vl
 {
@@ -2392,6 +2420,11 @@ Expression::Apply
 /***********************************************************************
 .\REGEXPARSER.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 
 namespace vl
 {
@@ -3090,6 +3123,11 @@ Helper Functions
 /***********************************************************************
 .\REGEXPURE.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 
 namespace vl
 {
@@ -3322,6 +3360,11 @@ PureInterpretor
 /***********************************************************************
 .\REGEXRICH.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 
 namespace vl
 {
@@ -3782,6 +3825,11 @@ RichInterpretor
 /***********************************************************************
 .\REGEXWRITER.CPP
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
 
 namespace vl
 {

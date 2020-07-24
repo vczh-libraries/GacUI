@@ -313,7 +313,7 @@ namespace vl
 	/// int main()
 	/// {
 	///     Ptr<Object> boxed = MakePtr<ObjectBox<vint>>(100);
-	///     vint unboxed = boxed.Cast<ObjectBox<vint>>().UnBox();
+	///     vint unboxed = boxed.Cast<ObjectBox<vint>>()->Unbox();
 	///     Console::WriteLine(itow(unboxed));
 	/// }
 	/// ]]></example>
@@ -2840,7 +2840,7 @@ namespace vl
 	/// <see cref="FinalizeGlobalStorage"/> is recommended after you don't need any global storages any more, it frees memory.
 	/// </remarks>
 	/// <example><![CDATA[
-	/// BEGIN_GLOBAL_STOREGE_CLASS(MyStorage)
+	/// BEGIN_GLOBAL_STORAGE_CLASS(MyStorage)
 	///     Ptr<vint> data;
 	/// INITIALIZE_GLOBAL_STORAGE_CLASS
 	///     data = new vint(100);
@@ -3423,7 +3423,7 @@ Interfaces
 			virtual void								Reset()=0;
 			/// <summary>Test if all values of this enumerator have been evaluated.</summary>
 			/// <returns>Returns true if all values have been evaluated.</returns>
-			/// <remakrs>An evaluated enumerator typically means, there will be no more calculation happens in <see cref="Next"/> regardless if all values have been read or not.</remakrs>
+			/// <remarks>An evaluated enumerator typically means, there will be no more calculation happens in <see cref="Next"/> regardless if all values have been read or not.</remarks>
 			virtual bool								Evaluated()const{return false;}
 		};
 		
@@ -4962,18 +4962,17 @@ GroupInnerJoin
 		/// <param name="discardFirst">
 		/// Callback that is called when a value in the first group is discarded.
 		/// This happens for values associated to a key in the first group, that no value is assocated to the same key in the second group.
-		/// The first argument is the key, the second argument is the discarded value in the first group.
+		/// The first argument is the key, the second argument is the discarded value list in the first group.
 		/// </param>
 		/// <param name="discardSecond">
 		/// Callback that is called when a value in the second group is discarded.
 		/// This happens for values associated to a key in the second group, that no value is assocated to the same key in the first group.
-		/// The first argument is the key, the second argument is the discarded value in the first group.
+		/// The first argument is the key, the second argument is the discarded value list in the first group.
 		/// </param>
 		/// <param name="accept">
 		/// Callback that is called when a match of values in both groups are found.
 		/// This happens for any key that, values are associated to this key in both group.
-		/// If multiple values are associated to this key in both group, cartesian product applies on values.
-		/// The first argument is the key, the second argument is the associated value in the first group, the third argument is the associated value in the second group.
+		/// The first argument is the key, the second argument is the associated value list in the first group, the third argument list is the associated value in the second group.
 		/// </param>
 		/// <remarks>
 		/// This function does not change data in provided groups.
@@ -4981,15 +4980,20 @@ GroupInnerJoin
 		/// <example><![CDATA[
 		/// int main()
 		/// {
+		///     auto printList = [](const List<WString>& values)
+		///     {
+		///         return L"[" + From(values).Aggregate([](const WString& a, const WString& b) { return a + L", " + b; }) + L"]";
+		///     };
+		/// 
 		///     Group<vint, WString> as, bs;
 		///     as.Add(1 ,L"A"); as.Add(1 ,L"B"); as.Add(2 ,L"C"); as.Add(2 ,L"D");
-		///     bs.Add(1 ,L"X"); bs.Add(1 ,L"Y"); as.Add(3 ,L"Z"); as.Add(3 ,L"W");
+		///     bs.Add(1 ,L"X"); bs.Add(1 ,L"Y"); bs.Add(3 ,L"Z"); bs.Add(3 ,L"W");
 		///     GroupInnerJoin(
 		///         as,
 		///         bs,
-		///         [](vint key, const WString& value) { Console::WriteLine(L"Discarded in as: " + itow(key) + L", " + value); },
-		///         [](vint key, const WString& value) { Console::WriteLine(L"Discarded in bs: " + itow(key) + L", " + value); },
-		///         [](vint key, const WString& value1, const WString& value 2) { Console::WriteLine(L"Accepted: " + itow(key) + L", " + value1 + L", " + value2); }
+		///         [&](vint key, const List<WString>& values) { Console::WriteLine(L"Discarded in as: " + itow(key) + printList(values)); },
+		///         [&](vint key, const List<WString>& values) { Console::WriteLine(L"Discarded in bs: " + itow(key) + printList(values)); },
+		///         [&](vint key, const List<WString>& values1, const List<WString>& values2) { Console::WriteLine(L"Accepted: " + itow(key) + printList(values1) + printList(values2)); }
 		///         );
 		/// }
 		/// ]]></example>
@@ -6689,11 +6693,13 @@ LazyList
 		/// <summary>A lazy evaluated container with rich operations. <see cref="From`*"/> is useful to create lazy list from arrays or containers.</summary>
 		/// <typeparam name="T">The type of elements.</typeparam>
 		/// <remarks>
-		/// A lazy list is usually created directly from a container source, or from a calculation on a source.
-		/// Typically the lazy list cannot be used after the source is deleted.
+		/// <p>A lazy list is usually created directly from a container source, or from a calculation on a source.</p>
+		/// <p>Typically the lazy list cannot be used after the source is deleted.</p>
+		/// <p>
 		/// If this lazy list needs to be used after the source is deleted,
 		/// you are recommended to use [F:vl.collections.LazyList`1.Evaluate], <b>with forceCopy set to true</b>.
-		/// In this way you get a lazy list with all values copied, they do not rely on other objects.
+		/// </p>
+		/// <p>In this way you get a lazy list with all values copied, they do not rely on other objects.</p>
 		/// </remarks>
 		template<typename T>
 		class LazyList : public Object, public IEnumerable<T>
@@ -7178,7 +7184,7 @@ LazyList
 			/// {
 			///     vint xs[] = {1, 2, 3, 4, 5, 6, 7};
 			///     vint ys[] = {60, 70, 80, 90, 100};
-			///     auto zs = From(xs).Pairwise(From(ys)).Select(Pair<vint, vint> p){ return p.key + p.value; });
+			///     auto zs = From(xs).Pairwise(From(ys)).Select([](Pair<vint, vint> p){ return p.key + p.value; });
 			///     FOREACH(vint, z, zs) Console::Write(itow(z) + L" ");
 			/// }
 			/// ]]></example>
@@ -7249,12 +7255,12 @@ LazyList
 			/// </returns>
 			/// <param name="forceCopy">Set to true to force copying values, regardless of whether this lazy list is evaluated or not.</param>
 			/// <remarks>
-			/// "Evaluated" means reading from this lazy list cause no extra calculation.
-			/// In most of the cases, the created lazy list relies on its source.
-			/// For example, a lazy list can be created from a reference to a <see cref="List`*"/>, or from an array on stack.
-			/// If this list or array is deleted, then iterating the created lazy list will crash.
-			/// By calling the Evaluate function <b>with forceCopy set to true</b>, a new lazy list is created, with all values cached in it.
-			/// Its connection to the source list or array is removed, and can then be passed to everywhere.
+			/// <p>"Evaluated" means reading from this lazy list cause no extra calculation.</p>
+			/// <p>In most of the cases, the created lazy list relies on its source.</p>
+			/// <p>For example, a lazy list can be created from a reference to a <see cref="List`*"/>, or from an array on stack.</p>
+			/// <p>If this list or array is deleted, then iterating the created lazy list will crash.</p>
+			/// <p>By calling the Evaluate function <b>with forceCopy set to true</b>, a new lazy list is created, with all values cached in it.</p>
+			/// <p>Its connection to the source list or array is removed, and can then be passed to everywhere.</p>
 			/// </remarks>
 			LazyList<T> Evaluate(bool forceCopy = false)const
 			{
@@ -7285,7 +7291,7 @@ LazyList
 			///     auto ys = From(xs).SelectMany([](vint x)
 			///     {
 			///         vint factors[] = {1, 10, 100};
-			///         return From(factors).Select([](vint f){ return f * x; }).Evaluate(true);
+			///         return From(factors).Select([=](vint f){ return f * x; }).Evaluate(true);
 			///     });
 			///     FOREACH(vint, y, ys) Console::Write(itow(y) + L" ");
 			/// }
@@ -7325,13 +7331,14 @@ LazyList
 			LazyList<Pair<FUNCTION_RESULT_TYPE(F), LazyList<T>>> GroupBy(F f)const
 			{
 				typedef FUNCTION_RESULT_TYPE(F) K;
+				auto self = *this;
 				return Select(f)
 					.Distinct()
 					.Select([=](K k)
 					{
 						return Pair<K, LazyList<T>>(
 							k,
-							Where([=](T t){return k==f(t);})
+							self.Where([=](T t){return k==f(t);})
 							);
 					});
 			}
@@ -7533,19 +7540,50 @@ Partial Ordering
 
 		namespace po
 		{
+			/// <summary>
+			/// Node contains extra information for sorted objects.
+			/// </summary>
 			struct Node
 			{
 				bool					visited = false;
+
+				/// <summary>The index used in [F:vl.collections.PartialOrderingProcessor.components], specifying the component that contain this node.</summary>
 				vint					component = -1;
-				const List<vint>*		ins = nullptr;					// all nodes that this node depends on
-				const List<vint>*		outs = nullptr;					// all nodes that depend on this node
-				const vint*				firstSubClassItem = nullptr;	// index of the first item in this sub class node
-				vint					subClassItemCount = 0;			// the number of items in this sub class node
+				/// <summary>All nodes that this node depends on.</summary>
+				const List<vint>*		ins = nullptr;
+				/// <summary>All nodes that this node is depended by.</summary>
+				const List<vint>*		outs = nullptr;
+				/// <summary>
+				/// If [M:vl.collections.PartialOrderingProcessor.InitWithSubClass`2] is used,
+				/// a node becomes a sub class representing objects.
+				/// An object will not be shared by different sub classes.
+				/// In this case, this field is a pointer to an array of indexes of objects.
+				/// The index is used in "items" argument in [M:vl.collections.PartialOrderingProcessor.InitWithSubClass`2]
+				/// </summary>
+				const vint*				firstSubClassItem = nullptr;
+				/// <summary>
+				/// When <see cref="firstSubClassItem"/> is available,
+				/// this field is the number of indexes in the array.
+				/// </summary>
+				vint					subClassItemCount = 0;
 			};
 
+			/// <summary>
+			/// Component is a unit in sorting result.
+			/// If a component contains more than one node,
+			/// it means that nodes in this component depend on each other by the given relationship.
+			/// It is not possible to tell which node should be place before others for all nodes in this component.
+			/// If all nodes are completely partial ordered,
+			/// there should be only one node in all components.
+			/// </summary>
 			struct Component
 			{
+				/// <summary>
+				/// Pointer to the array of all indexes of nodes in this component.
+				/// Index is used in [F:vl.collections.PartialOrderingProcessor.nodes].
+				/// </summary>
 				const vint*				firstNode = nullptr;
+				/// <summary>The number of nodes in this component.</summary>
 				vint					nodeCount = 0;
 			};
 		}
@@ -7554,42 +7592,113 @@ Partial Ordering
 	namespace collections
 	{
 		/// <summary>
-		/// Partial ordering item sorter.
-		/// This class sorts items in a partial order using the given dependency information.
-		/// Node stored in this class using the index of items.
-		/// If a depends on b, then a.ins-&gt;Contains(b) &amp;&amp; b.outs-&gt;Contains(a).
-		/// The sorting result is a list of strong connected components in order.
-		/// If a depends on b, then the component containing a appears after the component containing b.
-		/// Node could represent a sub class if InitWithSubClass is called.
+		/// PartialOrderingProcessor is used to sort objects by given relationships among them.
+		/// The relationship is defined by dependance.
+		/// If A depends on B, then B will be place before A after sorting.
+		/// If a group of objects depends on each other by the given relationship,
+		/// they will be grouped together in the sorting result.
 		/// </summary>
 		class PartialOrderingProcessor : public Object
 		{
 			template<typename TList>
 			using GroupOf = Group<typename TList::ElementType, typename TList::ElementType>;
 		protected:
-			List<vint>					emptyList;
-			Group<vint, vint>			ins;
-			Group<vint, vint>			outs;
-			Array<vint>					firstNodesBuffer;
-			Array<vint>					subClassItemsBuffer;
+			List<vint>					emptyList;				// make a pointer to an empty list available
+			Group<vint, vint>			ins;					// if a depends on b, ins.Contains(a, b)
+			Group<vint, vint>			outs;					// if a depends on b, outs.Contains(b, a)
+			Array<vint>					firstNodesBuffer;		// one buffer for all Component::firstNode
+			Array<vint>					subClassItemsBuffer;	// one buffer for all Node::firstSubClassItem
 
 			void						InitNodes(vint itemCount);
 			void						VisitUnvisitedNode(po::Node& node, Array<vint>& reversedOrder, vint& used);
 			void						AssignUnassignedNode(po::Node& node, vint componentIndex, vint& used);
 		public:
-			/// <summary>Nodes.</summary>
+			/// <summary>After <see cref="Sort"/> is called, this field stores all nodes referenced by sorted components.</summary>
+			/// <remarks>
+			/// The same order is kept as the "items" argument in <see cref="InitWithGroup`1"/>, and <see cref="InitWithFunc`2"/>.
+			/// If sub classing is enabled by calling <see cref="InitWithSubClass`2"/>,
+			/// a node represents a sub class of objects.
+			/// In this case, the order in this field does not matter,
+			/// [F:vl.collections.po.Node.firstSubClassItem] stores indexes of objects in this sub class.
+			/// </remarks>
 			Array<po::Node>				nodes;
 
-			/// <summary>Strong connected components in order.</summary>
+			/// <summary>After <see cref="Sort"/> is called, this field stores all sorted components in order.</summary>
 			List<po::Component>			components;
 
-			/// <summary>Sort. This method can only be called once.</summary>
+			/// <summary>
+			/// Sort objects by given relationships. It will crash if this method is called for more than once.
+			/// </summary>
+			/// <remarks>
+			/// One and only one of <see cref="InitWithGroup`1"/>, <see cref="InitWithFunc`2"/> or <see cref="InitWithSubClass`2"/> must be called to set data for sorting.
+			/// And then call <see cref="Sort"/> to sort objects and store the result in <see cref="components"/>.
+			/// </remarks>
 			void						Sort();
 
-			/// <summary>Initialize the processor, specifying dependency relationships as a group.</summary>
-			/// <typeparam name="TList">Type of the first parameter.</typeparam>
-			/// <param name="items">Items.</param>
-			/// <param name="depGroup">Dependences. If a depends on b, then depGroups[a].Contains(b) == true.</param>
+			/// <summary>Set data for sorting, by providing a list for objects, and a group for their relationship.</summary>
+			/// <typeparam name="TList">Type of the list for objects. <see cref="Array`*"/>, <see cref="List`*"/> or <see cref="SortedList`*"/> are recommended.</typeparam>
+			/// <param name="items">List of objects for sorting.</param>
+			/// <param name="depGroup">Relationship of objects for sorting in <see cref="Group`*"/>. Both keys and values are elements in "items". To say that a depends on b, do depGroup.Add(a, b).</param>
+			/// <example><![CDATA[
+			/// int main()
+			/// {
+			///     //         apple
+			///     //           ^
+			///     //           |
+			///     //         ball
+			///     //         ^  \
+			///     //        /    V
+			///     //     cat <-- dog
+			///     //       ^     ^
+			///     //      /       \
+			///     //  elephant   fish
+			/// 
+			///     List<WString> items;
+			///     items.Add(L"elephant");
+			///     items.Add(L"fish");
+			///     items.Add(L"ball");
+			///     items.Add(L"cat");
+			///     items.Add(L"dog");
+			///     items.Add(L"apple");
+			/// 
+			///     Group<WString, WString> depGroup;
+			///     depGroup.Add(L"ball", L"apple");
+			///     depGroup.Add(L"cat", L"ball");
+			///     depGroup.Add(L"ball", L"dog");
+			///     depGroup.Add(L"dog", L"cat");
+			///     depGroup.Add(L"elephant", L"cat");
+			///     depGroup.Add(L"fish", L"dog");
+			/// 
+			///     PartialOrderingProcessor pop;
+			///     pop.InitWithGroup(items, depGroup);
+			///     pop.Sort();
+			/// 
+			///     for (vint i = 0; i < pop.components.Count(); i++)
+			///     {
+			///         auto& c = pop.components[i];
+			///         Console::WriteLine(
+			///             L"Component " + itow(i) + L": " +
+			///             Range<vint>(0, c.nodeCount)
+			///                 .Select([&](vint ni){ return items[c.firstNode[ni]]; })
+			///                 .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
+			///         );
+			///     }
+			/// 
+			///     for (vint i = 0; i < pop.nodes.Count(); i++)
+			///     {
+			///         auto& n = pop.nodes[i];
+			///         if(n.outs->Count() > 0)
+			///         {
+			///             Console::WriteLine(
+			///                 L"Node " + items[i] + L" <- " +
+			///                 From(*n.outs)
+			///                     .Select([&](vint ni){ return items[ni]; })
+			///                     .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
+			///             );
+			///         }
+			///     }
+			/// }
+			/// ]]></example>
 			template<typename TList>
 			void InitWithGroup(const TList& items, const GroupOf<TList>& depGroup)
 			{
@@ -7614,11 +7723,75 @@ Partial Ordering
 				InitNodes(items.Count());
 			}
 
-			/// <summary>Initialize the processor, specifying dependency relationships as a callback function.</summary>
-			/// <typeparam name="TList">Type of the first parameter.</typeparam>
-			/// <typeparam name="TFunc">Type of the second parameter.</typeparam>
-			/// <param name="items">Items.</param>
-			/// <param name="depFunc">Dependences. If a depends on b, then depFunc(a, b) == true.</param>
+			/// <summary>Set data for sorting, by providing a list for objects, and a function for their relationship.</summary>
+			/// <typeparam name="TList">Type of the list for objects. <see cref="Array`*"/>, <see cref="List`*"/> or <see cref="SortedList`*"/> are recommended.</typeparam>
+			/// <typeparam name="TFunc">Type of the function that defines relationships of objects.</typeparam>
+			/// <param name="items">List of objects for sorting.</param>
+			/// <param name="depFunc">Relationship of objects for sorting, both arguments are elements in "items". To say that a depends on b, depFunc(a, b) must returns true.</param>
+			/// <example><![CDATA[
+			/// int main()
+			/// {
+			///     //         apple
+			///     //           ^
+			///     //           |
+			///     //         ball
+			///     //         ^  \
+			///     //        /    V
+			///     //     cat <-- dog
+			///     //       ^     ^
+			///     //      /       \
+			///     //  elephant   fish
+			/// 
+			///     List<WString> items;
+			///     items.Add(L"elephant");
+			///     items.Add(L"fish");
+			///     items.Add(L"ball");
+			///     items.Add(L"cat");
+			///     items.Add(L"dog");
+			///     items.Add(L"apple");
+			/// 
+			///     auto depFunc = [](const WString& a, const WString& b)
+			///     {
+			///         return
+			///             (a == L"ball" && b == L"apple") ||
+			///             (a == L"cat" && b == L"ball") ||
+			///             (a == L"ball" && b == L"dog") ||
+			///             (a == L"dog" && b == L"cat") ||
+			///             (a == L"elephant" && b == L"cat") ||
+			///             (a == L"fish" && b == L"dog")
+			///             ;
+			///     };
+			/// 
+			///     PartialOrderingProcessor pop;
+			///     pop.InitWithFunc(items, depFunc);
+			///     pop.Sort();
+			/// 
+			///     for (vint i = 0; i < pop.components.Count(); i++)
+			///     {
+			///         auto& c = pop.components[i];
+			///         Console::WriteLine(
+			///             L"Component " + itow(i) + L": " +
+			///             Range<vint>(0, c.nodeCount)
+			///                 .Select([&](vint ni){ return items[c.firstNode[ni]]; })
+			///                 .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
+			///         );
+			///     }
+			/// 
+			///     for (vint i = 0; i < pop.nodes.Count(); i++)
+			///     {
+			///         auto& n = pop.nodes[i];
+			///         if(n.outs->Count() > 0)
+			///         {
+			///             Console::WriteLine(
+			///                 L"Node " + items[i] + L" <- " +
+			///                 From(*n.outs)
+			///                     .Select([&](vint ni){ return items[ni]; })
+			///                     .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
+			///             );
+			///         }
+			///     }
+			/// }
+			/// ]]></example>
 			template<typename TList, typename TFunc>
 			void InitWithFunc(const TList& items, TFunc&& depFunc)
 			{
@@ -7636,12 +7809,100 @@ Partial Ordering
 				InitWithGroup(items, depGroup);
 			}
 
-			/// <summary>Initialize the processor, specifying dependency relationships and sub class classification as two groups.</summary>
-			/// <typeparam name="TList">Type of the first parameter.</typeparam>
-			/// <typeparam name="TSubClass">Type of the sub class.</typeparam>
-			/// <param name="items">Items.</param>
-			/// <param name="depGroup">Dependences. If a depends on b, then depGroups[a].Contains(b) == true.</param>
-			/// <param name="subClasses">To put multiple items in a node to represent a sub class, use these items as keys, use a unique value as a value, and put them in subClasses.</param>
+			/// <summary>Set data for sorting, by providing a list for objects, and a group for their relationship, and a dictionary for sub classing objects.</summary>
+			/// <typeparam name="TList">Type of the list for objects. <see cref="Array`*"/>, <see cref="List`*"/> or <see cref="SortedList`*"/> are recommended.</typeparam>
+			/// <typeparam name="TSubClass">Type of a sub class.</typeparam>
+			/// <param name="items">List of objects for sorting.</param>
+			/// <param name="depGroup">Relationship of objects for sorting in <see cref="Group`*"/>. Both keys and values are elements in "items". To say that a depends on b, do depGroup.Add(a, b).</param>
+			/// <param name="subClasses">Sub classing objects. Keys are elements in "items". If multiple keys have the same value in this dictionary, then these objects are in the same sub class.</param>
+			/// <remarks>
+			/// Relationships are defined on objects.
+			/// By sub classing objects,
+			/// relationships of sub classes are calculated from "depGroup".
+			/// If object A in sub class X depends on object B in sub class Y, then sub class X depends on sub class Y.
+			/// It is allowed that relatipnships on sub classes are not completely partial ordered,
+			/// in this case, some components may contain multiple sub classes.
+			/// </remarks>
+			/// <example><![CDATA[
+			/// int main()
+			/// {
+			///     //         apple
+			///     //           ^
+			///     //           |
+			///     //         ball
+			///     //         ^  \
+			///     //        /    V
+			///     //     cat <-- dog
+			///     //       ^     ^
+			///     //      /       \
+			///     //  elephant   fish
+			/// 
+			///     List<WString> items;
+			///     for (vint i = 1; i <= 2; i++)
+			///     {
+			///         items.Add(L"apple_" + itow(i));
+			///         items.Add(L"ball_" + itow(i));
+			///         items.Add(L"cat_" + itow(i));
+			///         items.Add(L"dog_" + itow(i));
+			///         items.Add(L"elephant_" + itow(i));
+			///         items.Add(L"fish_" + itow(i));
+			///     }
+			/// 
+			///     Group<WString, WString> depGroup;
+			///     depGroup.Add(L"ball_2", L"apple_1");
+			///     depGroup.Add(L"cat_2", L"ball_1");
+			///     depGroup.Add(L"ball_2", L"dog_1");
+			///     depGroup.Add(L"dog_2", L"cat_1");
+			///     depGroup.Add(L"elephant_2", L"cat_1");
+			///     depGroup.Add(L"fish_2", L"dog_1");
+			/// 
+			///     Dictionary<WString, vint> subClass;
+			///     for (vint i = 1; i <= 2; i++)
+			///     {
+			///         subClass.Add(L"apple_" + itow(i), 1);
+			///         subClass.Add(L"ball_" + itow(i), 2);
+			///         subClass.Add(L"cat_" + itow(i), 3);
+			///         subClass.Add(L"dog_" + itow(i), 4);
+			///         subClass.Add(L"elephant_" + itow(i), 5);
+			///         subClass.Add(L"fish_" + itow(i), 6);
+			///     }
+			/// 
+			///     PartialOrderingProcessor pop;
+			///     pop.InitWithSubClass(items, depGroup, subClass);
+			///     pop.Sort();
+			/// 
+			///     for (vint i = 0; i < pop.components.Count(); i++)
+			///     {
+			///         auto& c = pop.components[i];
+			///         Console::WriteLine(
+			///             L"Component " + itow(i) + L": sub classes" +
+			///             Range<vint>(0, c.nodeCount)
+			///                 .Select([&](vint ni) { return c.firstNode[ni]; })
+			///                 .Aggregate<WString>(L"", [](const WString& a, vint b) { return a + L" " + itow(b); })
+			///         );
+			///     }
+			/// 
+			///     for (vint i = 0; i < pop.nodes.Count(); i++)
+			///     {
+			///         auto& n = pop.nodes[i];
+			///         Console::WriteLine(L"Sub class " + itow(i));
+			/// 
+			///         Console::WriteLine(
+			///             Range<vint>(0, n.subClassItemCount)
+			///                 .Select([&](vint si) { return n.firstSubClassItem[si]; })
+			///                 .Aggregate<WString>(L"    :", [&](const WString& a, vint b) { return a + L" " + items[b]; })
+			///         );
+			/// 
+			///         if (n.outs->Count() > 0)
+			///         {
+			///             Console::WriteLine(
+			///                 From(*n.outs)
+			///                     .Aggregate<WString>(L"    <- sub classes", [](const WString& a, vint b) { return a + L" " + itow(b); })
+			///             );
+			///         }
+			///     }
+			/// }
+			/// ]]></example>
 			template<typename TList, typename TSubClass>
 			void InitWithSubClass(const TList& items, const GroupOf<TList>& depGroup, const Dictionary<typename TList::ElementType, TSubClass>& subClasses)
 			{
@@ -7818,22 +8079,22 @@ namespace vl
 		/// <example><![CDATA[
 		/// TEST_FILE
 		/// {
-		///     TEST_CATEGORY(L"This is a test category)
+		///     TEST_CATEGORY(L"This is a test category")
 		///     {
 		///         TEST_CASE(L"This is a test case")
 		///         {
 		///             TEST_ASSERT(true);
 		///             TEST_ERROR({WString::Empty[0];});
 		///             TEST_EXCEPTION({throw Exception();}, Exception, [](const Exception&){});
-		///         }
+		///         });
 		///         TEST_CASE_ASSERT(true);
-		///     }
+		///     });
 		///
 		///     TEST_CATEGORY(L"This is another test category")
 		///     {
 		///         TEST_PRINT(L"some information");
 		///         TEST_CASE_ASSERT(true);
-		///     }
+		///     });
 		/// }
 		///
 		/// int main(int argc, wchar_t* argv[])

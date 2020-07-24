@@ -11,11 +11,8 @@ DEVELOPER: Zihan Chen(vczh)
 .\PARSINGTREE.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parsing::Parsing Tree
-
-Classes:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_PARSING_PARSINGTREE
@@ -586,11 +583,8 @@ Logging
 .\PARSINGDEFINITIONS.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parsing::Definitions
-
-Classes:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_PARSING_PARSINGDEFINITIONS
@@ -1093,11 +1087,8 @@ Bootstrap
 .\PARSINGANALYZER.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parsing::Analyzing
-
-Classes:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_PARSING_PARSINGANALYZER
@@ -1271,11 +1262,8 @@ Semantic Analyzer
 .\PARSINGTABLE.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parsing::Table
-
-Classes:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_PARSING_PARSINGTABLE
@@ -1861,11 +1849,8 @@ Helper Functions
 .\PARSINGAUTOMATON.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parsing::Automaton
-
-Classes:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_PARSING_PARSINGAUTOMATON
@@ -2093,11 +2078,8 @@ Helper: Parsing Table Generating
 .\PARSINGSTATE.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parsing::State
-
-Classes:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_PARSING_PARSINGSTATE
@@ -2420,11 +2402,8 @@ AST Generating
 .\PARSING.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parsing::Parser
-
-Classes:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_PARSING_PARSING

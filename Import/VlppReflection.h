@@ -10,11 +10,8 @@ DEVELOPER: Zihan Chen(vczh)
 .\GUITYPEDESCRIPTOR.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-
-Interfaces:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTOR
@@ -62,7 +59,64 @@ Attribute
 			};
 		}
 
-		/// <summary>Base class of all reflectable object. You can use pointer or smart pointer to DescriptableObject to define variables, but if you want to create a reflectable class, you should inherit from [T:vl.reflection.Description`1].</summary>
+		/// <summary>
+		/// <p>
+		/// Base class of all reflectable value types (class).
+		/// If you want to create a reflectable class, you should inherit from [T:vl.reflection.Description`1].
+		/// </p>
+		/// <p>
+		/// Inheriting from [T:vl.reflection.Description`1] is necessary even if you turned on "VCZH_DEBUG_NO_REFLECTION" preprocessor definition.
+		/// In this case, some members will be removed from this class to reduce the object size.
+		/// </p>
+		/// <p>
+		/// <b>Ptr&lt;DescriptableObject&gt;</b> is recommended to replace <b>Ptr&lt;Object&gt;</b> for holding a reflectable object.
+		/// When a class <b>T</b> inherits from [T:vl.reflection.Description`1], including <b>DescriptableObject</b> itself,
+		/// <b>Ptr&lt;T&gt;</b> is safe to be created directly from a <b>T*</b> hold by another <b>Ptr&lt;T&gt;</b>.
+		/// This is not allowed for all classes that do not inherit from [T:vl.reflection.Description`1].
+		/// </p>
+		/// </summary>
+		/// <remarks>
+		/// <p>
+		/// When a class in Workflow script inherits from a class in C++,
+		/// since it is not possible to actually create a class in runtime,
+		/// so the created object from this Workflow class is multiple <b>DescriptableObject</b> grouping together.
+		/// </p>
+		/// <p>
+		/// This is called <b>aggregation</b>.
+		/// </p>
+		/// <p>
+		/// In this case, <see cref="SafeAggregationCast`1"/> is required to do pointer casting to a C++ class.
+		/// </p>
+		/// <p>
+		/// To allow a C++ class to be aggregated,
+		/// use [T:vl.reflection.AggregatableDescription`1] instead of [T:vl.reflection.Description`1],
+		/// and call <see cref="FinalizeAggregation"/> in the destructor.
+		/// If A inherits B and they are all aggregatable, do it in both destructors.
+		/// </p>
+		/// </remarks>
+		/// <example><![CDATA[
+		/// class MyClass : public Object, public Description<MyClass>
+		/// {
+		/// public:
+		///     WString data;
+		/// };
+		/// 
+		/// int main()
+		/// {
+		///     auto myClass = MakePtr<MyClass>();
+		///     myClass->data = L"Hello, world!";
+		/// 
+		///     Ptr<DescriptableObject> obj = myClass;
+		///     Console::WriteLine(obj.Cast<MyClass>()->data);
+		/// 
+		///     // usually you cannot do this directly
+		///     // because obj and myClass share the same reference counter, but myClass2 doesn't
+		///     // this will cause the destructor delete MyClass twice and crash
+		///     // but it is different when MyClass inherits from Description<MyClass> or AggregatableDescription<MyClass>
+		///     auto myClass2 = Ptr<MyClass>(dynamic_cast<MyClass*>(obj.Obj()));
+		///     Console::WriteLine(myClass2->data);
+		/// }
+		/// ]]></example>
 		class DescriptableObject
 		{
 			template<typename T, typename Enabled>
@@ -93,15 +147,31 @@ Attribute
 		protected:
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			// Returns true if this object inherits other objects by aggregation.</returns>
 			bool									IsAggregated();
+
+			// Returnd the number of aggregated base objects.</returns>
 			vint									GetAggregationSize();
+
+			// Return the object that inherit this object.</returns>
 			DescriptableObject*						GetAggregationRoot();
+
+			// Notice that an object inherit this object, it is called by SetAggregationParent
 			void									SetAggregationRoot(DescriptableObject* value);
+
+			// Return the specified aggregated base object
 			DescriptableObject*						GetAggregationParent(vint index);
+
+			// Set an aggregated base class
 			void									SetAggregationParent(vint index, DescriptableObject* value);
+
+			// Set an aggregated base class
 			void									SetAggregationParent(vint index, Ptr<DescriptableObject>& value);
+
+			// Must be called in Workflow generated classes that inherit from aggregatable C++ classes.
 			void									InitializeAggregation(vint size);
 #endif
+			/// <summary>A function that must be called in destructors of all classes inheriting from [T:vl.reflection.AggregatableDescription`1].</summary>
 			void									FinalizeAggregation();
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -131,16 +201,29 @@ Attribute
 			virtual ~DescriptableObject();
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			/// <summary>Get the type descriptor that describe the real type of this object.</summary>
+			/// <summary>
+			/// <p>Get the type descriptor that describe the real type of this object.</p>
+			/// </summary>
 			/// <returns>The real type.</returns>
+			/// <remarks>
+			/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+			/// </remarks>
 			description::ITypeDescriptor*			GetTypeDescriptor();
 #endif
 
-			/// <summary>Get an internal property of this object. This map is totally for customization.</summary>
+			/// <summary>
+			/// Get an internal property of this object.
+			/// Internal properties are totally for customization,
+			/// they do not affect the object in anyway.
+			/// </summary>
 			/// <returns>Value of the internal property of this object.</returns>
 			/// <param name="name">Name of the property.</param>
 			Ptr<Object>								GetInternalProperty(const WString& name);
-			/// <summary>Set an internal property of this object. This map is totally for customization.</summary>
+			/// <summary>
+			/// Set an internal property of this object.
+			/// Internal properties are totally for customization,
+			/// they do not affect the object in anyway.
+			/// </summary>
 			/// <param name="name">Name of the property.</param>
 			/// <param name="value">Value of the internal property of this object.</param>
 			void									SetInternalProperty(const WString& name, Ptr<Object> value);
@@ -150,14 +233,32 @@ Attribute
 			bool									Dispose(bool forceDisposing);
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			/// <summary>Get the aggregation root object.</summary>
+			/// <summary>
+			/// <p>Get the aggregation root object, which is the object that inherits this object by aggregation.</p>
+			/// </summary>
 			/// <returns>The aggregation root object. If this object is not aggregated, or it is the root object of others, than this function return itself.</returns>
+			/// <remarks>
+			/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+			/// </remarks>
 			DescriptableObject*						SafeGetAggregationRoot();
 
 #endif
-			/// <summary>Cast the object to another type, considered aggregation.</summary>
-			/// <returns>The object with the expected type in all aggregated objects.</returns>
+			/// <summary>Cast the object to another type, this is required when the object is involved in aggregation.</summary>
+			/// <returns>The object with the expected type in all involved aggregated objects. It will crash when multiple objects are found to be qualified.</returns>
 			/// <typeparam name="T">The expected type to cast.</typeparam>
+			/// <remarks>
+			/// <p>
+			/// A workflow class could inherit from multiple aggregatable C++ classes.
+			/// </p>
+			/// <p>
+			/// In order to do pointer casting correctly,
+			/// this function allow you to cast from one aggregated C++ base object to another aggregated C++ base object,
+			/// even when these two objects are not involved in inheriting in C++.
+			/// </p>
+			/// <p>
+			/// When <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>on</b>, it performs dynamic_cast.
+			/// </p>
+			/// </remarks>
 			template<typename T>
 			T* SafeAggregationCast()
 			{
@@ -171,247 +272,360 @@ Attribute
 			}
 		};
 		
-		/// <summary><![CDATA[
-		/// Inherit from this class when you want to create a reflectable class. It should be used like this:
+		/// <summary>
+		/// <p>
+		/// Inherit from this class when you want to create a reflectable class.
+		/// It should be used like this:
+		/// <program><code><![CDATA[
 		/// class YourClass : public Description<YourClass>
 		/// {
-		///		...
+		///     ..
 		/// };
-		///
-		/// If you want YourClass to be inheritable in scripts, instead of using Description, you should use AggregatableDescription, like this:
+		/// ]]></code></program>
+		/// </p>
+		/// <p>
+		/// If you want YourClass to be inheritable in scripts,
+		/// instead of using Description,
+		/// you should use <see cref="AggregatableDescription`1"/>, like this:
+		/// <program><code><![CDATA[
 		/// class YourClass : public AggregatableDescription<YourClass>
 		/// {
-		///		~YourClass()
-		///		{
-		///			FinalizeAggregation();
-		///		}
+		///     ~YourClass()
+		///     {
+		///         FinalizeAggregation();
+		///     }
 		/// };
+		/// ]]></code></program>
+		/// </p>
+		/// <p>
+		/// After you complete your type,
+		/// use the following macros and functions to register your class into the global type table.
+		/// </p>
+		/// <p>
+		/// Some of the predefined type has already been registered.
+		/// If your types depend on these types, you should load those types by calling some or all of them:
+		/// <ul>
+		///     <li>[F:vl.reflection.description.LoadPredefinedTypes]</li>
+		///     <li>[F:vl.reflection.description.LoadParsingTypes]</li>
+		///     <li>[F:vl.reflection.description.JsonLoadTypes]</li>
+		///     <li>[F:vl.reflection.description.XmlLoadTypes]</li>
+		/// </ul>
+		/// But if you link <b>GacUIReflection.cpp</b> in your project and set <b>VCZH_DEBUG_NO_REFLECTION</b> to off,
+		/// all types will be automatically loaded before <b>GuiMain</b> is called.
+		/// </p>
+		/// <p>
+		/// The order does not matter, because content of types are lazily loaded.
+		/// </p>
+		/// <p>
+		/// Everything below should be put in <b>vl::reflection::description</b> namespaces.
+		/// <ol>
+		///     <li>
+		///         <b>(in header files)</b> Create a macro that contains all types that you want to register.
+		///         Content in the list will become full names for registered type,
+		///         so it is strongly recommended to use the full name.
+		///         <program><code><![CDATA[
+		///             #define MY_TYPELIST(F)\
+		///                 F(mynamespaces::MyClass1)\
+		///                 F(mynamespaces::MyClass2)\
+		///         ]]></code></program>
+		///     </li>
+		///     <li>
+		///         <b>in header files)</b> Connect type names and types:
+		///         <program><code><![CDATA[
+		///             MY_TYPELIST(DECL_TYPE_INFO)
+		///         ]]></code></program>
+		///     </li>
+		///     <li>
+		///         <b>(in cpp files)</b> Connect type names and types:
+		///         <program><code><![CDATA[
+		///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+		///         ]]></code></program>
+		///     </li>
+		///     <li>
+		///         <b>(in cpp files)</b> Register all members:
+		///         <ul>
+		///             <li>
+		///                 You will need to define a macro for commas, Whatever name is fine.
+		///                 <program><code><![CDATA[
+		///                     #define _ ,
+		///                 ]]></code></program>
+		///             </li>
+		///             <li>
+		///                 <b>enum</b>:
+		///                 use <b>BEGIN_ENUM_ITEM_MERGABLE</b> instead of <b>BEGIN_ENUM_ITEM</b> if enum items are flags instead of concrete items.
+		///                 <program><code><![CDATA[
+		///                     BEGIN_ENUM_ITEM(Season)
+		///                         ENUM_ITEM(Spring)
+		///                         ENUM_ITEM(Summer)
+		///                         ENUM_ITEM(Autumn)
+		///                         ENUM_ITEM(Winter)
+		///                     END_ENUM_ITEM(Season)
+		///                 ]]></code></program>
+		///             </li>
+		///             <li>
+		///                 <b>enum class:</b>
+		///                 use <b>BEGIN_ENUM_ITEM_MERGABLE</b> instead of <b>BEGIN_ENUM_ITEM</b> if enum items are flags instead of concrete items.
+		///                 <program><code><![CDATA[
+		///                     BEGIN_ENUM_ITEM(Season)
+		///                         ENUM_CLASS_ITEM(Spring)
+		///                         ENUM_CLASS_ITEM(Summer)
+		///                         ENUM_CLASS_ITEM(Autumn)
+		///                         ENUM_CLASS_ITEM(Winter)
+		///                     END_ENUM_ITEM(Season)
+		///                 ]]></code></program>
+		///             </li>
+		///             <li>
+		///                 <b>struct</b>:
+		///                 It doesn't necessary mean a struct in C++.
+		///                 Structs in reflection and Workflow script mean value types that carry only data, without methods and inheritance.
+		///                 <program><code><![CDATA[
+		///                     BEGIN_STRUCT_MEMBER(Point)
+		///                         STRUCT_MEMBER(x)
+		///                         STRUCT_MEMBER(y)
+		///                     END_STRUCT_MEMBER(Point)
+		///                 ]]></code></program>
+		///             </li>
+		///             <li>
+		///                 <p>
+		///                 <b>class</b>:
+		///                 It doesn't necessary mean a class in C++.
+		///                 Classes in reflection and Workflow script mean reference types.
+		///                 </p>
+		///                 <p>
+		///                 Here are all macros that register content of classes
+		///                 <ul>
+		///                     <li>CLASS_MEMBER_BASE</li>
+		///                     <li>CLASS_MEMBER_FIELD</li>
+		///                     <li>CLASS_MEMBER_CONSTRUCTOR</li>
+		///                     <li>CLASS_MEMBER_EXTERNALCTOR(_TEMPLATE)?</li>
+		///                     <li>CLASS_MEMBER_METHOD(_OVERLOAD)?_RENAME</li>
+		///                     <li>CLASS_MEMBER_(STATIC_)?METHOD(_OVERLOAD)?</li>
+		///                     <li>CLASS_MEMBER_(STATIC_)?EXTERNALMETHOD(_TEMPLATE)?</li>
+		///                     <li>CLASS_MEMBER_PROPERTY(_EVENT)?(_READONLY)?(_FAST)?</li>
+		///                     <li>CLASS_MEMBER_PROPERTY_REFERENCETEMPLATE</li>
+		///                     <li>CLASS_MEMBER_EVENT</li>
+		///                 </ul>
+		///                 </p>
+		///                 <p>
+		///                 <program><code><![CDATA[
+		///                     BEGIN_CLASS_MEMBER(MyClass)
 		///
-		/// After you have complete your type, use the following macros and functions to register your class into the global type table. Everything should be defined in vl::reflection::description namespaces.
-		///	Some of the predefined type has already been registered, if your types depend on these types, you should load those types by calling some or all of them:
-		///	[F:vl.reflection.description.LoadPredefinedTypes]
-		///	[F:vl.reflection.description.LoadParsingTypes]
-		///	[F:vl.reflection.description.JsonLoadTypes]
-		///	[F:vl.reflection.description.XmlLoadTypes]
+		///                         // 01) Declare a base class (can have multiple base classes).
+		///                         CLASS_MEMBER_BASE(MyBaseClass)
 		///
-		/// 1) (in header files) Create a macro that contains all types that you want to register. Content in the list will become the registered type names, so it is strongly recommended to use the full name.
-		///		#define MY_TYPELIST(F)\
-		///			F(mynamespaces::MyClass1)\
-		///			F(mynamespaces::MyClass2)\
+		///                         // 02) Declare a field.
+		///                         CLASS_MEMBER_FIELD(myField)
 		///
-		/// 2) (in header files) Connect type names and types:
-		///		MY_TYPELIST(DECL_TYPE_INFO)
+		///                         // 03) Default constructor that results in a raw pointer.
+		///                         CLASS_MEMBER_CONSTRUCTIOR(MyClass*(), NO_PARAMETER)
 		///
-		/// 3) (in cpp files) Connect type names and types:
-		///		MY_TYPELIST(IMPL_VL_TYPE_INFO)
+		///                         // 04) Default constructor that results in a shared pointer.
+		///                         CLASS_MEMBER_CONSTRUCTIOR(Ptr<MyClass>(), NO_PARAMETER)
 		///
-		/// 4) (in cpp files) Register all members:
-		///		
-		///		#define _ ,
+		///                         // 05) Constructor with arguments.
+		///                         CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"})
 		///
-		///		a) enum:
-		///			use BEGIN_ENUM_ITEM_MERGABLE instead of BEGIN_ENUM_ITEM if enum items are consider mergable using "|".
+		///                         // 06) Inject a global function as a constructor.
+		///                         CLASS_MEMBER_EXTERNALCTOR(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"}, mynamespace::CreateMyClass)
 		///
-		///			BEGIN_ENUM_ITEM(Season)
-		///				ENUM_ITEM(Spring)
-		///				ENUM_ITEM(Summer)
-		///				ENUM_ITEM(Autumn)
-		///				ENUM_ITEM(Winter)
-		///			END_ENUM_ITEM(Season)
+		///                         // 07) Inject a consturctor and specify how to generate C++ code, "*" means not able to generate.
+		///                         CLASS_MEMBER_EXTERNALCTOR_TEMPLATE(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"}, CreateMyClass, L"mynamespace::GetMyClass($Arguments)", L"::vl::Func<$Func>(&mynamespace::GetMyClass)")
+		///                         CLASS_MEMBER_EXTERNALCTOR_TEMPLATE(Ptr<MyClass>(), NO_PARAMETER, []()->Ptr<MyClass>{return nullptr;}, L"*", L"*")
 		///
-		///		b) enum class:
-		///			use BEGIN_ENUM_ITEM_MERGABLE instead of BEGIN_ENUM_ITEM if enum items are consider mergable using "|".
+		///                         // 08) Add unoverloaded functions.
+		///                         CLASS_MEMBER_METHOD(MyFunction1, NO_PARAMETER)
+		///                         CLASS_MEMBER_METHOD(MyFunction2, {L"parameter1" _ L"parameter2"})
 		///
-		///			BEGIN_ENUM_ITEM(Season)
-		///				ENUM_CLASS_ITEM(Spring)
-		///				ENUM_CLASS_ITEM(Summer)
-		///				ENUM_CLASS_ITEM(Autumn)
-		///				ENUM_CLASS_ITEM(Winter)
-		///			END_ENUM_ITEM(Season)
+		///                         // 09) Add unoverloaded functions but give different names. Unoverloaded only means in C++, not in renamed functions.
+		///                         CLASS_MEMBER_METHOD_RENAME(MyNewName1, MyFunction1, NO_PARAMETER)
+		///                         CLASS_MEMBER_METHOD_RENAME(MyNewName2, MyFunction2, {L"parameter1" _ L"parameter2"})
 		///
-		///		c) struct (pure data structure):
-		///			BEGIN_STRUCT_MEMBER(Point)
-		///				STRUCT_MEMBER(x)
-		///				STRUCT_MEMBER(y)
-		///			END_STRUCT_MEMBER(Point)
+		///                         // 10) Add overloaded functions, with function type specified in method pointers
+		///                         CLASS_MEMBER_METHOD_OVERLOAD(MyFunction3, NO_PARAMETER, int(MyClass::*)())
+		///                         CLASS_MEMBER_METHOD_OVERLOAD(MyFunction3, {L"parameter"}, int(MyClass::*)(int))
+		///                         CLASS_MEMBER_METHOD_OVERLOAD(MyFunction3, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&))
 		///
-		///		d) class:
-		///			BEGIN_CLASS_MEMBER(MyClass)
+		///                         // 11) Add overloaded functions but give different names.
+		///                         CLASS_MEMBER_METHOD_OVERLOAD_RENAME(MyNewName3, MyFunction3, NO_PARAMETER, int(MyClass::*)())
+		///                         CLASS_MEMBER_METHOD_OVERLOAD_RENAME(MyNewName4, MyFunction3, {L"parameter"}, int(MyClass::*)(int))
+		///                         CLASS_MEMBER_METHOD_OVERLOAD_RENAME(MyNewName4, MyFunction3, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&))
 		///
-		///				I) declare a base class (can have multiple base classes):
-		///				CLASS_MEMBER_BASE(MyBaseClass)
+		///                         // 12) Inject global functions as methods:
+		///                         CLASS_MEMBER_EXTERNALMETHOD(MyNewName5, {L"parameter"}, int(MyClass::*)(int), mynamespace::AGlobalFunction)
 		///
-		///				II) declare a field:
-		///				CLASS_MEMBER_FIELD(myField)
+		///                         // 13) Inject a method and specify how to generate C++ code, "*" means not able to generate.
+		///                         CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(MyNewName5, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&), [](MyClass* a, int b, const WString& c){return 0;}, L"*", L"*")
 		///
-		///				III) Empty constructor that results in a raw pointer:
-		///				CLASS_MEMBER_CONSTRUCTIOR(MyClass*(), NO_PARAMETER)
+		///                         // 14) Add unoverloaded static functions
+		///                         CLASS_MEMBER_STATIC_METHOD(MyFunction4, NO_PARAMETER)
+		///                         CLASS_MEMBER_STATIC_METHOD(MyFunction5, {L"parameter1" _ L"parameter2"})
 		///
-		///				IV) Empty constructor that results in a smart pointer:
-		///				CLASS_MEMBER_CONSTRUCTIOR(Ptr<MyClass>(), NO_PARAMETER)
+		///                         // 15) Add overloaded static functions
+		///                         CLASS_MEMBER_STATIC_METHOD_OVERLOAD(MyFunction6, NO_PARAMETER, int(*)())
+		///                         CLASS_MEMBER_STATIC_METHOD_OVERLOAD(MyFunction6, {L"parameter"}, int(*)(int))
+		///                         CLASS_MEMBER_STATIC_METHOD_OVERLOAD(MyFunction6, {L"parameter1" _ L"parameter2"}, int(*)(int, const WString&))
 		///
-		///				V) Constructor with arguments:
-		///				CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"})
+		///                         // 16) Inject global functions as static methods:
+		///                         CLASS_MEMBER_STATIC_EXTERNALMETHOD(MyNewName6, {L"parameter"}, int(*)(int), mynamespace::AGlobalFunction2)
 		///
-		///				VI) Inject a global function as a constructor
-		///				CLASS_MEMBER_EXTERNALCTOR(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"}, mynamespace::CreateMyClass)
-		///				CLASS_MEMBER_EXTERNALCTOR_TEMPLATE(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"}, CreateMyClass, L"mynamespace::GetMyClass($Arguments)", L"::vl::Func<$Func>(&mynamespace::GetMyClass)")
-		///				CLASS_MEMBER_EXTERNALCTOR_TEMPLATE(Ptr<MyClass>(), NO_PARAMETER, []()->Ptr<MyClass>{return nullptr;}, L"*", L"*")
+		///                         // 17) Inject a static method and specify how to generate C++ code, "*" means not able to generate.
+		///                         CLASS_MEMBER_STATIC_EXTERNALMETHOD_TEMPLATE(MyNewName6, {L"parameter1" _ L"parameter2"}, int(*)(int, const WString&), [](int b, const WString& c){return 0;}, L"*")
 		///
-		///				VII) Add unoverloaded functions
-		///				CLASS_MEMBER_METHOD(MyFunction1, NO_PARAMETER)
-		///				CLASS_MEMBER_METHOD(MyFunction2, {L"parameter1" _ L"parameter2"})
+		///                         // 18) Add a getter function as a property
+		///                         CLASS_MEMBER_PROPERTY_READONLY_FAST(X)
+		///                         // which is short for
+		///                         CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
+		///                         CLASS_MEMBER_PROPERTY_READONLY(X, GetX)
 		///
-		///				VIII) Add unoverloaded function but give a different names
-		///				CLASS_MEMBER_METHOD_RENAME(MyNewName1, MyFunction1, NO_PARAMETER)
-		///				CLASS_MEMBER_METHOD_RENAME(MyNewName2, MyFunction2, {L"parameter1" _ L"parameter2"})
+		///                         // 19) Add a pair of getter and setter functions as a property
+		///                         CLASS_MEMBER_PROPERTY_FAST(X)
+		///                         // which is short for
+		///                         CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
+		///                         CLASS_MEMBER_METHOD(SetX, {L"value"})
+		///                         CLASS_MEMBER_PROPERTY(X, GetX, SetX)
 		///
-		///				IX) Add overloaded functions
-		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction3, NO_PARAMETER, int(MyClass::*)())
-		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction3, {L"parameter"}, int(MyClass::*)(int))
-		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction3, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&))
+		///                         // 20) Add a getter function as a property with a property changed event
+		///                         CLASS_MEMBER_EVENT(XChanged)
+		///                         CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(X, XChanged)
+		///                         // which is short for
+		///                         CLASS_MEMBER_EVENT(XChanged)
+		///                         CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
+		///                         CLASS_MEMBER_PROPERTY_EVENT_READONLY(X, GetX, XChanged)
 		///
-		///				IX) Add overloaded functions but give different names
-		///				CLASS_MEMBER_METHOD_OVERLOAD_RENAME(MyNewName3, MyFunction3, NO_PARAMETER, int(MyClass::*)())
-		///				CLASS_MEMBER_METHOD_OVERLOAD_RENAME(MyNewName4, MyFunction3, {L"parameter"}, int(MyClass::*)(int))
-		///				CLASS_MEMBER_METHOD_OVERLOAD_RENAME(MyNewName4, MyFunction3, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&))
+		///                         // 21) Add a pair of getter and setter functions as a property with a property changed event
+		///                         CLASS_MEMBER_EVENT(XChanged)
+		///                         CLASS_MEMBER_PROPERTY_EVENT_FAST(X, XChanged)
+		///                         // which is short for
+		///                         CLASS_MEMBER_EVENT(XChanged)
+		///                         CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
+		///                         CLASS_MEMBER_METHOD(SetX, {L"value"})
+		///                         CLASS_MEMBER_PROPERTY_EVENT(X, GetX, SetX, XChanged)
 		///
-		///				X) Inject global functions as methods:
-		///				CLASS_MEMBER_EXTERNALMETHOD(MyNewName5, {L"parameter"}, int(MyClass::*)(int), mynamespace::AGlobalFunction)
-		///				CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(MyNewName5, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&), [](MyClass* a, int b, const WString& c){return 0;}, L"*", L"*")
+		///                     END_CLASS_MEMBER(MyClass)
+		///                 ]]></code></program>
+		///                 </p>
+		///                 <p>
+		///                 If the code compiles, the class should look like this:
+		///                 <program><code><![CDATA[
+		///                     class MyClass : public Description<MyClass>
+		///                     {
+		///                     public:
+		///                         MyClass();
+		///                         MyClass(int numberParameter, const WString& stringParameter);
 		///
-		///				XI) Add unoverloaded static functions
-		///				CLASS_MEMBER_STATIC_METHOD(MyFunction4, NO_PARAMETER)
-		///				CLASS_MEMBER_STATIC_METHOD(MyFunction5, {L"parameter1" _ L"parameter2"})
+		///                         int MyFunction1();
+		///                         int MyFunction2(int parameter1, const WString& parameter2);
+		///                         int MyFunction3();
+		///                         int MyFunction3(int parameter);
+		///                         int MyFunction3(int parameter1, const WString& parameter2);
 		///
-		///				XII) Add overloaded static functions
-		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction6, NO_PARAMETER, int(*)())
-		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction6, {L"parameter"}, int(*)(int))
-		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction6, {L"parameter1" _ L"parameter2"}, int(*)(int, const WString&))
+		///                         static int MyFunction4();
+		///                         static int MyFunction5(int parameter1, const WString& parameter2);
+		///                         static int MyFunction6();
+		///                         static int MyFunction6(int parameter);
+		///                         static int MyFunction6(int parameter1, const WString& parameter2);
 		///
-		///				XIII) Inject global functions as static methods:
-		///				CLASS_MEMBER_STATIC_EXTERNALMETHOD(MyNewName6, {L"parameter"}, int(*)(int), mynamespace::AGlobalFunction2)
-		///				CLASS_MEMBER_STATIC_EXTERNALMETHOD_INVOKETEMPLATE(MyNewName6, {L"parameter1" _ L"parameter2"}, int(*)(int, const WString&), [](int b, const WString& c){return 0;}, L"*")
+		///                         Event<void()> XChanged;
+		///                         int GetX();
+		///                         void SetX(int value);
+		///                     };
 		///
-		///				XIV) Add a getter function as a property
-		///				CLASS_MEMBER_PROPERTY_READONLY_FAST(X)
-		///				which is short for
-		///				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
-		///				CLASS_MEMBER_PROPERTY_READONLY(X, GetX)
+		///                     Ptr<MyClass> CreateMyClass(int numberParameter, const WString7 stringParameter);
+		///                     int GlobalFunction(MyClass* self, int parameter);
+		///                 ]]></code></program>
+		///                 </p>
+		///             </li>
+		///             <li>
+		///                 <p>
+		///                 <b>interface</b>:
+		///                 A C++ class can be registered as a reflectable interface if:
+		///                 <ul>
+		///                     <li>Directly or indirectly inherits [T:vl.reflection.IDescriptable]</li>
+		///                     <li>The only registered constructor (if exists) should use Ptr&lt;[T:vl.reflection.description.IValueInterfaceProxy]&gt; as a parameter, so that a Workflow script class could implement this interface.</li>
+		///                 </ul>
+		///                 </p>
+		///                 <p>
+		///                 Suppose you have an interface like this:
+		///                 <program><code><![CDATA[
+		///                     class IMyInterface : public virtual IDescriptable, public Description<IMyInterface>
+		///                     {
+		///                     public:
+		///                         int GetX();
+		///                         void SetX(int value);
+		///                     };
+		///                 ]]></code></program>
+		///                 </p>
+		///                 <p>
+		///                 If you want to allow a Workflow script class implement this interface, you should first add a proxy like this:
+		///                 <program><code><![CDATA[
+		///                     #pragma warning(push)
+		///                     #pragma warning(disable:4250)
+		///                     BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(IMyInterface)
+		///                         // or BEGIN_INTERFACE_PROXY_RAWPTR(IMyInterface, baseInterfaces...)
+		///                         // or BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IMyInterface)
+		///                         // or BEGIN_INTERFACE_PROXY_SHAREDPTR(IMyInterface, baseInterfaces...)
+		///                         int GetX()override
+		///                         {
+		///                             INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetX)
+		///                         }
 		///
-		///				XV) Add a pair of getter and setter functions as a property
-		///				CLASS_MEMBER_PROPERTY_FAST(X)
-		///				which is short for
-		///				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
-		///				CLASS_MEMBER_METHOD(SetX, {L"value"})
-		///				CLASS_MEMBER_PROPERTY(X, GetX, SetX)
+		///                         void SetX(int value)override
+		///                         {
+		///                             INVOKE_INTERFACE_PROXY(SetX, value)
+		///                         }
+		///                     END_INTERFACE_PROXY(IMyInterface)
+		///                     #pragma warning(pop)
+		///                 ]]></code></program>
+		///                 </p>
+		///                 <p>
+		///                 And then use this code to register the interface:
+		///                 <program><code><![CDATA[
+		///                     BEGIN_INTERFACE_MEMBER(IMyInterface)
+		///                         ...
+		///                     END_INTERFACE_MEMBER(IMyInterface)
+		///                 ]]></code></program>
+		///                 </p>
+		///                 <p>
+		///                 Everything else is the same as registering classes.
+		///                 Use <b>BEGIN_INTERFACE_MEMBER_NOPROXY</b> to register an interface without a proxy,
+		///                 which means a Workflow script class cannot implement this interface.
+		///                 </p>
+		///             </li>
+		///             <li>
+		///                 Undefine the macro for comma:
+		///                 <program><code><![CDATA[
+		///                     #undef _
+		///                 ]]></code></program>
+		///             </li>
+		///         </ul>
+		///     </li>
+		///     <li>
+		///         <b>(in cpp files)</b> Create a type loader:
+		///         <program><code><![CDATA[
+		///             class MyTypeLoader : public Object, public ITypeLoader
+		///             {
+		///             public:
+		///                 void Load(ITypeManager* manager)
+		///                 {
+		///                     MY_TYPELIST(ADD_TYPE_INFO)
+		///                 }
 		///
-		///				XVI) Add a getter function as a property with a property changed event
-		///				CLASS_MEMBER_EVENT(XChanged)
-		///				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(X)
-		///				which is short for
-		///				CLASS_MEMBER_EVENT(XChanged)
-		///				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
-		///				CLASS_MEMBER_PROPERTY_EVENT_READONLY(X, GetX, XChanged)
-		///
-		///				XVII) Add a pair of getter and setter functions as a property with a property changed event
-		///				CLASS_MEMBER_EVENT(XChanged)
-		///				CLASS_MEMBER_PROPERTY_EVENT_FAST(X)
-		///				which is short for
-		///				CLASS_MEMBER_EVENT(XChanged)
-		///				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
-		///				CLASS_MEMBER_METHOD(SetX, {L"value"})
-		///				CLASS_MEMBER_PROPERTY_EVENT(X, GetX, SetX, XChanged)
-		///
-		///			END_CLASS_MEMBER(MyClass)
-		///
-		///			If the code compiles, the class should look like this:
-		///			class MyClass : public Description<MyClass>
-		///			{
-		///			public:
-		///				MyClass();
-		///				MyClass(int numberParameter, const WString& stringParameter);
-		///
-		///				int MyFunction1();
-		///				int MyFunction2(int parameter1, const WString& parameter2);
-		///				int MyFunction3();
-		///				int MyFunction3(int parameter);
-		///				int MyFunction3(int parameter1, const WString& parameter2);
-		///
-		///				static int MyFunction4();
-		///				static int MyFunction5(int parameter1, const WString& parameter2);
-		///				static int MyFunction6();
-		///				static int MyFunction6(int parameter);
-		///				static int MyFunction6(int parameter1, const WString& parameter2);
-		///
-		///				Event<void()> XChanged;
-		///				int GetX();
-		///				void SetX(int value);
-		///			};
-		///
-		///			Ptr<MyClass> CreateMyClass(int numberParameter, const WString7 stringParameter);
-		///			int GlobalFunction(MyClass* self, int parameter);
-		///
-		///		e) interface:
-		///			An interface is defined by
-		///			I) Directly or indirectly inherits [T:vl.reflection.IDescriptable]
-		///			II) The only registered constructor (if exists) should use Ptr<[T:vl.reflection.description.IValueInterfaceProxy]> as a parameter
-		///
-		///			Suppose you have an interface like this:
-		///			class IMyInterface : public virtual IDescriptable, public Description<IMyInterface>
-		///			{
-		///			public:
-		///				int GetX();
-		///				void SetX(int value);
-		///			};
-		///
-		///			If you want this interface implementable by Workflow script, you should first add a proxy like this:
-		///			#pragma warning(push)
-		///			#pragma warning(disable:4250)
-		///			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(IMyInterface)
-		///			 or BEGIN_INTERFACE_PROXY_RAWPTR(IMyInterface, baseInterfaces...)
-		///			 or BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IMyInterface)
-		///			 or BEGIN_INTERFACE_PROXY_SHAREDPTR(IMyInterface, baseInterfaces...)
-		///				int GetX()override
-		///				{
-		///					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetX)
-		///				}
-		///
-		///				void SetX(int value)override
-		///				{
-		///					INVOKE_INTERFACE_PROXY(SetX, value)
-		///				}
-		///			END_INTERFACE_PROXY(IMyInterface)
-		///			#pragma warning(pop)
-		///
-		///			And then use this code to register the interface:
-		///			BEGIN_INTERFACE_MEMBER(IMyInterface)
-		///				...
-		///			END_INTERFACE_MEMBER(IMyInterface)
-		///
-		///			Everything else is the same as registering classes. Use BEGIN_INTERFACE_MEMBER_NOPROXY to register an interface without a proxy, which means you cannot implement it in runtime dynamically.
-		///
-		///		#undef _
-		///
-		/// 5) (in cpp files) Create a type loader:
-		///		class MyTypeLoader : public Object, public ITypeLoader
-		///		{
-		///		public:
-		///			void Load(ITypeManager* manager)
-		///			{
-		///				MY_TYPELIST(ADD_TYPE_INFO)
-		///			}
-		///
-		///			void Unload(ITypeManager* manager)
-		///			{
-		///			}
-		///		};
-		///
-		///	6) Load types when you think is a good timing using this code:
-		///		vl::reflection::description::GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
-		///
-		/// ]]></summary>
-		/// <typeparam name="T">Type of your created reflection class.</typeparam>
+		///                 void Unload(ITypeManager* manager)
+		///                 {
+		///                 }
+		///             };
+		///         ]]></code></program>
+		///     </li>
+		///     <li>
+		///         Before using reflection on registered types, you need to register the type loader:
+		///         <program><code><![CDATA[
+		///             vl::reflection::description::GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+		///         ]]></code></program>
+		///     </li>
+		/// </ol>
+		/// </p>
+		/// </summary>
+		/// <typeparam name="T">Type that inherit this class.</typeparam>
 		template<typename T>
 		class Description : public virtual DescriptableObject
 		{
@@ -448,6 +662,10 @@ Attribute
 #endif
 		};
 
+		/// <summary>
+		/// Inherit from this class when you want to create a reflectable class that can be inherited by Workflow script classes.
+		/// </summary>
+		/// <typeparam name="T">Type that inherit this class.</typeparam>
 		template<typename T>
 		class AggregatableDescription : public Description<T>
 		{
@@ -458,7 +676,7 @@ Attribute
 		description::ITypeDescriptor* Description<T>::associatedTypeDescriptor=0;
 #endif
 
-		/// <summary>Base types of all reflectable interfaces. All reflectable interface types should be virtual inherited.</summary>
+		/// <summary>Base type of all reflectable interfaces. All reflectable interface types should be virtual inherited.</summary>
 		class IDescriptable : public virtual Interface, public Description<IDescriptable>
 		{
 		public:
@@ -521,19 +739,28 @@ Value
 			};
 
 			/// <summary>A type to store all values of reflectable types.</summary>
+			/// <remarks>
+			/// To convert between <b>Value</b> and its real C++ type, the following functions are recommended:
+			/// <ul>
+			///     <li>[F:vl.reflection.description.BoxValue`1]</li>
+			///     <li>[F:vl.reflection.description.UnboxValue`1]</li>
+			///     <li>[F:vl.reflection.description.BoxParameter`1]</li>
+			///     <li>[F:vl.reflection.description.UnboxParameter`1]</li>
+			/// </ul>
+			/// </remarks>
 			class Value : public Object
 			{
 			public:
-				/// <summary>Representing how the value is stored.</summary>
+				/// <summary>How the value is stored.</summary>
 				enum ValueType
 				{
 					/// <summary>The value is null.</summary>
 					Null,
-					/// <summary>The value stored using a raw pointer.</summary>
+					/// <summary>The reference value is stored using a raw pointer.</summary>
 					RawPtr,
-					/// <summary>The value stored using a smart pointer.</summary>
+					/// <summary>The reference value is stored using a shared pointer.</summary>
 					SharedPtr,
-					/// <summary>The value stored using a boxed value.</summary>
+					/// <summary>The value is stored by boxing.</summary>
 					BoxedValue,
 				};
 			protected:
@@ -551,6 +778,7 @@ Value
 
 				vint							Compare(const Value& a, const Value& b)const;
 			public:
+				/// <summary>Create a null value.</summary>
 				Value();
 				Value(const Value& value);
 				Value&							operator=(const Value& value);
@@ -561,61 +789,1026 @@ Value
 				bool							operator>(const Value& value)const { return Compare(*this, value)>0; }
 				bool							operator>=(const Value& value)const { return Compare(*this, value) >= 0; }
 
-				/// <summary>Get how the value is stored.</summary>
-				/// <returns>How the value is stored.</returns>
+				/// <summary>Find out how the value is stored.</summary>
+				/// <returns>Returns How the value is stored.</returns>
 				ValueType						GetValueType()const;
-				/// <summary>Get the stored raw pointer if possible.</summary>
+				/// <summary>Get the stored raw pointer if <b>GetValueType()</b> returns <b>RawPtr</b> or <b>SharedPtr</b>.</summary>
 				/// <returns>The stored raw pointer. Returns null if failed.</returns>
 				DescriptableObject*				GetRawPtr()const;
-				/// <summary>Get the stored shared pointer if possible.</summary>
+				/// <summary>Get the stored shared pointer if <b>GetValueType()</b> returns <b>SharedPtr</b>.</summary>
 				/// <returns>The stored shared pointer. Returns null if failed.</returns>
 				Ptr<DescriptableObject>			GetSharedPtr()const;
-				/// <summary>Get the stored text if possible.</summary>
+				/// <summary>Get the stored value if <b>GetValueType()</b> returns <b>BoxedValue</b>.</summary>
 				/// <returns>The stored text. Returns empty if failed.</returns>
 				Ptr<IBoxedValue>				GetBoxedValue()const;
-				/// <summary>Get the real type of the stored object.</summary>
-				/// <returns>The real type. Returns null if the value is null.</returns>
-
+				/// <summary>Test if this value isnull.</summary>
+				/// <returns>Returns true if this value is null.</returns>
 				bool							IsNull()const;
 #ifndef VCZH_DEBUG_NO_REFLECTION
+				/// <summary>Get the real type of the stored object.</summary>
+				/// <returns>The real type. Returns null if the value is null.</returns>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
 				ITypeDescriptor*				GetTypeDescriptor()const;
 				WString							GetTypeFriendlyName()const;
 				bool							CanConvertTo(ITypeDescriptor* targetType, ValueType targetValueType)const;
 				bool							CanConvertTo(ITypeInfo* targetType)const;
 #endif
 
-				/// <summary>Store a raw pointer.</summary>
-				/// <returns>The boxed value.</returns>
+				/// <summary>Create a value from a raw pointer.</summary>
+				/// <returns>The created value.</returns>
 				/// <param name="value">The raw pointer to store.</param>
 				static Value					From(DescriptableObject* value);
-				/// <summary>Store a shared pointer.</summary>
-				/// <returns>The boxed value.</returns>
+				/// <summary>Create a value from a shared pointer.</summary>
+				/// <returns>The created value.</returns>
 				/// <param name="value">The shared pointer to store.</param>
 				static Value					From(Ptr<DescriptableObject> value);
-				/// <summary>Store a text.</summary>
-				/// <returns>The boxed value.</returns>
-				/// <param name="value">The text to store.</param>
-				/// <param name="type">The type that you expect to interpret the text.</param>
+				/// <summary>Create a boxed value.</summary>
+				/// <returns>The created value.</returns>
+				/// <param name="value">The boxed value to store.</param>
+				/// <param name="type">The type of the boxed value.</param>
 				static Value					From(Ptr<IBoxedValue> value, ITypeDescriptor* type);
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				static IMethodInfo*				SelectMethod(IMethodGroupInfo* methodGroup, collections::Array<Value>& arguments);
+
+				/// <summary>Call the default constructor of the specified type to create a value.</summary>
+				/// <returns>The created value.</returns>
+				/// <param name="type">The type to create the value.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
 				static Value					Create(ITypeDescriptor* type);
+
+				/// <summary>Call the constructor of the specified type to create a value.</summary>
+				/// <returns>The created value.</returns>
+				/// <param name="type">The type to create the value.</param>
+				/// <param name="arguments">Arguments for the constructor.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
+				/// <example><![CDATA[
+				/// // reflectable C++ types
+				/// 
+				/// namespace mynamespace
+				/// {
+				///     class MyClass : public Object, public Description<MyClass>
+				///     {
+				///     public:
+				///         MyClass()
+				///             :data(L"Hello, world!")
+				///         {
+				///         }
+				/// 
+				///         MyClass(const WString& _data)
+				///             :data(_data)
+				///         {
+				///         }
+				/// 
+				///         WString data;
+				///     };
+				/// }
+				/// 
+				/// #define MY_TYPELIST(F)\
+				///     F(mynamespace::MyClass)\
+				/// 
+				/// // it is recommended to put the content below in a separated header file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             MY_TYPELIST(DECL_TYPE_INFO)
+				///         }
+				///     }
+				/// }
+				/// 
+				/// // it is recommended to put the content below in a separated cpp file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             using namespace mynamespace;
+				/// 
+				/// #define _ ,
+				/// 
+				///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+				/// 
+				///             BEGIN_CLASS_MEMBER(MyClass)
+				///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(), NO_PARAMETER)
+				///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(const WString&), { L"data" })
+				///             END_CLASS_MEMBER(MyClass)
+				/// 
+				/// #undef  _
+				///         }
+				///     }
+				/// }
+				/// 
+				/// class MyTypeLoader : public Object, public ITypeLoader
+				/// {
+				/// public:
+				///     void Load(ITypeManager* manager)
+				///     {
+				///         MY_TYPELIST(ADD_TYPE_INFO)
+				///     }
+				/// 
+				///     void Unload(ITypeManager* manager)
+				///     {
+				///     }
+				/// };
+				/// 
+				/// // main function
+				/// 
+				/// int main()
+				/// {
+				///     LoadPredefinedTypes();
+				///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+				///     GetGlobalTypeManager()->Load();
+				///     {
+				///         auto myClass = Value::Create(GetTypeDescriptor(L"mynamespace::MyClass"), (Value_xs(), WString(L"Hello, world!!!")));
+				/// 
+				///         auto ptrMyClass1 = UnboxValue<Ptr<MyClass>>(myClass);
+				///         Console::WriteLine(ptrMyClass1->data);
+				/// 
+				///         Ptr<MyClass> ptrMyClass2;
+				///         UnboxParameter(myClass, ptrMyClass2);
+				///         Console::WriteLine(ptrMyClass2->data);
+				///     }
+				///     DestroyGlobalTypeManager();
+				/// }
+				/// ]]></example>
 				static Value					Create(ITypeDescriptor* type, collections::Array<Value>& arguments);
+
+				/// <summary>Call the default constructor of the specified type to create a value.</summary>
+				/// <returns>The created value.</returns>
+				/// <param name="typeName">The registered full name for the type to create the value.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
 				static Value					Create(const WString& typeName);
+
+				/// <summary>Call the constructor of the specified type to create a value.</summary>
+				/// <returns>The created value.</returns>
+				/// <param name="typeName">The registered full name for the type to create the value.</param>
+				/// <param name="arguments">Arguments for the constructor.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
+				/// <example><![CDATA[
+				/// // reflectable C++ types
+				/// 
+				/// namespace mynamespace
+				/// {
+				///     class MyClass : public Object, public Description<MyClass>
+				///     {
+				///     public:
+				///         MyClass()
+				///             :data(L"Hello, world!")
+				///         {
+				///         }
+				/// 
+				///         MyClass(const WString& _data)
+				///             :data(_data)
+				///         {
+				///         }
+				/// 
+				///         WString data;
+				///     };
+				/// }
+				/// 
+				/// #define MY_TYPELIST(F)\
+				///     F(mynamespace::MyClass)\
+				/// 
+				/// // it is recommended to put the content below in a separated header file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             MY_TYPELIST(DECL_TYPE_INFO)
+				///         }
+				///     }
+				/// }
+				/// 
+				/// // it is recommended to put the content below in a separated cpp file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             using namespace mynamespace;
+				/// 
+				/// #define _ ,
+				/// 
+				///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+				/// 
+				///             BEGIN_CLASS_MEMBER(MyClass)
+				///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(), NO_PARAMETER)
+				///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(const WString&), { L"data" })
+				///             END_CLASS_MEMBER(MyClass)
+				/// 
+				/// #undef  _
+				///         }
+				///     }
+				/// }
+				/// 
+				/// class MyTypeLoader : public Object, public ITypeLoader
+				/// {
+				/// public:
+				///     void Load(ITypeManager* manager)
+				///     {
+				///         MY_TYPELIST(ADD_TYPE_INFO)
+				///     }
+				/// 
+				///     void Unload(ITypeManager* manager)
+				///     {
+				///     }
+				/// };
+				/// 
+				/// // main function
+				/// 
+				/// int main()
+				/// {
+				///     LoadPredefinedTypes();
+				///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+				///     GetGlobalTypeManager()->Load();
+				///     {
+				///         auto myClass = Value::Create(L"mynamespace::MyClass", (Value_xs(), WString(L"Hello, world!!!")));
+				/// 
+				///         auto ptrMyClass1 = UnboxValue<Ptr<MyClass>>(myClass);
+				///         Console::WriteLine(ptrMyClass1->data);
+				/// 
+				///         Ptr<MyClass> ptrMyClass2;
+				///         UnboxParameter(myClass, ptrMyClass2);
+				///         Console::WriteLine(ptrMyClass2->data);
+				///     }
+				///     DestroyGlobalTypeManager();
+				/// }
+				/// ]]></example>
 				static Value					Create(const WString& typeName, collections::Array<Value>& arguments);
+
+				/// <summary>Call a static method of the specified type.</summary>
+				/// <returns>The return value from that method.</returns>
+				/// <param name="typeName">The registered full name for the type.</param>
+				/// <param name="name">The registered name for the method.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
 				static Value					InvokeStatic(const WString& typeName, const WString& name);
+
+				/// <summary>Call a static method of the specified type.</summary>
+				/// <returns>The return value from that method.</returns>
+				/// <param name="typeName">The registered full name for the type.</param>
+				/// <param name="name">The registered name for the method.</param>
+				/// <param name="arguments">Arguments for the method.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
+				/// <example><![CDATA[
+				/// // reflectable C++ types
+				/// 
+				/// namespace mynamespace
+				/// {
+				///     class MyClass : public Object, public Description<MyClass>
+				///     {
+				///     public:
+				///         static void PrintHelloWorld(const WString& name)
+				///         {
+				///             Console::WriteLine(L"Hello, " + name + L"!");
+				///         }
+				///     };
+				/// }
+				/// 
+				/// #define MY_TYPELIST(F)\
+				///     F(mynamespace::MyClass)\
+				/// 
+				/// // it is recommended to put the content below in a separated header file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             MY_TYPELIST(DECL_TYPE_INFO)
+				///         }
+				///     }
+				/// }
+				/// 
+				/// // it is recommended to put the content below in a separated cpp file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             using namespace mynamespace;
+				/// 
+				/// #define _ ,
+				/// 
+				///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+				/// 
+				///             BEGIN_CLASS_MEMBER(MyClass)
+				///                 CLASS_MEMBER_STATIC_METHOD(PrintHelloWorld, { L"name" })
+				///             END_CLASS_MEMBER(MyClass)
+				/// 
+				/// #undef  _
+				///         }
+				///     }
+				/// }
+				/// 
+				/// class MyTypeLoader : public Object, public ITypeLoader
+				/// {
+				/// public:
+				///     void Load(ITypeManager* manager)
+				///     {
+				///         MY_TYPELIST(ADD_TYPE_INFO)
+				///     }
+				/// 
+				///     void Unload(ITypeManager* manager)
+				///     {
+				///     }
+				/// };
+				/// 
+				/// // main function
+				/// 
+				/// int main()
+				/// {
+				///     LoadPredefinedTypes();
+				///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+				///     GetGlobalTypeManager()->Load();
+				///     {
+				///         Value::InvokeStatic(L"mynamespace::MyClass", L"PrintHelloWorld", (Value_xs(), WString(L"Gaclib")));
+				///     }
+				///     DestroyGlobalTypeManager();
+				/// }
+				/// ]]></example>
 				static Value					InvokeStatic(const WString& typeName, const WString& name, collections::Array<Value>& arguments);
+
+				/// <summary>Call the getter function for a property.</summary>
+				/// <returns>The value of the property.</returns>
+				/// <param name="name">The registered name for the property.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
+				/// <example><![CDATA[
+				/// // reflectable C++ types
+				/// 
+				/// namespace mynamespace
+				/// {
+				///     class MyClass : public Object, public Description<MyClass>
+				///     {
+				///     private:
+				///         WString prop;
+				///     public:
+				///         WString field;
+				/// 
+				///         WString GetProp() { return prop; };
+				///         void SetProp(const WString& value) { prop = value; }
+				///     };
+				/// }
+				/// 
+				/// #define MY_TYPELIST(F)\
+				///     F(mynamespace::MyClass)\
+				/// 
+				/// // it is recommended to put the content below in a separated header file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             MY_TYPELIST(DECL_TYPE_INFO)
+				///         }
+				///     }
+				/// }
+				/// 
+				/// // it is recommended to put the content below in a separated cpp file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             using namespace mynamespace;
+				/// 
+				/// #define _ ,
+				/// 
+				///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+				/// 
+				///             BEGIN_CLASS_MEMBER(MyClass)
+				///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(), NO_PARAMETER)
+				///                 CLASS_MEMBER_FIELD(field)
+				///                 CLASS_MEMBER_PROPERTY_FAST(Prop)
+				///             END_CLASS_MEMBER(MyClass)
+				/// 
+				/// #undef  _
+				///         }
+				///     }
+				/// }
+				/// 
+				/// class MyTypeLoader : public Object, public ITypeLoader
+				/// {
+				/// public:
+				///     void Load(ITypeManager* manager)
+				///     {
+				///         MY_TYPELIST(ADD_TYPE_INFO)
+				///     }
+				/// 
+				///     void Unload(ITypeManager* manager)
+				///     {
+				///     }
+				/// };
+				/// 
+				/// // main function
+				/// 
+				/// int main()
+				/// {
+				///     LoadPredefinedTypes();
+				///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+				///     GetGlobalTypeManager()->Load();
+				///     {
+				///         auto td = GetTypeDescriptor(L"mynamespace::MyClass");
+				///         auto myClass = Value::Create(td);
+				/// 
+				///         myClass.SetProperty(L"field", BoxValue<WString>(L"Hello, world!"));
+				///         myClass.SetProperty(L"Prop", BoxValue<WString>(L"Hello, Gaclib!"));
+				/// 
+				///         Console::WriteLine(UnboxValue<WString>(myClass.GetProperty(L"field")));
+				///         Console::WriteLine(UnboxValue<WString>(myClass.GetProperty(L"Prop")));
+				///     }
+				///     DestroyGlobalTypeManager();
+				/// }
+				/// ]]></example>
 				Value							GetProperty(const WString& name)const;
+
+				/// <summary>Call the setter function for a property.</summary>
+				/// <param name="name">The registered name for the property.</param>
+				/// <param name="newValue">The value to set the property.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
+				/// <example><![CDATA[
+				/// // reflectable C++ types
+				/// 
+				/// namespace mynamespace
+				/// {
+				///     class MyClass : public Object, public Description<MyClass>
+				///     {
+				///     private:
+				///         WString prop;
+				///     public:
+				///         WString field;
+				/// 
+				///         WString GetProp() { return prop; };
+				///         void SetProp(const WString& value) { prop = value; }
+				///     };
+				/// }
+				/// 
+				/// #define MY_TYPELIST(F)\
+				///     F(mynamespace::MyClass)\
+				/// 
+				/// // it is recommended to put the content below in a separated header file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             MY_TYPELIST(DECL_TYPE_INFO)
+				///         }
+				///     }
+				/// }
+				/// 
+				/// // it is recommended to put the content below in a separated cpp file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             using namespace mynamespace;
+				/// 
+				/// #define _ ,
+				/// 
+				///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+				/// 
+				///             BEGIN_CLASS_MEMBER(MyClass)
+				///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(), NO_PARAMETER)
+				///                 CLASS_MEMBER_FIELD(field)
+				///                 CLASS_MEMBER_PROPERTY_FAST(Prop)
+				///             END_CLASS_MEMBER(MyClass)
+				/// 
+				/// #undef  _
+				///         }
+				///     }
+				/// }
+				/// 
+				/// class MyTypeLoader : public Object, public ITypeLoader
+				/// {
+				/// public:
+				///     void Load(ITypeManager* manager)
+				///     {
+				///         MY_TYPELIST(ADD_TYPE_INFO)
+				///     }
+				/// 
+				///     void Unload(ITypeManager* manager)
+				///     {
+				///     }
+				/// };
+				/// 
+				/// // main function
+				/// 
+				/// int main()
+				/// {
+				///     LoadPredefinedTypes();
+				///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+				///     GetGlobalTypeManager()->Load();
+				///     {
+				///         auto td = GetTypeDescriptor(L"mynamespace::MyClass");
+				///         auto myClass = Value::Create(td);
+				/// 
+				///         myClass.SetProperty(L"field", BoxValue<WString>(L"Hello, world!"));
+				///         myClass.SetProperty(L"Prop", BoxValue<WString>(L"Hello, Gaclib!"));
+				/// 
+				///         Console::WriteLine(UnboxValue<WString>(myClass.GetProperty(L"field")));
+				///         Console::WriteLine(UnboxValue<WString>(myClass.GetProperty(L"Prop")));
+				///     }
+				///     DestroyGlobalTypeManager();
+				/// }
+				/// ]]></example>
 				void							SetProperty(const WString& name, const Value& newValue);
+
+				/// <summary>Call a non-static method.</summary>
+				/// <returns>The return value from that method.</returns>
+				/// <param name="name">The registered name for the method.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
 				Value							Invoke(const WString& name)const;
+
+				/// <summary>Call a non-static method.</summary>
+				/// <returns>The return value from that method.</returns>
+				/// <param name="name">The registered name for the method.</param>
+				/// <param name="arguments">Arguments for the method.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
+				/// <example><![CDATA[
+				/// // reflectable C++ types
+				/// 
+				/// namespace mynamespace
+				/// {
+				///     class MyClass : public Object, public Description<MyClass>
+				///     {
+				///     public:
+				///         void PrintHelloWorld(const WString& name)
+				///         {
+				///             Console::WriteLine(L"Hello, " + name + L"!");
+				///         }
+				///     };
+				/// }
+				/// 
+				/// #define MY_TYPELIST(F)\
+				///     F(mynamespace::MyClass)\
+				/// 
+				/// // it is recommended to put the content below in a separated header file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             MY_TYPELIST(DECL_TYPE_INFO)
+				///         }
+				///     }
+				/// }
+				/// 
+				/// // it is recommended to put the content below in a separated cpp file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             using namespace mynamespace;
+				/// 
+				/// #define _ ,
+				/// 
+				///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+				/// 
+				///             BEGIN_CLASS_MEMBER(MyClass)
+				///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(), NO_PARAMETER)
+				///                 CLASS_MEMBER_METHOD(PrintHelloWorld, { L"name" })
+				///             END_CLASS_MEMBER(MyClass)
+				/// 
+				/// #undef  _
+				///         }
+				///     }
+				/// }
+				/// 
+				/// class MyTypeLoader : public Object, public ITypeLoader
+				/// {
+				/// public:
+				///     void Load(ITypeManager* manager)
+				///     {
+				///         MY_TYPELIST(ADD_TYPE_INFO)
+				///     }
+				/// 
+				///     void Unload(ITypeManager* manager)
+				///     {
+				///     }
+				/// };
+				/// 
+				/// // main function
+				/// 
+				/// int main()
+				/// {
+				///     LoadPredefinedTypes();
+				///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+				///     GetGlobalTypeManager()->Load();
+				///     {
+				///         auto td = GetTypeDescriptor(L"mynamespace::MyClass");
+				///         auto myClass = Value::Create(td);
+				///         myClass.Invoke(L"PrintHelloWorld", (Value_xs(), WString(L"Gaclib")));
+				///     }
+				///     DestroyGlobalTypeManager();
+				/// }
+				/// ]]></example>
 				Value							Invoke(const WString& name, collections::Array<Value>& arguments)const;
+
+				/// <summary>Attach a callback function for the event.</summary>
+				/// <returns>The event handler for this attachment. You need to keep it to detach the callback function.</returns>
+				/// <param name="name">The registered name for the event.</param>
+				/// <param name="function">The callback function.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
+				/// <example><![CDATA[
+				/// // reflectable C++ types
+				/// 
+				/// namespace mynamespace
+				/// {
+				///     class MyClass : public Object, public Description<MyClass>
+				///     {
+				///     private:
+				///         WString prop;
+				///     public:
+				///         Event<void(const WString&, const WString&)> PropChanged;
+				/// 
+				///         WString GetProp()
+				///         {
+				///             return prop;
+				///         }
+				/// 
+				///         void SetProp(const WString& value)
+				///         {
+				///             if (prop != value)
+				///             {
+				///                 auto old = prop;
+				///                 prop = value;
+				///                 PropChanged(old, prop);
+				///             }
+				///         }
+				///     };
+				/// }
+				/// 
+				/// #define MY_TYPELIST(F)\
+				///     F(mynamespace::MyClass)\
+				/// 
+				/// // it is recommended to put the content below in a separated header file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             MY_TYPELIST(DECL_TYPE_INFO)
+				///         }
+				///     }
+				/// }
+				/// 
+				/// // it is recommended to put the content below in a separated cpp file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             using namespace mynamespace;
+				/// 
+				/// #define _ ,
+				/// 
+				///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+				/// 
+				///             BEGIN_CLASS_MEMBER(MyClass)
+				///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(), NO_PARAMETER)
+				///                 CLASS_MEMBER_EVENT(PropChanged)
+				///                 CLASS_MEMBER_PROPERTY_EVENT_FAST(Prop, PropChanged)
+				///             END_CLASS_MEMBER(MyClass)
+				/// 
+				/// #undef  _
+				///         }
+				///     }
+				/// }
+				/// 
+				/// class MyTypeLoader : public Object, public ITypeLoader
+				/// {
+				/// public:
+				///     void Load(ITypeManager* manager)
+				///     {
+				///         MY_TYPELIST(ADD_TYPE_INFO)
+				///     }
+				/// 
+				///     void Unload(ITypeManager* manager)
+				///     {
+				///     }
+				/// };
+				/// 
+				/// // main function
+				/// 
+				/// int main()
+				/// {
+				///     LoadPredefinedTypes();
+				///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+				///     GetGlobalTypeManager()->Load();
+				///     {
+				///         auto td = GetTypeDescriptor(L"mynamespace::MyClass");
+				///         auto myClass = Value::Create(td);
+				///         myClass.SetProperty(L"Prop", BoxValue<WString>(L"Zero"));
+				/// 
+				///         using CallbackType = Func<void(const WString&, const WString&)>;
+				///         CallbackType callbackFunction = [](const WString& oldProp, const WString& newProp)
+				///         {
+				///             Console::WriteLine(L"myClass.Prop changed: " + oldProp + L" -> " + newProp);
+				///         };
+				///         auto handler = myClass.AttachEvent(L"PropChanged", BoxParameter<CallbackType>(callbackFunction));
+				/// 
+				///         myClass.SetProperty(L"Prop", BoxValue<WString>(L"One"));
+				///         myClass.SetProperty(L"Prop", BoxValue<WString>(L"Two"));
+				///         myClass.DetachEvent(L"PropChanged", handler);
+				///         myClass.SetProperty(L"Prop", BoxValue<WString>(L"Three"));
+				///     }
+				///     DestroyGlobalTypeManager();
+				/// }
+				/// ]]></example>
 				Ptr<IEventHandler>				AttachEvent(const WString& name, const Value& function)const;
+
+				/// <summary>Detach a callback function from the event.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="name">The registered name for the event.</param>
+				/// <param name="handler">The event handler returned from <see cref="AttachEvent"/>.</param>
+				/// <remarks>
+				/// <p>Only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is <b>off</b>.</p>
+				/// </remarks>
+				/// <example><![CDATA[
+				/// // reflectable C++ types
+				/// 
+				/// namespace mynamespace
+				/// {
+				///     class MyClass : public Object, public Description<MyClass>
+				///     {
+				///     private:
+				///         WString prop;
+				///     public:
+				///         Event<void(const WString&, const WString&)> PropChanged;
+				/// 
+				///         WString GetProp()
+				///         {
+				///             return prop;
+				///         }
+				/// 
+				///         void SetProp(const WString& value)
+				///         {
+				///             if (prop != value)
+				///             {
+				///                 auto old = prop;
+				///                 prop = value;
+				///                 PropChanged(old, prop);
+				///             }
+				///         }
+				///     };
+				/// }
+				/// 
+				/// #define MY_TYPELIST(F)\
+				///     F(mynamespace::MyClass)\
+				/// 
+				/// // it is recommended to put the content below in a separated header file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             MY_TYPELIST(DECL_TYPE_INFO)
+				///         }
+				///     }
+				/// }
+				/// 
+				/// // it is recommended to put the content below in a separated cpp file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             using namespace mynamespace;
+				/// 
+				/// #define _ ,
+				/// 
+				///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+				/// 
+				///             BEGIN_CLASS_MEMBER(MyClass)
+				///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(), NO_PARAMETER)
+				///                 CLASS_MEMBER_EVENT(PropChanged)
+				///                 CLASS_MEMBER_PROPERTY_EVENT_FAST(Prop, PropChanged)
+				///             END_CLASS_MEMBER(MyClass)
+				/// 
+				/// #undef  _
+				///         }
+				///     }
+				/// }
+				/// 
+				/// class MyTypeLoader : public Object, public ITypeLoader
+				/// {
+				/// public:
+				///     void Load(ITypeManager* manager)
+				///     {
+				///         MY_TYPELIST(ADD_TYPE_INFO)
+				///     }
+				/// 
+				///     void Unload(ITypeManager* manager)
+				///     {
+				///     }
+				/// };
+				/// 
+				/// // main function
+				/// 
+				/// int main()
+				/// {
+				///     LoadPredefinedTypes();
+				///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+				///     GetGlobalTypeManager()->Load();
+				///     {
+				///         auto td = GetTypeDescriptor(L"mynamespace::MyClass");
+				///         auto myClass = Value::Create(td);
+				///         myClass.SetProperty(L"Prop", BoxValue<WString>(L"Zero"));
+				/// 
+				///         using CallbackType = Func<void(const WString&, const WString&)>;
+				///         CallbackType callbackFunction = [](const WString& oldProp, const WString& newProp)
+				///         {
+				///             Console::WriteLine(L"myClass.Prop changed: " + oldProp + L" -> " + newProp);
+				///         };
+				///         auto handler = myClass.AttachEvent(L"PropChanged", BoxParameter<CallbackType>(callbackFunction));
+				/// 
+				///         myClass.SetProperty(L"Prop", BoxValue<WString>(L"One"));
+				///         myClass.SetProperty(L"Prop", BoxValue<WString>(L"Two"));
+				///         myClass.DetachEvent(L"PropChanged", handler);
+				///         myClass.SetProperty(L"Prop", BoxValue<WString>(L"Three"));
+				///     }
+				///     DestroyGlobalTypeManager();
+				/// }
+				/// ]]></example>
 				bool							DetachEvent(const WString& name, Ptr<IEventHandler> handler)const;
 #endif
 
-				/// <summary>Dispose the object is it is stored as a raw pointer.</summary>
-				/// <returns>Returns true if the object is disposed. Returns false if the object cannot be disposed. An exception will be thrown if the reference counter is not 0.</returns>
+				/// <summary>Dispose the object if <b>GetValueType()</b> returns <b>RawPtr</b>.</summary>
+				/// <returns>
+				/// Returns true if the object is disposed.
+				/// Returns false if the object cannot be disposed.
+				/// An exception will be thrown if the reference counter is not 0.
+				///</returns>
+				/// <example><![CDATA[
+				/// // reflectable C++ types
+				/// 
+				/// namespace mynamespace
+				/// {
+				///     class SharedClass : public Object, public Description<SharedClass>
+				///     {
+				///     public:
+				///         SharedClass()
+				///         {
+				///             Console::WriteLine(L"SharedClass::SharedClass()");
+				///         }
+				/// 
+				///         ~SharedClass()
+				///         {
+				///             Console::WriteLine(L"SharedClass::~SharedClass()");
+				///         }
+				///     };
+				/// 
+				///     class RawClass : public Object, public Description<RawClass>
+				///     {
+				///     public:
+				///         RawClass()
+				///         {
+				///             Console::WriteLine(L"RawClass::RawClass()");
+				///         }
+				/// 
+				///         ~RawClass()
+				///         {
+				///             Console::WriteLine(L"RawClass::~RawClass()");
+				///         }
+				///     };
+				/// }
+				/// 
+				/// #define MY_TYPELIST(F)\
+				///     F(mynamespace::SharedClass)\
+				///     F(mynamespace::RawClass)\
+				/// 
+				/// // it is recommended to put the content below in a separated header file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             MY_TYPELIST(DECL_TYPE_INFO)
+				///         }
+				///     }
+				/// }
+				/// 
+				/// // it is recommended to put the content below in a separated cpp file
+				/// 
+				/// namespace vl
+				/// {
+				///     namespace reflection
+				///     {
+				///         namespace description
+				///         {
+				///             using namespace mynamespace;
+				/// 
+				/// #define _ ,
+				/// 
+				///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+				/// 
+				///             BEGIN_CLASS_MEMBER(SharedClass)
+				///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<SharedClass>(), NO_PARAMETER)
+				///             END_CLASS_MEMBER(SharedClass)
+				/// 
+				///             BEGIN_CLASS_MEMBER(RawClass)
+				///                 CLASS_MEMBER_CONSTRUCTOR(RawClass*(), NO_PARAMETER)
+				///             END_CLASS_MEMBER(RawClass)
+				/// 
+				/// #undef  _
+				///         }
+				///     }
+				/// }
+				/// 
+				/// class MyTypeLoader : public Object, public ITypeLoader
+				/// {
+				/// public:
+				///     void Load(ITypeManager* manager)
+				///     {
+				///         MY_TYPELIST(ADD_TYPE_INFO)
+				///     }
+				/// 
+				///     void Unload(ITypeManager* manager)
+				///     {
+				///     }
+				/// };
+				/// 
+				/// // main function
+				/// 
+				/// int main()
+				/// {
+				///     LoadPredefinedTypes();
+				///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+				///     GetGlobalTypeManager()->Load();
+				///     {
+				///         auto sharedClass = Value::Create(L"mynamespace::SharedClass");
+				///         auto rawClass = Value::Create(L"mynamespace::RawClass");
+				/// 
+				///         Console::WriteLine(L"sharedClass is " + WString(sharedClass.GetValueType() == Value::SharedPtr ? L"SharedPtr" : L"RawPtr"));
+				///         Console::WriteLine(L"rawClass is " + WString(rawClass.GetValueType() == Value::SharedPtr ? L"SharedPtr" : L"RawPtr"));
+				/// 
+				///         rawClass.DeleteRawPtr();
+				///     }
+				///     DestroyGlobalTypeManager();
+				/// }
+				/// ]]></example>
 				bool							DeleteRawPtr();
 			};
 
@@ -949,6 +2142,7 @@ ITypeDescriptor
 				return (TypeDescriptorFlags)((vint)a | (vint)b);
 			}
 
+			/// <summary>Metadata class for reflectable types.</summary>
 			class ITypeDescriptor : public virtual IDescriptable, public Description<ITypeDescriptor>
 			{
 			public:
@@ -1007,23 +2201,57 @@ ITypeManager
 
 			class ITypeManager;
 
+			/// <summary>Delay loading for registering reflectable types.</summary>
 			class ITypeLoader : public virtual Interface
 			{
 			public:
+				/// <summary>Called when it is time to register types.</summary>
+				/// <param name="manager">The type manager.</param>
 				virtual void					Load(ITypeManager* manager)=0;
+
+				/// <summary>Called when it is time to unregister types.</summary>
+				/// <param name="manager">The type manager.</param>
+				/// <remarks>
+				/// Types cannot be unregistered one by one,
+				/// they are removed at the same time by calling
+				/// [F:vl.reflection.description.DestroyGlobalTypeManager] or
+				/// [F:vl.reflection.description.ResetGlobalTypeManager].
+				/// Here is just a chance for reverse extra steps, when these steps are taken in <see cref="Load"/>.
+				/// </remarks>
 				virtual void					Unload(ITypeManager* manager)=0;
 			};
 
+			/// <summary>A type manager to access all reflectable types.</summary>
 			class ITypeManager : public virtual Interface
 			{
 			public:
+				/// <summary>Get the number of all registered types.</summary>
+				/// <returns>The number of all registered types.</returns>
 				virtual vint					GetTypeDescriptorCount()=0;
+
+				/// <summary>Get one registered type.</summary>
+				/// <returns>A registered type specified by the index.</returns>
+				/// <param name="index">The index for retriving the registered type.</param>
+				/// <remarks>
+				/// The index itself does not has any specific meaning.
+				/// And it is no guarantee that an index will always return the same type for each execution of the same process.
+				/// </remarks>
 				virtual ITypeDescriptor*		GetTypeDescriptor(vint index)=0;
 				virtual ITypeDescriptor*		GetTypeDescriptor(const WString& name)=0;
 				virtual bool					SetTypeDescriptor(const WString& name, Ptr<ITypeDescriptor> typeDescriptor)=0;
 
+				/// <summary>Delay register some types.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="typeLoader">A type loader for delay registering.</param>
+				/// <remarks>
+				/// You can still call this function after <see cref="Load"/> is called.
+				/// In this case, there is no delay registering, all types in this loader will be registered immediately.
+				/// </remarks>
 				virtual bool					AddTypeLoader(Ptr<ITypeLoader> typeLoader)=0;
 				virtual bool					RemoveTypeLoader(Ptr<ITypeLoader> typeLoader)=0;
+
+				/// <summary>Load all added type loaders.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
 				virtual bool					Load()=0;
 				virtual bool					Unload()=0;
 				virtual bool					Reload()=0;
@@ -1031,9 +2259,45 @@ ITypeManager
 				virtual ITypeDescriptor*		GetRootType()=0;
 			};
 
+			/// <summary>Get the type manager.</summary>
+			/// <returns>Returns the type manager.</returns>
 			extern ITypeManager*				GetGlobalTypeManager();
+
+			/// <summary>Unload all types and free the type manager.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <remakrs>
+			/// After calling this function, you can no longer register new types,
+			/// and calling <see cref="GetGlobalTypeManager"/> will always get null.
+			/// </remarks>
+
 			extern bool							DestroyGlobalTypeManager();
+
+			/// <summary>Unload all types and reset the type manager.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <remakrs>
+			/// <p>
+			/// This function is similar to <see cref="DestroyGlobalTypeManager"/>,
+			/// but calling this function allows types to be registsred again.
+			/// </p>
+			/// <p>
+			/// This function is very useful for unit testing.
+			/// In each test case, you can first register all types,
+			/// and after the test case is finished, call this function to reset all types.
+			/// You can do this again and again in the other test cases,
+			/// so that these test cases don't affect each other.
+			/// </p>
+			/// </remarks>
 			extern bool							ResetGlobalTypeManager();
+
+			/// <summary>Get a registered type given the registered name.</summary>
+			/// <returns>Returns the metadata class for this registered type.</returns>
+			/// <param name="name">
+			/// The registered name.
+			/// Note that this is not the full name of the C++ type,
+			/// it is the name what is used to registere this type.</param>
+			/// <remarks>
+			/// Returning null means the type registration is declared but the type manager has not started.
+			/// </remarks>
 			extern ITypeDescriptor*				GetTypeDescriptor(const WString& name);
 			extern bool							IsInterfaceType(ITypeDescriptor* typeDescriptor, bool& acceptProxy);
 			extern void							LogTypeManager(stream::TextWriter& writer);
@@ -1191,11 +2455,8 @@ Exceptions
 .\GUITYPEDESCRIPTORPREDEFINED.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-
-Interfaces:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORPREDEFINED
@@ -1215,75 +2476,675 @@ namespace vl
 Collections
 ***********************************************************************/
 
+			/// <summary>The reflectable version of <see cref="collections::IEnumerator`1"/>.</summary>
 			class IValueEnumerator : public virtual IDescriptable, public Description<IValueEnumerator>
 			{
 			public:
+				/// <summary>Get the reference to the current value in the enumerator.</summary>
+				/// <returns>The current value.</returns>
+				/// <remarks><see cref="Next"/> needs to be called to make the first value available.</remarks>
 				virtual Value					GetCurrent() = 0;
+
+				/// <summary>Get the position of the current value in the enumerator.</summary>
+				/// <returns>The position of the current value.</returns>
 				virtual vint					GetIndex() = 0;
+
+				/// <summary>Prepare for the next value.</summary>
+				/// <returns>Returns false if there is no more value.</returns>
 				virtual bool					Next() = 0;
 			};
 
+			/// <summary>The reflectable version of <see cref="collections::IEnumerable`1"/>.</summary>
+			/// <remarks><see cref="BoxParameter`1"/> will create a <see cref="Value"/> storing a shared pointer to an instance of this interface from an enumerable.</remarks>
+			/// <example><![CDATA[
+			/// // reflectable C++ types
+			/// 
+			/// namespace mynamespace
+			/// {
+			///     class MyClass : public Object, public Description<MyClass>
+			///     {
+			///     public:
+			///         MyClass(vint _data = 0)
+			///             :data(_data)
+			///         {
+			///         }
+			/// 
+			///         vint data;
+			///     };
+			/// }
+			/// 
+			/// #define MY_TYPELIST(F)\
+			///     F(mynamespace::MyClass)\
+			/// 
+			/// // it is recommended to put the content below in a separated header file
+			/// 
+			/// namespace vl
+			/// {
+			///     namespace reflection
+			///     {
+			///         namespace description
+			///         {
+			///             MY_TYPELIST(DECL_TYPE_INFO)
+			///         }
+			///     }
+			/// }
+			/// 
+			/// // it is recommended to put the content below in a separated cpp file
+			/// 
+			/// namespace vl
+			/// {
+			///     namespace reflection
+			///     {
+			///         namespace description
+			///         {
+			///             using namespace mynamespace;
+			/// 
+			/// #define _ ,
+			/// 
+			///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+			/// 
+			///             BEGIN_CLASS_MEMBER(MyClass)
+			///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(), NO_PARAMETER)
+			///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(vint), { L"data" })
+			///                 CLASS_MEMBER_FIELD(data)
+			///             END_CLASS_MEMBER(MyClass)
+			/// 
+			/// #undef  _
+			///         }
+			///     }
+			/// }
+			/// 
+			/// class MyTypeLoader : public Object, public ITypeLoader
+			/// {
+			/// public:
+			///     void Load(ITypeManager* manager)
+			///     {
+			///         MY_TYPELIST(ADD_TYPE_INFO)
+			///     }
+			/// 
+			///     void Unload(ITypeManager* manager)
+			///     {
+			///     }
+			/// };
+			/// 
+			/// // main function
+			/// 
+			/// int main()
+			/// {
+			///     LoadPredefinedTypes();
+			///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+			///     GetGlobalTypeManager()->Load();
+			///     {
+			///         LazyList<Ptr<MyClass>> cs = Range<vint>(1, 10)
+			///             .Select([](vint i)
+			///             {
+			///                 return MakePtr<MyClass>(i);
+			///             });
+			/// 
+			///         Value boxed = BoxParameter<LazyList<Ptr<MyClass>>>(cs);
+			///         {
+			///             auto enumerable = UnboxValue<Ptr<IValueEnumerable>>(boxed);
+			///             auto enumerator = enumerable->CreateEnumerator();
+			///             while (enumerator->Next())
+			///             {
+			///                 Console::Write(itow(UnboxValue<Ptr<MyClass>>(enumerator->GetCurrent())->data) + L" ");
+			///             }
+			///             Console::WriteLine(L"");
+			///         }
+			///         {
+			///             auto enumerator = boxed.Invoke(L"CreateEnumerator");
+			///             while (UnboxValue<bool>(enumerator.Invoke(L"Next")))
+			///             {
+			///                 Console::Write(itow(UnboxValue<vint>(enumerator.GetProperty(L"Current").GetProperty(L"data"))) + L" ");
+			///             }
+			///             Console::WriteLine(L"");
+			///         }
+			///     }
+			///     DestroyGlobalTypeManager();
+			/// }
+			/// ]]></example>
 			class IValueEnumerable : public virtual IDescriptable, public Description<IValueEnumerable>
 			{
 			public:
+				/// <summary>
+				/// Create an enumerator. <see cref="IValueEnumerator::Next"/> should be called before reading the first value.
+				/// </summary>
+				/// <returns>The enumerator.</returns>
 				virtual Ptr<IValueEnumerator>	CreateEnumerator() = 0;
 
+				/// <summary>Create an enumerable from another lazy list.</summary>
+				/// <returns>The created enumerable.</returns>
+				/// <param name="values">The lazy list to wrap.</param>
 				static Ptr<IValueEnumerable>	Create(collections::LazyList<Value> values);
 			};
 
+			/// <summary>
+			/// The reflectable version of readonly
+			/// <see cref="collections::Array`2"/>,
+			/// <see cref="collections::List`2"/> or
+			/// <see cref="collections::SortedList`2"/>
+			/// </summary>
 			class IValueReadonlyList : public virtual IValueEnumerable, public Description<IValueReadonlyList>
 			{
 			public:
+				/// <summary>Get the number of elements in the container.</summary>
+				/// <returns>The number of elements.</returns>
 				virtual vint					GetCount() = 0;
+
+				/// <summary>Get the reference to the specified element.</summary>
+				/// <returns>The reference to the specified element. It will crash when the index is out of range.</returns>
+				/// <param name="index">The index of the element.</param>
 				virtual Value					Get(vint index) = 0;
+
+				/// <summary>Test does the list contain a value or not.</summary>
+				/// <returns>Returns true if the list contains the specified value.</returns>
+				/// <param name="value">The value to test.</param>
 				virtual bool					Contains(const Value& value) = 0;
+
+				/// <summary>Get the position of a value in this list.</summary>
+				/// <returns>Returns the position of first element that equals to the specified value. Returns -1 if failed to find.</returns>
+				/// <param name="value">The value to find.</param>
 				virtual vint					IndexOf(const Value& value) = 0;
 			};
 
+			/// <summary>
+			/// The reflectable version of readonly
+			/// <see cref="collections::Array`2"/> or
+			/// <see cref="collections::List`2"/>
+			/// </summary>
+			/// <remarks><see cref="BoxParameter`1"/> will create a <see cref="Value"/> storing a shared pointer to an instance of this interface from a container.</remarks>
+			/// <example><![CDATA[
+			/// // reflectable C++ types
+			/// 
+			/// namespace mynamespace
+			/// {
+			///     class MyClass : public Object, public Description<MyClass>
+			///     {
+			///     public:
+			///         MyClass(vint _data = 0)
+			///             :data(_data)
+			///         {
+			///         }
+			/// 
+			///         vint data;
+			///     };
+			/// }
+			/// 
+			/// #define MY_TYPELIST(F)\
+			///     F(mynamespace::MyClass)\
+			/// 
+			/// // it is recommended to put the content below in a separated header file
+			/// 
+			/// namespace vl
+			/// {
+			///     namespace reflection
+			///     {
+			///         namespace description
+			///         {
+			///             MY_TYPELIST(DECL_TYPE_INFO)
+			///         }
+			///     }
+			/// }
+			/// 
+			/// // it is recommended to put the content below in a separated cpp file
+			/// 
+			/// namespace vl
+			/// {
+			///     namespace reflection
+			///     {
+			///         namespace description
+			///         {
+			///             using namespace mynamespace;
+			/// 
+			/// #define _ ,
+			/// 
+			///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+			/// 
+			///             BEGIN_CLASS_MEMBER(MyClass)
+			///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(), NO_PARAMETER)
+			///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(vint), { L"data" })
+			///                 CLASS_MEMBER_FIELD(data)
+			///             END_CLASS_MEMBER(MyClass)
+			/// 
+			/// #undef  _
+			///         }
+			///     }
+			/// }
+			/// 
+			/// class MyTypeLoader : public Object, public ITypeLoader
+			/// {
+			/// public:
+			///     void Load(ITypeManager* manager)
+			///     {
+			///         MY_TYPELIST(ADD_TYPE_INFO)
+			///     }
+			/// 
+			///     void Unload(ITypeManager* manager)
+			///     {
+			///     }
+			/// };
+			/// 
+			/// // main function
+			/// 
+			/// int main()
+			/// {
+			///     LoadPredefinedTypes();
+			///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+			///     GetGlobalTypeManager()->Load();
+			///     {
+			///         List<Ptr<MyClass>> cs;
+			///         CopyFrom(cs, Range<vint>(1, 10)
+			///             .Select([](vint i)
+			///             {
+			///                 return MakePtr<MyClass>(i);
+			///             })
+			///         );
+			/// 
+			///         Value boxed = BoxParameter<List<Ptr<MyClass>>>(cs);
+			///         {
+			///             auto list = UnboxValue<Ptr<IValueList>>(boxed);
+			///             for (vint i = 0; i < list->GetCount(); i++)
+			///             {
+			///                 Console::Write(itow(UnboxValue<Ptr<MyClass>>(list->Get(i))->data) + L" ");
+			///             }
+			///             Console::WriteLine(L"");
+			///         }
+			///
+			///         for (vint i = 1; i <= 5; i++)
+			///         {
+			///             cs.RemoveAt(i);
+			///         }
+			///
+			///         {
+			///             for (vint i = 0; i < UnboxValue<vint>(boxed.GetProperty(L"Count")); i++)
+			///             {
+			///                 Console::Write(itow(UnboxValue<vint>(boxed.Invoke(L"Get", (Value_xs(), i)).GetProperty(L"data"))) + L" ");
+			///             }
+			///             Console::WriteLine(L"");
+			///         }
+			///     }
+			///     DestroyGlobalTypeManager();
+			/// }
+			/// ]]></example>
 			class IValueList : public virtual IValueReadonlyList, public Description<IValueList>
 			{
 			public:
+				/// <summary>Replace an element in the specified position.</summary>
+				/// <returns>Returns true if this operation succeeded. It will crash when the index is out of range</returns>
+				/// <param name="index">The position of the element to replace.</param>
+				/// <param name="value">The new value to replace.</param>
 				virtual void					Set(vint index, const Value& value) = 0;
+
+				/// <summary>Append a value at the end of the list.</summary>
+				/// <returns>The index of the added item.</returns>
+				/// <param name="value">The value to add.</param>
 				virtual vint					Add(const Value& value) = 0;
+
+				/// <summary>Insert a value at the specified position.</summary>
+				/// <returns>The index of the added item. It will crash if the index is out of range</returns>
+				/// <param name="index">The position to insert the value.</param>
+				/// <param name="value">The value to add.</param>
 				virtual vint					Insert(vint index, const Value& value) = 0;
+
+				/// <summary>Remove an element from the list. If multiple elements equal to the specified value, only the first one will be removed.</summary>
+				/// <returns>Returns true if the element is removed.</returns>
+				/// <param name="value">The item to remove.</param>
 				virtual bool					Remove(const Value& value) = 0;
+
+				/// <summary>Remove an element at a specified position.</summary>
+				/// <returns>Returns true if the element is removed. It will crash when the index is out of range.</returns>
+				/// <param name="index">The index of the element to remove.</param>
 				virtual bool					RemoveAt(vint index) = 0;
+
+				/// <summary>Remove all elements.</summary>
 				virtual void					Clear() = 0;
 
+				/// <summary>Create an empty list.</summary>
+				/// <returns>The created list.</returns>
 				static Ptr<IValueList>			Create();
+
+				/// <summary>Create a list with elements copied from another readonly list.</summary>
+				/// <returns>The created list.</returns>
+				/// <param name="values">Elements to copy.</param>
 				static Ptr<IValueList>			Create(Ptr<IValueReadonlyList> values);
+
+				/// <summary>Create a list with elements copied from another lazy list.</summary>
+				/// <returns>The created list.</returns>
+				/// <param name="values">Elements to copy.</param>
 				static Ptr<IValueList>			Create(collections::LazyList<Value> values);
 			};
 
+			/// <summary>
+			/// The reflectable version of list container which triggers an event whenever items are changed.
+			/// </summary>
+			/// <example><![CDATA[
+			/// // reflectable C++ types
+			/// 
+			/// namespace mynamespace
+			/// {
+			///     class MyClass : public Object, public Description<MyClass>
+			///     {
+			///     public:
+			///         MyClass(vint _data = 0)
+			///             :data(_data)
+			///         {
+			///         }
+			/// 
+			///         vint data;
+			///     };
+			/// }
+			/// 
+			/// #define MY_TYPELIST(F)\
+			///     F(mynamespace::MyClass)\
+			/// 
+			/// // it is recommended to put the content below in a separated header file
+			/// 
+			/// namespace vl
+			/// {
+			///     namespace reflection
+			///     {
+			///         namespace description
+			///         {
+			///             MY_TYPELIST(DECL_TYPE_INFO)
+			///         }
+			///     }
+			/// }
+			/// 
+			/// // it is recommended to put the content below in a separated cpp file
+			/// 
+			/// namespace vl
+			/// {
+			///     namespace reflection
+			///     {
+			///         namespace description
+			///         {
+			///             using namespace mynamespace;
+			/// 
+			/// #define _ ,
+			/// 
+			///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+			/// 
+			///             BEGIN_CLASS_MEMBER(MyClass)
+			///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(), NO_PARAMETER)
+			///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(vint), { L"data" })
+			///                 CLASS_MEMBER_FIELD(data)
+			///             END_CLASS_MEMBER(MyClass)
+			/// 
+			/// #undef  _
+			///         }
+			///     }
+			/// }
+			/// 
+			/// class MyTypeLoader : public Object, public ITypeLoader
+			/// {
+			/// public:
+			///     void Load(ITypeManager* manager)
+			///     {
+			///         MY_TYPELIST(ADD_TYPE_INFO)
+			///     }
+			/// 
+			///     void Unload(ITypeManager* manager)
+			///     {
+			///     }
+			/// };
+			/// 
+			/// // main function
+			/// 
+			/// int main()
+			/// {
+			///     LoadPredefinedTypes();
+			///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+			///     GetGlobalTypeManager()->Load();
+			///     {
+			///         ObservableList<Ptr<MyClass>> cs;
+			///         CopyFrom(cs, Range<vint>(1, 10)
+			///             .Select([](vint i)
+			///             {
+			///                 return MakePtr<MyClass>(i);
+			///             })
+			///         );
+			/// 
+			///         Value boxed = BoxValue(cs.GetWrapper());
+			///         auto list = UnboxValue<Ptr<IValueObservableList>>(boxed);
+			///         {
+			///             for (vint i = 0; i < list->GetCount(); i++)
+			///             {
+			///                 Console::Write(itow(UnboxValue<Ptr<MyClass>>(list->Get(i))->data) + L" ");
+			///             }
+			///             Console::WriteLine(L"");
+			///         }
+			/// 
+			///         {
+			///             using CallbackType = Func<void(vint, vint, vint)>;
+			///             CallbackType callbackFunction = [](vint index, vint oldCount, vint newCount)
+			///             {
+			///                 Console::WriteLine(L"ItemChanged(" + itow(index) + L", " + itow(oldCount) + L", " + itow(newCount) + L");");
+			///             };
+			/// 
+			///             auto handler = boxed.AttachEvent(L"ItemChanged", BoxParameter<CallbackType>(callbackFunction));
+			///             for (vint i = 1; i <= 5; i++)
+			///             {
+			///                 cs.RemoveAt(i);
+			///             }
+			///             boxed.DetachEvent(L"ItemChanged", handler);
+			///         }
+			/// 
+			///         {
+			///             for (vint i = 0; i < UnboxValue<vint>(boxed.GetProperty(L"Count")); i++)
+			///             {
+			///                 Console::Write(itow(UnboxValue<vint>(boxed.Invoke(L"Get", (Value_xs(), i)).GetProperty(L"data"))) + L" ");
+			///             }
+			///             Console::WriteLine(L"");
+			///         }
+			///     }
+			///     DestroyGlobalTypeManager();
+			/// }
+			/// ]]></example>
 			class IValueObservableList : public virtual IValueList, public Description<IValueObservableList>
 			{
 				typedef void ItemChangedProc(vint index, vint oldCount, vint newCount);
 			public:
+				/// <summary>
+				/// <p>Event that is triggered whenever items are changed.</p>
+				/// <p>The first argument is the index of the first item that is changed.</p>
+				/// <p>The second argument is the number of original items that are replaced by new items.</p>
+				/// <p>The third argument is the number of new items that replace original items.</p>
+				/// </summary>
+				/// <remarks>
+				/// <p>If an item is changed, oldCount and newCount are both 1.</p>
+				/// <p>If several items are removed from the list, newCount is 0.</p>
+				/// <p>If several items are inserted to the list, oldCount is 0.</p>
+				/// <p>This event is triggered when the updating is done, original items are not possible to access at the moment.</p>
+				/// </remarks>
 				Event<ItemChangedProc>			ItemChanged;
 
+				/// <summary>Create an empty list.</summary>
+				/// <returns>The created list.</returns>
 				static Ptr<IValueObservableList>	Create();
+
+				/// <summary>Create a list with elements copied from another readonly list.</summary>
+				/// <returns>The created list.</returns>
+				/// <param name="values">Elements to copy.</param>
 				static Ptr<IValueObservableList>	Create(Ptr<IValueReadonlyList> values);
+
+				/// <summary>Create a list with elements copied from another lazy list.</summary>
+				/// <returns>The created list.</returns>
+				/// <param name="values">Elements to copy.</param>
 				static Ptr<IValueObservableList>	Create(collections::LazyList<Value> values);
 			};
 
+			/// <summary>
+			/// The reflectable version of readonly <see cref="collections::Dictionary`4"/>.
+			/// </summary>
 			class IValueReadonlyDictionary : public virtual IDescriptable, public Description<IValueReadonlyDictionary>
 			{
 			public:
+				/// <summary>Get all keys.</summary>
+				/// <returns>All keys.</returns>
 				virtual Ptr<IValueReadonlyList>	GetKeys() = 0;
+
+				/// <summary>Get all values.</summary>
+				/// <returns>All values.</returns>
 				virtual Ptr<IValueReadonlyList>	GetValues() = 0;
+
+				/// <summary>Get the number of keys.</summary>
+				/// <returns>The number of keys. It is also the number of values.</returns>
 				virtual vint					GetCount() = 0;
+
+				/// <summary>Get the value associated to a specified key.</summary>
+				/// <returns>The reference to the value. It will crash if the key does not exist.</returns>
+				/// <param name="key">The key to find.</param>
 				virtual Value					Get(const Value& key) = 0;
 			};
 
+			/// <summary>
+			/// The reflectable version of <see cref="collections::Dictionary`4"/>.
+			/// </summary>
+			/// <remarks><see cref="BoxParameter`1"/> will create a <see cref="Value"/> storing a shared pointer to an instance of this interface from a dictionary.</remarks>
+			/// <example><![CDATA[
+			/// // reflectable C++ types
+			/// 
+			/// namespace mynamespace
+			/// {
+			///     class MyClass : public Object, public Description<MyClass>
+			///     {
+			///     public:
+			///         MyClass(vint _data = 0)
+			///             :data(_data)
+			///         {
+			///         }
+			/// 
+			///         vint data;
+			///     };
+			/// }
+			/// 
+			/// #define MY_TYPELIST(F)\
+			///     F(mynamespace::MyClass)\
+			/// 
+			/// // it is recommended to put the content below in a separated header file
+			/// 
+			/// namespace vl
+			/// {
+			///     namespace reflection
+			///     {
+			///         namespace description
+			///         {
+			///             MY_TYPELIST(DECL_TYPE_INFO)
+			///         }
+			///     }
+			/// }
+			/// 
+			/// // it is recommended to put the content below in a separated cpp file
+			/// 
+			/// namespace vl
+			/// {
+			///     namespace reflection
+			///     {
+			///         namespace description
+			///         {
+			///             using namespace mynamespace;
+			/// 
+			/// #define _ ,
+			/// 
+			///             MY_TYPELIST(IMPL_CPP_TYPE_INFO)
+			/// 
+			///             BEGIN_CLASS_MEMBER(MyClass)
+			///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(), NO_PARAMETER)
+			///                 CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(vint), { L"data" })
+			///                 CLASS_MEMBER_FIELD(data)
+			///             END_CLASS_MEMBER(MyClass)
+			/// 
+			/// #undef  _
+			///         }
+			///     }
+			/// }
+			/// 
+			/// class MyTypeLoader : public Object, public ITypeLoader
+			/// {
+			/// public:
+			///     void Load(ITypeManager* manager)
+			///     {
+			///         MY_TYPELIST(ADD_TYPE_INFO)
+			///     }
+			/// 
+			///     void Unload(ITypeManager* manager)
+			///     {
+			///     }
+			/// };
+			/// 
+			/// // main function
+			/// 
+			/// int main()
+			/// {
+			///     LoadPredefinedTypes();
+			///     GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+			///     GetGlobalTypeManager()->Load();
+			///     {
+			///         Dictionary<vint, Ptr<MyClass>> cs;
+			///         CopyFrom(cs, Range<vint>(1, 10)
+			///             .Select([](vint i) -> Pair<vint, Ptr<MyClass>>
+			///             {
+			///                 return { i, MakePtr<MyClass>(i * i) };
+			///             })
+			///         );
+			/// 
+			///         Value boxed = BoxParameter<Dictionary<vint, Ptr<MyClass>>>(cs);
+			///         {
+			///             auto dictionary = UnboxValue<Ptr<IValueDictionary>>(boxed);
+			///             for (vint i = 0; i < dictionary->GetCount(); i++)
+			///             {
+			///                 Value key = dictionary->GetKeys()->Get(i);
+			///                 Console::Write(itow(UnboxValue<Ptr<MyClass>>(dictionary->Get(key))->data) + L" ");
+			///             }
+			///             Console::WriteLine(L"");
+			///         }
+			/// 
+			///         for (vint i = 1; i <= 5; i++)
+			///         {
+			///             cs.Remove(i * 2);
+			///         }
+			/// 
+			///         {
+			///             for (vint i = 0; i < UnboxValue<vint>(boxed.GetProperty(L"Count")); i++)
+			///             {
+			///                 Value key = boxed.GetProperty(L"Keys").Invoke(L"Get", (Value_xs(), i));
+			///                 Console::Write(itow(UnboxValue<vint>(boxed.Invoke(L"Get", (Value_xs(), key)).GetProperty(L"data"))) + L" ");
+			///             }
+			///             Console::WriteLine(L"");
+			///         }
+			///     }
+			///     DestroyGlobalTypeManager();
+			/// }
+			/// ]]></example>
 			class IValueDictionary : public virtual IValueReadonlyDictionary, public Description<IValueDictionary>
 			{
 			public:
+				/// <summary>Replace the value associated to a specified key.</summary>
+				/// <returns>Returns true if the value is replaced.</returns>
+				/// <param name="key">The key to find. If the key does not exist, it will be added to the dictionary.</param>
+				/// <param name="value">The associated value to replace.</param>
 				virtual void					Set(const Value& key, const Value& value) = 0;
+
+				/// <summary>Remove a key with the associated value.</summary>
+				/// <returns>Returns true if the key and the value is removed.</returns>
+				/// <param name="key">The key to find.</param>
 				virtual bool					Remove(const Value& key) = 0;
+
+				/// <summary>Remove all elements.</summary>
 				virtual void					Clear() = 0;
 
+				/// <summary>Create an empty dictionary.</summary>
+				/// <returns>The created dictionary.</returns>
 				static Ptr<IValueDictionary>	Create();
+
+				/// <summary>Create a dictionary with elements copied from another readonly dictionary.</summary>
+				/// <returns>The created dictionary.</returns>
+				/// <param name="values">Elements to copy.</param>
 				static Ptr<IValueDictionary>	Create(Ptr<IValueReadonlyDictionary> values);
+
+				/// <summary>Create a dictionary with elements copied from another lazy list.</summary>
+				/// <returns>The created dictionary.</returns>
+				/// <param name="values">Elements to copy.</param>
 				static Ptr<IValueDictionary>	Create(collections::LazyList<collections::Pair<Value, Value>> values);
 			};
 
@@ -1297,20 +3158,36 @@ Interface Implementation Proxy
 				virtual Value					Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments) = 0;
 			};
 
+			/// <summary>A reflectable version of <see cref="Func`1"/>.</summary>
+			/// <remarks><see cref="BoxParameter`1"/> will create a <see cref="Value"/> storing a shared pointer to an instance of this interface from a function.</remarks>
 			class IValueFunctionProxy : public virtual IDescriptable, public Description<IValueFunctionProxy>
 			{
 			public:
+				/// <summary>Call the function.</summary>
+				/// <returns>Return value from the function.</returns>
+				/// <param name="arguments">Arguments to call the function.</param>
 				virtual Value					Invoke(Ptr<IValueList> arguments) = 0;
 			};
 
+			/// <summary>A reflectable subscription, usually created by the <b>bind</b> expression in Workflow script.</summary>
 			class IValueSubscription : public virtual IDescriptable, public Description<IValueSubscription>
 			{
 				typedef void ValueChangedProc(const Value& newValue);
 			public:
+				/// <summary>Event that triggered when the binding source is changed.</summary>
+				/// <remarks>The first argument is the new value of the binding source.</remarks>
 				Event<ValueChangedProc>			ValueChanged;
 
+				/// <summary>Start the subscription.</summary>
+				/// <returns>Returns true if this operation succeeded.</summary>
 				virtual bool					Open() = 0;
+
+				/// <summary>Manually trigger the event.</summary>
+				/// <returns>Returns true if this operation succeeded.</summary>
 				virtual bool					Update() = 0;
+
+				/// <summary>Stop the subscription.</summary>
+				/// <returns>Returns true if this operation succeeded.</summary>
 				virtual bool					Close() = 0;
 			};
 
@@ -1395,11 +3272,8 @@ Runtime Exception
 .\GUITYPEDESCRIPTORBUILDER.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-
-Interfaces:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER
@@ -1449,6 +3323,14 @@ TypeInfo
 			{
 			};
 
+			/// <summary>Get a registered type given a C++ type.</summary>
+			/// <returns>Returns the metadata class for this registered type.</returns>
+			/// <typeparam name="T">The C++ type to get the registered type.</typeparam>
+			/// <remarks>
+			/// Returning null means the type registration is declared but the type manager has not started.
+			/// Failing to compile means that the type registration is not declared.
+			/// See <see cref="Description`1"/> about how to register a type.
+			/// </remarks>
 			template<typename T>
 			ITypeDescriptor* GetTypeDescriptor()
 			{
@@ -2181,7 +4063,7 @@ TypeInfoRetriver Helper Functions (BoxValue, UnboxValue)
 				return ValueAccessor<Type, TypeInfoRetriver<Type>::Decorator>::BoxValue(object, typeDescriptor);
 			}
 			
-			/// <summary>Unbox an reflectable object. Its type cannot be generic.</summary>
+			/// <summary>Unbox a reflectable object. Its type cannot be generic.</summary>
 			/// <returns>The unboxed object.</returns>
 			/// <typeparam name="T">Type of the object.</typeparam>
 			/// <param name="value">The value to unbox.</param>
@@ -2203,7 +4085,7 @@ TypeInfoRetriver Helper Functions (UnboxParameter)
 			{
 			};
 			
-			/// <summary>Box an reflectable object. It supports generic types such as containers, functions, etc.</summary>
+			/// <summary>Box an reflectable object. It supports generic types such as containers, functions (should be Func&lt;T&gt;), etc.</summary>
 			/// <returns>The boxed value.</returns>
 			/// <typeparam name="T">Type of the object.</typeparam>
 			/// <param name="object">The object to box.</param>
@@ -2214,7 +4096,7 @@ TypeInfoRetriver Helper Functions (UnboxParameter)
 				return ParameterAccessor<typename TypeInfoRetriver<T>::ResultNonReferenceType, TypeInfoRetriver<T>::TypeFlag>::BoxParameter(object, typeDescriptor);
 			}
 			
-			/// <summary>Box an reflectable object. It supports generic types such as containers, functions, etc.</summary>
+			/// <summary>Box an reflectable object. It supports generic types such as containers, functions (should be Func&lt;T&gt;), etc.</summary>
 			/// <typeparam name="T">Type of the object.</typeparam>
 			/// <param name="value">The value to unbox.</param>
 			/// <param name="result">The unboxed object.</param>
@@ -2570,11 +4452,8 @@ StructTypeDescriptor
 .\GUITYPEDESCRIPTORBUILDER_CONTAINER.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-	
-Interfaces:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
  
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER_CONTAINER
@@ -2658,12 +4537,20 @@ Enumerable Wrappers
 				}
 			};
 
+			/// <summary>Convert a reflectable container to a lazy list to the known element type.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <typeparam name="T">The expected element type.</typeparam>
+			/// <param name="value">The reflectable container.</param>
 			template<typename T>
 			collections::LazyList<T> GetLazyList(Ptr<IValueEnumerable> value)
 			{
 				return collections::LazyList<T>(new TypedEnumerator<T>(value));
 			}
 
+			/// <summary>Convert a reflectable container to a lazy list to the known element type.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <typeparam name="T">The expected element type.</typeparam>
+			/// <param name="value">The reflectable container.</param>
 			template<typename T>
 			collections::LazyList<T> GetLazyList(Ptr<IValueReadonlyList> value)
 			{
@@ -2674,18 +4561,31 @@ Enumerable Wrappers
 					});
 			}
 
+			/// <summary>Convert a reflectable container to a lazy list to the known element type.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <typeparam name="T">The expected element type.</typeparam>
+			/// <param name="value">The reflectable container.</param>
 			template<typename T>
 			collections::LazyList<T> GetLazyList(Ptr<IValueList> value)
 			{
 				return GetLazyList<T>(Ptr<IValueReadonlyList>(value));
 			}
 
+			/// <summary>Convert a reflectable container to a lazy list to the known element type.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <typeparam name="T">The expected element type.</typeparam>
+			/// <param name="value">The reflectable container.</param>
 			template<typename T>
 			collections::LazyList<T> GetLazyList(Ptr<IValueObservableList> value)
 			{
 				return GetLazyList<T>(Ptr<IValueReadonlyList>(value));
 			}
 
+			/// <summary>Convert a reflectable dictionary to a lazy list to the known element type.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <typeparam name="K">The expected key type.</typeparam>
+			/// <typeparam name="V">The expected value type.</typeparam>
+			/// <param name="value">The reflectable dictionary.</param>
 			template<typename K, typename V>
 			collections::LazyList<collections::Pair<K, V>> GetLazyList(Ptr<IValueReadonlyDictionary> value)
 			{
@@ -2696,6 +4596,11 @@ Enumerable Wrappers
 					});
 			}
 
+			/// <summary>Convert a reflectable dictionary to a lazy list to the known element type.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <typeparam name="K">The expected key type.</typeparam>
+			/// <typeparam name="V">The expected value type.</typeparam>
+			/// <param name="value">The reflectable dictionary.</param>
 			template<typename K, typename V>
 			collections::LazyList<collections::Pair<K, V>> GetLazyList(Ptr<IValueDictionary> value)
 			{
@@ -3390,6 +5295,31 @@ ParameterAccessor<TContainer>
 
 	namespace collections
 	{
+		/// <summary>Base type of observable container which triggers callbacks whenever items are changed.</summary>
+		/// <typeparam name="T">Type of elements.</typeparam>
+		/// <typeparam name="K">Type of the key type of elements. It is recommended to use the default value.</typeparam>
+		/// <remarks>
+		/// <p>Methods are the same to <see cref="List`2"/>, except that operator[] is readonly.</p>
+		/// <p>
+		/// When an item is being inserted to the list,
+		/// <b>QueryInsert</b> will be called to determine if this item can be inserted,
+		/// <b>BeforeInsert</b> will be called before inserting,
+		/// <b>AfterInsert</b> will be called after inserting.
+		/// </p>
+		/// <p>
+		/// When an item is being removed from the list,
+		/// <b>QueryRemove</b> will be called to determine if this item can be removed,
+		/// <b>BeforeRemove</b> will be called before removing,
+		/// <b>AfterRemove</b> will be called after removing.
+		/// </p>
+		/// <p>
+		/// When an item is being replaced, it is considered as removing the original item and inserting the new item.
+		/// </p>
+		/// <p>
+		/// After any changing happens, <b>NotifyUpdateInternal</b> is called.
+		/// Arguments is exactly the same as <see cref="reflection::description::IValueObservableList::ItemChanged"/>.
+		/// </p>
+		/// </remarks>
 		template<typename T, typename K = typename KeyType<T>::Type>
 		class ObservableListBase : public Object, public virtual collections::IEnumerable<T>
 		{
@@ -3440,6 +5370,20 @@ ParameterAccessor<TContainer>
 				return items.CreateEnumerator();
 			}
 
+			/// <summary>Trigger <b>NotifyUpdateInternal</b> manually.</summary>
+			/// <returns>Returns true if arguments are not out of range.</returns>
+			/// <param name="start">The index of the first item that are changed.</param>
+			/// <param name="count">The number of items that are changed, the default value is 1.</param>
+			/// <remarks>
+			/// <p>
+			/// This is useful when the container is not actually changed, but data in some items are changed.
+			/// For example, in an observable list of shared pointers,
+			/// properties of elements are changed does not trigger callbacks because it doesn't change pointers in the list.
+			/// </p>
+			/// <p>
+			/// If subscribers need to know about such change, calling this function is an easy way to do it.
+			/// </p>
+			/// </remarks>
 			bool NotifyUpdate(vint start, vint count = 1)
 			{
 				if (start<0 || start >= items.Count() || count <= 0 || start + count>items.Count())
@@ -3585,6 +5529,9 @@ ParameterAccessor<TContainer>
 			}
 		};
 
+		/// <summary>An observable container that maintain an implementation of <see cref="reflection::description::IValueObservableList"/>.</summary>
+		/// <typeparam name="T">Type of elements.</typeparam>
+		/// <typeparam name="K">Type of the key type of elements. It is recommended to use the default value.</typeparam>
 		template<typename T>
 		class ObservableList : public ObservableListBase<T>
 		{
@@ -3600,6 +5547,20 @@ ParameterAccessor<TContainer>
 			}
 		public:
 
+			/// <summary>
+			/// Get the maintained observable list.
+			/// <see cref="reflection::description::IValueObservableList::ItemChanged"/> of the observable list
+			/// will be automatically triggered when any changing happens.
+			/// </summary>
+			/// <returns>The maintained observable list.</returns>
+			/// <remarks>
+			/// <p>
+			/// <see cref="reflection::description::BoxParameter`1"/>
+			/// cannot turn any predefined C++ object to an reflectable observable list
+			/// and keep it binding to the C++ object.
+			/// When an reflectable observable list is required, ObservableList is strongly recommended.
+			/// </p>
+			/// </remarks>
 			Ptr<reflection::description::IValueObservableList> GetWrapper()
 			{
 				if (!observableList)
@@ -3635,11 +5596,8 @@ ParameterAccessor<TContainer>
 .\GUITYPEDESCRIPTORBUILDER_FUNCTION.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-	
-Interfaces:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
  
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER_FUNCTION
@@ -4274,12 +6232,9 @@ CustomEventInfoImpl<void(TArgs...)>
 /***********************************************************************
 .\GUITYPEDESCRIPTORBUILDER_STRUCT.H
 ***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-	
-Interfaces:
+/*/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
  
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER_STRUCT
@@ -4610,11 +6565,8 @@ ParameterAccessor<TStruct>
 .\GUITYPEDESCRIPTORMACROS.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-
-Interfaces:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORMACROS
@@ -5189,11 +7141,8 @@ Property
 .\GUITYPEDESCRIPTORREFLECTION.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-
-Interfaces:
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORREFLECTION
@@ -5460,6 +7409,8 @@ Helper Functions
 LoadPredefinedTypes
 ***********************************************************************/
 
+			/// <summary>Register all reflectable types in <b>VlppReflection</b>.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
 			extern bool										LoadPredefinedTypes();
 		}
 	}
