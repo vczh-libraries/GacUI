@@ -55,7 +55,7 @@ Instruction
 				Return,					//						: Value -> Value													; (exit function)
 				CreateArray,			// count				: Value-count, ..., Value-1 -> <array>								; {1 2 3} -> <3 2 1>
 				CreateObservableList,	// count				: Value-count, ..., Value-1 -> <observable-list>					; {1 2 3} -> <3 2 1>
-				CreateMap,				// count				: Value-count, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
+				CreateMap,				// count				: Value-count*2, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
 				CreateClosureContext,	// count				: Value-1, ..., Value-count -> <closure-context>					;
 				CreateClosure,			//						: <closure-context>, Value-function-index -> <closure>				;
 				CreateInterface,		// IMethodInfo*, count	: <closure-context>, Value-count, ..., Value-1 -> <map>				; {"Get":a "Set":b} -> new TInterface(InterfaceProxy^)
@@ -75,7 +75,7 @@ Instruction
 				UpdateProperty,			// IPropertyInfo*		: Value-this, Value -> Value-this									;
 				InvokeProxy,			// count				: Value-1, ..., Value-n, Value-this -> Value						;
 				InvokeMethod,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
-				InvokeEvent,			// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
+				InvokeEvent,			// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> <null>						;
 				InvokeBaseCtor,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> <null>						;
 				AttachEvent,			// IEventInfo*			: Value-this, <function> -> <Listener>								;
 				DetachEvent,			// IEventInfo*			: Value-this, <Listener> -> bool									;
@@ -865,12 +865,17 @@ Assembly
 				void												Initialize();
 			};
 
-			/// <summary>Representing failures during loading an assembly</summary>
+			/// <summary>Representing metadata errors during loading an assembly.</summary>
 			class WfAssemblyLoadErrors
 			{
 			public:
+				/// <summary>All unresolvable types.</summary>
 				collections::List<WString>							unresolvedTypes;
+
+				/// <summary>All duplicated types. Types are shared in the process, there is no isolation between assemblies.</summary>
 				collections::List<WString>							duplicatedTypes;
+
+				/// <summary>All unresolvable members in resolved types.</summary>
 				collections::List<WString>							unresolvedMembers;
 			};
 
@@ -1064,7 +1069,7 @@ namespace vl
 Debugger
 ***********************************************************************/
 
-			/// <summary>Break point action.</summary>
+			/// <summary>Break point action. It will </summary>
 			class IWfBreakPointAction : public virtual Interface
 			{
 			public:
@@ -1074,7 +1079,8 @@ Debugger
 				virtual bool					EvaluateCondition(WfDebugger* debugger) = 0;
 				/// <summary>Called when a break point is about to activate, even <see cref="EvaluateCondition"/> returns false.</summary>
 				/// <param name="debugger">The current attached debugger.</param>
-				virtual void					PostAction(WfDebugger* debugger) = 0;
+				/// <param name="activated">The return value from <see cref="EvaluateCondition"/>.</param>
+				virtual void					PostAction(WfDebugger* debugger, bool activated) = 0;
 			};
 
 			/// <summary>Break point.</summary>
@@ -1196,6 +1202,28 @@ Debugger
 			};
 
 			/// <summary>Workflow debugger.</summary>
+			/// <remarks>
+			/// <p>
+			/// <see cref="SetDebuggerForCurrentThread"/> needs to be called to make a debugger works for any Workflow script that is running in the current thread.
+			/// </p>
+			/// <p>
+			/// <see cref="OnBlockExecution"/> needs to be overrided to make a debugger work properly.
+			/// When the target Workflow script stops,
+			/// this function will be called.
+			/// In this function,
+			/// one of <see cref="Run"/>, <see cref="Pause"/>, <see cref="Stop"/>, <see cref="StepOver"/> and <see cref="StepInto"/>
+			/// must be called to make the target Workflow script continues.
+			/// </p>
+			/// <p>
+			/// You are allowed to run the debugger logic in another thread,
+			/// for example,
+			/// an GUI application is debugging a Workflow script which is running in another thread.
+			/// In this case, <see cref="OnBlockExecution"/> needs to be blocked until it is ready to continue.
+			/// </p>
+			/// <p>
+			/// Locks are a good choice for this.
+			/// </p>
+			/// </remarks>
 			class WfDebugger : public Object, protected virtual IWfDebuggerCallback
 			{
 				friend IWfDebuggerCallback* GetDebuggerCallback(WfDebugger* debugger);
@@ -1215,15 +1243,36 @@ Debugger
 				typedef collections::Dictionary<MethodKey, vint>		MethodBreakPointMap;
 				typedef collections::Dictionary<TypeKey, vint>			TypeBreakPointMap;
 			public:
+				/// <summary>The state of the debugger.</summary>
+				/// <remarks>
+				/// <p>
+				/// The state is affected by break points and the following operations:
+				/// <ul>
+				///   <li><b><see cref="Run"/></b>: If the Workflow script is paused, it continues the script.</li>
+				///   <li><b><see cref="Pause"/></b>: If the Workflow script is running, it pauses the script, following by a call to <see cref="OnBlockExecution"/>.</li>
+				///   <li><b><see cref="Stop"/></b>: If the Workflow script is not stopped, it stops the script by throwing in exception in the script.</li>
+				///   <li><b><see cref="StepOver"/></b>: Stop over to the next code line and pause. It doesn't jump into the function to be called.</li>
+				///   <li><b><see cref="StepInto"/></b>: Stop into the new code line and pause.</li>
+				/// </ul>
+				/// Operations are expected to be called in <see cref="OnBlockExecution"/>.
+				/// </p>
+				/// </remarks>
 				enum State
 				{						//		Run		Pause	Stop	StepOver	StepInto
+					/// <summary>The associated thread is running Workflow script.</summary>
 					Running,			// R			*RTP	*RTS
+					/// <summary>The target Workflow script is paused by operations other than break points.</summary>
 					PauseByOperation,	// PBO	*C				*RTS	*C			*C
+					/// <summary>The target Workflow script is paused by break points.</summary>
 					PauseByBreakPoint,	// PBB	*C				*RTS	*C			*C
+					/// <summary>The associated thread has stopped running Workflow script.</summary>
 					Stopped,			// S			*RTP			*			*
+					/// <summary>The debugger allows the target Workflow script to continue.</summary>
 					Continue,			// C	soon becomes Running
-					RequiredToPause,	// RTP	soon becomes PauseByOperation
-					RequiredToStop,		// RTS	soon becomes Stop
+					/// <summary>The target Workflow script is required to pause. This value can be observed in <see cref="OnBlockExecution"/>. Operations to continue executing the Workflow script await to be called.</summary>
+					RequiredToPause,	// RTP	soon becomes PauseByOperation (should be triggered in OnBlockExecution)
+					/// <summary>The target Workflow script is required to stop. It caused to Workflow script to stop by throwing an exception saying this.</summary>
+					RequiredToStop,		// RTS	soon becomes Stopped          (should be triggered in OnBlockExecution)
 				};
 
 				enum RunningType
@@ -1272,6 +1321,7 @@ Debugger
 				TypeBreakPointMap						createObjectBreakPoints;
 
 				/// <summary>Called for doing something when a break point is activated. This function will be called multiple times before some one let the debugger to continue.</summary>
+				/// <remarks>This function must be overrided, or the Workflow script will hang when it is paused by any reason.</remarks>
 				virtual void							OnBlockExecution();
 				/// <summary>Called when a new Workflow program is about to run.</summary>
 				virtual void							OnStartExecution();
@@ -1316,13 +1366,18 @@ Debugger
 				/// <summary>Get the number of all break points.</summary>
 				/// <returns>The number of all break points.</returns>
 				vint									GetBreakPointCount();
-				/// <summary>Get a specified break point.</summary>
+				/// <summary>Test if an index is an available break point.</summary>
+				/// <returns>Returns true if an index is an available break point. This function returns true for all disabled break points.</returns>
+				/// <param name="index">The index of the break point.</param>
+				bool									IsBreakPointAvailable(vint index);
+				/// <summary>Get a specified break point. For unavailable break points, <see cref="WfBreakPoint::available"/> is false.</summary>
 				/// <returns>The break point.</returns>
 				/// <param name="index">The index of the break point.</param>
 				const WfBreakPoint&						GetBreakPoint(vint index);
 				/// <summary>Delete a specified break point.</summary>
 				/// <returns>Returns true if this operation is succeeded.</returns>
 				/// <param name="index">The index of the break point.</param>
+				/// <remarks>After removing a break point, the break point becomes unavailable. The index will be reused later when a new break point is added to the debugger.</remarks>
 				bool									RemoveBreakPoint(vint index);
 				/// <summary>Enable or disable a specified break point.</summary>
 				/// <returns>Returns true if this operation is succeeded.</returns>
@@ -1421,19 +1476,23 @@ namespace vl
 RuntimeEnvironment
 ***********************************************************************/
 
+			/// <summary>Variable storage.</summary>
 			class WfRuntimeVariableContext : public Object, public reflection::Description<WfRuntimeVariableContext>
 			{
 				typedef collections::Array<reflection::description::Value>		VariableArray;
 
 			public:
+				/// <summary>Values of variables in runtime.</summary>
 				VariableArray					variables;
 			};
 
-			/// <summary>Global context for executing a Workflow program. After the context is prepared, use [M:vl.workflow.runtime.LoadFunction] to call any functions inside the assembly. Function "&lt;initialize&gt;" should be the first to execute.</summary>
+			/// <summary>Global context for executing a Workflow program. After the context is prepared, use [M:vl.workflow.runtime.LoadFunction`1] to call any functions inside the assembly. Function "<b>&lt;initialize&gt;</b>" should be the first to execute.</summary>
 			class WfRuntimeGlobalContext : public Object, public reflection::Description<WfRuntimeGlobalContext>
 			{
 			public:
+				/// <summary>The loaded assembly.</summary>
 				Ptr<WfAssembly>					assembly;
+				/// <summary>Global variable storages.</summary>
 				Ptr<WfRuntimeVariableContext>	globalVariables;
 				
 				/// <summary>Create a global context for executing a Workflow program.</summary>
@@ -1617,6 +1676,23 @@ RuntimeThreadContext
 				StackCorrupted,
 			};
 
+			/// <summary>A Workflow script call stack.</summary>
+			/// <remarks>
+			/// <p>
+			/// This object could be obtained by <see cref="WfDebugger::GetCurrentThreadContext"/>.
+			/// A thread could have multiple thread contexts,
+			/// a full list could be obtained by <see cref="WfDebugger::GetThreadContexts"/>.
+			/// </p>
+			/// <p>
+			/// You are not recommended to update the call stack using this object.
+			/// </p>
+			/// <p>
+			/// In the current version,
+			/// the debug information doesn't contain enough data,
+			/// so that it could be difficult to read local variables in high-level function constructions,
+			/// like lambda expression or coroutines.
+			/// </p>
+			/// </remakrs>
 			class WfRuntimeThreadContext
 			{
 				typedef collections::List<reflection::description::Value>		VariableList;
@@ -1662,17 +1738,19 @@ RuntimeThreadContext
 Helper Functions
 ***********************************************************************/
 			
-			/// <summary>Load a function from a global context, raise an exception if multiple functions are found under the same name. Function "&gt;initialize&lt;" should be the first to execute.</summary>
+			/// <summary>Load a function from a global context, raise an exception if multiple functions are found under the same name. Function "&lt;initialize&gt;" should be the first to execute.</summary>
 			/// <returns>The loaded function.</returns>
 			/// <param name="context">The context to the evaluation environment.</param>
 			/// <param name="name">The function name.</param>
+			/// <remarks>"<b>&lt;initialize&gt;</b>" must be the first function that is executed after an assembly is loaded. It has no argument or return value.</remarks>
 			extern Ptr<reflection::description::IValueFunctionProxy>		LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name);
 			
-			/// <summary>Load a C++ friendly function from a global context, raise an exception if multiple functions are found under the same name. Function "&gt;initialize&lt;" should be the first to execute.</summary>
+			/// <summary>Load a C++ friendly function from a global context, raise an exception if multiple functions are found under the same name. Function "&lt;initialize&gt;" should be the first to execute.</summary>
 			/// <typeparam name="TFunction">Type of the function.</typeparam>
 			/// <returns>The loaded C++ friendly function.</returns>
 			/// <param name="context">The context to the evaluation environment.</param>
 			/// <param name="name">The function name.</param>
+			/// <remarks>"<b>&lt;initialize&gt;</b>" must be the first function that is executed after an assembly is loaded. Its type is <b>void()</b>.</remarks>
 			template<typename TFunction>
 			Func<TFunction> LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name)
 			{

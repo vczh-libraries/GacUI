@@ -2571,7 +2571,7 @@ InstructionLocation
 			}
 
 /***********************************************************************
-WfDebugger
+WfDebugger Callback Handlers
 ***********************************************************************/
 
 			void WfDebugger::OnBlockExecution()
@@ -2617,7 +2617,7 @@ WfDebugger
 						if (breakPoint.action)
 						{
 							activated = breakPoint.action->EvaluateCondition(this);
-							breakPoint.action->PostAction(this);
+							breakPoint.action->PostAction(this, activated);
 						}
 						else
 						{
@@ -2792,7 +2792,7 @@ WfDebugger
 			}
 
 /***********************************************************************
-WfDebugger
+WfDebugger BreakPoints
 ***********************************************************************/
 
 #define TEST(AVAILABLE, KEY, MAP) if (AVAILABLE && available == MAP.Keys().Contains(KEY)) return false;
@@ -2937,6 +2937,7 @@ WfDebugger
 				breakPoints[index].id = index;
 				breakPoints[index].available = true;
 				breakPoints[index].enabled = true;
+				breakPoints[index].action = nullptr;
 				return index;
 			}
 
@@ -2952,6 +2953,11 @@ WfDebugger
 
 				vint ins = codeInsMap.GetByIndex(index)[0];
 				return AddBreakPoint(WfBreakPoint::Ins(assembly, ins));
+			}
+
+			bool WfDebugger::IsBreakPointAvailable(vint index)
+			{
+				return 0 <= index && index < breakPoints.Count() && !freeBreakPointIndices.Contains(index);
 			}
 
 			vint WfDebugger::GetBreakPointCount()
@@ -3005,6 +3011,10 @@ WfDebugger
 			{
 				breakException = value;
 			}
+
+/***********************************************************************
+WfDebugger Operations
+***********************************************************************/
 
 			bool WfDebugger::Run()
 			{
@@ -3069,6 +3079,10 @@ WfDebugger
 				stepBeforeCodegen = beforeCodegen;
 				return true;
 			}
+
+/***********************************************************************
+WfDebugger
+***********************************************************************/
 
 			WfDebugger::State WfDebugger::GetState()
 			{

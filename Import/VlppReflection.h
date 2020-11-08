@@ -2265,7 +2265,7 @@ ITypeManager
 
 			/// <summary>Unload all types and free the type manager.</summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <remakrs>
+			/// <remarks>
 			/// After calling this function, you can no longer register new types,
 			/// and calling <see cref="GetGlobalTypeManager"/> will always get null.
 			/// </remarks>
@@ -2274,7 +2274,7 @@ ITypeManager
 
 			/// <summary>Unload all types and reset the type manager.</summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <remakrs>
+			/// <remarks>
 			/// <p>
 			/// This function is similar to <see cref="DestroyGlobalTypeManager"/>,
 			/// but calling this function allows types to be registsred again.

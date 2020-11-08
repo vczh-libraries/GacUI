@@ -188,7 +188,7 @@ General Syntax Tree
 		class ParsingTreeObject;
 		class ParsingTreeArray;
 
-		/// <summary>Abstract syntax tree.</summary>
+		/// <summary>Abstract syntax tree, usually created by a sub class of  <see cref="tabling::ParsingGeneralParser"/></summary>
 		class ParsingTreeNode : public Object, public reflection::Description<ParsingTreeNode>
 		{
 		public:
@@ -245,36 +245,36 @@ General Syntax Tree
 			ParsingTextRange					GetCodeRange();
 			void								SetCodeRange(const ParsingTextRange& range);
 
-			/// <summary>Precalculate for enhance searching performance for this node and all child nodes.</summary>
+			/// <summary>Cache necessary data to improve searching performance for this node and all child nodes.</summary>
 			void								InitializeQueryCache();
 			/// <summary>Clear all cache made by <see cref="InitializeQueryCache"/>.</summary>
 			void								ClearQueryCache();
-			/// <summary>Get the parent node. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <summary>Get the parent node. Using this function requires <see cref="InitializeQueryCache"/> to be called.</summary>
 			/// <returns>The parent node.</returns>
 			ParsingTreeNode*					GetParent();
-			/// <summary>Get the child nodes. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <summary>Get the child nodes. Using this function requires <see cref="InitializeQueryCache"/> to be called.</summary>
 			/// <returns>The child nodes.</returns>
 			const NodeList&						GetSubNodes();
 			
-			/// <summary>Find a direct child node at the position. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <summary>Find a direct child node at the position. Using this function requires <see cref="InitializeQueryCache"/> to be called.</summary>
 			/// <returns>The found node.</returns>
 			/// <param name="position">The position.</param>
 			ParsingTreeNode*					FindSubNode(const ParsingTextPos& position);
-			/// <summary>Find a direct child node at the range. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <summary>Find a direct child node at the range. Using this function requires <see cref="InitializeQueryCache"/> to be called.</summary>
 			/// <returns>The found node.</returns>
 			/// <param name="range">The range.</param>
 			ParsingTreeNode*					FindSubNode(const ParsingTextRange& range);
-			/// <summary>Find a most deepest indirect child node at the position. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <summary>Find a most deepest indirect child node at the position. Using this function requires <see cref="InitializeQueryCache"/> to be called.</summary>
 			/// <returns>The found node.</returns>
 			/// <param name="position">The position.</param>
 			ParsingTreeNode*					FindDeepestNode(const ParsingTextPos& position);
-			/// <summary>Find a most deepest indirect child node at the range. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <summary>Find a most deepest indirect child node at the range. Using this function requires <see cref="InitializeQueryCache"/> to be called.</summary>
 			/// <returns>The found node.</returns>
 			/// <param name="range">The range.</param>
 			ParsingTreeNode*					FindDeepestNode(const ParsingTextRange& range);
 		};
 
-		/// <summary>Representing a token node in a abstract syntax tree.</summary>
+		/// <summary>Representing a token node in an abstract syntax tree.</summary>
 		class ParsingTreeToken : public ParsingTreeNode, public reflection::Description<ParsingTreeToken>
 		{
 		protected:
@@ -296,7 +296,7 @@ General Syntax Tree
 			void								SetValue(const WString& _value);
 		};
 		
-		/// <summary>Representing an object node in a abstract syntax tree.</summary>
+		/// <summary>Representing an object node in an abstract syntax tree.</summary>
 		class ParsingTreeObject : public ParsingTreeNode, public reflection::Description<ParsingTreeObject>
 		{
 		protected:
@@ -336,7 +336,7 @@ General Syntax Tree
 			RuleList&							GetCreatorRules();
 		};
 		
-		/// <summary>Representing an array node in a abstract syntax tree.</summary>
+		/// <summary>Representing an array node in an abstract syntax tree.</summary>
 		class ParsingTreeArray : public ParsingTreeNode, public reflection::Description<ParsingTreeArray>
 		{
 		protected:
@@ -1281,242 +1281,391 @@ namespace vl
 Parsing Table
 ***********************************************************************/
 
-			/// <summary><![CDATA[
-			/// The parsing table. When you complete a grammar file, ParserGen.exe which is in the Tools project will generate the C++ code for you to create a parsing table.
-			///
+			/// <summary>
+			/// <p>
+			/// The parsing table. When you complete a grammar file, use ParserGen.exe to generate the C++ code for you to create a parsing table.
+			/// </p>
+			/// <p>
 			/// Here is a brief description of the grammar file format:
+			/// </p>
+			/// <p>
+			/// The grammar file consists of four parts: configuration, types, tokens and grammar in order like this:
+			/// <program><code><![CDATA[
+			/// CONFIGURATION
+			/// grammar:
+			/// TYPES
+			/// TOKENS
+			/// GRAMMAR
+			/// ]]></code></program>
+			/// </p>
+			/// <p>
+			/// <b>Configuration</b>
+			/// <ul>
+			/// <li>
+			/// <b>include:"releative path to the VlppParser.h"</b>:
+			/// (multiple) e.g. "../Import/Vlpp.h"
+			/// </li>
+			/// <li>
+			/// <b>namespace:C++-NAMESPACE</b>:
+			/// (single) Namespaces separated by "." to contain the generated code. e.g. vl.parsing.xml
+			/// </li>
+			/// <li>
+			/// <b>reflection:REFLECTION-NAMESPACE</b>:
+			/// (single) Namespaces separated by "." to contain the name of reflectable types. In most of the cases this should be the same as namespace. e.g. vl.parsing.xml
+			/// </li>
+			/// <li>
+			/// <b>filePrefix:FILE-PREFIX</b>:
+			/// (single) A prefix that will be add before all generated files. e.g. ParsingXml
+			/// </li>
+			/// <li>
+			/// <b>classPrefix:CLASS-PREFIX</b>:
+			/// (single) A prefix that will be add before all generated types and function. e.g. Xml
+			/// </li>
+			/// <li>
+			/// <b>classRoot:CLASS-ROOT</b>:
+			/// (single) The class that represents the whole text being parsed.
+			/// </li>
+			/// <li>
+			/// <b>guard:C++-HEADER-GUARD</b>:
+			/// (single) The C++ header guard pattern macro name. e.g. VCZH_PARSING_XML_PARSINGXML_PARSER
+			/// </li>
+			/// <li>
+			/// <b>parser:NAME(RULE)</b>:
+			/// (multiple) Pair a function name to a rule name.
+			/// It will generate a function called "XmlParseDocument" to parse the input using the rule named "XDocument",
+			/// if you have "classPrefix:Xml" and "parser:ParseDocument(XDocument)".</li>
+			/// <li>
+			/// <b>file:FEATURE(POSTFIX)</b>:
+			/// (multiple) Generate code for a specified feature to "&lt;FILE-PREFIX&gt;&lt;POSTFIX&gt;.h" and "&lt;FILE-PREFIX&gt;&lt;POSTFIX&gt;.cpp".
+			/// FEATURE could be Ast, Parser, Copy, Traverse and Empty.
+			/// Ast is the definition of all classes in the grammar file.
+			/// Parser is the implementation of all parsers.
+			/// Others are visitors for Ast with different traversing features.
+			/// </li>
+			/// <li>
+			/// <b>ambiguity:(enabled|disabled)</b>:
+			/// (single) Set to "enabled" indicating that the grammar is by design to have ambiguity.
+			/// If ambiguity happens during parser, but here is "disabled", then an error will be generated.
+			/// </li>
+			/// <li>
+			/// <b>serialization:(enabled|disabled)</b>:
+			/// (single) Set to "enabled" to serialize the parsing table as binary in the generated C++ code,
+			/// so that when the "&lt;CLASS-PREFIX&gt;LoadTable" function is called to load the table,
+			/// it can deserialize from the binary data directly,
+			/// instead of parsing the grammar again.
+			/// But the grammar text will always be in the generated C++ code regardless of the value of "serialization",
+			/// it can always be retrived using the "&lt;CLASS-PREFIX&gt;GetParserTextBuffer" function.
+			/// </li>
+			/// </ul>
+			/// </p>
+			/// <p>
+			/// <b>Character escaping in strings</b>
+			/// </p>
+			/// <p>
+			/// There is only character escaping in strings: "", which means the " character.
+			/// For example, "a""b""c" means R"TEXT(a"b"c)TEXT" in C++.
+			/// </p>
+			/// <p>
+			/// <b>Types</b>
+			/// </p>
+			/// <p>
+			/// You can write attributes like @AttributeName("argument1", "argument2", ...) in the middle of types.
+			/// But attributes don't affect parsing.
+			/// All attribute definitions will be stored in the generated parsing table,
+			/// and who uses the table defines how attributes work. Multiple attributes are separated by ",".
+			/// </p>
+			/// <p>
+			/// If you only need parsing, usually you don't need to use attributes.
+			/// GacUI will use some attributes to drive colorizer and intellisense.
+			/// This part is subject to change in the next version, so it will not be described here.
+			/// </p>
+			/// <p>
+			/// <ul>
+			///     <li>
+			///         <b>Enum</b>:
+			///         <program><code><![CDATA[
+			///             enum EnumName <attributes>
+			///             {
+			///                 Item1 <attributes>,
+			///                 Item2 <attributes>,
+			///                 ... // cannot skip the last ","
+			///             }
+			///         ]]></code></program>
+			///     </li>
+			///     <li>
+			///         <p>
+			///         <b>Class</b>:
+			///         <program><code><![CDATA[
+			///             class Name [ambiguous(AmbiguousType)] [: ParentType] <attributes>
+			///             {
+			///                 Type name [(UnescapingFunction)] <attributes> ;
+			///             }
+			///         ]]></code></program>
+			///         </p>
+			///         <p>
+			///         UnescapingFunction is a callback,
+			///         which will be called after the contained type is fully constructed.
+			///         The generated C++ code will define forward declarations of all unescaping functions in the cpp file.
+			///         You should implement them in other places, or you will get linking errors.
+			///         </p>
+			///         <p>
+			///         If the grammar enables ambiguity, then the parsing result may contain ambiguous results for the same part of the input. For example, in C++:
+			///         <program><code><![CDATA[
+			///         A*B;
+			///         ]]></code></program>
+			///         has two meanings without considering the surrounding context: a multiplication expression or a pointer variable definition.
+			///         </p>
+			///         <p>
+			///         If the grammar doesn't enable ambiguity, it will refuce to generate C++ codes because the grammar is wrong.
+			///         Note that it doesn't generate errors for every possible cases of ambiguity.
+			///         Do not rely on this to check ambiguity in the grammar.
+			///         </p>
+			///         <p>
+			///         If the grammar enables ambiguity, than the syntax tree should be defined like this:
+			///         <program><code><![CDATA[
+			///             // when ambiguity happens for Statement, AmbiguiusStatement will be used to container all possible cases
+			///             class Statement ambiguous(AmbiguousStatement)
+			///             {
+			///             }
 			///
-			/// include:"<releative path to the Vlpp.h>"	// (multiple)	e.g. "../Import/Vlpp.h"
-			/// classPrefix:<class prefix>					// (single)		A prefix that will be add before all generated types and function. e.g. Xml
-			/// guard:<C++ header guard>					// (single)		The C++ header guard pattern macro name. e.g. VCZH_PARSING_XML_PARSINGXML_PARSER
-			/// namespace:<C++ namespaces>					// (single)		Namespaces separated by "." to contain the generated code. e.g. vl.parsing.xml
-			/// reflection:<namespace>						// (single)		Namespaces separated by "." to contain the name of reflectable types. In most of the cases this should be the same as namespace. e.g. vl.parsing.xml
-			/// parser:<name>(<rule>)						// (multiple)	Pair a function name to a rule name. ParserGen.exe will generate a function called "<prefix><name>" to parse the input using rule named "<rule>". e.g. ParseDocument(XDocument)
-			/// ambiguity:(enabled|disabled)				// (single)		Set to "enabled" indicating that the grammar is by design to have ambiguity.
-			/// serialization:(enabled|disabled)			// (single)		Set to "enabled" to serialize the parsing table as binary in the generated C++ code, so that when the "<prefix>LoadTable" function is called to load the table, it can deserialize from the binary data directly, instead of parsing the grammar again. But the grammar text will always be contained in the generated C++ code regardless of the value of "serialization", it can always be retrived using the "<prefix>GetParserTextBuffer" function.
-			/// grammar:									// (single)		Configuration ends here. All content after "grammar:" will be treated as the grammar to define the input.
+			///             // so that "AmbiguousStatement" should inherit from "Statement"
+			///             class AmbiguousStatement : Statement
+			///             {
+			///                 // it should called "items", and the type should be an array of the base type
+			///                 Statement[] items;
+			///             }
 			///
-			/// Here is the brief description of the grammar.
-			/// The grammar is formed by 3 parts: types, token definitions and rule definitions. There is only one character escaping in strings: "", which means the " character.
+			///             class ExpressionStatement : Statement
+			///             {
+			///                 Expression expression;
+			///             }
 			///
-			/// 1) Types:
-			///		You can write attributes like @AttributeName("argument1", "argument2", ...) in the middle of types. But attributes don't affect the parsing. All attribute definitions will be stored in the generated parsing table, and who uses the table defines how attributes work. Multiple attributes are separated by ",".
+			///             class VariableDefinitionStatement : Statement
+			///             {
+			///                 Type type;
+			///                 token name;
+			///             }
+			///         ]]></code></program>
+			///         For "A*B;" part in the whole input, it becomes an AmbiguousStatement.
+			///         The "items" field contains two instances, which are "ExpressionStatement" and "VariableDefinitionStatement".
+			///         You could write C++ code to resolve the ambiguity in later passes.
+			///         </p>
+			///     </li>
+			///     <li>
+			///         <p><b>Type references</b>:</p>
+			///         <p>
+			///         Types can be defined globally or inside classes. Generic type is not supported. You can use the following types for a class field:
+			///         <ul>
+			///             <li><b>token</b>: Store a token, which will becomes [T:vl.parsing.ParsingToken].</li>
+			///             <li><b>ClassName</b>: Instance of a specified type, which will becomes Ptr&lt;ClassName&gt;.</li>
+			///             <li>
+			///                 <p><b>ClassName[]</b>: Array, which will becomes List&lt;Ptr&lt;ClassName&gt;&gt;. Array of tokens are not supported.</p>
+			///                 <p>A class name could also be<b>OuterClass.InnerClass</b>, referring to the "InnerClass" defined inside the "OuterClass".</p>
+			///             </li>
+			///         </ul>
+			///         </p>
+			///     </li>
+			/// </ul>
+			/// </p>
+			/// <p>
+			/// <b>Token definitions</b>
+			/// <program><code><![CDATA[
+			///     token TokenName = "regular expression" <attributes>;
+			///     discardtoken TokenName = "regular expression";
+			/// ]]></code></program>
+			/// "discardtoken" means that,
+			/// if such a token is identified,
+			/// it will not appear in the lexical analyzing result.
+			/// You cannot use tokens marked with "discardtoken" in the grammar.
+			/// </p>
+			/// <p>
+			/// <b>Grammar</b>
+			/// <program><code><![CDATA[
+			///     rule RuleType RuleName <attributes>
+			///         = Grammar1
+			///         = Grammar2
+			///         ...
+			///         ;
+			/// ]]></code></program>
+			/// It means rule "RuleName" is defined by those grammars,
+			/// and matching this rule will create an instance of "RuleType" or one of its sub classes.
+			/// </p>
+			/// <p>
+			/// Here are all supported grammars that:
+			/// <ul>
+			///     <li><b>RuleName</b>: Defines an input that matches a rule.</li>
+			///     <li><b>TokenName</b>: Defines an input that formed by the specified token.</li>
+			///     <li><b>"StringConstant"</b>: Defines an input that formed by exactly the string constant. There should be exactly one token who can only be this string constant.</li>
+			///     <li><b>Grammar: FieldName</b>: Defines an input that matches Grammar (should be either a rule name or a token name), and the result will be stored in field "FieldName" of the created object.</li>
+			///     <li><b>!Grammar</b>: Defines an input that matches Grammar, and the rule will use the created object from this grammar. The input should still match other part of the rule, but result of other parts are ignored.</li>
+			///     <li><b>[Grammar]</b>: Defines an input that, if it matches Grammar, it returns the result from that grammar; otherwise, it returns null.</li>
+			///     <li><b>{Grammar}</b>: Defines an input that matches 0, 1 or more Grammar.</li>
+			///     <li><b>(Grammar)</b>: Defines an input that matches the the grammar. Brackets is only for changing operator associations.</li>
+			///     <li><b>Grammar1 Grammar2</b>: Defines an input that should match Grammar1 followed by Grammar2.</li>
+			///     <li><b>Grammar1 | Grammar2</b>: Defines an input that match either Grammar1 or Grammar2. When it matches Grammar1, Grammar2 will be ignored.</li>
+			///     <li><b>Grammar as Type</b>: Defines an input that matches the Grammar, and the whole branch of the rule creates an instance of type "Type".</li>
+			///     <li><b>Grammar with { FieldName = Value }</b>: Defines an input that matches the Grammar, assign "Value" to the field "FieldName" of the created object.</li>
+			/// </ul>
+			/// A grammar branch must be "GRAMMAR as TYPE with {Field1 = Value1} with {Field2 = Value2} ...".
+			/// </p>
+			/// <p>
+			/// <b>Example</b>
+			/// </p>
+			/// <p>
+			/// Here is an example to parse expression containing +, -, *, /, () and numbers:
+			/// <program><code><![CDATA[
+			///     include:"Vlpp.h"
+			///     namespace:vl.calculator
+			///     reflection:vl.calculator
+			///     filePrefix:Calc
+			///     classPrefix:Calc
+			///     classRoot:Expression
+			///     guard:VCZH_CALCULATOR_PARSER
+			///     parser:ParseExpression(Expr)
+			///     file:Ast(_Ast)
+			///     file:Parser(_Parser)
+			///     ambiguity:disabled
+			///     serialization:enabled
+			///     grammar:
 			///
-			///		a) Enum:
-			///			enum EnumName <attributes>
-			///			{
-			///				Item1 <attributes>,
-			///				Item2 <attributes>,
-			///				... // cannot skip the last ","
-			///			}
+			///     class Expression
+			///     {
+			///     }
 			///
-			///		b) Class:
-			///			class Name [ambiguous(AmbiguousType)] [: ParentType] <attributes>
-			///			{
-			///				Type name [(UnescapingFunction)] <attributes> ;
-			///			}
+			///     enum BinaryOperator
+			///     {
+			///         Add, Sub, Mul, Div,
+			///     }
 			///
-			///			UnescapingFunction is a callback, which will be called when the contained type is fully constructed. The generated C++ code will define forward declarations of all unescaping functions in the cpp file. You should implement them in other places, or you will get linking errors.
+			///     class NumberExpression : Expression
+			///     {
+			///         token number;
+			///     }
 			///
-			///			If the grammar enables ambiguity, then the parsing result may contain ambiguous results for the same part of the input. For example, in C++:
-			///			A*B;
-			///			has two meaning (if we only consider context-free parsing): multiplication expression and pointer variable definition.
-			///			So if the grammar doesn't enable ambiguity, ParserGen.exe will refuce to generate C++ codes because the grammar is wrong.
-			///			If the grammar enables ambiguity, than the syntax tree should be defined like this:
-			///			
-			///			class Statement ambiguous(AmbiguousStatement)
-			///			{
-			///			}
+			///     class BinaryExpression : Expression
+			///     {
+			///         BinaryOperator op;
+			///         Expression left;
+			///         Expression right;
+			///     }
 			///
-			///			class AmbiguousStatement : Statement // due to the definition of "Statement" class, "AmbiguousStatement" should inherit from "Statement"
-			///			{
-			///				Statement[] items; // required by naming convention
-			///			}
+			///     token ADD "\+"
+			///     token SUB "-"
+			///     token MUL "\*"
+			///     token DIV "\/"
+			///     token NUMBER "\d+(.\d+)?"
+			///     token OPEN "("
+			///     token CLOSE ")"
+			///     discardtoken SPACE = "/s+";
+			///     
+			///     rule Expression Factor
+			///         = NUMBER : number as NumberExpression
+			///         = "(" !Expr ")"
+			///         ;
+			///     rule Expression Term
+			///         = !Factor
+			///         = Term : left "*" Factor : right as BinaryExpression with {op = "Mul"}
+			///         = Term : left "/" Factor : right as BinaryExpression with {op = "Div"}
+			///         ;
+			///     rule Expression Expr
+			///         = !Term
+			///         = Expr : left "+" Term : right as BinaryExpression with {op = "Add"}
+			///         = Expr : left "-" Term : right as BinaryExpression with {op = "Sub"}
+			///         ;
+			/// ]]></code></program>
+			/// </p>
+			/// <p>
+			/// After using ParserGen.exe to generate C++ codes, you can do this:
+			/// <program><code><![CDATA[
+			///     // this table can be used, please cache the result to improve the performance
+			///     auto table = CalcLoadTable();
+			///     List<Ptr<ParsingError>> errors;
+			///     // it should be a Ptr<CalcExpression>, will returns nullptr if the input contains syntax errors
+			///     auto expression = CalcParseExpression(L"(1+2) * (3+4)", table, errors);
+			/// ]]></code></program>
+			/// You don't need to define the "errors" if you don't actually care how the input is wrong.
+			/// There will be a overloaded version of CalcParseExpression that doesn't need the third argument.
+			/// </p>
+			/// <p>
+			/// You can also automatically correct wrong input.
+			/// Ifthe input is not too wrong to recognize,
+			/// you can still get a syntax tree,
+			/// but some fields are nullptr,
+			/// with errors filled into the "error" variable.
+			/// <program><code><![CDATA[
+			///     auto table = CalcLoadTable();                   // Load the table.
+			///     ParsingState state(L"(1+2) * (3+4)", table);    // Initialize a state with the input and the table.
+			///     state.Reset(L"Expr");                           // Set the rule to parse.
+			///     auto parser = CreateAutoRecoverParser(table);   // Create an appropriate automatic error recoverable parser.
+			///     List<Ptr<ParsingError>> errors;                 // Define an error list.
+			///     auto node = parser->Parse(state, errors);       // Parse to get an abstract syntax tree, which is a Ptr<ParsingTreeNode>.
+			///     if (node)
+			///     {
+			///         auto expression = CalcConvertParsingTreeNode(node, state.GetTokens()).Cast<CalcExpression>();
+			///     }
+			/// ]]></code></program>
+			/// </p>
+			/// <p>
+			/// After you get a strong typed syntax tree, you can use the generated visitor interface to do something, like evaluate the results of the expression:
+			/// <program><code><![CDATA[
+			///     class Evaluator : public Object, public virtual CalcExpression::IVisitor
+			///     {
+			///     private:
+			///         double result;
 			///
-			///			class ExpressionStatement : Statement
-			///			{
-			///				Expression expression;
-			///			}
+			///         double Call(CalcExpression* node)
+			///         {
+			///             node->Accept(this);
+			///             return result;
+			///         }
 			///
-			///			class VariableDefinitionStatement : Statement
-			///			{
-			///				Type type;
-			///				token name;
-			///			}
+			///     public:
+			///         static double Evaluate(CalcExpression* node)
+			///         {
+			///             return Evaluator().Call(node);
+			///         }
 			///
-			///			So for the "A*B;" part in the whole input, it will becomes an AmbiguousStatement, in which the "items" field contains 2 instance of "ExpressionStatement" and "VariableDefinitionStatement".
-			///			And you can write C++ code to resolve the ambiguity in later passes.
+			///         void Visit(CalcNumberExpression* node)override
+			///         {
+			///             return wtof(node->number.value);
+			///         }
 			///
-			///		c) Type references:
-			///			Types can be defined globally or inside classes. Generic type is not supported. When you want to refer to a specific type, it could be:
-			///				token: Store a token, which will becomes [T:vl.parsing.ParsingToken].
-			///				Type[]: Array, which will becomes [T:vl.collections.List`2] to the element type. Token cannot be the element of arrays.
-			///				ClassName: Instance of a specified type, which will becomes [T:vl.Ptr`1] to that type.
-			///				OuterClass.InnerClass: Refer to the "InnerClass" defined inside the "OuterClass".
+			///         void Visit(CalcBinaryExpression* node)override
+			///         {
+			///             auto left = Calc(node->left.Obj());
+			///             auto right = Calc(node->right.Obj());
+			///             switch (node->op)
+			///             {
+			///             case CalcBinaryOperator::Add:
+			///                 result = left + right;
+			///                 break;
+			///             case CalcBinaryOperator::Sub:
+			///                 result = left 0 right;
+			///                 break;
+			///             case CalcBinaryOperator::Mul:
+			///                 result = left * right;
+			///                 break;
+			///             case CalcBinaryOperator::Div:
+			///                 result = left / right;
+			///                 break;
+			///             }
+			///         }
+			///     };
 			///
-			/// 2) Token definitions:
-			///		token TokenName = "regular expression" <attributes>;
-			///		discardtoken TokenName = "regular expression";
-			///
-			///		"discardtoken" means if such a token is identified, it will not appear in the lexical analyzing result. And you cannot refer to names of "discardtoken" in the grammar.
-			///
-			/// 3) Rule definitions:
-			///		rule RuleType RuleName <attributes>
-			///			= Grammar1
-			///			= Grammar2
-			///			...
-			///			;
-			///
-			///		It means rule "RuleName" is defined by those grammars, and matching this rule will create an instance of "RuleType" or its whatever types that inheriting "RuleType".
-			///
-			/// 4) Grammars:
-			///		RuleName: Defines an input that matches a rule.
-			///		TokenName: Defines an input that formed by the specified token.
-			///		"StringConstant": Defins an input that formed by exactly the string constant. This constant should define a token in the token list.
-			///		Grammar : FieldName: Defines an input that matches Grammar (should be either a rule name or a token name), and the result will be stored in field "FieldName" of a class, whose type will appear later.
-			///		!Grammar: Defines an input that matches Grammar, and the rule will return the result from this grammar. The input should still match other part of the rule, but result of other parts are ignored.
-			///		[Grammar]: Defines an input that, if match Grammar, will returns the result from that grammar; if not, the result is null.
-			///		{Grammar}: Defines an input that matches 0, 1 or more Grammar.
-			///		(Grammar): Defins an input that matches the the grammar. Brackets is only for changing operator associations.
-			///		Grammar1 Grammar2: Defines an input that should match Grammar1 right before Grammar2.
-			///		Grammar1 | Grammar2: Defines an input that match either Grammar1 or Grammar2.
-			///		Grammar as Type: Defines an input that matches the Grammar, and the whole branch of the rule creates an instance of type "Type"
-			///		Grammar with { FieldName = Value }: Defins an input that matches the Grammar, and will assign "Value", which should be an enum item, to the field "FieldName" of the created instance.
-			///
-			/// 5) Example
-			///		Here is an example to parse expression containing +, -, *, /, () and numbers:\
-			///
-			///		include:"Vlpp.h"
-			///		classPrefix:Calc
-			///		guard:VCZH_CALCULATOR_PARSER
-			///		namespace:vl.calculator
-			///		reflection:vl.calculator
-			///		parser:ParseExpression(Expr)
-			///		ambiguity:disabled
-			///		serialization:enabled
-			///		grammar:
-			///
-			///		class Expression
-			///		{
-			///		}
-			///
-			///		enum BinaryOperator
-			///		{
-			///			Add, Sub, Mul, Div,
-			///		}
-			///
-			///		class NumberExpression : Expression
-			///		{
-			///			token number;
-			///		}
-			///
-			///		class BinaryExpression : Expression
-			///		{
-			///			BinaryOperator op;
-			///			Expression left;
-			///			Expression right;
-			///		}
-			///
-			///		token ADD "\+"
-			///		token SUB "-"
-			///		token MUL "\*"
-			///		token DIV "\/"
-			///		token NUMBER "\d+(.\d+)?"
-			///		token OPEN "("
-			///		token CLOSE ")"
-			///
-			///		rule Expression Factor
-			///			= NUMBER : number as NumberExpression
-			///			= "(" !Expr ")"
-			///			;
-			///		rule Expression Term
-			///			= !Factor
-			///			= Term : left "*" Factor : right as BinaryExpression with {op = "Mul"}
-			///			= Term : left "/" Factor : right as BinaryExpression with {op = "Div"}
-			///			;
-			///		rule Expression Expr
-			///			= !Term
-			///			= Expr : left "+" Term : right as BinaryExpression with {op = "Add"}
-			///			= Expr : left "-" Term : right as BinaryExpression with {op = "Sub"}
-			///			;
-			///
-			///		After using ParserGen.exe to generate C++ codes, you can do this:
-			///			auto table = CalcLoadTable(); // this table can be used several times, don't load each type for each parsing, it will have a big performance overhead.
-			///			List<Ptr<ParsingError>> errors;
-			///			auto expression = CalcParseExpression(L"(1+2) * (3+4)", table, errors); // it should be a Ptr<CalcExpression>, will returns nullptr if the input is wrong, with all errors filled into the "errors" variable.
-			///			You don't need to define the "errors" if you don't actually care how the input is wrong. There will be a overloaded version of CalcParseExpression that doesn't need the error list.
-			///
-			///		If you want to parse a wrong input and do automatic error recovering, which means if the input is not too wrong, you can still get a syntax tree, but some fields are null, with errors filled into the "error" variable. It will be a little complex:
-			///			auto table = CalcLoadTable();					// Load the table.
-			///			ParsingState state(L"(1+2) * (3+4)", table);	// Initialize a state with the input and the table.
-			///			state.Reset(L"Expr");							// Set the rule to parse.
-			///			auto parser = CreateAutoRecoverParser(table);	// Create an appropriate automatic error recoverable parser.
-			///			List<Ptr<ParsingError>> errors;					// Define an error list.
-			///			auto node = parser->Parse(state, errors);		// Parse to get an abstract syntax tree, which is a Ptr<ParsingTreeNode>.
-			///			if (node)
-			///			{
-			///				auto expression = CalcConvertParsingTreeNode(node, state.GetTokens()).Cast<CalcExpression>();
-			///			}
-			///
-			///		After you get a strong typed syntax tree, you can use the generated visitor interface to do something, like evaluate the results of the expression:
-			///			class Evaluator : public Object, public virtual CalcExpression::IVisitor
-			///			{
-			///			private:
-			///				double result;
-			///
-			///				double Call(CalcExpression* node)
-			///				{
-			///					node->Accept(this);
-			///					return result;
-			///				}
-			///
-			///			public:
-			///
-			///				static double Evaluate(CalcExpression* node)
-			///				{
-			///					return Evaluator().Call(node);
-			///				}
-			///
-			///				void Visit(CalcNumberExpression* node)override
-			///				{
-			///					return wtof(node->number.value);
-			///				}
-			///
-			///				void Visit(CalcBinaryExpression* node)override
-			///				{
-			///					auto left = Calc(node->left.Obj());
-			///					auto right = Calc(node->right.Obj());
-			///					switch (node->op)
-			///					{
-			///					case CalcBinaryOperator::Add:
-			///						result = left + right;
-			///						break;
-			///					case CalcBinaryOperator::Sub:
-			///						result = left 0 right;
-			///						break;
-			///					case CalcBinaryOperator::Mul:
-			///						result = left * right;
-			///						break;
-			///					case CalcBinaryOperator::Div:
-			///						result = left / right;
-			///						break;
-			///					}
-			///				}
-			///			};
-			///
-			///			Nullable<double> EvaluateExpression(const WString& input)
-			///			{
-			///				static auto table = CalcLoadTable();
-			///				auto expression = CalcParseExpression(input, table);
-			///				Nulllable<double> result;
-			///				if (expression)
-			///				{
-			///					result = Evaluator::Evaulate(expression.Obj());
-			///				}
-			///				return result;
-			///			}
-			///
-			/// ]]></summary>
+			///     Nullable<double> EvaluateExpression(const WString& input)
+			///     {
+			///         static auto table = CalcLoadTable();
+			///         auto expression = CalcParseExpression(input, table);
+			///         Nulllable<double> result;
+			///         if (expression)
+			///         {
+			///             result = Evaluator::Evaulate(expression.Obj());
+			///         }
+			///         return result;
+			///     }
+			/// ]]></code></program>
+			/// </p>
+			/// </summary>
 			class ParsingTable : public Object
 			{
 			public:
@@ -2622,11 +2771,9 @@ namespace vl
 .\JSON\PARSINGJSON_AST.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parser::ParsingJson.parser.txt
-
 This file is generated by: Vczh Parser Generator
+From parser definition:ParsingJson.parser.txt
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_PARSING_JSON_PARSINGJSON_PARSER_AST
@@ -2639,19 +2786,32 @@ namespace vl
 	{
 		namespace json
 		{
+			/// <summary>Token types. Values of enum items will be used in <see cref="vl::regex::RegexToken::token"/>.</summary>
 			enum class JsonParserTokenIndex
 			{
+				/// <summary>Token TRUEVALUE: true</summary>
 				TRUEVALUE = 0,
+				/// <summary>Token FALSEVALUE: false</summary>
 				FALSEVALUE = 1,
+				/// <summary>Token NULLVALUE: null</summary>
 				NULLVALUE = 2,
+				/// <summary>Token OBJOPEN: \{</summary>
 				OBJOPEN = 3,
+				/// <summary>Token OBJCLOSE: \}</summary>
 				OBJCLOSE = 4,
+				/// <summary>Token ARROPEN: \[</summary>
 				ARROPEN = 5,
+				/// <summary>Token ARRCLOSE: \]</summary>
 				ARRCLOSE = 6,
+				/// <summary>Token COMMA: ,</summary>
 				COMMA = 7,
+				/// <summary>Token COLON: :</summary>
 				COLON = 8,
+				/// <summary>Token NUMBER: [\-]?\d+(.\d+)?([eE][+\-]?\d+)?</summary>
 				NUMBER = 9,
+				/// <summary>Token STRING: &quot;([^\\&quot;]|\\[^u]|\\u\d{4})*&quot;</summary>
 				STRING = 10,
+				/// <summary>Discardable token SPACE: \s+</summary>
 				SPACE = 11,
 			};
 			class JsonNode;
@@ -2662,34 +2822,56 @@ namespace vl
 			class JsonObjectField;
 			class JsonObject;
 
+			/// <summary>Base class of JSON nodes.</summary>
 			class JsonNode abstract : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<JsonNode>
 			{
 			public:
+				/// <summary>Visitor interface for <see cref="JsonNode"/>.</summary>
 				class IVisitor : public vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
 				{
 				public:
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="JsonLiteral"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(JsonLiteral* node)=0;
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="JsonString"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(JsonString* node)=0;
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="JsonNumber"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(JsonNumber* node)=0;
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="JsonArray"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(JsonArray* node)=0;
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="JsonObjectField"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(JsonObjectField* node)=0;
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="JsonObject"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(JsonObject* node)=0;
 				};
 
+				/// <summary>Accept a visitor to reveal its real type of this strong-typed AST node.</summary>
+				/// <param name="visitor">The visitor, one of its <b>Visit</b> method will be called according to the real type of this strong-typed AST node.</param>
 				virtual void Accept(JsonNode::IVisitor* visitor)=0;
 
 			};
 
+			/// <summary>Literal value node that is not number or string.</summary>
 			class JsonLiteral : public JsonNode, vl::reflection::Description<JsonLiteral>
 			{
 			public:
+				/// <summary>Literal value.</summary>
 				enum class JsonValue
 				{
+					/// <summary>A boolean literal: true.</summary>
 					True,
+					/// <summary>A boolean literal: false.</summary>
 					False,
+					/// <summary>A null literal.</summary>
 					Null,
 				};
 
+				/// <summary>The literal value.</summary>
 				JsonValue value;
 
 				void Accept(JsonNode::IVisitor* visitor)override;
@@ -2697,9 +2879,11 @@ namespace vl
 				static vl::Ptr<JsonLiteral> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 			};
 
+			/// <summary>String literal value node.</summary>
 			class JsonString : public JsonNode, vl::reflection::Description<JsonString>
 			{
 			public:
+				/// <summary>Content of the string literal.</summary>
 				vl::parsing::ParsingToken content;
 
 				void Accept(JsonNode::IVisitor* visitor)override;
@@ -2707,9 +2891,11 @@ namespace vl
 				static vl::Ptr<JsonString> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 			};
 
+			/// <summary>Number literal value node.</summary>
 			class JsonNumber : public JsonNode, vl::reflection::Description<JsonNumber>
 			{
 			public:
+				/// <summary>Content of the number literal.</summary>
 				vl::parsing::ParsingToken content;
 
 				void Accept(JsonNode::IVisitor* visitor)override;
@@ -2717,9 +2903,11 @@ namespace vl
 				static vl::Ptr<JsonNumber> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 			};
 
+			/// <summary>Array node.</summary>
 			class JsonArray : public JsonNode, vl::reflection::Description<JsonArray>
 			{
 			public:
+				/// <summary>Array elements.</summary>
 				vl::collections::List<vl::Ptr<JsonNode>> items;
 
 				void Accept(JsonNode::IVisitor* visitor)override;
@@ -2727,10 +2915,13 @@ namespace vl
 				static vl::Ptr<JsonArray> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 			};
 
+			/// <summary>Object property node.</summary>
 			class JsonObjectField : public JsonNode, vl::reflection::Description<JsonObjectField>
 			{
 			public:
+				/// <summary>Property name.</summary>
 				vl::parsing::ParsingToken name;
+				/// <summary>Property value.</summary>
 				vl::Ptr<JsonNode> value;
 
 				void Accept(JsonNode::IVisitor* visitor)override;
@@ -2738,9 +2929,11 @@ namespace vl
 				static vl::Ptr<JsonObjectField> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 			};
 
+			/// <summary>Object node.</summary>
 			class JsonObject : public JsonNode, vl::reflection::Description<JsonObject>
 			{
 			public:
+				/// <summary>Object properties.</summary>
 				vl::collections::List<vl::Ptr<JsonObjectField>> fields;
 
 				void Accept(JsonNode::IVisitor* visitor)override;
@@ -2802,6 +2995,8 @@ namespace vl
 			END_INTERFACE_PROXY(vl::parsing::json::JsonNode::IVisitor)
 
 #endif
+			/// <summary>Load all reflectable AST types, only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is off.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
 			extern bool JsonLoadTypes();
 		}
 	}
@@ -2812,11 +3007,9 @@ namespace vl
 .\JSON\PARSINGJSON_PARSER.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parser::ParsingJson.parser.txt
-
 This file is generated by: Vczh Parser Generator
+From parser definition:ParsingJson.parser.txt
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_PARSING_JSON_PARSINGJSON_PARSER_PARSER
@@ -2829,13 +3022,43 @@ namespace vl
 	{
 		namespace json
 		{
+			/// <summary>Get the grammar definition for this parser.</summary>
+			/// <returns>The grammar definition for this parser.</returns>
 			extern vl::WString JsonGetParserTextBuffer();
+			/// <summary>Convert parser result to a strong typed AST node. Usually you don't need to use this function, unless you are doing meta programming like error recovering or implementing intellisense for an editor.</summary>
+			/// <returns>Returns the strong typed AST node.</returns>
+			/// <param name="node">The parser result.</param>
+			/// <param name="tokens">Tokens for parsing. You can get the <see cref="vl::regex::RegexLexer"/> by calling <see cref="vl::parsing::tabling::ParsingTable::GetLexer"/> from <see cref="JsonLoadTable"/></param>
 			extern vl::Ptr<vl::parsing::ParsingTreeCustomBase> JsonConvertParsingTreeNode(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+			/// <summary>Create the parser table. You should cache the value if possible, for improving performance.</summary>
+			/// <returns>The created parser table.</returns>
 			extern vl::Ptr<vl::parsing::tabling::ParsingTable> JsonLoadTable();
 
+			/// <summary>Parse a JSON text, it could be an object or an array.</summary>
+			/// <returns>Returns the parsing result as a weak-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="JsonLoadTable"/>.</param>
+			/// <param name="errors">All errors during parsing.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<vl::parsing::ParsingTreeNode> JsonParseAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex = -1);
+			/// <summary>Parse a JSON text, it could be an object or an array.</summary>
+			/// <returns>Returns the parsing result as a weak-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="JsonLoadTable"/>.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<vl::parsing::ParsingTreeNode> JsonParseAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex = -1);
+			/// <summary>Parse a JSON text, it could be an object or an array.</summary>
+			/// <returns>Returns the parsing result as a strong-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="JsonLoadTable"/>.</param>
+			/// <param name="errors">All errors during parsing.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<JsonNode> JsonParse(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex = -1);
+			/// <summary>Parse a JSON text, it could be an object or an array.</summary>
+			/// <returns>Returns the parsing result as a strong-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="JsonLoadTable"/>.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<JsonNode> JsonParse(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex = -1);
 		}
 	}
@@ -2864,7 +3087,15 @@ namespace vl
 		{
 			extern void						JsonEscapeString(const WString& text, stream::TextWriter& writer);
 			extern void						JsonUnescapeString(const WString& text, stream::TextWriter& writer);
+
+			/// <summary>Serialize JSON to string.</summary>
+			/// <param name="node">The JSON node to serialize.</param>
+			/// <param name="writer">The text writer to receive the string.</param>
 			extern void						JsonPrint(Ptr<JsonNode> node, stream::TextWriter& writer);
+
+			/// <summary>Serialize JSON to string.</summary>
+			/// <returns>The serialized string.</returns>
+			/// <param name="node">The JSON node to serialize.</param>
 			extern WString					JsonToString(Ptr<JsonNode> node);
 		}
 	}
@@ -2876,11 +3107,9 @@ namespace vl
 .\XML\PARSINGXML_AST.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parser::ParsingXml.parser.txt
-
 This file is generated by: Vczh Parser Generator
+From parser definition:ParsingXml.parser.txt
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_PARSING_XML_PARSINGXML_PARSER_AST
@@ -2893,20 +3122,34 @@ namespace vl
 	{
 		namespace xml
 		{
+			/// <summary>Token types. Values of enum items will be used in <see cref="vl::regex::RegexToken::token"/>.</summary>
 			enum class XmlParserTokenIndex
 			{
+				/// <summary>Token INSTRUCTION_OPEN: /&lt;/?</summary>
 				INSTRUCTION_OPEN = 0,
+				/// <summary>Token INSTRUCTION_CLOSE: /?/&gt;</summary>
 				INSTRUCTION_CLOSE = 1,
+				/// <summary>Token COMPLEX_ELEMENT_OPEN: /&lt;//</summary>
 				COMPLEX_ELEMENT_OPEN = 2,
+				/// <summary>Token SINGLE_ELEMENT_CLOSE: ///&gt;</summary>
 				SINGLE_ELEMENT_CLOSE = 3,
+				/// <summary>Token ELEMENT_OPEN: /&lt;</summary>
 				ELEMENT_OPEN = 4,
+				/// <summary>Token ELEMENT_CLOSE: /&gt;</summary>
 				ELEMENT_CLOSE = 5,
+				/// <summary>Token EQUAL: /=</summary>
 				EQUAL = 6,
+				/// <summary>Token NAME: [a-zA-Z0-9:._/-]+</summary>
 				NAME = 7,
+				/// <summary>Token ATTVALUE: &quot;[^&lt;&gt;&quot;]*&quot;|&apos;[^&lt;&gt;&apos;]*&apos;</summary>
 				ATTVALUE = 8,
+				/// <summary>Token COMMENT: /&lt;/!--([^/-&gt;]|-[^/-&gt;]|--[^&gt;])*--/&gt;</summary>
 				COMMENT = 9,
+				/// <summary>Token CDATA: /&lt;/!/[CDATA/[([^/]]|/][^/]]|/]/][^&gt;])*/]/]/&gt;</summary>
 				CDATA = 10,
+				/// <summary>Token TEXT: ([^&lt;&gt;=&quot;&apos; /r/n/ta-zA-Z0-9:._/-])+|&quot;|&apos;</summary>
 				TEXT = 11,
+				/// <summary>Discardable token SPACE: /s+</summary>
 				SPACE = 12,
 			};
 			class XmlNode;
@@ -2918,28 +3161,48 @@ namespace vl
 			class XmlInstruction;
 			class XmlDocument;
 
+			/// <summary>Base class of XML nodes.</summary>
 			class XmlNode abstract : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<XmlNode>
 			{
 			public:
+				/// <summary>Visitor interface for <see cref="XmlNode"/>.</summary>
 				class IVisitor : public vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
 				{
 				public:
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="XmlText"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(XmlText* node)=0;
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="XmlCData"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(XmlCData* node)=0;
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="XmlAttribute"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(XmlAttribute* node)=0;
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="XmlComment"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(XmlComment* node)=0;
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="XmlElement"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(XmlElement* node)=0;
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="XmlInstruction"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(XmlInstruction* node)=0;
+					/// <summary>A callback that is called if the node accepting this visitor is <see cref="XmlDocument"/>.</summary>
+					/// <param name="node">The strong-typed AST node in its real type.</param>
 					virtual void Visit(XmlDocument* node)=0;
 				};
 
+				/// <summary>Accept a visitor to reveal its real type of this strong-typed AST node.</summary>
+				/// <param name="visitor">The visitor, one of its <b>Visit</b> method will be called according to the real type of this strong-typed AST node.</param>
 				virtual void Accept(XmlNode::IVisitor* visitor)=0;
 
 			};
 
+			/// <summary>Text node.</summary>
 			class XmlText : public XmlNode, vl::reflection::Description<XmlText>
 			{
 			public:
+				/// <summary>Content of the text node.</summary>
 				vl::parsing::ParsingToken content;
 
 				void Accept(XmlNode::IVisitor* visitor)override;
@@ -2947,9 +3210,11 @@ namespace vl
 				static vl::Ptr<XmlText> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 			};
 
+			/// <summary>CData node.</summary>
 			class XmlCData : public XmlNode, vl::reflection::Description<XmlCData>
 			{
 			public:
+				/// <summary>Content of the cdata node</summary>
 				vl::parsing::ParsingToken content;
 
 				void Accept(XmlNode::IVisitor* visitor)override;
@@ -2957,10 +3222,13 @@ namespace vl
 				static vl::Ptr<XmlCData> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 			};
 
+			/// <summary>Attribute node.</summary>
 			class XmlAttribute : public XmlNode, vl::reflection::Description<XmlAttribute>
 			{
 			public:
+				/// <summary>Attribute name.</summary>
 				vl::parsing::ParsingToken name;
+				/// <summary>Attribute value.</summary>
 				vl::parsing::ParsingToken value;
 
 				void Accept(XmlNode::IVisitor* visitor)override;
@@ -2968,9 +3236,11 @@ namespace vl
 				static vl::Ptr<XmlAttribute> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 			};
 
+			/// <summary>Comment node.</summary>
 			class XmlComment : public XmlNode, vl::reflection::Description<XmlComment>
 			{
 			public:
+				/// <summary>Content of the comment node.</summary>
 				vl::parsing::ParsingToken content;
 
 				void Accept(XmlNode::IVisitor* visitor)override;
@@ -2978,12 +3248,17 @@ namespace vl
 				static vl::Ptr<XmlComment> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 			};
 
+			/// <summary>Element node.</summary>
 			class XmlElement : public XmlNode, vl::reflection::Description<XmlElement>
 			{
 			public:
+				/// <summary>Element name of the open element node.</summary>
 				vl::parsing::ParsingToken name;
+				/// <summary>(Optional): Element name of the closing element node. The name is ignored when serializing XML to text.</summary>
 				vl::parsing::ParsingToken closingName;
+				/// <summary>Attributes of the element.</summary>
 				vl::collections::List<vl::Ptr<XmlAttribute>> attributes;
+				/// <summary>Sub nodes for element nodes, text nodes, cdata nodes and comment nodes.</summary>
 				vl::collections::List<vl::Ptr<XmlNode>> subNodes;
 
 				void Accept(XmlNode::IVisitor* visitor)override;
@@ -2991,10 +3266,13 @@ namespace vl
 				static vl::Ptr<XmlElement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 			};
 
+			/// <summary>Instruction node.</summary>
 			class XmlInstruction : public XmlNode, vl::reflection::Description<XmlInstruction>
 			{
 			public:
+				/// <summary>Name of the instruction.</summary>
 				vl::parsing::ParsingToken name;
+				/// <summary>Attributes of the instruction.</summary>
 				vl::collections::List<vl::Ptr<XmlAttribute>> attributes;
 
 				void Accept(XmlNode::IVisitor* visitor)override;
@@ -3002,10 +3280,13 @@ namespace vl
 				static vl::Ptr<XmlInstruction> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 			};
 
+			/// <summary>XML document node.</summary>
 			class XmlDocument : public XmlNode, vl::reflection::Description<XmlDocument>
 			{
 			public:
+				/// <summary>Prologue nodes, for instructions and comments.</summary>
 				vl::collections::List<vl::Ptr<XmlNode>> prologs;
+				/// <summary>Root element of the XML document.</summary>
 				vl::Ptr<XmlElement> rootElement;
 
 				void Accept(XmlNode::IVisitor* visitor)override;
@@ -3072,6 +3353,8 @@ namespace vl
 			END_INTERFACE_PROXY(vl::parsing::xml::XmlNode::IVisitor)
 
 #endif
+			/// <summary>Load all reflectable AST types, only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is off.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
 			extern bool XmlLoadTypes();
 		}
 	}
@@ -3082,11 +3365,9 @@ namespace vl
 .\XML\PARSINGXML_PARSER.H
 ***********************************************************************/
 /***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Parser::ParsingXml.parser.txt
-
 This file is generated by: Vczh Parser Generator
+From parser definition:ParsingXml.parser.txt
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #ifndef VCZH_PARSING_XML_PARSINGXML_PARSER_PARSER
@@ -3099,18 +3380,70 @@ namespace vl
 	{
 		namespace xml
 		{
+			/// <summary>Get the grammar definition for this parser.</summary>
+			/// <returns>The grammar definition for this parser.</returns>
 			extern vl::WString XmlGetParserTextBuffer();
+			/// <summary>Convert parser result to a strong typed AST node. Usually you don't need to use this function, unless you are doing meta programming like error recovering or implementing intellisense for an editor.</summary>
+			/// <returns>Returns the strong typed AST node.</returns>
+			/// <param name="node">The parser result.</param>
+			/// <param name="tokens">Tokens for parsing. You can get the <see cref="vl::regex::RegexLexer"/> by calling <see cref="vl::parsing::tabling::ParsingTable::GetLexer"/> from <see cref="XmlLoadTable"/></param>
 			extern vl::Ptr<vl::parsing::ParsingTreeCustomBase> XmlConvertParsingTreeNode(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+			/// <summary>Create the parser table. You should cache the value if possible, for improving performance.</summary>
+			/// <returns>The created parser table.</returns>
 			extern vl::Ptr<vl::parsing::tabling::ParsingTable> XmlLoadTable();
 
+			/// <summary>Parse an XML document.</summary>
+			/// <returns>Returns the parsing result as a weak-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="XmlLoadTable"/>.</param>
+			/// <param name="errors">All errors during parsing.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<vl::parsing::ParsingTreeNode> XmlParseDocumentAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex = -1);
+			/// <summary>Parse an XML document.</summary>
+			/// <returns>Returns the parsing result as a weak-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="XmlLoadTable"/>.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<vl::parsing::ParsingTreeNode> XmlParseDocumentAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex = -1);
+			/// <summary>Parse an XML document.</summary>
+			/// <returns>Returns the parsing result as a strong-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="XmlLoadTable"/>.</param>
+			/// <param name="errors">All errors during parsing.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<XmlDocument> XmlParseDocument(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex = -1);
+			/// <summary>Parse an XML document.</summary>
+			/// <returns>Returns the parsing result as a strong-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="XmlLoadTable"/>.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<XmlDocument> XmlParseDocument(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex = -1);
 
+			/// <summary>Parse an XML element.</summary>
+			/// <returns>Returns the parsing result as a weak-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="XmlLoadTable"/>.</param>
+			/// <param name="errors">All errors during parsing.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<vl::parsing::ParsingTreeNode> XmlParseElementAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex = -1);
+			/// <summary>Parse an XML element.</summary>
+			/// <returns>Returns the parsing result as a weak-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="XmlLoadTable"/>.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<vl::parsing::ParsingTreeNode> XmlParseElementAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex = -1);
+			/// <summary>Parse an XML element.</summary>
+			/// <returns>Returns the parsing result as a strong-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="XmlLoadTable"/>.</param>
+			/// <param name="errors">All errors during parsing.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<XmlElement> XmlParseElement(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex = -1);
+			/// <summary>Parse an XML element.</summary>
+			/// <returns>Returns the parsing result as a strong-typed AST node. Returns null if there is any unrecoverable error during parsing.</returns>
+			/// <param name="input">The input for parsing.</param>
+			/// <param name="table">The return value from <see cref="XmlLoadTable"/>.</param>
+			/// <param name="codeIndex">(Optional): This argument will be copied to <see cref="vl::parsing::ParsingTextRange::codeIndex"/> in every AST nodes. The default value is -1.</param>
 			extern vl::Ptr<XmlElement> XmlParseElement(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex = -1);
 		}
 	}
@@ -3143,14 +3476,48 @@ namespace vl
 			extern WString							XmlUnescapeCData(const WString& value);
 			extern WString							XmlEscapeComment(const WString& value);
 			extern WString							XmlUnescapeComment(const WString& value);
+
+			/// <summary>Serialize XML to string.</summary>
+			/// <param name="node">The XML node to serialize.</param>
+			/// <param name="writer">The text writer to receive the string.</param>
 			extern void								XmlPrint(Ptr<XmlNode> node, stream::TextWriter& writer);
+
+			/// <summary>Serialize sub nodes in an XML element to string.</summary>
+			/// <param name="element">The XML element in which sub nodes are to be serialized.</param>
+			/// <param name="writer">The text writer to receive the string.</param>
 			extern void								XmlPrintContent(Ptr<XmlElement> element, stream::TextWriter& writer);
+
+			/// <summary>Serialize XML to string.</summary>
+			/// <returns>The serialized string.</returns>
+			/// <param name="node">The XML node to serialize.</param>
 			extern WString							XmlToString(Ptr<XmlNode> node);
 
+			/// <summary>Try to read an attribute in an XML element.</summary>
+			/// <returns>The expected attribute. Returns null if it doesn't exist.</returns>
+			/// <param name="element">The element to find the attribute.</param>
+			/// <param name="name">The name of the attribute.</param>
 			extern Ptr<XmlAttribute>							XmlGetAttribute(Ptr<XmlElement> element, const WString& name);
+
+			/// <summary>Try to read a sub element in an XML element.</summary>
+			/// <returns>The expected sub element. Returns null if it doesn't exist. If there are multiple elements of the expected name, returns the first one.</returns>
+			/// <param name="element">The element to find the sub element.</param>
+			/// <param name="name">The name of the sub element.</param>
 			extern Ptr<XmlElement>								XmlGetElement(Ptr<XmlElement> element, const WString& name);
+
+			/// <summary>Get all sub elements in an XML element.</summary>
+			/// <returns>All sub elements in an XML element.</returns>
+			/// <param name="element">The container XML element.</param>
 			extern collections::LazyList<Ptr<XmlElement>>		XmlGetElements(Ptr<XmlElement> element);
+
+			/// <summary>Try to read sub elements in an XML element.</summary>
+			/// <returns>Expected sub elements. All sub elements of the expected name will be returned.</returns>
+			/// <param name="element">The element to find sub elements.</param>
+			/// <param name="name">The name of sub elements.</param>
 			extern collections::LazyList<Ptr<XmlElement>>		XmlGetElements(Ptr<XmlElement> element, const WString& name);
+
+			/// <summary>Serialize contents in an XML element.</summary>
+			/// <returns>The serialized contents in an XML element.</returns>
+			/// <param name="element">The XML element in which contents are to be serialized.</param>
 			extern WString										XmlGetValue(Ptr<XmlElement> element);
 
 			extern Ptr<XmlAttribute>							XmlGetAttribute(XmlElement* element, const WString& name);

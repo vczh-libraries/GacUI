@@ -390,13 +390,18 @@ namespace vl
 Coroutine
 ***********************************************************************/
 
+			/// <summary>Status of a coroutine.</summary>
 			enum class CoroutineStatus
 			{
+				/// <summary>The coroutine is waiting for resuming.</summary>
 				Waiting,
+				/// <summary>The coroutine is being executed.</summary>
 				Executing,
+				/// <summary>The coroutine has stopped.</summary>
 				Stopped,
 			};
 
+			/// <summary>An object providing input information when resuming a coroutine.</summary>
 			class CoroutineResult : public virtual IDescriptable, public Description<CoroutineResult>
 			{
 			protected:
@@ -404,17 +409,38 @@ Coroutine
 				Ptr<IValueException>					failure;
 
 			public:
+				/// <summary>Get the object provided to the coroutine. This object is the return value for the pending async operation, like $Await.</summary>
+				/// <returns>The object provided to the coroutine.</returns>
 				Value									GetResult();
+
+				/// <summary>Set the object provided to the coroutine.</summary>
+				/// <param name="value">The object provided to the coroutine.</summary>
 				void									SetResult(const Value& value);
+
+				/// <summary>Get the error provided to the coroutine. When it is not nullptr, the return value of <see cref="GetResult"/> is ignored.</summary>
+				/// <returns>The error provided to the coroutine.</returns>
 				Ptr<IValueException>					GetFailure();
+
+				/// <summary>Set the error provided to the coroutine.</summary>
+				/// <param name="value">The error provided to the coroutine.</summary>
 				void									SetFailure(Ptr<IValueException> value);
 			};
 
+			/// <summary>A coroutine. This is typically created by a Workflow script.</summary>
 			class ICoroutine : public virtual IDescriptable, public Description<ICoroutine>
 			{
 			public:
+				/// <summary>Resume the coroutine.</summary>
+				/// <param name="raiseException">Set to true to raise an exception that the coroutine encountered. The same exception is accessible by <see cref="GetFailure"/>.</param>
+				/// <param name="output">Input for the coroutine in this resuming.</param>
 				virtual void							Resume(bool raiseException, Ptr<CoroutineResult> output) = 0;
+
+				/// <summary>Returns the current exception.</summary>
+				/// <returns>The current exception. It could cause by the Workflow script that creates this coroutine, or by calling <see cref="Resume"/> when this coroutine is in an inappropriate state.</returns>
 				virtual Ptr<IValueException>			GetFailure() = 0;
+
+				/// <summary>Returns the status of the coroutine.</summary>
+				/// <returns>The status of the coroutine. <see cref="Resume"/> can be called only when this function returns <see cref="CoroutineStatus::Waiting"/>.</returns>
 				virtual CoroutineStatus					GetStatus() = 0;
 			};
 
@@ -444,13 +470,18 @@ Coroutine (Enumerable)
 Coroutine (Async)
 ***********************************************************************/
 
+			/// <summary>Status of am async operation.</summary>
 			enum class AsyncStatus
 			{
+				/// <summary>The async operation is ready to execute.</summary>
 				Ready,
+				/// <summary>The async operation is being executed.</summary>
 				Executing,
+				/// <summary>The async operation has stopped.</summary>
 				Stopped,
 			};
 
+			/// <summary>A context providing communication between the caller and the async operation.</summary>
 			class AsyncContext : public virtual IDescriptable, public Description<AsyncContext>
 			{
 			protected:
@@ -459,51 +490,128 @@ Coroutine (Async)
 				Value									context;
 
 			public:
+				/// <summary>Create a context.</summary>
+				/// <param name="_context">Set the initial return value for <see cref="GetContext"/> (optional)..</param>
 				AsyncContext(const Value& _context = {});
 				~AsyncContext();
 
+				/// <summary>Test if the current async operation is expected to cancel.</summary>
+				/// <returns>Returns true if the current async operation is expected to cancel.</returns>
+				/// <remarks>
+				/// This function is accessible by "$.IsCancelled" in an $Async coroutine.
+				/// A cancelable async operation should check this value when it is able to stop properly, and stop when it is true.
+				/// </remarks>
 				bool									IsCancelled();
+
+				/// <summary>Set <see cref="IsCancelled"/> to true.</summary>
+				/// <returns>Returns true when this operation succeeded.</returns>
 				bool									Cancel();
 
+				/// <summary>Returns a value that is accessible in Workflow script by "$.Context" in an $Async coroutine.</summary>
+				/// <returns>A value that is accessible in Workflow script by "$.Context" in an $Async coroutine.</returns>
 				const description::Value&				GetContext();
+
+				/// <summary>Set a value that is accessible F</summary>
+				/// <param name="value">A value that is accessible in Workflow script by "$.Context" in an $Async coroutine.</param>
 				void									SetContext(const description::Value& value);
 			};
 
+			/// <summary>An async operation.</summary>
 			class IAsync : public virtual IDescriptable, public Description<IAsync>
 			{
 			public:
+				/// <summary>Get the status of this async operation.</summary>
+				/// <returns>The status of this async operation.</returns>
 				virtual AsyncStatus						GetStatus() = 0;
+
+				/// <summary>Run this async operation.</summary>
+				/// <returns>Returns true when this operation succeeded. This function cannot be called twice on the same object.</returns>
+				/// <param name="callback">A callback to execute when the async operation finished.</param>
+				/// <param name="context">A context object that is accessible in Workflow script by "$" in an $Async coroutine (optional).</param>
 				virtual bool							Execute(const Func<void(Ptr<CoroutineResult>)>& callback, Ptr<AsyncContext> context = nullptr) = 0;
 
+				/// <summary>Create an async operation that finished after a specified moment of time.</summary>
+				/// <returns>Returns the created async operation.</returns>
+				/// <param name="milliseconds">The time in milliseconds to wait. It counts from when this function is called, not from when this async operation is executed.</param>
 				static Ptr<IAsync>						Delay(vint milliseconds);
 			};
 
+			/// <summary>A promise object that controls a <see cref="IFuture"/> object.</summary>
 			class IPromise : public virtual IDescriptable, public Description<IPromise>
 			{
 			public:
+				/// <summary>Mark the <see cref="IFuture"/> object as finished by providing a value.</summary>
+				/// <returns>Returns true when this operation succeeded. Multiple calls to <see cref="SendResult"/> and <see cref="SendFailure"/> cause a failure.</returns>
+				/// <param name="result">The result of the <see cref="IFuture"/> object.</param>
 				virtual bool							SendResult(const Value& result) = 0;
+
+				/// <summary>Mark the <see cref="IFuture"/> object as finished by providing an exception.</summary>
+				/// <returns>Returns true when this operation succeeded. Multiple calls to <see cref="SendResult"/> and <see cref="SendFailure"/> cause a failure.</returns>
+				/// <param name="failure">The exception of the <see cref="IFuture"/> object.</param>
 				virtual bool							SendFailure(Ptr<IValueException> failure) = 0;
 			};
 
+			/// <summary>An async operation in the future-promise pattern.</summary>
 			class IFuture : public virtual IAsync, public Description<IFuture>
 			{
 			public:
+				/// <summary>Get the <see cref="IPromise"/> that controls this future object.</summary>
+				/// <returns>The <see cref="IPromise"/> that controls this future object.</returns>
 				virtual Ptr<IPromise>					GetPromise() = 0;
 
+				/// <summary>Create a future object.</summary>
+				/// <returns>The created future object.</returns>
 				static Ptr<IFuture>						Create();
 			};
 
+			/// <summary>A scheduler that controls how async operations are executed. It needs to be implemented and attached to threads that run async operations.</summary>
+			/// <remarks>See <a href="/workflow/lang/coroutine_async.html">Async Coroutine</a> for more information.</remarks>
 			class IAsyncScheduler : public virtual IDescriptable, public Description<IAsyncScheduler>
 			{
 			public:
+				/// <summary>Called when a callback needs to be executed in any thread.</summary>
+				/// <param name="callback">The callback to execute.</param>
+				/// <remarks>
+				/// You can decide which thread to execute.
+				/// For GacUI, the scheduler that attached to the UI thread will execute this callback in the UI thread.
+				/// </remarks>
 				virtual void							Execute(const Func<void()>& callback) = 0;
+
+				/// <summary>Called when a callback needs to be executed in another thread.</summary>
+				/// <param name="callback">The callback to execute.</param>
+				/// <remarks>
+				/// You can decide which thread to execute except the current one.
+				/// For GacUI, the scheduler that attached to any thread will execute this callback in a random background thread.
+				/// </remarks>
 				virtual void							ExecuteInBackground(const Func<void()>& callback) = 0;
+
+				/// <summary>Called when a callback needs to be executed in any thread after a specified moment of time.</summary>
+				/// <param name="callback">The callback to execute.</param>
+				/// <param name="milliseconds">The time in milliseconds to wait.</param>
+				/// <remarks>
+				/// You can decide which thread to execute.
+				/// For GacUI, the scheduler that attached to the UI thread will execute this callback in the UI thread.
+				/// </remarks>
 				virtual void							DelayExecute(const Func<void()>& callback, vint milliseconds) = 0;
 
+				/// <summary>Attach a scheduler for all threads.</summary>
+				/// <param name="scheduler">The scheduler to attach.</param>
 				static void								RegisterDefaultScheduler(Ptr<IAsyncScheduler> scheduler);
+
+				/// <summary>Attach a scheduler for the current thread.</summary>
+				/// <param name="scheduler">The scheduler to attach.</param>
 				static void								RegisterSchedulerForCurrentThread(Ptr<IAsyncScheduler> scheduler);
+
+				/// <summary>Detach the scheduler for all threads.</summary>
+				/// <returns>The previously attached scheduler.</returns>
 				static Ptr<IAsyncScheduler>				UnregisterDefaultScheduler();
+
+				/// <summary>Detach the scheduler for the current thread.</summary>
+				/// <returns>The previously attached scheduler.</returns>
 				static Ptr<IAsyncScheduler>				UnregisterSchedulerForCurrentThread();
+
+				/// <summary>Get the attached scheduler for the current thread.</summary>
+				/// <returns>The attached scheduler. If there is no scheduler that is attached to this particular thread, the default scheduler kicks in.</returns>
 				static Ptr<IAsyncScheduler>				GetSchedulerForCurrentThread();
 			};
 
@@ -555,6 +663,7 @@ Coroutine (State Machine)
 Libraries
 ***********************************************************************/
 
+			/// <summary>system::Sys includes a lot of utility functions for type conversion, string operations and date time operations for a Workflow script.</summary>
 			class Sys : public Description<Sys>
 			{
 			public:
@@ -598,6 +707,7 @@ Libraries
 				static Ptr<IValueEnumerable>		ReverseEnumerable(Ptr<IValueEnumerable> value);
 			};
 
+			/// <summary>system::Math includes math functions for a Workflow script.</summary>
 			class Math : public Description<Math>
 			{
 			public:
@@ -637,6 +747,17 @@ Libraries
 				static double		Trunc(double value)				{ return trunc(value); }
 			};
 
+			/// <summary>system::Math includes localization awared formatting operations for a Workflow script.</summary>
+			/// <remarks>
+			/// <p>
+			/// There are three locales that reflect the configuration of the operating system:
+			/// <ul>
+			///     <li><b>Invariant</b>: An invariant locale for general languages.</li>
+			///     <li><b>System</b>: Locale for the operating system, including the file system.</li>
+			///     <li><b>User</b>: Locale for UI of the operating system.</li>
+			/// </ul>
+			/// </p>
+			/// </remarks>
 			class Localization : public Description<Localization>
 			{
 			public:
