@@ -1130,7 +1130,7 @@ GuiInstanceGradientAnimation::Compile
 						auto func = MakePtr<WfConstructorDeclaration>();
 						addDecl(func);
 
-						func->constructorType = WfConstructorType::Undefined;
+						func->constructorType = WfConstructorType::SharedPtr;
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
 							argument->name.value = L"<ani>current";
