@@ -504,7 +504,7 @@ GuiInstanceLocalizedStrings
 					if (resultExpr)
 					{
 						auto binaryExpr = MakePtr<WfBinaryExpression>();
-						binaryExpr->op = WfBinaryOperator::Union;
+						binaryExpr->op = WfBinaryOperator::FlagAnd;
 						binaryExpr->first = resultExpr;
 						binaryExpr->second = strExpr;
 
