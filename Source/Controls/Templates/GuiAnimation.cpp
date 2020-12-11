@@ -69,6 +69,7 @@ GuiFiniteAnimation
 			{
 			protected:
 				vuint64_t						length = 0;
+				vuint64_t						currentTime = 0;
 				Func<void(vuint64_t)>			run;
 
 			public:
@@ -84,7 +85,7 @@ GuiFiniteAnimation
 
 				void Run()override
 				{
-					auto currentTime = GetTime();
+					currentTime = GetTime();
 					if (currentTime < length && run)
 					{
 						run(currentTime);
@@ -93,7 +94,7 @@ GuiFiniteAnimation
 
 				bool GetStopped()override
 				{
-					return GetTime() >= length;
+					return currentTime >= length;
 				}
 			};
 
