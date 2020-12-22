@@ -348,6 +348,19 @@ GuiMenuButton
 				return ownerMenuService?ownerMenuService->GetPreferredDirection():IGuiMenuService::Horizontal;
 			}
 
+			void GuiMenuButton::DetachSubMenu()
+			{
+				if (subMenu)
+				{
+					subMenu->WindowOpened.Detach(subMenuWindowOpenedHandler);
+					subMenu->WindowClosed.Detach(subMenuWindowClosedHandler);
+					if (ownedSubMenu)
+					{
+						delete subMenu;
+					}
+				}
+			}
+
 			GuiMenu* GuiMenuButton::ProvideDropdownMenu()
 			{
 				return GetSubMenu();
@@ -370,10 +383,7 @@ GuiMenuButton
 
 			GuiMenuButton::~GuiMenuButton()
 			{
-				if(subMenu && ownedSubMenu)
-				{
-					delete subMenu;
-				}
+				DetachSubMenu();
 			}
 
 			Ptr<GuiImageData> GuiMenuButton::GetLargeImage()
@@ -446,17 +456,14 @@ GuiMenuButton
 			{
 				if(subMenu)
 				{
-					if(ownedSubMenu)
-					{
-						delete subMenu;
-					}
+					DetachSubMenu();
 				}
 				subMenu=value;
 				ownedSubMenu=owned;
 				if(subMenu)
 				{
-					subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
-					subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
+					subMenuWindowOpenedHandler = subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
+					subMenuWindowClosedHandler = subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
 				}
 				GetControlTemplateObject(true)->SetSubMenuExisting(subMenu != nullptr);
 			}
@@ -465,10 +472,7 @@ GuiMenuButton
 			{
 				if(subMenu)
 				{
-					if(ownedSubMenu)
-					{
-						delete subMenu;
-					}
+					DetachSubMenu();
 					subMenu=0;
 					ownedSubMenu=false;
 					GetControlTemplateObject(true)->SetSubMenuExisting(false);
