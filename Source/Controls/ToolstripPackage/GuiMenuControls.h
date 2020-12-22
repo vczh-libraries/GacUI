@@ -182,6 +182,7 @@ MenuButton
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
 
 			private:
+				void									DetachSubMenu();
 				GuiMenu*								ProvideDropdownMenu()override;
 
 			public:
