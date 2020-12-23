@@ -534,7 +534,6 @@ GuiToolstripGroupContainer
 					}
 
 					stackComposition->SetDirection(direction);
-					splitterThemeName = splitterThemeName;
 					groupCollection->RebuildSplitters();
 					UpdateLayout();
 				}
