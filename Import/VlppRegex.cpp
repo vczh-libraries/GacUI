@@ -635,8 +635,8 @@ RegexLexerWalker
 
 		vint RegexLexerWalker::GetRelatedToken(vint state)const
 		{
-			vint finalState=pure->GetRelatedFinalState(state);
-			return finalState==-1?-1:stateTokens.Get(finalState);
+			vint finalState = state == -1 ? -1 : pure->GetRelatedFinalState(state);
+			return finalState == -1 ? -1 : stateTokens.Get(finalState);
 		}
 
 		void RegexLexerWalker::Walk(wchar_t input, vint& state, vint& token, bool& finalState, bool& previousTokenStop)const

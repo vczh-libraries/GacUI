@@ -13525,6 +13525,7 @@ GuiFiniteAnimation
 			{
 			protected:
 				vuint64_t						length = 0;
+				vuint64_t						currentTime = 0;
 				Func<void(vuint64_t)>			run;
 
 			public:
@@ -13540,7 +13541,7 @@ GuiFiniteAnimation
 
 				void Run()override
 				{
-					auto currentTime = GetTime();
+					currentTime = GetTime();
 					if (currentTime < length && run)
 					{
 						run(currentTime);
@@ -13549,7 +13550,7 @@ GuiFiniteAnimation
 
 				bool GetStopped()override
 				{
-					return GetTime() >= length;
+					return currentTime >= length;
 				}
 			};
 
@@ -15524,7 +15525,6 @@ GuiDocumentCommonInterface
 			{
 				if(documentControl->GetVisuallyEnabled())
 				{
-					documentControl->SetFocus();
 					switch(editMode)
 					{
 					case ViewOnly:
@@ -15533,6 +15533,7 @@ GuiDocumentCommonInterface
 					case Selectable:
 					case Editable:
 						{
+							documentControl->SetFocus();
 							TextPos caret=documentElement->CalculateCaretFromPoint(Point(arguments.x, arguments.y));
 							TextPos oldCaret=documentElement->GetCaretEnd();
 							if(caret!=oldCaret)
@@ -20777,6 +20778,19 @@ GuiMenuButton
 				return ownerMenuService?ownerMenuService->GetPreferredDirection():IGuiMenuService::Horizontal;
 			}
 
+			void GuiMenuButton::DetachSubMenu()
+			{
+				if (subMenu)
+				{
+					subMenu->WindowOpened.Detach(subMenuWindowOpenedHandler);
+					subMenu->WindowClosed.Detach(subMenuWindowClosedHandler);
+					if (ownedSubMenu)
+					{
+						delete subMenu;
+					}
+				}
+			}
+
 			GuiMenu* GuiMenuButton::ProvideDropdownMenu()
 			{
 				return GetSubMenu();
@@ -20799,10 +20813,7 @@ GuiMenuButton
 
 			GuiMenuButton::~GuiMenuButton()
 			{
-				if(subMenu && ownedSubMenu)
-				{
-					delete subMenu;
-				}
+				DetachSubMenu();
 			}
 
 			Ptr<GuiImageData> GuiMenuButton::GetLargeImage()
@@ -20875,17 +20886,14 @@ GuiMenuButton
 			{
 				if(subMenu)
 				{
-					if(ownedSubMenu)
-					{
-						delete subMenu;
-					}
+					DetachSubMenu();
 				}
 				subMenu=value;
 				ownedSubMenu=owned;
 				if(subMenu)
 				{
-					subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
-					subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
+					subMenuWindowOpenedHandler = subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
+					subMenuWindowClosedHandler = subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
 				}
 				GetControlTemplateObject(true)->SetSubMenuExisting(subMenu != nullptr);
 			}
@@ -20894,10 +20902,7 @@ GuiMenuButton
 			{
 				if(subMenu)
 				{
-					if(ownedSubMenu)
-					{
-						delete subMenu;
-					}
+					DetachSubMenu();
 					subMenu=0;
 					ownedSubMenu=false;
 					GetControlTemplateObject(true)->SetSubMenuExisting(false);
