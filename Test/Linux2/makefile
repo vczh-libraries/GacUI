@@ -16,26 +16,41 @@ clean:
 
 all:pre-build ./Bin/UnitTest
 
-./Bin/UnitTest:./Obj/Vlpp.o ./Obj/VlppWorkflowCompiler.o ./Obj/VlppWorkflow.o ./Obj/GacUI.o ./Obj/GacUIReflection.o ./Obj/GacUICompiler.o ./Obj/Main.o
+./Bin/UnitTest:./Obj/Vlpp.o ./Obj/VlppOS.o ./Obj/VlppParser.o ./Obj/VlppReflection.o ./Obj/VlppRegex.o ./Obj/VlppWorkflowCompiler.o ./Obj/VlppWorkflowLibrary.o ./Obj/VlppWorkflowRuntime.o ./Obj/GacUI.o ./Obj/GacUIReflection.o ./Obj/GacUICompiler.o ./Obj/Main.o
 	$(CPP_LINK)
 
 ./Obj/Vlpp.o: ../../Import/Vlpp.cpp ../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/VlppWorkflowCompiler.o: ../../Import/VlppWorkflowCompiler.cpp ../../Import/VlppWorkflowCompiler.h ../../Import/Vlpp.h ../../Import/VlppWorkflow.h
+./Obj/VlppOS.o: ../../Import/VlppOS.cpp ../../Import/VlppOS.h ../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/VlppWorkflow.o: ../../Import/VlppWorkflow.cpp ../../Import/VlppWorkflow.h ../../Import/Vlpp.h
+./Obj/VlppParser.o: ../../Import/VlppParser.cpp ../../Import/VlppParser.h ../../Import/VlppReflection.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h
 	$(CPP_COMPILE)
 
-./Obj/GacUI.o: ../../Release/GacUI.cpp ../../Release/GacUI.h ../../Import/Vlpp.h
+./Obj/VlppReflection.o: ../../Import/VlppReflection.cpp ../../Import/VlppReflection.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h
 	$(CPP_COMPILE)
 
-./Obj/GacUIReflection.o: ../../Release/GacUIReflection.cpp ../../Release/GacUIReflection.h ../../Import/Vlpp.h ../../Import/VlppWorkflow.h ../../Release/GacUI.h
+./Obj/VlppRegex.o: ../../Import/VlppRegex.cpp ../../Import/VlppRegex.h ../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/GacUICompiler.o: ../../Release/GacUICompiler.cpp ../../Release/GacUICompiler.h ../../Import/Vlpp.h ../../Import/VlppWorkflow.h ../../Import/VlppWorkflowCompiler.h ../../Release/GacUI.h ../../Release/GacUIReflection.h
+./Obj/VlppWorkflowCompiler.o: ../../Import/VlppWorkflowCompiler.cpp ../../Import/VlppWorkflowCompiler.h ../../Import/VlppWorkflowLibrary.h ../../Import/VlppReflection.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h ../../Import/VlppWorkflowRuntime.h ../../Import/VlppParser.h
 	$(CPP_COMPILE)
 
-./Obj/Main.o: Main.cpp ../../Release/GacUI.h ../../Import/Vlpp.h
+./Obj/VlppWorkflowLibrary.o: ../../Import/VlppWorkflowLibrary.cpp ../../Import/VlppWorkflowLibrary.h ../../Import/VlppReflection.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h
+	$(CPP_COMPILE)
+
+./Obj/VlppWorkflowRuntime.o: ../../Import/VlppWorkflowRuntime.cpp ../../Import/VlppWorkflowRuntime.h ../../Import/VlppParser.h ../../Import/VlppReflection.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h
+	$(CPP_COMPILE)
+
+./Obj/GacUI.o: ../../Release/GacUI.cpp ../../Release/GacUI.h ../../Import/VlppParser.h ../../Import/VlppReflection.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h ../../Import/VlppWorkflowLibrary.h ../../Release/GacUIReflection.h ../../Import/VlppWorkflowCompiler.h ../../Import/VlppWorkflowRuntime.h
+	$(CPP_COMPILE)
+
+./Obj/GacUIReflection.o: ../../Release/GacUIReflection.cpp ../../Release/GacUIReflection.h ../../Release/GacUI.h ../../Import/VlppParser.h ../../Import/VlppReflection.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h ../../Import/VlppWorkflowLibrary.h ../../Import/VlppWorkflowCompiler.h ../../Import/VlppWorkflowRuntime.h
+	$(CPP_COMPILE)
+
+./Obj/GacUICompiler.o: ../../Release/GacUICompiler.cpp ../../Release/GacUICompiler.h ../../Release/GacUIReflection.h ../../Release/GacUI.h ../../Import/VlppParser.h ../../Import/VlppReflection.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h ../../Import/VlppWorkflowLibrary.h ../../Import/VlppWorkflowCompiler.h ../../Import/VlppWorkflowRuntime.h
+	$(CPP_COMPILE)
+
+./Obj/Main.o: Main.cpp ../../Release/GacUI.h ../../Import/VlppParser.h ../../Import/VlppReflection.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h ../../Import/VlppWorkflowLibrary.h
 	$(CPP_COMPILE)
