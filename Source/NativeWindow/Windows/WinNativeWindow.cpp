@@ -852,6 +852,7 @@ WindowsForm
 				HICON								replacementHIcon = NULL;
 				UINT								dpiX = 0;
 				UINT								dpiY = 0;
+				bool								contentViewBufferEmpty = false;
 
 				void UpdateDpiAwaredFields(bool refreshDpiXY)
 				{
@@ -886,6 +887,16 @@ WindowsForm
 						}
 					}
 					DestroyWindow(handle);
+				}
+
+				bool IsContentViewBufferEmpty()
+				{
+					return contentViewBufferEmpty;
+				}
+
+				void SetContentViewBufferEmpty(bool empty)
+				{
+					contentViewBufferEmpty = empty;
 				}
 
 				void InvokeDestroying()

@@ -56,6 +56,7 @@ namespace vl
 						buffer = new WinBitmap(size.x.value, size.y.value, WinBitmap::vbb32Bits, true);
 						buffer->GetWinDC()->SetBackTransparent(true);
 					}
+					window->SetContentViewBufferEmpty(true);
 				}
 			public:
 				GdiWindowsNativeWindowListener(INativeWindow* _window)

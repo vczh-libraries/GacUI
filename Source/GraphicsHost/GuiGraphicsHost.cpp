@@ -330,6 +330,11 @@ GuiGraphicsHost
 				if (!supressPaint)
 				{
 					needRender = true;
+					if (hostRecord.nativeWindow->IsContentViewBufferEmpty())
+					{
+						Render(true);
+						hostRecord.nativeWindow->SetContentViewBufferEmpty(false);
+					}
 				}
 			}
 

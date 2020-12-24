@@ -454,6 +454,15 @@ Native Window
 			/// <returns>Returns true if the window customized frame mode is enabled.</returns>
 			virtual bool				IsCustomFrameModeEnabled()=0;
 			/// <summary>
+			/// Set content view buffer has anything to draw
+			/// </summary>
+			virtual void				SetContentViewBufferEmpty(bool empty)=0;
+			/// <summary>
+			/// Test content view buffer has anything to draw
+			/// </summary>
+			/// <returns>Returns true if content view buffer is empty.</returns>
+			virtual bool				IsContentViewBufferEmpty()=0;
+			/// <summary>
 			/// Get the amount of the border. The window template may need this value to calculate where to put the client area.
 			/// </summary>
 			/// <returns>Returns the amount of the border.</returns>
