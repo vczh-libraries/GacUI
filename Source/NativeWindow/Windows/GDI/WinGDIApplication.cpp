@@ -71,9 +71,12 @@ namespace vl
 
 				void Paint()
 				{
-					IWindowsForm* form=GetWindowsForm(window);
-					WinControlDC controlDC(form->GetWindowHandle());
-					controlDC.Draw(0, 0, buffer);
+					if (!window->IsContentViewBufferEmpty())
+					{
+						IWindowsForm* form = GetWindowsForm(window);
+						WinControlDC controlDC(form->GetWindowHandle());
+						controlDC.Draw(0, 0, buffer);
+					}
 				}
 
 				WinDC* GetWinDC()
