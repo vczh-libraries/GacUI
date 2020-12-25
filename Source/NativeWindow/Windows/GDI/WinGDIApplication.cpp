@@ -1,6 +1,7 @@
 #include "WinGDIApplication.h"
 #include "..\..\..\GraphicsElement\WindowsGDI\GuiGraphicsWindowsGDI.h"
 #include <ShellScalingApi.h>
+#include "..\ServicesImpl\WindowsCallbackService.h"
 
 namespace vl
 {
@@ -15,6 +16,7 @@ namespace vl
 			protected:
 				Ptr<WinBitmap>					buffer;
 				INativeWindow*					window;
+				bool							needPaintAfterResize = false;
 
 				vint DetermineBufferLength(vint minSize, vint minBound, vint maxBound, vint currentSize)
 				{
@@ -49,6 +51,7 @@ namespace vl
 						if (buffer->GetWidth() != size.x.value || buffer->GetHeight() != size.y.value)
 						{
 							buffer = 0;
+							needPaintAfterResize = true;
 						}
 					}
 					if (!buffer)
@@ -70,6 +73,16 @@ namespace vl
 
 				void Paint()
 				{
+					// for the first Paint() call after Moved()
+					// trigger the global timer so that all GuiGraphicsHost with needToRender=true will call Render(false)
+					// so that to fill the buffer to prevent from seeing a black frame
+					// but it still leave some black color since the layout may needs more than 1 frame to finish
+					if (needPaintAfterResize)
+					{
+						needPaintAfterResize = false;
+						auto callbackService = GetCurrentController()->CallbackService();
+						dynamic_cast<WindowsCallbackService*>(callbackService)->InvokeGlobalTimer();
+					}
 					IWindowsForm* form=GetWindowsForm(window);
 					WinControlDC controlDC(form->GetWindowHandle());
 					controlDC.Draw(0, 0, buffer);
