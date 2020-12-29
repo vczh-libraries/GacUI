@@ -1691,6 +1691,8 @@ Locale
 				return wcscmp(s1.Buffer(), s2.Buffer());
 			case Normalization::IgnoreCase:
 				return wcscasecmp(s1.Buffer(), s2.Buffer());
+			default:
+				return 0;
 		}
 #endif
 	}
@@ -1832,6 +1834,7 @@ Locale
 			case Normalization::IgnoreCase:
 				return wcsncasecmp(text.Buffer(), find.Buffer(), find.Length()) == 0;
 		}
+		return false;
 #endif
 	}
 
@@ -1852,6 +1855,7 @@ Locale
 			case Normalization::IgnoreCase:
 				return wcsncasecmp(text.Buffer() + text.Length() - find.Length(), find.Buffer(), find.Length()) == 0;
 		}
+		return false;
 #endif
 	}
 }

@@ -144,9 +144,12 @@ DescriptableObject
 		{
 		}
 
-#if defined(VCZH_GCC) && defined(__clang__)
+#if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexceptions"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wterminate"
 #endif
 		DescriptableObject::~DescriptableObject()
 		{
@@ -179,7 +182,9 @@ DescriptableObject
 			}
 #endif
 		}
-#if defined(VCZH_GCC) && defined(__clang__)
+#if defined(__clang__)
+#pragma GCC diagnostic pop
+#elif defined(__GNUC__)
 #pragma clang diagnostic pop
 #endif
 
