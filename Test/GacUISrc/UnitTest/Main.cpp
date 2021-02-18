@@ -56,17 +56,19 @@ int UT_result = 0;
 int UT_argc = 0;
 wchar_t** UT_argv = nullptr;
 
+#if defined VCZH_MSVC
+TEST_FILE
+{
+	Folder folder(GetTestOutputPath());
+	if (!folder.Exists())
+	{
+		TEST_CASE_ASSERT(folder.Create(false) == true);
+	}
+}
+#endif
+
 void GuiMain()
 {
-#if defined VCZH_MSVC
-	{
-		Folder folder(GetTestOutputPath());
-		if (!folder.Exists())
-		{
-			TEST_ASSERT(folder.Create(false) == true);
-		}
-	}
-#endif
 	UT_result = unittest::UnitTest::RunAndDisposeTests(UT_argc, UT_argv);
 }
 
