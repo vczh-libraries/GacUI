@@ -1841,9 +1841,9 @@ ValueType
 #endif
 						auto result = memcmp(&a, &b, sizeof(U));
 #if defined(__clang__)
-#pragma GCC diagnostic pop
-#elif defined(__GNUC__)
 #pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif
 						if (result < 0) return IBoxedValue::Smaller;
 						if (result > 0) return IBoxedValue::Greater;
