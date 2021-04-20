@@ -363,6 +363,8 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_FAST(ColumnPadding)
 				CLASS_MEMBER_PROPERTY_FAST(Axis)
 				CLASS_MEMBER_PROPERTY_FAST(Alignment)
+
+				CLASS_MEMBER_METHOD(InsertFlowItem, { L"index" _ L"item" })
 			END_CLASS_MEMBER(GuiFlowComposition)
 
 			BEGIN_CLASS_MEMBER(GuiFlowItemComposition)
