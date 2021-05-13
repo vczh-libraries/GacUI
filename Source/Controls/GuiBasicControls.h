@@ -162,32 +162,32 @@ Basic Construction
 				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
 
-				/// <summary>Theme name changed event. This event will be raised when the theme name is changed.</summary>
+				/// <summary>Theme name changed event. This event raises when the theme name is changed.</summary>
 				compositions::GuiNotifyEvent			ControlThemeNameChanged;
-				/// <summary>Control template changed event. This event will be raised when the control template is changed.</summary>
+				/// <summary>Control template changed event. This event raises when the control template is changed.</summary>
 				compositions::GuiNotifyEvent			ControlTemplateChanged;
-				/// <summary>Control signal trigerred. This event will be raised because of multiple reason specified in the argument.</summary>
+				/// <summary>Control signal trigerred. This raises be raised because of multiple reason specified in the argument.</summary>
 				compositions::GuiControlSignalEvent		ControlSignalTrigerred;
-				/// <summary>Visible event. This event will be raised when the visibility state of the control is changed.</summary>
+				/// <summary>Visible event. This event raises when the visibility state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			VisibleChanged;
-				/// <summary>Enabled event. This event will be raised when the enabling state of the control is changed.</summary>
+				/// <summary>Enabled event. This event raises when the enabling state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			EnabledChanged;
-				/// <summary>Focused event. This event will be raised when the focusing state of the control is changed.</summary>
+				/// <summary>Focused event. This event raises when the focusing state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			FocusedChanged;
 				/// <summary>
-				/// Enabled event. This event will be raised when the visually enabling state of the control is changed. A visually enabling is combined by the enabling state and the parent's visually enabling state.
+				/// Enabled event. This event raises when the visually enabling state of the control is changed. A visually enabling is combined by the enabling state and the parent's visually enabling state.
 				/// A control is rendered as disabled, not only when the control itself is disabled, but also when the parent control is rendered as disabled.
 				/// </summary>
 				compositions::GuiNotifyEvent			VisuallyEnabledChanged;
-				/// <summary>Alt changed event. This event will be raised when the associated Alt-combined shortcut key of the control is changed.</summary>
+				/// <summary>Alt changed event. This event raises when the associated Alt-combined shortcut key of the control is changed.</summary>
 				compositions::GuiNotifyEvent			AltChanged;
-				/// <summary>Text changed event. This event will be raised when the text of the control is changed.</summary>
+				/// <summary>Text changed event. This event raises when the text of the control is changed.</summary>
 				compositions::GuiNotifyEvent			TextChanged;
-				/// <summary>Font changed event. This event will be raised when the font of the control is changed.</summary>
+				/// <summary>Font changed event. This event raises when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			FontChanged;
-				/// <summary>Display font changed event. This event will be raised when the display font of the control is changed.</summary>
+				/// <summary>Display font changed event. This event raises when the display font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			DisplayFontChanged;
-				/// <summary>Context changed event. This event will be raised when the font of the control is changed.</summary>
+				/// <summary>Context changed event. This event raises when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			ContextChanged;
 
 				void									InvokeOrDelayIfRendering(Func<void()> proc);
