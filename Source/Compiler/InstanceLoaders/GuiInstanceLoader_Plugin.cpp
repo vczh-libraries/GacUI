@@ -195,13 +195,6 @@ GuiControlInstanceLoader
 GuiPredefinedInstanceLoadersPlugin
 ***********************************************************************/
 
-			Ptr<WfExpression> CreateTrue(IGuiInstanceLoader::ArgumentMap&)
-			{
-				auto expr = MakePtr<WfLiteralExpression>();
-				expr->value = WfLiteralValue::True;
-				return expr;
-			}
-
 			void InitializeTrackerProgressBar(const WString& variableName, Ptr<WfBlockStatement> block)
 			{
 				auto refVariable = MakePtr<WfReferenceExpression>();
