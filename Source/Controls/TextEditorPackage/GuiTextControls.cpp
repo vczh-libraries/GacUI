@@ -215,19 +215,26 @@ GuiSinglelineTextBox::DefaultTextElementOperatorCallback
 
 			bool GuiSinglelineTextBox::TextElementOperatorCallback::BeforeModify(TextPos start, TextPos end, const WString& originalText, WString& inputText)
 			{
-				vint length=inputText.Length();
-				const wchar_t* input=inputText.Buffer();
-				for(vint i=0;i<length;i++)
+				vint length = inputText.Length();
+				const wchar_t* input = inputText.Buffer();
+				for (vint i = 0; i < length; i++)
 				{
-					if(*input==0 || *input==L'\r' || *input==L'\n')
+					if (*input == 0 || *input == L'\r' || *input == L'\n')
 					{
-						length=i;
+						length = i;
 						break;
 					}
 				}
-				if(length!=inputText.Length())
+				if (length != inputText.Length())
 				{
-					inputText=inputText.Left(length);
+					if (length == 0)
+					{
+						// if the first line is empty after adjustment
+						// the input should just be canceled
+						// to prevent from making noise in undo
+						return false;
+					}
+					inputText = inputText.Left(length);
 				}
 				return true;
 			}
