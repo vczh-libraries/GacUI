@@ -378,6 +378,13 @@ WindowsForm
 							}
 						}
 						break;
+					case WM_MOUSEACTIVATE:
+						if (!IsEnabledActivate())
+						{
+							result = MA_NOACTIVATE;
+							return true;
+						}
+						break;
 					case WM_ACTIVATE:
 						{
 							for (vint i = 0; i < listeners.Count(); i++)
@@ -1161,11 +1168,13 @@ WindowsForm
 					if ((parentWindow = dynamic_cast<WindowsForm*>(parent)))
 					{
 						parentWindow->childWindows.Add(this);
-						::SetParent(handle, parentWindow->handle);
+						// ::SetParent(handle, parentWindow->handle);
+						SetWindowLongPtr(handle, GWLP_HWNDPARENT, (LONG_PTR)parentWindow->handle);
 					}
 					else
 					{
-						::SetParent(handle, NULL);
+						// ::SetParent(handle, NULL);
+						SetWindowLongPtr(handle, GWLP_HWNDPARENT, NULL);
 					}
 				}
 
@@ -1608,7 +1617,7 @@ WindowsForm
 
 				void SetTopMost(bool topmost)override
 				{
-					SetWindowPos(handle, (topmost ? HWND_TOPMOST : HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_FRAMECHANGED);
+					SetWindowPos(handle, (topmost ? HWND_TOPMOST : HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 				}
 
 				void SupressAlt()override

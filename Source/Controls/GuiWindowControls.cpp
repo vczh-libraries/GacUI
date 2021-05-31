@@ -1054,12 +1054,13 @@ GuiPopup
 				if (controlWindow)
 				{
 					window->SetParent(controlWindow);
-					window->SetTopMost(controlWindow->GetTopMost());
+					SetTopMost(controlWindow->GetTopMost());
 				}
 				else
 				{
-					window->SetTopMost(true);
+					SetTopMost(true);
 				}
+				SetEnabledActivate(false);
 				ShowDeactivated();
 			}
 
