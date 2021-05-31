@@ -41,53 +41,6 @@ WindowsCallbackService
 				}
 			}
 
-			void WindowsCallbackService::InvokeMouseHook(WPARAM message, NativePoint location)
-			{
-				switch(message)
-				{
-				case WM_LBUTTONDOWN:
-					{
-						for(vint i=0;i<listeners.Count();i++)
-						{
-							listeners[i]->LeftButtonDown(location);
-						}
-					}
-					break;
-				case WM_LBUTTONUP:
-					{
-						for(vint i=0;i<listeners.Count();i++)
-						{
-							listeners[i]->LeftButtonUp(location);
-						}
-					}
-					break;
-				case WM_RBUTTONDOWN:
-					{
-						for(vint i=0;i<listeners.Count();i++)
-						{
-							listeners[i]->RightButtonDown(location);
-						}
-					}
-					break;
-				case WM_RBUTTONUP:
-					{
-						for(vint i=0;i<listeners.Count();i++)
-						{
-							listeners[i]->RightButtonUp(location);
-						}
-					}
-					break;
-				case WM_MOUSEMOVE:
-					{
-						for(vint i=0;i<listeners.Count();i++)
-						{
-							listeners[i]->MouseMoving(location);
-						}
-					}
-					break;
-				}
-			}
-
 			void WindowsCallbackService::InvokeGlobalTimer()
 			{
 				for(vint i=0;i<listeners.Count();i++)

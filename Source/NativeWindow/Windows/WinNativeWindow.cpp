@@ -836,6 +836,7 @@ WindowsForm
 				WindowsCursor*						cursor = nullptr;
 				NativePoint							caretPoint;
 				WindowsForm*						parentWindow = nullptr;
+				WindowMode							windowMode = Normal;
 				bool								alwaysPassFocusToParent = false;
 				List<INativeWindowListener*>		listeners;
 				vint								mouseLastX = -1;
@@ -1111,6 +1112,16 @@ WindowsForm
 					{
 						SetWindowLongPtr(handle, GWLP_HWNDPARENT, NULL);
 					}
+				}
+
+				WindowMode GetWindowMode()override
+				{
+					return windowMode;
+				}
+
+				void SetWindowMode(WindowMode mode)override
+				{
+					windowMode = mode;
 				}
 
 				bool GetAlwaysPassFocusToParent()override
@@ -1594,7 +1605,6 @@ WindowsController
 
 			LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 			LRESULT CALLBACK GodProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-			LRESULT CALLBACK MouseProc(int nCode , WPARAM wParam , LPARAM lParam);
 
 			class WindowsController : public Object, public virtual INativeController, public virtual INativeWindowService
 			{
@@ -1624,7 +1634,6 @@ WindowsController
 					,mainWindow(0)
 					,mainWindowHandle(0)
 					,screenService(&GetHWNDFromNativeWindowHandle)
-					,inputService(&MouseProc)
 					,dialogService(&GetHWNDFromNativeWindowHandle)
 				{
 					godWindow=CreateWindowEx(WS_EX_CONTROLPARENT, godClass.GetName().Buffer(), L"GodWindow", WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
@@ -1635,7 +1644,6 @@ WindowsController
 				~WindowsController()
 				{
 					inputService.StopTimer();
-					inputService.StopHookMouse();
 					clipboardService.SetOwnerHandle(NULL);
 					DestroyWindow(godWindow);
 				}
@@ -1809,11 +1817,6 @@ WindowsController
 
 				//=======================================================================
 
-				void InvokeMouseHook(WPARAM message, NativePoint location)
-				{
-					callbackService.InvokeMouseHook(message, location);
-				}
-
 				void InvokeGlobalTimer()
 				{
 					callbackService.InvokeGlobalTimer();
@@ -1859,18 +1862,6 @@ Windows Procedure
 					}
 				}
 				return DefWindowProc(hwnd, uMsg, wParam, lParam);
-			}
-
-			LRESULT CALLBACK MouseProc(int nCode , WPARAM wParam , LPARAM lParam)
-			{
-				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
-				if(controller)
-				{
-					MSLLHOOKSTRUCT* mouseHookStruct=(MSLLHOOKSTRUCT*)lParam;
-					NativePoint location(mouseHookStruct->pt.x, mouseHookStruct->pt.y);
-					controller->InvokeMouseHook(wParam, location);
-				}
-				return CallNextHookEx(NULL,nCode,wParam,lParam);
 			}
 
 /***********************************************************************
