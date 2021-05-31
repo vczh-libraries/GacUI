@@ -366,15 +366,37 @@ WindowsForm
 						break;
 					case WM_ACTIVATE:
 						{
-							for(vint i=0;i<listeners.Count();i++)
+							for (vint i = 0; i < listeners.Count(); i++)
 							{
-								if(wParam==WA_ACTIVE || wParam==WA_CLICKACTIVE)
+								if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
 								{
 									listeners[i]->Activated();
 								}
 								else
 								{
 									listeners[i]->Deactivated();
+
+									if (IsVisible())
+									{
+										switch (windowMode)
+										{
+										case Tooltip:
+										case Popup:
+											Hide(false);
+											break;
+										case Menu:
+											if (childWindows.Count() == 0)
+											{
+												auto currentMenu = this;
+												while (currentMenu && (currentMenu == this || !currentMenu->IsActivated()) && currentMenu->windowMode != Normal)
+												{
+													currentMenu->Hide(false);
+													currentMenu = currentMenu->parentWindow;
+												}
+											}
+											break;
+										}
+									}
 								}
 							}
 						}
@@ -769,22 +791,6 @@ WindowsForm
 						break;
 					}
 
-					if(IsWindow(hwnd)!=0)
-					{
-						if(transferFocusEvent && IsFocused())
-						{
-							WindowsForm* window=this;
-							while(window->parentWindow && window->alwaysPassFocusToParent)
-							{
-								window=window->parentWindow;
-							}
-							if(window!=this)
-							{
-								window->SetFocus();
-							}
-						}
-					}
-
 					if (customFrameMode)
 					{
 						switch (uMsg)
@@ -836,6 +842,7 @@ WindowsForm
 				WindowsCursor*						cursor = nullptr;
 				NativePoint							caretPoint;
 				WindowsForm*						parentWindow = nullptr;
+				List<WindowsForm*>					childWindows;
 				WindowMode							windowMode = Normal;
 				bool								alwaysPassFocusToParent = false;
 				List<INativeWindowListener*>		listeners;
@@ -875,6 +882,15 @@ WindowsForm
 
 				~WindowsForm()
 				{
+					if (parentWindow)
+					{
+						parentWindow->childWindows.Remove(this);
+					}
+					for (vint i = childWindows.Count() - 1; i >= 0; i--)
+					{
+						childWindows[i]->SetParent(parentWindow);
+					}
+
 					*flagDisposed.Obj() = true;
 					List<INativeWindowListener*> copiedListeners;
 					CopyFrom(copiedListeners, listeners);
@@ -1103,9 +1119,14 @@ WindowsForm
 
 				void SetParent(INativeWindow* parent)override
 				{
-					parentWindow=dynamic_cast<WindowsForm*>(parent);
-					if(parentWindow)
+					if (parentWindow)
 					{
+						parentWindow->childWindows.Remove(this);
+					}
+
+					if ((parentWindow = dynamic_cast<WindowsForm*>(parent)))
+					{
+						parentWindow->childWindows.Add(this);
 						SetWindowLongPtr(handle, GWLP_HWNDPARENT, (LONG_PTR)parentWindow->handle);
 					}
 					else
