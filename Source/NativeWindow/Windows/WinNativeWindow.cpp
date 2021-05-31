@@ -844,7 +844,6 @@ WindowsForm
 				WindowsForm*						parentWindow = nullptr;
 				List<WindowsForm*>					childWindows;
 				WindowMode							windowMode = Normal;
-				bool								alwaysPassFocusToParent = false;
 				List<INativeWindowListener*>		listeners;
 				vint								mouseLastX = -1;
 				vint								mouseLastY = -1;
@@ -1143,16 +1142,6 @@ WindowsForm
 				void SetWindowMode(WindowMode mode)override
 				{
 					windowMode = mode;
-				}
-
-				bool GetAlwaysPassFocusToParent()override
-				{
-					return alwaysPassFocusToParent;
-				}
-
-				void SetAlwaysPassFocusToParent(bool value)override
-				{
-					alwaysPassFocusToParent=value;
 				}
 
 				void EnableCustomFrameMode()override
@@ -1706,17 +1695,32 @@ WindowsController
 					{
 						if (hwnd == mainWindowHandle && uMsg == WM_DESTROY)
 						{
-							for (vint i = 0; i < windows.Count(); i++)
+							FOREACH(WindowsForm*, window, windows.Values())
 							{
-								if (windows.Values().Get(i)->IsVisible())
+								if (window->IsVisible())
 								{
-									windows.Values().Get(i)->Hide(true);
+									window->Hide(true);
 								}
 							}
-							while (windows.Count())
+							List<WindowsForm*> normalWindows;
+							CopyFrom(
+								normalWindows,
+								From(windows.Values())
+									.Where([](WindowsForm* window)
+									{
+										return window->GetWindowMode() == INativeWindow::Normal;
+									})
+								);
+							FOREACH(WindowsForm*, window, normalWindows)
 							{
-								DestroyNativeWindow(windows.Values().Get(0));
+								DestroyNativeWindow(window);
 							}
+							for (vint i = windows.Count() - 1; i >= 0; i--)
+							{
+								auto window = windows.Values()[i];
+								DestroyNativeWindow(window);
+							}
+							
 							PostQuitMessage(0);
 						}
 					}

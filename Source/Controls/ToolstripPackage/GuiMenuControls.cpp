@@ -127,7 +127,6 @@ GuiMenu
 				:GuiPopup(themeName, INativeWindow::Menu)
 				, owner(_owner)
 			{
-				GetNativeWindow()->SetAlwaysPassFocusToParent(true);
 				UpdateMenuService();
 				WindowOpened.AttachMethod(this, &GuiMenu::OnWindowOpened);
 				WindowClosed.AttachMethod(this, &GuiMenu::OnWindowClosed);
@@ -311,6 +310,16 @@ GuiMenuButton
 				GetControlTemplateObject(true)->SetSubMenuOpening(false);
 			}
 
+			void GuiMenuButton::OnSubMenuWindowDestroying(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				subMenuWindowOpenedHandler = nullptr;
+				subMenuWindowClosedHandler = nullptr;
+				subMenuWindowDestroyingHandler = nullptr;
+				ownedSubMenu = false;
+				subMenu = nullptr;
+				GetControlTemplateObject(true)->SetSubMenuExisting(false);
+			}
+
 			void GuiMenuButton::OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if(GetVisuallyEnabled())
@@ -344,6 +353,11 @@ GuiMenuButton
 				{
 					subMenu->WindowOpened.Detach(subMenuWindowOpenedHandler);
 					subMenu->WindowClosed.Detach(subMenuWindowClosedHandler);
+					subMenu->WindowDestroying.Detach(subMenuWindowDestroyingHandler);
+
+					subMenuWindowOpenedHandler = nullptr;
+					subMenuWindowClosedHandler = nullptr;
+					subMenuWindowDestroyingHandler = nullptr;
 					if (ownedSubMenu)
 					{
 						delete subMenu;
@@ -454,6 +468,7 @@ GuiMenuButton
 				{
 					subMenuWindowOpenedHandler = subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
 					subMenuWindowClosedHandler = subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
+					subMenuWindowDestroyingHandler = subMenu->WindowDestroying.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowDestroying);
 				}
 				GetControlTemplateObject(true)->SetSubMenuExisting(subMenu != nullptr);
 			}

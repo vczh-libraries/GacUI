@@ -460,17 +460,6 @@ Native Window
 			virtual void				SetWindowMode(WindowMode mode) = 0;
 
 			/// <summary>
-			/// Test is the window always pass the focus to its parent window.
-			/// </summary>
-			/// <returns>Returns true if the window always pass the focus to its parent window.</returns>
-			virtual bool				GetAlwaysPassFocusToParent()=0;
-			/// <summary>
-			/// Enable or disble always passing the focus to its parent window.
-			/// </summary>
-			/// <param name="value">True to enable always passing the focus to its parent window.</param>
-			virtual void				SetAlwaysPassFocusToParent(bool value)=0;
-
-			/// <summary>
 			/// Enable the window customized frame mode.
 			/// </summary>
 			virtual void				EnableCustomFrameMode()=0;

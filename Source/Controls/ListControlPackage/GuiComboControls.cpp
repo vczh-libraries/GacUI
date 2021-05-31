@@ -126,16 +126,19 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::AdoptSubMenuSize()
 			{
-				Size expectedSize(0, GetDisplayFont().size * 20);
-				Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
-
-				Size clientSize = GetPreferredMenuClientSize();
-				clientSize.y = adoptedSize.y + GetSubMenu()->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
-				SetPreferredMenuClientSize(clientSize);
-
-				if (GetSubMenuOpening())
+				if (auto subMenu = GetSubMenu())
 				{
-					GetSubMenu()->SetClientSize(clientSize);
+					Size expectedSize(0, GetDisplayFont().size * 20);
+					Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
+
+					Size clientSize = GetPreferredMenuClientSize();
+					clientSize.y = adoptedSize.y + subMenu->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
+					SetPreferredMenuClientSize(clientSize);
+
+					if (GetSubMenuOpening())
+					{
+						subMenu->SetClientSize(clientSize);
+					}
 				}
 			}
 
@@ -167,7 +170,6 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				containedListControl->SelectItemsByClick(selectedIndex, false, false, true);
-				GetSubMenu()->GetNativeWindow()->SetFocus();
 				containedListControl->SetFocus();
 			}
 

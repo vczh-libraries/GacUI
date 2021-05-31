@@ -157,6 +157,7 @@ MenuButton
 			protected:
 				Ptr<IEventHandler>						subMenuWindowOpenedHandler;
 				Ptr<IEventHandler>						subMenuWindowClosedHandler;
+				Ptr<IEventHandler>						subMenuWindowDestroyingHandler;
 				Ptr<IEventHandler>						hostClickedHandler;
 				Ptr<IEventHandler>						hostMouseEnterHandler;
 				Ptr<GuiImageData>						image;
@@ -175,6 +176,7 @@ MenuButton
 
 				void									OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnSubMenuWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnSubMenuWindowDestroying(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 

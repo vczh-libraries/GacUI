@@ -365,6 +365,16 @@ ControllerListener
 					}
 				}
 
+				~Direct2DWindowsNativeControllerListener()
+				{
+					for (vint i = 0; i < nativeWindowListeners.Count(); i++)
+					{
+						auto window = nativeWindowListeners.Keys()[i];
+						auto listener = nativeWindowListeners.Values()[i];
+						window->UninstallListener(listener.Obj());
+					}
+				}
+
 				ComPtr<ID3D11Device> CreateD3D11Device(D3D_DRIVER_TYPE driverType)
 				{
 					UINT flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
