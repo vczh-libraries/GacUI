@@ -22,9 +22,7 @@ namespace vl
 			{
 			protected:
 				HWND									ownerHandle;
-				HHOOK									mouseHook;
 				bool									isTimerEnabled;
-				HOOKPROC								mouseProc;
 
 				collections::Array<WString>				keyNames;
 				collections::Dictionary<WString, VKEY>	keys;
@@ -32,12 +30,9 @@ namespace vl
 				WString									GetKeyNameInternal(VKEY code);
 				void									InitializeKeyNames();
 			public:
-				WindowsInputService(HOOKPROC _mouseProc);
+				WindowsInputService();
 
 				void									SetOwnerHandle(HWND handle);
-				void									StartHookMouse()override;
-				void									StopHookMouse()override;
-				bool									IsHookingMouse()override;
 				void									StartTimer()override;
 				void									StopTimer()override;
 				bool									IsTimerEnabled()override;

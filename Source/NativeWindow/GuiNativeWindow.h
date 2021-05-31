@@ -1577,31 +1577,6 @@ Native Window Controller
 		{
 		public:
 			/// <summary>
-			/// Called when the left mouse button is pressed. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>.
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					LeftButtonDown(NativePoint position);
-			/// <summary>
-			/// Called when the left mouse button is released. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					LeftButtonUp(NativePoint position);
-			/// <summary>
-			/// Called when the right mouse button is pressed. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					RightButtonDown(NativePoint position);
-			/// <summary>
-			/// Called when the right mouse button is released. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					RightButtonUp(NativePoint position);
-			/// <summary>
-			/// Called when the mouse is moving. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					MouseMoving(NativePoint position);
-			/// <summary>
 			/// Called when the global timer message raised. To receive or not receive this message, use <see cref="INativeInputService::StartTimer"/> or <see cref="INativeInputService::StopTimer"/>
 			/// </summary>
 			virtual void					GlobalTimer();
