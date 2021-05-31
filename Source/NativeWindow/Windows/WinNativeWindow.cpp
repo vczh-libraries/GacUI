@@ -366,6 +366,11 @@ WindowsForm
 						break;
 					case WM_ACTIVATE:
 						{
+							// TODO:
+							// Use SetParent instead of SetWindowLongPtr
+							// Set focus to current menu or popup
+							// menus are closed when the hosted window is deactivated
+							// if a popup does not have a parent window, it will be Show() instead of ShowDeactivated() and than it is closed when it is deactivated
 							for (vint i = 0; i < listeners.Count(); i++)
 							{
 								if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
