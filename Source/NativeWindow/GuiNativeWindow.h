@@ -422,8 +422,6 @@ Native Window
 			/// <summary>
 			/// Get the parent window.
 			/// A parent window doesn't contain a child window. It always displayed below the child windows. When a parent window is minimized or restored, so as its child windows.
-			/// When a child window is activated, its parent window is also activated.
-			/// When a parent window is deactivated, its child windows are also deactivated.
 			/// </summary>
 			/// <returns>The parent window.</returns>
 			virtual INativeWindow*		GetParent()=0;
@@ -438,13 +436,30 @@ Native Window
 			/// </summary>
 			enum WindowMode
 			{
-				/// <summary>A normal window.</summary>
+				/// <summary>
+				/// A normal window.
+				/// </summary>
 				Normal,
-				/// <summary>A tooltip window.</summary>
+				/// <summary>
+				/// A tooltip window.
+				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
+				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
+				/// This window is automatically closed when the top level window is deactivated or clicked.
+				/// </summary>
 				Tooltip,
-				/// <summary>A popup window. It will be automatically closed when deactivated.</summary>
+				/// <summary>
+				/// A popup window.
+				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
+				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
+				/// This window is automatically closed when the top level window is deactivated or clicked.
+				/// </summary>
 				Popup,
-				/// <summary>A menu window. It will be automatically closed when deactivated.</summary>
+				/// <summary>
+				/// A menu window.
+				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
+				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
+				/// This window is automatically closed when the top level window is deactivated or clicked.
+				/// </summary>
 				Menu,
 			};
 
@@ -507,6 +522,7 @@ Native Window
 			virtual WindowSizeState		GetSizeState()=0;
 			/// <summary>
 			/// Show the window.
+			/// If the window disabled activation, this function enables it again.
 			/// </summary>
 			virtual void				Show()=0;
 			/// <summary>
@@ -552,6 +568,7 @@ Native Window
 			
 			/// <summary>
 			/// Set focus to the window.
+			/// A window with activation disabled cannot receive focus.
 			/// </summary>
 			virtual void				SetFocus()=0;
 			/// <summary>
@@ -561,6 +578,7 @@ Native Window
 			virtual bool				IsFocused()=0;
 			/// <summary>
 			/// Activate to the window.
+			/// If the window disabled activation, this function enables it again.
 			/// </summary>
 			virtual void				SetActivate()=0;
 			/// <summary>
@@ -589,6 +607,8 @@ Native Window
 			virtual void				EnableActivate()=0;
 			/// <summary>
 			/// Disable activation to the window.
+			/// Clicking a window with activation disabled doesn't bring activation and focus.
+			/// Activation will be automatically enabled by calling <see cref="Show"/> or <see cref="SetActivate"/>.
 			/// </summary>
 			virtual void				DisableActivate()=0;
 			/// <summary>

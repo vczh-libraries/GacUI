@@ -119,12 +119,12 @@ Control Host
 				/// <summary>Test is the window focused.</summary>
 				/// <returns>Returns true if the window is focused.</returns>
 				bool											GetFocused()override;
-				/// <summary>Focus the window.</summary>
+				/// <summary>Focus the window. A window with activation disabled cannot receive focus.</summary>
 				void											SetFocused();
 				/// <summary>Test is the window activated.</summary>
 				/// <returns>Returns true if the window is activated.</returns>
 				bool											GetActivated();
-				/// <summary>Activate the window.</summary>
+				/// <summary>Activate the window. If the window disabled activation, this function enables it again.</summary>
 				void											SetActivated();
 				/// <summary>Test is the window icon shown in the task bar.</summary>
 				/// <returns>Returns true if the window is icon shown in the task bar.</returns>
@@ -135,7 +135,11 @@ Control Host
 				/// <summary>Test is the window allowed to be activated.</summary>
 				/// <returns>Returns true if the window is allowed to be activated.</returns>
 				bool											GetEnabledActivate();
-				/// <summary>Allow or forbid the window to be activated.</summary>
+				/// <summary>
+				/// Allow or forbid the window to be activated.
+				/// Clicking a window with activation disabled doesn't bring activation and focus.
+				/// Activation will be automatically enabled by calling <see cref="Show"/> or <see cref="SetActivated"/>.
+				/// </summary>
 				/// <param name="value">Set to true to allow the window to be activated.</param>
 				void											SetEnabledActivate(bool value);
 				/// <summary>
@@ -185,6 +189,7 @@ Control Host
 				INativeScreen*									GetRelatedScreen();
 				/// <summary>
 				/// Show the window.
+				/// If the window disabled activation, this function enables it again.
 				/// </summary>
 				void											Show();
 				/// <summary>
