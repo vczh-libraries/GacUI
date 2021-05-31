@@ -110,15 +110,6 @@ GuiMenu
 				GuiPopup::OnDeactivatedAltHost();
 			}
 
-			void GuiMenu::MouseClickedOnOtherWindow(GuiWindow* window)
-			{
-				GuiMenu* targetMenu=dynamic_cast<GuiMenu*>(window);
-				if(!targetMenu)
-				{
-					Hide();
-				}
-			}
-
 			void GuiMenu::OnWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if(parentMenuService)

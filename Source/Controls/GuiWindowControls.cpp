@@ -707,10 +707,6 @@ GuiWindow
 				GuiControlHost::OnVisualStatusChanged();
 			}
 
-			void GuiWindow::MouseClickedOnOtherWindow(GuiWindow* window)
-			{
-			}
-
 			void GuiWindow::OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if (auto ct = GetControlTemplateObject(false))
@@ -915,11 +911,6 @@ GuiPopup
 					auto position = CalculatePopupPosition(NativeSize(nativeClientSize.x + offsetX, nativeClientSize.y + offsetY), popupType, popupInfo);
 					SetBounds(position, clientSize);
 				}
-			}
-
-			void GuiPopup::MouseClickedOnOtherWindow(GuiWindow* window)
-			{
-				Hide();
 			}
 
 			void GuiPopup::PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

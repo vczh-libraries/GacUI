@@ -31,10 +31,6 @@ Application
 				friend class Ptr<GuiApplication>;
 			private:
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
-				void											LeftButtonDown(NativePoint position)override;
-				void											LeftButtonUp(NativePoint position)override;
-				void											RightButtonDown(NativePoint position)override;
-				void											RightButtonUp(NativePoint position)override;
 				void											ClipboardUpdated()override;
 			protected:
 				Locale											locale;
@@ -55,7 +51,6 @@ Application
 				void											UnregisterWindow(GuiWindow* window);
 				void											RegisterPopupOpened(GuiPopup* popup);
 				void											RegisterPopupClosed(GuiPopup* popup);
-				void											OnMouseDown(NativePoint location);
 				void											TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											TooltipMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:

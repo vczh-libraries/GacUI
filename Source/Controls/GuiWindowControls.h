@@ -244,7 +244,6 @@ Window
 				void									DpiChanged()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
-				virtual void							MouseClickedOnOtherWindow(GuiWindow* window);
 				
 				void									OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -385,7 +384,6 @@ Window
 				PopupInfo								popupInfo;
 
 				void									UpdateClientSizeAfterRendering(Size clientSize)override;
-				void									MouseClickedOnOtherWindow(GuiWindow* window)override;
 				void									PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
