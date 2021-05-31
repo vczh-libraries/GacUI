@@ -288,6 +288,48 @@ WindowsForm
 					bool transferFocusEvent = false;
 					bool nonClient = false;
 
+					// handling popup windows
+					{
+						bool closeChildPopups = false;
+						switch (uMsg)
+						{
+						case WM_ACTIVATE:
+							if (wParam == WA_INACTIVE && windowMode == Normal)
+							{
+								closeChildPopups = true;
+							}
+							break;
+						case WM_LBUTTONDOWN:
+						case WM_MBUTTONDOWN:
+						case WM_RBUTTONDOWN:
+							closeChildPopups = true;
+							break;
+						}
+
+						if (closeChildPopups)
+						{
+							List<WindowsForm*> childPopups;
+							childPopups.Add(this);
+							for (vint i = 0; i < childPopups.Count(); i++)
+							{
+								auto popup = childPopups[i];
+								for (vint j = 0; j < popup->childWindows.Count(); j++)
+								{
+									auto childPopup = popup->childWindows[j];
+									if (childPopup->windowMode != Normal)
+									{
+										childPopups.Add(childPopup);
+									}
+								}
+
+								if (popup != this && popup->IsVisible())
+								{
+									popup->Hide(false);
+								}
+							}
+						}
+					}
+
 					switch(uMsg)
 					{
 					case WM_LBUTTONDOWN:
@@ -788,48 +830,6 @@ WindowsForm
 							return true;
 						}
 						break;
-					}
-
-					// handling popup windows
-					{
-						bool closeChildPopups = false;
-						switch (uMsg)
-						{
-						case WM_ACTIVATE:
-							if (wParam == MA_NOACTIVATE && windowMode == Normal)
-							{
-								closeChildPopups = true;
-							}
-							break;
-						case WM_LBUTTONDOWN:
-						case WM_MBUTTONDOWN:
-						case WM_RBUTTONDOWN:
-							closeChildPopups = true;
-							break;
-						}
-
-						if (closeChildPopups)
-						{
-							List<WindowsForm*> childPopups;
-							childPopups.Add(this);
-							for (vint i = 0; i < childPopups.Count(); i++)
-							{
-								auto popup = childPopups[i];
-								for (vint j = 0; j < popup->childWindows.Count(); j++)
-								{
-									auto childPopup = popup->childWindows[j];
-									if (childPopup->windowMode != Normal)
-									{
-										childPopups.Add(childPopup);
-									}
-								}
-
-								if (popup != this && popup->IsVisible())
-								{
-									// popup->Hide(false);
-								}
-							}
-						}
 					}
 
 					// handling custom frame
