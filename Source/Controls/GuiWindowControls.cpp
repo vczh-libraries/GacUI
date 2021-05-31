@@ -1060,7 +1060,7 @@ GuiPopup
 				{
 					window->SetTopMost(true);
 				}
-				Show();
+				ShowDeactivated();
 			}
 
 			GuiPopup::GuiPopup(theme::ThemeName themeName, INativeWindow::WindowMode mode)
