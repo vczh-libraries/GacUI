@@ -228,6 +228,7 @@ Window
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
 			protected:
+				INativeWindow::WindowMode				windowMode = INativeWindow::Normal;
 				compositions::IGuiAltActionHost*		previousAltHost = nullptr;
 				bool									hasMaximizedBox = true;
 				bool									hasMinimizedBox = true;
@@ -247,6 +248,11 @@ Window
 				
 				void									OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+				/// <summary>Create a control with a specified default theme and a window mode.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="mode">The window mode.</param>
+				GuiWindow(theme::ThemeName themeName, INativeWindow::WindowMode mode);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -392,6 +398,11 @@ Window
 				static NativePoint						CalculatePopupPosition(NativeSize windowSize, vint popupType, const PopupInfo& popupInfo);
 
 				void									ShowPopupInternal();
+
+				/// <summary>Create a control with a specified default theme and a window mode.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="mode">The window mode.</param>
+				GuiPopup(theme::ThemeName themeName, INativeWindow::WindowMode mode);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -425,11 +436,12 @@ Window
 			class GuiTooltip : public GuiPopup, private INativeControllerListener, public Description<GuiTooltip>
 			{
 			protected:
-				GuiControl*								temporaryContentControl;
+				GuiControl*								temporaryContentControl = nullptr;
 
 				void									GlobalTimer()override;
 				void									TooltipOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

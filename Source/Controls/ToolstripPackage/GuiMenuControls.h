@@ -92,7 +92,7 @@ Menu
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MenuTemplate, GuiPopup)
 			private:
-				IGuiMenuService*						parentMenuService;
+				IGuiMenuService*						parentMenuService = nullptr;
 				bool									hideOnDeactivateAltHost = true;
 
 				IGuiMenuService*						GetParentMenuService()override;

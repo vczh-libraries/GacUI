@@ -133,9 +133,8 @@ GuiMenu
 			}
 
 			GuiMenu::GuiMenu(theme::ThemeName themeName, GuiControl* _owner)
-				:GuiPopup(themeName)
+				:GuiPopup(themeName, INativeWindow::Menu)
 				, owner(_owner)
-				, parentMenuService(0)
 			{
 				GetNativeWindow()->SetAlwaysPassFocusToParent(true);
 				UpdateMenuService();

@@ -695,6 +695,10 @@ GuiWindow
 			void GuiWindow::OnNativeWindowChanged()
 			{
 				SyncNativeWindowProperties();
+				if (auto window = GetNativeWindow())
+				{
+					window->SetWindowMode(windowMode);
+				}
 				GuiControlHost::OnNativeWindowChanged();
 			}
 
@@ -723,8 +727,9 @@ GuiWindow
 				}
 			}
 
-			GuiWindow::GuiWindow(theme::ThemeName themeName)
+			GuiWindow::GuiWindow(theme::ThemeName themeName, INativeWindow::WindowMode mode)
 				:GuiControlHost(themeName)
+				, windowMode(mode)
 			{
 				SetAltComposition(boundsComposition);
 				SetAltControl(this, true);
@@ -736,6 +741,11 @@ GuiWindow
 
 				WindowActivated.AttachMethod(this, &GuiWindow::OnWindowActivated);
 				WindowDeactivated.AttachMethod(this, &GuiWindow::OnWindowDeactivated);
+			}
+
+			GuiWindow::GuiWindow(theme::ThemeName themeName)
+				:GuiWindow(themeName, INativeWindow::Normal)
+			{
 			}
 
 			GuiWindow::~GuiWindow()
@@ -1062,8 +1072,8 @@ GuiPopup
 				ShowDeactivated();
 			}
 
-			GuiPopup::GuiPopup(theme::ThemeName themeName)
-				:GuiWindow(themeName)
+			GuiPopup::GuiPopup(theme::ThemeName themeName, INativeWindow::WindowMode mode)
+				:GuiWindow(themeName, mode)
 			{
 				SetMinimizedBox(false);
 				SetMaximizedBox(false);
@@ -1074,6 +1084,11 @@ GuiPopup
 				WindowOpened.AttachMethod(this, &GuiPopup::PopupOpened);
 				WindowClosed.AttachMethod(this, &GuiPopup::PopupClosed);
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiPopup::OnKeyDown);
+			}
+
+			GuiPopup::GuiPopup(theme::ThemeName themeName)
+				:GuiPopup(themeName, INativeWindow::Popup)
+			{
 			}
 
 			GuiPopup::~GuiPopup()
@@ -1172,8 +1187,7 @@ GuiPopup
 			}
 
 			GuiTooltip::GuiTooltip(theme::ThemeName themeName)
-				:GuiPopup(themeName)
-				,temporaryContentControl(0)
+				: GuiPopup(themeName, INativeWindow::Tooltip)
 			{
 				containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->SetPreferredMinSize(Size(20, 10));
