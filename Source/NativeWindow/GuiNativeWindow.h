@@ -420,7 +420,10 @@ Native Window
 			virtual void				SetCaretPoint(NativePoint point)=0;
 			
 			/// <summary>
-			/// Get the parent window. A parent window doesn't contain a child window. It always displayed below the child windows. When a parent window is minimized or restored, so as its child windows.
+			/// Get the parent window.
+			/// A parent window doesn't contain a child window. It always displayed below the child windows. When a parent window is minimized or restored, so as its child windows.
+			/// When a child window is activated, its parent window is also activated.
+			/// When a parent window is deactivated, its child windows are also deactivated.
 			/// </summary>
 			/// <returns>The parent window.</returns>
 			virtual INativeWindow*		GetParent()=0;
@@ -429,6 +432,33 @@ Native Window
 			/// </summary>
 			/// <param name="parent">The parent window.</param>
 			virtual void				SetParent(INativeWindow* parent)=0;
+
+			/// <summary>
+			/// Window mode
+			/// </summary>
+			enum WindowMode
+			{
+				/// <summary>A normal window.</summary>
+				Normal,
+				/// <summary>A tooltip window.</summary>
+				Tooltip,
+				/// <summary>A popup window. It will be automatically closed when deactivated.</summary>
+				Popup,
+				/// <summary>A menu window. It will be automatically closed when deactivated.</summary>
+				Menu,
+			};
+
+			/// <summary>
+			/// Get the window mode. 
+			/// </summary>
+			/// <returns>The window mode.</summary>
+			virtual WindowMode			GetWindowMode() = 0;
+			/// <summary>
+			/// Set the window mode
+			/// </summary>
+			/// <param name="mode">The window mode.</param>
+			virtual void				SetWindowMode(WindowMode mode) = 0;
+
 			/// <summary>
 			/// Test is the window always pass the focus to its parent window.
 			/// </summary>
@@ -1212,21 +1242,7 @@ Native Window Services
 		/// </summary>
 		class INativeInputService : public virtual IDescriptable, public Description<INativeInputService>
 		{
-		public:
-			/// <summary>
-			/// Start to reveive global mouse message.
-			/// </summary>
-			virtual void					StartHookMouse()=0;
-			/// <summary>
-			/// Stop to receive global mouse message.
-			/// </summary>
-			virtual void					StopHookMouse()=0;
-			/// <summary>
-			/// Test is the global mouse message receiving enabled.
-			/// </summary>
-			/// <returns>Returns true if the global mouse message receiving is enabled.</returns>
-			virtual bool					IsHookingMouse()=0;
-			
+		public:			
 			/// <summary>
 			/// Start to reveive global timer message.
 			/// </summary>
