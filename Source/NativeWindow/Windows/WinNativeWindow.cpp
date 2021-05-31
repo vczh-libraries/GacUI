@@ -367,7 +367,7 @@ WindowsForm
 					case WM_ACTIVATE:
 						{
 							// TODO:
-							// Use SetParent instead of SetWindowLongPtr
+							// Use SetParent instead of SetWindowLongPtr, child window will be focused without activated (check)
 							// Set focus to current menu or popup
 							// menus are closed when the hosted window is deactivated
 							// if a popup does not have a parent window, it will be Show() instead of ShowDeactivated() and than it is closed when it is deactivated
