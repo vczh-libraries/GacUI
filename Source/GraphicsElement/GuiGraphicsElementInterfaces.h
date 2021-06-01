@@ -25,7 +25,6 @@ namespace vl
 		namespace elements
 		{
 			class IGuiGraphicsElement;
-			class IGuiGraphicsElementFactory;
 			class IGuiGraphicsRenderer;
 			class IGuiGraphicsRendererFactory;
 			class IGuiGraphicsRenderTarget;
@@ -47,11 +46,6 @@ Basic Construction
 				virtual void									SetOwnerComposition(compositions::GuiGraphicsComposition* composition) = 0;
 			public:
 				/// <summary>
-				/// Access the <see cref="IGuiGraphicsElementFactory"></see> that is used to create this graphics elements.
-				/// </summary>
-				/// <returns>Returns the related factory.</returns>
-				virtual IGuiGraphicsElementFactory*				GetFactory() = 0;
-				/// <summary>
 				/// Access the associated <see cref="IGuiGraphicsRenderer"></see> for this graphics element.
 				/// </summary>
 				/// <returns>Returns the related renderer.</returns>
@@ -61,25 +55,6 @@ Basic Construction
 				/// </summary>
 				/// <returns>The owner composition.</returns>
 				virtual compositions::GuiGraphicsComposition*	GetOwnerComposition() = 0;
-			};
-
-			/// <summary>
-			/// This is the interface for graphics element factories.
-			/// Graphics element factories should be registered using [M:vl.presentation.elements.GuiGraphicsResourceManager.RegisterElementFactory].
-			/// </summary>
-			class IGuiGraphicsElementFactory : public Interface
-			{
-			public:
-				/// <summary>
-				/// Get the name representing the kind of graphics element to be created.
-				/// </summary>
-				/// <returns>Returns the name of graphics elements.</returns>
-				virtual WString							GetElementTypeName()=0;
-				/// <summary>
-				/// Create a <see cref="IGuiGraphicsElement"></see>.
-				/// </summary>
-				/// <returns>Returns the created graphics elements.</returns>
-				virtual IGuiGraphicsElement*			Create()=0;
 			};
 
 			/// <summary>
