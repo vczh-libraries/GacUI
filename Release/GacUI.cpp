@@ -30536,42 +30536,29 @@ GuiGraphicsResourceManager
 			{
 			}
 
-			bool GuiGraphicsResourceManager::RegisterElementFactory(IGuiGraphicsElementFactory* factory)
+			vint GuiGraphicsResourceManager::RegisterElementType(const WString& elementTypeName)
 			{
-				if(elementFactories.Keys().Contains(factory->GetElementTypeName()))
+				CHECK_ERROR(!elementTypes.Contains(elementTypeName), L"GuiGraphicsResourceManager::RegisterElementType(const WString&)#This element type has already been registered.");
+				return elementTypes.Add(elementTypeName);
+			}
+
+			void GuiGraphicsResourceManager::RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory)
+			{
+				if (rendererFactories.Count() <= elementType)
 				{
-					return false;
+					rendererFactories.Resize(elementType + 1);
+					rendererFactories[elementType] = factory;
 				}
 				else
 				{
-					elementFactories.Add(factory->GetElementTypeName(), factory);
-					return true;
+					CHECK_ERROR(!rendererFactories[elementType], L"GuiGraphicsResourceManager::RegisterRendererFactory(vint, Ptr<IGuiGraphicsRendererFactory>)#This element type has already been binded a renderer factory.");
+					rendererFactories[elementType] = factory;
 				}
 			}
 
-			bool GuiGraphicsResourceManager::RegisterRendererFactory(const WString& elementTypeName, IGuiGraphicsRendererFactory* factory)
+			IGuiGraphicsRendererFactory* GuiGraphicsResourceManager::GetRendererFactory(vint elementType)
 			{
-				if(rendererFactories.Keys().Contains(elementTypeName))
-				{
-					return false;
-				}
-				else
-				{
-					rendererFactories.Add(elementTypeName, factory);
-					return true;
-				}
-			}
-
-			IGuiGraphicsElementFactory* GuiGraphicsResourceManager::GetElementFactory(const WString& elementTypeName)
-			{
-				vint index=elementFactories.Keys().IndexOf(elementTypeName);
-				return index==-1?0:elementFactories.Values().Get(index).Obj();
-			}
-
-			IGuiGraphicsRendererFactory* GuiGraphicsResourceManager::GetRendererFactory(const WString& elementTypeName)
-			{
-				vint index=rendererFactories.Keys().IndexOf(elementTypeName);
-				return index==-1?nullptr:rendererFactories.Values().Get(index).Obj();
+				return rendererFactories.Count() > elementType ? rendererFactories[elementType].Obj() : nullptr;
 			}
 
 			GuiGraphicsResourceManager* guiGraphicsResourceManager=0;
@@ -30584,21 +30571,6 @@ GuiGraphicsResourceManager
 			void SetGuiGraphicsResourceManager(GuiGraphicsResourceManager* resourceManager)
 			{
 				guiGraphicsResourceManager=resourceManager;
-			}
-
-			bool RegisterFactories(IGuiGraphicsElementFactory* elementFactory, IGuiGraphicsRendererFactory* rendererFactory)
-			{
-				if(guiGraphicsResourceManager && elementFactory && rendererFactory)
-				{
-					if(guiGraphicsResourceManager->RegisterElementFactory(elementFactory))
-					{
-						if(guiGraphicsResourceManager->RegisterRendererFactory(elementFactory->GetElementTypeName(), rendererFactory))
-						{
-							return true;
-						}
-					}
-				}
-				return false;
 			}
 		}
 	}

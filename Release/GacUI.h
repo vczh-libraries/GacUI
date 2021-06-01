@@ -1179,7 +1179,6 @@ namespace vl
 		namespace elements
 		{
 			class IGuiGraphicsElement;
-			class IGuiGraphicsElementFactory;
 			class IGuiGraphicsRenderer;
 			class IGuiGraphicsRendererFactory;
 			class IGuiGraphicsRenderTarget;
@@ -1201,11 +1200,6 @@ Basic Construction
 				virtual void									SetOwnerComposition(compositions::GuiGraphicsComposition* composition) = 0;
 			public:
 				/// <summary>
-				/// Access the <see cref="IGuiGraphicsElementFactory"></see> that is used to create this graphics elements.
-				/// </summary>
-				/// <returns>Returns the related factory.</returns>
-				virtual IGuiGraphicsElementFactory*				GetFactory() = 0;
-				/// <summary>
 				/// Access the associated <see cref="IGuiGraphicsRenderer"></see> for this graphics element.
 				/// </summary>
 				/// <returns>Returns the related renderer.</returns>
@@ -1215,25 +1209,6 @@ Basic Construction
 				/// </summary>
 				/// <returns>The owner composition.</returns>
 				virtual compositions::GuiGraphicsComposition*	GetOwnerComposition() = 0;
-			};
-
-			/// <summary>
-			/// This is the interface for graphics element factories.
-			/// Graphics element factories should be registered using [M:vl.presentation.elements.GuiGraphicsResourceManager.RegisterElementFactory].
-			/// </summary>
-			class IGuiGraphicsElementFactory : public Interface
-			{
-			public:
-				/// <summary>
-				/// Get the name representing the kind of graphics element to be created.
-				/// </summary>
-				/// <returns>Returns the name of graphics elements.</returns>
-				virtual WString							GetElementTypeName()=0;
-				/// <summary>
-				/// Create a <see cref="IGuiGraphicsElement"></see>.
-				/// </summary>
-				/// <returns>Returns the created graphics elements.</returns>
-				virtual IGuiGraphicsElement*			Create()=0;
 			};
 
 			/// <summary>
@@ -5550,11 +5525,9 @@ Resource Manager
 			/// </summary>
 			class GuiGraphicsResourceManager : public Object
 			{
-				typedef collections::Dictionary<WString, Ptr<IGuiGraphicsElementFactory>>		elementFactoryMap;
-				typedef collections::Dictionary<WString, Ptr<IGuiGraphicsRendererFactory>>		rendererFactoryMap;
 			protected:
-				elementFactoryMap						elementFactories;
-				rendererFactoryMap						rendererFactories;
+				collections::List<WString>								elementTypes;
+				collections::Array<Ptr<IGuiGraphicsRendererFactory>>	rendererFactories;
 			public:
 				/// <summary>
 				/// Create a graphics resource manager without any predefined factories
@@ -5563,36 +5536,31 @@ Resource Manager
 				~GuiGraphicsResourceManager();
 
 				/// <summary>
-				/// Register a <see cref="IGuiGraphicsElementFactory"></see> using the element type from <see cref="IGuiGraphicsElementFactory::GetElementTypeName"></see>.
+				/// Register a element type name.
+				/// This function crashes when an element type has already been registered.
 				/// </summary>
-				/// <param name="factory">The instance of the graphics element factory to register.</param>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				virtual bool							RegisterElementFactory(IGuiGraphicsElementFactory* factory);
+				/// <param name="elementTypeName">The element type.</param>
+				/// <returns>A number identifies this element type.</returns>
+				vint									RegisterElementType(const WString& elementTypeName);
 				/// <summary>
-				/// Register a <see cref="IGuiGraphicsRendererFactory"></see> and bind it to a registered <see cref="IGuiGraphicsElementFactory"></see>.
+				/// Register a <see cref="IGuiGraphicsRendererFactory"></see> and bind it to an registered element type from <see cref="RegisterElementType"></see>.
+				/// This function crashes when an element type has already been binded a renderer factory.
 				/// </summary>
-				/// <param name="elementTypeName">The element type to represent a graphics element factory.</param>
+				/// <param name="elementType">The element type to represent a graphics element factory.</param>
 				/// <param name="factory">The instance of the graphics renderer factory to register.</param>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				virtual bool							RegisterRendererFactory(const WString& elementTypeName, IGuiGraphicsRendererFactory* factory);
-				/// <summary>
-				/// Get the instance of a registered <see cref="IGuiGraphicsElementFactory"></see> that is binded to a specified element type.
-				/// </summary>
-				/// <returns>Returns the element factory.</returns>
-				/// <param name="elementTypeName">The element type to get a corresponding graphics element factory.</param>
-				virtual IGuiGraphicsElementFactory*		GetElementFactory(const WString& elementTypeName);
+				void									RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory);
 				/// <summary>
 				/// Get the instance of a registered <see cref="IGuiGraphicsRendererFactory"></see> that is binded to a specified element type.
 				/// </summary>
 				/// <returns>Returns the renderer factory.</returns>
-				/// <param name="elementTypeName">The element type to get a corresponding graphics renderer factory.</param>
-				virtual IGuiGraphicsRendererFactory*	GetRendererFactory(const WString& elementTypeName);
+				/// <param name="elementType">The registered element type from <see cref="RegisterElementType"> to get a binded graphics renderer factory.</param>
+				IGuiGraphicsRendererFactory*			GetRendererFactory(vint elementType);
 				/// <summary>
 				/// Get the instance of a <see cref="IGuiGraphicsRenderTarget"></see> that is binded to an <see cref="INativeWindow"></see>.
 				/// </summary>
 				/// <param name="window">The specified window.</param>
 				/// <returns>Returns the render target.</returns>
-				virtual IGuiGraphicsRenderTarget*		GetRenderTarget(INativeWindow* window)=0;
+				virtual IGuiGraphicsRenderTarget*		GetRenderTarget(INativeWindow* window) = 0;
 				/// <summary>
 				/// Recreate the render target for the specified window.
 				/// </summary>
@@ -5607,7 +5575,7 @@ Resource Manager
 				/// Get the renderer awared rich text document layout engine provider object.
 				/// </summary>
 				/// <returns>Returns the layout provider.</returns>
-				virtual IGuiGraphicsLayoutProvider*		GetLayoutProvider()=0;
+				virtual IGuiGraphicsLayoutProvider*		GetLayoutProvider() = 0;
 			};
 
 			/// <summary>
@@ -5620,13 +5588,6 @@ Resource Manager
 			/// </summary>
 			/// <param name="resourceManager">The resource manager to set.</param>
 			extern void									SetGuiGraphicsResourceManager(GuiGraphicsResourceManager* resourceManager);
-			/// <summary>
-			/// Helper function to register a <see cref="IGuiGraphicsElementFactory"></see> with a <see cref="IGuiGraphicsRendererFactory"></see> and bind them together.
-			/// </summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="elementFactory">The element factory to register.</param>
-			/// <param name="rendererFactory">The renderer factory to register.</param>
-			extern bool									RegisterFactories(IGuiGraphicsElementFactory* elementFactory, IGuiGraphicsRendererFactory* rendererFactory);
 
 /***********************************************************************
 Helpers
@@ -5635,29 +5596,7 @@ Helpers
 			template<typename TElement>
 			class GuiElementBase : public Object, public IGuiGraphicsElement, public Description<TElement>
 			{
-			public:
-				class Factory : public Object, public IGuiGraphicsElementFactory
-				{
-				public:
-					WString GetElementTypeName()
-					{
-						return TElement::GetElementTypeName();
-					}
-					IGuiGraphicsElement* Create()
-					{
-						auto element = new TElement;
-						element->factory = this;
-						IGuiGraphicsRendererFactory* rendererFactory = GetGuiGraphicsResourceManager()->GetRendererFactory(GetElementTypeName());
-						if (rendererFactory)
-						{
-							element->renderer = rendererFactory->Create();
-							element->renderer->Initialize(element);
-						}
-						return element;
-					}
-				};
 			protected:
-				IGuiGraphicsElementFactory*				factory = nullptr;
 				Ptr<IGuiGraphicsRenderer>				renderer;
 				compositions::GuiGraphicsComposition*	ownerComposition = nullptr;
 
@@ -5685,9 +5624,13 @@ Helpers
 			public:
 				static TElement* Create()
 				{
-					auto factory = GetGuiGraphicsResourceManager()->GetElementFactory(TElement::GetElementTypeName());
-					CHECK_ERROR(factory != nullptr, L"This element is not supported by the selected renderer.");
-					return dynamic_cast<TElement*>(factory->Create());
+					auto rendererFactory = GetGuiGraphicsResourceManager()->GetRendererFactory(TElement::GetElementType());
+					CHECK_ERROR(rendererFactory != nullptr, L"This element is not supported by the selected renderer.");
+
+					auto element = new TElement;
+					element->renderer = rendererFactory->Create();
+					element->renderer->Initialize(element);
+					return element;
 				}
 
 				~GuiElementBase()
@@ -5696,11 +5639,6 @@ Helpers
 					{
 						renderer->Finalize();
 					}
-				}
-
-				IGuiGraphicsElementFactory* GetFactory()override
-				{
-					return factory;
 				}
 
 				IGuiGraphicsRenderer* GetRenderer()override
@@ -5717,9 +5655,16 @@ Helpers
 #define DEFINE_GUI_GRAPHICS_ELEMENT(TELEMENT, ELEMENT_TYPE_NAME)\
 				friend class GuiElementBase<TELEMENT>;\
 			public:\
-				static WString GetElementTypeName()\
+				static vint GetElementType()\
 				{\
-					return ELEMENT_TYPE_NAME;\
+					static vint elementType = -1;\
+					if (elementType == -1)\
+					{\
+						auto manager = GetGuiGraphicsResourceManager();\
+						CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element types.");\
+						elementType = manager->RegisterElementType(WString(ELEMENT_TYPE_NAME, false));\
+					}\
+					return elementType;\
 				}\
 
 #define DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, TTARGET)\
@@ -5744,7 +5689,9 @@ Helpers
 			public:\
 				static void Register()\
 				{\
-					RegisterFactories(new TELEMENT::Factory, new TRENDERER::Factory);\
+					auto manager = GetGuiGraphicsResourceManager();\
+					CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element renderers.");\
+					manager->RegisterRendererFactory(TELEMENT::GetElementType(), new TRENDERER::Factory);\
 				}\
 				IGuiGraphicsRendererFactory* GetFactory()override\
 				{\
