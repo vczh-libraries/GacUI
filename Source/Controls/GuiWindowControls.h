@@ -119,12 +119,12 @@ Control Host
 				/// <summary>Test is the window focused.</summary>
 				/// <returns>Returns true if the window is focused.</returns>
 				bool											GetFocused()override;
-				/// <summary>Focus the window.</summary>
+				/// <summary>Focus the window. A window with activation disabled cannot receive focus.</summary>
 				void											SetFocused();
 				/// <summary>Test is the window activated.</summary>
 				/// <returns>Returns true if the window is activated.</returns>
 				bool											GetActivated();
-				/// <summary>Activate the window.</summary>
+				/// <summary>Activate the window. If the window disabled activation, this function enables it again.</summary>
 				void											SetActivated();
 				/// <summary>Test is the window icon shown in the task bar.</summary>
 				/// <returns>Returns true if the window is icon shown in the task bar.</returns>
@@ -135,7 +135,11 @@ Control Host
 				/// <summary>Test is the window allowed to be activated.</summary>
 				/// <returns>Returns true if the window is allowed to be activated.</returns>
 				bool											GetEnabledActivate();
-				/// <summary>Allow or forbid the window to be activated.</summary>
+				/// <summary>
+				/// Allow or forbid the window to be activated.
+				/// Clicking a window with activation disabled doesn't bring activation and focus.
+				/// Activation will be automatically enabled by calling <see cref="Show"/> or <see cref="SetActivated"/>.
+				/// </summary>
 				/// <param name="value">Set to true to allow the window to be activated.</param>
 				void											SetEnabledActivate(bool value);
 				/// <summary>
@@ -185,6 +189,7 @@ Control Host
 				INativeScreen*									GetRelatedScreen();
 				/// <summary>
 				/// Show the window.
+				/// If the window disabled activation, this function enables it again.
 				/// </summary>
 				void											Show();
 				/// <summary>
@@ -228,6 +233,7 @@ Window
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
 			protected:
+				INativeWindow::WindowMode				windowMode = INativeWindow::Normal;
 				compositions::IGuiAltActionHost*		previousAltHost = nullptr;
 				bool									hasMaximizedBox = true;
 				bool									hasMinimizedBox = true;
@@ -243,10 +249,14 @@ Window
 				void									DpiChanged()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
-				virtual void							MouseClickedOnOtherWindow(GuiWindow* window);
 				
 				void									OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+				/// <summary>Create a control with a specified default theme and a window mode.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="mode">The window mode.</param>
+				GuiWindow(theme::ThemeName themeName, INativeWindow::WindowMode mode);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -379,7 +389,6 @@ Window
 				PopupInfo								popupInfo;
 
 				void									UpdateClientSizeAfterRendering(Size clientSize)override;
-				void									MouseClickedOnOtherWindow(GuiWindow* window)override;
 				void									PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
@@ -392,6 +401,11 @@ Window
 				static NativePoint						CalculatePopupPosition(NativeSize windowSize, vint popupType, const PopupInfo& popupInfo);
 
 				void									ShowPopupInternal();
+
+				/// <summary>Create a control with a specified default theme and a window mode.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="mode">The window mode.</param>
+				GuiPopup(theme::ThemeName themeName, INativeWindow::WindowMode mode);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -425,11 +439,12 @@ Window
 			class GuiTooltip : public GuiPopup, private INativeControllerListener, public Description<GuiTooltip>
 			{
 			protected:
-				GuiControl*								temporaryContentControl;
+				GuiControl*								temporaryContentControl = nullptr;
 
 				void									GlobalTimer()override;
 				void									TooltipOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

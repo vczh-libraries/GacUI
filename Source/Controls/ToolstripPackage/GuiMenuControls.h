@@ -92,7 +92,7 @@ Menu
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MenuTemplate, GuiPopup)
 			private:
-				IGuiMenuService*						parentMenuService;
+				IGuiMenuService*						parentMenuService = nullptr;
 				bool									hideOnDeactivateAltHost = true;
 
 				IGuiMenuService*						GetParentMenuService()override;
@@ -105,7 +105,6 @@ Menu
 				GuiControl*								owner;
 
 				void									OnDeactivatedAltHost()override;
-				void									MouseClickedOnOtherWindow(GuiWindow* window)override;
 				void									OnWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:

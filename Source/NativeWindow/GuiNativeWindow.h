@@ -420,7 +420,8 @@ Native Window
 			virtual void				SetCaretPoint(NativePoint point)=0;
 			
 			/// <summary>
-			/// Get the parent window. A parent window doesn't contain a child window. It always displayed below the child windows. When a parent window is minimized or restored, so as its child windows.
+			/// Get the parent window.
+			/// A parent window doesn't contain a child window. It always displayed below the child windows. When a parent window is minimized or restored, so as its child windows.
 			/// </summary>
 			/// <returns>The parent window.</returns>
 			virtual INativeWindow*		GetParent()=0;
@@ -429,16 +430,49 @@ Native Window
 			/// </summary>
 			/// <param name="parent">The parent window.</param>
 			virtual void				SetParent(INativeWindow* parent)=0;
+
 			/// <summary>
-			/// Test is the window always pass the focus to its parent window.
+			/// Window mode
 			/// </summary>
-			/// <returns>Returns true if the window always pass the focus to its parent window.</returns>
-			virtual bool				GetAlwaysPassFocusToParent()=0;
+			enum WindowMode
+			{
+				/// <summary>
+				/// A normal window.
+				/// </summary>
+				Normal,
+				/// <summary>
+				/// A tooltip window.
+				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
+				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
+				/// This window is automatically closed when the top level window is deactivated or clicked.
+				/// </summary>
+				Tooltip,
+				/// <summary>
+				/// A popup window.
+				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
+				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
+				/// This window is automatically closed when the top level window is deactivated or clicked.
+				/// </summary>
+				Popup,
+				/// <summary>
+				/// A menu window.
+				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
+				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
+				/// This window is automatically closed when the top level window is deactivated or clicked.
+				/// </summary>
+				Menu,
+			};
+
 			/// <summary>
-			/// Enable or disble always passing the focus to its parent window.
+			/// Get the window mode. 
 			/// </summary>
-			/// <param name="value">True to enable always passing the focus to its parent window.</param>
-			virtual void				SetAlwaysPassFocusToParent(bool value)=0;
+			/// <returns>The window mode.</summary>
+			virtual WindowMode			GetWindowMode() = 0;
+			/// <summary>
+			/// Set the window mode
+			/// </summary>
+			/// <param name="mode">The window mode.</param>
+			virtual void				SetWindowMode(WindowMode mode) = 0;
 
 			/// <summary>
 			/// Enable the window customized frame mode.
@@ -488,6 +522,7 @@ Native Window
 			virtual WindowSizeState		GetSizeState()=0;
 			/// <summary>
 			/// Show the window.
+			/// If the window disabled activation, this function enables it again.
 			/// </summary>
 			virtual void				Show()=0;
 			/// <summary>
@@ -533,6 +568,7 @@ Native Window
 			
 			/// <summary>
 			/// Set focus to the window.
+			/// A window with activation disabled cannot receive focus.
 			/// </summary>
 			virtual void				SetFocus()=0;
 			/// <summary>
@@ -542,6 +578,7 @@ Native Window
 			virtual bool				IsFocused()=0;
 			/// <summary>
 			/// Activate to the window.
+			/// If the window disabled activation, this function enables it again.
 			/// </summary>
 			virtual void				SetActivate()=0;
 			/// <summary>
@@ -570,6 +607,8 @@ Native Window
 			virtual void				EnableActivate()=0;
 			/// <summary>
 			/// Disable activation to the window.
+			/// Clicking a window with activation disabled doesn't bring activation and focus.
+			/// Activation will be automatically enabled by calling <see cref="Show"/> or <see cref="SetActivate"/>.
 			/// </summary>
 			virtual void				DisableActivate()=0;
 			/// <summary>
@@ -1212,21 +1251,7 @@ Native Window Services
 		/// </summary>
 		class INativeInputService : public virtual IDescriptable, public Description<INativeInputService>
 		{
-		public:
-			/// <summary>
-			/// Start to reveive global mouse message.
-			/// </summary>
-			virtual void					StartHookMouse()=0;
-			/// <summary>
-			/// Stop to receive global mouse message.
-			/// </summary>
-			virtual void					StopHookMouse()=0;
-			/// <summary>
-			/// Test is the global mouse message receiving enabled.
-			/// </summary>
-			/// <returns>Returns true if the global mouse message receiving is enabled.</returns>
-			virtual bool					IsHookingMouse()=0;
-			
+		public:			
 			/// <summary>
 			/// Start to reveive global timer message.
 			/// </summary>
@@ -1560,31 +1585,6 @@ Native Window Controller
 		class INativeControllerListener : public Interface
 		{
 		public:
-			/// <summary>
-			/// Called when the left mouse button is pressed. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>.
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					LeftButtonDown(NativePoint position);
-			/// <summary>
-			/// Called when the left mouse button is released. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					LeftButtonUp(NativePoint position);
-			/// <summary>
-			/// Called when the right mouse button is pressed. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					RightButtonDown(NativePoint position);
-			/// <summary>
-			/// Called when the right mouse button is released. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					RightButtonUp(NativePoint position);
-			/// <summary>
-			/// Called when the mouse is moving. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					MouseMoving(NativePoint position);
 			/// <summary>
 			/// Called when the global timer message raised. To receive or not receive this message, use <see cref="INativeInputService::StartTimer"/> or <see cref="INativeInputService::StopTimer"/>
 			/// </summary>

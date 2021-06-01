@@ -110,15 +110,6 @@ GuiMenu
 				GuiPopup::OnDeactivatedAltHost();
 			}
 
-			void GuiMenu::MouseClickedOnOtherWindow(GuiWindow* window)
-			{
-				GuiMenu* targetMenu=dynamic_cast<GuiMenu*>(window);
-				if(!targetMenu)
-				{
-					Hide();
-				}
-			}
-
 			void GuiMenu::OnWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if(parentMenuService)
@@ -133,11 +124,9 @@ GuiMenu
 			}
 
 			GuiMenu::GuiMenu(theme::ThemeName themeName, GuiControl* _owner)
-				:GuiPopup(themeName)
+				:GuiPopup(themeName, INativeWindow::Menu)
 				, owner(_owner)
-				, parentMenuService(0)
 			{
-				GetNativeWindow()->SetAlwaysPassFocusToParent(true);
 				UpdateMenuService();
 				WindowOpened.AttachMethod(this, &GuiMenu::OnWindowOpened);
 				WindowClosed.AttachMethod(this, &GuiMenu::OnWindowClosed);
@@ -354,6 +343,9 @@ GuiMenuButton
 				{
 					subMenu->WindowOpened.Detach(subMenuWindowOpenedHandler);
 					subMenu->WindowClosed.Detach(subMenuWindowClosedHandler);
+
+					subMenuWindowOpenedHandler = nullptr;
+					subMenuWindowClosedHandler = nullptr;
 					if (ownedSubMenu)
 					{
 						delete subMenu;

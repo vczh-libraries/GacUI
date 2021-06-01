@@ -29,7 +29,6 @@ namespace vl
 				bool											InstallListener(INativeControllerListener* listener)override;
 				bool											UninstallListener(INativeControllerListener* listener)override;
 
-				void											InvokeMouseHook(WPARAM message, NativePoint location);
 				void											InvokeGlobalTimer();
 				void											InvokeClipboardUpdated();
 				void											InvokeNativeWindowCreated(INativeWindow* window);

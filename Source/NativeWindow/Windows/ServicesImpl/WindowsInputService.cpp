@@ -64,11 +64,9 @@ WindowsInputService
 				}
 			}
 
-			WindowsInputService::WindowsInputService(HOOKPROC _mouseProc)
+			WindowsInputService::WindowsInputService()
 				:ownerHandle(NULL)
-				,mouseHook(NULL)
 				,isTimerEnabled(false)
-				,mouseProc(_mouseProc)
 				,keyNames(146)
 			{
 				InitializeKeyNames();
@@ -77,28 +75,6 @@ WindowsInputService
 			void WindowsInputService::SetOwnerHandle(HWND handle)
 			{
 				ownerHandle=handle;
-			}
-
-			void WindowsInputService::StartHookMouse()
-			{
-				if(!IsHookingMouse())
-				{
-					mouseHook=SetWindowsHookEx(WH_MOUSE_LL, mouseProc, NULL, NULL);
-				}
-			}
-
-			void WindowsInputService::StopHookMouse()
-			{
-				if(IsHookingMouse())
-				{
-					UnhookWindowsHookEx(mouseHook);
-					mouseHook=NULL;
-				}
-			}
-
-			bool WindowsInputService::IsHookingMouse()
-			{
-				return mouseHook!=NULL;
 			}
 
 			void WindowsInputService::StartTimer()

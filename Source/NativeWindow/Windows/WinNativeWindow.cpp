@@ -113,45 +113,59 @@ WindowsForm
 					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 				}
 
+				LONG_PTR InternalGetStyle()
+				{
+					return GetWindowLongPtr(handle, GWL_STYLE);
+				}
+
+				void InternalSetStyle(LONG_PTR style)
+				{
+					SetWindowLongPtr(handle, GWL_STYLE, style);
+					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+				}
+
+				LONG_PTR TurnOnStyle(LONG_PTR combination, LONG_PTR style)
+				{
+					return combination | style;
+				}
+
+				LONG_PTR TurnOffStyle(LONG_PTR combination, LONG_PTR style)
+				{
+					return combination & (~style);
+				}
+
 				bool GetExStyle(LONG_PTR exStyle)
 				{
-					LONG_PTR Long=InternalGetExStyle();
-					return (Long & exStyle) != 0;
+					return (InternalGetExStyle() & exStyle) != 0;
 				}
 
 				void SetExStyle(LONG_PTR exStyle, bool available)
 				{
-					LONG_PTR Long = InternalGetExStyle();
-					if(available)
+					if (available)
 					{
-						Long |= exStyle;
+						InternalSetExStyle(TurnOnStyle(InternalGetExStyle(), exStyle));
 					}
 					else
 					{
-						Long &= ~exStyle;
+						InternalSetExStyle(TurnOffStyle(InternalGetExStyle(), exStyle));
 					}
-					InternalSetExStyle(Long);
 				}
 
 				bool GetStyle(LONG_PTR style)
 				{
-					LONG_PTR Long = GetWindowLongPtr(handle, GWL_STYLE);
-					return (Long & style) != 0;
+					return (InternalGetStyle() & style) != 0;
 				}
 
 				void SetStyle(LONG_PTR style, bool available)
 				{
-					LONG_PTR Long = GetWindowLongPtr(handle, GWL_STYLE);
-					if(available)
+					if (available)
 					{
-						Long |= style;
+						InternalSetStyle(TurnOnStyle(InternalGetStyle(), style));
 					}
 					else
 					{
-						Long &= ~style;
+						InternalSetStyle(TurnOffStyle(InternalGetStyle(), style));
 					}
-					SetWindowLongPtr(handle, GWL_STYLE, Long);
-					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 				}
 #pragma push_macro("_CONTROL")
 #if defined _CONTROL
@@ -274,6 +288,48 @@ WindowsForm
 					bool transferFocusEvent = false;
 					bool nonClient = false;
 
+					// handling popup windows
+					{
+						bool closeChildPopups = false;
+						switch (uMsg)
+						{
+						case WM_ACTIVATE:
+							if (wParam == WA_INACTIVE && windowMode == Normal)
+							{
+								closeChildPopups = true;
+							}
+							break;
+						case WM_LBUTTONDOWN:
+						case WM_MBUTTONDOWN:
+						case WM_RBUTTONDOWN:
+							closeChildPopups = true;
+							break;
+						}
+
+						if (closeChildPopups)
+						{
+							List<WindowsForm*> childPopups;
+							childPopups.Add(this);
+							for (vint i = 0; i < childPopups.Count(); i++)
+							{
+								auto popup = childPopups[i];
+								for (vint j = 0; j < popup->childWindows.Count(); j++)
+								{
+									auto childPopup = popup->childWindows[j];
+									if (childPopup->windowMode != Normal)
+									{
+										childPopups.Add(childPopup);
+									}
+								}
+
+								if (popup != this && popup->IsVisible())
+								{
+									popup->Hide(false);
+								}
+							}
+						}
+					}
+
 					switch(uMsg)
 					{
 					case WM_LBUTTONDOWN:
@@ -364,11 +420,18 @@ WindowsForm
 							}
 						}
 						break;
+					case WM_MOUSEACTIVATE:
+						if (!IsEnabledActivate())
+						{
+							result = MA_NOACTIVATE;
+							return true;
+						}
+						break;
 					case WM_ACTIVATE:
 						{
-							for(vint i=0;i<listeners.Count();i++)
+							for (vint i = 0; i < listeners.Count(); i++)
 							{
-								if(wParam==WA_ACTIVE || wParam==WA_CLICKACTIVE)
+								if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
 								{
 									listeners[i]->Activated();
 								}
@@ -769,22 +832,7 @@ WindowsForm
 						break;
 					}
 
-					if(IsWindow(hwnd)!=0)
-					{
-						if(transferFocusEvent && IsFocused())
-						{
-							WindowsForm* window=this;
-							while(window->parentWindow && window->alwaysPassFocusToParent)
-							{
-								window=window->parentWindow;
-							}
-							if(window!=this)
-							{
-								window->SetFocus();
-							}
-						}
-					}
-
+					// handling custom frame
 					if (customFrameMode)
 					{
 						switch (uMsg)
@@ -836,7 +884,8 @@ WindowsForm
 				WindowsCursor*						cursor = nullptr;
 				NativePoint							caretPoint;
 				WindowsForm*						parentWindow = nullptr;
-				bool								alwaysPassFocusToParent = false;
+				List<WindowsForm*>					childWindows;
+				WindowMode							windowMode = Normal;
 				List<INativeWindowListener*>		listeners;
 				vint								mouseLastX = -1;
 				vint								mouseLastY = -1;
@@ -866,7 +915,7 @@ WindowsForm
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
 				{
 					DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
-					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
+					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_OVERLAPPED | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 					handle = CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
 
 					UpdateDpiAwaredFields(true);
@@ -874,6 +923,15 @@ WindowsForm
 
 				~WindowsForm()
 				{
+					if (parentWindow)
+					{
+						parentWindow->childWindows.Remove(this);
+					}
+					for (vint i = childWindows.Count() - 1; i >= 0; i--)
+					{
+						childWindows[i]->SetParent(parentWindow);
+					}
+
 					*flagDisposed.Obj() = true;
 					List<INativeWindowListener*> copiedListeners;
 					CopyFrom(copiedListeners, listeners);
@@ -1102,25 +1160,44 @@ WindowsForm
 
 				void SetParent(INativeWindow* parent)override
 				{
-					parentWindow=dynamic_cast<WindowsForm*>(parent);
-					if(parentWindow)
+					if (parentWindow)
 					{
+						parentWindow->childWindows.Remove(this);
+					}
+
+					if ((parentWindow = dynamic_cast<WindowsForm*>(parent)))
+					{
+						parentWindow->childWindows.Add(this);
+						// ::SetParent(handle, parentWindow->handle);
 						SetWindowLongPtr(handle, GWLP_HWNDPARENT, (LONG_PTR)parentWindow->handle);
 					}
 					else
 					{
+						// ::SetParent(handle, NULL);
 						SetWindowLongPtr(handle, GWLP_HWNDPARENT, NULL);
 					}
 				}
 
-				bool GetAlwaysPassFocusToParent()override
+				WindowMode GetWindowMode()override
 				{
-					return alwaysPassFocusToParent;
+					return windowMode;
 				}
 
-				void SetAlwaysPassFocusToParent(bool value)override
+				void SetWindowMode(WindowMode mode)override
 				{
-					alwaysPassFocusToParent=value;
+					windowMode = mode;
+					auto style = InternalGetStyle();
+					if (mode == Normal)
+					{
+						style = TurnOnStyle(style, WS_OVERLAPPED);
+						style = TurnOffStyle(style, WS_POPUP);
+					}
+					else
+					{
+						style = TurnOffStyle(style, WS_OVERLAPPED);
+						style = TurnOnStyle(style, WS_POPUP);
+					}
+					InternalSetStyle(style);
 				}
 
 				void EnableCustomFrameMode()override
@@ -1540,7 +1617,7 @@ WindowsForm
 
 				void SetTopMost(bool topmost)override
 				{
-					SetWindowPos(handle, (topmost ? HWND_TOPMOST : HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_FRAMECHANGED);
+					SetWindowPos(handle, (topmost ? HWND_TOPMOST : HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 				}
 
 				void SupressAlt()override
@@ -1594,7 +1671,6 @@ WindowsController
 
 			LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 			LRESULT CALLBACK GodProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-			LRESULT CALLBACK MouseProc(int nCode , WPARAM wParam , LPARAM lParam);
 
 			class WindowsController : public Object, public virtual INativeController, public virtual INativeWindowService
 			{
@@ -1624,7 +1700,6 @@ WindowsController
 					,mainWindow(0)
 					,mainWindowHandle(0)
 					,screenService(&GetHWNDFromNativeWindowHandle)
-					,inputService(&MouseProc)
 					,dialogService(&GetHWNDFromNativeWindowHandle)
 				{
 					godWindow=CreateWindowEx(WS_EX_CONTROLPARENT, godClass.GetName().Buffer(), L"GodWindow", WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
@@ -1635,7 +1710,6 @@ WindowsController
 				~WindowsController()
 				{
 					inputService.StopTimer();
-					inputService.StopHookMouse();
 					clipboardService.SetOwnerHandle(NULL);
 					DestroyWindow(godWindow);
 				}
@@ -1677,17 +1751,32 @@ WindowsController
 					{
 						if (hwnd == mainWindowHandle && uMsg == WM_DESTROY)
 						{
-							for (vint i = 0; i < windows.Count(); i++)
+							FOREACH(WindowsForm*, window, windows.Values())
 							{
-								if (windows.Values().Get(i)->IsVisible())
+								if (window->IsVisible())
 								{
-									windows.Values().Get(i)->Hide(true);
+									window->Hide(true);
 								}
 							}
-							while (windows.Count())
+							List<WindowsForm*> normalWindows;
+							CopyFrom(
+								normalWindows,
+								From(windows.Values())
+									.Where([](WindowsForm* window)
+									{
+										return window->GetWindowMode() == INativeWindow::Normal;
+									})
+								);
+							FOREACH(WindowsForm*, window, normalWindows)
 							{
-								DestroyNativeWindow(windows.Values().Get(0));
+								DestroyNativeWindow(window);
 							}
+							for (vint i = windows.Count() - 1; i >= 0; i--)
+							{
+								auto window = windows.Values()[i];
+								DestroyNativeWindow(window);
+							}
+							
 							PostQuitMessage(0);
 						}
 					}
@@ -1809,11 +1898,6 @@ WindowsController
 
 				//=======================================================================
 
-				void InvokeMouseHook(WPARAM message, NativePoint location)
-				{
-					callbackService.InvokeMouseHook(message, location);
-				}
-
 				void InvokeGlobalTimer()
 				{
 					callbackService.InvokeGlobalTimer();
@@ -1859,18 +1943,6 @@ Windows Procedure
 					}
 				}
 				return DefWindowProc(hwnd, uMsg, wParam, lParam);
-			}
-
-			LRESULT CALLBACK MouseProc(int nCode , WPARAM wParam , LPARAM lParam)
-			{
-				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
-				if(controller)
-				{
-					MSLLHOOKSTRUCT* mouseHookStruct=(MSLLHOOKSTRUCT*)lParam;
-					NativePoint location(mouseHookStruct->pt.x, mouseHookStruct->pt.y);
-					controller->InvokeMouseHook(wParam, location);
-				}
-				return CallNextHookEx(NULL,nCode,wParam,lParam);
 			}
 
 /***********************************************************************

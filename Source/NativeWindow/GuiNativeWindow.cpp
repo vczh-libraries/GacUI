@@ -154,26 +154,6 @@ INativeWindowListener
 INativeControllerListener
 ***********************************************************************/
 
-		void INativeControllerListener::LeftButtonDown(NativePoint position)
-		{
-		}
-
-		void INativeControllerListener::LeftButtonUp(NativePoint position)
-		{
-		}
-
-		void INativeControllerListener::RightButtonDown(NativePoint position)
-		{
-		}
-
-		void INativeControllerListener::RightButtonUp(NativePoint position)
-		{
-		}
-
-		void INativeControllerListener::MouseMoving(NativePoint position)
-		{
-		}
-
 		void INativeControllerListener::GlobalTimer()
 		{
 		}

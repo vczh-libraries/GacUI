@@ -100,6 +100,16 @@ namespace vl
 			public:
 				Dictionary<INativeWindow*, Ptr<GdiWindowsNativeWindowListener>>		nativeWindowListeners;
 
+				~GdiWindowsNativeControllerListener()
+				{
+					for (vint i = 0; i < nativeWindowListeners.Count(); i++)
+					{
+						auto window = nativeWindowListeners.Keys()[i];
+						auto listener = nativeWindowListeners.Values()[i];
+						window->UninstallListener(listener.Obj());
+					}
+				}
+
 				void NativeWindowCreated(INativeWindow* window)
 				{
 					Ptr<GdiWindowsNativeWindowListener> listener=new GdiWindowsNativeWindowListener(window);

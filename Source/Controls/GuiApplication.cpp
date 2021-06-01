@@ -30,24 +30,6 @@ GuiApplication
 				}
 			}
 
-			void GuiApplication::LeftButtonDown(NativePoint position)
-			{
-				OnMouseDown(position);
-			}
-
-			void GuiApplication::LeftButtonUp(NativePoint position)
-			{
-			}
-
-			void GuiApplication::RightButtonDown(NativePoint position)
-			{
-				OnMouseDown(position);
-			}
-
-			void GuiApplication::RightButtonUp(NativePoint position)
-			{
-			}
-
 			void GuiApplication::ClipboardUpdated()
 			{
 				for(vint i=0;i<windows.Count();i++)
@@ -95,10 +77,6 @@ GuiApplication
 				if(index==-1)
 				{
 					openingPopups.Add(popup);
-					if(openingPopups.Count()==1)
-					{
-						GetCurrentController()->InputService()->StartHookMouse();
-					}
 				}
 			}
 
@@ -106,22 +84,6 @@ GuiApplication
 			{
 				if(openingPopups.Remove(popup))
 				{
-					if(openingPopups.Count()==0)
-					{
-						GetCurrentController()->InputService()->StopHookMouse();
-					}
-				}
-			}
-
-			void GuiApplication::OnMouseDown(NativePoint location)
-			{
-				GuiWindow* window=GetWindow(location);
-				for(vint i=0;i<windows.Count();i++)
-				{
-					if(windows[i]!=window)
-					{
-						windows[i]->MouseClickedOnOtherWindow(window);
-					}
 				}
 			}
 
