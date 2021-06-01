@@ -67,7 +67,10 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::AfterControlTemplateInstalled(bool initialize)
 			{
 				GuiComboBoxBase::AfterControlTemplateInstalled(initialize);
-				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
+				if (auto ct = GetControlTemplateObject(true))
+				{
+					ct->SetTextVisible(!itemStyleProperty);
+				}
 			}
 
 			void GuiComboBoxListControl::RemoveStyleController()
@@ -195,7 +198,7 @@ GuiComboBoxListControl
 				GetSubMenu()->Hide();
 			}
 
-			void GuiComboBoxListControl::OnListControlKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			void GuiComboBoxListControl::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
 				if (!arguments.autoRepeatKeyDown)
 				{
@@ -208,7 +211,8 @@ GuiComboBoxListControl
 						GetSubMenu()->Hide();
 						arguments.handled = true;
 						break;
-					default:;
+					default:
+						containedListControl->SelectItemsByKey(arguments.code, arguments.ctrl, arguments.shift);
 					}
 				}
 			}
@@ -246,8 +250,8 @@ GuiComboBoxListControl
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
 				containedListControl->ItemLeftButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
 				containedListControl->ItemRightButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
-				containedListControl->GetFocusableComposition()->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlKeyDown);
 				boundsChangedHandler = containedListControl->GetBoundsComposition()->BoundsChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlBoundsChanged);
+				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxListControl::OnKeyDown);
 
 				auto itemProvider = containedListControl->GetItemProvider();
 
