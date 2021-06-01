@@ -125,6 +125,7 @@ Type List (Basic)
 			F(presentation::INativeCursor::SystemCursorType)\
 			F(presentation::INativeWindow)\
 			F(presentation::INativeWindow::WindowSizeState)\
+			F(presentation::INativeWindow::WindowMode)\
 			F(presentation::INativeDelay)\
 			F(presentation::INativeDelay::ExecuteStatus)\
 			F(presentation::INativeScreen)\

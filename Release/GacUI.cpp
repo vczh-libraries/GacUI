@@ -199,24 +199,6 @@ GuiApplication
 				}
 			}
 
-			void GuiApplication::LeftButtonDown(NativePoint position)
-			{
-				OnMouseDown(position);
-			}
-
-			void GuiApplication::LeftButtonUp(NativePoint position)
-			{
-			}
-
-			void GuiApplication::RightButtonDown(NativePoint position)
-			{
-				OnMouseDown(position);
-			}
-
-			void GuiApplication::RightButtonUp(NativePoint position)
-			{
-			}
-
 			void GuiApplication::ClipboardUpdated()
 			{
 				for(vint i=0;i<windows.Count();i++)
@@ -264,10 +246,6 @@ GuiApplication
 				if(index==-1)
 				{
 					openingPopups.Add(popup);
-					if(openingPopups.Count()==1)
-					{
-						GetCurrentController()->InputService()->StartHookMouse();
-					}
 				}
 			}
 
@@ -275,22 +253,6 @@ GuiApplication
 			{
 				if(openingPopups.Remove(popup))
 				{
-					if(openingPopups.Count()==0)
-					{
-						GetCurrentController()->InputService()->StopHookMouse();
-					}
-				}
-			}
-
-			void GuiApplication::OnMouseDown(NativePoint location)
-			{
-				GuiWindow* window=GetWindow(location);
-				for(vint i=0;i<windows.Count();i++)
-				{
-					if(windows[i]!=window)
-					{
-						windows[i]->MouseClickedOnOtherWindow(window);
-					}
 				}
 			}
 
@@ -4291,16 +4253,16 @@ GuiWindow
 			void GuiWindow::OnNativeWindowChanged()
 			{
 				SyncNativeWindowProperties();
+				if (auto window = GetNativeWindow())
+				{
+					window->SetWindowMode(windowMode);
+				}
 				GuiControlHost::OnNativeWindowChanged();
 			}
 
 			void GuiWindow::OnVisualStatusChanged()
 			{
 				GuiControlHost::OnVisualStatusChanged();
-			}
-
-			void GuiWindow::MouseClickedOnOtherWindow(GuiWindow* window)
-			{
 			}
 
 			void GuiWindow::OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -4319,8 +4281,9 @@ GuiWindow
 				}
 			}
 
-			GuiWindow::GuiWindow(theme::ThemeName themeName)
+			GuiWindow::GuiWindow(theme::ThemeName themeName, INativeWindow::WindowMode mode)
 				:GuiControlHost(themeName)
+				, windowMode(mode)
 			{
 				SetAltComposition(boundsComposition);
 				SetAltControl(this, true);
@@ -4332,6 +4295,11 @@ GuiWindow
 
 				WindowActivated.AttachMethod(this, &GuiWindow::OnWindowActivated);
 				WindowDeactivated.AttachMethod(this, &GuiWindow::OnWindowDeactivated);
+			}
+
+			GuiWindow::GuiWindow(theme::ThemeName themeName)
+				:GuiWindow(themeName, INativeWindow::Normal)
+			{
 			}
 
 			GuiWindow::~GuiWindow()
@@ -4503,11 +4471,6 @@ GuiPopup
 				}
 			}
 
-			void GuiPopup::MouseClickedOnOtherWindow(GuiWindow* window)
-			{
-				Hide();
-			}
-
 			void GuiPopup::PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				GetApplication()->RegisterPopupOpened(this);
@@ -4649,17 +4612,18 @@ GuiPopup
 				if (controlWindow)
 				{
 					window->SetParent(controlWindow);
-					window->SetTopMost(controlWindow->GetTopMost());
+					SetTopMost(controlWindow->GetTopMost());
 				}
 				else
 				{
-					window->SetTopMost(true);
+					SetTopMost(true);
 				}
+				SetEnabledActivate(false);
 				ShowDeactivated();
 			}
 
-			GuiPopup::GuiPopup(theme::ThemeName themeName)
-				:GuiWindow(themeName)
+			GuiPopup::GuiPopup(theme::ThemeName themeName, INativeWindow::WindowMode mode)
+				:GuiWindow(themeName, mode)
 			{
 				SetMinimizedBox(false);
 				SetMaximizedBox(false);
@@ -4670,6 +4634,11 @@ GuiPopup
 				WindowOpened.AttachMethod(this, &GuiPopup::PopupOpened);
 				WindowClosed.AttachMethod(this, &GuiPopup::PopupClosed);
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiPopup::OnKeyDown);
+			}
+
+			GuiPopup::GuiPopup(theme::ThemeName themeName)
+				:GuiPopup(themeName, INativeWindow::Popup)
+			{
 			}
 
 			GuiPopup::~GuiPopup()
@@ -4768,8 +4737,7 @@ GuiPopup
 			}
 
 			GuiTooltip::GuiTooltip(theme::ThemeName themeName)
-				:GuiPopup(themeName)
-				,temporaryContentControl(0)
+				: GuiPopup(themeName, INativeWindow::Tooltip)
 			{
 				containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->SetPreferredMinSize(Size(20, 10));
@@ -6812,7 +6780,10 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::AfterControlTemplateInstalled(bool initialize)
 			{
 				GuiComboBoxBase::AfterControlTemplateInstalled(initialize);
-				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
+				if (auto ct = GetControlTemplateObject(true))
+				{
+					ct->SetTextVisible(!itemStyleProperty);
+				}
 			}
 
 			void GuiComboBoxListControl::RemoveStyleController()
@@ -6871,16 +6842,19 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::AdoptSubMenuSize()
 			{
-				Size expectedSize(0, GetDisplayFont().size * 20);
-				Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
-
-				Size clientSize = GetPreferredMenuClientSize();
-				clientSize.y = adoptedSize.y + GetSubMenu()->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
-				SetPreferredMenuClientSize(clientSize);
-
-				if (GetSubMenuOpening())
+				if (auto subMenu = GetSubMenu())
 				{
-					GetSubMenu()->SetClientSize(clientSize);
+					Size expectedSize(0, GetDisplayFont().size * 20);
+					Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
+
+					Size clientSize = GetPreferredMenuClientSize();
+					clientSize.y = adoptedSize.y + subMenu->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
+					SetPreferredMenuClientSize(clientSize);
+
+					if (GetSubMenuOpening())
+					{
+						subMenu->SetClientSize(clientSize);
+					}
 				}
 			}
 
@@ -6912,8 +6886,6 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				containedListControl->SelectItemsByClick(selectedIndex, false, false, true);
-				GetSubMenu()->GetNativeWindow()->SetFocus();
-				containedListControl->SetFocus();
 			}
 
 			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -6939,7 +6911,7 @@ GuiComboBoxListControl
 				GetSubMenu()->Hide();
 			}
 
-			void GuiComboBoxListControl::OnListControlKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			void GuiComboBoxListControl::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
 				if (!arguments.autoRepeatKeyDown)
 				{
@@ -6952,7 +6924,8 @@ GuiComboBoxListControl
 						GetSubMenu()->Hide();
 						arguments.handled = true;
 						break;
-					default:;
+					default:
+						containedListControl->SelectItemsByKey(arguments.code, arguments.ctrl, arguments.shift);
 					}
 				}
 			}
@@ -6990,8 +6963,8 @@ GuiComboBoxListControl
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
 				containedListControl->ItemLeftButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
 				containedListControl->ItemRightButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
-				containedListControl->GetFocusableComposition()->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlKeyDown);
 				boundsChangedHandler = containedListControl->GetBoundsComposition()->BoundsChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlBoundsChanged);
+				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxListControl::OnKeyDown);
 
 				auto itemProvider = containedListControl->GetItemProvider();
 
@@ -17472,19 +17445,26 @@ GuiSinglelineTextBox::DefaultTextElementOperatorCallback
 
 			bool GuiSinglelineTextBox::TextElementOperatorCallback::BeforeModify(TextPos start, TextPos end, const WString& originalText, WString& inputText)
 			{
-				vint length=inputText.Length();
-				const wchar_t* input=inputText.Buffer();
-				for(vint i=0;i<length;i++)
+				vint length = inputText.Length();
+				const wchar_t* input = inputText.Buffer();
+				for (vint i = 0; i < length; i++)
 				{
-					if(*input==0 || *input==L'\r' || *input==L'\n')
+					if (*input == 0 || *input == L'\r' || *input == L'\n')
 					{
-						length=i;
+						length = i;
 						break;
 					}
 				}
-				if(length!=inputText.Length())
+				if (length != inputText.Length())
 				{
-					inputText=inputText.Left(length);
+					if (length == 0)
+					{
+						// if the first line is empty after adjustment
+						// the input should just be canceled
+						// to prevent from making noise in undo
+						return false;
+					}
+					inputText = inputText.Left(length);
 				}
 				return true;
 			}
@@ -20540,15 +20520,6 @@ GuiMenu
 				GuiPopup::OnDeactivatedAltHost();
 			}
 
-			void GuiMenu::MouseClickedOnOtherWindow(GuiWindow* window)
-			{
-				GuiMenu* targetMenu=dynamic_cast<GuiMenu*>(window);
-				if(!targetMenu)
-				{
-					Hide();
-				}
-			}
-
 			void GuiMenu::OnWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if(parentMenuService)
@@ -20563,11 +20534,9 @@ GuiMenu
 			}
 
 			GuiMenu::GuiMenu(theme::ThemeName themeName, GuiControl* _owner)
-				:GuiPopup(themeName)
+				:GuiPopup(themeName, INativeWindow::Menu)
 				, owner(_owner)
-				, parentMenuService(0)
 			{
-				GetNativeWindow()->SetAlwaysPassFocusToParent(true);
 				UpdateMenuService();
 				WindowOpened.AttachMethod(this, &GuiMenu::OnWindowOpened);
 				WindowClosed.AttachMethod(this, &GuiMenu::OnWindowClosed);
@@ -20784,6 +20753,9 @@ GuiMenuButton
 				{
 					subMenu->WindowOpened.Detach(subMenuWindowOpenedHandler);
 					subMenu->WindowClosed.Detach(subMenuWindowClosedHandler);
+
+					subMenuWindowOpenedHandler = nullptr;
+					subMenuWindowClosedHandler = nullptr;
 					if (ownedSubMenu)
 					{
 						delete subMenu;
@@ -32312,8 +32284,8 @@ namespace vl
 			using namespace theme;
 
 			const wchar_t* const IGuiAltAction::Identifier = L"vl::presentation::compositions::IGuiAltAction";
-			const wchar_t* const IGuiAltActionContainer::Identifier = L"vl::presentation::compositions::IGuiAltAction";
-			const wchar_t* const IGuiAltActionHost::Identifier = L"vl::presentation::compositions::IGuiAltAction";
+			const wchar_t* const IGuiAltActionContainer::Identifier = L"vl::presentation::compositions::IGuiAltActionContainer";
+			const wchar_t* const IGuiAltActionHost::Identifier = L"vl::presentation::compositions::IGuiAltActionHost";
 
 /***********************************************************************
 IGuiAltAction
@@ -33170,26 +33142,6 @@ INativeWindowListener
 /***********************************************************************
 INativeControllerListener
 ***********************************************************************/
-
-		void INativeControllerListener::LeftButtonDown(NativePoint position)
-		{
-		}
-
-		void INativeControllerListener::LeftButtonUp(NativePoint position)
-		{
-		}
-
-		void INativeControllerListener::RightButtonDown(NativePoint position)
-		{
-		}
-
-		void INativeControllerListener::RightButtonUp(NativePoint position)
-		{
-		}
-
-		void INativeControllerListener::MouseMoving(NativePoint position)
-		{
-		}
 
 		void INativeControllerListener::GlobalTimer()
 		{

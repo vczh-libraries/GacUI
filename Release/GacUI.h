@@ -2012,7 +2012,8 @@ Native Window
 			virtual void				SetCaretPoint(NativePoint point)=0;
 			
 			/// <summary>
-			/// Get the parent window. A parent window doesn't contain a child window. It always displayed below the child windows. When a parent window is minimized or restored, so as its child windows.
+			/// Get the parent window.
+			/// A parent window doesn't contain a child window. It always displayed below the child windows. When a parent window is minimized or restored, so as its child windows.
 			/// </summary>
 			/// <returns>The parent window.</returns>
 			virtual INativeWindow*		GetParent()=0;
@@ -2021,16 +2022,49 @@ Native Window
 			/// </summary>
 			/// <param name="parent">The parent window.</param>
 			virtual void				SetParent(INativeWindow* parent)=0;
+
 			/// <summary>
-			/// Test is the window always pass the focus to its parent window.
+			/// Window mode
 			/// </summary>
-			/// <returns>Returns true if the window always pass the focus to its parent window.</returns>
-			virtual bool				GetAlwaysPassFocusToParent()=0;
+			enum WindowMode
+			{
+				/// <summary>
+				/// A normal window.
+				/// </summary>
+				Normal,
+				/// <summary>
+				/// A tooltip window.
+				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
+				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
+				/// This window is automatically closed when the top level window is deactivated or clicked.
+				/// </summary>
+				Tooltip,
+				/// <summary>
+				/// A popup window.
+				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
+				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
+				/// This window is automatically closed when the top level window is deactivated or clicked.
+				/// </summary>
+				Popup,
+				/// <summary>
+				/// A menu window.
+				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
+				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
+				/// This window is automatically closed when the top level window is deactivated or clicked.
+				/// </summary>
+				Menu,
+			};
+
 			/// <summary>
-			/// Enable or disble always passing the focus to its parent window.
+			/// Get the window mode. 
 			/// </summary>
-			/// <param name="value">True to enable always passing the focus to its parent window.</param>
-			virtual void				SetAlwaysPassFocusToParent(bool value)=0;
+			/// <returns>The window mode.</summary>
+			virtual WindowMode			GetWindowMode() = 0;
+			/// <summary>
+			/// Set the window mode
+			/// </summary>
+			/// <param name="mode">The window mode.</param>
+			virtual void				SetWindowMode(WindowMode mode) = 0;
 
 			/// <summary>
 			/// Enable the window customized frame mode.
@@ -2080,6 +2114,7 @@ Native Window
 			virtual WindowSizeState		GetSizeState()=0;
 			/// <summary>
 			/// Show the window.
+			/// If the window disabled activation, this function enables it again.
 			/// </summary>
 			virtual void				Show()=0;
 			/// <summary>
@@ -2125,6 +2160,7 @@ Native Window
 			
 			/// <summary>
 			/// Set focus to the window.
+			/// A window with activation disabled cannot receive focus.
 			/// </summary>
 			virtual void				SetFocus()=0;
 			/// <summary>
@@ -2134,6 +2170,7 @@ Native Window
 			virtual bool				IsFocused()=0;
 			/// <summary>
 			/// Activate to the window.
+			/// If the window disabled activation, this function enables it again.
 			/// </summary>
 			virtual void				SetActivate()=0;
 			/// <summary>
@@ -2162,6 +2199,8 @@ Native Window
 			virtual void				EnableActivate()=0;
 			/// <summary>
 			/// Disable activation to the window.
+			/// Clicking a window with activation disabled doesn't bring activation and focus.
+			/// Activation will be automatically enabled by calling <see cref="Show"/> or <see cref="SetActivate"/>.
 			/// </summary>
 			virtual void				DisableActivate()=0;
 			/// <summary>
@@ -2804,21 +2843,7 @@ Native Window Services
 		/// </summary>
 		class INativeInputService : public virtual IDescriptable, public Description<INativeInputService>
 		{
-		public:
-			/// <summary>
-			/// Start to reveive global mouse message.
-			/// </summary>
-			virtual void					StartHookMouse()=0;
-			/// <summary>
-			/// Stop to receive global mouse message.
-			/// </summary>
-			virtual void					StopHookMouse()=0;
-			/// <summary>
-			/// Test is the global mouse message receiving enabled.
-			/// </summary>
-			/// <returns>Returns true if the global mouse message receiving is enabled.</returns>
-			virtual bool					IsHookingMouse()=0;
-			
+		public:			
 			/// <summary>
 			/// Start to reveive global timer message.
 			/// </summary>
@@ -3152,31 +3177,6 @@ Native Window Controller
 		class INativeControllerListener : public Interface
 		{
 		public:
-			/// <summary>
-			/// Called when the left mouse button is pressed. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>.
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					LeftButtonDown(NativePoint position);
-			/// <summary>
-			/// Called when the left mouse button is released. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					LeftButtonUp(NativePoint position);
-			/// <summary>
-			/// Called when the right mouse button is pressed. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					RightButtonDown(NativePoint position);
-			/// <summary>
-			/// Called when the right mouse button is released. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					RightButtonUp(NativePoint position);
-			/// <summary>
-			/// Called when the mouse is moving. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
-			/// </summary>
-			/// <param name="position">The mouse position in the screen space.</param>
-			virtual void					MouseMoving(NativePoint position);
 			/// <summary>
 			/// Called when the global timer message raised. To receive or not receive this message, use <see cref="INativeInputService::StartTimer"/> or <see cref="INativeInputService::StopTimer"/>
 			/// </summary>
@@ -10030,32 +10030,32 @@ Basic Construction
 				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
 
-				/// <summary>Theme name changed event. This event will be raised when the theme name is changed.</summary>
+				/// <summary>Theme name changed event. This event raises when the theme name is changed.</summary>
 				compositions::GuiNotifyEvent			ControlThemeNameChanged;
-				/// <summary>Control template changed event. This event will be raised when the control template is changed.</summary>
+				/// <summary>Control template changed event. This event raises when the control template is changed.</summary>
 				compositions::GuiNotifyEvent			ControlTemplateChanged;
-				/// <summary>Control signal trigerred. This event will be raised because of multiple reason specified in the argument.</summary>
+				/// <summary>Control signal trigerred. This raises be raised because of multiple reason specified in the argument.</summary>
 				compositions::GuiControlSignalEvent		ControlSignalTrigerred;
-				/// <summary>Visible event. This event will be raised when the visibility state of the control is changed.</summary>
+				/// <summary>Visible event. This event raises when the visibility state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			VisibleChanged;
-				/// <summary>Enabled event. This event will be raised when the enabling state of the control is changed.</summary>
+				/// <summary>Enabled event. This event raises when the enabling state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			EnabledChanged;
-				/// <summary>Focused event. This event will be raised when the focusing state of the control is changed.</summary>
+				/// <summary>Focused event. This event raises when the focusing state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			FocusedChanged;
 				/// <summary>
-				/// Enabled event. This event will be raised when the visually enabling state of the control is changed. A visually enabling is combined by the enabling state and the parent's visually enabling state.
+				/// Enabled event. This event raises when the visually enabling state of the control is changed. A visually enabling is combined by the enabling state and the parent's visually enabling state.
 				/// A control is rendered as disabled, not only when the control itself is disabled, but also when the parent control is rendered as disabled.
 				/// </summary>
 				compositions::GuiNotifyEvent			VisuallyEnabledChanged;
-				/// <summary>Alt changed event. This event will be raised when the associated Alt-combined shortcut key of the control is changed.</summary>
+				/// <summary>Alt changed event. This event raises when the associated Alt-combined shortcut key of the control is changed.</summary>
 				compositions::GuiNotifyEvent			AltChanged;
-				/// <summary>Text changed event. This event will be raised when the text of the control is changed.</summary>
+				/// <summary>Text changed event. This event raises when the text of the control is changed.</summary>
 				compositions::GuiNotifyEvent			TextChanged;
-				/// <summary>Font changed event. This event will be raised when the font of the control is changed.</summary>
+				/// <summary>Font changed event. This event raises when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			FontChanged;
-				/// <summary>Display font changed event. This event will be raised when the display font of the control is changed.</summary>
+				/// <summary>Display font changed event. This event raises when the display font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			DisplayFontChanged;
-				/// <summary>Context changed event. This event will be raised when the font of the control is changed.</summary>
+				/// <summary>Context changed event. This event raises when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			ContextChanged;
 
 				void									InvokeOrDelayIfRendering(Func<void()> proc);
@@ -11320,12 +11320,12 @@ Control Host
 				/// <summary>Test is the window focused.</summary>
 				/// <returns>Returns true if the window is focused.</returns>
 				bool											GetFocused()override;
-				/// <summary>Focus the window.</summary>
+				/// <summary>Focus the window. A window with activation disabled cannot receive focus.</summary>
 				void											SetFocused();
 				/// <summary>Test is the window activated.</summary>
 				/// <returns>Returns true if the window is activated.</returns>
 				bool											GetActivated();
-				/// <summary>Activate the window.</summary>
+				/// <summary>Activate the window. If the window disabled activation, this function enables it again.</summary>
 				void											SetActivated();
 				/// <summary>Test is the window icon shown in the task bar.</summary>
 				/// <returns>Returns true if the window is icon shown in the task bar.</returns>
@@ -11336,7 +11336,11 @@ Control Host
 				/// <summary>Test is the window allowed to be activated.</summary>
 				/// <returns>Returns true if the window is allowed to be activated.</returns>
 				bool											GetEnabledActivate();
-				/// <summary>Allow or forbid the window to be activated.</summary>
+				/// <summary>
+				/// Allow or forbid the window to be activated.
+				/// Clicking a window with activation disabled doesn't bring activation and focus.
+				/// Activation will be automatically enabled by calling <see cref="Show"/> or <see cref="SetActivated"/>.
+				/// </summary>
 				/// <param name="value">Set to true to allow the window to be activated.</param>
 				void											SetEnabledActivate(bool value);
 				/// <summary>
@@ -11386,6 +11390,7 @@ Control Host
 				INativeScreen*									GetRelatedScreen();
 				/// <summary>
 				/// Show the window.
+				/// If the window disabled activation, this function enables it again.
 				/// </summary>
 				void											Show();
 				/// <summary>
@@ -11429,6 +11434,7 @@ Window
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
 			protected:
+				INativeWindow::WindowMode				windowMode = INativeWindow::Normal;
 				compositions::IGuiAltActionHost*		previousAltHost = nullptr;
 				bool									hasMaximizedBox = true;
 				bool									hasMinimizedBox = true;
@@ -11444,10 +11450,14 @@ Window
 				void									DpiChanged()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
-				virtual void							MouseClickedOnOtherWindow(GuiWindow* window);
 				
 				void									OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+				/// <summary>Create a control with a specified default theme and a window mode.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="mode">The window mode.</param>
+				GuiWindow(theme::ThemeName themeName, INativeWindow::WindowMode mode);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -11580,7 +11590,6 @@ Window
 				PopupInfo								popupInfo;
 
 				void									UpdateClientSizeAfterRendering(Size clientSize)override;
-				void									MouseClickedOnOtherWindow(GuiWindow* window)override;
 				void									PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
@@ -11593,6 +11602,11 @@ Window
 				static NativePoint						CalculatePopupPosition(NativeSize windowSize, vint popupType, const PopupInfo& popupInfo);
 
 				void									ShowPopupInternal();
+
+				/// <summary>Create a control with a specified default theme and a window mode.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="mode">The window mode.</param>
+				GuiPopup(theme::ThemeName themeName, INativeWindow::WindowMode mode);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -11626,11 +11640,12 @@ Window
 			class GuiTooltip : public GuiPopup, private INativeControllerListener, public Description<GuiTooltip>
 			{
 			protected:
-				GuiControl*								temporaryContentControl;
+				GuiControl*								temporaryContentControl = nullptr;
 
 				void									GlobalTimer()override;
 				void									TooltipOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -11693,10 +11708,6 @@ Application
 				friend class Ptr<GuiApplication>;
 			private:
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
-				void											LeftButtonDown(NativePoint position)override;
-				void											LeftButtonUp(NativePoint position)override;
-				void											RightButtonDown(NativePoint position)override;
-				void											RightButtonUp(NativePoint position)override;
 				void											ClipboardUpdated()override;
 			protected:
 				Locale											locale;
@@ -11717,7 +11728,6 @@ Application
 				void											UnregisterWindow(GuiWindow* window);
 				void											RegisterPopupOpened(GuiPopup* popup);
 				void											RegisterPopupClosed(GuiPopup* popup);
-				void											OnMouseDown(NativePoint location);
 				void											TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											TooltipMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
@@ -15781,7 +15791,7 @@ Menu
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MenuTemplate, GuiPopup)
 			private:
-				IGuiMenuService*						parentMenuService;
+				IGuiMenuService*						parentMenuService = nullptr;
 				bool									hideOnDeactivateAltHost = true;
 
 				IGuiMenuService*						GetParentMenuService()override;
@@ -15794,7 +15804,6 @@ Menu
 				GuiControl*								owner;
 
 				void									OnDeactivatedAltHost()override;
-				void									MouseClickedOnOtherWindow(GuiWindow* window)override;
 				void									OnWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
@@ -16036,7 +16045,7 @@ ComboBox with GuiListControl
 				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments);
-				void										OnListControlKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+				void										OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
 			private:
 				// ===================== GuiListControl::IItemProviderCallback =====================
