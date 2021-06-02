@@ -47,20 +47,20 @@ Resource Manager
 				/// <returns>A number identifies this element type.</returns>
 				vint									RegisterElementType(const WString& elementTypeName);
 				/// <summary>
-				/// Register a <see cref="IGuiGraphicsRendererFactory"></see> and bind it to an registered element type from <see cref="RegisterElementType"></see>.
+				/// Register a <see cref="IGuiGraphicsRendererFactory"/> and bind it to an registered element type from <see cref="RegisterElementType"/>.
 				/// This function crashes when an element type has already been binded a renderer factory.
 				/// </summary>
 				/// <param name="elementType">The element type to represent a graphics element factory.</param>
 				/// <param name="factory">The instance of the graphics renderer factory to register.</param>
 				void									RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory);
 				/// <summary>
-				/// Get the instance of a registered <see cref="IGuiGraphicsRendererFactory"></see> that is binded to a specified element type.
+				/// Get the instance of a registered <see cref="IGuiGraphicsRendererFactory"/> that is binded to a specified element type.
 				/// </summary>
 				/// <returns>Returns the renderer factory.</returns>
-				/// <param name="elementType">The registered element type from <see cref="RegisterElementType"> to get a binded graphics renderer factory.</param>
+				/// <param name="elementType">The registered element type from <see cref="RegisterElementType"/> to get a binded graphics renderer factory.</param>
 				IGuiGraphicsRendererFactory*			GetRendererFactory(vint elementType);
 				/// <summary>
-				/// Get the instance of a <see cref="IGuiGraphicsRenderTarget"></see> that is binded to an <see cref="INativeWindow"></see>.
+				/// Get the instance of a <see cref="IGuiGraphicsRenderTarget"/> that is binded to an <see cref="INativeWindow"/>.
 				/// </summary>
 				/// <param name="window">The specified window.</param>
 				/// <returns>Returns the render target.</returns>
@@ -83,12 +83,12 @@ Resource Manager
 			};
 
 			/// <summary>
-			/// Get the current <see cref="GuiGraphicsResourceManager"></see>.
+			/// Get the current <see cref="GuiGraphicsResourceManager"/>.
 			/// </summary>
 			/// <returns>Returns the current resource manager.</returns>
 			extern GuiGraphicsResourceManager*			GetGuiGraphicsResourceManager();
 			/// <summary>
-			/// Set the current <see cref="GuiGraphicsResourceManager"></see>.
+			/// Set the current <see cref="GuiGraphicsResourceManager"/>.
 			/// </summary>
 			/// <param name="resourceManager">The resource manager to set.</param>
 			extern void									SetGuiGraphicsResourceManager(GuiGraphicsResourceManager* resourceManager);

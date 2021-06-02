@@ -46,7 +46,7 @@ Basic Construction
 				virtual void									SetOwnerComposition(compositions::GuiGraphicsComposition* composition) = 0;
 			public:
 				/// <summary>
-				/// Access the associated <see cref="IGuiGraphicsRenderer"></see> for this graphics element.
+				/// Access the associated <see cref="IGuiGraphicsRenderer"/> for this graphics element.
 				/// </summary>
 				/// <returns>Returns the related renderer.</returns>
 				virtual IGuiGraphicsRenderer*					GetRenderer() = 0;
@@ -64,13 +64,13 @@ Basic Construction
 			{
 			public:
 				/// <summary>
-				/// Access the graphics <see cref="IGuiGraphicsRendererFactory"></see> that is used to create this graphics renderer.
+				/// Access the graphics <see cref="IGuiGraphicsRendererFactory"/> that is used to create this graphics renderer.
 				/// </summary>
 				/// <returns>Returns the related factory.</returns>
 				virtual IGuiGraphicsRendererFactory*	GetFactory()=0;
 
 				/// <summary>
-				/// Initialize the grpahics renderer by binding a <see cref="IGuiGraphicsElement"></see> to it.
+				/// Initialize the grpahics renderer by binding a <see cref="IGuiGraphicsElement"/> to it.
 				/// </summary>
 				/// <param name="element">The graphics element to bind.</param>
 				virtual void							Initialize(IGuiGraphicsElement* element)=0;
@@ -79,7 +79,7 @@ Basic Construction
 				/// </summary>
 				virtual void							Finalize()=0;
 				/// <summary>
-				/// Set a <see cref="IGuiGraphicsRenderTarget"></see> to this element.
+				/// Set a <see cref="IGuiGraphicsRenderTarget"/> to this element.
 				/// </summary>
 				/// <param name="renderTarget">The graphics render target. It can be NULL.</param>
 				virtual void							SetRenderTarget(IGuiGraphicsRenderTarget* renderTarget)=0;
@@ -107,7 +107,7 @@ Basic Construction
 			{
 			public:
 				/// <summary>
-				/// Create a <see cref="IGuiGraphicsRenderer"></see>.
+				/// Create a <see cref="IGuiGraphicsRenderer"/>.
 				/// </summary>
 				/// <returns>Returns the created graphics renderer.</returns>
 				virtual IGuiGraphicsRenderer*			Create()=0;

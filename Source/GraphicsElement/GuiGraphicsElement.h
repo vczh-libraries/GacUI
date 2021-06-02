@@ -25,7 +25,7 @@ Elements
 ***********************************************************************/
 
 			/// <summary>
-			/// Defines a shape for some <see cref="IGuiGraphicsElement"></see>.
+			/// Defines a shape for some <see cref="IGuiGraphicsElement"/>.
 			/// </summary>
 			enum class ElementShapeType
 			{
@@ -38,7 +38,7 @@ Elements
 			};
 
 			/// <summary>
-			/// Defines a shape for some <see cref="IGuiGraphicsElement"></see>.
+			/// Defines a shape for some <see cref="IGuiGraphicsElement"/>.
 			/// </summary>
 			struct ElementShape
 			{
@@ -144,7 +144,7 @@ Elements
 				DEFINE_GUI_GRAPHICS_ELEMENT(Gui3DSplitterElement, L"3DSplitter")
 			public:
 				/// <summary>
-				/// Defines a direction of the <see cref="Gui3DSplitterElement"></see>.
+				/// Defines a direction of the <see cref="Gui3DSplitterElement"/>.
 				/// </summary>
 				enum Direction
 				{
@@ -241,7 +241,7 @@ Elements
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGradientBackgroundElement, L"GradientBackground")
 			public:
 				/// <summary>
-				/// Defines a direction of the <see cref="GuiGradientBackgroundElement"></see>.
+				/// Defines a direction of the <see cref="GuiGradientBackgroundElement"/>.
 				/// </summary>
 				enum Direction
 				{

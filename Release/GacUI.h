@@ -1200,7 +1200,7 @@ Basic Construction
 				virtual void									SetOwnerComposition(compositions::GuiGraphicsComposition* composition) = 0;
 			public:
 				/// <summary>
-				/// Access the associated <see cref="IGuiGraphicsRenderer"></see> for this graphics element.
+				/// Access the associated <see cref="IGuiGraphicsRenderer"/> for this graphics element.
 				/// </summary>
 				/// <returns>Returns the related renderer.</returns>
 				virtual IGuiGraphicsRenderer*					GetRenderer() = 0;
@@ -1218,13 +1218,13 @@ Basic Construction
 			{
 			public:
 				/// <summary>
-				/// Access the graphics <see cref="IGuiGraphicsRendererFactory"></see> that is used to create this graphics renderer.
+				/// Access the graphics <see cref="IGuiGraphicsRendererFactory"/> that is used to create this graphics renderer.
 				/// </summary>
 				/// <returns>Returns the related factory.</returns>
 				virtual IGuiGraphicsRendererFactory*	GetFactory()=0;
 
 				/// <summary>
-				/// Initialize the grpahics renderer by binding a <see cref="IGuiGraphicsElement"></see> to it.
+				/// Initialize the grpahics renderer by binding a <see cref="IGuiGraphicsElement"/> to it.
 				/// </summary>
 				/// <param name="element">The graphics element to bind.</param>
 				virtual void							Initialize(IGuiGraphicsElement* element)=0;
@@ -1233,7 +1233,7 @@ Basic Construction
 				/// </summary>
 				virtual void							Finalize()=0;
 				/// <summary>
-				/// Set a <see cref="IGuiGraphicsRenderTarget"></see> to this element.
+				/// Set a <see cref="IGuiGraphicsRenderTarget"/> to this element.
 				/// </summary>
 				/// <param name="renderTarget">The graphics render target. It can be NULL.</param>
 				virtual void							SetRenderTarget(IGuiGraphicsRenderTarget* renderTarget)=0;
@@ -1261,7 +1261,7 @@ Basic Construction
 			{
 			public:
 				/// <summary>
-				/// Create a <see cref="IGuiGraphicsRenderer"></see>.
+				/// Create a <see cref="IGuiGraphicsRenderer"/>.
 				/// </summary>
 				/// <returns>Returns the created graphics renderer.</returns>
 				virtual IGuiGraphicsRenderer*			Create()=0;
@@ -5543,20 +5543,20 @@ Resource Manager
 				/// <returns>A number identifies this element type.</returns>
 				vint									RegisterElementType(const WString& elementTypeName);
 				/// <summary>
-				/// Register a <see cref="IGuiGraphicsRendererFactory"></see> and bind it to an registered element type from <see cref="RegisterElementType"></see>.
+				/// Register a <see cref="IGuiGraphicsRendererFactory"/> and bind it to an registered element type from <see cref="RegisterElementType"/>.
 				/// This function crashes when an element type has already been binded a renderer factory.
 				/// </summary>
 				/// <param name="elementType">The element type to represent a graphics element factory.</param>
 				/// <param name="factory">The instance of the graphics renderer factory to register.</param>
 				void									RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory);
 				/// <summary>
-				/// Get the instance of a registered <see cref="IGuiGraphicsRendererFactory"></see> that is binded to a specified element type.
+				/// Get the instance of a registered <see cref="IGuiGraphicsRendererFactory"/> that is binded to a specified element type.
 				/// </summary>
 				/// <returns>Returns the renderer factory.</returns>
-				/// <param name="elementType">The registered element type from <see cref="RegisterElementType"> to get a binded graphics renderer factory.</param>
+				/// <param name="elementType">The registered element type from <see cref="RegisterElementType"/> to get a binded graphics renderer factory.</param>
 				IGuiGraphicsRendererFactory*			GetRendererFactory(vint elementType);
 				/// <summary>
-				/// Get the instance of a <see cref="IGuiGraphicsRenderTarget"></see> that is binded to an <see cref="INativeWindow"></see>.
+				/// Get the instance of a <see cref="IGuiGraphicsRenderTarget"/> that is binded to an <see cref="INativeWindow"/>.
 				/// </summary>
 				/// <param name="window">The specified window.</param>
 				/// <returns>Returns the render target.</returns>
@@ -5579,12 +5579,12 @@ Resource Manager
 			};
 
 			/// <summary>
-			/// Get the current <see cref="GuiGraphicsResourceManager"></see>.
+			/// Get the current <see cref="GuiGraphicsResourceManager"/>.
 			/// </summary>
 			/// <returns>Returns the current resource manager.</returns>
 			extern GuiGraphicsResourceManager*			GetGuiGraphicsResourceManager();
 			/// <summary>
-			/// Set the current <see cref="GuiGraphicsResourceManager"></see>.
+			/// Set the current <see cref="GuiGraphicsResourceManager"/>.
 			/// </summary>
 			/// <param name="resourceManager">The resource manager to set.</param>
 			extern void									SetGuiGraphicsResourceManager(GuiGraphicsResourceManager* resourceManager);
@@ -7864,7 +7864,7 @@ Elements
 ***********************************************************************/
 
 			/// <summary>
-			/// Defines a shape for some <see cref="IGuiGraphicsElement"></see>.
+			/// Defines a shape for some <see cref="IGuiGraphicsElement"/>.
 			/// </summary>
 			enum class ElementShapeType
 			{
@@ -7877,7 +7877,7 @@ Elements
 			};
 
 			/// <summary>
-			/// Defines a shape for some <see cref="IGuiGraphicsElement"></see>.
+			/// Defines a shape for some <see cref="IGuiGraphicsElement"/>.
 			/// </summary>
 			struct ElementShape
 			{
@@ -7983,7 +7983,7 @@ Elements
 				DEFINE_GUI_GRAPHICS_ELEMENT(Gui3DSplitterElement, L"3DSplitter")
 			public:
 				/// <summary>
-				/// Defines a direction of the <see cref="Gui3DSplitterElement"></see>.
+				/// Defines a direction of the <see cref="Gui3DSplitterElement"/>.
 				/// </summary>
 				enum Direction
 				{
@@ -8080,7 +8080,7 @@ Elements
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGradientBackgroundElement, L"GradientBackground")
 			public:
 				/// <summary>
-				/// Defines a direction of the <see cref="GuiGradientBackgroundElement"></see>.
+				/// Defines a direction of the <see cref="GuiGradientBackgroundElement"/>.
 				/// </summary>
 				enum Direction
 				{
