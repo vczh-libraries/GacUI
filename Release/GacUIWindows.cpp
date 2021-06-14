@@ -8937,8 +8937,9 @@ WindowsForm
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
 				{
+					// use WS_POPUP in CreateWindowEx, because CW_USERDEFAULT is interpreted as 0, unlike WS_OVERLAPPED
 					DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
-					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_OVERLAPPED | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
+					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 					handle = CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
 
 					UpdateDpiAwaredFields(true);
