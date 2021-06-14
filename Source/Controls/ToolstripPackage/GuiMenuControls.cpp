@@ -375,7 +375,10 @@ GuiMenuButton
 
 			GuiMenuButton::~GuiMenuButton()
 			{
-				DetachSubMenu();
+				if (!subMenuDisposeFlag || !subMenuDisposeFlag->IsDisposed())
+				{
+					DetachSubMenu();
+				}
 			}
 
 			Ptr<GuiImageData> GuiMenuButton::GetLargeImage()
@@ -449,11 +452,13 @@ GuiMenuButton
 				if(subMenu)
 				{
 					DetachSubMenu();
+					subMenuDisposeFlag = nullptr;
 				}
 				subMenu=value;
 				ownedSubMenu=owned;
 				if(subMenu)
 				{
+					subMenuDisposeFlag = subMenu->GetDisposedFlag();
 					subMenuWindowOpenedHandler = subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
 					subMenuWindowClosedHandler = subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
 				}

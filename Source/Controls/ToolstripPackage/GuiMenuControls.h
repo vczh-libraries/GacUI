@@ -155,6 +155,7 @@ MenuButton
 
 				using IEventHandler = compositions::IGuiGraphicsEventHandler;
 			protected:
+				Ptr<GuiDisposedFlag>					subMenuDisposeFlag;
 				Ptr<IEventHandler>						subMenuWindowOpenedHandler;
 				Ptr<IEventHandler>						subMenuWindowClosedHandler;
 				Ptr<IEventHandler>						hostClickedHandler;
