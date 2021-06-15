@@ -285,9 +285,6 @@ WindowsForm
 
 				bool HandleMessageInternal(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
-					bool transferFocusEvent = false;
-					bool nonClient = false;
-
 					// handling popup windows
 					{
 						bool closeChildPopups = false;
@@ -333,19 +330,8 @@ WindowsForm
 						}
 					}
 
-					switch(uMsg)
-					{
-					case WM_LBUTTONDOWN:
-					case WM_LBUTTONUP:
-					case WM_LBUTTONDBLCLK:
-					case WM_RBUTTONDOWN:
-					case WM_RBUTTONUP:
-					case WM_RBUTTONDBLCLK:
-					case WM_MBUTTONDOWN:
-					case WM_MBUTTONUP:
-					case WM_MBUTTONDBLCLK:
-						transferFocusEvent=true;
-					}
+					bool nonClient = false;
+
 					switch(uMsg)
 					{
 					// ************************************** moving and sizing
@@ -424,7 +410,7 @@ WindowsForm
 						}
 						break;
 					case WM_MOUSEACTIVATE:
-						if (!IsEnabledActivate())
+						if (!enabledActivate)
 						{
 							result = MA_NOACTIVATE;
 							return true;
@@ -895,6 +881,7 @@ WindowsForm
 				bool								mouseHoving = false;
 				Interface*							graphicsHandler = nullptr;
 				bool								customFrameMode = false;
+				bool								enabledActivate = true;
 				List<Ptr<INativeMessageHandler>>	messageHandlers;
 				bool								supressingAlt = false;
 				Ptr<bool>							flagDisposed = new bool(false);
@@ -1523,17 +1510,19 @@ WindowsForm
 
 				void EnableActivate()override
 				{
+					enabledActivate = true;
 					SetExStyle(WS_EX_NOACTIVATE, false);
 				}
 
 				void DisableActivate()override
 				{
+					enabledActivate = false;
 					SetExStyle(WS_EX_NOACTIVATE, true);
 				}
 
 				bool IsEnabledActivate()override
 				{
-					return !GetExStyle(WS_EX_NOACTIVATE);
+					return enabledActivate;
 				}
 
 				bool RequireCapture()override
