@@ -302,6 +302,9 @@ WindowsForm
 						case WM_LBUTTONDOWN:
 						case WM_MBUTTONDOWN:
 						case WM_RBUTTONDOWN:
+						case WM_NCLBUTTONDOWN:
+						case WM_NCMBUTTONDOWN:
+						case WM_NCRBUTTONDOWN:
 							closeChildPopups = true;
 							break;
 						}
