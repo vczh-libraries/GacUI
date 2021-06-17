@@ -853,6 +853,7 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ButtonTemplateConstructor>;
 #endif
 	protected:
+		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::darkskin::ButtonTemplate* self;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
@@ -911,6 +912,7 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CheckBoxTemplateConstructor>;
 #endif
 	protected:
+		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::darkskin::CheckBoxTemplate* self;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
@@ -1935,6 +1937,7 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RadioButtonTemplateConstructor>;
 #endif
 	protected:
+		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::darkskin::RadioButtonTemplate* self;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;

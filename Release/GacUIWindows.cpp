@@ -8308,9 +8308,6 @@ WindowsForm
 
 				bool HandleMessageInternal(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
-					bool transferFocusEvent = false;
-					bool nonClient = false;
-
 					// handling popup windows
 					{
 						bool closeChildPopups = false;
@@ -8325,6 +8322,9 @@ WindowsForm
 						case WM_LBUTTONDOWN:
 						case WM_MBUTTONDOWN:
 						case WM_RBUTTONDOWN:
+						case WM_NCLBUTTONDOWN:
+						case WM_NCMBUTTONDOWN:
+						case WM_NCRBUTTONDOWN:
 							closeChildPopups = true;
 							break;
 						}
@@ -8353,19 +8353,8 @@ WindowsForm
 						}
 					}
 
-					switch(uMsg)
-					{
-					case WM_LBUTTONDOWN:
-					case WM_LBUTTONUP:
-					case WM_LBUTTONDBLCLK:
-					case WM_RBUTTONDOWN:
-					case WM_RBUTTONUP:
-					case WM_RBUTTONDBLCLK:
-					case WM_MBUTTONDOWN:
-					case WM_MBUTTONUP:
-					case WM_MBUTTONDBLCLK:
-						transferFocusEvent=true;
-					}
+					bool nonClient = false;
+
 					switch(uMsg)
 					{
 					// ************************************** moving and sizing
@@ -8444,7 +8433,7 @@ WindowsForm
 						}
 						break;
 					case WM_MOUSEACTIVATE:
-						if (!IsEnabledActivate())
+						if (!enabledActivate)
 						{
 							result = MA_NOACTIVATE;
 							return true;
@@ -8915,6 +8904,7 @@ WindowsForm
 				bool								mouseHoving = false;
 				Interface*							graphicsHandler = nullptr;
 				bool								customFrameMode = false;
+				bool								enabledActivate = true;
 				List<Ptr<INativeMessageHandler>>	messageHandlers;
 				bool								supressingAlt = false;
 				Ptr<bool>							flagDisposed = new bool(false);
@@ -8941,7 +8931,6 @@ WindowsForm
 					DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
 					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 					handle = CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
-
 					UpdateDpiAwaredFields(true);
 				}
 
@@ -9544,17 +9533,19 @@ WindowsForm
 
 				void EnableActivate()override
 				{
+					enabledActivate = true;
 					SetExStyle(WS_EX_NOACTIVATE, false);
 				}
 
 				void DisableActivate()override
 				{
+					enabledActivate = false;
 					SetExStyle(WS_EX_NOACTIVATE, true);
 				}
 
 				bool IsEnabledActivate()override
 				{
-					return !GetExStyle(WS_EX_NOACTIVATE);
+					return enabledActivate;
 				}
 
 				bool RequireCapture()override

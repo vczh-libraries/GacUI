@@ -1577,15 +1577,15 @@ GuiButton
 
 			void GuiButton::OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
-				if(arguments.eventSource==boundsComposition)
+				if (arguments.eventSource == boundsComposition || !ignoreChildControlMouseEvents)
 				{
-					mousePressing=true;
+					mousePressing = true;
 					if (autoFocus)
 					{
 						SetFocus();
 					}
 					UpdateControlState();
-					if(!clickOnMouseUp)
+					if (!clickOnMouseUp)
 					{
 						CheckAndClick(arguments);
 					}
@@ -1594,14 +1594,14 @@ GuiButton
 
 			void GuiButton::OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
-				if(arguments.eventSource==boundsComposition)
+				if (arguments.eventSource == boundsComposition || !ignoreChildControlMouseEvents)
 				{
-					mousePressing=false;
+					mousePressing = false;
 					UpdateControlState();
 				}
-				if(GetVisuallyEnabled())
+				if (GetVisuallyEnabled())
 				{
-					if(mouseHoving && clickOnMouseUp)
+					if (mouseHoving && clickOnMouseUp)
 					{
 						CheckAndClick(arguments);
 					}
@@ -1610,18 +1610,18 @@ GuiButton
 
 			void GuiButton::OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if(arguments.eventSource==boundsComposition)
+				if (arguments.eventSource == boundsComposition || !ignoreChildControlMouseEvents)
 				{
-					mouseHoving=true;
+					mouseHoving = true;
 					UpdateControlState();
 				}
 			}
 
 			void GuiButton::OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if(arguments.eventSource==boundsComposition)
+				if (arguments.eventSource == boundsComposition || !ignoreChildControlMouseEvents)
 				{
-					mouseHoving=false;
+					mouseHoving = false;
 					UpdateControlState();
 				}
 			}
@@ -1715,6 +1715,16 @@ GuiButton
 			void GuiButton::SetAutoFocus(bool value)
 			{
 				autoFocus = value;
+			}
+
+			bool GuiButton::GetIgnoreChildControlMouseEvents()
+			{
+				return ignoreChildControlMouseEvents;
+			}
+
+			void GuiButton::SetIgnoreChildControlMouseEvents(bool value)
+			{
+				ignoreChildControlMouseEvents = value;
 			}
 
 /***********************************************************************
@@ -20785,7 +20795,10 @@ GuiMenuButton
 
 			GuiMenuButton::~GuiMenuButton()
 			{
-				DetachSubMenu();
+				if (!subMenuDisposeFlag || !subMenuDisposeFlag->IsDisposed())
+				{
+					DetachSubMenu();
+				}
 			}
 
 			Ptr<GuiImageData> GuiMenuButton::GetLargeImage()
@@ -20859,11 +20872,13 @@ GuiMenuButton
 				if(subMenu)
 				{
 					DetachSubMenu();
+					subMenuDisposeFlag = nullptr;
 				}
 				subMenu=value;
 				ownedSubMenu=owned;
 				if(subMenu)
 				{
+					subMenuDisposeFlag = subMenu->GetDisposedFlag();
 					subMenuWindowOpenedHandler = subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
 					subMenuWindowClosedHandler = subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
 				}

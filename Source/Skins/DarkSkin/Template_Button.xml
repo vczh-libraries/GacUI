@@ -1,7 +1,7 @@
 <Folder>
   <Instance name="ButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ButtonTemplate" ref.Styles="res://DarkSkin/Style">
-      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+      <ButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground ref.Style="buttonBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="buttonBorder"/>
@@ -11,6 +11,7 @@
         </Bounds>
         <Bounds AlignmentToParent="left:4 top:2 right:4 bottom:2">
           <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </Bounds>
       </ButtonTemplate>
     </Instance>
@@ -18,7 +19,7 @@
 
   <Instance name="CheckBoxTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::CheckBoxTemplate" ref.Styles="res://DarkSkin/Style">
-      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+      <SelectableButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -49,6 +50,7 @@
               </Bounds>
               <Bounds AlignmentToParent="left:4 top:2 right:4 bottom:2">
                 <SolidLabel ref.Style="controlText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               </Bounds>
             </Bounds>
           </Cell>
@@ -59,7 +61,7 @@
 
   <Instance name="RadioButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RadioButtonTemplate" ref.Styles="res://DarkSkin/Style">
-      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+      <SelectableButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -90,6 +92,7 @@
               </Bounds>
               <Bounds AlignmentToParent="left:4 top:2 right:4 bottom:2">
                 <SolidLabel ref.Style="controlText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               </Bounds>
             </Bounds>
           </Cell>

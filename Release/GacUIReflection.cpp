@@ -2182,6 +2182,7 @@ Type Declaration (Class)
 
 				CLASS_MEMBER_PROPERTY_FAST(ClickOnMouseUp)
 				CLASS_MEMBER_PROPERTY_FAST(AutoFocus)
+				CLASS_MEMBER_PROPERTY_FAST(IgnoreChildControlMouseEvents)
 			END_CLASS_MEMBER(GuiButton)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableButton)

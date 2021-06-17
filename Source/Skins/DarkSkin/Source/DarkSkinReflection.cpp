@@ -202,6 +202,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
+				CLASS_MEMBER_FIELD(container)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::ButtonTemplateConstructor)
 
@@ -229,6 +230,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
+				CLASS_MEMBER_FIELD(container)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::CheckBoxTemplateConstructor)
 
@@ -661,6 +663,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
+				CLASS_MEMBER_FIELD(container)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::RadioButtonTemplateConstructor)
 
