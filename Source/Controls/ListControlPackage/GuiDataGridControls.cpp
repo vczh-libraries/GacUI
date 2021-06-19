@@ -468,7 +468,7 @@ GuiVirtualDataGrid (IDataGridContext)
 
 			templates::GuiListViewTemplate* GuiVirtualDataGrid::GetListViewControlTemplate()
 			{
-				return GetControlTemplateObject(true);
+				return TypedControlTemplateObject(true);
 			}
 
 			void GuiVirtualDataGrid::RequestSaveData()

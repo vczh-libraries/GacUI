@@ -227,7 +227,7 @@ GuiMenuButton
 
 			void GuiMenuButton::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				auto host = GetSubMenuHost();
 
 				ct->SetSubMenuOpening(GetSubMenuOpening());
@@ -242,7 +242,7 @@ GuiMenuButton
 
 			GuiButton* GuiMenuButton::GetSubMenuHost()
 			{
-				GuiButton* button = GetControlTemplateObject(true)->GetSubMenuHost();
+				GuiButton* button = TypedControlTemplateObject(true)->GetSubMenuHost();
 				return button ? button : this;
 			}
 
@@ -301,13 +301,13 @@ GuiMenuButton
 			void GuiMenuButton::OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				GetControlTemplateObject(true)->SetSubMenuOpening(true);
+				TypedControlTemplateObject(true)->SetSubMenuOpening(true);
 			}
 
 			void GuiMenuButton::OnSubMenuWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				GetControlTemplateObject(true)->SetSubMenuOpening(false);
+				TypedControlTemplateObject(true)->SetSubMenuOpening(false);
 			}
 
 			void GuiMenuButton::OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -391,7 +391,7 @@ GuiMenuButton
 				if (largeImage != value)
 				{
 					largeImage = value;
-					GetControlTemplateObject(true)->SetLargeImage(largeImage);
+					TypedControlTemplateObject(true)->SetLargeImage(largeImage);
 					LargeImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -406,7 +406,7 @@ GuiMenuButton
 				if (image != value)
 				{
 					image = value;
-					GetControlTemplateObject(true)->SetImage(image);
+					TypedControlTemplateObject(true)->SetImage(image);
 					ImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -421,7 +421,7 @@ GuiMenuButton
 				if (shortcutText != value)
 				{
 					shortcutText = value;
-					GetControlTemplateObject(true)->SetShortcutText(shortcutText);
+					TypedControlTemplateObject(true)->SetShortcutText(shortcutText);
 					ShortcutTextChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -441,7 +441,7 @@ GuiMenuButton
 				if (!subMenu)
 				{
 					GuiMenu* newSubMenu = new GuiMenu(theme::ThemeName::Menu, this);
-					newSubMenu->SetControlTemplate(subMenuTemplate ? subMenuTemplate : GetControlTemplateObject(true)->GetSubMenuTemplate());
+					newSubMenu->SetControlTemplate(subMenuTemplate ? subMenuTemplate : TypedControlTemplateObject(true)->GetSubMenuTemplate());
 					SetSubMenu(newSubMenu, true);
 				}
 				return subMenu;
@@ -462,7 +462,7 @@ GuiMenuButton
 					subMenuWindowOpenedHandler = subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
 					subMenuWindowClosedHandler = subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
 				}
-				GetControlTemplateObject(true)->SetSubMenuExisting(subMenu != nullptr);
+				TypedControlTemplateObject(true)->SetSubMenuExisting(subMenu != nullptr);
 			}
 
 			void GuiMenuButton::DestroySubMenu()
@@ -472,7 +472,7 @@ GuiMenuButton
 					DetachSubMenu();
 					subMenu=0;
 					ownedSubMenu=false;
-					GetControlTemplateObject(true)->SetSubMenuExisting(false);
+					TypedControlTemplateObject(true)->SetSubMenuExisting(false);
 				}
 			}
 

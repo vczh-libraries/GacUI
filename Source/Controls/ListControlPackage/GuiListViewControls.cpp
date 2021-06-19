@@ -24,7 +24,7 @@ GuiListViewColumnHeader
 
 			void GuiListViewColumnHeader::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject(true)->SetSortingState(columnSortingState);
+				TypedControlTemplateObject(true)->SetSortingState(columnSortingState);
 			}
 			
 			GuiListViewColumnHeader::GuiListViewColumnHeader(theme::ThemeName themeName)
@@ -51,7 +51,7 @@ GuiListViewColumnHeader
 				if (columnSortingState != value)
 				{
 					columnSortingState = value;
-					GetControlTemplateObject(true)->SetSortingState(columnSortingState);
+					TypedControlTemplateObject(true)->SetSortingState(columnSortingState);
 				}
 			}
 
@@ -253,7 +253,7 @@ ListViewColumnItemArranger
 							{
 								GuiListViewColumnHeader* button = new GuiListViewColumnHeader(theme::ThemeName::Unknown);
 								button->SetAutoFocus(false);
-								button->SetControlTemplate(listView->GetControlTemplateObject(true)->GetColumnHeaderTemplate());
+								button->SetControlTemplate(listView->TypedControlTemplateObject(true)->GetColumnHeaderTemplate());
 								button->SetText(listViewItemView->GetColumnText(i));
 								button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
 								button->SetColumnSortingState(columnItemView->GetSortingState(i));

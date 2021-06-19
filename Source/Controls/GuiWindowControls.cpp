@@ -602,7 +602,7 @@ GuiWindow
 
 			void GuiWindow::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 #define FIX_WINDOW_PROPERTY(VARIABLE, NAME) \
 				switch (ct->Get ## NAME ## Option()) \
 				{ \
@@ -659,7 +659,7 @@ GuiWindow
 			{
 				if (auto window = GetNativeWindow())
 				{
-					if (GetControlTemplateObject(true)->GetCustomFrameEnabled())
+					if (TypedControlTemplateObject(true)->GetCustomFrameEnabled())
 					{
 						window->EnableCustomFrameMode();
 						window->SetBorder(false);
@@ -681,12 +681,12 @@ GuiWindow
 			void GuiWindow::Moved()
 			{
 				GuiControlHost::Moved();
-				GetControlTemplateObject(true)->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+				TypedControlTemplateObject(true)->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
 			}
 
 			void GuiWindow::DpiChanged()
 			{
-				if (auto ct = GetControlTemplateObject(false))
+				if (auto ct = TypedControlTemplateObject(false))
 				{
 					UpdateCustomFramePadding(GetNativeWindow(), ct);
 				}
@@ -709,7 +709,7 @@ GuiWindow
 
 			void GuiWindow::OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if (auto ct = GetControlTemplateObject(false))
+				if (auto ct = TypedControlTemplateObject(false))
 				{
 					ct->SetActivated(true);
 				}
@@ -717,7 +717,7 @@ GuiWindow
 
 			void GuiWindow::OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if (auto ct = GetControlTemplateObject(false))
+				if (auto ct = TypedControlTemplateObject(false))
 				{
 					ct->SetActivated(false);
 				}
@@ -798,7 +798,7 @@ GuiWindow
 			} \
 			void GuiWindow::Set ## NAME(bool visible) \
 			{ \
-				auto ct = GetControlTemplateObject(true); \
+				auto ct = TypedControlTemplateObject(true); \
 				if (ct->Get ## NAME ## Option() == templates::BoolOption::Customizable) \
 				{ \
 					VARIABLE = visible; \
@@ -840,7 +840,7 @@ GuiWindow
 						window->SetIcon(icon);
 					}
 
-					if (auto ct = GetControlTemplateObject(false))
+					if (auto ct = TypedControlTemplateObject(false))
 					{
 						ct->SetIcon(icon ? icon : window ? window->GetIcon() : nullptr);
 					}

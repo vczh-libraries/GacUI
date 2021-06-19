@@ -1148,7 +1148,7 @@ GuiDocumentViewer
 
 			void GuiDocumentViewer::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				baselineDocument = ct->GetBaselineDocument();
 				if (documentElement)
 				{
@@ -1224,7 +1224,7 @@ GuiDocumentLabel
 
 			void GuiDocumentLabel::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				baselineDocument = ct->GetBaselineDocument();
 				if (documentElement)
 				{

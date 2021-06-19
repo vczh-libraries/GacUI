@@ -118,7 +118,7 @@ GuiTab
 
 			void GuiTab::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -128,7 +128,7 @@ GuiTab
 
 			void GuiTab::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetTabPages(tabPages.GetWrapper());
 				ct->SetSelectedTabPage(selectedPage);
@@ -138,7 +138,7 @@ GuiTab
 			{
 				if (arguments.eventSource == focusableComposition)
 				{
-					if (auto ct = GetControlTemplateObject(false))
+					if (auto ct = TypedControlTemplateObject(false))
 					{
 						vint index = tabPages.IndexOf(selectedPage);
 						if (index != -1)
@@ -226,7 +226,7 @@ GuiTab
 						tabPage->SetVisible(tabPage == selectedPage);
 					}
 				}
-				if (auto ct = GetControlTemplateObject(false))
+				if (auto ct = TypedControlTemplateObject(false))
 				{
 					ct->SetSelectedTabPage(selectedPage);
 				}
@@ -240,7 +240,7 @@ GuiScrollView
 
 			void GuiScrollView::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				if (auto scroll = ct->GetHorizontalScroll())
@@ -265,7 +265,7 @@ GuiScrollView
 
 			void GuiScrollView::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				if (auto scroll = ct->GetHorizontalScroll())
 				{
 					hScrollHandler = scroll->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
@@ -314,7 +314,7 @@ GuiScrollView
 			{
 				if(!supressScrolling)
 				{
-					if (auto scroll = GetControlTemplateObject(true)->GetHorizontalScroll())
+					if (auto scroll = TypedControlTemplateObject(true)->GetHorizontalScroll())
 					{
 						if (scroll->GetEnabled())
 						{
@@ -331,7 +331,7 @@ GuiScrollView
 			{
 				if(!supressScrolling && GetVisuallyEnabled())
 				{
-					if (auto scroll = GetControlTemplateObject(true)->GetVerticalScroll())
+					if (auto scroll = TypedControlTemplateObject(true)->GetVerticalScroll())
 					{
 						if (scroll->GetEnabled())
 						{
@@ -352,7 +352,7 @@ GuiScrollView
 
 			bool GuiScrollView::AdjustView(Size fullSize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
 				Size viewSize = ct->GetContainerComposition()->GetBounds().GetSize();
@@ -421,7 +421,7 @@ GuiScrollView
 
 			void GuiScrollView::CalculateView()
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				if (!supressScrolling)
 				{
 					Size fullSize = QueryFullSize();
@@ -464,7 +464,7 @@ GuiScrollView
 
 			Size GuiScrollView::GetViewSize()
 			{
-				Size viewSize = GetControlTemplateObject(true)->GetContainerComposition()->GetBounds().GetSize();
+				Size viewSize = TypedControlTemplateObject(true)->GetContainerComposition()->GetBounds().GetSize();
 				return viewSize;
 			}
 
@@ -475,7 +475,7 @@ GuiScrollView
 
 			Point GuiScrollView::GetViewPosition()
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
 				return Point(hScroll ? hScroll->GetPosition() : 0, vScroll ? vScroll->GetPosition() : 0);
@@ -483,7 +483,7 @@ GuiScrollView
 
 			void GuiScrollView::SetViewPosition(Point value)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				if (auto hScroll = ct->GetHorizontalScroll())
 				{
 					hScroll->SetPosition(value.x);
@@ -496,12 +496,12 @@ GuiScrollView
 
 			GuiScroll* GuiScrollView::GetHorizontalScroll()
 			{
-				return GetControlTemplateObject(true)->GetHorizontalScroll();
+				return TypedControlTemplateObject(true)->GetHorizontalScroll();
 			}
 
 			GuiScroll* GuiScrollView::GetVerticalScroll()
 			{
-				return GetControlTemplateObject(true)->GetVerticalScroll();
+				return TypedControlTemplateObject(true)->GetVerticalScroll();
 			}
 
 			bool GuiScrollView::GetHorizontalAlwaysVisible()

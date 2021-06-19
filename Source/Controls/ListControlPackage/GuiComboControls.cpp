@@ -67,10 +67,7 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::AfterControlTemplateInstalled(bool initialize)
 			{
 				GuiComboBoxBase::AfterControlTemplateInstalled(initialize);
-				if (auto ct = GetControlTemplateObject(true))
-				{
-					ct->SetTextVisible(!itemStyleProperty);
-				}
+				TypedControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
 			}
 
 			void GuiComboBoxListControl::RemoveStyleController()
@@ -283,7 +280,7 @@ GuiComboBoxListControl
 			{
 				RemoveStyleController();
 				itemStyleProperty = value;
-				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
+				TypedControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
 				InstallStyleController(selectedIndex);
 				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}

@@ -256,7 +256,7 @@ GuiAltActionManager
 						auto composition = currentActiveAltActions.Values()[i]->GetAltComposition();
 
 						auto label = new GuiLabel(theme::ThemeName::ShortcutKey);
-						if (auto labelStyle = window->GetControlTemplateObject(true)->GetShortcutKeyTemplate())
+						if (auto labelStyle = window->TypedControlTemplateObject(true)->GetShortcutKeyTemplate())
 						{
 							label->SetControlTemplate(labelStyle);
 						}

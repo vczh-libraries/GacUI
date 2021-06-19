@@ -17,7 +17,7 @@ GuiLabel
 
 			void GuiLabel::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				textColorConsisted = (textColor == ct->GetDefaultTextColor());
@@ -25,7 +25,7 @@ GuiLabel
 
 			void GuiLabel::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				if (initialize || textColorConsisted)
 				{
 					SetTextColor(ct->GetDefaultTextColor());
@@ -55,7 +55,7 @@ GuiLabel
 				if (textColor != value)
 				{
 					textColor = value;
-					GetControlTemplateObject(true)->SetTextColor(textColor);
+					TypedControlTemplateObject(true)->SetTextColor(textColor);
 				}
 			}
 		}

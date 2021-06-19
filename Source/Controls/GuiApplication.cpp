@@ -166,7 +166,7 @@ GuiApplication
 					sharedTooltipControl = new GuiTooltip(theme::ThemeName::Tooltip);
 					if (ownerWindow)
 					{
-						if (auto tooltipStyle = ownerWindow->GetControlTemplateObject(true)->GetTooltipTemplate())
+						if (auto tooltipStyle = ownerWindow->TypedControlTemplateObject(true)->GetTooltipTemplate())
 						{
 							sharedTooltipControl->SetControlTemplate(tooltipStyle);
 						}

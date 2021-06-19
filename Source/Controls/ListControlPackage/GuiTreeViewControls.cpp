@@ -877,7 +877,7 @@ GuiVirtualTreeView
 				GuiVirtualTreeListControl::OnStyleInstalled(itemIndex, style);
 				if (auto treeItemStyle = dynamic_cast<templates::GuiTreeItemTemplate*>(style))
 				{
-					treeItemStyle->SetTextColor(GetControlTemplateObject(true)->GetTextColor());
+					treeItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetTextColor());
 
 					if (treeViewItemView)
 					{
@@ -984,7 +984,7 @@ DefaultTreeItemTemplate
 						expandingButton = new GuiSelectableButton(theme::ThemeName::TreeItemExpander);
 						if (auto treeView = dynamic_cast<GuiVirtualTreeView*>(listControl))
 						{
-							if (auto expanderStyle = treeView->GetControlTemplateObject(true)->GetExpandingDecoratorTemplate())
+							if (auto expanderStyle = treeView->TypedControlTemplateObject(true)->GetExpandingDecoratorTemplate())
 							{
 								expandingButton->SetControlTemplate(expanderStyle);
 							}

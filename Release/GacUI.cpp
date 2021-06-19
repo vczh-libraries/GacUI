@@ -335,7 +335,7 @@ GuiApplication
 					sharedTooltipControl = new GuiTooltip(theme::ThemeName::Tooltip);
 					if (ownerWindow)
 					{
-						if (auto tooltipStyle = ownerWindow->GetControlTemplateObject(true)->GetTooltipTemplate())
+						if (auto tooltipStyle = ownerWindow->TypedControlTemplateObject(true)->GetTooltipTemplate())
 						{
 							sharedTooltipControl->SetControlTemplate(tooltipStyle);
 						}
@@ -1496,8 +1496,7 @@ GuiButton
 
 			void GuiButton::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
-				GetControlTemplateObject(true)->SetState(controlState);
+				TypedControlTemplateObject(true)->SetState(controlState);
 			}
 
 			void GuiButton::OnParentLineChanged()
@@ -1557,7 +1556,7 @@ GuiButton
 				if (controlState != newControlState)
 				{
 					controlState = newControlState;
-					GetControlTemplateObject(true)->SetState(controlState);
+					TypedControlTemplateObject(true)->SetState(controlState);
 				}
 			}
 
@@ -1792,7 +1791,7 @@ GuiSelectableButton
 
 			void GuiSelectableButton::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject(true)->SetSelected(isSelected);
+				TypedControlTemplateObject(true)->SetSelected(isSelected);
 			}
 
 			void GuiSelectableButton::OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -1864,7 +1863,7 @@ GuiSelectableButton
 				if (isSelected != value)
 				{
 					isSelected = value;
-					GetControlTemplateObject(true)->SetSelected(isSelected);
+					TypedControlTemplateObject(true)->SetSelected(isSelected);
 					if (groupController)
 					{
 						groupController->OnSelectedChanged(this);
@@ -1941,13 +1940,17 @@ GuiTabPageList
 				tab->containerComposition->RemoveChild(value->boundsComposition);
 				value->tab = nullptr;
 
-				if (items.Count() == 0)
+				if (items.Count() <= 1)
 				{
 					tab->SetSelectedPage(nullptr);
 				}
-				else if (tab->selectedPage == value)
+				else if (items.Count() > index + 1)
 				{
-					tab->SetSelectedPage(items[0]);
+					tab->SetSelectedPage(items[index + 1]);
+				}
+				else if (items.Count() == index + 1)
+				{
+					tab->SetSelectedPage(items[index - 1]);
 				}
 			}
 
@@ -1988,7 +1991,7 @@ GuiTab
 
 			void GuiTab::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -1998,7 +2001,7 @@ GuiTab
 
 			void GuiTab::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetTabPages(tabPages.GetWrapper());
 				ct->SetSelectedTabPage(selectedPage);
@@ -2008,7 +2011,7 @@ GuiTab
 			{
 				if (arguments.eventSource == focusableComposition)
 				{
-					if (auto ct = GetControlTemplateObject(false))
+					if (auto ct = TypedControlTemplateObject(false))
 					{
 						vint index = tabPages.IndexOf(selectedPage);
 						if (index != -1)
@@ -2096,7 +2099,7 @@ GuiTab
 						tabPage->SetVisible(tabPage == selectedPage);
 					}
 				}
-				if (auto ct = GetControlTemplateObject(false))
+				if (auto ct = TypedControlTemplateObject(false))
 				{
 					ct->SetSelectedTabPage(selectedPage);
 				}
@@ -2110,7 +2113,7 @@ GuiScrollView
 
 			void GuiScrollView::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				if (auto scroll = ct->GetHorizontalScroll())
@@ -2135,7 +2138,7 @@ GuiScrollView
 
 			void GuiScrollView::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				if (auto scroll = ct->GetHorizontalScroll())
 				{
 					hScrollHandler = scroll->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
@@ -2184,7 +2187,7 @@ GuiScrollView
 			{
 				if(!supressScrolling)
 				{
-					if (auto scroll = GetControlTemplateObject(true)->GetHorizontalScroll())
+					if (auto scroll = TypedControlTemplateObject(true)->GetHorizontalScroll())
 					{
 						if (scroll->GetEnabled())
 						{
@@ -2201,7 +2204,7 @@ GuiScrollView
 			{
 				if(!supressScrolling && GetVisuallyEnabled())
 				{
-					if (auto scroll = GetControlTemplateObject(true)->GetVerticalScroll())
+					if (auto scroll = TypedControlTemplateObject(true)->GetVerticalScroll())
 					{
 						if (scroll->GetEnabled())
 						{
@@ -2222,7 +2225,7 @@ GuiScrollView
 
 			bool GuiScrollView::AdjustView(Size fullSize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
 				Size viewSize = ct->GetContainerComposition()->GetBounds().GetSize();
@@ -2291,7 +2294,7 @@ GuiScrollView
 
 			void GuiScrollView::CalculateView()
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				if (!supressScrolling)
 				{
 					Size fullSize = QueryFullSize();
@@ -2334,7 +2337,7 @@ GuiScrollView
 
 			Size GuiScrollView::GetViewSize()
 			{
-				Size viewSize = GetControlTemplateObject(true)->GetContainerComposition()->GetBounds().GetSize();
+				Size viewSize = TypedControlTemplateObject(true)->GetContainerComposition()->GetBounds().GetSize();
 				return viewSize;
 			}
 
@@ -2345,7 +2348,7 @@ GuiScrollView
 
 			Point GuiScrollView::GetViewPosition()
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
 				return Point(hScroll ? hScroll->GetPosition() : 0, vScroll ? vScroll->GetPosition() : 0);
@@ -2353,7 +2356,7 @@ GuiScrollView
 
 			void GuiScrollView::SetViewPosition(Point value)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				if (auto hScroll = ct->GetHorizontalScroll())
 				{
 					hScroll->SetPosition(value.x);
@@ -2366,12 +2369,12 @@ GuiScrollView
 
 			GuiScroll* GuiScrollView::GetHorizontalScroll()
 			{
-				return GetControlTemplateObject(true)->GetHorizontalScroll();
+				return TypedControlTemplateObject(true)->GetHorizontalScroll();
 			}
 
 			GuiScroll* GuiScrollView::GetVerticalScroll()
 			{
-				return GetControlTemplateObject(true)->GetVerticalScroll();
+				return TypedControlTemplateObject(true)->GetVerticalScroll();
 			}
 
 			bool GuiScrollView::GetHorizontalAlwaysVisible()
@@ -2504,7 +2507,7 @@ GuiDatePicker::CommandExecutor
 
 			void GuiDatePicker::CommandExecutor::NotifyDateChanged()
 			{
-				datePicker->date = datePicker->GetControlTemplateObject(true)->GetDate();
+				datePicker->date = datePicker->TypedControlTemplateObject(true)->GetDate();
 				datePicker->UpdateText();
 				datePicker->DateChanged.Execute(datePicker->GetNotifyEventArguments());
 			}
@@ -2525,7 +2528,7 @@ GuiDatePicker
 
 			void GuiDatePicker::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -2533,7 +2536,7 @@ GuiDatePicker
 
 			void GuiDatePicker::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetDate(date);
 				ct->SetDateLocale(dateLocale);
@@ -2602,7 +2605,7 @@ GuiDatePicker
 				if (date != value)
 				{
 					date = value;
-					GetControlTemplateObject(true)->SetDate(value);
+					TypedControlTemplateObject(true)->SetDate(value);
 				}
 			}
 
@@ -2632,7 +2635,7 @@ GuiDatePicker
 				{
 					dateFormat=formats[0];
 				}
-				GetControlTemplateObject(true)->SetDateLocale(dateLocale);
+				TypedControlTemplateObject(true)->SetDateLocale(dateLocale);
 
 				UpdateText();
 				DateFormatChanged.Execute(GetNotifyEventArguments());
@@ -2653,7 +2656,7 @@ GuiDateComboBox
 
 			void GuiDateComboBox::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				datePicker->SetControlTemplate(ct->GetDatePickerTemplate());
 			}
 
@@ -3244,7 +3247,7 @@ GuiLabel
 
 			void GuiLabel::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				textColorConsisted = (textColor == ct->GetDefaultTextColor());
@@ -3252,7 +3255,7 @@ GuiLabel
 
 			void GuiLabel::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				if (initialize || textColorConsisted)
 				{
 					SetTextColor(ct->GetDefaultTextColor());
@@ -3282,7 +3285,7 @@ GuiLabel
 				if (textColor != value)
 				{
 					textColor = value;
-					GetControlTemplateObject(true)->SetTextColor(textColor);
+					TypedControlTemplateObject(true)->SetTextColor(textColor);
 				}
 			}
 		}
@@ -3416,7 +3419,7 @@ GuiScroll
 
 			void GuiScroll::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -3424,7 +3427,7 @@ GuiScroll
 
 			void GuiScroll::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetPageSize(pageSize);
 				ct->SetTotalSize(totalSize);
@@ -3470,7 +3473,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					GetControlTemplateObject(true)->SetTotalSize(totalSize);
+					TypedControlTemplateObject(true)->SetTotalSize(totalSize);
 					TotalSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -3489,7 +3492,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					GetControlTemplateObject(true)->SetPageSize(pageSize);
+					TypedControlTemplateObject(true)->SetPageSize(pageSize);
 					PageSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -3510,7 +3513,7 @@ GuiScroll
 				if(position!=newPosition)
 				{
 					position=newPosition;
-					GetControlTemplateObject(true)->SetPosition(position);
+					TypedControlTemplateObject(true)->SetPosition(position);
 					PositionChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -4170,7 +4173,7 @@ GuiWindow
 
 			void GuiWindow::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 #define FIX_WINDOW_PROPERTY(VARIABLE, NAME) \
 				switch (ct->Get ## NAME ## Option()) \
 				{ \
@@ -4227,7 +4230,7 @@ GuiWindow
 			{
 				if (auto window = GetNativeWindow())
 				{
-					if (GetControlTemplateObject(true)->GetCustomFrameEnabled())
+					if (TypedControlTemplateObject(true)->GetCustomFrameEnabled())
 					{
 						window->EnableCustomFrameMode();
 						window->SetBorder(false);
@@ -4249,12 +4252,12 @@ GuiWindow
 			void GuiWindow::Moved()
 			{
 				GuiControlHost::Moved();
-				GetControlTemplateObject(true)->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+				TypedControlTemplateObject(true)->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
 			}
 
 			void GuiWindow::DpiChanged()
 			{
-				if (auto ct = GetControlTemplateObject(false))
+				if (auto ct = TypedControlTemplateObject(false))
 				{
 					UpdateCustomFramePadding(GetNativeWindow(), ct);
 				}
@@ -4277,7 +4280,7 @@ GuiWindow
 
 			void GuiWindow::OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if (auto ct = GetControlTemplateObject(false))
+				if (auto ct = TypedControlTemplateObject(false))
 				{
 					ct->SetActivated(true);
 				}
@@ -4285,7 +4288,7 @@ GuiWindow
 
 			void GuiWindow::OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if (auto ct = GetControlTemplateObject(false))
+				if (auto ct = TypedControlTemplateObject(false))
 				{
 					ct->SetActivated(false);
 				}
@@ -4366,7 +4369,7 @@ GuiWindow
 			} \
 			void GuiWindow::Set ## NAME(bool visible) \
 			{ \
-				auto ct = GetControlTemplateObject(true); \
+				auto ct = TypedControlTemplateObject(true); \
 				if (ct->Get ## NAME ## Option() == templates::BoolOption::Customizable) \
 				{ \
 					VARIABLE = visible; \
@@ -4408,7 +4411,7 @@ GuiWindow
 						window->SetIcon(icon);
 					}
 
-					if (auto ct = GetControlTemplateObject(false))
+					if (auto ct = TypedControlTemplateObject(false))
 					{
 						ct->SetIcon(icon ? icon : window ? window->GetIcon() : nullptr);
 					}
@@ -6790,10 +6793,7 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::AfterControlTemplateInstalled(bool initialize)
 			{
 				GuiComboBoxBase::AfterControlTemplateInstalled(initialize);
-				if (auto ct = GetControlTemplateObject(true))
-				{
-					ct->SetTextVisible(!itemStyleProperty);
-				}
+				TypedControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
 			}
 
 			void GuiComboBoxListControl::RemoveStyleController()
@@ -7006,7 +7006,7 @@ GuiComboBoxListControl
 			{
 				RemoveStyleController();
 				itemStyleProperty = value;
-				GetControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
+				TypedControlTemplateObject(true)->SetTextVisible(!itemStyleProperty);
 				InstallStyleController(selectedIndex);
 				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}
@@ -7515,7 +7515,7 @@ GuiVirtualDataGrid (IDataGridContext)
 
 			templates::GuiListViewTemplate* GuiVirtualDataGrid::GetListViewControlTemplate()
 			{
-				return GetControlTemplateObject(true);
+				return TypedControlTemplateObject(true);
 			}
 
 			void GuiVirtualDataGrid::RequestSaveData()
@@ -8296,7 +8296,7 @@ RangedItemArrangerBase
 					if (listControl->GetDisplayItemBackground())
 					{
 						backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
-						if (auto style = listControl->GetControlTemplateObject(true)->GetBackgroundTemplate())
+						if (auto style = listControl->TypedControlTemplateObject(true)->GetBackgroundTemplate())
 						{
 							backgroundButton->SetControlTemplate(style);
 						}
@@ -10362,7 +10362,7 @@ GuiListViewColumnHeader
 
 			void GuiListViewColumnHeader::AfterControlTemplateInstalled_(bool initialize)
 			{
-				GetControlTemplateObject(true)->SetSortingState(columnSortingState);
+				TypedControlTemplateObject(true)->SetSortingState(columnSortingState);
 			}
 			
 			GuiListViewColumnHeader::GuiListViewColumnHeader(theme::ThemeName themeName)
@@ -10389,7 +10389,7 @@ GuiListViewColumnHeader
 				if (columnSortingState != value)
 				{
 					columnSortingState = value;
-					GetControlTemplateObject(true)->SetSortingState(columnSortingState);
+					TypedControlTemplateObject(true)->SetSortingState(columnSortingState);
 				}
 			}
 
@@ -10591,7 +10591,7 @@ ListViewColumnItemArranger
 							{
 								GuiListViewColumnHeader* button = new GuiListViewColumnHeader(theme::ThemeName::Unknown);
 								button->SetAutoFocus(false);
-								button->SetControlTemplate(listView->GetControlTemplateObject(true)->GetColumnHeaderTemplate());
+								button->SetControlTemplate(listView->TypedControlTemplateObject(true)->GetColumnHeaderTemplate());
 								button->SetText(listViewItemView->GetColumnText(i));
 								button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
 								button->SetColumnSortingState(columnItemView->GetSortingState(i));
@@ -11316,7 +11316,7 @@ BigIconListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
+							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
 
@@ -11394,7 +11394,7 @@ SmallIconListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
+							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
 
@@ -11471,7 +11471,7 @@ ListListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
+							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
 
@@ -11580,7 +11580,7 @@ TileListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
+							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 
 							vint dataColumnCount = view->GetDataColumnCount();
 							ResetTextTable(dataColumnCount + 1);
@@ -11589,7 +11589,7 @@ TileListViewItemTemplate
 							{
 								dataTexts[i] = CreateTextElement(i + 1);
 								dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
-								dataTexts[i]->SetColor(listView->GetControlTemplateObject(true)->GetSecondaryTextColor());
+								dataTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
 							}
 						}
 					}
@@ -11695,8 +11695,8 @@ InformationListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
-							bottomLine->SetColor(listView->GetControlTemplateObject(true)->GetItemSeparatorColor());
+							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
+							bottomLine->SetColor(listView->TypedControlTemplateObject(true)->GetItemSeparatorColor());
 
 							vint dataColumnCount = view->GetDataColumnCount();
 							columnTexts.Resize(dataColumnCount);
@@ -11732,7 +11732,7 @@ InformationListViewItemTemplate
 
 									columnTexts[i] = GuiSolidLabelElement::Create();
 									columnTexts[i]->SetText(view->GetColumnText(view->GetDataColumn(i) + 1) + L": ");
-									columnTexts[i]->SetColor(listView->GetControlTemplateObject(true)->GetSecondaryTextColor());
+									columnTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
 									cell->SetOwnedElement(columnTexts[i]);
 								}
 								{
@@ -11743,7 +11743,7 @@ InformationListViewItemTemplate
 									dataTexts[i]= GuiSolidLabelElement::Create();
 									dataTexts[i]->SetEllipse(true);
 									dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
-									dataTexts[i]->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
+									dataTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 									cell->SetOwnedElement(dataTexts[i]);
 								}
 							}
@@ -11851,7 +11851,7 @@ DetailListViewItemTemplate
 								image->SetImage(0);
 							}
 							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->GetControlTemplateObject(true)->GetPrimaryTextColor());
+							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 
 							vint columnCount = view->GetColumnCount() - 1;
 							subItems.Resize(columnCount);
@@ -11868,7 +11868,7 @@ DetailListViewItemTemplate
 								subItems[i]->SetFont(text->GetFont());
 								subItems[i]->SetEllipse(true);
 								subItems[i]->SetText(view->GetSubItem(itemIndex, i));
-								subItems[i]->SetColor(listView->GetControlTemplateObject(true)->GetSecondaryTextColor());
+								subItems[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
 								cell->SetOwnedElement(subItems[i]);
 							}
 							OnColumnChanged();
@@ -12065,7 +12065,7 @@ DefaultCheckTextListItemTemplate
 				{
 					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
-						auto style = textList->GetControlTemplateObject(true)->GetCheckBulletTemplate();
+						auto style = textList->TypedControlTemplateObject(true)->GetCheckBulletTemplate();
 						if (style) return style;
 					}
 					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::CheckTextListItem);
@@ -12079,7 +12079,7 @@ DefaultRadioTextListItemTemplate
 				{
 					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
-						auto style = textList->GetControlTemplateObject(true)->GetRadioBulletTemplate();
+						auto style = textList->TypedControlTemplateObject(true)->GetRadioBulletTemplate();
 						if (style) return style;
 					}
 					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::RadioTextListItem);
@@ -12231,7 +12231,7 @@ GuiTextList
 				GuiSelectableListControl::OnStyleInstalled(itemIndex, style);
 				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
 				{
-					textItemStyle->SetTextColor(GetControlTemplateObject(true)->GetTextColor());
+					textItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetTextColor());
 					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(list::ITextItemView::Identifier)))
 					{
 						textItemStyle->SetChecked(textItemView->GetChecked(itemIndex));
@@ -13196,7 +13196,7 @@ GuiVirtualTreeView
 				GuiVirtualTreeListControl::OnStyleInstalled(itemIndex, style);
 				if (auto treeItemStyle = dynamic_cast<templates::GuiTreeItemTemplate*>(style))
 				{
-					treeItemStyle->SetTextColor(GetControlTemplateObject(true)->GetTextColor());
+					treeItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetTextColor());
 
 					if (treeViewItemView)
 					{
@@ -13303,7 +13303,7 @@ DefaultTreeItemTemplate
 						expandingButton = new GuiSelectableButton(theme::ThemeName::TreeItemExpander);
 						if (auto treeView = dynamic_cast<GuiVirtualTreeView*>(listControl))
 						{
-							if (auto expanderStyle = treeView->GetControlTemplateObject(true)->GetExpandingDecoratorTemplate())
+							if (auto expanderStyle = treeView->TypedControlTemplateObject(true)->GetExpandingDecoratorTemplate())
 							{
 								expandingButton->SetControlTemplate(expanderStyle);
 							}
@@ -16158,7 +16158,7 @@ GuiDocumentViewer
 
 			void GuiDocumentViewer::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				baselineDocument = ct->GetBaselineDocument();
 				if (documentElement)
 				{
@@ -16234,7 +16234,7 @@ GuiDocumentLabel
 
 			void GuiDocumentLabel::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				baselineDocument = ct->GetBaselineDocument();
 				if (documentElement)
 				{
@@ -17325,7 +17325,7 @@ GuiMultilineTextBox
 
 			void GuiMultilineTextBox::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -17333,7 +17333,7 @@ GuiMultilineTextBox
 
 			void GuiMultilineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				Array<ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);
@@ -17373,7 +17373,7 @@ GuiMultilineTextBox
 
 			void GuiMultilineTextBox::CalculateViewAndSetScroll()
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				CalculateView();
 				vint smallMove = textElement->GetLines().GetRowHeight();
 				vint bigMove = smallMove * 5;
@@ -17526,7 +17526,7 @@ GuiSinglelineTextBox
 
 			void GuiSinglelineTextBox::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				Array<ColorEntry> colors(1);
 				colors[0] = ct->GetTextColor();
 				textElement->SetColors(colors);
@@ -20647,7 +20647,7 @@ GuiMenuButton
 
 			void GuiMenuButton::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				auto host = GetSubMenuHost();
 
 				ct->SetSubMenuOpening(GetSubMenuOpening());
@@ -20662,7 +20662,7 @@ GuiMenuButton
 
 			GuiButton* GuiMenuButton::GetSubMenuHost()
 			{
-				GuiButton* button = GetControlTemplateObject(true)->GetSubMenuHost();
+				GuiButton* button = TypedControlTemplateObject(true)->GetSubMenuHost();
 				return button ? button : this;
 			}
 
@@ -20721,13 +20721,13 @@ GuiMenuButton
 			void GuiMenuButton::OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				GetControlTemplateObject(true)->SetSubMenuOpening(true);
+				TypedControlTemplateObject(true)->SetSubMenuOpening(true);
 			}
 
 			void GuiMenuButton::OnSubMenuWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				GetControlTemplateObject(true)->SetSubMenuOpening(false);
+				TypedControlTemplateObject(true)->SetSubMenuOpening(false);
 			}
 
 			void GuiMenuButton::OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -20811,7 +20811,7 @@ GuiMenuButton
 				if (largeImage != value)
 				{
 					largeImage = value;
-					GetControlTemplateObject(true)->SetLargeImage(largeImage);
+					TypedControlTemplateObject(true)->SetLargeImage(largeImage);
 					LargeImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -20826,7 +20826,7 @@ GuiMenuButton
 				if (image != value)
 				{
 					image = value;
-					GetControlTemplateObject(true)->SetImage(image);
+					TypedControlTemplateObject(true)->SetImage(image);
 					ImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -20841,7 +20841,7 @@ GuiMenuButton
 				if (shortcutText != value)
 				{
 					shortcutText = value;
-					GetControlTemplateObject(true)->SetShortcutText(shortcutText);
+					TypedControlTemplateObject(true)->SetShortcutText(shortcutText);
 					ShortcutTextChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -20861,7 +20861,7 @@ GuiMenuButton
 				if (!subMenu)
 				{
 					GuiMenu* newSubMenu = new GuiMenu(theme::ThemeName::Menu, this);
-					newSubMenu->SetControlTemplate(subMenuTemplate ? subMenuTemplate : GetControlTemplateObject(true)->GetSubMenuTemplate());
+					newSubMenu->SetControlTemplate(subMenuTemplate ? subMenuTemplate : TypedControlTemplateObject(true)->GetSubMenuTemplate());
 					SetSubMenu(newSubMenu, true);
 				}
 				return subMenu;
@@ -20882,7 +20882,7 @@ GuiMenuButton
 					subMenuWindowOpenedHandler = subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
 					subMenuWindowClosedHandler = subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
 				}
-				GetControlTemplateObject(true)->SetSubMenuExisting(subMenu != nullptr);
+				TypedControlTemplateObject(true)->SetSubMenuExisting(subMenu != nullptr);
 			}
 
 			void GuiMenuButton::DestroySubMenu()
@@ -20892,7 +20892,7 @@ GuiMenuButton
 					DetachSubMenu();
 					subMenu=0;
 					ownedSubMenu=false;
-					GetControlTemplateObject(true)->SetSubMenuExisting(false);
+					TypedControlTemplateObject(true)->SetSubMenuExisting(false);
 				}
 			}
 
@@ -20985,7 +20985,7 @@ GuiRibbonTab
 
 			void GuiRibbonTab::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				if (auto bhc = ct->GetBeforeHeadersContainer())
@@ -21000,7 +21000,7 @@ GuiRibbonTab
 
 			void GuiRibbonTab::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				if (auto bhc = ct->GetBeforeHeadersContainer())
 				{
 					bhc->AddChild(beforeHeaders);
@@ -21224,7 +21224,7 @@ GuiRibbonGroup
 
 			void GuiRibbonGroup::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -21232,7 +21232,7 @@ GuiRibbonGroup
 
 			void GuiRibbonGroup::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				ct->SetExpandable(expandable);
 				ct->SetCollapsed(responsiveView->GetCurrentView() == responsiveFixedButton);
 				ct->SetCommands(commandExecutor.Obj());
@@ -21271,7 +21271,7 @@ GuiRibbonGroup
 
 			void GuiRibbonGroup::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
 			{
-				if (auto ct = GetControlTemplateObject(false))
+				if (auto ct = TypedControlTemplateObject(false))
 				{
 					ct->SetCollapsed(arguments.itemIndex == 1);
 				}
@@ -21354,7 +21354,7 @@ GuiRibbonGroup
 				if (expandable != value)
 				{
 					expandable = value;
-					GetControlTemplateObject(true)->SetExpandable(expandable);
+					TypedControlTemplateObject(true)->SetExpandable(expandable);
 					ExpandableChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -21404,7 +21404,7 @@ GuiRibbonIconLabel
 
 			void GuiRibbonIconLabel::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				ct->SetImage(image);
 			}
 
@@ -21428,7 +21428,7 @@ GuiRibbonIconLabel
 				if (image != value)
 				{
 					image = value;
-					GetControlTemplateObject(true)->SetImage(image);
+					TypedControlTemplateObject(true)->SetImage(image);
 					ImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -21569,7 +21569,7 @@ GuiRibbonButtons
 							}
 						}
 
-						if (auto ct = GetControlTemplateObject(false))
+						if (auto ct = TypedControlTemplateObject(false))
 						{
 							if (fixed == views[(vint)RibbonButtonSize::Large])
 							{
@@ -21704,7 +21704,7 @@ GuiRibbonToolstrips
 
 			void GuiRibbonToolstrips::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				for (vint i = 0; i < ARRLEN(toolbars); i++)
 				{
 					toolbars[i]->SetControlTemplate(ct->GetToolbarTemplate());
@@ -21946,7 +21946,7 @@ GuiRibbonGallery
 
 			void GuiRibbonGallery::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				ct->SetCommands(nullptr);
@@ -21954,7 +21954,7 @@ GuiRibbonGallery
 
 			void GuiRibbonGallery::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
 				ct->SetScrollUpEnabled(scrollUpEnabled);
 				ct->SetScrollDownEnabled(scrollDownEnabled);
@@ -21986,7 +21986,7 @@ GuiRibbonGallery
 				if (scrollUpEnabled != value)
 				{
 					scrollUpEnabled = value;
-					GetControlTemplateObject(true)->SetScrollUpEnabled(value);
+					TypedControlTemplateObject(true)->SetScrollUpEnabled(value);
 				}
 			}
 
@@ -22000,7 +22000,7 @@ GuiRibbonGallery
 				if (scrollDownEnabled != value)
 				{
 					scrollDownEnabled = value;
-					GetControlTemplateObject(true)->SetScrollDownEnabled(value);
+					TypedControlTemplateObject(true)->SetScrollDownEnabled(value);
 				}
 			}
 
@@ -22010,7 +22010,7 @@ GuiRibbonToolstripMenu
 
 			void GuiRibbonToolstripMenu::BeforeControlTemplateUninstalled_()
 			{
-				auto ct = GetControlTemplateObject(false);
+				auto ct = TypedControlTemplateObject(false);
 				if (!ct) return;
 
 				if (auto cc = ct->GetContentComposition())
@@ -22021,7 +22021,7 @@ GuiRibbonToolstripMenu
 
 			void GuiRibbonToolstripMenu::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				if (auto cc = ct->GetContentComposition())
 				{
 					cc->AddChild(contentComposition);
@@ -22323,7 +22323,7 @@ GuiBindableRibbonGalleryList
 
 			void GuiBindableRibbonGalleryList::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = GetControlTemplateObject(true);
+				auto ct = TypedControlTemplateObject(true);
 				itemList->SetControlTemplate(ct->GetItemListTemplate());
 				subMenu->SetControlTemplate(ct->GetMenuTemplate());
 				groupContainer->SetControlTemplate(ct->GetGroupContainerTemplate());
@@ -22445,7 +22445,7 @@ GuiBindableRibbonGalleryList
 						groupContentStack->AddChild(item);
 
 						auto header = new GuiControl(theme::ThemeName::RibbonToolstripHeader);
-						header->SetControlTemplate(GetControlTemplateObject(true)->GetHeaderTemplate());
+						header->SetControlTemplate(TypedControlTemplateObject(true)->GetHeaderTemplate());
 						header->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						header->SetText(group->GetName());
 						item->AddChild(header->GetBoundsComposition());
@@ -22466,7 +22466,7 @@ GuiBindableRibbonGalleryList
 							groupItemTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 							auto backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
-							if (auto style = GetControlTemplateObject(true)->GetBackgroundTemplate())
+							if (auto style = TypedControlTemplateObject(true)->GetBackgroundTemplate())
 							{
 								backgroundButton->SetControlTemplate(style);
 							}
@@ -23801,7 +23801,7 @@ GuiToolstripButton
 					}
 					else
 					{
-						newSubMenu->SetControlTemplate(GetControlTemplateObject(true)->GetSubMenuTemplate());
+						newSubMenu->SetControlTemplate(TypedControlTemplateObject(true)->GetSubMenuTemplate());
 					}
 					SetSubMenu(newSubMenu, true);
 				}
@@ -32513,7 +32513,7 @@ GuiAltActionManager
 						auto composition = currentActiveAltActions.Values()[i]->GetAltComposition();
 
 						auto label = new GuiLabel(theme::ThemeName::ShortcutKey);
-						if (auto labelStyle = window->GetControlTemplateObject(true)->GetShortcutKeyTemplate())
+						if (auto labelStyle = window->TypedControlTemplateObject(true)->GetShortcutKeyTemplate())
 						{
 							label->SetControlTemplate(labelStyle);
 						}
