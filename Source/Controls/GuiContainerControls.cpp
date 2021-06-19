@@ -67,13 +67,17 @@ GuiTabPageList
 				tab->containerComposition->RemoveChild(value->boundsComposition);
 				value->tab = nullptr;
 
-				if (items.Count() == 0)
+				if (items.Count() <= 1)
 				{
 					tab->SetSelectedPage(nullptr);
 				}
-				else if (tab->selectedPage == value)
+				else if (items.Count() > index + 1)
 				{
-					tab->SetSelectedPage(items[0]);
+					tab->SetSelectedPage(items[index + 1]);
+				}
+				else if (items.Count() == index + 1)
+				{
+					tab->SetSelectedPage(items[index - 1]);
 				}
 			}
 
