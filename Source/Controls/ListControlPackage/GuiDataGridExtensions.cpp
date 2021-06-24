@@ -324,6 +324,7 @@ SubColumnVisualizerTemplate
 				{
 					text = GuiSolidLabelElement::Create();
 					text->SetVerticalAlignment(Alignment::Center);
+					text->SetEllipse(true);
 
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					SetMargin(Margin(8, 0, 8, 0));
