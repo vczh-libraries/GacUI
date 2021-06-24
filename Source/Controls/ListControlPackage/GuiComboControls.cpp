@@ -170,6 +170,7 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				containedListControl->SelectItemsByClick(selectedIndex, false, false, true);
+				containedListControl->EnsureItemVisible(selectedIndex);
 			}
 
 			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
