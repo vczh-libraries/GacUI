@@ -89,6 +89,7 @@ GuiVirtualDataGrid
 
 				compositions::IGuiAltActionHost*						GetActivatingAltHost()override;
 				void													OnItemModified(vint start, vint count, vint newCount)override;
+				void													OnStyleInstalled(vint index, ItemStyle* style)override;
 				void													OnStyleUninstalled(ItemStyle* style)override;
 
 				void													NotifyCloseEditor();

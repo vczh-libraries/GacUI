@@ -373,6 +373,18 @@ GuiVirtualDataGrid (Editor)
 				}
 			}
 
+			void GuiVirtualDataGrid::OnStyleInstalled(vint index, ItemStyle* style)
+			{
+				GuiVirtualListView::OnStyleInstalled(index, style);
+				if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
+				{
+					if (selectedCell.row == index && selectedCell.column != -1)
+					{
+						itemStyle->NotifySelectCell(selectedCell.column);
+					}
+				}
+			}
+
 			void GuiVirtualDataGrid::OnStyleUninstalled(ItemStyle* style)
 			{
 				GuiVirtualListView::OnStyleUninstalled(style);
