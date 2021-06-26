@@ -11237,7 +11237,7 @@ Control Host
 				void											Closed()override;
 				void											Destroying()override;
 
-				virtual void									UpdateClientSizeAfterRendering(Size clientSize);
+				virtual void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -11557,7 +11557,7 @@ Window
 				vint									popupType = -1;
 				PopupInfo								popupInfo;
 
-				void									UpdateClientSizeAfterRendering(Size clientSize)override;
+				void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)override;
 				void									PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
@@ -15761,6 +15761,7 @@ Menu
 			private:
 				IGuiMenuService*						parentMenuService = nullptr;
 				bool									hideOnDeactivateAltHost = true;
+				Size									preferredMenuClientSize;
 
 				IGuiMenuService*						GetParentMenuService()override;
 				Direction								GetPreferredDirection()override;
@@ -15768,6 +15769,7 @@ Menu
 				bool									IsSubMenuActivatedByMouseDown()override;
 				void									MenuItemExecuted()override;
 
+				void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)override;
 			protected:
 				GuiControl*								owner;
 
@@ -15791,6 +15793,13 @@ Menu
 				/// <summary>Set if this menu hide after pressing ESC key to exit to the upper level of ALT shortcuts.</summary>
 				/// <param name="value">Set to true to make this menu hide after pressing ESC key to exit to the upper level of ALT shortcuts.</param>
 				void									SetHideOnDeactivateAltHost(bool value);
+
+				/// <summary>Get the preferred client size for the menu.</summary>
+				/// <returns>The preferred client size for the menu.</returns>
+				Size									GetPreferredMenuClientSize();
+				/// <summary>Set the preferred client size for the menu.</summary>
+				/// <param name="value">The preferred client size for the menu.</param>
+				void									SetPreferredMenuClientSize(Size value);
 			};
 			
 			/// <summary>Menu bar.</summary>
@@ -17700,6 +17709,7 @@ GuiVirtualDataGrid
 
 				compositions::IGuiAltActionHost*						GetActivatingAltHost()override;
 				void													OnItemModified(vint start, vint count, vint newCount)override;
+				void													OnStyleInstalled(vint index, ItemStyle* style)override;
 				void													OnStyleUninstalled(ItemStyle* style)override;
 
 				void													NotifyCloseEditor();

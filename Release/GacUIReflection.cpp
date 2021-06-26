@@ -1685,6 +1685,7 @@ Type Declaration (Extra)
 			END_CLASS_MEMBER(TextItem)
 
 			BEGIN_CLASS_MEMBER(TextItemProvider)
+				CLASS_MEMBER_BASE(GuiListControl::IItemProvider)
 				CLASS_MEMBER_BASE(ITextItemView)
 			END_CLASS_MEMBER(TextItemProvider)
 
@@ -1753,6 +1754,7 @@ Type Declaration (Extra)
 			END_CLASS_MEMBER(ListViewColumn)
 
 			BEGIN_CLASS_MEMBER(ListViewItemProvider)
+				CLASS_MEMBER_BASE(GuiListControl::IItemProvider)
 				CLASS_MEMBER_BASE(IListViewItemView)
 				CLASS_MEMBER_BASE(ListViewColumnItemArranger::IColumnItemView)
 			END_CLASS_MEMBER(ListViewItemProvider)

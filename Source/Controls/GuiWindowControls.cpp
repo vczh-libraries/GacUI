@@ -192,9 +192,13 @@ GuiControlHost
 				SetNativeWindow(nullptr);
 			}
 
-			void GuiControlHost::UpdateClientSizeAfterRendering(Size clientSize)
+			void GuiControlHost::UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)
 			{
-				SetClientSize(clientSize);
+				auto size = GetClientSize();
+				if (size != clientSize)
+				{
+					SetClientSize(clientSize);
+				}
 			}
 
 			GuiControlHost::GuiControlHost(theme::ThemeName themeName)
@@ -894,11 +898,11 @@ GuiWindow
 GuiPopup
 ***********************************************************************/
 
-			void GuiPopup::UpdateClientSizeAfterRendering(Size clientSize)
+			void GuiPopup::UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)
 			{
 				if (popupType == -1)
 				{
-					GuiWindow::UpdateClientSizeAfterRendering(clientSize);
+					GuiWindow::UpdateClientSizeAfterRendering(preferredSize, clientSize);
 				}
 				else
 				{
@@ -909,7 +913,10 @@ GuiPopup
 					auto offsetY = currentWindowSize.y - currentClientSize.y;
 					auto nativeClientSize = window->Convert(clientSize);
 					auto position = CalculatePopupPosition(NativeSize(nativeClientSize.x + offsetX, nativeClientSize.y + offsetY), popupType, popupInfo);
-					SetBounds(position, clientSize);
+					if (position != GetLocation() || clientSize != GetClientSize())
+					{
+						SetBounds(position, clientSize);
+					}
 				}
 			}
 
@@ -1041,7 +1048,8 @@ GuiPopup
 			void GuiPopup::ShowPopupInternal()
 			{
 				auto window = GetNativeWindow();
-				UpdateClientSizeAfterRendering(window->Convert(window->GetClientSize()));
+				auto clientSize = window->Convert(window->GetClientSize());
+				UpdateClientSizeAfterRendering(clientSize, clientSize);
 
 				INativeWindow* controlWindow = nullptr;
 				switch (popupType)

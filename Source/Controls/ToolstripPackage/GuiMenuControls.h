@@ -94,6 +94,7 @@ Menu
 			private:
 				IGuiMenuService*						parentMenuService = nullptr;
 				bool									hideOnDeactivateAltHost = true;
+				Size									preferredMenuClientSize;
 
 				IGuiMenuService*						GetParentMenuService()override;
 				Direction								GetPreferredDirection()override;
@@ -101,6 +102,7 @@ Menu
 				bool									IsSubMenuActivatedByMouseDown()override;
 				void									MenuItemExecuted()override;
 
+				void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)override;
 			protected:
 				GuiControl*								owner;
 
@@ -124,6 +126,13 @@ Menu
 				/// <summary>Set if this menu hide after pressing ESC key to exit to the upper level of ALT shortcuts.</summary>
 				/// <param name="value">Set to true to make this menu hide after pressing ESC key to exit to the upper level of ALT shortcuts.</param>
 				void									SetHideOnDeactivateAltHost(bool value);
+
+				/// <summary>Get the preferred client size for the menu.</summary>
+				/// <returns>The preferred client size for the menu.</returns>
+				Size									GetPreferredMenuClientSize();
+				/// <summary>Set the preferred client size for the menu.</summary>
+				/// <param name="value">The preferred client size for the menu.</param>
+				void									SetPreferredMenuClientSize(Size value);
 			};
 			
 			/// <summary>Menu bar.</summary>

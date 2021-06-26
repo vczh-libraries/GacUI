@@ -3763,7 +3763,7 @@ GuiControlHost
 				SetNativeWindow(nullptr);
 			}
 
-			void GuiControlHost::UpdateClientSizeAfterRendering(Size clientSize)
+			void GuiControlHost::UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)
 			{
 				SetClientSize(clientSize);
 			}
@@ -4465,11 +4465,11 @@ GuiWindow
 GuiPopup
 ***********************************************************************/
 
-			void GuiPopup::UpdateClientSizeAfterRendering(Size clientSize)
+			void GuiPopup::UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)
 			{
 				if (popupType == -1)
 				{
-					GuiWindow::UpdateClientSizeAfterRendering(clientSize);
+					GuiWindow::UpdateClientSizeAfterRendering(preferredSize, clientSize);
 				}
 				else
 				{
@@ -4612,7 +4612,8 @@ GuiPopup
 			void GuiPopup::ShowPopupInternal()
 			{
 				auto window = GetNativeWindow();
-				UpdateClientSizeAfterRendering(window->Convert(window->GetClientSize()));
+				auto clientSize = window->Convert(window->GetClientSize());
+				UpdateClientSizeAfterRendering(clientSize, clientSize);
 
 				INativeWindow* controlWindow = nullptr;
 				switch (popupType)
@@ -6896,6 +6897,7 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				containedListControl->SelectItemsByClick(selectedIndex, false, false, true);
+				containedListControl->EnsureItemVisible(selectedIndex);
 			}
 
 			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -7350,6 +7352,7 @@ DefaultDataGridItemTemplate
 						{
 							focusControl->SetFocus();
 						}
+						dataVisualizers[column]->GetTemplate()->SetVisible(false);
 					}
 				}
 
@@ -7357,6 +7360,10 @@ DefaultDataGridItemTemplate
 				{
 					if (currentEditor)
 					{
+						for (vint i = 0; i < dataVisualizers.Count(); i++)
+						{
+							dataVisualizers[i]->GetTemplate()->SetVisible(true);
+						}
 						auto composition = currentEditor->GetTemplate();
 						if (composition->GetParent())
 						{
@@ -7417,6 +7424,18 @@ GuiVirtualDataGrid (Editor)
 				if(!GetItemProvider()->IsEditing())
 				{
 					StopEdit();
+				}
+			}
+
+			void GuiVirtualDataGrid::OnStyleInstalled(vint index, ItemStyle* style)
+			{
+				GuiVirtualListView::OnStyleInstalled(index, style);
+				if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
+				{
+					if (selectedCell.row == index && selectedCell.column != -1)
+					{
+						itemStyle->NotifySelectCell(selectedCell.column);
+					}
 				}
 			}
 
@@ -8090,6 +8109,7 @@ SubColumnVisualizerTemplate
 				{
 					text = GuiSolidLabelElement::Create();
 					text->SetVerticalAlignment(Alignment::Center);
+					text->SetEllipse(true);
 
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					SetMargin(Margin(8, 0, 8, 0));
@@ -10154,11 +10174,13 @@ GuiSelectableListControl
 						shift = false;
 						ctrl = false;
 					}
+
 					if (shift)
 					{
 						if (!ctrl)
 						{
-							SetMultipleItemsSelectedSilently(selectedItemIndexStart, selectedItemIndexEnd, false);
+							selectedItems.Clear();
+							OnItemSelectionCleared();
 						}
 						selectedItemIndexEnd = itemIndex;
 						SetMultipleItemsSelectedSilently(selectedItemIndexStart, selectedItemIndexEnd, true);
@@ -20513,6 +20535,14 @@ GuiMenu
 				Hide();
 			}
 
+			void GuiMenu::UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)
+			{
+				auto size = preferredSize;
+				if (size.x < preferredMenuClientSize.x) size.x = preferredMenuClientSize.x;
+				if (size.y < preferredMenuClientSize.y) size.x = preferredMenuClientSize.y;
+				GuiPopup::UpdateClientSizeAfterRendering(preferredSize, size);
+			}
+
 			void GuiMenu::OnWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if(parentMenuService)
@@ -20584,6 +20614,16 @@ GuiMenu
 			void GuiMenu::SetHideOnDeactivateAltHost(bool value)
 			{
 				hideOnDeactivateAltHost = value;
+			}
+
+			Size GuiMenu::GetPreferredMenuClientSize()
+			{
+				return preferredMenuClientSize;
+			}
+
+			void GuiMenu::SetPreferredMenuClientSize(Size value)
+			{
+				preferredMenuClientSize = value;
 			}
 
 /***********************************************************************
@@ -20869,15 +20909,16 @@ GuiMenuButton
 
 			void GuiMenuButton::SetSubMenu(GuiMenu* value, bool owned)
 			{
-				if(subMenu)
+				if (subMenu)
 				{
 					DetachSubMenu();
 					subMenuDisposeFlag = nullptr;
 				}
-				subMenu=value;
-				ownedSubMenu=owned;
-				if(subMenu)
+				subMenu = value;
+				ownedSubMenu = owned;
+				if (subMenu)
 				{
+					subMenu->SetPreferredMenuClientSize(preferredMenuClientSize);
 					subMenuDisposeFlag = subMenu->GetDisposedFlag();
 					subMenuWindowOpenedHandler = subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
 					subMenuWindowClosedHandler = subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
@@ -20935,7 +20976,11 @@ GuiMenuButton
 
 			void GuiMenuButton::SetPreferredMenuClientSize(Size value)
 			{
-				preferredMenuClientSize=value;
+				preferredMenuClientSize = value;
+				if (subMenu)
+				{
+					subMenu->SetPreferredMenuClientSize(preferredMenuClientSize);
+				}
 			}
 
 			bool GuiMenuButton::GetCascadeAction()
@@ -23575,6 +23620,7 @@ GuiToolstripCollection
 				:GuiToolstripCollectionBase(_contentCallback)
 				,stackComposition(_stackComposition)
 			{
+				stackComposition->SetPreferredMinSize(Size(1, 1));
 			}
 
 			GuiToolstripCollection::~GuiToolstripCollection()

@@ -68,7 +68,7 @@ Control Host
 				void											Closed()override;
 				void											Destroying()override;
 
-				virtual void									UpdateClientSizeAfterRendering(Size clientSize);
+				virtual void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -388,7 +388,7 @@ Window
 				vint									popupType = -1;
 				PopupInfo								popupInfo;
 
-				void									UpdateClientSizeAfterRendering(Size clientSize)override;
+				void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)override;
 				void									PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);

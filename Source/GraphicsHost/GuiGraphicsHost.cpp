@@ -639,10 +639,7 @@ GuiGraphicsHost
 						auto preferred = windowComposition->GetPreferredBounds();
 						auto width = bounds.Width() > preferred.Width() ? bounds.Width() : preferred.Width();
 						auto height = bounds.Height() > preferred.Height() ? bounds.Height() : preferred.Height();
-						if (width != bounds.Width() || height != bounds.Height())
-						{
-							controlHost->UpdateClientSizeAfterRendering(Size(width, height));
-						}
+						controlHost->UpdateClientSizeAfterRendering(preferred.GetSize(), Size(width, height));
 					}
 					auto result = hostRecord.renderTarget->StopRendering();
 					hostRecord.nativeWindow->RedrawContent();

@@ -1,4 +1,5 @@
 #include "GuiMenuControls.h"
+#include "../../GraphicsHost/GuiGraphicsHost.h"
 #include "../Templates/GuiThemeStyleFactory.h"
 
 namespace vl
@@ -93,6 +94,14 @@ GuiMenu
 				Hide();
 			}
 
+			void GuiMenu::UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)
+			{
+				auto size = preferredSize;
+				if (size.x < preferredMenuClientSize.x) size.x = preferredMenuClientSize.x;
+				if (size.y < preferredMenuClientSize.y) size.x = preferredMenuClientSize.y;
+				GuiPopup::UpdateClientSizeAfterRendering(preferredSize, size);
+			}
+
 			void GuiMenu::OnWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if(parentMenuService)
@@ -164,6 +173,16 @@ GuiMenu
 			void GuiMenu::SetHideOnDeactivateAltHost(bool value)
 			{
 				hideOnDeactivateAltHost = value;
+			}
+
+			Size GuiMenu::GetPreferredMenuClientSize()
+			{
+				return preferredMenuClientSize;
+			}
+
+			void GuiMenu::SetPreferredMenuClientSize(Size value)
+			{
+				preferredMenuClientSize = value;
 			}
 
 /***********************************************************************
@@ -449,15 +468,16 @@ GuiMenuButton
 
 			void GuiMenuButton::SetSubMenu(GuiMenu* value, bool owned)
 			{
-				if(subMenu)
+				if (subMenu)
 				{
 					DetachSubMenu();
 					subMenuDisposeFlag = nullptr;
 				}
-				subMenu=value;
-				ownedSubMenu=owned;
-				if(subMenu)
+				subMenu = value;
+				ownedSubMenu = owned;
+				if (subMenu)
 				{
+					subMenu->SetPreferredMenuClientSize(preferredMenuClientSize);
 					subMenuDisposeFlag = subMenu->GetDisposedFlag();
 					subMenuWindowOpenedHandler = subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
 					subMenuWindowClosedHandler = subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
@@ -515,7 +535,11 @@ GuiMenuButton
 
 			void GuiMenuButton::SetPreferredMenuClientSize(Size value)
 			{
-				preferredMenuClientSize=value;
+				preferredMenuClientSize = value;
+				if (subMenu)
+				{
+					subMenu->SetPreferredMenuClientSize(preferredMenuClientSize);
+				}
 			}
 
 			bool GuiMenuButton::GetCascadeAction()
