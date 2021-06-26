@@ -98,7 +98,7 @@ GuiMenu
 			{
 				auto size = preferredSize;
 				if (size.x < preferredMenuClientSize.x) size.x = preferredMenuClientSize.x;
-				if (size.y < preferredMenuClientSize.y) size.x = preferredMenuClientSize.y;
+				if (size.y < preferredMenuClientSize.y) size.y = preferredMenuClientSize.y;
 				GuiPopup::UpdateClientSizeAfterRendering(preferredSize, size);
 			}
 

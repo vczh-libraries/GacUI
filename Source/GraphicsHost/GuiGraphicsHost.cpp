@@ -634,13 +634,6 @@ GuiGraphicsHost
 					supressPaint = true;
 					hostRecord.renderTarget->StartRendering();
 					windowComposition->Render(Size());
-					{
-						auto bounds = windowComposition->GetBounds();
-						auto preferred = windowComposition->GetPreferredBounds();
-						auto width = bounds.Width() > preferred.Width() ? bounds.Width() : preferred.Width();
-						auto height = bounds.Height() > preferred.Height() ? bounds.Height() : preferred.Height();
-						controlHost->UpdateClientSizeAfterRendering(preferred.GetSize(), Size(width, height));
-					}
 					auto result = hostRecord.renderTarget->StopRendering();
 					hostRecord.nativeWindow->RedrawContent();
 					supressPaint = false;
@@ -659,7 +652,16 @@ GuiGraphicsHost
 							needRender = true;
 						}
 						break;
-					default:;
+					default:
+						{
+							supressPaint = true;
+							auto bounds = windowComposition->GetBounds();
+							auto preferred = windowComposition->GetPreferredBounds();
+							auto width = bounds.Width() > preferred.Width() ? bounds.Width() : preferred.Width();
+							auto height = bounds.Height() > preferred.Height() ? bounds.Height() : preferred.Height();
+							controlHost->UpdateClientSizeAfterRendering(preferred.GetSize(), Size(width, height));
+							supressPaint = false;
+						}
 					}
 				}
 
