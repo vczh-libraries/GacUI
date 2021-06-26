@@ -738,11 +738,13 @@ GuiSelectableListControl
 						shift = false;
 						ctrl = false;
 					}
+
 					if (shift)
 					{
 						if (!ctrl)
 						{
-							SetMultipleItemsSelectedSilently(selectedItemIndexStart, selectedItemIndexEnd, false);
+							selectedItems.Clear();
+							OnItemSelectionCleared();
 						}
 						selectedItemIndexEnd = itemIndex;
 						SetMultipleItemsSelectedSilently(selectedItemIndexStart, selectedItemIndexEnd, true);
