@@ -21,5 +21,3 @@ i1 # .\Resource.FailedInstance.Control.xml
 (42, 20): Unrecognizable token: "!".
 (55, 17): Precompile: The value of property "Site" of type "presentation::compositions::GuiCellComposition" is not in a correct format: "row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]".
 (56, 17): Precompile: The value of property "Site" of type "presentation::compositions::GuiCellComposition" is not in a correct format: "row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]".
-t4 # .\Resource.FailedInstance.Control.xml
-(85, 30): Precompile: Type "presentation::templates::GuiButtonTemplate" cannot be used here because it requires "presentation::templates::GuiWindowTemplate" or its derived classes.
