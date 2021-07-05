@@ -18809,7 +18809,7 @@ Ribbon Containers
 			};
 
 			/// <summary>Ribbon tab page control, adding to the Pages property of a <see cref="GuiRibbonTab"/>.</summary>
-			class GuiRibbonTabPage : public GuiTabPage, public Description<GuiRibbonTabPage>
+			class GuiRibbonTabPage : public GuiTabPage, public AggregatableDescription<GuiRibbonTabPage>
 			{
 				friend class GuiRibbonGroupCollection;
 			protected:
