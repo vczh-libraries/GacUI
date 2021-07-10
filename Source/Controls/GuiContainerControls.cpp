@@ -422,13 +422,26 @@ GuiScrollView
 			void GuiScrollView::CalculateView()
 			{
 				auto ct = TypedControlTemplateObject(true);
+				auto hScroll = ct->GetHorizontalScroll();
+				auto vScroll = ct->GetVerticalScroll();
+
 				if (!supressScrolling)
 				{
 					Size fullSize = QueryFullSize();
 					while (true)
 					{
-						bool flagA = AdjustView(fullSize);
-						bool flagB = AdjustView(fullSize);
+						bool flagA = false;
+						bool flagB = false;
+
+						flagA = AdjustView(fullSize);
+						bool bothInvisible = (hScroll ? !hScroll->GetVisible() : true) && (vScroll ? !vScroll->GetVisible() : true);
+
+						if (!bothInvisible)
+						{
+							flagB = AdjustView(fullSize);
+							bothInvisible = (hScroll ? !hScroll->GetVisible() : true) && (vScroll ? !vScroll->GetVisible() : true);
+						}
+
 						supressScrolling = true;
 						CallUpdateView();
 						supressScrolling = false;
@@ -438,18 +451,18 @@ GuiScrollView
 						{
 							vint smallMove = GetSmallMove();
 							Size bigMove = GetBigMove();
-							if (auto scroll = ct->GetHorizontalScroll())
+							if (hScroll)
 							{
-								scroll->SetSmallMove(smallMove);
-								scroll->SetBigMove(bigMove.x);
+								hScroll->SetSmallMove(smallMove);
+								hScroll->SetBigMove(bigMove.x);
 							}
-							if (auto scroll = ct->GetVerticalScroll())
+							if (vScroll)
 							{
-								scroll->SetSmallMove(smallMove);
-								scroll->SetBigMove(bigMove.y);
+								vScroll->SetSmallMove(smallMove);
+								vScroll->SetBigMove(bigMove.y);
 							}
 
-							if (!flagA && !flagB)
+							if (bothInvisible || !flagA && !flagB)
 							{
 								break;
 							}
