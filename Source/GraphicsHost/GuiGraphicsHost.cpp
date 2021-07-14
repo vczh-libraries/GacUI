@@ -249,7 +249,7 @@ GuiGraphicsHost
 				NativeRect clientBounds = hostRecord.nativeWindow->GetClientBoundsInScreen();
 				NativePoint clientLocation(location.x + bounds.x1 - clientBounds.x1, location.y + bounds.y1 - clientBounds.y1);
 				auto point = hostRecord.nativeWindow->Convert(clientLocation);
-				GuiGraphicsComposition* hitComposition = windowComposition->FindComposition(point, false);
+				GuiGraphicsComposition* hitComposition = windowComposition->FindComposition(point, true);
 				while (hitComposition)
 				{
 					INativeWindowListener::HitTestResult result = hitComposition->GetAssociatedHitTestResult();
