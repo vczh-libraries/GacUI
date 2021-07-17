@@ -619,7 +619,8 @@ Native Window
 			
 			/// <summary>
 			/// Require mouse message capturing to this window. If the capture is required, all mouse message will be send to this window.
-			/// When the window becomes invisible after calling this function, the window will still receive mouse messages.
+			/// When the window becomes invisible after calling this function, the window will still receive mouse messages, if the OS supports this feature.
+			/// Otherwise, the capturing must be released when the window becomes invisible.
 			/// </summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
 			virtual bool				RequireCapture()=0;
