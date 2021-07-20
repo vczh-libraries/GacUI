@@ -208,10 +208,12 @@ DefaultDataGridItemTemplate
 					SelectedChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnSelectedChanged);
 					FontChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnFontChanged);
 					ContextChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnContextChanged);
+					VisuallyEnabledChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnVisuallyEnabledChanged);
 
 					SelectedChanged.Execute(compositions::GuiEventArgs(this));
 					FontChanged.Execute(compositions::GuiEventArgs(this));
 					ContextChanged.Execute(compositions::GuiEventArgs(this));
+					VisuallyEnabledChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
 				void DefaultDataGridItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -243,6 +245,18 @@ DefaultDataGridItemTemplate
 					if (currentEditor)
 					{
 						currentEditor->GetTemplate()->SetContext(GetContext());
+					}
+				}
+
+				void DefaultDataGridItemTemplate::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					{
+						visualizer->GetTemplate()->SetVisuallyEnabled(GetVisuallyEnabled());
+					}
+					if (currentEditor)
+					{
+						currentEditor->GetTemplate()->SetVisuallyEnabled(GetVisuallyEnabled());
 					}
 				}
 
