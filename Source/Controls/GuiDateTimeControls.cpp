@@ -96,8 +96,8 @@ GuiDatePicker
 				, nestedAlt(_nestedAlt)
 			{
 				commandExecutor = new CommandExecutor(this);
-				SetDateLocale(Locale::UserDefault());
 				SetDate(DateTime::LocalTime());
+				SetDateLocale(Locale::UserDefault());
 				SetAltComposition(boundsComposition);
 				SetAltControl(this, false);
 
