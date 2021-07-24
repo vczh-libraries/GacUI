@@ -52,3 +52,6 @@ This GUI library provides the following features:
 - MVVM and Data Binding.
   - You can define interfaces that required to build your own MVVM pattern in XML and [GacGen.exe](https://github.com/vczh-libraries/GacUI/tree/master/Tools/GacGen) will generate the C++ interface declaration for you.
   - You can also use [Workflow](https://github.com/vczh-libraries/Workflow) expressions in Data Binding and statements in event handlers (instead of writing C++ code in code behind).
+
+https://gankra.github.io/blah/text-hates-you/
+https://lord.io/text-editing-hates-you-too/
