@@ -3785,8 +3785,9 @@ GuiControlHost
 				}
 			}
 
-			GuiControlHost::GuiControlHost(theme::ThemeName themeName)
+			GuiControlHost::GuiControlHost(theme::ThemeName themeName, INativeWindow::WindowMode mode)
 				:GuiControl(themeName)
+				, windowMode(mode)
 			{
 				boundsComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				
@@ -3844,6 +3845,13 @@ GuiControlHost
 				if(host->GetNativeWindow())
 				{
 					host->GetNativeWindow()->UninstallListener(this);
+				}
+				if (window)
+				{
+					if (windowMode != window->GetWindowMode())
+					{
+						CHECK_FAIL(L"GuiControlHost::SetNativeWindow(INativeWindow*)#Window mode does not match.");
+					}
 				}
 				host->SetNativeWindow(window);
 				if(host->GetNativeWindow())
@@ -4283,10 +4291,6 @@ GuiWindow
 			void GuiWindow::OnNativeWindowChanged()
 			{
 				SyncNativeWindowProperties();
-				if (auto window = GetNativeWindow())
-				{
-					window->SetWindowMode(windowMode);
-				}
 				GuiControlHost::OnNativeWindowChanged();
 			}
 
@@ -4312,13 +4316,12 @@ GuiWindow
 			}
 
 			GuiWindow::GuiWindow(theme::ThemeName themeName, INativeWindow::WindowMode mode)
-				:GuiControlHost(themeName)
-				, windowMode(mode)
+				:GuiControlHost(themeName, mode)
 			{
 				SetAltComposition(boundsComposition);
 				SetAltControl(this, true);
 
-				INativeWindow* window = GetCurrentController()->WindowService()->CreateNativeWindow();
+				INativeWindow* window = GetCurrentController()->WindowService()->CreateNativeWindow(windowMode);
 				SetNativeWindow(window);
 				GetApplication()->RegisterWindow(this);
 				ClipboardUpdated.SetAssociatedComposition(boundsComposition);

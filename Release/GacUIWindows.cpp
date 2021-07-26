@@ -8897,7 +8897,7 @@ WindowsForm
 				NativePoint							caretPoint;
 				WindowsForm*						parentWindow = nullptr;
 				List<WindowsForm*>					childWindows;
-				WindowMode							windowMode = Normal;
+				WindowMode							windowMode;
 				List<INativeWindowListener*>		listeners;
 				vint								mouseLastX = -1;
 				vint								mouseLastY = -1;
@@ -8925,12 +8925,23 @@ WindowsForm
 					customFramePadding = NativeMargin(padding, padding, padding, padding);
 				}
 			public:
-				WindowsForm(HWND parent, WString className, HINSTANCE hInstance)
+				WindowsForm(HWND parent, WString className, HINSTANCE hInstance, INativeWindow::WindowMode _windowMode)
+					:windowMode(_windowMode)
 				{
-					// use WS_POPUP in CreateWindowEx, because CW_USERDEFAULT is interpreted as 0, unlike WS_OVERLAPPED
-					DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
-					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
-					handle = CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
+					{
+						DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
+						DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
+						handle = CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
+					}
+					if (windowMode == INativeWindow::Normal)
+					{
+						// use WS_POPUP in CreateWindowEx, because CW_USERDEFAULT is interpreted as 0, unlike WS_OVERLAPPED
+						// if this is not a popup window, replace WS_POPUP with WS_OVERLAPPED
+						auto style = InternalGetStyle();
+						style = TurnOnStyle(style, WS_OVERLAPPED);
+						style = TurnOffStyle(style, WS_POPUP);
+						InternalSetStyle(style);
+					}
 					UpdateDpiAwaredFields(true);
 				}
 
@@ -9194,23 +9205,6 @@ WindowsForm
 				WindowMode GetWindowMode()override
 				{
 					return windowMode;
-				}
-
-				void SetWindowMode(WindowMode mode)override
-				{
-					windowMode = mode;
-					auto style = InternalGetStyle();
-					if (mode == Normal)
-					{
-						style = TurnOnStyle(style, WS_OVERLAPPED);
-						style = TurnOffStyle(style, WS_POPUP);
-					}
-					else
-					{
-						style = TurnOffStyle(style, WS_OVERLAPPED);
-						style = TurnOnStyle(style, WS_POPUP);
-					}
-					InternalSetStyle(style);
 				}
 
 				void EnableCustomFrameMode()override
@@ -9800,9 +9794,9 @@ WindowsController
 
 				//=======================================================================
 
-				INativeWindow* CreateNativeWindow()override
+				INativeWindow* CreateNativeWindow(INativeWindow::WindowMode windowMode)override
 				{
-					WindowsForm* window=new WindowsForm(godWindow, windowClass.GetName(), hInstance);
+					WindowsForm* window=new WindowsForm(godWindow, windowClass.GetName(), hInstance, windowMode);
 					windows.Add(window->GetWindowHandle(), window);
 					callbackService.InvokeNativeWindowCreated(window);
 					window->SetWindowCursor(resourceService.GetDefaultSystemCursor());

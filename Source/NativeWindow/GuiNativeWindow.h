@@ -468,11 +468,6 @@ Native Window
 			/// </summary>
 			/// <returns>The window mode.</summary>
 			virtual WindowMode			GetWindowMode() = 0;
-			/// <summary>
-			/// Set the window mode
-			/// </summary>
-			/// <param name="mode">The window mode.</param>
-			virtual void				SetWindowMode(WindowMode mode) = 0;
 
 			/// <summary>
 			/// Enable the window customized frame mode.
@@ -1224,7 +1219,8 @@ Native Window Services
 			/// Create a window.
 			/// </summary>
 			/// <returns>The created window.</returns>
-			virtual INativeWindow*			CreateNativeWindow() = 0;
+			/// <param name="windowMode">The window mode.</param>
+			virtual INativeWindow*			CreateNativeWindow(INativeWindow::WindowMode windowMode) = 0;
 			/// <summary>
 			/// Destroy a window.
 			/// </summary>

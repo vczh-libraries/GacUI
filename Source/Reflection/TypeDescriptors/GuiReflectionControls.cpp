@@ -846,7 +846,7 @@ Type Declaration (Class)
 			BEGIN_CLASS_MEMBER(GuiControlHost)
 				CLASS_MEMBER_BASE(GuiControl)
 				CLASS_MEMBER_BASE(GuiInstanceRootObject)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE(GuiControlHost)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiControlHost, INativeWindow::WindowMode, mode)
 
 				CLASS_MEMBER_GUIEVENT(WindowGotFocus)
 				CLASS_MEMBER_GUIEVENT(WindowLostFocus)

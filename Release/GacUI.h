@@ -2035,11 +2035,6 @@ Native Window
 			/// </summary>
 			/// <returns>The window mode.</summary>
 			virtual WindowMode			GetWindowMode() = 0;
-			/// <summary>
-			/// Set the window mode
-			/// </summary>
-			/// <param name="mode">The window mode.</param>
-			virtual void				SetWindowMode(WindowMode mode) = 0;
 
 			/// <summary>
 			/// Enable the window customized frame mode.
@@ -2791,7 +2786,8 @@ Native Window Services
 			/// Create a window.
 			/// </summary>
 			/// <returns>The created window.</returns>
-			virtual INativeWindow*			CreateNativeWindow() = 0;
+			/// <param name="windowMode">The window mode.</param>
+			virtual INativeWindow*			CreateNativeWindow(INativeWindow::WindowMode windowMode) = 0;
 			/// <summary>
 			/// Destroy a window.
 			/// </summary>
@@ -11207,6 +11203,7 @@ Control Host
 				friend class compositions::GuiGraphicsHost;
 			protected:
 				compositions::GuiGraphicsHost*					host;
+				INativeWindow::WindowMode						windowMode = INativeWindow::Normal;
 
 				virtual void									OnNativeWindowChanged();
 				virtual void									OnVisualStatusChanged();
@@ -11243,7 +11240,8 @@ Control Host
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiControlHost(theme::ThemeName themeName);
+				/// <param name="mode">The window mode.</param>
+				GuiControlHost(theme::ThemeName themeName, INativeWindow::WindowMode mode);
 				~GuiControlHost();
 				
 				/// <summary>Window got focus event.</summary>
@@ -11404,7 +11402,6 @@ Window
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
 			protected:
-				INativeWindow::WindowMode				windowMode = INativeWindow::Normal;
 				compositions::IGuiAltActionHost*		previousAltHost = nullptr;
 				bool									hasMaximizedBox = true;
 				bool									hasMinimizedBox = true;
