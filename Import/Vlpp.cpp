@@ -120,13 +120,6 @@ DateTime
 		dt.totalMilliseconds = (vuint64_t)timer * 1000 + milliseconds;
 		return dt;
 	}
-
-	vint GetCurrentMilliseconds()
-	{
-		struct timeval tv;
-		gettimeofday(&tv, nullptr);
-		return tv.tv_usec / 1000;
-	}
 #endif
 
 	DateTime DateTime::LocalTime()
@@ -136,9 +129,10 @@ DateTime
 		GetLocalTime(&systemTime);
 		return SystemTimeToDateTime(systemTime);
 #elif defined VCZH_GCC
-		time_t timer = time(nullptr);
-		tm* timeinfo = localtime(&timer);
-		return ConvertTMToDateTime(timeinfo, GetCurrentMilliseconds());
+		struct timeval tv;
+		gettimeofday(&tv, nullptr);
+		tm* timeinfo = localtime(&tv.tv_sec);
+		return ConvertTMToDateTime(timeinfo, tv.tv_usec / 1000);
 #endif
 	}
 
@@ -149,9 +143,10 @@ DateTime
 		GetSystemTime(&utcTime);
 		return SystemTimeToDateTime(utcTime);
 #elif defined VCZH_GCC
-		time_t timer = time(nullptr);
-		tm* timeinfo = gmtime(&timer);
-		return ConvertTMToDateTime(timeinfo, GetCurrentMilliseconds());
+		struct timeval tv;
+		gettimeofday(&tv, nullptr);
+		tm* timeinfo = gmtime(&tv.tv_sec);
+		return ConvertTMToDateTime(timeinfo, tv.tv_usec / 1000);
 #endif
 	}
 
