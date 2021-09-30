@@ -19,7 +19,7 @@ For **GacUI**: click [here](http://vczh-libraries.github.io/doc/current/gacui/ho
 
 ## Content of This Project
 
-- The [Tutorial](http://vczh-libraries.github.io/tutorial.html) shows how to start using this marvelous GUI library.
+- The [Tutorial](http://vczh-libraries.github.io/doc/current/gacui/running.html) shows how to start using this marvelous GUI library.
 - The [Demos](http://vczh-libraries.github.io/demo.html) section show you all demos using this GUI library.
 
 ### Notice
