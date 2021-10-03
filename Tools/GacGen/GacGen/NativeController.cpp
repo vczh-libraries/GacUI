@@ -7,6 +7,7 @@ using namespace vl::presentation;
 class GacGenNativeController
 	: public Object
 	, public INativeController
+	, protected INativeCallbackService
 	, protected INativeImageService
 	, protected INativeInputService
 {
