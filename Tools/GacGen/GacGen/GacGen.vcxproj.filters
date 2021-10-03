@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Release\GacUIWindows.h">
-      <Filter>Import</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Release\GacUI.h">
       <Filter>Import</Filter>
     </ClInclude>
@@ -63,9 +60,6 @@
       <Filter>Import</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Release\GacUIReflection.cpp">
-      <Filter>Import</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Release\GacUIWindows.cpp">
       <Filter>Import</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Import\Vlpp.cpp">
