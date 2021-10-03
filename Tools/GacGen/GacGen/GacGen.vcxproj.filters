@@ -101,5 +101,8 @@
     <ClCompile Include="..\..\..\Import\VlppParser.cpp">
       <Filter>Import</Filter>
     </ClCompile>
+    <ClCompile Include="NativeController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

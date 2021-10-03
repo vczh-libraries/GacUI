@@ -4,6 +4,8 @@ using namespace vl::filesystem;
 
 Array<WString>* arguments = 0;
 
+extern int SetupGacGenNativeController();
+
 int wmain(int argc, wchar_t* argv[])
 {
 	Array<WString> _arguments(argc - 1);
@@ -12,7 +14,7 @@ int wmain(int argc, wchar_t* argv[])
 		_arguments[i - 1] = argv[i];
 	}
 	arguments = &_arguments;
-	SetupWindowsDirect2DRenderer();
+	return SetupGacGenNativeController();
 }
 
 void PrintErrors(List<GuiResourceError>& errors)
