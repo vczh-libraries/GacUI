@@ -8,6 +8,7 @@ class GacGenNativeController
 	: public Object
 	, public INativeController
 	, protected INativeCallbackService
+	, protected INativeResourceService
 	, protected INativeImageService
 	, protected INativeInputService
 {
@@ -19,7 +20,7 @@ public:
 
 	INativeResourceService* ResourceService() override
 	{
-		CHECK_FAIL(L"Not implemented!");
+		return this;
 	}
 
 	INativeAsyncService* AsyncService() override
@@ -74,6 +75,39 @@ public:
 	bool UninstallListener(INativeControllerListener* listener) override
 	{
 		return true;
+	}
+
+	////////////////////////////////////////////////////////////////////
+	// INativeResourceService
+	////////////////////////////////////////////////////////////////////
+
+	INativeCursor* GetSystemCursor(INativeCursor::SystemCursorType type) override
+	{
+		CHECK_FAIL(L"Not implemented!");
+	}
+
+	INativeCursor* GetDefaultSystemCursor() override
+	{
+		CHECK_FAIL(L"Not implemented!");
+	}
+
+	FontProperties GetDefaultFont() override
+	{
+		FontProperties font;
+		font.fontFamily = L"GacGen";
+		font.size = 12;
+		font.bold = false;
+		font.italic = false;
+		font.underline = false;
+		font.strikeline = false;
+		font.antialias = false;
+		font.verticalAntialias = false;
+		return font;
+	}
+
+	void SetDefaultFont(const FontProperties& value) override
+	{
+		CHECK_FAIL(L"Not implemented!");
 	}
 
 	////////////////////////////////////////////////////////////////////
