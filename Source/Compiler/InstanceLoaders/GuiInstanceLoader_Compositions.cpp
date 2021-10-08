@@ -492,14 +492,6 @@ GuiCellCompositionInstanceLoader
 								auto call = MakePtr<WfCallExpression>();
 								call->function = refSetSite;
 
-								auto GetValueText = [](const Value& value)
-								{
-									WString result;
-									auto st = value.GetTypeDescriptor()->GetSerializableType();
-									st->Serialize(value, result);
-									return result;
-								};
-
 								{
 									auto arg = MakePtr<WfIntegerExpression>();
 									arg->value.value = itow(site.row);
