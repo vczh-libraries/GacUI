@@ -1,4 +1,4 @@
-#include "../GuiInstanceHelperTypes.h"
+#include "../../Resources/GuiResource.h"
 #include "../WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
 
 #ifndef VCZH_PRESENTATION_REFLECTION_INSTANCELOADERS_GUIINSTANCELOADER_TEMPLATECONTROL
