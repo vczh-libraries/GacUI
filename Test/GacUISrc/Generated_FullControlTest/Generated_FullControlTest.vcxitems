@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -12,5 +12,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\Demo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\Demo1.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\DemoIncludes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\DemoReflection.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\DocumentEditorBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\MainWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\Demo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\DemoReflection.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\DemoResource.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\DocumentEditorBase.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\MainWindow.cpp" />
   </ItemGroup>
 </Project>
