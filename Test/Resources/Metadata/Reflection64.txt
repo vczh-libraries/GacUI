@@ -4238,6 +4238,14 @@ class presentation::elements::text::TextLines : system::ReferenceType {
 }
 
 @ValueType
+struct presentation::helper_types::SiteValue {
+    property column : system::Int64;
+    property columnSpan : system::Int64;
+    property row : system::Int64;
+    property rowSpan : system::Int64;
+}
+
+@ValueType
 enum presentation::templates::BoolOption {
     AlwaysFalse = 1,
     AlwaysTrue = 0,

@@ -13,6 +13,14 @@ namespace vl
 GuiInstanceSharedScript
 ***********************************************************************/
 
+		GuiInstanceCompiledWorkflow::GuiInstanceCompiledWorkflow()
+		{
+		}
+
+		GuiInstanceCompiledWorkflow::~GuiInstanceCompiledWorkflow()
+		{
+		}
+
 		bool GuiInstanceCompiledWorkflow::Initialize(bool initializeContext, workflow::runtime::WfAssemblyLoadErrors& loadErrors)
 		{
 			if (binaryToLoad)
