@@ -63,26 +63,29 @@ GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
 void GuiMain()
 {
 	UnitTestInGuiMain();
-#define DARKSKIN_PATH			L"App/DarkSkin/Resource.xml"
-#define FULLCONTROLTEST_PATH	L"App/FullControlTest/Resource.xml"
-#define BINARY_FOLDER			L"../GacUISrc/TestCppCodegen/"
-#define SOURCE_FOLDER			L"../GacUISrc/TestCppCodegen/Source/"
+#define DARKSKIN_PATH					L"App/DarkSkin/Resource.xml"
+#define DARKSKIN_BINARY_FOLDER			L"../GacUISrc/Generated_DarkSkin/Resource/"
+#define DARKSKIN_SOURCE_FOLDER			L"../GacUISrc/Generated_DarkSkin/Source/"
+
+#define FULLCONTROLTEST_PATH			L"App/FullControlTest/Resource.xml"
+#define FULLCONTROLTEST_BINARY_FOLDER	L"../GacUISrc/Generated_FullControlTest/Resource/"
+#define FULLCONTROLTEST_SOURCE_FOLDER	L"../GacUISrc/Generated_FullControlTest/Source/"
 
 	List<WString> dependencies;
 	LoadResource(CompileResources(
 		L"DarkSkin",
 		dependencies,
 		(GetResourcePath() + DARKSKIN_PATH),
-		(GetResourcePath() + BINARY_FOLDER),
-		(GetResourcePath() + SOURCE_FOLDER),
+		(GetResourcePath() + DARKSKIN_BINARY_FOLDER),
+		(GetResourcePath() + DARKSKIN_SOURCE_FOLDER),
 		true
 	));
 	LoadResource(CompileResources(
 		L"Demo",
 		dependencies,
 		(GetResourcePath() + FULLCONTROLTEST_PATH),
-		(GetResourcePath() + BINARY_FOLDER),
-		(GetResourcePath() + SOURCE_FOLDER),
+		(GetResourcePath() + FULLCONTROLTEST_BINARY_FOLDER),
+		(GetResourcePath() + FULLCONTROLTEST_SOURCE_FOLDER),
 		false
 	));
 }
