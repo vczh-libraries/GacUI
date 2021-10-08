@@ -8,6 +8,8 @@ namespace vl
 		using namespace stream;
 		using namespace workflow::runtime;
 		using namespace controls;
+		using namespace reflection;
+		using namespace reflection::description;
 
 /***********************************************************************
 GuiInstanceSharedScript
@@ -19,6 +21,15 @@ GuiInstanceSharedScript
 
 		GuiInstanceCompiledWorkflow::~GuiInstanceCompiledWorkflow()
 		{
+#ifndef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+			if (assembly->typeImpl)
+			{
+				if (auto tm = GetGlobalTypeManager())
+				{
+					tm->RemoveTypeLoader(assembly->typeImpl);
+				}
+			}
+#endif
 		}
 
 		bool GuiInstanceCompiledWorkflow::Initialize(bool initializeContext, workflow::runtime::WfAssemblyLoadErrors& loadErrors)
@@ -39,6 +50,14 @@ GuiInstanceSharedScript
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				context = new WfRuntimeGlobalContext(assembly);
 				LoadFunction<void()>(context, L"<initialize>")();
+#else
+				if (assembly->typeImpl)
+				{
+					if (auto tm = GetGlobalTypeManager())
+					{
+						tm->AddTypeLoader(assembly->typeImpl);
+					}
+				}
 #endif
 			}
 			return true;
