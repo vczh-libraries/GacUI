@@ -242,49 +242,6 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Xml Include="Resources\DarkSkin\DarkSkin.xml" />
-    <Xml Include="Resources\DarkSkin\Index.xml" />
-    <Xml Include="Resources\DarkSkin\Resource.xml" />
-    <Xml Include="Resources\DarkSkin\Style.xml" />
-    <Xml Include="Resources\DarkSkin\Template_Button.xml" />
-    <Xml Include="Resources\DarkSkin\Template_Document.xml" />
-    <Xml Include="Resources\DarkSkin\Template_List.xml" />
-    <Xml Include="Resources\DarkSkin\Template_Misc.xml" />
-    <Xml Include="Resources\DarkSkin\Template_Ribbon.xml" />
-    <Xml Include="Resources\DarkSkin\Template_Scroll.xml" />
-    <Xml Include="Resources\DarkSkin\Template_Tab.xml" />
-    <Xml Include="Resources\DarkSkin\Template_TextBox.xml" />
-    <Xml Include="Resources\DarkSkin\Template_Toolstrip.xml" />
-    <Xml Include="Resources\DarkSkin\Template_Window.xml" />
-    <Xml Include="Resources\FullControlTest\AnimationTabPage.xml" />
-    <Xml Include="Resources\FullControlTest\DataGridComponents.xml" />
-    <Xml Include="Resources\FullControlTest\DataGridTabPage.xml" />
-    <Xml Include="Resources\FullControlTest\DatePickerTabPage.xml" />
-    <Xml Include="Resources\FullControlTest\DocumentComponents.xml" />
-    <Xml Include="Resources\FullControlTest\DocumentEditorBase.xml" />
-    <Xml Include="Resources\FullControlTest\DocumentEditorRibbon.xml" />
-    <Xml Include="Resources\FullControlTest\DocumentEditorToolstrip.xml" />
-    <Xml Include="Resources\FullControlTest\ElementTabPage.xml" />
-    <Xml Include="Resources\FullControlTest\Images\ImageLoader.xml" />
-    <Xml Include="Resources\FullControlTest\Images\LargeImages.xml" />
-    <Xml Include="Resources\FullControlTest\Images\MiscImages.xml" />
-    <Xml Include="Resources\FullControlTest\Images\SmallImages.xml" />
-    <Xml Include="Resources\FullControlTest\ListViewTabPage.xml" />
-    <Xml Include="Resources\FullControlTest\LocalizedStringsTabPage.xml" />
-    <Xml Include="Resources\FullControlTest\RepeatComponents.xml" />
-    <Xml Include="Resources\FullControlTest\RepeatTabPage.xml" />
-    <Xml Include="Resources\FullControlTest\Resource.xml" />
-    <Xml Include="Resources\FullControlTest\ResponsiveTabPage.xml" />
-    <Xml Include="Resources\FullControlTest\TextBoxTabPage.xml" />
-    <Xml Include="Resources\FullControlTest\TextListTabPage.xml" />
-    <Xml Include="Resources\FullControlTest\ToolbarImages\Images.xml" />
-    <Xml Include="Resources\FullControlTest\TreeViewTabPage.xml" />
-    <Xml Include="Resources\UI1_StyleTemplate.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Resources\Gaclib.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="AutoComplete_Grammar.cpp" />
     <ClCompile Include="CompositionDumper.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -295,11 +252,6 @@
     <ProjectReference Include="..\GacUISrc\GacUISrc.vcxproj">
       <Project>{407401eb-c968-42b2-aee9-47aa1658e1ff}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\FullControlTest\Images\Build.bat" />
-    <None Include="Resources\FullControlTest\Images\Build_WriteFolder.bat" />
-    <None Include="Resources\FullControlTest\Images\Build_WriteImageLoader.bat" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ResourceCompiler.h" />
