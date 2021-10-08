@@ -51,8 +51,8 @@ void GuiMain()
 
 #define DARKSKIN_PATH			L"App/DarkSkin/Resource.xml"
 #define FULLCONTROLTEST_PATH	L"App/FullControlTest/Resource.xml"
-#define BINARY_FOLDER			L"../TestCppCodegen/"
-#define SOURCE_FOLDER			L"../TestCppCodegen/Source/"
+#define BINARY_FOLDER			L"../GacUISrc/TestCppCodegen/"
+#define SOURCE_FOLDER			L"../GacUISrc/TestCppCodegen/Source/"
 
 	List<WString> dependencies;
 	LoadResource(CompileResources(
