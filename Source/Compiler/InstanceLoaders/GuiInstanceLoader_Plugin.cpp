@@ -230,9 +230,7 @@ GuiPredefinedInstanceLoadersPlugin
 				{
 					GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 					GUI_PLUGIN_DEPEND(GacUI_Instance);
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
-#endif
 				}
 
 				void Load()override

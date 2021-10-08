@@ -31,9 +31,15 @@ WString GetResourcePath()
 #endif
 }
 
-void GuiMain()
+class GuiReflectionPlugin : public Object, public IGuiPlugin
 {
-	UnitTestInGuiMain();
+public:
+
+	GUI_PLUGIN_NAME(GacUI_Instance_Reflection)
+	{
+	}
+
+	void Load()override
 	{
 #define INSTALL_SERIALIZABLE_TYPE(TYPE) serializableTypes.Add(TypeInfo<TYPE>::content.typeName, MakePtr<SerializableType<TYPE>>());
 		collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
@@ -45,10 +51,18 @@ void GuiMain()
 		auto typeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
 		auto tm = GetGlobalTypeManager();
 		tm->AddTypeLoader(typeLoader);
-		tm->Load();
 #undef INSTALL_SERIALIZABLE_TYPE
 	}
 
+	void Unload()override
+	{
+	}
+};
+GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
+
+void GuiMain()
+{
+	UnitTestInGuiMain();
 #define DARKSKIN_PATH			L"App/DarkSkin/Resource.xml"
 #define FULLCONTROLTEST_PATH	L"App/FullControlTest/Resource.xml"
 #define BINARY_FOLDER			L"../GacUISrc/TestCppCodegen/"
