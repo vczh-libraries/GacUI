@@ -25,9 +25,9 @@ extern void UnitTestInGuiMain();
 WString GetResourcePath()
 {
 #ifdef _WIN64
-	return GetApplication()->GetExecutablePath() + L"../../../Resources/";
+	return GetApplication()->GetExecutableFolder() + L"../../../Resources/";
 #else
-	return GetApplication()->GetExecutablePath() + L"../../Resources/";
+	return GetApplication()->GetExecutableFolder() + L"../../Resources/";
 #endif
 }
 
