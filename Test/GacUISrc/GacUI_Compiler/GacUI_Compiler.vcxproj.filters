@@ -13,6 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\DarkSkin">
+      <UniqueIdentifier>{596f58f6-39ed-4dce-8c63-7d64b53e49ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\FullControlTest">
+      <UniqueIdentifier>{d06e2604-7a38-42fb-a6d7-7ad41d235cb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\FullControlTest\Images">
+      <UniqueIdentifier>{c6dcfbeb-5f9d-48ff-b668-5ad0291ec650}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\FullControlTest\ToolbarImages">
+      <UniqueIdentifier>{2c355127-a093-4987-961f-e4eb28646fcd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -29,5 +41,126 @@
     <ClInclude Include="ResourceCompiler.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Resources\App\Gaclib.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Resources\App\UI1_StyleTemplate.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Resource.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Style.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Button.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Document.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_List.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Misc.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Ribbon.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Scroll.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Tab.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_TextBox.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Toolstrip.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Window.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\DarkSkin.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\DarkSkin\Index.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\DocumentComponents.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorBase.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorRibbon.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorToolstrip.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\ElementTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\ListViewTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\LocalizedStringsTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\RepeatComponents.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\RepeatTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\Resource.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\ResponsiveTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\TextBoxTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\TextListTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\TreeViewTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\AnimationTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\DataGridComponents.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\DataGridTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\DatePickerTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\Images\ImageLoader.xml">
+      <Filter>Resource Files\FullControlTest\Images</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\Images\LargeImages.xml">
+      <Filter>Resource Files\FullControlTest\Images</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\Images\MiscImages.xml">
+      <Filter>Resource Files\FullControlTest\Images</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\Images\SmallImages.xml">
+      <Filter>Resource Files\FullControlTest\Images</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\ToolbarImages\Images.xml">
+      <Filter>Resource Files\FullControlTest\ToolbarImages</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

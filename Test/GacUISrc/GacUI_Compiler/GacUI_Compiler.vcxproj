@@ -166,6 +166,49 @@
   <ItemGroup>
     <ClInclude Include="ResourceCompiler.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Resources\App\Gaclib.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Resources\App\DarkSkin\DarkSkin.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Index.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Resource.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Style.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Button.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Document.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_List.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Misc.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Ribbon.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Scroll.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Tab.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_TextBox.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Toolstrip.xml" />
+    <Xml Include="..\..\Resources\App\DarkSkin\Template_Window.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\AnimationTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\DataGridComponents.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\DataGridTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\DatePickerTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\DocumentComponents.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorBase.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorRibbon.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorToolstrip.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\ElementTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\Images\ImageLoader.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\Images\LargeImages.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\Images\MiscImages.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\Images\SmallImages.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\ListViewTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\LocalizedStringsTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\RepeatComponents.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\RepeatTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\Resource.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\ResponsiveTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\TextBoxTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\TextListTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\ToolbarImages\Images.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\TreeViewTabPage.xml" />
+    <Xml Include="..\..\Resources\App\UI1_StyleTemplate.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
