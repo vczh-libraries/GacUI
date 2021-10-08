@@ -55,11 +55,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="Shared">
-    <Import Project="..\Source_Import\Source_Import.vcxitems" Label="Shared" />
-    <Import Project="..\Source_GacUI\Source_GacUI.vcxitems" Label="Shared" />
-    <Import Project="..\Source_GacUI_Reflection\Source_GacUI_Reflection.vcxitems" Label="Shared" />
-  </ImportGroup>
+  <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -100,6 +96,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -128,6 +127,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -147,6 +149,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lib_GacUI_Metaonly\Lib_GacUI_Metaonly.vcxproj">
+      <Project>{bf177697-a8b5-4580-87e7-de77c0a29c9f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
