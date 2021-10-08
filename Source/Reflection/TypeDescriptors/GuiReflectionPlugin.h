@@ -29,6 +29,7 @@ Type List (Basic)
 ***********************************************************************/
 
 #define GUIREFLECTIONBASIC_TYPELIST(F)\
+			F(presentation::helper_types::SiteValue)\
 			F(presentation::Color)\
 			F(presentation::Alignment)\
 			F(presentation::AxisDirection)\
@@ -408,6 +409,9 @@ Type List (Controls)
 /***********************************************************************
 Type List
 ***********************************************************************/
+
+#define GUIREFLECTIONHELPERTYPES_TYPELIST(F)\
+			F(presentation::helper_types::SiteValue)\
 
 #define GUIREFLECTIONTEMPLATES_DECL_TYPE_INFO(NAME, BASE) DECL_TYPE_INFO(presentation::templates::NAME)
 

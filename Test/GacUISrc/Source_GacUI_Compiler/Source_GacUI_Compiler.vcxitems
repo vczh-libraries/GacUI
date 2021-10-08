@@ -16,7 +16,6 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiCppGen.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceAnimation.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceHelperTypes.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceBinders.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceDeserializers.cpp" />
@@ -45,7 +44,6 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiCppGen.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceAnimation.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceHelperTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLoader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLocalizedStrings.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceRepresentation.h" />

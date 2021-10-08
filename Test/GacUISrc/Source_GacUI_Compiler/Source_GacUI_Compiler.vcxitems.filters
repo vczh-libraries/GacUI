@@ -21,9 +21,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceAnimation.cpp">
       <Filter>Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceHelperTypes.cpp">
-      <Filter>Compiler</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLoader.cpp">
       <Filter>Compiler</Filter>
     </ClCompile>
@@ -102,9 +99,6 @@
       <Filter>Compiler</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceAnimation.h">
-      <Filter>Compiler</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceHelperTypes.h">
       <Filter>Compiler</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLoader.h">

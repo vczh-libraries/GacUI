@@ -8,6 +8,7 @@ namespace vl
 		{
 			using namespace parsing::xml;
 			using namespace presentation;
+			using namespace helper_types;
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -19,6 +20,13 @@ Type Declaration
 
 #define GUI_TEMPLATE_PROPERTY_REFLECTION(CLASS, TYPE, NAME)\
 	CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(NAME)
+
+			BEGIN_STRUCT_MEMBER(SiteValue)
+				STRUCT_MEMBER(row)
+				STRUCT_MEMBER(column)
+				STRUCT_MEMBER(rowSpan)
+				STRUCT_MEMBER(columnSpan)
+			END_STRUCT_MEMBER(SiteValue)
 
 			BEGIN_STRUCT_MEMBER(Color)
 				valueType = new SerializableValueType<Color>();
