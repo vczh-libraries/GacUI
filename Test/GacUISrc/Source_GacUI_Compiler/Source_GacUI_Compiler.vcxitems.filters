@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Compiler">
+      <UniqueIdentifier>{cd32a79b-f42b-41d6-9d08-a1742e98af20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Compiler\InstanceLoaders">
+      <UniqueIdentifier>{c58ffbde-c573-4c40-a392-3e4c815dfebb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Compiler\InstanceQuery">
+      <UniqueIdentifier>{553e05f2-ff2b-4986-8047-fa38e8ff48f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Compiler\WorkflowCodegen">
+      <UniqueIdentifier>{962156d5-2481-4ca6-806d-73e37070859c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiCppGen.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceAnimation.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceHelperTypes.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLoader.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceBinders.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceDeserializers.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedTypeResolvers.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLocalizedStrings.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceRepresentation.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceSharedScript.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Compositions.cpp">
+      <Filter>Compiler\InstanceLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Document.cpp">
+      <Filter>Compiler\InstanceLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_List.cpp">
+      <Filter>Compiler\InstanceLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Plugin.cpp">
+      <Filter>Compiler\InstanceLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Templates.cpp">
+      <Filter>Compiler\InstanceLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Toolstrip.cpp">
+      <Filter>Compiler\InstanceLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.cpp">
+      <Filter>Compiler\InstanceQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.cpp">
+      <Filter>Compiler\InstanceQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.cpp">
+      <Filter>Compiler\InstanceQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.cpp">
+      <Filter>Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCollectReferences.cpp">
+      <Filter>Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateBindings.cpp">
+      <Filter>Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateCreating.cpp">
+      <Filter>Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowInstallBindings.cpp">
+      <Filter>Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowModule.cpp">
+      <Filter>Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowParser.cpp">
+      <Filter>Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowScriptPosition.cpp">
+      <Filter>Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiCppGen.h">
+      <Filter>Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceAnimation.h">
+      <Filter>Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceHelperTypes.h">
+      <Filter>Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLoader.h">
+      <Filter>Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceLocalizedStrings.h">
+      <Filter>Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceRepresentation.h">
+      <Filter>Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceSharedScript.h">
+      <Filter>Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_TemplateControl.h">
+      <Filter>Compiler\InstanceLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.h">
+      <Filter>Compiler\InstanceQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.h">
+      <Filter>Compiler\InstanceQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.h">
+      <Filter>Compiler\InstanceQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h">
+      <Filter>Compiler\WorkflowCodegen</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.parser.txt">
+      <Filter>Compiler\InstanceQuery</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

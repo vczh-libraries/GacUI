@@ -8,7 +8,7 @@ namespace vl
 		{
 			using namespace presentation::compositions;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 /***********************************************************************
 Type Declaration
@@ -137,7 +137,7 @@ Type Loader
 
 			bool LoadGuiEventTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{

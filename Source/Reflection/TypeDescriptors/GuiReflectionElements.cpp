@@ -9,7 +9,7 @@ namespace vl
 			using namespace presentation;
 			using namespace presentation::elements;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 #define _ ,
 
@@ -288,7 +288,7 @@ Type Loader
 
 			bool LoadGuiElementTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Reflection">
+      <UniqueIdentifier>{cf801ba4-135f-43e5-b600-475c421ee387}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Reflection\TypeDescriptors">
+      <UniqueIdentifier>{00b04a5e-4985-4179-82b2-5e157f69d1d9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.cpp">
+      <Filter>Reflection\TypeDescriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionCompositions.cpp">
+      <Filter>Reflection\TypeDescriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionControls.cpp">
+      <Filter>Reflection\TypeDescriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionElements.cpp">
+      <Filter>Reflection\TypeDescriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.cpp">
+      <Filter>Reflection\TypeDescriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.cpp">
+      <Filter>Reflection\TypeDescriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.cpp">
+      <Filter>Reflection\TypeDescriptors</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.h">
+      <Filter>Reflection\TypeDescriptors</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

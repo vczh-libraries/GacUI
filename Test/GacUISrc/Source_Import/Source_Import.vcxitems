@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{6c3c0b7c-2f16-43df-a18a-4cab7a0cd715}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Import\Vlpp.cpp">
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppOS.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppParser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppReflection.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppRegex.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppWorkflowCompiler.cpp">
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppWorkflowLibrary.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppWorkflowRuntime.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\Vlpp.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppOS.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppParser.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppReflection.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppRegex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppWorkflowCompiler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppWorkflowLibrary.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppWorkflowRuntime.h" />
+  </ItemGroup>
+</Project>

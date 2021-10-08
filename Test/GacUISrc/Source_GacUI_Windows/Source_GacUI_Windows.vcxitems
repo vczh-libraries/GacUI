@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{4a3faa16-fd8e-4de4-804a-95f0f45cbd82}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsLayoutProviderWindowsDirect2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsRenderersWindowsDirect2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsWindowsDirect2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsLayoutProviderWindowsGDI.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsRenderersWindowsGDI.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsUniscribe.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsWindowsGDI.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\Direct2D\WinDirect2DApplication.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\GDI\WinGDI.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\GDI\WinGDIApplication.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsAsyncService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsCallbackService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsClipboardService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsDialogService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsImageService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsInputService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsResourceService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsScreenService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\WinNativeDpiAwareness.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\WinNativeWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsLayoutProviderWindowsDirect2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsRenderersWindowsDirect2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsWindowsDirect2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsLayoutProviderWindowsGDI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsRenderersWindowsGDI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsUniscribe.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsWindowsGDI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\Direct2D\WinDirect2DApplication.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\GDI\WinGDI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\GDI\WinGDIApplication.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsAsyncService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsCallbackService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsClipboardService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsDialogService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsImageService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsInputService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsResourceService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsScreenService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\WinNativeDpiAwareness.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\Windows\WinNativeWindow.h" />
+  </ItemGroup>
+</Project>

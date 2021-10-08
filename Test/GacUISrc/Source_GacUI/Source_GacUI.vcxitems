@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{cf702b13-73b3-47f2-8afc-89d1c25b007e}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiApplication.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiBasicControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiContainerControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDateTimeControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDialogs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiLabelControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiScrollControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiWindowControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiComboControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListControlItemArrangers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListViewControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiAnimation.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiCommonTemplates.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlShared.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlTemplates.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextAutoComplete.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextColorizer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentViewer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiTextCommonInterface.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiTextControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageAutoComplete.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageColorizer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageOperations.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiMenuControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiRibbonControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiRibbonGalleryList.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiRibbonImpl.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiToolstripCommand.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiToolstripMenu.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUIReflectionHelper.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsBasicComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsCompositionBase.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsEventReceiver.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsResponsiveComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsSharedSizeComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsSpecializedComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsStackComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsTableComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentElement.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElement.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_Alt.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_ShortcutKey.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_Tab.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_Document.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_HtmlFormat.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_AddContainer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_ClearUnnecessaryRun.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CloneRun.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CollectStyle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CutRun.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_GetRunRange.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_LocaleHyperlink.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_LocaleStyle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_RemoveContainer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_RemoveRun.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_ReplaceStyleName.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_SummerizeStyle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Edit.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Load.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Save.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiParserManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceTypeResolvers.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiApplication.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiBasicControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiContainerControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDateTimeControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDialogs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiLabelControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiScrollControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiWindowControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\IncludeAll.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\IncludeForward.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiComboControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridInterfaces.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListControlItemArrangers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListViewControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiAnimation.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiCommonTemplates.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlShared.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlTemplates.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextAutoComplete.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextColorizer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextGeneralOperations.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentViewer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiTextCommonInterface.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiTextControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageAutoComplete.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageColorizer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageOperations.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiMenuControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiRibbonControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiRibbonGalleryList.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiRibbonImpl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiToolstripCommand.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiToolstripMenu.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUIReflectionHelper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsBasicComposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsCompositionBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsEventReceiver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsResponsiveComposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsSharedSizeComposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsSpecializedComposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsStackComposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsTableComposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\IncludeAll.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\IncludeForward.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentElement.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentInterfaces.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElement.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElementInterfaces.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_Alt.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_ShortcutKey.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_Tab.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GuiTypes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiParserManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.h" />
+  </ItemGroup>
+</Project>

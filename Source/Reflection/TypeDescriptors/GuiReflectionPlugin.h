@@ -420,6 +420,8 @@ Type List
 
 #undef GUIREFLECTIONTEMPLATES_DECL_TYPE_INFO
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 #pragma warning(push)
 #pragma warning(disable:4250)
 
@@ -1097,6 +1099,7 @@ Interface Proxy (Controls)
 
 #pragma warning(pop)
 
+#endif
 #endif
 
 		}

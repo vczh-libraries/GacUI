@@ -21,6 +21,8 @@ namespace vl
 
 #undef GUIREFLECTIONTEMPLATES_IMPL_VL_TYPE_INFO
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			extern bool LoadGuiBasicTypes();
 			extern bool LoadGuiElementTypes();
 			extern bool LoadGuiCompositionTypes();
@@ -58,6 +60,7 @@ namespace vl
 				}
 			};
 			GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
+#endif
 		}
 	}
 }

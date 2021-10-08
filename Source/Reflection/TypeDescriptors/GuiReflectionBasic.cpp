@@ -9,7 +9,7 @@ namespace vl
 			using namespace parsing::xml;
 			using namespace presentation;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 /***********************************************************************
 Type Declaration
@@ -685,7 +685,7 @@ Type Loader
 
 			bool LoadGuiBasicTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
