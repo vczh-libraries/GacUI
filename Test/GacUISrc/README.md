@@ -1,10 +1,19 @@
 ﻿# GacUI Developer's Projects
 
-- **GacUISrc**: All GacUI source code
-- **UnitTest**: GacUI XML resource compiler unit test
-- **Host**: Compile and run DarkSkin and FullControlTest XML resource
-- **TestCppCodegen**: Run DarkSkin and FullControlTest generated C++ code
-- **TestXml**: Run DarkSkin generated C++ code with a simple test resource file for temporary use
+- **Metadata_Generate**: Run both Win32 and X64 to generate metaonly reflection binary files
+- **Metadata_Test**: Test the generated binary files
+- **GacUI_Compiler**: Compile `Host/Resources/FullControlTest/Resource.xml` and get both binary and C++ files
+- **GacUI_Load**: Load the compiled binary file and run
+- **CppTest**: Compile and run generated C++ files with `VCZH_DEBUG_NO_REFLECTION`
+- **CppTest_Metaonly**: Compile and run generated C++ files with `VCZH_DEBUG_METAONLY_REFLECTION`
+- **CppTest_Reflection**: Compile and run generated C++ files
+- **UnitTest**: Test cases for GacUI compiler
+
+- **Lib_**: Lib files under different configurations
+  - **Use Library Dependencies Input** must be turned on for all exe projects
 
 ## Notice
-Run Host before TestCppCodegen and TestXml
+
+Run **Metadata_Generate** and **Metadata_Test** to update types.
+
+Run **GacUI_Compiler** before executing GacUI in other projects.
