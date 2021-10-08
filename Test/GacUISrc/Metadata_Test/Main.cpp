@@ -66,6 +66,10 @@ WString GetTestOutputPath()
 #define INSTALL_SERIALIZABLE_TYPE(TYPE)\
 	serializableTypes.Add(TypeInfo<TYPE>::content.typeName, MakePtr<SerializableType<TYPE>>());
 
+void GuiMain()
+{
+}
+
 int wmain(vint argc, wchar_t* argv[])
 {
 	{
