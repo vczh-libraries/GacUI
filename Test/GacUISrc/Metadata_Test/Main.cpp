@@ -11,22 +11,6 @@ using namespace vl::stream;
 using namespace vl::reflection;
 using namespace vl::reflection::description;
 
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-			extern bool LoadGuiBasicTypes();
-			extern bool LoadGuiElementTypes();
-			extern bool LoadGuiCompositionTypes();
-			extern bool LoadGuiEventTypes();
-			extern bool LoadGuiTemplateTypes();
-			extern bool LoadGuiControlTypes();
-		}
-	}
-}
-
 WString GetExePath()
 {
 	wchar_t buffer[65536];
