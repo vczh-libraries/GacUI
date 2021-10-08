@@ -74,6 +74,11 @@ int wmain(vint argc, wchar_t* argv[])
 		INSTALL_SERIALIZABLE_TYPE(Color)
 		INSTALL_SERIALIZABLE_TYPE(GlobalStringKey)
 		INSTALL_SERIALIZABLE_TYPE(DocumentFontSize)
+		FileStream fileStream(GetTestOutputPath() + REFLECTION_BIN, FileStream::ReadOnly);
+		auto typeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
+		auto tm = GetGlobalTypeManager();
+		tm->AddTypeLoader(typeLoader);
+		tm->Load();
 	}
 	{
 		FileStream fileStream(GetTestOutputPath() + REFLECTION_OUTPUT, FileStream::WriteOnly);
@@ -85,7 +90,7 @@ int wmain(vint argc, wchar_t* argv[])
 	{
 		auto first = File(GetTestOutputPath() + REFLECTION_BASELINE).ReadAllTextByBom();
 		auto second = File(GetTestOutputPath() + REFLECTION_OUTPUT).ReadAllTextByBom();
-		TEST_ASSERT(first == second);
+		CHECK_ERROR(first == second, L"Metadata is not properly loaded!");
 	}
 	return 0;
 }
