@@ -168,6 +168,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(darkskin::WindowTemplate)
 			IMPL_CPP_TYPE_INFO(darkskin::WindowTemplateConstructor)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_CLASS_MEMBER(::darkskin::BottomScrollButtonTemplate)
 				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiButtonTemplate)
@@ -202,6 +203,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
+				CLASS_MEMBER_FIELD(container)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::ButtonTemplateConstructor)
 
@@ -229,6 +231,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
+				CLASS_MEMBER_FIELD(container)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::CheckBoxTemplateConstructor)
 
@@ -661,6 +664,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
+				CLASS_MEMBER_FIELD(container)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::RadioButtonTemplateConstructor)
 
@@ -1668,10 +1672,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadDarkSkinTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<DarkSkinTypeLoader>());

@@ -11,42 +11,42 @@ DebugCallback
 
 void DebugCallback::OnLoadEnvironment()
 {
-#if defined VCZH_MSVC && defined _DEBUG
+#if defined VCZH_MSVC
 	Console::WriteLine(L"    Workflow: Loading metadata from registered types ...");
 #endif
 }
 
 void DebugCallback::OnInitialize(analyzer::WfLexicalScopeManager* manager)
 {
-#if defined VCZH_MSVC && defined _DEBUG
+#if defined VCZH_MSVC
 	Console::WriteLine(L"    Workflow: Creating metadata from declarations ...");
 #endif
 }
 
 void DebugCallback::OnValidateModule(Ptr<WfModule> module)
 {
-#if defined VCZH_MSVC && defined _DEBUG
+#if defined VCZH_MSVC
 	Console::WriteLine((L"    Workflow: Validating module " + module->name.value + L" ..."));
 #endif
 }
 
 void DebugCallback::OnGenerateMetadata()
 {
-#if defined VCZH_MSVC && defined _DEBUG
+#if defined VCZH_MSVC
 	Console::WriteLine(L"    Workflow: Generating metadata ...");
 #endif
 }
 
 void DebugCallback::OnGenerateCode(Ptr<WfModule> module)
 {
-#if defined VCZH_MSVC && defined _DEBUG
+#if defined VCZH_MSVC
 	Console::WriteLine((L"    Workflow: Generating code for module " + module->name.value + L" ..."));
 #endif
 }
 
 void DebugCallback::OnGenerateDebugInfo()
 {
-#if defined VCZH_MSVC && defined _DEBUG
+#if defined VCZH_MSVC
 	Console::WriteLine(L"    Workflow: Generating debug information ...");
 #endif
 }
@@ -61,7 +61,7 @@ void DebugCallback::PrintPassName(vint passIndex)
 	if (lastPassIndex != passIndex)
 	{
 		lastPassIndex = passIndex;
-#if defined VCZH_MSVC && defined _DEBUG
+#if defined VCZH_MSVC
 
 #define PRINT_PASS(PASS)\
 		case IGuiResourceTypeResolver_Precompile::PASS:\
