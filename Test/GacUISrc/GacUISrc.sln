@@ -53,6 +53,8 @@ Global
 		Source_GacUI_Windows\Source_GacUI_Windows.vcxitems*{4a3faa16-fd8e-4de4-804a-95f0f45cbd82}*SharedItemsImports = 9
 		Source_Import\Source_Import.vcxitems*{6c3c0b7c-2f16-43df-a18a-4cab7a0cd715}*SharedItemsImports = 9
 		Source_GacUI_Reflection\Source_GacUI_Reflection.vcxitems*{a2a0d66d-5528-4a86-b0ff-8acc908e7de4}*SharedItemsImports = 9
+		Source_GacUI\Source_GacUI.vcxitems*{c3349b3b-054e-4268-9ff8-796e72dc6214}*SharedItemsImports = 4
+		Source_GacUI_Reflection\Source_GacUI_Reflection.vcxitems*{c3349b3b-054e-4268-9ff8-796e72dc6214}*SharedItemsImports = 4
 		Source_Import\Source_Import.vcxitems*{c3349b3b-054e-4268-9ff8-796e72dc6214}*SharedItemsImports = 4
 		Source_GacUI\Source_GacUI.vcxitems*{cf702b13-73b3-47f2-8afc-89d1c25b007e}*SharedItemsImports = 9
 	EndGlobalSection

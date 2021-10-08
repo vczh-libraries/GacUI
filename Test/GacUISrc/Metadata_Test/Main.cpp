@@ -86,7 +86,7 @@ int wmain(vint argc, wchar_t* argv[])
 	}
 	{
 		FileStream fileStream(GetTestOutputPath() + REFLECTION_OUTPUT, FileStream::WriteOnly);
-		BomEncoder encoder(BomEncoder::Utf16);
+		BomEncoder encoder(BomEncoder::Utf8);
 		EncoderStream encoderStream(fileStream, encoder);
 		StreamWriter writer(encoderStream);
 		LogTypeManager(writer);

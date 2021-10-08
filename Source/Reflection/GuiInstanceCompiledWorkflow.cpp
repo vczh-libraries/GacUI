@@ -28,8 +28,12 @@ GuiInstanceSharedScript
 
 			if (initializeContext && !context)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				context = new WfRuntimeGlobalContext(assembly);
 				LoadFunction<void()>(context, L"<initialize>")();
+#else
+				CHECK_FAIL(L"GuiInstanceCompiledWorkflow::Initialize(bool, WfAssemblyLoadErrors&)#Cannot load assembly without VCZH_DESCRIPTABLEOBJECT_WITH_METADATA.");
+#endif
 			}
 			return true;
 		}
