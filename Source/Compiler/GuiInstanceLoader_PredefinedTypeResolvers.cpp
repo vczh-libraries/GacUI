@@ -405,14 +405,13 @@ Instance Type Resolver (Instance)
 #define UNLOAD_ASSEMBLY(PATH)\
 			if (auto compiled = Workflow_GetModule(context, PATH, {}))\
 			{\
-				compiled->context = nullptr;\
+				compiled->UnloadTypes();\
 			}\
 
 #define DELETE_ASSEMBLY(PATH)\
 			if (auto compiled = Workflow_GetModule(context, PATH, {}))\
 			{\
-				compiled->context = nullptr;\
-				compiled->assembly = nullptr;\
+				compiled->UnloadAssembly();\
 			}\
 
 			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override

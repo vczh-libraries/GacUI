@@ -21,15 +21,7 @@ GuiInstanceSharedScript
 
 		GuiInstanceCompiledWorkflow::~GuiInstanceCompiledWorkflow()
 		{
-#ifndef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-			if (assembly->typeImpl)
-			{
-				if (auto tm = GetGlobalTypeManager())
-				{
-					tm->RemoveTypeLoader(assembly->typeImpl);
-				}
-			}
-#endif
+			UnloadAssembly();
 		}
 
 		bool GuiInstanceCompiledWorkflow::Initialize(bool initializeContext, workflow::runtime::WfAssemblyLoadErrors& loadErrors)
@@ -61,6 +53,26 @@ GuiInstanceSharedScript
 #endif
 			}
 			return true;
+		}
+
+		void GuiInstanceCompiledWorkflow::UnloadAssembly()
+		{
+			UnloadTypes();
+			assembly = nullptr;
+		}
+
+		void GuiInstanceCompiledWorkflow::UnloadTypes()
+		{
+#ifndef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+			if (assembly->typeImpl)
+			{
+				if (auto tm = GetGlobalTypeManager())
+				{
+					tm->RemoveTypeLoader(assembly->typeImpl);
+				}
+			}
+#endif
+			context = nullptr;
 		}
 
 /***********************************************************************

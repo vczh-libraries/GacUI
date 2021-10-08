@@ -50,6 +50,8 @@ namespace vl
 			~GuiInstanceCompiledWorkflow();
 
 			bool												Initialize(bool initializeContext, workflow::runtime::WfAssemblyLoadErrors& loadErrors);
+			void												UnloadAssembly();
+			void												UnloadTypes();
 		};
 	}
 }
