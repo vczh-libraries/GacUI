@@ -5195,13 +5195,12 @@ CreateDefaultValue
 				auto valueType = elementType->GetTypeDescriptor()->GetValueType();
 				if (elementType->GetDecorator()==ITypeInfo::TypeDescriptor && valueType != nullptr)
 				{
-					auto value = valueType->CreateDefault();
 					switch (GetTypeFlag(elementType))
 					{
 					case TypeFlag::Enum:
 						{
 							auto intExpr = MakePtr<WfIntegerExpression>();
-							intExpr->value.value = u64tow(elementType->GetTypeDescriptor()->GetEnumType()->FromEnum(value));
+							intExpr->value.value = L"0";
 
 							auto inferExpr = MakePtr<WfTypeCastingExpression>();
 							inferExpr->strategy = WfTypeCastingStrategy::Strong;
@@ -5218,7 +5217,6 @@ CreateDefaultValue
 					case TypeFlag::String:
 						{
 							auto stringExpr = MakePtr<WfStringExpression>();
-							elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(value, stringExpr->value.value);
 							return stringExpr;
 						}
 						break;
@@ -5241,6 +5239,11 @@ CreateDefaultValue
 							{
 								auto expr = MakePtr<WfLiteralExpression>();
 								expr->value = WfLiteralValue::False;
+								return expr;
+							}
+							if (td == description::GetTypeDescriptor<WString>())
+							{
+								auto expr = MakePtr<WfStringExpression>();
 								return expr;
 							}
 							else if (td == description::GetTypeDescriptor<float>()
@@ -5275,8 +5278,11 @@ CreateDefaultValue
 							}
 							else
 							{
+								// Consider adding a \"default (type)\" expression if CreateDefault() cannot be liminated from the compiler.
+								CHECK_FAIL(L"All serializable types should have been handled!");
+								/*
 								auto stringExpr = MakePtr<WfStringExpression>();
-								elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(value, stringExpr->value.value);
+								elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(valueType->CreateDefault(), stringExpr->value.value);
 
 								auto castExpr = MakePtr<WfTypeCastingExpression>();
 								castExpr->strategy = WfTypeCastingStrategy::Strong;
@@ -5284,6 +5290,7 @@ CreateDefaultValue
 								castExpr->type = GetTypeFromTypeInfo(elementType);
 
 								return castExpr;
+								*/
 							}
 						}
 					}
@@ -14014,6 +14021,8 @@ IsConstantExpression
 					isConstant = true;
 				}
 
+				/*
+
 				void Visit(WfUnaryExpression* node)override
 				{
 					isConstant = Call(node->operand);
@@ -14050,6 +14059,8 @@ IsConstantExpression
 					}
 					isConstant = true;
 				}
+
+				*/
 
 				void Visit(WfTypeOfTypeExpression* node)override
 				{
@@ -18239,7 +18250,9 @@ CollectModule
 						WString file;
 						if (auto att = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"File"))
 						{
-							file = UnboxValue<WString>(config->attributeEvaluator->GetAttributeValue(att));
+							auto attValue = config->attributeEvaluator->GetAttributeValue(att);
+							CHECK_ERROR(attValue.type == runtime::WfInsType::String, L"Unexpected value in attribute: @cpp.File.");
+							file = attValue.stringValue;
 						}
 						config->customFilesClasses.Add(file, node);
 					}
@@ -21006,10 +21019,7 @@ namespace vl
 	{
 		namespace cppcodegen
 		{
-			using namespace collections;
 			using namespace stream;
-			using namespace filesystem;
-			using namespace regex;
 
 /***********************************************************************
 WfCppInput
@@ -21326,431 +21336,6 @@ GenerateCppFiles
 				}
 
 				return output;
-			}
-
-/***********************************************************************
-MergeCppFile
-***********************************************************************/
-
-			WString RemoveSpacePrefix(const WString& s)
-			{
-				for (vint i = 0; i < s.Length(); i++)
-				{
-					if (s[i] != L' '&&s[i] != L'\t')
-					{
-						return s.Sub(i, s.Length() - i);
-					}
-				}
-				return WString::Empty;
-			}
-
-			const vint NORMAL = 0;
-			const vint WAIT_HEADER = 1;
-			const vint WAIT_OPEN = 2;
-			const vint WAIT_CLOSE = 3;
-			const vint USER_CONTENT = 4;
-			const vint UNUSED_USER_CONTENT = 5;
-
-			template<typename TCallback>
-			void ProcessCppContent(const WString& code, const TCallback& callback)
-			{
-				Regex regexUserContentBegin(L"/.*?(?/{)?///* USER_CONTENT_BEGIN/((<name>[^)]*?)/) /*//");
-
-				vint state = NORMAL;
-				vint counter = 0;
-				WString previousContent;
-
-				StringReader reader(code);
-				while (!reader.IsEnd())
-				{
-					auto line = reader.ReadLine();
-					if (reader.IsEnd() && line == L"")
-					{
-						break;
-					}
-
-					if (line == L"// UNUSED_USER_CONTENT:")
-					{
-						state = UNUSED_USER_CONTENT;
-					}
-
-					if (state == UNUSED_USER_CONTENT)
-					{
-						callback(state, state, line, line);
-					}
-					else
-					{
-						auto content = RemoveSpacePrefix(line);
-						auto previousState = state;
-						switch (state)
-						{
-						case NORMAL:
-							if (auto match = regexUserContentBegin.MatchHead(content))
-							{
-								content = L"USERIMPL(/* " + match->Groups()[L"name"][0].Value() + L" */)";
-								if (match->Captures().Count() > 0)
-								{
-									content += previousContent;
-								}
-								state = USER_CONTENT;
-							}
-							else if (INVLOC.StartsWith(content, L"USERIMPL(",Locale::None))
-							{
-								state = WAIT_HEADER;
-							}
-							break;
-						case WAIT_HEADER:
-							state = WAIT_OPEN;
-							break;
-						case WAIT_OPEN:
-							if (INVLOC.StartsWith(content, L"{", Locale::None))
-							{
-								state = WAIT_CLOSE;
-							}
-							break;
-						case WAIT_CLOSE:
-							if (INVLOC.StartsWith(content, L"{", Locale::None))
-							{
-								counter++;
-							}
-							else if (INVLOC.StartsWith(content, L"}", Locale::None))
-							{
-								if (counter == 0)
-								{
-									state = NORMAL;
-								}
-								else
-								{
-									counter--;
-								}
-							}
-							break;
-						case USER_CONTENT:
-							if (INVLOC.EndsWith(content, L"/* USER_CONTENT_END() */", Locale::None))
-							{
-								state = NORMAL;
-							}
-							break;
-						}
-						callback(previousState, state, line, content);
-					}
-					previousContent = RemoveSpacePrefix(line);
-				}
-			}
-
-			template<typename TCallback>
-			void SplitCppContent(const WString& code, Dictionary<WString, WString>& userContents, Dictionary<WString, WString>& userContentsFull, const TCallback& callback)
-			{
-				WString name;
-				WString userImpl;
-				WString userImplFull;
-				ProcessCppContent(code, [&](vint previousState, vint state, const WString& line, const WString& content)
-				{
-					if (state == UNUSED_USER_CONTENT)
-					{
-						callback(line);
-					}
-					else
-					{
-						switch (previousState)
-						{
-						case NORMAL:
-							switch (state)
-							{
-							case WAIT_HEADER:
-							case USER_CONTENT:
-								name = content;
-								userImpl = L"";
-								userImplFull = L"";
-								break;
-							}
-							break;
-						case WAIT_HEADER:
-							name += content;
-							break;
-						case WAIT_CLOSE:
-						case USER_CONTENT:
-							switch (state)
-							{
-							case WAIT_CLOSE:
-							case USER_CONTENT:
-								userImpl += line + L"\r\n";
-								break;
-							case NORMAL:
-								userImplFull += L"//" + line + L"\r\n";
-								userContents.Add(name, userImpl);
-								userContentsFull.Add(name, userImplFull);
-								name = L"";
-								break;
-							}
-							break;
-						}
-
-						if (name != L"")
-						{
-							userImplFull += L"//" + line + L"\r\n";
-						}
-					}
-				});
-			}
-
-			MergeCppMultiPlatformException::MergeCppMultiPlatformException(vint _row32, vint _column32, vint _row64, vint _column64)
-				:Exception(L"The difference at "
-					L"x86 file(row:" + itow(_row32 + 1) + L", column:" + itow(_column32 + 1) + L") and "
-					L"x64 file(row:" + itow(_row64 + 1) + L", column:" + itow(_column64 + 1) + L") are not "
-					L"\"vint32_t\" and \"vint64_t\", "
-					L"\"vuint32_t\" and \"vuint64_t\", "
-					L"\"<number>\" and \"<number>L\", "
-					L"\"<number>\" and \"<number>UL\".")
-				, row32(_row32)
-				, column32(_column32)
-				, row64(_row64)
-				, column64(_column64)
-			{
-			}
-
-			void CountRowAndColumn(const wchar_t* start, const wchar_t* reading, vint& row, vint& column)
-			{
-				row = 0;
-				column = 0;
-				while (start < reading)
-				{
-					if (*start++ == L'\n')
-					{
-						row++;
-						column = 0;
-					}
-					else
-					{
-						column++;
-					}
-				}
-			}
-
-
-			WString MergeCppMultiPlatform(const WString& code32, const WString& code64)
-			{
-				static wchar_t stringCast32[] = L"static_cast<::vl::vint32_t>(";
-				const vint lengthCast32 = sizeof(stringCast32) / sizeof(*stringCast32) - 1;
-
-				static wchar_t stringCast64[] = L"static_cast<::vl::vint64_t>(";
-				const vint lengthCast64 = sizeof(stringCast64) / sizeof(*stringCast64) - 1;
-
-				return GenerateToStream([&](StreamWriter& writer)
-				{
-					const wchar_t* reading32 = code32.Buffer();
-					const wchar_t* reading64 = code64.Buffer();
-					const wchar_t* start32 = reading32;
-					const wchar_t* start64 = reading64;
-					while (true)
-					{
-						vint length = 0;
-						while (reading32[length] && reading64[length])
-						{
-							if (reading32[length] == reading64[length])
-							{
-								length++;
-							}
-							else
-							{
-								break;
-							}
-						}
-
-						writer.WriteString(reading32, length);
-						reading32 += length;
-						reading64 += length;
-
-						if (*reading32 == 0 && *reading64 == 0)
-						{
-							break;
-						}
-
-#define IS_DIGIT(C) (L'0' <= C && C <= L'9')
-
-						if (reading32[0] == L'3' && reading32[1] == L'2' && reading64[0] == L'6' && reading64[1] == L'4')
-						{
-							if (length >= 4)
-							{
-								if (wcsncmp(reading32 - 4, L"vint32_t", 8) == 0 && wcsncmp(reading64 - 4, L"vint64_t", 8) == 0)
-								{
-									reading32 += 4;
-									reading64 += 4;
-									goto NEXT_ROUND;
-								}
-							}
-							if (length >= 5)
-							{
-								if (wcsncmp(reading32 - 5, L"vuint32_t", 9) == 0 && wcsncmp(reading64 - 5, L"vuint64_t", 9) == 0)
-								{
-									reading32 += 4;
-									reading64 += 4;
-									goto NEXT_ROUND;
-								}
-							}
-						}
-						else if (reading64[0] == L'L')
-						{
-							if (reading32[0] == reading64[1] && length >= 1)
-							{
-								if (IS_DIGIT(reading32[-1]) && !IS_DIGIT(reading32[0]))
-								{
-									if (IS_DIGIT(reading64[-1]) && !IS_DIGIT(reading64[1]))
-									{
-										reading64 += 1;
-										goto NEXT_ROUND;
-									}
-								}
-							}
-						}
-						else if (reading64[0] == L'U' && reading64[1] == L'L')
-						{
-							if (reading32[0] == reading64[2] && length >= 1)
-							{
-								if (IS_DIGIT(reading32[-1]) && !IS_DIGIT(reading32[0]))
-								{
-									if (IS_DIGIT(reading64[-1]) && !IS_DIGIT(reading64[2]))
-									{
-										reading64 += 2;
-										goto NEXT_ROUND;
-									}
-								}
-							}
-						}
-						else if (wcsncmp(reading32, stringCast32, lengthCast32) == 0 && IS_DIGIT(reading32[lengthCast32]) && IS_DIGIT(reading64[0]))
-						{
-							reading32 += lengthCast32;
-							vint digitCount = 0;
-							while (IS_DIGIT(reading32[digitCount])) digitCount++;
-							if (wcsncmp(reading32, reading64, digitCount) == 0 && reading64[digitCount] == L'L' && reading32[digitCount] == L')')
-							{
-								writer.WriteString(L"static_cast<::vl::vint>(");
-								writer.WriteString(WString(reading32, digitCount));
-								writer.WriteChar(L')');
-								reading64 += digitCount + 1;
-								reading32 += digitCount + 1;
-								goto NEXT_ROUND;
-							}
-						}
-						else if (wcsncmp(reading64, stringCast64, lengthCast64) == 0 && IS_DIGIT(reading64[lengthCast64]) && IS_DIGIT(reading32[0]))
-						{
-							reading64 += lengthCast64;
-							vint digitCount = 0;
-							while (IS_DIGIT(reading64[digitCount])) digitCount++;
-							if (wcsncmp(reading64, reading32, digitCount) == 0 && reading64[digitCount] == L'L' && reading64[digitCount + 1] == L')')
-							{
-								writer.WriteString(L"static_cast<::vl::vint>(");
-								writer.WriteString(WString(reading64, digitCount));
-								writer.WriteChar(L')');
-								reading64 += digitCount + 2;
-								reading32 += digitCount;
-								goto NEXT_ROUND;
-							}
-						}
-
-						{
-							vint row32 = 0;
-							vint column32 = 0;
-							vint row64 = 0;
-							vint column64 = 0;
-							CountRowAndColumn(start32, reading32, row32, column32);
-							CountRowAndColumn(start64, reading64, row64, column64);
-							throw MergeCppMultiPlatformException(row32, column32, row64, column64);
-						}
-					NEXT_ROUND:;
-#undef IS_DIGIT
-					}
-				});
-			}
-
-			WString MergeCppFileContent(const WString& dst, const WString& src)
-			{
-				Dictionary<WString, WString> userContents, userContentsFull;
-				WString unusedUserContent = GenerateToStream([&](StreamWriter& writer)
-				{
-					SplitCppContent(dst, userContents, userContentsFull, [&](const WString& line)
-					{
-						writer.WriteLine(line);
-					});
-				});
-
-				WString processedUnusedUserContent = GenerateToStream([&](StreamWriter& writer)
-				{
-					StringReader reader(unusedUserContent);
-					while (!reader.IsEnd())
-					{
-						auto line = reader.ReadLine();
-						if (line != L"// UNUSED_USER_CONTENT:")
-						{
-							if (INVLOC.StartsWith(line, L"//", Locale::None))
-							{
-								line = line.Right(line.Length() - 2);
-							}
-							writer.WriteLine(line);
-						}
-					}
-				});
-
-				SplitCppContent(processedUnusedUserContent, userContents, userContentsFull, [&](const WString& line) {});
-				
-				return GenerateToStream([&](StreamWriter& writer)
-				{
-					WString name;
-					WString userImpl;
-					ProcessCppContent(src, [&](vint previousState, vint state, const WString& line, const WString& content)
-					{
-						switch (previousState)
-						{
-						case NORMAL:
-							switch (state)
-							{
-							case WAIT_HEADER:
-							case USER_CONTENT:
-								name = content;
-								userImpl = L"";
-								break;
-							}
-							break;
-						case WAIT_HEADER:
-							name += content;
-							break;
-						case WAIT_CLOSE:
-						case USER_CONTENT:
-							switch (state)
-							{
-							case WAIT_CLOSE:
-							case USER_CONTENT:
-								userImpl += line + L"\r\n";
-								return;
-							case NORMAL:
-								{
-									vint index = userContents.Keys().IndexOf(name);
-									if (index == -1)
-									{
-										writer.WriteString(userImpl);
-									}
-									else
-									{
-										writer.WriteString(userContents.Values()[index]);
-										userContentsFull.Remove(name);
-									}
-								}
-								break;
-							}
-							break;
-						}
-						writer.WriteLine(line);
-					});
-
-					if (userContentsFull.Count() > 0)
-					{
-						writer.WriteLine(L"// UNUSED_USER_CONTENT:");
-						FOREACH(WString, content, userContentsFull.Values())
-						{
-							writer.WriteString(content);
-						}
-					}
-				});
 			}
 		}
 	}
@@ -22209,7 +21794,9 @@ namespace vl
 
 					FOREACH(Ptr<WfAttribute>, attribute, attributeEvaluator->GetAttributes(decl->attributes, L"cpp", L"Friend"))
 					{
-						auto td = UnboxValue<ITypeDescriptor*>(attributeEvaluator->GetAttributeValue(attribute));
+						auto attValue = attributeEvaluator->GetAttributeValue(attribute);
+						CHECK_ERROR(attValue.type == runtime::WfInsType::Unknown && attValue.typeDescriptor != nullptr, L"Unexpected value in attribute: @cpp.Friend.");
+						auto td = attValue.typeDescriptor;
 
 						auto scopeName = manager->typeNames[td];
 						if (scopeName->declarations.Count() == 0)
@@ -22273,7 +21860,7 @@ namespace vl
 						}
 					}
 				}
-				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
+				writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 				writer.WriteLine(prefix + L"\tfriend struct ::vl::reflection::description::CustomTypeDescriptorSelector<" + name + L">;");
 				writer.WriteLine(L"#endif");
 
@@ -23335,6 +22922,8 @@ namespace vl
 
 				if (tdInterfaces.Count() > 0)
 				{
+					writer.WriteLine(L"");
+					writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 					FOREACH(ITypeDescriptor*, td, tdInterfaces)
 					{
 						List<ITypeDescriptor*> baseTds;
@@ -23422,6 +23011,7 @@ namespace vl
 						writer.WriteString(ConvertType(td));
 						writer.WriteLine(L")");
 					}
+					writer.WriteLine(L"#endif");
 				}
 
 				writer.WriteLine(L"#endif");
@@ -23465,6 +23055,7 @@ namespace vl
 				}
 				writer.WriteLine(L"");
 
+				writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 				writer.WriteLine(L"#define _ ,");
 				FOREACH(ITypeDescriptor*, td, tds)
 				{
@@ -23744,13 +23335,14 @@ namespace vl
 				writer.WriteLine(L"\t\t\t};");
 
 				writer.WriteLine(L"#endif");
+				writer.WriteLine(L"#endif");
 				writer.WriteLine(L"");
 
 				writer.WriteString(L"\t\t\tbool Load");
 				writer.WriteString(assemblyName);
 				writer.WriteLine(L"Types()");
 				writer.WriteLine(L"\t\t\t{");
-				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
+				writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 				writer.WriteLine(L"\t\t\t\tif (auto manager = GetGlobalTypeManager())");
 				writer.WriteLine(L"\t\t\t\t{");
 				writer.WriteString(L"\t\t\t\t\treturn manager->AddTypeLoader(MakePtr<");
@@ -23921,6 +23513,449 @@ namespace vl
 }
 
 /***********************************************************************
+.\CPP\WFMERGECPP.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace cppcodegen
+		{
+			using namespace collections;
+			using namespace stream;
+			using namespace regex;
+
+/***********************************************************************
+MergeCpp
+***********************************************************************/
+
+			WString RemoveSpacePrefix(const WString& s)
+			{
+				for (vint i = 0; i < s.Length(); i++)
+				{
+					if (s[i] != L' '&&s[i] != L'\t')
+					{
+						return s.Sub(i, s.Length() - i);
+					}
+				}
+				return WString::Empty;
+			}
+
+			const vint NORMAL = 0;
+			const vint WAIT_HEADER = 1;
+			const vint WAIT_OPEN = 2;
+			const vint WAIT_CLOSE = 3;
+			const vint USER_CONTENT = 4;
+			const vint UNUSED_USER_CONTENT = 5;
+
+			template<typename TCallback>
+			void ProcessCppContent(const WString& code, const TCallback& callback)
+			{
+				Regex regexUserContentBegin(L"/.*?(?/{)?///* USER_CONTENT_BEGIN/((<name>[^)]*?)/) /*//");
+
+				vint state = NORMAL;
+				vint counter = 0;
+				WString previousContent;
+
+				StringReader reader(code);
+				while (!reader.IsEnd())
+				{
+					auto line = reader.ReadLine();
+					if (reader.IsEnd() && line == L"")
+					{
+						break;
+					}
+
+					if (line == L"// UNUSED_USER_CONTENT:")
+					{
+						state = UNUSED_USER_CONTENT;
+					}
+
+					if (state == UNUSED_USER_CONTENT)
+					{
+						callback(state, state, line, line);
+					}
+					else
+					{
+						auto content = RemoveSpacePrefix(line);
+						auto previousState = state;
+						switch (state)
+						{
+						case NORMAL:
+							if (auto match = regexUserContentBegin.MatchHead(content))
+							{
+								content = L"USERIMPL(/* " + match->Groups()[L"name"][0].Value() + L" */)";
+								if (match->Captures().Count() > 0)
+								{
+									content += previousContent;
+								}
+								state = USER_CONTENT;
+							}
+							else if (INVLOC.StartsWith(content, L"USERIMPL(",Locale::None))
+							{
+								state = WAIT_HEADER;
+							}
+							break;
+						case WAIT_HEADER:
+							state = WAIT_OPEN;
+							break;
+						case WAIT_OPEN:
+							if (INVLOC.StartsWith(content, L"{", Locale::None))
+							{
+								state = WAIT_CLOSE;
+							}
+							break;
+						case WAIT_CLOSE:
+							if (INVLOC.StartsWith(content, L"{", Locale::None))
+							{
+								counter++;
+							}
+							else if (INVLOC.StartsWith(content, L"}", Locale::None))
+							{
+								if (counter == 0)
+								{
+									state = NORMAL;
+								}
+								else
+								{
+									counter--;
+								}
+							}
+							break;
+						case USER_CONTENT:
+							if (INVLOC.EndsWith(content, L"/* USER_CONTENT_END() */", Locale::None))
+							{
+								state = NORMAL;
+							}
+							break;
+						}
+						callback(previousState, state, line, content);
+					}
+					previousContent = RemoveSpacePrefix(line);
+				}
+			}
+
+			template<typename TCallback>
+			void SplitCppContent(const WString& code, Dictionary<WString, WString>& userContents, Dictionary<WString, WString>& userContentsFull, const TCallback& callback)
+			{
+				WString name;
+				WString userImpl;
+				WString userImplFull;
+				ProcessCppContent(code, [&](vint previousState, vint state, const WString& line, const WString& content)
+				{
+					if (state == UNUSED_USER_CONTENT)
+					{
+						callback(line);
+					}
+					else
+					{
+						switch (previousState)
+						{
+						case NORMAL:
+							switch (state)
+							{
+							case WAIT_HEADER:
+							case USER_CONTENT:
+								name = content;
+								userImpl = L"";
+								userImplFull = L"";
+								break;
+							}
+							break;
+						case WAIT_HEADER:
+							name += content;
+							break;
+						case WAIT_CLOSE:
+						case USER_CONTENT:
+							switch (state)
+							{
+							case WAIT_CLOSE:
+							case USER_CONTENT:
+								userImpl += line + L"\r\n";
+								break;
+							case NORMAL:
+								userImplFull += L"//" + line + L"\r\n";
+								userContents.Add(name, userImpl);
+								userContentsFull.Add(name, userImplFull);
+								name = L"";
+								break;
+							}
+							break;
+						}
+
+						if (name != L"")
+						{
+							userImplFull += L"//" + line + L"\r\n";
+						}
+					}
+				});
+			}
+
+			MergeCppMultiPlatformException::MergeCppMultiPlatformException(vint _row32, vint _column32, vint _row64, vint _column64)
+				:Exception(L"The difference at "
+					L"x86 file(row:" + itow(_row32 + 1) + L", column:" + itow(_column32 + 1) + L") and "
+					L"x64 file(row:" + itow(_row64 + 1) + L", column:" + itow(_column64 + 1) + L") are not "
+					L"\"vint32_t\" and \"vint64_t\", "
+					L"\"vuint32_t\" and \"vuint64_t\", "
+					L"\"<number>\" and \"<number>L\", "
+					L"\"<number>\" and \"<number>UL\".")
+				, row32(_row32)
+				, column32(_column32)
+				, row64(_row64)
+				, column64(_column64)
+			{
+			}
+
+			void CountRowAndColumn(const wchar_t* start, const wchar_t* reading, vint& row, vint& column)
+			{
+				row = 0;
+				column = 0;
+				while (start < reading)
+				{
+					if (*start++ == L'\n')
+					{
+						row++;
+						column = 0;
+					}
+					else
+					{
+						column++;
+					}
+				}
+			}
+
+
+			WString MergeCppMultiPlatform(const WString& code32, const WString& code64)
+			{
+				static wchar_t stringCast32[] = L"static_cast<::vl::vint32_t>(";
+				const vint lengthCast32 = sizeof(stringCast32) / sizeof(*stringCast32) - 1;
+
+				static wchar_t stringCast64[] = L"static_cast<::vl::vint64_t>(";
+				const vint lengthCast64 = sizeof(stringCast64) / sizeof(*stringCast64) - 1;
+
+				return GenerateToStream([&](StreamWriter& writer)
+				{
+					const wchar_t* reading32 = code32.Buffer();
+					const wchar_t* reading64 = code64.Buffer();
+					const wchar_t* start32 = reading32;
+					const wchar_t* start64 = reading64;
+					while (true)
+					{
+						vint length = 0;
+						while (reading32[length] && reading64[length])
+						{
+							if (reading32[length] == reading64[length])
+							{
+								length++;
+							}
+							else
+							{
+								break;
+							}
+						}
+
+						writer.WriteString(reading32, length);
+						reading32 += length;
+						reading64 += length;
+
+						if (*reading32 == 0 && *reading64 == 0)
+						{
+							break;
+						}
+
+#define IS_DIGIT(C) (L'0' <= C && C <= L'9')
+
+						if (reading32[0] == L'3' && reading32[1] == L'2' && reading64[0] == L'6' && reading64[1] == L'4')
+						{
+							if (length >= 4)
+							{
+								if (wcsncmp(reading32 - 4, L"vint32_t", 8) == 0 && wcsncmp(reading64 - 4, L"vint64_t", 8) == 0)
+								{
+									reading32 += 4;
+									reading64 += 4;
+									goto NEXT_ROUND;
+								}
+							}
+							if (length >= 5)
+							{
+								if (wcsncmp(reading32 - 5, L"vuint32_t", 9) == 0 && wcsncmp(reading64 - 5, L"vuint64_t", 9) == 0)
+								{
+									reading32 += 4;
+									reading64 += 4;
+									goto NEXT_ROUND;
+								}
+							}
+						}
+						else if (reading64[0] == L'L')
+						{
+							if (reading32[0] == reading64[1] && length >= 1)
+							{
+								if (IS_DIGIT(reading32[-1]) && !IS_DIGIT(reading32[0]))
+								{
+									if (IS_DIGIT(reading64[-1]) && !IS_DIGIT(reading64[1]))
+									{
+										reading64 += 1;
+										goto NEXT_ROUND;
+									}
+								}
+							}
+						}
+						else if (reading64[0] == L'U' && reading64[1] == L'L')
+						{
+							if (reading32[0] == reading64[2] && length >= 1)
+							{
+								if (IS_DIGIT(reading32[-1]) && !IS_DIGIT(reading32[0]))
+								{
+									if (IS_DIGIT(reading64[-1]) && !IS_DIGIT(reading64[2]))
+									{
+										reading64 += 2;
+										goto NEXT_ROUND;
+									}
+								}
+							}
+						}
+						else if (wcsncmp(reading32, stringCast32, lengthCast32) == 0 && IS_DIGIT(reading32[lengthCast32]) && IS_DIGIT(reading64[0]))
+						{
+							reading32 += lengthCast32;
+							vint digitCount = 0;
+							while (IS_DIGIT(reading32[digitCount])) digitCount++;
+							if (wcsncmp(reading32, reading64, digitCount) == 0 && reading64[digitCount] == L'L' && reading32[digitCount] == L')')
+							{
+								writer.WriteString(L"static_cast<::vl::vint>(");
+								writer.WriteString(WString(reading32, digitCount));
+								writer.WriteChar(L')');
+								reading64 += digitCount + 1;
+								reading32 += digitCount + 1;
+								goto NEXT_ROUND;
+							}
+						}
+						else if (wcsncmp(reading64, stringCast64, lengthCast64) == 0 && IS_DIGIT(reading64[lengthCast64]) && IS_DIGIT(reading32[0]))
+						{
+							reading64 += lengthCast64;
+							vint digitCount = 0;
+							while (IS_DIGIT(reading64[digitCount])) digitCount++;
+							if (wcsncmp(reading64, reading32, digitCount) == 0 && reading64[digitCount] == L'L' && reading64[digitCount + 1] == L')')
+							{
+								writer.WriteString(L"static_cast<::vl::vint>(");
+								writer.WriteString(WString(reading64, digitCount));
+								writer.WriteChar(L')');
+								reading64 += digitCount + 2;
+								reading32 += digitCount;
+								goto NEXT_ROUND;
+							}
+						}
+
+						{
+							vint row32 = 0;
+							vint column32 = 0;
+							vint row64 = 0;
+							vint column64 = 0;
+							CountRowAndColumn(start32, reading32, row32, column32);
+							CountRowAndColumn(start64, reading64, row64, column64);
+							throw MergeCppMultiPlatformException(row32, column32, row64, column64);
+						}
+					NEXT_ROUND:;
+#undef IS_DIGIT
+					}
+				});
+			}
+
+			WString MergeCppFileContent(const WString& dst, const WString& src)
+			{
+				Dictionary<WString, WString> userContents, userContentsFull;
+				WString unusedUserContent = GenerateToStream([&](StreamWriter& writer)
+				{
+					SplitCppContent(dst, userContents, userContentsFull, [&](const WString& line)
+					{
+						writer.WriteLine(line);
+					});
+				});
+
+				WString processedUnusedUserContent = GenerateToStream([&](StreamWriter& writer)
+				{
+					StringReader reader(unusedUserContent);
+					while (!reader.IsEnd())
+					{
+						auto line = reader.ReadLine();
+						if (line != L"// UNUSED_USER_CONTENT:")
+						{
+							if (INVLOC.StartsWith(line, L"//", Locale::None))
+							{
+								line = line.Right(line.Length() - 2);
+							}
+							writer.WriteLine(line);
+						}
+					}
+				});
+
+				SplitCppContent(processedUnusedUserContent, userContents, userContentsFull, [&](const WString& line) {});
+				
+				return GenerateToStream([&](StreamWriter& writer)
+				{
+					WString name;
+					WString userImpl;
+					ProcessCppContent(src, [&](vint previousState, vint state, const WString& line, const WString& content)
+					{
+						switch (previousState)
+						{
+						case NORMAL:
+							switch (state)
+							{
+							case WAIT_HEADER:
+							case USER_CONTENT:
+								name = content;
+								userImpl = L"";
+								break;
+							}
+							break;
+						case WAIT_HEADER:
+							name += content;
+							break;
+						case WAIT_CLOSE:
+						case USER_CONTENT:
+							switch (state)
+							{
+							case WAIT_CLOSE:
+							case USER_CONTENT:
+								userImpl += line + L"\r\n";
+								return;
+							case NORMAL:
+								{
+									vint index = userContents.Keys().IndexOf(name);
+									if (index == -1)
+									{
+										writer.WriteString(userImpl);
+									}
+									else
+									{
+										writer.WriteString(userContents.Values()[index]);
+										userContentsFull.Remove(name);
+									}
+								}
+								break;
+							}
+							break;
+						}
+						writer.WriteLine(line);
+					});
+
+					if (userContentsFull.Count() > 0)
+					{
+						writer.WriteLine(L"// UNUSED_USER_CONTENT:");
+						FOREACH(WString, content, userContentsFull.Values())
+						{
+							writer.WriteString(content);
+						}
+					}
+				});
+			}
+		}
+	}
+}
+
+
+/***********************************************************************
 .\EMITTER\WFEMITTER.CPP
 ***********************************************************************/
 
@@ -23953,16 +23988,16 @@ WfAttributeEvaluator
 			{
 				return From(atts)
 					.Where([=](Ptr<WfAttribute> att)
-				{
-					return att->category.value == category && att->name.value == name;
-				});
+					{
+						return att->category.value == category && att->name.value == name;
+					});
 			}
 
-			Value WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute> att)
+			runtime::WfRuntimeValue WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute> att)
 			{
 				if (!att->value)
 				{
-					return Value();
+					return {};
 				}
 
 				{
@@ -23973,50 +24008,16 @@ WfAttributeEvaluator
 					}
 				}
 
-				if (!attributeAssembly)
-				{
-					attributeAssembly = MakePtr<WfAssembly>();
-
-					auto func = MakePtr<WfAssemblyFunction>();
-					func->name = L"<get-attribute-value>";
-					func->firstInstruction = 0;
-
-					vint index = attributeAssembly->functions.Add(func);
-					attributeAssembly->functionByName.Add(func->name, index);
-				}
-
-				attributeAssembly->insBeforeCodegen = MakePtr<WfInstructionDebugInfo>();
-				attributeAssembly->insAfterCodegen = MakePtr<WfInstructionDebugInfo>();
-				attributeAssembly->instructions.Clear();
-
+				auto attributeAssembly = MakePtr<WfAssembly>();
 				WfCodegenContext context(attributeAssembly, manager);
-				{
-					auto recorderBefore = new ParsingGeneratedLocationRecorder(context.nodePositionsBeforeCodegen);
-					auto recorderAfter = new ParsingGeneratedLocationRecorder(context.nodePositionsAfterCodegen);
-					auto recorderOriginal = new ParsingOriginalLocationRecorder(recorderBefore);
-					auto recorderMultiple = new ParsingMultiplePrintNodeRecorder;
-					recorderMultiple->AddRecorder(recorderOriginal);
-					recorderMultiple->AddRecorder(recorderAfter);
-
-					stream::MemoryStream memoryStream;
-					{
-						stream::StreamWriter streamWriter(memoryStream);
-						ParsingWriter parsingWriter(streamWriter, recorderMultiple);
-						WfPrint(att->value, L"", parsingWriter);
-					}
-				}
 				auto typeInfo = manager->attributes[{att->category.value, att->name.value}];
 				GenerateExpressionInstructions(context, att->value, typeInfo);
-				attributeAssembly->instructions.Add(WfInstruction::Return());
 
-				if (!attributeGlobalContext)
-				{
-					attributeGlobalContext = MakePtr<WfRuntimeGlobalContext>(attributeAssembly);
-				}
-				auto func = LoadFunction<Value()>(attributeGlobalContext, L"<get-attribute-value>");
-				auto value = func();
-				attributeValues.Add(att, value);
-				return func();
+				CHECK_ERROR(attributeAssembly->instructions.Count() == 1, L"WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute>)#Internal error, attribute argument generates unexpected instructions.");
+				auto& ins = attributeAssembly->instructions[0];
+				CHECK_ERROR(ins.code == WfInsCode::LoadValue, L"WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute>)#Internal error, attribute argument generates unexpected instructions.");
+				attributeValues.Add(att, ins.valueParameter);
+				return ins.valueParameter;
 			}
 
 /***********************************************************************
@@ -24076,16 +24077,19 @@ WfCodegenContext
 			vint WfCodegenContext::AddInstruction(parsing::ParsingTreeCustomBase* node, const runtime::WfInstruction& ins)
 			{
 				auto index = assembly->instructions.Add(ins);
-				if (node)
+				if (assembly->insBeforeCodegen && assembly->insAfterCodegen)
 				{
-					assembly->insBeforeCodegen->instructionCodeMapping.Add(nodePositionsBeforeCodegen[node]);
-					assembly->insAfterCodegen->instructionCodeMapping.Add(nodePositionsAfterCodegen[node]);
-				}
-				else
-				{
-					parsing::ParsingTextRange range;
-					assembly->insBeforeCodegen->instructionCodeMapping.Add(range);
-					assembly->insAfterCodegen->instructionCodeMapping.Add(range);
+					if (node)
+					{
+						assembly->insBeforeCodegen->instructionCodeMapping.Add(nodePositionsBeforeCodegen[node]);
+						assembly->insAfterCodegen->instructionCodeMapping.Add(nodePositionsAfterCodegen[node]);
+					}
+					else
+					{
+						parsing::ParsingTextRange range;
+						assembly->insBeforeCodegen->instructionCodeMapping.Add(range);
+						assembly->insAfterCodegen->instructionCodeMapping.Add(range);
+					}
 				}
 				return index;
 			}
@@ -24195,7 +24199,7 @@ GenerateTypeCastInstructions
 					if (expectedType->GetDecorator() == ITypeInfo::Nullable)
 					{
 						INSTRUCTION(Ins::Duplicate(0));
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CompareReference());
 						fillElseIndex = INSTRUCTION(Ins::JumpIf(-1));
 					}
@@ -24239,7 +24243,7 @@ GenerateTypeCastInstructions
 					{
 						fillEndIndex = INSTRUCTION(Ins::Jump(-1));
 						FILL_LABEL_TO_CURRENT(fillElseIndex);
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						FILL_LABEL_TO_CURRENT(fillEndIndex);
 					}
 				}
@@ -24271,7 +24275,7 @@ GetInstructionTypeArgument
 				else
 				{
 					INSTRUCTION(Ins::Pop());
-					INSTRUCTION(Ins::LoadValue(BoxValue(true)));
+					INSTRUCTION(Ins::LoadValue({ true }));
 				}
 			}
 
@@ -24389,7 +24393,7 @@ GenerateAssembly
 
 					// define node for INSTRUCTION
 					parsing::ParsingTreeCustomBase* node = nullptr;
-					INSTRUCTION(Ins::LoadValue(Value()));
+					INSTRUCTION(Ins::LoadValue({}));
 					INSTRUCTION(Ins::Return());
 
 					meta->lastInstruction = assembly->instructions.Count() - 1;
@@ -24599,15 +24603,7 @@ GenerateInstructions(Declaration)
 
 			void GenerateFunctionInstructions_Epilog(WfCodegenContext& context, WfLexicalScope* scope, Ptr<WfAssemblyFunction> meta, Ptr<ITypeInfo> returnType, Ptr<WfLexicalSymbol> recursiveLambdaSymbol, const List<Ptr<WfLexicalSymbol>>& argumentSymbols, const List<Ptr<WfLexicalSymbol>>& capturedSymbols, Ptr<WfCodegenFunctionContext> functionContext, ParsingTreeCustomBase* node)
 			{
-				Value result;
-				if (returnType->GetDecorator() == ITypeInfo::TypeDescriptor)
-				{
-					if (auto vt = returnType->GetTypeDescriptor()->GetValueType())
-					{
-						result = vt->CreateDefault();
-					}
-				}
-				INSTRUCTION(Ins::LoadValue(Value()));
+				INSTRUCTION(Ins::LoadValue({}));
 				INSTRUCTION(Ins::Return());
 				meta->lastInstruction = context.assembly->instructions.Count() - 1;
 				context.functionContext = 0;
@@ -24783,7 +24779,7 @@ GenerateInstructions(Declaration)
 					}
 					GenerateStatementInstructions(context, node->statement);
 
-					INSTRUCTION(Ins::LoadValue(Value()));
+					INSTRUCTION(Ins::LoadValue({}));
 					INSTRUCTION(Ins::Return());
 					meta->lastInstruction = context.assembly->instructions.Count() - 1;
 					context.functionContext = 0;
@@ -24801,7 +24797,7 @@ GenerateInstructions(Declaration)
 					auto scope = context.manager->nodeScopes[node].Obj();
 					GenerateStatementInstructions(context, node->statement);
 
-					INSTRUCTION(Ins::LoadValue(Value()));
+					INSTRUCTION(Ins::LoadValue({}));
 					INSTRUCTION(Ins::Return());
 					meta->lastInstruction = context.assembly->instructions.Count() - 1;
 					context.functionContext = 0;
@@ -25141,7 +25137,7 @@ GenerateInstructions(Expression)
 					{
 						if (result.methodInfo->IsStatic())
 						{
-							INSTRUCTION(Ins::LoadValue(Value()));
+							INSTRUCTION(Ins::LoadValue({}));
 						}
 						else
 						{
@@ -25166,12 +25162,13 @@ GenerateInstructions(Expression)
 					{
 						if ((result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
 						{
-							auto enumType = result.type->GetTypeDescriptor()->GetEnumType();
+							auto td = result.type->GetTypeDescriptor();
+							auto enumType = td->GetEnumType();
 							vint index = enumType->IndexOfItem(name);
 							if (index != -1)
 							{
 								auto intValue = enumType->GetItemValue(index);
-								INSTRUCTION(Ins::LoadValue(enumType->ToEnum(intValue)));
+								INSTRUCTION(Ins::LoadValue({ intValue, td }));
 								return;
 							}
 						}
@@ -25332,16 +25329,18 @@ GenerateInstructions(Expression)
 					switch (node->value)
 					{
 					case WfLiteralValue::Null:
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						break;
 					case WfLiteralValue::True:
-						INSTRUCTION(Ins::LoadValue(BoxValue(true)));
+						INSTRUCTION(Ins::LoadValue({ true }));
 						break;
 					case WfLiteralValue::False:
-						INSTRUCTION(Ins::LoadValue(BoxValue(false)));
+						INSTRUCTION(Ins::LoadValue({ false }));
 						break;
 					}
 				}
+
+#define INSTRUCTION_LOAD_VALUE(TYPE) if (td == description::GetTypeDescriptor<TYPE>()) { INSTRUCTION(Ins::LoadValue({ UnboxValue<TYPE>(output) })); return; }
 
 				void Visit(WfFloatingExpression* node)override
 				{
@@ -25349,7 +25348,9 @@ GenerateInstructions(Expression)
 					auto td = result.type->GetTypeDescriptor();
 					Value output;
 					td->GetSerializableType()->Deserialize(node->value.value, output);
-					INSTRUCTION(Ins::LoadValue(output));
+					INSTRUCTION_LOAD_VALUE(float);
+					INSTRUCTION_LOAD_VALUE(double);
+					CHECK_FAIL(L"Unrecognized value in WfFloatingExpression!");
 				}
 
 				void Visit(WfIntegerExpression* node)override
@@ -25358,12 +25359,24 @@ GenerateInstructions(Expression)
 					auto td = result.type->GetTypeDescriptor();
 					Value output;
 					td->GetSerializableType()->Deserialize(node->value.value, output);
-					INSTRUCTION(Ins::LoadValue(output));
+					INSTRUCTION_LOAD_VALUE(vint8_t);
+					INSTRUCTION_LOAD_VALUE(vint16_t);
+					INSTRUCTION_LOAD_VALUE(vint32_t);
+					INSTRUCTION_LOAD_VALUE(vint64_t);
+					INSTRUCTION_LOAD_VALUE(vuint8_t);
+					INSTRUCTION_LOAD_VALUE(vuint16_t);
+					INSTRUCTION_LOAD_VALUE(vuint32_t);
+					INSTRUCTION_LOAD_VALUE(vuint64_t);
+					INSTRUCTION_LOAD_VALUE(float);
+					INSTRUCTION_LOAD_VALUE(double);
+					CHECK_FAIL(L"Unrecognized value in WfIntegerExpression!");
 				}
+
+#undef INSTRUCTION_LOAD_VALUE
 
 				void Visit(WfStringExpression* node)override
 				{
-					INSTRUCTION(Ins::LoadValue(BoxValue(node->value.value)));
+					INSTRUCTION(Ins::LoadValue({ node->value.value }));
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -25649,7 +25662,7 @@ GenerateInstructions(Expression)
 					GenerateExpressionInstructions(context, node->expression);
 					FOREACH_INDEXER(Ptr<WfLetVariable>, var, index, node->variables)
 					{
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::StoreLocalVar(variableIndices[index]));
 					}
 				}
@@ -25675,14 +25688,14 @@ GenerateInstructions(Expression)
 					GenerateExpressionInstructions(context, node->begin, elementType);
 					if (node->beginBoundary == WfRangeBoundary::Exclusive)
 					{
-						INSTRUCTION(Ins::LoadValue(BoxValue<vint>(1)));
+						INSTRUCTION(Ins::LoadValue({ (vint)1 }));
 						INSTRUCTION(Ins::OpAdd(type));
 					}
 					
 					GenerateExpressionInstructions(context, node->end, elementType);
 					if (node->endBoundary == WfRangeBoundary::Exclusive)
 					{
-						INSTRUCTION(Ins::LoadValue(BoxValue<vint>(1)));
+						INSTRUCTION(Ins::LoadValue({ (vint)1 }));
 						INSTRUCTION(Ins::OpSub(type));
 					}
 
@@ -25744,7 +25757,7 @@ GenerateInstructions(Expression)
 						{
 							INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 						}
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::StoreLocalVar(index));
 					}
 					else
@@ -25849,12 +25862,12 @@ GenerateInstructions(Expression)
 					{
 					case WfTypeTesting::IsNull:
 						GenerateExpressionInstructions(context, node->expression);
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CompareReference());
 						break;
 					case WfTypeTesting::IsNotNull:
 						GenerateExpressionInstructions(context, node->expression);
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CompareReference());
 						INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 						break;
@@ -25882,8 +25895,7 @@ GenerateInstructions(Expression)
 				{
 					auto scope = context.manager->nodeScopes[node].Obj();
 					auto type = CreateTypeInfoFromType(scope, node->type, false);
-					auto value = Value::From(type->GetTypeDescriptor());
-					INSTRUCTION(Ins::LoadValue(value));
+					INSTRUCTION(Ins::LoadValue({ type->GetTypeDescriptor() }));
 				}
 
 				void Visit(WfTypeOfExpressionExpression* node)override
@@ -25938,7 +25950,7 @@ GenerateInstructions(Expression)
 					{
 						if (result.methodInfo->IsStatic())
 						{
-							INSTRUCTION(Ins::LoadValue(Value()));
+							INSTRUCTION(Ins::LoadValue({}));
 						}
 						else if (auto member = node->function.Cast<WfMemberExpression>())
 						{
@@ -26098,7 +26110,7 @@ GenerateInstructions(Expression)
 					{
 						GenerateExpressionInstructions(context, argument);
 					}
-					INSTRUCTION(Ins::LoadValue(Value()));
+					INSTRUCTION(Ins::LoadValue({}));
 					INSTRUCTION(Ins::InvokeMethod(result.constructorInfo, node->arguments.Count()));
 				}
 
@@ -26123,7 +26135,7 @@ GenerateInstructions(Expression)
 						}
 						auto scope = context.manager->nodeScopes[node].Obj();
 						vint thisCount = PushCapturedThisValues(context, scope, node);
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count() + thisCount + 1));
 
 						FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.closureFunctions)
@@ -26154,7 +26166,7 @@ GenerateInstructions(Expression)
 					}
 					else
 					{
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CreateClosureContext(1));
 					}
 					INSTRUCTION(Ins::CreateInterface(result.constructorInfo, declVisitor.overrideFunctions.Count() * 2));
@@ -26559,7 +26571,7 @@ GenerateInstructions(Statement)
 					}
 					else
 					{
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 					}
 					INSTRUCTION(Ins::Return());
 				}
@@ -26613,7 +26625,7 @@ GenerateInstructions(Statement)
 						GenerateTypeCastInstructions(context, symbol->typeInfo, false, node->expression.Obj());
 						INSTRUCTION(Ins::StoreLocalVar(variableIndex));
 						INSTRUCTION(Ins::LoadLocalVar(variableIndex));
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CompareReference());
 					}
 					else
@@ -26625,7 +26637,7 @@ GenerateInstructions(Statement)
 					GenerateStatementInstructions(context, node->trueBranch);
 					if (variableIndex != -1)
 					{
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::StoreLocalVar(variableIndex));
 					}
 					vint fillEndIndex = INSTRUCTION(Ins::Jump(-1));
@@ -29492,6 +29504,8 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVirtualCseExpression::IVisitor, workflow::WfVirtualCseExpression::IVisitor)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfModuleUsingFragment::IVisitor, workflow::WfModuleUsingFragment::IVisitor)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_ENUM_ITEM(WfClassMemberKind)
 				ENUM_ITEM_NAMESPACE(WfClassMemberKind)
 				ENUM_NAMESPACE_ITEM(Static)
@@ -30696,8 +30710,10 @@ namespace vl
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfModuleUsingFragment::IVisitor::*)(WfModuleUsingWildCardFragment* node))
 			END_INTERFACE_MEMBER(WfModuleUsingFragment)
 
+#endif
 #undef PARSING_TOKEN_FIELD
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			class WfTypeLoader : public vl::Object, public ITypeLoader
 			{
 			public:
@@ -30854,14 +30870,15 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool WfLoadTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				ITypeManager* manager=GetGlobalTypeManager();
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+				ITypeManager* manager = GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new WfTypeLoader;
+					Ptr<ITypeLoader> loader = new WfTypeLoader;
 					return manager->AddTypeLoader(loader);
 				}
 #endif

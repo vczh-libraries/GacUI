@@ -141,6 +141,8 @@ namespace vl
 			DECL_TYPE_INFO(vl::presentation::GuiIqSetQuery)
 			DECL_TYPE_INFO(vl::presentation::GuiIqQuery::IVisitor)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::GuiIqQuery::IVisitor)
 				void Visit(vl::presentation::GuiIqPrimaryQuery* node)override
 				{
@@ -159,6 +161,7 @@ namespace vl
 
 			END_INTERFACE_PROXY(vl::presentation::GuiIqQuery::IVisitor)
 
+#endif
 #endif
 			/// <summary>Load all reflectable AST types, only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is off.</summary>
 			/// <returns>Returns true if this operation succeeded.</returns>

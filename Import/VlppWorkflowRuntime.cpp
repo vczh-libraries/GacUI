@@ -8,6 +8,8 @@ DEVELOPER: Zihan Chen(vczh)
 .\WFRUNTIME.CPP
 ***********************************************************************/
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 namespace vl
 {
 	using namespace reflection;
@@ -381,6 +383,54 @@ WfRuntimeThreadContext
 				return WfRuntimeThreadContextError::Success;
 			}
 
+			WfRuntimeThreadContextError WfRuntimeThreadContext::PushRuntimeValue(const WfRuntimeValue& value)
+			{
+				if (value.typeDescriptor)
+				{
+					switch (value.type)
+					{
+					case WfInsType::Unknown:
+						return PushValue(BoxValue(value.typeDescriptor));
+					case WfInsType::U8:
+						CHECK_ERROR(value.typeDescriptor->GetEnumType(), L"WfRuntimeThreadContext::PushValue(const WfRuntimeValue&)#Missing typeDescriptor in WfRuntimeValue!");
+						return PushValue(value.typeDescriptor->GetEnumType()->ToEnum(value.u8Value));
+					}
+					CHECK_FAIL(L"WfRuntimeThreadContext::PushValue(const WfRuntimeValue&)#Unexpected type in WfRuntimeValue with typeDescriptor!");
+				}
+				else
+				{
+					switch (value.type)
+					{
+					case WfInsType::Bool:
+						return PushValue(BoxValue(value.boolValue));
+					case WfInsType::I1:
+						return PushValue(BoxValue(value.i1Value));
+					case WfInsType::I2:
+						return PushValue(BoxValue(value.i2Value));
+					case WfInsType::I4:
+						return PushValue(BoxValue(value.i4Value));
+					case WfInsType::I8:
+						return PushValue(BoxValue(value.i8Value));
+					case WfInsType::U1:
+						return PushValue(BoxValue(value.u1Value));
+					case WfInsType::U2:
+						return PushValue(BoxValue(value.u2Value));
+					case WfInsType::U4:
+						return PushValue(BoxValue(value.u4Value));
+					case WfInsType::U8:
+						return PushValue(BoxValue(value.u8Value));
+					case WfInsType::F4:
+						return PushValue(BoxValue(value.f4Value));
+					case WfInsType::F8:
+						return PushValue(BoxValue(value.f8Value));
+					case WfInsType::String:
+						return PushValue(BoxValue(value.stringValue));
+					default:
+						return PushValue(Value());
+					}
+				}
+			}
+
 			WfRuntimeThreadContextError WfRuntimeThreadContext::PushValue(const reflection::description::Value& value)
 			{
 				stack.Add(value);
@@ -557,6 +607,8 @@ WfRuntimeThreadContext
 		}
 	}
 }
+
+#endif
 
 /***********************************************************************
 .\WFRUNTIMEASSEMBLY.CPP
@@ -779,7 +831,7 @@ Serialization (CollectMetadata)
 #define PI(X)										do{ if (!prepare.pis.Contains(X)) prepare.pis.Add(X); }while(0)
 #define EI(X)										do{ if (!prepare.eis.Contains(X)) prepare.eis.Add(X); }while(0)
 #define COLLECTMETADATA(NAME)						case WfInsCode::NAME: break;
-#define COLLECTMETADATA_VALUE(NAME)					case WfInsCode::NAME: if (auto td = ins.valueParameter.GetTypeDescriptor()) TD(td); break;
+#define COLLECTMETADATA_VALUE(NAME)					case WfInsCode::NAME: if (auto td = ins.valueParameter.typeDescriptor) TD(td); break;
 #define COLLECTMETADATA_FUNCTION(NAME)				case WfInsCode::NAME: break;
 #define COLLECTMETADATA_FUNCTION_COUNT(NAME)		case WfInsCode::NAME: break;
 #define COLLECTMETADATA_VARIABLE(NAME)				case WfInsCode::NAME: break;
@@ -1286,126 +1338,54 @@ Serizliation (Metadata)
 			};
 
 			template<>
-			struct Serialization<Value>
+			struct Serialization<WfRuntimeValue>
 			{
-				static void IO(WfReader& reader, Value& value)
+				static void IO(WfReader& reader, WfRuntimeValue& value)
 				{
-					vint typeFlag = -1;
-					reader << typeFlag;
-					CHECK_ERROR(0 <= typeFlag && typeFlag <= 2, L"Failed to load value.");
-					if (typeFlag == 0)
-					{
-						value = Value();
-						return;
-					}
-
 					vint typeIndex = -1;
 					reader << typeIndex;
-					auto type = reader.context->tdIndex[typeIndex];
+					value.typeDescriptor = typeIndex == -1 ? nullptr : reader.context->tdIndex[typeIndex];
+					reader << value.type;
+					value.stringValue = WString();
 
-					if (typeFlag == 1)
+					switch (value.type)
 					{
-						value = Value::From(type);
-						return;
-					}
-
-					if (auto st = type->GetSerializableType())
-					{
-						WString text;
-						reader << text;
-						st->Deserialize(text, value);
-					}
-					else
-					{
-						switch (type->GetTypeDescriptorFlags())
-						{
-						case TypeDescriptorFlags::FlagEnum:
-						case TypeDescriptorFlags::NormalEnum:
-							{
-								vint64_t intValue;
-								reader << intValue;
-								value = type->GetEnumType()->ToEnum((vuint64_t)intValue);
-							}
-							break;
-						case TypeDescriptorFlags::Struct:
-							{
-								value = type->GetValueType()->CreateDefault();
-								vint count = 0;
-								reader << count;
-
-								for (vint i = 0; i < count; i++)
-								{
-									vint propName = 0;
-									Value propValue;
-									reader << propName << propValue;
-									reader.context->piIndex[propName]->SetValue(value, propValue);
-								}
-							}
-							break;
-						default:;
-						}
+					case WfInsType::Bool:			reader << value.boolValue; break;
+					case WfInsType::I1:				{ vint64_t intValue = 0; reader << intValue; value.i1Value = (vint8_t)intValue; break; }
+					case WfInsType::I2:				{ vint64_t intValue = 0; reader << intValue; value.i2Value = (vint16_t)intValue; break; }
+					case WfInsType::I4:				{ vint64_t intValue = 0; reader << intValue; value.i4Value = (vint32_t)intValue; break; }
+					case WfInsType::I8:				{ vint64_t intValue = 0; reader << intValue; value.i8Value = (vint64_t)intValue; break; }
+					case WfInsType::U1:				{ vuint64_t intValue = 0; reader << intValue; value.u1Value = (vuint8_t)intValue; break; }
+					case WfInsType::U2:				{ vuint64_t intValue = 0; reader << intValue; value.u2Value = (vuint16_t)intValue; break; }
+					case WfInsType::U4:				{ vuint64_t intValue = 0; reader << intValue; value.u4Value = (vuint32_t)intValue; break; }
+					case WfInsType::U8:				{ vuint64_t intValue = 0; reader << intValue; value.u8Value = (vuint64_t)intValue; break; }
+					case WfInsType::F4:				reader << value.f4Value; break;
+					case WfInsType::F8:				reader << value.f8Value; break;
+					case WfInsType::String:			reader << value.stringValue; break;
 					}
 				}
 					
-				static void IO(WfWriter& writer, Value& value)
+				static void IO(WfWriter& writer, WfRuntimeValue& value)
 				{
-					vint typeFlag = 0;
-					if (value.IsNull())
-					{
-						writer << typeFlag;
-					}
-					else
-					{
-						auto type = value.GetTypeDescriptor();
-						if (type == GetTypeDescriptor<ITypeDescriptor>())
-						{
-							typeFlag = 1;
-							type = UnboxValue<ITypeDescriptor*>(value);
-						}
-						else
-						{
-							typeFlag = 2;
-						}
-						vint typeIndex = writer.context->tdIndex[type];
-						writer << typeFlag << typeIndex;
+					vint typeIndex = -1;
+					if (value.typeDescriptor) typeIndex = writer.context->tdIndex[value.typeDescriptor];
+					writer << typeIndex;
+					writer << value.type;
 
-						if (typeFlag == 2)
-						{
-							if (auto st = type->GetSerializableType())
-							{
-								WString text;
-								st->Serialize(value, text);
-								writer << text;
-							}
-							else
-							{
-								switch (type->GetTypeDescriptorFlags())
-								{
-								case TypeDescriptorFlags::FlagEnum:
-								case TypeDescriptorFlags::NormalEnum:
-									{
-										vint64_t intValue = (vint64_t)type->GetEnumType()->FromEnum(value);
-										writer << intValue;
-									}
-									break;
-								case TypeDescriptorFlags::Struct:
-									{
-										vint count = type->GetPropertyCount();
-										writer << count;
-
-										for (vint i = 0; i < count; i++)
-										{
-											auto prop = type->GetProperty(i);
-											vint propName = writer.context->piIndex[prop];
-											Value propValue = prop->GetValue(value);
-											writer << propName << propValue;
-										}
-									}
-									break;
-								default:;
-								}
-							}
-						}
+					switch (value.type)
+					{
+					case WfInsType::Bool:			writer << value.boolValue; break;
+					case WfInsType::I1:				{ vint64_t intValue = value.i1Value; writer << intValue; break; }
+					case WfInsType::I2:				{ vint64_t intValue = value.i2Value; writer << intValue; break; }
+					case WfInsType::I4:				{ vint64_t intValue = value.i4Value; writer << intValue; break; }
+					case WfInsType::I8:				{ vint64_t intValue = value.i8Value; writer << intValue; break; }
+					case WfInsType::U1:				{ vuint64_t intValue = value.u1Value; writer << intValue; break; }
+					case WfInsType::U2:				{ vuint64_t intValue = value.u2Value; writer << intValue; break; }
+					case WfInsType::U4:				{ vuint64_t intValue = value.u4Value; writer << intValue; break; }
+					case WfInsType::U8:				{ vuint64_t intValue = value.u8Value; writer << intValue; break; }
+					case WfInsType::F4:				writer << value.f4Value; break;
+					case WfInsType::F8:				writer << value.f8Value; break;
+					case WfInsType::String:			writer << value.stringValue; break;
 					}
 				}
 			};
@@ -2346,6 +2326,8 @@ WfAssembly
 .\WFRUNTIMECONSTRUCTIONS.CPP
 ***********************************************************************/
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 namespace vl
 {
 	namespace workflow
@@ -2426,10 +2408,14 @@ WfRuntimeInterfaceInstance
 	}
 }
 
+#endif
+
 /***********************************************************************
 .\WFRUNTIMEDEBUGGER.CPP
 ***********************************************************************/
 #include <math.h>
+
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 namespace vl
 {
@@ -3200,9 +3186,13 @@ Helper Functions
 	}
 }
 
+#endif
+
 /***********************************************************************
 .\WFRUNTIMEEXECUTION.CPP
 ***********************************************************************/
+
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 namespace vl
 {
@@ -3534,7 +3524,7 @@ WfRuntimeThreadContext
 				switch (ins.code)
 				{
 				case WfInsCode::LoadValue:
-					CONTEXT_ACTION(PushValue(ins.valueParameter), L"failed to push a value to the stack.");
+					CONTEXT_ACTION(PushRuntimeValue(ins.valueParameter), L"failed to push a value to the stack.");
 					return WfRuntimeExecutionAction::ExecuteInstruction;
 				case WfInsCode::LoadFunction:
 					{
@@ -4446,6 +4436,8 @@ WfRuntimeThreadContext
 	}
 }
 
+#endif
+
 /***********************************************************************
 .\WFRUNTIMEINSTRUCTION.CPP
 ***********************************************************************/
@@ -4478,7 +4470,7 @@ WfInstruction
 			}\
 
 #define CTOR_VALUE(NAME)\
-			WfInstruction WfInstruction::NAME(const reflection::description::Value& value)\
+			WfInstruction WfInstruction::NAME(const WfRuntimeValue& value)\
 			{\
 				WfInstruction ins; \
 				ins.code = WfInsCode::NAME; \
@@ -4671,9 +4663,13 @@ WfMethodProxy
 				
 			Value WfMethodProxy::Invoke(Ptr<IValueList> arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				Array<Value> values;
 				UnboxParameter(Value::From(arguments), values);
 				return methodInfo->Invoke(thisObject, values);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 /***********************************************************************
@@ -4682,7 +4678,11 @@ WfMethodBase
 
 			Value WfMethodBase::CreateFunctionProxyInternal(const Value& thisObject)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				return Value::From(MakePtr<WfMethodProxy>(thisObject, this));
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			void WfMethodBase::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
@@ -4720,8 +4720,12 @@ WfStaticMethod
 
 			Value WfStaticMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto argumentArray = IValueList::Create(arguments);
 				return WfRuntimeLambda::Invoke(globalContext, nullptr, functionIndex, argumentArray);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfStaticMethod::WfStaticMethod()
@@ -4735,6 +4739,7 @@ WfClassConstructor
 
 			Value WfClassConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto instance = MakePtr<WfClassInstance>(GetOwnerTypeDescriptor());
 				{
 					InvokeBaseCtor(Value::From(instance.Obj()), arguments);
@@ -4748,6 +4753,9 @@ WfClassConstructor
 				{
 					return Value::From(instance.Detach());
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfClassConstructor::WfClassConstructor(Ptr<ITypeInfo> type)
@@ -4758,12 +4766,16 @@ WfClassConstructor
 
 			void WfClassConstructor::InvokeBaseCtor(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
 				capturedVariables->variables.Resize(1);
 				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
 					
 				auto argumentArray = IValueList::Create(arguments);
 				WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 /***********************************************************************
@@ -4772,12 +4784,16 @@ WfClassMethod
 
 			Value WfClassMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
 				capturedVariables->variables.Resize(1);
 				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
 
 				auto argumentArray = IValueList::Create(arguments);
 				return WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfClassMethod::WfClassMethod()
@@ -4791,6 +4807,7 @@ WfInterfaceConstructor
 
 			Value WfInterfaceConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (arguments.Count() != 1)
 				{
 					throw ArgumentCountMismtatchException(GetOwnerMethodGroup());
@@ -4852,6 +4869,9 @@ WfInterfaceConstructor
 				{
 					return Value::From(instance.Detach());
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfInterfaceConstructor::WfInterfaceConstructor(Ptr<ITypeInfo> type)
@@ -4869,8 +4889,12 @@ WfInterfaceMethod
 
 			Value WfInterfaceMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto instance = thisObject.GetRawPtr()->SafeAggregationCast<WfInterfaceInstance>();
 				return instance->GetProxy()->Invoke(this, IValueList::Create(From(arguments)));
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfInterfaceMethod::WfInterfaceMethod()
@@ -4882,6 +4906,7 @@ WfInterfaceMethod
 GetInfoRecord
 ***********************************************************************/
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			template<typename TRecord, typename TInfo>
 			Ptr<TRecord> GetInfoRecord(TInfo* target, DescriptableObject* thisObject, const WString& key, bool createIfNotExist)
 			{
@@ -4905,6 +4930,7 @@ GetInfoRecord
 				}
 				return typedValue;
 			}
+#endif
 
 /***********************************************************************
 WfEvent
@@ -4914,19 +4940,28 @@ WfEvent
 
 			Ptr<WfEvent::EventRecord> WfEvent::GetEventRecord(DescriptableObject* thisObject, bool createIfNotExist)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				return GetInfoRecord<EventRecord>(this, thisObject, EventRecordInternalPropertyName, createIfNotExist);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			Ptr<IEventHandler> WfEvent::AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto record = GetEventRecord(thisObject, true);
 				auto result = MakePtr<EventHandlerImpl>(handler);
 				record->handlers.Add(this, result);
 				return result;
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			bool WfEvent::DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto impl = handler.Cast<EventHandlerImpl>();
 				if (!impl)return false;
 				auto record = GetEventRecord(thisObject, true);
@@ -4936,10 +4971,14 @@ WfEvent
 					return true;
 				}
 				return false;
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			void WfEvent::InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto record = GetEventRecord(thisObject, false);
 				if (record)
 				{
@@ -4953,6 +4992,9 @@ WfEvent
 						}
 					}
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			Ptr<ITypeInfo> WfEvent::GetHandlerTypeInternal()
@@ -4987,19 +5029,31 @@ WfField
 
 			Ptr<WfField::FieldRecord> WfField::GetFieldRecord(DescriptableObject* thisObject, bool createIfNotExist)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				return GetInfoRecord<FieldRecord>(this, thisObject, FieldRecordInternalPropertyName, createIfNotExist);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			Value WfField::GetValueInternal(const Value& thisObject)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto record = GetFieldRecord(thisObject.GetRawPtr(), true);
 				return record->values.Get(this);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			void WfField::SetValueInternal(Value& thisObject, const Value& newValue)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto record = GetFieldRecord(thisObject.GetRawPtr(), true);
 				record->values.Set(this, newValue);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfField::WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
@@ -5027,6 +5081,7 @@ WfStructField
 
 			Value WfStructField::GetValueInternal(const Value& thisObject)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
 				if (!structValue)
 				{
@@ -5041,16 +5096,23 @@ WfStructField
 				{
 					return structValue->value.fieldValues.Values()[index];
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			void WfStructField::SetValueInternal(Value& thisObject, const Value& newValue)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
 				if (!structValue)
 				{
 					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
 				}
 				structValue->value.fieldValues.Set(this, newValue);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfStructField::WfStructField(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
@@ -5265,7 +5327,11 @@ WfStruct
 
 			Value WfStruct::WfValueType::CreateDefault()
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				return Value::From(new IValueType::TypedBox<WfStructInstance>, owner);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			IBoxedValue::CompareResult WfStruct::WfValueType::Compare(const Value& a, const Value& b)
@@ -5362,19 +5428,27 @@ WfEnum::WfEnumType
 
 			Value WfEnum::WfEnumType::ToEnum(vuint64_t value)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto boxedValue = MakePtr<IValueType::TypedBox<WfEnumInstance>>();
 				boxedValue->value.value = value;
 				return Value::From(boxedValue, owner);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			vuint64_t WfEnum::WfEnumType::FromEnum(const Value& value)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto enumValue = value.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
 				if (!enumValue)
 				{
 					throw ArgumentTypeMismtatchException(L"enumValue", owner, Value::BoxedValue, value);
 				}
 				return enumValue->value.value;
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 /***********************************************************************
@@ -5388,11 +5462,16 @@ WfEnum
 
 			Value WfEnum::WfValueType::CreateDefault()
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				return Value::From(new IValueType::TypedBox<WfEnumInstance>, owner);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			IBoxedValue::CompareResult WfEnum::WfValueType::Compare(const Value& a, const Value& b)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto ea = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
 				if (!ea)
 				{
@@ -5408,6 +5487,9 @@ WfEnum
 				if (ea->value.value < eb->value.value) return IBoxedValue::Smaller;
 				if (ea->value.value > eb->value.value)return IBoxedValue::Greater;
 				return IBoxedValue::Equal;
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfEnum::WfEnum(bool isFlags, const WString& typeName)
@@ -5431,14 +5513,19 @@ WfClassInstance
 ***********************************************************************/
 
 			WfClassInstance::WfClassInstance(ITypeDescriptor* _typeDescriptor)
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				:Description<WfClassInstance>(_typeDescriptor)
+#endif
 			{
 				classType = dynamic_cast<WfClass*>(_typeDescriptor);
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				InitializeAggregation(classType->GetExpandedBaseTypes().Count());
+#endif
 			}
 
 			WfClassInstance::~WfClassInstance()
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (classType->destructorFunctionIndex != -1)
 				{
 					auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
@@ -5448,6 +5535,7 @@ WfClassInstance
 					auto argumentArray = IValueList::Create();
 					WfRuntimeLambda::Invoke(classType->GetGlobalContext(), capturedVariables, classType->destructorFunctionIndex, argumentArray);
 				}
+#endif
 			}
 
 			void WfClassInstance::InstallBaseObject(ITypeDescriptor* td, Value& value)
@@ -5460,9 +5548,10 @@ WfClassInstance
 					}
 					value = Value();
 				}
-				
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				vint index = classType->GetExpandedBaseTypes().IndexOf(td);
 				SetAggregationParent(index, ptr);
+#endif
 			}
 
 /***********************************************************************
@@ -5470,12 +5559,14 @@ WfInterfaceInstance
 ***********************************************************************/
 
 			WfInterfaceInstance::WfInterfaceInstance(ITypeDescriptor* _typeDescriptor, Ptr<IValueInterfaceProxy> _proxy, collections::List<IMethodInfo*>& baseCtors)
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				:Description<WfInterfaceInstance>(_typeDescriptor)
 				, proxy(_proxy)
+#endif
 			{
 				Array<Value> arguments(1);
 				arguments[0] = Value::From(_proxy);
-
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				InitializeAggregation(baseCtors.Count());
 				FOREACH_INDEXER(IMethodInfo*, ctor, index, baseCtors)
 				{
@@ -5490,6 +5581,7 @@ WfInterfaceInstance
 
 					SetAggregationParent(index, ptr);
 				}
+#endif
 			}
 
 			WfInterfaceInstance::~WfInterfaceInstance()

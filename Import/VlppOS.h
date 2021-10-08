@@ -2391,6 +2391,28 @@ Serialization
 			};
 
 			template<>
+			struct Serialization<vuint64_t>
+			{
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, vuint64_t& value)
+				{
+					if (reader.input.Read(&value, sizeof(value)) != sizeof(value))
+					{
+						CHECK_FAIL(L"Deserialization failed.");
+					}
+				}
+
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, vuint64_t& value)
+				{
+					if (writer.output.Write(&value, sizeof(value)) != sizeof(value))
+					{
+						CHECK_FAIL(L"Serialization failed.");
+					}
+				}
+			};
+
+			template<>
 			struct Serialization<vint32_t>
 			{
 				template<typename TContext>
@@ -2406,6 +2428,69 @@ Serialization
 				{
 					vint64_t v = (vint64_t)value;
 					Serialization<vint64_t>::IO(writer, v);
+				}
+			};
+
+			template<>
+			struct Serialization<vuint32_t>
+			{
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, vint32_t& value)
+				{
+					vuint64_t v = 0;
+					Serialization<vuint64_t>::IO(reader, v);
+					value = (vuint32_t)v;
+				}
+
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, vint32_t& value)
+				{
+					vuint64_t v = (vuint64_t)value;
+					Serialization<vuint64_t>::IO(writer, v);
+				}
+			};
+
+			template<>
+			struct Serialization<double>
+			{
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, double& value)
+				{
+					if (reader.input.Read(&value, sizeof(value)) != sizeof(value))
+					{
+						CHECK_FAIL(L"Deserialization failed.");
+					}
+				}
+
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, double& value)
+				{
+					if (writer.output.Write(&value, sizeof(value)) != sizeof(value))
+					{
+						CHECK_FAIL(L"Serialization failed.");
+					}
+				}
+			};
+
+			template<>
+			struct Serialization<float>
+			{
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, float& value)
+				{
+					if (reader.input.Read(&value, sizeof(value)) != sizeof(value))
+					{
+						CHECK_FAIL(L"Deserialization failed.");
+					}
+				}
+
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, float& value)
+				{
+					if (writer.output.Write(&value, sizeof(value)) != sizeof(value))
+					{
+						CHECK_FAIL(L"Serialization failed.");
+					}
 				}
 			};
 

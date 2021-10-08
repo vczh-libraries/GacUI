@@ -11,6 +11,40 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppParser.h"
 
 /***********************************************************************
+.\CPP\WFMERGECPP.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Workflow::C++ Code Generator
+
+Interfaces:
+**********************************************************************/
+
+#ifndef VCZH_WORKFLOW_CPP_WFMERGECPP
+#define VCZH_WORKFLOW_CPP_WFMERGECPP
+
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace cppcodegen
+		{
+
+/***********************************************************************
+MergeCpp
+***********************************************************************/
+
+			extern WString				MergeCppMultiPlatform(const WString& code32, const WString& code64);
+			extern WString				MergeCppFileContent(const WString& dst, const WString& src);
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\EXPRESSION\WFEXPRESSION_AST.H
 ***********************************************************************/
 /***********************************************************************
@@ -1986,6 +2020,8 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfVirtualCseExpression::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment::IVisitor)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfType::IVisitor)
 				void Visit(vl::workflow::WfPredefinedType* node)override
 				{
@@ -2462,6 +2498,7 @@ namespace vl
 
 			END_INTERFACE_PROXY(vl::workflow::WfModuleUsingFragment::IVisitor)
 
+#endif
 #endif
 			/// <summary>Load all reflectable AST types, only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is off.</summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
@@ -4565,21 +4602,18 @@ Attribute Evaluator
 
 			class WfAttributeEvaluator : public Object
 			{
-				typedef reflection::description::Value														Value;
-				typedef collections::Dictionary<Ptr<WfAttribute>, Value>									AttributeValueMap;
+				typedef collections::Dictionary<Ptr<WfAttribute>, runtime::WfRuntimeValue>			AttributeValueMap;
 
 			protected:
 				analyzer::WfLexicalScopeManager*			manager;
 				AttributeValueMap							attributeValues;				// cached value for attribute
-				Ptr<runtime::WfAssembly>					attributeAssembly;				// shared assembly for evaluating attribute value
-				Ptr<runtime::WfRuntimeGlobalContext>		attributeGlobalContext;			// shared shared context for evaluating attribute value
 
 			public:
 				WfAttributeEvaluator(analyzer::WfLexicalScopeManager* _manager);
 
 				Ptr<WfAttribute>							GetAttribute(collections::List<Ptr<WfAttribute>>& atts, const WString& category, const WString& name);
 				collections::LazyList<Ptr<WfAttribute>>		GetAttributes(collections::List<Ptr<WfAttribute>>& atts, const WString& category, const WString& name);
-				Value										GetAttributeValue(Ptr<WfAttribute> att);
+				runtime::WfRuntimeValue						GetAttributeValue(Ptr<WfAttribute> att);
 			};
 
 /***********************************************************************
@@ -4993,8 +5027,6 @@ GenerateCppFiles
 			};
 
 			extern Ptr<WfCppOutput>		GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager);
-			extern WString				MergeCppMultiPlatform(const WString& code32, const WString& code64);
-			extern WString				MergeCppFileContent(const WString& dst, const WString& src);
 		}
 	}
 }

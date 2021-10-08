@@ -55,6 +55,8 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqSetQuery, presentation::GuiIqSetQuery)
 			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqQuery::IVisitor, presentation::GuiIqQuery::IVisitor)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_CLASS_MEMBER(GuiIqQuery)
 				CLASS_MEMBER_METHOD_OVERLOAD(Accept, {L"visitor"}, void(GuiIqQuery::*)(GuiIqQuery::IVisitor* visitor))
 			END_CLASS_MEMBER(GuiIqQuery)
@@ -117,8 +119,10 @@ namespace vl
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(GuiIqQuery::IVisitor::*)(GuiIqSetQuery* node))
 			END_INTERFACE_MEMBER(GuiIqQuery)
 
+#endif
 #undef PARSING_TOKEN_FIELD
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			class GuiIqTypeLoader : public vl::Object, public ITypeLoader
 			{
 			public:
@@ -139,14 +143,15 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool GuiIqLoadTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				ITypeManager* manager=GetGlobalTypeManager();
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+				ITypeManager* manager = GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiIqTypeLoader;
+					Ptr<ITypeLoader> loader = new GuiIqTypeLoader;
 					return manager->AddTypeLoader(loader);
 				}
 #endif
