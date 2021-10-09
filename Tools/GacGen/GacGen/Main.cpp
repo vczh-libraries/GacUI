@@ -1,13 +1,16 @@
 #include "GacGen.h"
 
 using namespace vl::filesystem;
+using namespace vl::presentation::controls;
 
 Array<WString>* arguments = 0;
 
 extern int SetupGacGenNativeController();
+const wchar_t* executablePath = nullptr;
 
 int wmain(int argc, wchar_t* argv[])
 {
+	executablePath = argv[0];
 	Array<WString> _arguments(argc - 1);
 	for (vint i = 1; i < argc; i++)
 	{
@@ -633,6 +636,60 @@ void DumpResource(FilePath inputPath, FilePath outputPath)
 		XmlPrint(doc, writer);
 	}
 }
+
+class GuiReflectionPlugin : public Object, public IGuiPlugin
+{
+public:
+
+	GUI_PLUGIN_NAME(GacUI_Instance_Reflection)
+	{
+	}
+
+	void Load()override
+	{
+
+#ifdef VCZH_64
+#define BINARY_NAME L"Reflection64.bin"
+#else
+#define BINARY_NAME L"Reflection32.bin"
+#endif
+		FilePath exeFolder = FilePath(executablePath).GetFolder();
+		FilePath metadataFolder = exeFolder;
+		{
+			File metadataOverride = exeFolder / L"Metadata.txt";
+			if (metadataOverride.Exists())
+			{
+				auto path = metadataOverride.ReadAllTextByBom();
+				metadataFolder = exeFolder / path;
+			}
+		}
+		FilePath binaryPath = metadataFolder / BINARY_NAME;
+
+		if (!File(binaryPath).Exists())
+		{
+			Console::WriteLine(L"Unable to find the GacUI type metadata file at: " + binaryPath.GetFullPath());
+			CHECK_FAIL(L"Unable to find the GacUI type metadata file!");
+		}
+
+#define INSTALL_SERIALIZABLE_TYPE(TYPE) serializableTypes.Add(TypeInfo<TYPE>::content.typeName, MakePtr<SerializableType<TYPE>>());
+		collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
+		REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
+		INSTALL_SERIALIZABLE_TYPE(Color)
+		INSTALL_SERIALIZABLE_TYPE(GlobalStringKey)
+		INSTALL_SERIALIZABLE_TYPE(DocumentFontSize)
+
+		FileStream fileStream(binaryPath.GetFullPath(), FileStream::ReadOnly);
+		auto typeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
+		auto tm = GetGlobalTypeManager();
+		tm->AddTypeLoader(typeLoader);
+#undef INSTALL_SERIALIZABLE_TYPE
+	}
+
+	void Unload()override
+	{
+	}
+};
+GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
 
 void GuiMain()
 {
