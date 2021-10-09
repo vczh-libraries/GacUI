@@ -3,14 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GacUISrc", "GacUISrc\GacUISrc.vcxproj", "{407401EB-C968-42B2-AEE9-47AA1658E1FF}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Host", "Host\Host.vcxproj", "{2E5D31F7-CE73-4683-8A01-64C48F40E258}"
-	ProjectSection(ProjectDependencies) = postProject
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF} = {407401EB-C968-42B2-AEE9-47AA1658E1FF}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCppCodegen", "TestCppCodegen\TestCppCodegen.vcxproj", "{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "UnitTest\UnitTest.vcxproj", "{456FDC57-9687-4607-86A6-D43B7E72E740}"
 EndProject
@@ -71,11 +64,6 @@ Global
 		Source_GacUI\Source_GacUI.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
 		Source_GacUI_Windows\Source_GacUI_Windows.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
 		Source_Import\Source_Import.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
-		Source_GacUI\Source_GacUI.vcxitems*{407401eb-c968-42b2-aee9-47aa1658e1ff}*SharedItemsImports = 4
-		Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems*{407401eb-c968-42b2-aee9-47aa1658e1ff}*SharedItemsImports = 4
-		Source_GacUI_Reflection\Source_GacUI_Reflection.vcxitems*{407401eb-c968-42b2-aee9-47aa1658e1ff}*SharedItemsImports = 4
-		Source_GacUI_Windows\Source_GacUI_Windows.vcxitems*{407401eb-c968-42b2-aee9-47aa1658e1ff}*SharedItemsImports = 4
-		Source_Import\Source_Import.vcxitems*{407401eb-c968-42b2-aee9-47aa1658e1ff}*SharedItemsImports = 4
 		Source_GacUI_Windows\Source_GacUI_Windows.vcxitems*{4a3faa16-fd8e-4de4-804a-95f0f45cbd82}*SharedItemsImports = 9
 		Source_GacUI\Source_GacUI.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4
 		Source_GacUI_Reflection\Source_GacUI_Reflection.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4
@@ -106,18 +94,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Debug|Win32.ActiveCfg = Debug|Win32
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Debug|Win32.Build.0 = Debug|Win32
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Debug|x64.ActiveCfg = Debug|x64
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Debug|x64.Build.0 = Debug|x64
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.DebugNoReflection|Win32.ActiveCfg = DebugNoReflection|Win32
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.DebugNoReflection|Win32.Build.0 = DebugNoReflection|Win32
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.DebugNoReflection|x64.ActiveCfg = DebugNoReflection|x64
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.DebugNoReflection|x64.Build.0 = DebugNoReflection|x64
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Release|Win32.ActiveCfg = Release|Win32
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Release|Win32.Build.0 = Release|Win32
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Release|x64.ActiveCfg = Release|x64
-		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Release|x64.Build.0 = Release|x64
 		{2E5D31F7-CE73-4683-8A01-64C48F40E258}.Debug|Win32.ActiveCfg = Debug|Win32
 		{2E5D31F7-CE73-4683-8A01-64C48F40E258}.Debug|Win32.Build.0 = Debug|Win32
 		{2E5D31F7-CE73-4683-8A01-64C48F40E258}.Debug|x64.ActiveCfg = Debug|x64
@@ -128,18 +104,6 @@ Global
 		{2E5D31F7-CE73-4683-8A01-64C48F40E258}.Release|Win32.Build.0 = Release|Win32
 		{2E5D31F7-CE73-4683-8A01-64C48F40E258}.Release|x64.ActiveCfg = Release|x64
 		{2E5D31F7-CE73-4683-8A01-64C48F40E258}.Release|x64.Build.0 = Release|x64
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.Debug|Win32.Build.0 = Debug|Win32
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.Debug|x64.ActiveCfg = Debug|x64
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.Debug|x64.Build.0 = Debug|x64
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.DebugNoReflection|Win32.ActiveCfg = DebugNoReflection|Win32
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.DebugNoReflection|Win32.Build.0 = DebugNoReflection|Win32
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.DebugNoReflection|x64.ActiveCfg = DebugNoReflection|x64
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.DebugNoReflection|x64.Build.0 = DebugNoReflection|x64
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.Release|Win32.ActiveCfg = Release|Win32
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.Release|Win32.Build.0 = Release|Win32
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.Release|x64.ActiveCfg = Release|x64
-		{1986AFA3-BCCD-4EA4-A29E-D90E515D5E9D}.Release|x64.Build.0 = Release|x64
 		{456FDC57-9687-4607-86A6-D43B7E72E740}.Debug|Win32.ActiveCfg = Debug|Win32
 		{456FDC57-9687-4607-86A6-D43B7E72E740}.Debug|Win32.Build.0 = Debug|Win32
 		{456FDC57-9687-4607-86A6-D43B7E72E740}.Debug|x64.ActiveCfg = Debug|x64
