@@ -1,0 +1,16 @@
+<Resource>
+  <Instance name="ThemeResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestTheme" xmlns:x="testtheme::*">
+      <ThemeTemplates Name="TestSkin">
+      </ThemeTemplates>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
+      <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480" TopMost="true">
+        <Label Font="fontFamily:Segoe UI size:32" Text="Welcome to GacUI Playground!"/>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
