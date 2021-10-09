@@ -807,7 +807,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc157_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_darkskin_BottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf257_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_darkskin_BottomScrollButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf258_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_darkskin_BottomScrollButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<BottomScrollButtonTemplateConstructor>;
 #endif
 	protected:
@@ -827,7 +827,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc157_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_darkskin_BottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf257_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_darkskin_BottomScrollButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf258_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_darkskin_BottomScrollButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<BottomScrollButtonTemplate>;
 #endif
 	public:
@@ -849,7 +849,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf59_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_darkskin_ButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf60_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_darkskin_ButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf61_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_darkskin_ButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ButtonTemplateConstructor>;
 #endif
 	protected:
@@ -882,7 +882,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf59_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_darkskin_ButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf60_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_darkskin_ButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf61_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_darkskin_ButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ButtonTemplate>;
 #endif
 	public:
@@ -908,7 +908,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf67_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf68_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf69_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CheckBoxTemplateConstructor>;
 #endif
 	protected:
@@ -952,7 +952,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf67_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf68_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf69_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CheckBoxTemplate>;
 #endif
 	public:
@@ -982,7 +982,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf90_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf91_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf92_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ComboBoxTemplateConstructor>;
 #endif
 	protected:
@@ -1025,7 +1025,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf90_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf91_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf92_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ComboBoxTemplate>;
 #endif
 	public:
@@ -1035,7 +1035,7 @@ namespace darkskin
 
 	class CustomControlTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<CustomControlTemplateConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CustomControlTemplateConstructor>;
 #endif
 	protected:
@@ -1048,7 +1048,7 @@ namespace darkskin
 	class CustomControlTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::darkskin::CustomControlTemplateConstructor, public ::vl::reflection::Description<CustomControlTemplate>
 	{
 		friend class ::darkskin::CustomControlTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CustomControlTemplate>;
 #endif
 	public:
@@ -1062,7 +1062,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc57_DarkSkin_darkskin_DateButtonTemplateConstructor___vwsn_darkskin_DateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf130_DarkSkin_darkskin_DateButtonTemplateConstructor___vwsn_darkskin_DateButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf131_DarkSkin_darkskin_DateButtonTemplateConstructor___vwsn_darkskin_DateButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateButtonTemplateConstructor>;
 #endif
 	protected:
@@ -1083,7 +1083,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc57_DarkSkin_darkskin_DateButtonTemplateConstructor___vwsn_darkskin_DateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf130_DarkSkin_darkskin_DateButtonTemplateConstructor___vwsn_darkskin_DateButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf131_DarkSkin_darkskin_DateButtonTemplateConstructor___vwsn_darkskin_DateButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DateButtonTemplate>;
 #endif
 	public:
@@ -1106,7 +1106,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf137_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_darkskin_DatePickerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf138_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_darkskin_DatePickerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf139_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_darkskin_DatePickerTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DatePickerTemplateConstructor>;
 #endif
 	protected:
@@ -1133,7 +1133,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf137_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_darkskin_DatePickerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf138_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_darkskin_DatePickerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf139_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_darkskin_DatePickerTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DatePickerTemplate>;
 #endif
 	public:
@@ -1143,7 +1143,7 @@ namespace darkskin
 
 	class DocumentLabelTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentLabelTemplateConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentLabelTemplateConstructor>;
 #endif
 	protected:
@@ -1156,7 +1156,7 @@ namespace darkskin
 	class DocumentLabelTemplate : public ::vl::presentation::templates::GuiDocumentLabelTemplate, public ::darkskin::DocumentLabelTemplateConstructor, public ::vl::reflection::Description<DocumentLabelTemplate>
 	{
 		friend class ::darkskin::DocumentLabelTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentLabelTemplate>;
 #endif
 	public:
@@ -1168,7 +1168,7 @@ namespace darkskin
 	{
 		friend class ::vl_workflow_global::__vwsnc23_DarkSkin_darkskin_DocumentTextBoxTemplateConstructor___vwsn_darkskin_DocumentTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf78_DarkSkin_darkskin_DocumentTextBoxTemplateConstructor___vwsn_darkskin_DocumentTextBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTextBoxTemplateConstructor>;
 #endif
 	protected:
@@ -1186,7 +1186,7 @@ namespace darkskin
 		friend class ::darkskin::DocumentTextBoxTemplateConstructor;
 		friend class ::vl_workflow_global::__vwsnc23_DarkSkin_darkskin_DocumentTextBoxTemplateConstructor___vwsn_darkskin_DocumentTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf78_DarkSkin_darkskin_DocumentTextBoxTemplateConstructor___vwsn_darkskin_DocumentTextBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTextBoxTemplate>;
 #endif
 	public:
@@ -1200,7 +1200,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf79_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_darkskin_DocumentViewerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf80_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_darkskin_DocumentViewerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf81_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_darkskin_DocumentViewerTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentViewerTemplateConstructor>;
 #endif
 	protected:
@@ -1221,7 +1221,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf79_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_darkskin_DocumentViewerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf80_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_darkskin_DocumentViewerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf81_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_darkskin_DocumentViewerTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentViewerTemplate>;
 #endif
 	public:
@@ -1243,7 +1243,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf96_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_darkskin_ExpandingDecoratorTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf97_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_darkskin_ExpandingDecoratorTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf98_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_darkskin_ExpandingDecoratorTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ExpandingDecoratorTemplateConstructor>;
 #endif
 	protected:
@@ -1274,7 +1274,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf96_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_darkskin_ExpandingDecoratorTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf97_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_darkskin_ExpandingDecoratorTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf98_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_darkskin_ExpandingDecoratorTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ExpandingDecoratorTemplate>;
 #endif
 	public:
@@ -1292,7 +1292,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf141_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_darkskin_GroupBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf142_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_darkskin_GroupBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf143_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_darkskin_GroupBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GroupBoxTemplateConstructor>;
 #endif
 	protected:
@@ -1321,7 +1321,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf141_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_darkskin_GroupBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf142_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_darkskin_GroupBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf143_DarkSkin_darkskin_GroupBoxTemplateConstructor___vwsn_darkskin_GroupBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GroupBoxTemplate>;
 #endif
 	public:
@@ -1333,7 +1333,7 @@ namespace darkskin
 	{
 		friend class ::vl_workflow_global::__vwsnc158_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_darkskin_HScrollHandleTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf259_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_darkskin_HScrollHandleTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollHandleTemplateConstructor>;
 #endif
 	protected:
@@ -1350,7 +1350,7 @@ namespace darkskin
 		friend class ::darkskin::HScrollHandleTemplateConstructor;
 		friend class ::vl_workflow_global::__vwsnc158_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_darkskin_HScrollHandleTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf259_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_darkskin_HScrollHandleTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollHandleTemplate>;
 #endif
 	public:
@@ -1369,7 +1369,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf263_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf264_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf265_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollTemplateConstructor>;
 #endif
 	protected:
@@ -1405,7 +1405,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf263_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf264_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf265_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HScrollTemplate>;
 #endif
 	public:
@@ -1421,7 +1421,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf266_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_darkskin_HTrackerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf267_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_darkskin_HTrackerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf268_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_darkskin_HTrackerTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HTrackerTemplateConstructor>;
 #endif
 	protected:
@@ -1449,7 +1449,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf266_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_darkskin_HTrackerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf267_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_darkskin_HTrackerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf268_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_darkskin_HTrackerTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HTrackerTemplate>;
 #endif
 	public:
@@ -1462,7 +1462,7 @@ namespace darkskin
 	{
 		friend class ::vl_workflow_global::__vwsnc40_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_darkskin_ItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf99_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_darkskin_ItemBackgroundTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ItemBackgroundTemplateConstructor>;
 #endif
 	protected:
@@ -1479,7 +1479,7 @@ namespace darkskin
 		friend class ::darkskin::ItemBackgroundTemplateConstructor;
 		friend class ::vl_workflow_global::__vwsnc40_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_darkskin_ItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf99_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_darkskin_ItemBackgroundTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ItemBackgroundTemplate>;
 #endif
 	public:
@@ -1495,7 +1495,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf144_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_darkskin_LabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf145_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_darkskin_LabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf146_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_darkskin_LabelTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LabelTemplateConstructor>;
 #endif
 	protected:
@@ -1515,7 +1515,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf144_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_darkskin_LabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf145_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_darkskin_LabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf146_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_darkskin_LabelTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LabelTemplate>;
 #endif
 	public:
@@ -1529,7 +1529,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc165_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_darkskin_LeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf269_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_darkskin_LeftScrollButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf270_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_darkskin_LeftScrollButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LeftScrollButtonTemplateConstructor>;
 #endif
 	protected:
@@ -1549,7 +1549,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc165_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_darkskin_LeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf269_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_darkskin_LeftScrollButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf270_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_darkskin_LeftScrollButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LeftScrollButtonTemplate>;
 #endif
 	public:
@@ -1585,7 +1585,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf111_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf112_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf113_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewColumnHeaderTemplateConstructor>;
 #endif
 	protected:
@@ -1641,7 +1641,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf111_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf112_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf113_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewColumnHeaderTemplate>;
 #endif
 	public:
@@ -1657,7 +1657,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf116_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_darkskin_ListViewTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf117_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_darkskin_ListViewTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf118_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_darkskin_ListViewTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTemplateConstructor>;
 #endif
 	protected:
@@ -1680,7 +1680,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf116_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_darkskin_ListViewTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf117_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_darkskin_ListViewTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf118_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_darkskin_ListViewTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTemplate>;
 #endif
 	public:
@@ -1699,7 +1699,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf313_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf314_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf315_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuBarButtonTemplateConstructor>;
 #endif
 	protected:
@@ -1724,7 +1724,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf313_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf314_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf315_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuBarButtonTemplate>;
 #endif
 	public:
@@ -1761,7 +1761,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf327_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_darkskin_MenuItemButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf328_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_darkskin_MenuItemButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf329_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_darkskin_MenuItemButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuItemButtonTemplateConstructor>;
 #endif
 	protected:
@@ -1813,7 +1813,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf327_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_darkskin_MenuItemButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf328_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_darkskin_MenuItemButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf329_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_darkskin_MenuItemButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuItemButtonTemplate>;
 #endif
 	public:
@@ -1823,7 +1823,7 @@ namespace darkskin
 
 	class MenuSplitterTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MenuSplitterTemplateConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuSplitterTemplateConstructor>;
 #endif
 	protected:
@@ -1839,7 +1839,7 @@ namespace darkskin
 	class MenuSplitterTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::darkskin::MenuSplitterTemplateConstructor, public ::vl::reflection::Description<MenuSplitterTemplate>
 	{
 		friend class ::darkskin::MenuSplitterTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MenuSplitterTemplate>;
 #endif
 	public:
@@ -1853,7 +1853,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf307_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf308_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf309_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MultilineTextBoxTemplateConstructor>;
 #endif
 	protected:
@@ -1874,7 +1874,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf307_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf308_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf309_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MultilineTextBoxTemplate>;
 #endif
 	public:
@@ -1886,7 +1886,7 @@ namespace darkskin
 	{
 		friend class ::vl_workflow_global::__vwsnc166_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_darkskin_ProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf271_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_darkskin_ProgressBarTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ProgressBarTemplateConstructor>;
 #endif
 	protected:
@@ -1907,7 +1907,7 @@ namespace darkskin
 		friend class ::darkskin::ProgressBarTemplateConstructor;
 		friend class ::vl_workflow_global::__vwsnc166_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_darkskin_ProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf271_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_darkskin_ProgressBarTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ProgressBarTemplate>;
 #endif
 	public:
@@ -1933,7 +1933,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf75_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_darkskin_RadioButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf76_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_darkskin_RadioButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf77_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_darkskin_RadioButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RadioButtonTemplateConstructor>;
 #endif
 	protected:
@@ -1977,7 +1977,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf75_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_darkskin_RadioButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf76_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_darkskin_RadioButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf77_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_darkskin_RadioButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RadioButtonTemplate>;
 #endif
 	public:
@@ -1987,7 +1987,7 @@ namespace darkskin
 
 	class RibbonButtonsTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonButtonsTemplateConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonButtonsTemplateConstructor>;
 #endif
 	protected:
@@ -2000,7 +2000,7 @@ namespace darkskin
 	class RibbonButtonsTemplate : public ::vl::presentation::templates::GuiRibbonButtonsTemplate, public ::darkskin::RibbonButtonsTemplateConstructor, public ::vl::reflection::Description<RibbonButtonsTemplate>
 	{
 		friend class ::darkskin::RibbonButtonsTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonButtonsTemplate>;
 #endif
 	public:
@@ -2016,7 +2016,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf156_DarkSkin_darkskin_RibbonGalleryDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonGalleryDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf157_DarkSkin_darkskin_RibbonGalleryDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonGalleryDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf158_DarkSkin_darkskin_RibbonGalleryDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonGalleryDropdownButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGalleryDropdownButtonTemplateConstructor>;
 #endif
 	protected:
@@ -2040,7 +2040,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf156_DarkSkin_darkskin_RibbonGalleryDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonGalleryDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf157_DarkSkin_darkskin_RibbonGalleryDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonGalleryDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf158_DarkSkin_darkskin_RibbonGalleryDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonGalleryDropdownButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGalleryDropdownButtonTemplate>;
 #endif
 	public:
@@ -2051,7 +2051,7 @@ namespace darkskin
 	class RibbonGalleryItemListTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonGalleryItemListTemplateConstructor>
 	{
 		friend struct ::vl_workflow_global::__vwsnf159_DarkSkin_darkskin_RibbonGalleryItemListTemplateConstructor___vwsn_darkskin_RibbonGalleryItemListTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGalleryItemListTemplateConstructor>;
 #endif
 	protected:
@@ -2065,7 +2065,7 @@ namespace darkskin
 	{
 		friend class ::darkskin::RibbonGalleryItemListTemplateConstructor;
 		friend struct ::vl_workflow_global::__vwsnf159_DarkSkin_darkskin_RibbonGalleryItemListTemplateConstructor___vwsn_darkskin_RibbonGalleryItemListTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGalleryItemListTemplate>;
 #endif
 	public:
@@ -2092,7 +2092,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf171_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf172_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf173_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGalleryTemplateConstructor>;
 #endif
 	protected:
@@ -2136,7 +2136,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf171_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf172_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf173_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGalleryTemplate>;
 #endif
 	public:
@@ -2150,7 +2150,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc86_DarkSkin_darkskin_RibbonGroupExpandButtonTemplateConstructor___vwsn_darkskin_RibbonGroupExpandButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf174_DarkSkin_darkskin_RibbonGroupExpandButtonTemplateConstructor___vwsn_darkskin_RibbonGroupExpandButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf175_DarkSkin_darkskin_RibbonGroupExpandButtonTemplateConstructor___vwsn_darkskin_RibbonGroupExpandButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGroupExpandButtonTemplateConstructor>;
 #endif
 	protected:
@@ -2169,7 +2169,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc86_DarkSkin_darkskin_RibbonGroupExpandButtonTemplateConstructor___vwsn_darkskin_RibbonGroupExpandButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf174_DarkSkin_darkskin_RibbonGroupExpandButtonTemplateConstructor___vwsn_darkskin_RibbonGroupExpandButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf175_DarkSkin_darkskin_RibbonGroupExpandButtonTemplateConstructor___vwsn_darkskin_RibbonGroupExpandButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGroupExpandButtonTemplate>;
 #endif
 	public:
@@ -2179,7 +2179,7 @@ namespace darkskin
 
 	class RibbonGroupMenuTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonGroupMenuTemplateConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGroupMenuTemplateConstructor>;
 #endif
 	protected:
@@ -2195,7 +2195,7 @@ namespace darkskin
 	class RibbonGroupMenuTemplate : public ::vl::presentation::templates::GuiMenuTemplate, public ::darkskin::RibbonGroupMenuTemplateConstructor, public ::vl::reflection::Description<RibbonGroupMenuTemplate>
 	{
 		friend class ::darkskin::RibbonGroupMenuTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGroupMenuTemplate>;
 #endif
 	public:
@@ -2215,7 +2215,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf180_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf181_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf182_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGroupTemplateConstructor>;
 #endif
 	protected:
@@ -2248,7 +2248,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf180_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf181_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf182_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonGroupTemplate>;
 #endif
 	public:
@@ -2264,7 +2264,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf183_DarkSkin_darkskin_RibbonIconLabelTemplateConstructor___vwsn_darkskin_RibbonIconLabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf184_DarkSkin_darkskin_RibbonIconLabelTemplateConstructor___vwsn_darkskin_RibbonIconLabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf185_DarkSkin_darkskin_RibbonIconLabelTemplateConstructor___vwsn_darkskin_RibbonIconLabelTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonIconLabelTemplateConstructor>;
 #endif
 	protected:
@@ -2287,7 +2287,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf183_DarkSkin_darkskin_RibbonIconLabelTemplateConstructor___vwsn_darkskin_RibbonIconLabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf184_DarkSkin_darkskin_RibbonIconLabelTemplateConstructor___vwsn_darkskin_RibbonIconLabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf185_DarkSkin_darkskin_RibbonIconLabelTemplateConstructor___vwsn_darkskin_RibbonIconLabelTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonIconLabelTemplate>;
 #endif
 	public:
@@ -2314,7 +2314,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf192_DarkSkin_darkskin_RibbonLargeButtonTemplateConstructor___vwsn_darkskin_RibbonLargeButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf193_DarkSkin_darkskin_RibbonLargeButtonTemplateConstructor___vwsn_darkskin_RibbonLargeButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf194_DarkSkin_darkskin_RibbonLargeButtonTemplateConstructor___vwsn_darkskin_RibbonLargeButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonLargeButtonTemplateConstructor>;
 #endif
 	protected:
@@ -2354,7 +2354,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf192_DarkSkin_darkskin_RibbonLargeButtonTemplateConstructor___vwsn_darkskin_RibbonLargeButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf193_DarkSkin_darkskin_RibbonLargeButtonTemplateConstructor___vwsn_darkskin_RibbonLargeButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf194_DarkSkin_darkskin_RibbonLargeButtonTemplateConstructor___vwsn_darkskin_RibbonLargeButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonLargeButtonTemplate>;
 #endif
 	public:
@@ -2385,7 +2385,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf203_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf204_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf205_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonLargeDropdownButtonTemplateConstructor>;
 #endif
 	protected:
@@ -2433,7 +2433,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf203_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf204_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf205_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonLargeDropdownButtonTemplate>;
 #endif
 	public:
@@ -2461,7 +2461,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf213_DarkSkin_darkskin_RibbonLargeSplitButtonTemplateConstructor___vwsn_darkskin_RibbonLargeSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf214_DarkSkin_darkskin_RibbonLargeSplitButtonTemplateConstructor___vwsn_darkskin_RibbonLargeSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf215_DarkSkin_darkskin_RibbonLargeSplitButtonTemplateConstructor___vwsn_darkskin_RibbonLargeSplitButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonLargeSplitButtonTemplateConstructor>;
 #endif
 	protected:
@@ -2504,7 +2504,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf213_DarkSkin_darkskin_RibbonLargeSplitButtonTemplateConstructor___vwsn_darkskin_RibbonLargeSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf214_DarkSkin_darkskin_RibbonLargeSplitButtonTemplateConstructor___vwsn_darkskin_RibbonLargeSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf215_DarkSkin_darkskin_RibbonLargeSplitButtonTemplateConstructor___vwsn_darkskin_RibbonLargeSplitButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonLargeSplitButtonTemplate>;
 #endif
 	public:
@@ -2531,7 +2531,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf222_DarkSkin_darkskin_RibbonSmallButtonTemplateConstructor___vwsn_darkskin_RibbonSmallButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf223_DarkSkin_darkskin_RibbonSmallButtonTemplateConstructor___vwsn_darkskin_RibbonSmallButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf224_DarkSkin_darkskin_RibbonSmallButtonTemplateConstructor___vwsn_darkskin_RibbonSmallButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSmallButtonTemplateConstructor>;
 #endif
 	protected:
@@ -2570,7 +2570,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf222_DarkSkin_darkskin_RibbonSmallButtonTemplateConstructor___vwsn_darkskin_RibbonSmallButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf223_DarkSkin_darkskin_RibbonSmallButtonTemplateConstructor___vwsn_darkskin_RibbonSmallButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf224_DarkSkin_darkskin_RibbonSmallButtonTemplateConstructor___vwsn_darkskin_RibbonSmallButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSmallButtonTemplate>;
 #endif
 	public:
@@ -2603,7 +2603,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf234_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf235_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf236_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSmallDropdownButtonTemplateConstructor>;
 #endif
 	protected:
@@ -2652,7 +2652,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf234_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf235_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf236_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSmallDropdownButtonTemplate>;
 #endif
 	public:
@@ -2674,7 +2674,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf240_DarkSkin_darkskin_RibbonSmallIconLabelTemplateConstructor___vwsn_darkskin_RibbonSmallIconLabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf241_DarkSkin_darkskin_RibbonSmallIconLabelTemplateConstructor___vwsn_darkskin_RibbonSmallIconLabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf242_DarkSkin_darkskin_RibbonSmallIconLabelTemplateConstructor___vwsn_darkskin_RibbonSmallIconLabelTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSmallIconLabelTemplateConstructor>;
 #endif
 	protected:
@@ -2706,7 +2706,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf240_DarkSkin_darkskin_RibbonSmallIconLabelTemplateConstructor___vwsn_darkskin_RibbonSmallIconLabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf241_DarkSkin_darkskin_RibbonSmallIconLabelTemplateConstructor___vwsn_darkskin_RibbonSmallIconLabelTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf242_DarkSkin_darkskin_RibbonSmallIconLabelTemplateConstructor___vwsn_darkskin_RibbonSmallIconLabelTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSmallIconLabelTemplate>;
 #endif
 	public:
@@ -2738,7 +2738,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf252_DarkSkin_darkskin_RibbonSmallSplitButtonTemplateConstructor___vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf253_DarkSkin_darkskin_RibbonSmallSplitButtonTemplateConstructor___vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf254_DarkSkin_darkskin_RibbonSmallSplitButtonTemplateConstructor___vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSmallSplitButtonTemplateConstructor>;
 #endif
 	protected:
@@ -2787,7 +2787,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf252_DarkSkin_darkskin_RibbonSmallSplitButtonTemplateConstructor___vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf253_DarkSkin_darkskin_RibbonSmallSplitButtonTemplateConstructor___vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf254_DarkSkin_darkskin_RibbonSmallSplitButtonTemplateConstructor___vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSmallSplitButtonTemplate>;
 #endif
 	public:
@@ -2809,7 +2809,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf153_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_darkskin_RibbonSplitArrowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf154_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_darkskin_RibbonSplitArrowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf155_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_darkskin_RibbonSplitArrowTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSplitArrowTemplateConstructor>;
 #endif
 	protected:
@@ -2841,7 +2841,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf153_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_darkskin_RibbonSplitArrowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf154_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_darkskin_RibbonSplitArrowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf155_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_darkskin_RibbonSplitArrowTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonSplitArrowTemplate>;
 #endif
 	public:
@@ -2855,7 +2855,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc155_DarkSkin_darkskin_RibbonToolstripHeaderTemplateConstructor___vwsn_darkskin_RibbonToolstripHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf255_DarkSkin_darkskin_RibbonToolstripHeaderTemplateConstructor___vwsn_darkskin_RibbonToolstripHeaderTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf256_DarkSkin_darkskin_RibbonToolstripHeaderTemplateConstructor___vwsn_darkskin_RibbonToolstripHeaderTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonToolstripHeaderTemplateConstructor>;
 #endif
 	protected:
@@ -2874,7 +2874,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc155_DarkSkin_darkskin_RibbonToolstripHeaderTemplateConstructor___vwsn_darkskin_RibbonToolstripHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf255_DarkSkin_darkskin_RibbonToolstripHeaderTemplateConstructor___vwsn_darkskin_RibbonToolstripHeaderTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf256_DarkSkin_darkskin_RibbonToolstripHeaderTemplateConstructor___vwsn_darkskin_RibbonToolstripHeaderTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonToolstripHeaderTemplate>;
 #endif
 	public:
@@ -2884,7 +2884,7 @@ namespace darkskin
 
 	class RibbonToolstripMenuTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonToolstripMenuTemplateConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonToolstripMenuTemplateConstructor>;
 #endif
 	protected:
@@ -2910,7 +2910,7 @@ namespace darkskin
 	class RibbonToolstripMenuTemplate : public ::vl::presentation::templates::GuiRibbonToolstripMenuTemplate, public ::darkskin::RibbonToolstripMenuTemplateConstructor, public ::vl::reflection::Description<RibbonToolstripMenuTemplate>
 	{
 		friend class ::darkskin::RibbonToolstripMenuTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonToolstripMenuTemplate>;
 #endif
 	public:
@@ -2920,7 +2920,7 @@ namespace darkskin
 
 	class RibbonToolstripsTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<RibbonToolstripsTemplateConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonToolstripsTemplateConstructor>;
 #endif
 	protected:
@@ -2933,7 +2933,7 @@ namespace darkskin
 	class RibbonToolstripsTemplate : public ::vl::presentation::templates::GuiRibbonToolstripsTemplate, public ::darkskin::RibbonToolstripsTemplateConstructor, public ::vl::reflection::Description<RibbonToolstripsTemplate>
 	{
 		friend class ::darkskin::RibbonToolstripsTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonToolstripsTemplate>;
 #endif
 	public:
@@ -2947,7 +2947,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc168_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_darkskin_RightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf272_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_darkskin_RightScrollButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf273_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_darkskin_RightScrollButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RightScrollButtonTemplateConstructor>;
 #endif
 	protected:
@@ -2967,7 +2967,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc168_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_darkskin_RightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf272_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_darkskin_RightScrollButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf273_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_darkskin_RightScrollButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RightScrollButtonTemplate>;
 #endif
 	public:
@@ -2979,7 +2979,7 @@ namespace darkskin
 	{
 		friend struct ::vl_workflow_global::__vwsnf274_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_darkskin_ScrollViewTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf275_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_darkskin_ScrollViewTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ScrollViewTemplateConstructor>;
 #endif
 	protected:
@@ -2998,7 +2998,7 @@ namespace darkskin
 		friend class ::darkskin::ScrollViewTemplateConstructor;
 		friend struct ::vl_workflow_global::__vwsnf274_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_darkskin_ScrollViewTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf275_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_darkskin_ScrollViewTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ScrollViewTemplate>;
 #endif
 	public:
@@ -3014,7 +3014,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf147_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_darkskin_ShortcutKeyTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf148_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_darkskin_ShortcutKeyTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf149_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_darkskin_ShortcutKeyTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ShortcutKeyTemplateConstructor>;
 #endif
 	protected:
@@ -3038,7 +3038,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf147_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_darkskin_ShortcutKeyTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf148_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_darkskin_ShortcutKeyTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf149_DarkSkin_darkskin_ShortcutKeyTemplateConstructor___vwsn_darkskin_ShortcutKeyTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ShortcutKeyTemplate>;
 #endif
 	public:
@@ -3050,7 +3050,7 @@ namespace darkskin
 	{
 		friend class ::vl_workflow_global::__vwsnc191_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf310_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SinglelineTextBoxTemplateConstructor>;
 #endif
 	protected:
@@ -3068,7 +3068,7 @@ namespace darkskin
 		friend class ::darkskin::SinglelineTextBoxTemplateConstructor;
 		friend class ::vl_workflow_global::__vwsnc191_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf310_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SinglelineTextBoxTemplate>;
 #endif
 	public:
@@ -3092,7 +3092,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf292_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_darkskin_TabHeaderButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf293_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_darkskin_TabHeaderButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf294_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_darkskin_TabHeaderButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabHeaderButtonTemplateConstructor>;
 #endif
 	protected:
@@ -3124,7 +3124,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf292_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_darkskin_TabHeaderButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf293_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_darkskin_TabHeaderButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf294_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_darkskin_TabHeaderButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabHeaderButtonTemplate>;
 #endif
 	public:
@@ -3150,7 +3150,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf297_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_darkskin_TabHeaderTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf298_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_darkskin_TabHeaderTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf299_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_darkskin_TabHeaderTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabHeaderTemplateConstructor>;
 #endif
 	protected:
@@ -3174,7 +3174,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf297_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_darkskin_TabHeaderTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf298_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_darkskin_TabHeaderTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf299_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_darkskin_TabHeaderTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabHeaderTemplate>;
 #endif
 	public:
@@ -3200,7 +3200,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf304_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf305_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf306_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabTemplateConstructor>;
 #endif
 	protected:
@@ -3234,7 +3234,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf304_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf305_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf306_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabTemplate>;
 #endif
 	public:
@@ -3256,7 +3256,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf122_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_darkskin_TextListTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf123_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_darkskin_TextListTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf124_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_darkskin_TextListTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTemplateConstructor>;
 #endif
 	protected:
@@ -3280,7 +3280,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf122_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_darkskin_TextListTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf123_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_darkskin_TextListTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf124_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_darkskin_TextListTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTemplate>;
 #endif
 	public:
@@ -3345,7 +3345,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf7_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf8_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ThemeConstructor>;
 #endif
 	protected:
@@ -3413,7 +3413,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf7_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf8_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf9_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Theme>;
 #endif
 	public:
@@ -3434,7 +3434,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf336_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_darkskin_ToolstripButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf337_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_darkskin_ToolstripButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf338_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_darkskin_ToolstripButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripButtonTemplateConstructor>;
 #endif
 	protected:
@@ -3464,7 +3464,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf336_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_darkskin_ToolstripButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf337_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_darkskin_ToolstripButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf338_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_darkskin_ToolstripButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripButtonTemplate>;
 #endif
 	public:
@@ -3491,7 +3491,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf345_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf346_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf347_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripDropdownButtonTemplateConstructor>;
 #endif
 	protected:
@@ -3531,7 +3531,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf345_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf346_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf347_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripDropdownButtonTemplate>;
 #endif
 	public:
@@ -3541,7 +3541,7 @@ namespace darkskin
 
 	class ToolstripMenuTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ToolstripMenuTemplateConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripMenuTemplateConstructor>;
 #endif
 	protected:
@@ -3557,7 +3557,7 @@ namespace darkskin
 	class ToolstripMenuTemplate : public ::vl::presentation::templates::GuiMenuTemplate, public ::darkskin::ToolstripMenuTemplateConstructor, public ::vl::reflection::Description<ToolstripMenuTemplate>
 	{
 		friend class ::darkskin::ToolstripMenuTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripMenuTemplate>;
 #endif
 	public:
@@ -3573,7 +3573,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf330_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_darkskin_ToolstripSplitArrowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf331_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_darkskin_ToolstripSplitArrowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf332_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_darkskin_ToolstripSplitArrowTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitArrowTemplateConstructor>;
 #endif
 	protected:
@@ -3596,7 +3596,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf330_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_darkskin_ToolstripSplitArrowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf331_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_darkskin_ToolstripSplitArrowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf332_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_darkskin_ToolstripSplitArrowTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitArrowTemplate>;
 #endif
 	public:
@@ -3622,7 +3622,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf354_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf355_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf356_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitButtonTemplateConstructor>;
 #endif
 	protected:
@@ -3662,7 +3662,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf354_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf355_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf356_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitButtonTemplate>;
 #endif
 	public:
@@ -3672,7 +3672,7 @@ namespace darkskin
 
 	class ToolstripSplitterTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ToolstripSplitterTemplateConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitterTemplateConstructor>;
 #endif
 	protected:
@@ -3688,7 +3688,7 @@ namespace darkskin
 	class ToolstripSplitterTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::darkskin::ToolstripSplitterTemplateConstructor, public ::vl::reflection::Description<ToolstripSplitterTemplate>
 	{
 		friend class ::darkskin::ToolstripSplitterTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripSplitterTemplate>;
 #endif
 	public:
@@ -3698,7 +3698,7 @@ namespace darkskin
 
 	class ToolstripTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ToolstripTemplateConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripTemplateConstructor>;
 #endif
 	protected:
@@ -3712,7 +3712,7 @@ namespace darkskin
 	class ToolstripTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::darkskin::ToolstripTemplateConstructor, public ::vl::reflection::Description<ToolstripTemplate>
 	{
 		friend class ::darkskin::ToolstripTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripTemplate>;
 #endif
 	public:
@@ -3722,7 +3722,7 @@ namespace darkskin
 
 	class TooltipTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TooltipTemplateConstructor>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TooltipTemplateConstructor>;
 #endif
 	protected:
@@ -3739,7 +3739,7 @@ namespace darkskin
 	class TooltipTemplate : public ::vl::presentation::templates::GuiWindowTemplate, public ::darkskin::TooltipTemplateConstructor, public ::vl::reflection::Description<TooltipTemplate>
 	{
 		friend class ::darkskin::TooltipTemplateConstructor;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TooltipTemplate>;
 #endif
 	public:
@@ -3753,7 +3753,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc170_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_darkskin_TopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf276_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_darkskin_TopScrollButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf277_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_darkskin_TopScrollButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TopScrollButtonTemplateConstructor>;
 #endif
 	protected:
@@ -3773,7 +3773,7 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc170_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_darkskin_TopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf276_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_darkskin_TopScrollButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf277_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_darkskin_TopScrollButtonTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TopScrollButtonTemplate>;
 #endif
 	public:
@@ -3789,7 +3789,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf127_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_darkskin_TreeViewTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf128_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_darkskin_TreeViewTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf129_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_darkskin_TreeViewTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTemplateConstructor>;
 #endif
 	protected:
@@ -3812,7 +3812,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf127_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_darkskin_TreeViewTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf128_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_darkskin_TreeViewTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf129_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_darkskin_TreeViewTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TreeViewTemplate>;
 #endif
 	public:
@@ -3824,7 +3824,7 @@ namespace darkskin
 	{
 		friend class ::vl_workflow_global::__vwsnc171_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_darkskin_VScrollHandleTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf278_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_darkskin_VScrollHandleTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollHandleTemplateConstructor>;
 #endif
 	protected:
@@ -3841,7 +3841,7 @@ namespace darkskin
 		friend class ::darkskin::VScrollHandleTemplateConstructor;
 		friend class ::vl_workflow_global::__vwsnc171_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_darkskin_VScrollHandleTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf278_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_darkskin_VScrollHandleTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollHandleTemplate>;
 #endif
 	public:
@@ -3860,7 +3860,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf282_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf283_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf284_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollTemplateConstructor>;
 #endif
 	protected:
@@ -3896,7 +3896,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf282_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf283_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf284_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VScrollTemplate>;
 #endif
 	public:
@@ -3912,7 +3912,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf285_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_darkskin_VTrackerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf286_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_darkskin_VTrackerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf287_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_darkskin_VTrackerTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VTrackerTemplateConstructor>;
 #endif
 	protected:
@@ -3940,7 +3940,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf285_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_darkskin_VTrackerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf286_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_darkskin_VTrackerTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf287_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_darkskin_VTrackerTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VTrackerTemplate>;
 #endif
 	public:
@@ -3985,7 +3985,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf374_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf375_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf376_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<WindowTemplateConstructor>;
 #endif
 	protected:
@@ -4063,7 +4063,7 @@ namespace darkskin
 		friend struct ::vl_workflow_global::__vwsnf374_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf375_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf376_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<WindowTemplate>;
 #endif
 	public:
