@@ -4,6 +4,7 @@
 - **Metadata_Test**: Test the generated binary files
 - **GacUI_Compiler**: Compile `Host/Resources/FullControlTest/Resource.xml` and get both binary and C++ files, with `VCZH_DEBUG_METAONLY_REFLECTION`
 - **GacUI_Host**: Load the compiled binary file and run
+- **GacUI_Playground**: Compile and load XML with generated DarkSkin
 - **CppTest**: Compile and run generated C++ files with `VCZH_DEBUG_NO_REFLECTION`
 - **CppTest_Metaonly**: Compile and run generated C++ files with `VCZH_DEBUG_METAONLY_REFLECTION`
 - **CppTest_Reflection**: Compile and run generated C++ files

@@ -33,16 +33,21 @@ GuiInstanceSharedScript
 				{
 					return false;
 				}
-				context = nullptr;
 				binaryToLoad = nullptr;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+				context = nullptr;
+#endif
 			}
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			if (initializeContext && !context)
 			{
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				context = new WfRuntimeGlobalContext(assembly);
 				LoadFunction<void()>(context, L"<initialize>")();
+			}
 #else
+			if (initializeContext)
+			{
 				if (assembly->typeImpl)
 				{
 					if (auto tm = GetGlobalTypeManager())
@@ -50,8 +55,8 @@ GuiInstanceSharedScript
 						tm->AddTypeLoader(assembly->typeImpl);
 					}
 				}
-#endif
 			}
+#endif
 			return true;
 		}
 
@@ -63,7 +68,9 @@ GuiInstanceSharedScript
 
 		void GuiInstanceCompiledWorkflow::UnloadTypes()
 		{
-#ifndef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+			context = nullptr;
+#else
 			if (assembly->typeImpl)
 			{
 				if (auto tm = GetGlobalTypeManager())
@@ -72,7 +79,6 @@ GuiInstanceSharedScript
 				}
 			}
 #endif
-			context = nullptr;
 		}
 
 /***********************************************************************
