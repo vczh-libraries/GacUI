@@ -33,7 +33,7 @@ WString GetResourcePath()
 void GuiMain()
 {
 #define DARKSKIN_BINARY			L"../GacUISrc/Generated_DarkSkin/Resource/DarkSkin.UI.bin"
-#define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource/FullControlTest.UI.bin"
+#define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource/Demo.UI.bin"
 	{
 		FileStream fileStream(GetResourcePath() + DARKSKIN_BINARY, FileStream::ReadOnly);
 		GetResourceManager()->LoadResourceOrPending(fileStream, GuiResourceUsage::InstanceClass);
