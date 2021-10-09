@@ -279,7 +279,7 @@ namespace vl
 					writer.WriteLine(L"\t\t\t\t{");
 					writer.WriteLine(L"\t\t\t\t\tGUI_PLUGIN_DEPEND(GacUI_Res_Resource);");
 					writer.WriteLine(L"\t\t\t\t\tGUI_PLUGIN_DEPEND(GacUI_Res_TypeResolvers);");
-					writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
+					writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 					writer.WriteLine(L"\t\t\t\t\tGUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);");
 					writer.WriteLine(L"\t\t\t\t\tGUI_PLUGIN_DEPEND(GacUI_Compiler_WorkflowTypeResolvers);");
 					writer.WriteLine(L"#endif");
@@ -1547,100 +1547,6 @@ GuiInstanceGradientAnimation::Compile
 	}
 }
 
-
-/***********************************************************************
-.\GUIINSTANCEHELPERTYPES.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace helper_types
-		{
-		}
-	}
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-
-	namespace reflection
-	{
-		namespace description
-		{
-			using namespace presentation::helper_types;
-
-/***********************************************************************
-Type Declaration
-***********************************************************************/
-
-			GUIREFLECTIONHELPERTYPES_TYPELIST(IMPL_VL_TYPE_INFO)
-
-#define _ ,
-
-			BEGIN_STRUCT_MEMBER(SiteValue)
-				STRUCT_MEMBER(row)
-				STRUCT_MEMBER(column)
-				STRUCT_MEMBER(rowSpan)
-				STRUCT_MEMBER(columnSpan)
-			END_STRUCT_MEMBER(SiteValue)
-
-#undef _
-		}
-	}
-
-	namespace presentation
-	{
-		using namespace reflection::description;
-		using namespace controls;
-
-/***********************************************************************
-Type Loader
-***********************************************************************/
-
-		class GuiHelperTypesLoader : public Object, public ITypeLoader
-		{
-		public:
-			void Load(ITypeManager* manager)
-			{
-				GUIREFLECTIONHELPERTYPES_TYPELIST(ADD_TYPE_INFO)
-			}
-
-			void Unload(ITypeManager* manager)
-			{
-			}
-		};
-
-/***********************************************************************
-GuiHelperTypesLoaderPlugin
-***********************************************************************/
-
-		class GuiHelperTypesLoaderPlugin : public Object, public IGuiPlugin
-		{
-		public:
-
-			GUI_PLUGIN_NAME(GacUI_Instance_ReflectionHelper)
-			{
-				GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
-			}
-
-			void Load()override
-			{
-				ITypeManager* manager=GetGlobalTypeManager();
-				if(manager)
-				{
-					Ptr<ITypeLoader> loader=new GuiHelperTypesLoader;
-					manager->AddTypeLoader(loader);
-				}
-			}
-
-			void Unload()override
-			{
-			}
-		};
-		GUI_REGISTER_PLUGIN(GuiHelperTypesLoaderPlugin)
-	}
-#endif
-}
 
 /***********************************************************************
 .\GUIINSTANCELOADER.CPP
@@ -4369,14 +4275,13 @@ Instance Type Resolver (Instance)
 #define UNLOAD_ASSEMBLY(PATH)\
 			if (auto compiled = Workflow_GetModule(context, PATH, {}))\
 			{\
-				compiled->context = nullptr;\
+				compiled->UnloadTypes();\
 			}\
 
 #define DELETE_ASSEMBLY(PATH)\
 			if (auto compiled = Workflow_GetModule(context, PATH, {}))\
 			{\
-				compiled->context = nullptr;\
-				compiled->assembly = nullptr;\
+				compiled->UnloadAssembly();\
 			}\
 
 			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
@@ -7284,14 +7189,6 @@ GuiCellCompositionInstanceLoader
 								auto call = MakePtr<WfCallExpression>();
 								call->function = refSetSite;
 
-								auto GetValueText = [](const Value& value)
-								{
-									WString result;
-									auto st = value.GetTypeDescriptor()->GetSerializableType();
-									st->Serialize(value, result);
-									return result;
-								};
-
 								{
 									auto arg = MakePtr<WfIntegerExpression>();
 									arg->value.value = itow(site.row);
@@ -8293,8 +8190,8 @@ GuiPredefinedInstanceLoadersPlugin
 				GUI_PLUGIN_NAME(GacUI_Instance_TypeLoaders)
 				{
 					GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
-					GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
 					GUI_PLUGIN_DEPEND(GacUI_Instance);
+					GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
 				}
 
 				void Load()override
@@ -9302,6 +9199,8 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqSetQuery, presentation::GuiIqSetQuery)
 			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqQuery::IVisitor, presentation::GuiIqQuery::IVisitor)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_CLASS_MEMBER(GuiIqQuery)
 				CLASS_MEMBER_METHOD_OVERLOAD(Accept, {L"visitor"}, void(GuiIqQuery::*)(GuiIqQuery::IVisitor* visitor))
 			END_CLASS_MEMBER(GuiIqQuery)
@@ -9364,8 +9263,10 @@ namespace vl
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(GuiIqQuery::IVisitor::*)(GuiIqSetQuery* node))
 			END_INTERFACE_MEMBER(GuiIqQuery)
 
+#endif
 #undef PARSING_TOKEN_FIELD
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			class GuiIqTypeLoader : public vl::Object, public ITypeLoader
 			{
 			public:
@@ -9386,14 +9287,15 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool GuiIqLoadTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				ITypeManager* manager=GetGlobalTypeManager();
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+				ITypeManager* manager = GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiIqTypeLoader;
+					Ptr<ITypeLoader> loader = new GuiIqTypeLoader;
 					return manager->AddTypeLoader(loader);
 				}
 #endif

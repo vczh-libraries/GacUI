@@ -6,7 +6,6 @@ DEVELOPER: Zihan Chen(vczh)
 
 #include "..\..\Source\Compiler\GuiCppGen.cpp"
 #include "..\..\Source\Compiler\GuiInstanceAnimation.cpp"
-#include "..\..\Source\Compiler\GuiInstanceHelperTypes.cpp"
 #include "..\..\Source\Compiler\GuiInstanceLoader.cpp"
 #include "..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceBinders.cpp"
 #include "..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceDeserializers.cpp"

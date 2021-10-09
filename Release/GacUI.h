@@ -19756,6 +19756,20 @@ GacUI Reflection Helper
 
 namespace vl
 {
+	namespace presentation
+	{
+		namespace helper_types
+		{
+			struct SiteValue
+			{
+				vint			row = 0;
+				vint			column = 0;
+				vint			rowSpan = 1;
+				vint			columnSpan = 1;
+			};
+		}
+	}
+
 	namespace reflection
 	{
 		namespace description

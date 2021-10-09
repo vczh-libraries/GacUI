@@ -15,7 +15,6 @@ DEVELOPER: Zihan Chen(vczh)
 
 #include "..\..\Source\Compiler\GuiCppGen.h"
 #include "..\..\Source\Compiler\GuiInstanceAnimation.h"
-#include "..\..\Source\Compiler\GuiInstanceHelperTypes.h"
 #include "..\..\Source\Compiler\GuiInstanceLocalizedStrings.h"
 #include "..\..\Source\Compiler\GuiInstanceSharedScript.h"
 #include "..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.h"

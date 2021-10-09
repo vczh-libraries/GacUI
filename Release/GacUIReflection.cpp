@@ -15,10 +15,21 @@ namespace vl
 		using namespace stream;
 		using namespace workflow::runtime;
 		using namespace controls;
+		using namespace reflection;
+		using namespace reflection::description;
 
 /***********************************************************************
 GuiInstanceSharedScript
 ***********************************************************************/
+
+		GuiInstanceCompiledWorkflow::GuiInstanceCompiledWorkflow()
+		{
+		}
+
+		GuiInstanceCompiledWorkflow::~GuiInstanceCompiledWorkflow()
+		{
+			UnloadAssembly();
+		}
 
 		bool GuiInstanceCompiledWorkflow::Initialize(bool initializeContext, workflow::runtime::WfAssemblyLoadErrors& loadErrors)
 		{
@@ -29,16 +40,52 @@ GuiInstanceSharedScript
 				{
 					return false;
 				}
-				context = nullptr;
 				binaryToLoad = nullptr;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+				context = nullptr;
+#endif
 			}
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			if (initializeContext && !context)
 			{
 				context = new WfRuntimeGlobalContext(assembly);
 				LoadFunction<void()>(context, L"<initialize>")();
 			}
+#else
+			if (initializeContext)
+			{
+				if (assembly->typeImpl)
+				{
+					if (auto tm = GetGlobalTypeManager())
+					{
+						tm->AddTypeLoader(assembly->typeImpl);
+					}
+				}
+			}
+#endif
 			return true;
+		}
+
+		void GuiInstanceCompiledWorkflow::UnloadAssembly()
+		{
+			UnloadTypes();
+			assembly = nullptr;
+		}
+
+		void GuiInstanceCompiledWorkflow::UnloadTypes()
+		{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+			context = nullptr;
+#else
+			if (assembly->typeImpl)
+			{
+				if (auto tm = GetGlobalTypeManager())
+				{
+					tm->RemoveTypeLoader(assembly->typeImpl);
+				}
+			}
+#endif
 		}
 
 /***********************************************************************
@@ -192,8 +239,9 @@ namespace vl
 		{
 			using namespace parsing::xml;
 			using namespace presentation;
+			using namespace helper_types;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 /***********************************************************************
 Type Declaration
@@ -203,6 +251,13 @@ Type Declaration
 
 #define GUI_TEMPLATE_PROPERTY_REFLECTION(CLASS, TYPE, NAME)\
 	CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(NAME)
+
+			BEGIN_STRUCT_MEMBER(SiteValue)
+				STRUCT_MEMBER(row)
+				STRUCT_MEMBER(column)
+				STRUCT_MEMBER(rowSpan)
+				STRUCT_MEMBER(columnSpan)
+			END_STRUCT_MEMBER(SiteValue)
 
 			BEGIN_STRUCT_MEMBER(Color)
 				valueType = new SerializableValueType<Color>();
@@ -869,7 +924,7 @@ Type Loader
 
 			bool LoadGuiBasicTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
@@ -898,7 +953,7 @@ namespace vl
 			using namespace presentation::compositions;
 			using namespace presentation::controls;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 #define _ ,
 
@@ -1388,7 +1443,7 @@ Type Loader
 
 			bool LoadGuiCompositionTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
@@ -1420,7 +1475,7 @@ namespace vl
 			using namespace presentation::elements::text;
 			using namespace presentation::theme;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 #define _ ,
 
@@ -2879,7 +2934,7 @@ Type Loader
 
 			bool LoadGuiControlTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
@@ -2907,7 +2962,7 @@ namespace vl
 			using namespace presentation;
 			using namespace presentation::elements;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 #define _ ,
 
@@ -3186,7 +3241,7 @@ Type Loader
 
 			bool LoadGuiElementTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
@@ -3212,7 +3267,7 @@ namespace vl
 		{
 			using namespace presentation::compositions;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 /***********************************************************************
 Type Declaration
@@ -3341,7 +3396,7 @@ Type Loader
 
 			bool LoadGuiEventTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
@@ -3380,6 +3435,8 @@ namespace vl
 
 #undef GUIREFLECTIONTEMPLATES_IMPL_VL_TYPE_INFO
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			extern bool LoadGuiBasicTypes();
 			extern bool LoadGuiElementTypes();
 			extern bool LoadGuiCompositionTypes();
@@ -3417,6 +3474,7 @@ namespace vl
 				}
 			};
 			GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
+#endif
 		}
 	}
 }
@@ -3437,7 +3495,7 @@ namespace vl
 			using namespace presentation::controls::list;
 			using namespace presentation::templates;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 #define _ ,
 
@@ -3675,7 +3733,7 @@ Type Loader
 
 			bool LoadGuiTemplateTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{

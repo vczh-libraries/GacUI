@@ -59,9 +59,16 @@ namespace vl
 
 			AssemblyType										type = AssemblyType::Shared;
 			Ptr<workflow::runtime::WfAssembly>					assembly;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			Ptr<workflow::runtime::WfRuntimeGlobalContext>		context;
+#endif
+
+			GuiInstanceCompiledWorkflow();
+			~GuiInstanceCompiledWorkflow();
 
 			bool												Initialize(bool initializeContext, workflow::runtime::WfAssemblyLoadErrors& loadErrors);
+			void												UnloadAssembly();
+			void												UnloadTypes();
 		};
 	}
 }
@@ -101,6 +108,7 @@ Type List (Basic)
 ***********************************************************************/
 
 #define GUIREFLECTIONBASIC_TYPELIST(F)\
+			F(presentation::helper_types::SiteValue)\
 			F(presentation::Color)\
 			F(presentation::Alignment)\
 			F(presentation::AxisDirection)\
@@ -481,6 +489,9 @@ Type List (Controls)
 Type List
 ***********************************************************************/
 
+#define GUIREFLECTIONHELPERTYPES_TYPELIST(F)\
+			F(presentation::helper_types::SiteValue)\
+
 #define GUIREFLECTIONTEMPLATES_DECL_TYPE_INFO(NAME, BASE) DECL_TYPE_INFO(presentation::templates::NAME)
 
 			GUIREFLECTIONBASIC_TYPELIST(DECL_TYPE_INFO)
@@ -491,6 +502,8 @@ Type List
 			GUIREFLECTIONCONTROLS_TYPELIST(DECL_TYPE_INFO)
 
 #undef GUIREFLECTIONTEMPLATES_DECL_TYPE_INFO
+
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 #pragma warning(push)
 #pragma warning(disable:4250)
@@ -1169,6 +1182,7 @@ Interface Proxy (Controls)
 
 #pragma warning(pop)
 
+#endif
 #endif
 
 		}
