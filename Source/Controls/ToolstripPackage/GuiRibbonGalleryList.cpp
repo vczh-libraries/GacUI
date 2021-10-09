@@ -1,5 +1,6 @@
 #include "GuiRibbonGalleryList.h"
 #include "GuiRibbonImpl.h"
+#include "../../GraphicsComposition/GuiGraphicsRepeatComposition.h"
 #include "../Templates/GuiThemeStyleFactory.h"
 
 /* CodePack:BeginIgnore() */
