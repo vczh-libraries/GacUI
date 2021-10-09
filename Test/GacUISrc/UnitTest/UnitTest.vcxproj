@@ -55,6 +55,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -179,11 +180,6 @@
     <ClCompile Include="TestResource.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GacUISrc\GacUISrc.vcxproj">
-      <Project>{407401eb-c968-42b2-aee9-47aa1658e1ff}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="..\..\Resources\Resource.FailedInstance.Control.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor1.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml.txt" />
@@ -228,6 +224,11 @@
     <Xml Include="..\..\Resources\Resource.WrongInstanceStyle.xml" />
     <Xml Include="..\..\Resources\Resource.WrongSyntax.xml" />
     <Xml Include="..\..\Resources\Resource.WrongSyntax2.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lib_GacUI_Reflection\Lib_GacUI_Reflection.vcxproj">
+      <Project>{543b32d9-e229-472a-9d11-9bf12c7982bd}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
