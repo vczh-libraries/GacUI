@@ -78,7 +78,7 @@ GuiInstanceSharedScript
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			context = nullptr;
 #else
-			if (assembly->typeImpl)
+			if (assembly && assembly->typeImpl)
 			{
 				if (auto tm = GetGlobalTypeManager())
 				{
