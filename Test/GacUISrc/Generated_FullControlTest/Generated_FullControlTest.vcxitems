@@ -23,7 +23,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source\Demo.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source\DemoReflection.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\DemoReflection.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source\DemoResource.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Source\DocumentEditorBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Source\MainWindow.cpp" />

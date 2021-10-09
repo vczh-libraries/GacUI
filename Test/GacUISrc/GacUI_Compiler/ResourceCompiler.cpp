@@ -153,7 +153,6 @@ FilePath CompileResources(
 		input->reflection = WfCppFileSwitch::Enabled;
 		input->comment = L"Source: Host.sln";
 		input->normalIncludes.Add(L"../../../../Source/GacUI.h");
-		input->normalIncludes.Add(L"../Helpers.h");
 		input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h");
 
 		FilePath cppFolder = outputCppFolder;

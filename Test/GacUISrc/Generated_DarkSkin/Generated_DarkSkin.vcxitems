@@ -15,7 +15,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source\DarkSkin.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source\DarkSkinReflection.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\DarkSkinReflection.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source\DarkSkinResource.cpp" />
   </ItemGroup>
   <ItemGroup>
