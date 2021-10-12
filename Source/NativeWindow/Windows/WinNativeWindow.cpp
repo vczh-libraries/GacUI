@@ -1375,8 +1375,8 @@ WindowsForm
 						if (hAppIcon == NULL) hAppIcon = (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED);
 						bool isVisible = IsVisible();
 						if (isVisible) SendMessage(handle, WM_SETREDRAW, (WPARAM)FALSE, NULL);
-						SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)newReplacementHIcon);
-						SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)newReplacementHIcon);
+						SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)hAppIcon);
+						SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
 						if (isVisible) SendMessage(handle, WM_SETREDRAW, (WPARAM)TRUE, NULL);
 
 						if (this == GetCurrentController()->WindowService()->GetMainWindow())
