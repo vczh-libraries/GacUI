@@ -109,7 +109,7 @@ Ribbon Containers
 			};
 
 			/// <summary>Ribbon group control, adding to the Groups property of a <see cref="GuiRibbonTabPage"/>.</summary>
-			class GuiRibbonGroup : public GuiControl, public Description<GuiRibbonGroup>
+			class GuiRibbonGroup : public GuiControl, protected compositions::GuiAltActionHostBase, public Description<GuiRibbonGroup>
 			{
 				friend class GuiRibbonGroupItemCollection;
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(RibbonGroupTemplate, GuiControl)
@@ -139,6 +139,8 @@ Ribbon Containers
 				GuiToolstripButton*									dropdownButton = nullptr;
 				GuiMenu*											dropdownMenu = nullptr;
 
+				bool												IsAltAvailable()override;
+				compositions::IGuiAltActionHost*					GetActivatingAltHost()override;
 				void												OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void												OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void												OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);

@@ -278,6 +278,23 @@ GuiRibbonGroup
 				dropdownMenu->SetControlTemplate(ct->GetSubMenuTemplate());
 			}
 
+			bool GuiRibbonGroup::IsAltAvailable()
+			{
+				return alt != L"";
+			}
+
+			compositions::IGuiAltActionHost* GuiRibbonGroup::GetActivatingAltHost()
+			{
+				if (IsAltAvailable())
+				{
+					return this;
+				}
+				else
+				{
+					return GuiControl::GetActivatingAltHost();
+				}
+			}
+
 			void GuiRibbonGroup::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				dropdownMenu->GetBoundsComposition()->SetPreferredMinSize(Size(0, containerComposition->GetBounds().Height()));
@@ -333,6 +350,9 @@ GuiRibbonGroup
 				:GuiControl(themeName)
 				, items(this)
 			{
+				SetAltComposition(boundsComposition);
+				SetAltControl(this, false);
+
 				commandExecutor = new CommandExecutor(this);
 				{
 					stack = new GuiStackComposition();
