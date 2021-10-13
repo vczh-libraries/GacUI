@@ -10,22 +10,28 @@
     <Doc>
       <Content>
         <p>
-          <nop>abcdefg</nop><sp/>
-          <nop>hijklmn</nop><sp/>
-          <nop>opqrst</nop><sp/>
-          <nop>uvwxyz</nop><sp/>
+          <font size="36">
+            <nop>abcdefg</nop><sp/>
+            <nop>hijklmn</nop><sp/>
+            <nop>opqrst</nop><sp/>
+            <nop>uvwxyz</nop><sp/>
+          </font>
         </p>
         <p>
-          <nop>abcdefg</nop><sp/>
-          <nop>hijklmn</nop><sp/>
-          <nop>opqrst</nop><sp/>
-          <nop>uvwxyz</nop><sp/>
+          <font size="36">
+            <nop>abcdefg</nop><sp/>
+            <nop>hijklmn</nop><sp/>
+            <nop>opqrst</nop><sp/>
+            <nop>uvwxyz</nop><sp/>
+          </font>
         </p>
         <p>
-          <nop>abcdefg</nop><sp/>
-          <nop>hijklmn</nop><sp/>
-          <nop>opqrst</nop><sp/>
-          <nop>uvwxyz</nop><sp/>
+          <font size="36">
+            <nop>abcdefg</nop><sp/>
+            <nop>hijklmn</nop><sp/>
+            <nop>opqrst</nop><sp/>
+            <nop>uvwxyz</nop><sp/>
+          </font>
         </p>
       </Content>
     </Doc>
