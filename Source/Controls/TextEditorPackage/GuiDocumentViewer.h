@@ -73,9 +73,15 @@ GuiDocumentCommonInterface
 				Ptr<DocumentModel>							baselineDocument;
 				DocumentItemMap								documentItems;
 				GuiControl*									documentControl = nullptr;
-				compositions::GuiGraphicsComposition*		documentMouseArea = nullptr;
 				elements::GuiDocumentElement*				documentElement = nullptr;
 				compositions::GuiBoundsComposition*			documentComposition = nullptr;
+
+				compositions::GuiGraphicsComposition*		documentMouseArea = nullptr;
+				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseMoveHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseDownHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseUpHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseLeaveHandler;
+
 				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
 				bool										dragging = false;
 				EditMode									editMode = EditMode::ViewOnly;
@@ -96,6 +102,7 @@ GuiDocumentCommonInterface
 																compositions::GuiGraphicsComposition* eventComposition,
 																compositions::GuiGraphicsComposition* focusableComposition
 																);
+				void										ReplaceMouseArea(compositions::GuiGraphicsComposition* _mouseArea);
 
 				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package);
 				void										ActivateActiveHyperlink(bool activate);

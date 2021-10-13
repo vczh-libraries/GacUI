@@ -214,7 +214,6 @@ GuiDocumentCommonInterface
 			)
 			{
 				documentControl = _sender;
-				documentMouseArea = _mouseArea;
 
 				documentElement = GuiDocumentElement::Create();
 				documentElement->SetCallback(this);
@@ -224,11 +223,7 @@ GuiDocumentCommonInterface
 				documentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
 				documentComposition->SetAlignmentToParent(Margin(5, 5, 5, 5));
 				_container->AddChild(documentComposition);
-
-				documentMouseArea->GetEventReceiver()->mouseMove.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseMove);
-				documentMouseArea->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
-				documentMouseArea->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
-				documentMouseArea->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
+				ReplaceMouseArea(_mouseArea);
 
 				focusableComposition->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiDocumentCommonInterface::OnCaretNotify);
 				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnGotFocus);
@@ -246,6 +241,30 @@ GuiDocumentCommonInterface
 				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiDocumentCommonInterface::InvokeUndoRedoChanged);
 				undoRedoProcessor->ModifiedChanged.Add(this, &GuiDocumentCommonInterface::InvokeModifiedChanged);
 				SetDocument(new DocumentModel);
+			}
+
+			void GuiDocumentCommonInterface::ReplaceMouseArea(compositions::GuiGraphicsComposition* _mouseArea)
+			{
+				if (documentMouseArea)
+				{
+					documentMouseArea->GetEventReceiver()->mouseMove.Detach(onMouseMoveHandler);
+					documentMouseArea->GetEventReceiver()->leftButtonDown.Detach(onMouseDownHandler);
+					documentMouseArea->GetEventReceiver()->leftButtonUp.Detach(onMouseUpHandler);
+					documentMouseArea->GetEventReceiver()->mouseLeave.Detach(onMouseLeaveHandler);
+
+					onMouseMoveHandler = nullptr;
+					onMouseDownHandler = nullptr;
+					onMouseUpHandler = nullptr;
+					onMouseLeaveHandler = nullptr;
+				}
+				documentMouseArea = _mouseArea;
+				if (documentMouseArea)
+				{
+					onMouseMoveHandler = documentMouseArea->GetEventReceiver()->mouseMove.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseMove);
+					onMouseDownHandler = documentMouseArea->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
+					onMouseUpHandler = documentMouseArea->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
+					onMouseLeaveHandler = documentMouseArea->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
+				}
 			}
 
 			void GuiDocumentCommonInterface::SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package)
@@ -442,17 +461,27 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::UpdateCursor(INativeCursor* cursor)
 			{
-				documentMouseArea->SetAssociatedCursor(cursor);
+				if (documentMouseArea)
+				{
+					documentMouseArea->SetAssociatedCursor(cursor);
+				}
 			}
 
 			Point GuiDocumentCommonInterface::GetMouseOffset()
 			{
-				auto documentBounds = documentComposition->GetGlobalBounds();
-				auto mouseAreaBounds = documentMouseArea->GetGlobalBounds();
-				return Point(
-					documentBounds.x1 - mouseAreaBounds.x1,
-					documentBounds.y1 - mouseAreaBounds.y1
+				if (documentMouseArea)
+				{
+					auto documentBounds = documentComposition->GetGlobalBounds();
+					auto mouseAreaBounds = documentMouseArea->GetGlobalBounds();
+					return Point(
+						documentBounds.x1 - mouseAreaBounds.x1,
+						documentBounds.y1 - mouseAreaBounds.y1
 					);
+				}
+				else
+				{
+					return Point(0, 0);
+				}
 			}
 
 			void GuiDocumentCommonInterface::OnMouseMove(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
@@ -1173,6 +1202,7 @@ GuiDocumentViewer
 
 			void GuiDocumentViewer::BeforeControlTemplateUninstalled_()
 			{
+				ReplaceMouseArea(nullptr);
 			}
 
 			void GuiDocumentViewer::AfterControlTemplateInstalled_(bool initialize)
@@ -1184,6 +1214,7 @@ GuiDocumentViewer
 					documentElement->SetCaretColor(ct->GetCaretColor());
 					SetDocument(GetDocument());
 				}
+				ReplaceMouseArea(containerComposition->GetParent());
 			}
 
 			void GuiDocumentViewer::UpdateDisplayFont()
@@ -1221,7 +1252,7 @@ GuiDocumentViewer
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
-				InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, focusableComposition);
+				InstallDocumentViewer(this, containerComposition->GetParent(), containerComposition, boundsComposition, focusableComposition);
 
 				SetExtendToFullWidth(true);
 				SetHorizontalAlwaysVisible(false);
