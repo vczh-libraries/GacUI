@@ -718,7 +718,7 @@ WindowsDirect2DParagraph (Formatting)
 				{
 					DWRITE_TEXT_METRICS metrics;
 					textLayout->GetMetrics(&metrics);
-					return (vint)metrics.height;
+					return (vint)ceil(metrics.height);
 				}
 
 /***********************************************************************
