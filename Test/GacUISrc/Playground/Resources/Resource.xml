@@ -15,6 +15,18 @@
           <nop>opqrst</nop><sp/>
           <nop>uvwxyz</nop><sp/>
         </p>
+        <p>
+          <nop>abcdefg</nop><sp/>
+          <nop>hijklmn</nop><sp/>
+          <nop>opqrst</nop><sp/>
+          <nop>uvwxyz</nop><sp/>
+        </p>
+        <p>
+          <nop>abcdefg</nop><sp/>
+          <nop>hijklmn</nop><sp/>
+          <nop>opqrst</nop><sp/>
+          <nop>uvwxyz</nop><sp/>
+        </p>
       </Content>
     </Doc>
   </Doc>
@@ -22,6 +34,7 @@
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
+        <att.BoundsComposition-set PreferredMinSize="x:320 y:240"/>
         <DocumentViewer EditMode="Selectable" Document-uri="res://DocLetters">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
         </DocumentViewer>
