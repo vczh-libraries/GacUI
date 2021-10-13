@@ -1224,7 +1224,6 @@ GuiDocumentViewer
 				InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, focusableComposition);
 
 				SetExtendToFullWidth(true);
-				SetExtendToFullHeight(true);
 				SetHorizontalAlwaysVisible(false);
 			}
 
