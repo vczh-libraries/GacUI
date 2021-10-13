@@ -767,49 +767,106 @@ WindowsDirect2DParagraph (Rendering)
 					return true;
 				}
 
+				struct BackgroundRenderer
+				{
+					IWindowsDirect2DRenderTarget* renderTarget = nullptr;
+					ID2D1SolidColorBrush* lastBackgroundBrush = nullptr;
+					FLOAT lbx1, lby1, lbx2, lby2;
+
+					void RenderBackground()
+					{
+						if (lastBackgroundBrush)
+						{
+							renderTarget->GetDirect2DRenderTarget()->FillRectangle(
+								D2D1::RectF(lbx1, lby1, lbx2, lby2),
+								lastBackgroundBrush
+							);
+							lastBackgroundBrush = nullptr;
+						}
+					}
+
+					void SubmitBackground(ID2D1SolidColorBrush* brush, FLOAT x1, FLOAT y1, FLOAT x2, FLOAT y2)
+					{
+						if (lastBackgroundBrush)
+						{
+							if (lastBackgroundBrush != brush)
+							{
+								RenderBackground();
+							}
+							else
+							{
+								FLOAT yc = (y1 + y2) / 2;
+								if (yc<lby1 || yc>lby2)
+								{
+									RenderBackground();
+								}
+							}
+						}
+
+						if (lastBackgroundBrush)
+						{
+							if (lbx1 > x1) lbx1 = x1;
+							if (lby1 > y1) lby1 = y1;
+							if (lbx2 < x2) lbx2 = x2;
+							if (lby2 < y2) lby2 = y2;
+						}
+						else
+						{
+							lastBackgroundBrush = brush;
+							lbx1 = x1;
+							lby1 = y1;
+							lbx2 = x2;
+							lby2 = y2;
+						}
+					}
+				};
+
 				void Render(Rect bounds)override
 				{
 					paragraphOffset = bounds.LeftTop();
 					PrepareFormatData();
-					for (vint i = 0; i < backgroundColors.Count(); i++)
 					{
-						TextRange key = backgroundColors.Keys()[i];
-						Color color = backgroundColors.Values()[i];
-						if (color.a > 0)
+						BackgroundRenderer backgroundRenderer;
+						backgroundRenderer.renderTarget = renderTarget;
+
+						for (vint i = 0; i < backgroundColors.Count(); i++)
 						{
-							ID2D1SolidColorBrush* brush = renderTarget->CreateDirect2DBrush(color);
-
-							vint start = key.start;
-							if (start < 0)
+							TextRange key = backgroundColors.Keys()[i];
+							Color color = backgroundColors.Values()[i];
+							if (color.a > 0)
 							{
-								start = 0;
+								ID2D1SolidColorBrush* brush = renderTarget->CreateDirect2DBrush(color);
+
+								vint start = key.start;
+								if (start < 0)
+								{
+									start = 0;
+								}
+
+								while (start < charHitTestMap.Count() && start < key.end)
+								{
+									vint index = charHitTestMap[start];
+									DWRITE_HIT_TEST_METRICS& hitTest = hitTestMetrics[index];
+
+									FLOAT x1 = hitTest.left + (FLOAT)bounds.x1;
+									FLOAT y1 = hitTest.top + (FLOAT)bounds.y1;
+									FLOAT x2 = x1 + hitTest.width;
+									FLOAT y2 = y1 + hitTest.height;
+
+									x1 -= 0.5f;
+									y1 -= 0.0f;
+									x2 += 0.5f;
+									y2 += 0.5f;
+
+									backgroundRenderer.SubmitBackground(brush, x1, y1, x2, y2);
+									start = hitTest.textPosition + hitTest.length;
+								}
+
+								renderTarget->DestroyDirect2DBrush(color);
 							}
-
-							while (start < charHitTestMap.Count() && start < key.end)
-							{
-								vint index = charHitTestMap[start];
-								DWRITE_HIT_TEST_METRICS& hitTest = hitTestMetrics[index];
-
-								FLOAT x1 = hitTest.left + (FLOAT)bounds.x1;
-								FLOAT y1 = hitTest.top + (FLOAT)bounds.y1;
-								FLOAT x2 = x1 + hitTest.width;
-								FLOAT y2 = y1 + hitTest.height;
-
-								x1 -= 0.5f;
-								y1 -= 0.0f;
-								x2 += 0.5f;
-								y2 += 0.5f;
-
-								renderTarget->GetDirect2DRenderTarget()->FillRectangle(
-									D2D1::RectF(x1, y1, x2, y2),
-									brush
-								);
-
-								start = hitTest.textPosition + hitTest.length;
-							}
-
-							renderTarget->DestroyDirect2DBrush(color);
 						}
+
+						backgroundRenderer.RenderBackground();
 					}
 
 					renderTarget->GetDirect2DRenderTarget()->DrawTextLayout(
