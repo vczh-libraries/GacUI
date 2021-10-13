@@ -6,10 +6,25 @@
     </Instance>
   </Instance>
 
+  <Doc name="DocLetters">
+    <Doc>
+      <Content>
+        <p>
+          <nop>abcdefg</nop><sp/>
+          <nop>hijklmn</nop><sp/>
+          <nop>opqrst</nop><sp/>
+          <nop>uvwxyz</nop><sp/>
+        </p>
+      </Content>
+    </Doc>
+  </Doc>
+
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
-        <Label Font="fontFamily:'Segoe UI' size:32" Text="Welcome to GacUI Playground!"/>
+        <DocumentViewer EditMode="Selectable" Document-uri="res://DocLetters">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+        </DocumentViewer>
       </Window>
     </Instance>
   </Instance>
