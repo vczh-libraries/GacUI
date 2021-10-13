@@ -771,41 +771,41 @@ WindowsDirect2DParagraph (Rendering)
 				{
 					paragraphOffset = bounds.LeftTop();
 					PrepareFormatData();
-					for(vint i=0;i<backgroundColors.Count();i++)
+					for (vint i = 0; i < backgroundColors.Count(); i++)
 					{
-						TextRange key=backgroundColors.Keys()[i];
-						Color color=backgroundColors.Values()[i];
-						if(color.a>0)
+						TextRange key = backgroundColors.Keys()[i];
+						Color color = backgroundColors.Values()[i];
+						if (color.a > 0)
 						{
-							ID2D1SolidColorBrush* brush=renderTarget->CreateDirect2DBrush(color);
+							ID2D1SolidColorBrush* brush = renderTarget->CreateDirect2DBrush(color);
 
-							vint start=key.start;
-							if(start<0)
+							vint start = key.start;
+							if (start < 0)
 							{
-								start=0;
+								start = 0;
 							}
 
-							while(start<charHitTestMap.Count() && start<key.end)
+							while (start < charHitTestMap.Count() && start < key.end)
 							{
-								vint index=charHitTestMap[start];
-								DWRITE_HIT_TEST_METRICS& hitTest=hitTestMetrics[index];
+								vint index = charHitTestMap[start];
+								DWRITE_HIT_TEST_METRICS& hitTest = hitTestMetrics[index];
 
-								FLOAT x1=hitTest.left+(FLOAT)bounds.x1;
-								FLOAT y1=hitTest.top+(FLOAT)bounds.y1;
-								FLOAT x2=x1+hitTest.width;
-								FLOAT y2=y1+hitTest.height;
+								FLOAT x1 = hitTest.left + (FLOAT)bounds.x1;
+								FLOAT y1 = hitTest.top + (FLOAT)bounds.y1;
+								FLOAT x2 = x1 + hitTest.width;
+								FLOAT y2 = y1 + hitTest.height;
 
-								x1-=0.5f;
-								y1-=0.0f;
-								x2+=0.5f;
-								y2+=0.5f;
+								x1 -= 0.5f;
+								y1 -= 0.0f;
+								x2 += 0.5f;
+								y2 += 0.5f;
 
 								renderTarget->GetDirect2DRenderTarget()->FillRectangle(
 									D2D1::RectF(x1, y1, x2, y2),
 									brush
-									);
-										
-								start=hitTest.textPosition+hitTest.length;
+								);
+
+								start = hitTest.textPosition + hitTest.length;
 							}
 
 							renderTarget->DestroyDirect2DBrush(color);
@@ -818,23 +818,23 @@ WindowsDirect2DParagraph (Rendering)
 						defaultTextColor,
 						D2D1_DRAW_TEXT_OPTIONS_NO_SNAP);
 
-					if(caret!=-1)
+					if (caret != -1)
 					{
-						Rect caretBounds=GetCaretBounds(caret, caretFrontSide);
-						vint x=caretBounds.x1+bounds.x1;
-						vint y1=caretBounds.y1+bounds.y1;
-						vint y2=y1+caretBounds.Height();
+						Rect caretBounds = GetCaretBounds(caret, caretFrontSide);
+						vint x = caretBounds.x1 + bounds.x1;
+						vint y1 = caretBounds.y1 + bounds.y1;
+						vint y2 = y1 + caretBounds.Height();
 
 						renderTarget->GetDirect2DRenderTarget()->DrawLine(
-							D2D1::Point2F((FLOAT)x-0.5f, (FLOAT)y1+0.5f),
-							D2D1::Point2F((FLOAT)x-0.5f, (FLOAT)y2+0.5f),
+							D2D1::Point2F((FLOAT)x - 0.5f, (FLOAT)y1 + 0.5f),
+							D2D1::Point2F((FLOAT)x - 0.5f, (FLOAT)y2 + 0.5f),
 							caretBrush
-							);
+						);
 						renderTarget->GetDirect2DRenderTarget()->DrawLine(
-							D2D1::Point2F((FLOAT)x+0.5f, (FLOAT)y1+0.5f),
-							D2D1::Point2F((FLOAT)x+0.5f, (FLOAT)y2+0.5f),
+							D2D1::Point2F((FLOAT)x + 0.5f, (FLOAT)y1 + 0.5f),
+							D2D1::Point2F((FLOAT)x + 0.5f, (FLOAT)y2 + 0.5f),
 							caretBrush
-							);
+						);
 					}
 				}
 
