@@ -68,6 +68,18 @@ GuiDocumentCommonInterface
 				}
 			}
 
+			void GuiDocumentCommonInterface::EnsureDocumentRectVisible(Rect bounds)
+			{
+				if (bounds != Rect())
+				{
+					bounds.x1 -= 15;
+					bounds.y1 -= 15;
+					bounds.x2 += 15;
+					bounds.y2 += 15;
+					EnsureRectVisible(bounds);
+				}
+			}
+
 			void GuiDocumentCommonInterface::Move(TextPos caret, bool shift, bool frontSide)
 			{
 				TextPos begin=documentElement->GetCaretBegin();
@@ -77,16 +89,7 @@ GuiDocumentCommonInterface
 				TextPos newEnd=caret;
 				documentElement->SetCaret(newBegin, newEnd, frontSide);
 				documentElement->SetCaretVisible(true);
-
-				Rect bounds=documentElement->GetCaretBounds(newEnd, frontSide);
-				if(bounds!=Rect())
-				{
-					bounds.x1-=15;
-					bounds.y1-=15;
-					bounds.x2+=15;
-					bounds.y2+=15;
-					EnsureRectVisible(bounds);
-				}
+				EnsureDocumentRectVisible(documentElement->GetCaretBounds(newEnd, frontSide));
 				UpdateCaretPoint();
 				SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
@@ -331,6 +334,7 @@ GuiDocumentCommonInterface
 						caret=TextPos(begin.row+paragraphCount-1, lastParagraphLength);
 					}
 					documentElement->SetCaret(caret, caret, true);
+					EnsureDocumentRectVisible(documentElement->GetCaretBounds(caret, true));
 					documentControl->TextChanged.Execute(documentControl->GetNotifyEventArguments());
 					UpdateCaretPoint();
 					SelectionChanged.Execute(documentControl->GetNotifyEventArguments());

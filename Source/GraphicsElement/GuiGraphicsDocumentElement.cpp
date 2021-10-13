@@ -531,6 +531,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElement::GuiDocumentElementRenderer::GetHyperlinkFromPoint(Point point)
 			{
+				if (!renderTarget) return nullptr;
 				vint top=0;
 				vint index=-1;
 				if(GetParagraphIndexFromPoint(point, top, index))
@@ -548,7 +549,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					vint caret=cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
 					return element->document->GetHyperlink(index, caret, caret);
 				}
-				return 0;
+				return nullptr;
 			}
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::OpenCaret(TextPos caret, Color color, bool frontSide)
@@ -595,6 +596,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					end=TextPos(-1, -1);
 				}
 
+				if (!renderTarget) return;
 				for(vint i=0;i<paragraphCaches.Count();i++)
 				{
 					if(begin.row<=i && i<=end.row)
@@ -628,6 +630,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			TextPos GuiDocumentElement::GuiDocumentElementRenderer::CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide)
 			{
+				if (!renderTarget) return comparingCaret;
 				Ptr<ParagraphCache> cache=EnsureAndGetCache(comparingCaret.row, true);
 				if(cache)
 				{
@@ -725,6 +728,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			TextPos GuiDocumentElement::GuiDocumentElementRenderer::CalculateCaretFromPoint(Point point)
 			{
+				if (!renderTarget) return TextPos(-1, -1);
 				vint top=0;
 				vint index=-1;
 				if(GetParagraphIndexFromPoint(point, top, index))
@@ -739,6 +743,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			Rect GuiDocumentElement::GuiDocumentElementRenderer::GetCaretBounds(TextPos caret, bool frontSide)
 			{
+				if (!renderTarget) return Rect();
 				Ptr<ParagraphCache> cache=EnsureAndGetCache(caret.row, true);
 				if(cache)
 				{

@@ -93,6 +93,7 @@ GuiDocumentCommonInterface
 				void										InvokeUndoRedoChanged();
 				void										InvokeModifiedChanged();
 				void										UpdateCaretPoint();
+				void										EnsureDocumentRectVisible(Rect bounds);
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(VKEY code, bool shift, bool ctrl);
 				void										InstallDocumentViewer(
