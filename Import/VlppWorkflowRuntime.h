@@ -622,6 +622,14 @@ Custom Type
 					, TBase(typeDescriptorFlags, this)
 				{
 				}
+
+				const WString& GetTypeName() override
+				{
+					// TypeDescriptorImplBase::GetTypeName returns WString(this->typeName, 0)
+					// which is this->workflowTypeName.Obj()
+					// will become a dangling pointer after this type is unloaded
+					return workflowTypeName;
+				}
 			};
 
 			class WfCustomType : public WfCustomTypeBase<reflection::description::TypeDescriptorImpl>
