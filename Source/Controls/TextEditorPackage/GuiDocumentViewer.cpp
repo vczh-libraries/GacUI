@@ -207,26 +207,28 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::InstallDocumentViewer(
 				GuiControl* _sender,
+				compositions::GuiGraphicsComposition* _mouseArea,
 				compositions::GuiGraphicsComposition* _container,
 				compositions::GuiGraphicsComposition* eventComposition,
 				compositions::GuiGraphicsComposition* focusableComposition
-				)
+			)
 			{
-				documentControl=_sender;
+				documentControl = _sender;
+				documentMouseArea = _mouseArea;
 
-				documentElement=GuiDocumentElement::Create();
+				documentElement = GuiDocumentElement::Create();
 				documentElement->SetCallback(this);
 
-				documentComposition=new GuiBoundsComposition;
+				documentComposition = new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(documentElement);
 				documentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
 				documentComposition->SetAlignmentToParent(Margin(5, 5, 5, 5));
 				_container->AddChild(documentComposition);
 
-				documentComposition->GetEventReceiver()->mouseMove.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseMove);
-				documentComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
-				documentComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
-				documentComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
+				documentMouseArea->GetEventReceiver()->mouseMove.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseMove);
+				documentMouseArea->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
+				documentMouseArea->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
+				documentMouseArea->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
 
 				focusableComposition->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiDocumentCommonInterface::OnCaretNotify);
 				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnGotFocus);
@@ -438,15 +440,34 @@ GuiDocumentCommonInterface
 				}
 			}
 
+			void GuiDocumentCommonInterface::UpdateCursor(INativeCursor* cursor)
+			{
+				documentMouseArea->SetAssociatedCursor(cursor);
+			}
+
+			Point GuiDocumentCommonInterface::GetMouseOffset()
+			{
+				auto documentBounds = documentComposition->GetGlobalBounds();
+				auto mouseAreaBounds = documentMouseArea->GetGlobalBounds();
+				return Point(
+					documentBounds.x1 - mouseAreaBounds.x1,
+					documentBounds.y1 - mouseAreaBounds.y1
+					);
+			}
+
 			void GuiDocumentCommonInterface::OnMouseMove(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				auto offset = GetMouseOffset();
+				auto x = arguments.x - offset.x;
+				auto y = arguments.y - offset.y;
+
 				if(documentControl->GetVisuallyEnabled())
 				{
 					switch(editMode)
 					{
 					case ViewOnly:
 						{
-							auto package = documentElement->GetHyperlinkFromPoint({ arguments.x, arguments.y });
+							auto package = documentElement->GetHyperlinkFromPoint({ x, y });
 							bool handCursor = false;
 
 							if(dragging)
@@ -473,11 +494,11 @@ GuiDocumentCommonInterface
 							if(handCursor)
 							{
 								auto cursor = GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Hand);
-								documentComposition->SetAssociatedCursor(cursor);
+								UpdateCursor(cursor);
 							}
 							else
 							{
-								documentComposition->SetAssociatedCursor(nullptr);
+								UpdateCursor(nullptr);
 							}
 						}
 						break;
@@ -485,7 +506,7 @@ GuiDocumentCommonInterface
 					case Editable:
 						if(dragging)
 						{
-							TextPos caret=documentElement->CalculateCaretFromPoint(Point(arguments.x, arguments.y));
+							TextPos caret=documentElement->CalculateCaretFromPoint(Point(x, y));
 							TextPos oldCaret=documentElement->GetCaretBegin();
 							Move(caret, true, (oldCaret==caret?documentElement->IsCaretEndPreferFrontSide():caret<oldCaret));
 						}
@@ -496,18 +517,22 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				auto offset = GetMouseOffset();
+				auto x = arguments.x - offset.x;
+				auto y = arguments.y - offset.y;
+
 				if(documentControl->GetVisuallyEnabled())
 				{
 					switch(editMode)
 					{
 					case ViewOnly:
-						SetActiveHyperlink(documentElement->GetHyperlinkFromPoint({ arguments.x, arguments.y }));
+						SetActiveHyperlink(documentElement->GetHyperlinkFromPoint({ x, y }));
 						break;
 					case Selectable:
 					case Editable:
 						{
 							documentControl->SetFocus();
-							TextPos caret=documentElement->CalculateCaretFromPoint(Point(arguments.x, arguments.y));
+							TextPos caret=documentElement->CalculateCaretFromPoint(Point(x, y));
 							TextPos oldCaret=documentElement->GetCaretEnd();
 							if(caret!=oldCaret)
 							{
@@ -522,6 +547,10 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				auto offset = GetMouseOffset();
+				auto x = arguments.x - offset.x;
+				auto y = arguments.y - offset.y;
+
 				if(documentControl->GetVisuallyEnabled())
 				{
 					dragging=false;
@@ -529,7 +558,7 @@ GuiDocumentCommonInterface
 					{
 					case ViewOnly:
 						{
-							auto package = documentElement->GetHyperlinkFromPoint({ arguments.x, arguments.y });
+							auto package = documentElement->GetHyperlinkFromPoint({ x, y });
 							if(activeHyperlinks)
 							{
 								if (package && CompareEnumerable(activeHyperlinks->hyperlinks, package->hyperlinks) == 0)
@@ -550,7 +579,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				SetActiveHyperlink(0);
+				SetActiveHyperlink(nullptr);
 			}
 
 			Point GuiDocumentCommonInterface::GetDocumentViewPosition()
@@ -902,12 +931,12 @@ GuiDocumentCommonInterface
 				editMode=value;
 				if(editMode==ViewOnly)
 				{
-					documentComposition->SetAssociatedCursor(0);
+					UpdateCursor(nullptr);
 				}
 				else
 				{
 					INativeCursor* cursor=GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::IBeam);
-					documentComposition->SetAssociatedCursor(cursor);
+					UpdateCursor(cursor);
 				}
 			}
 
@@ -1192,9 +1221,10 @@ GuiDocumentViewer
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
-				InstallDocumentViewer(this, containerComposition, boundsComposition, focusableComposition);
+				InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, focusableComposition);
 
 				SetExtendToFullWidth(true);
+				SetExtendToFullHeight(true);
 				SetHorizontalAlwaysVisible(false);
 			}
 
@@ -1244,7 +1274,7 @@ GuiDocumentLabel
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
-				InstallDocumentViewer(this, containerComposition, boundsComposition, focusableComposition);
+				InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, focusableComposition);
 			}
 
 			GuiDocumentLabel::~GuiDocumentLabel()
