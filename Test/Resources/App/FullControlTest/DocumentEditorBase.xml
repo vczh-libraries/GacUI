@@ -107,10 +107,38 @@
             {
               switch (dialogSaveDoc.FilterIndex)
               {
-              case 0: { self.SaveAsPrivateFormat(dialogSaveDoc.FileName); }
+              case 0: { self.SaveAsPrivateFormat(dialogSaveDoc.FileName); document.NotifyModificationSaved(); }
               case 1: { self.SaveAsRTF(dialogSaveDoc.FileName); }
               case 2: { self.SaveAsHTML(dialogSaveDoc.FileName); }
               }
+            }
+          }
+
+          func CancelWindowClose(): bool
+          {
+            if (document.Modified)
+            {
+              switch (dialogQueryClose.ShowDialog())
+              {
+                case SelectYes:
+                {
+                  if (dialogSaveDocPrivate.ShowDialog())
+                  {
+                    self.SaveAsPrivateFormat(dialogSaveDocPrivate.FileName);
+                    return false;
+                  }
+                  else
+                  {
+                    return true;
+                  }
+                }
+                case SelectNo: { return false; }
+                default: { return true; }
+              }
+            }
+            else
+            {
+              return false;
             }
           }
       
@@ -132,6 +160,13 @@
         <OpenFileDialog ref.Name="dialogOpen" Title="Select an Image" Filter="Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp" EnabledPreview="true" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
         <OpenFileDialog ref.Name="dialogOpenDoc" Title="Load a GacUI Document" Filter="Private Format (*.bin)|*.bin" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
         <SaveFileDialog ref.Name="dialogSaveDoc" Title="Save a GacUI Document" Filter="Private Format (*.bin)|*.bin|RTF Document (*.rtf)|*.rtf|HTML Document (*.html)|*.html" Options="FileDialogPromptOverwriteFile"/>
+        <SaveFileDialog ref.Name="dialogSaveDocPrivate" Title="Save a GacUI Document" Filter="Private Format (*.bin)|*.bin" Options="FileDialogPromptOverwriteFile"/>
+        <MessageDialog ref.Name="dialogQueryClose"
+                       Input="DisplayYesNoCancel"
+                       Icon="IconQuestion"
+                       Title-eval="self.Text"
+                       Text="The document has been changed since the last time it was saved as a Private Format file. Do you want to save this file?"
+              />
 
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>

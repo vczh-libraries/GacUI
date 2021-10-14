@@ -241,7 +241,7 @@
                   <SolidLabel Font-bind="self.DisplayFont" Color="#FFFFFF" Text="Search:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </StackItem>
                 <StackItem>
-                  <SinglelineTextBox>
+                  <SinglelineTextBox Alt="S">
                     <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:1" PreferredMinSize="x:180"/>
                   </SinglelineTextBox>
                 </StackItem>
@@ -249,10 +249,10 @@
             </att.AfterHeaders-set>
 
             <att.Pages>
-              <RibbonTabPage Text="Edit">
+              <RibbonTabPage Text="Edit" Alt="E">
                 <att.ContainerComposition-set PreferredMinSize="y:110"/>
                 <att.Groups>
-                  <RibbonGroup Text="Alignment" Expandable="true" LargeImage-uri="res://ToolbarImages/EditableLarge">
+                  <RibbonGroup Text="Alignment" Expandable="true" LargeImage-uri="res://ToolbarImages/EditableLarge" Alt="A">
                     <ev.ExpandButtonClicked-eval>
                       <![CDATA[
                         {
@@ -261,7 +261,7 @@
                       ]]>
                     </ev.ExpandButtonClicked-eval>
                     <att.Items>
-                      <RibbonLargeDropdownButton Text="Edit Mode">
+                      <RibbonLargeDropdownButton Text="Edit Mode" Alt="E">
                         <att.LargeImage-bind>self.EditModeCommand.LargeImage ?? null</att.LargeImage-bind>
                         <att.SubMenu-set>
                           <MenuItemButton Command-eval="self.commandViewOnly" Alt="V"/>
@@ -272,77 +272,77 @@
                       <RibbonSplitter/>
                       <RibbonButtons MaxSize="Large" MinSize="Icon">
                         <att.Buttons>
-                          <ToolstripButton Command-eval="self.commandAlignLeft" Selected-bind="self.AlignLeftSelected"/>
-                          <ToolstripButton Command-eval="self.commandAlignCenter" Selected-bind="self.AlignCenterSelected"/>
-                          <ToolstripButton Command-eval="self.commandAlignRight" Selected-bind="self.AlignRightSelected"/>
+                          <ToolstripButton Command-eval="self.commandAlignLeft" Selected-bind="self.AlignLeftSelected" Alt="L"/>
+                          <ToolstripButton Command-eval="self.commandAlignCenter" Selected-bind="self.AlignCenterSelected" Alt="C"/>
+                          <ToolstripButton Command-eval="self.commandAlignRight" Selected-bind="self.AlignRightSelected" Alt="R"/>
                         </att.Buttons>
                       </RibbonButtons>
                     </att.Items>
                   </RibbonGroup>
 
-                  <RibbonGroup Text="Edit" LargeImage-uri="res://ToolbarImages/PasteLarge">
+                  <RibbonGroup Text="Edit" LargeImage-uri="res://ToolbarImages/PasteLarge" Alt="E">
                     <att.Items>
                       <RibbonButtons MaxSize="Large" MinSize="Icon">
                         <att.Buttons>
-                          <ToolstripButton Command-eval="self.commandUndo"/>
-                          <ToolstripButton Command-eval="self.commandRedo"/>
+                          <ToolstripButton Command-eval="self.commandUndo" Alt="U"/>
+                          <ToolstripButton Command-eval="self.commandRedo" Alt="R"/>
                         </att.Buttons>
                       </RibbonButtons>
                       <RibbonSplitter/>
                       <RibbonButtons MaxSize="Large" MinSize="Icon">
                         <att.Buttons>
-                          <ToolstripButton Command-eval="self.commandCopy"/>
-                          <ToolstripButton Command-eval="self.commandCut"/>
-                          <ToolstripButton Command-eval="self.commandPaste"/>
+                          <ToolstripButton Command-eval="self.commandCopy" Alt="C"/>
+                          <ToolstripButton Command-eval="self.commandCut" Alt="X"/>
+                          <ToolstripButton Command-eval="self.commandPaste" Alt="P"/>
                         </att.Buttons>
                       </RibbonButtons>
                       <RibbonSplitter/>
-                      <RibbonLargeButton Command-eval="self.commandDelete"/>
+                      <RibbonLargeButton Command-eval="self.commandDelete" Alt="D"/>
                     </att.Items>
                   </RibbonGroup>
 
-                  <RibbonGroup Text="Text">
+                  <RibbonGroup Text="Text" Alt="T">
                     <att.Items>
                       <RibbonToolstrips>
                         <att.Groups>
                           <ToolstripGroup>
-                            <ToolstripButton Command-eval="self.commandBold"/>
-                            <ToolstripButton Command-eval="self.commandItalic"/>
+                            <ToolstripButton Command-eval="self.commandBold" Alt="B"/>
+                            <ToolstripButton Command-eval="self.commandItalic" Alt="I"/>
                           </ToolstripGroup>
                           <ToolstripGroup>
-                            <ToolstripButton Command-eval="self.commandUnderline"/>
-                            <ToolstripButton Command-eval="self.commandStrike"/>
+                            <ToolstripButton Command-eval="self.commandUnderline" Alt="U"/>
+                            <ToolstripButton Command-eval="self.commandStrike" Alt="S"/>
                           </ToolstripGroup>
                           <ToolstripGroup>
-                            <ToolstripButton Command-eval="self.commandFont"/>
-                            <ToolstripButton Command-eval="self.commandColor"/>
-                            <ToolstripButton Command-eval="self.commandBackColor"/>
+                            <ToolstripButton Command-eval="self.commandFont" Alt="F"/>
+                            <ToolstripButton Command-eval="self.commandColor" Alt="C"/>
+                            <ToolstripButton Command-eval="self.commandBackColor" Alt="K"/>
                           </ToolstripGroup>
                           <ToolstripGroup>
-                            <ToolstripButton Command-eval="self.commandEditHyperlink"/>
-                            <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
+                            <ToolstripButton Command-eval="self.commandEditHyperlink" Alt="L"/>
+                            <ToolstripButton Command-eval="self.commandRemoveHyperlink" Alt="R"/>
                           </ToolstripGroup>
                         </att.Groups>
                       </RibbonToolstrips>
                     </att.Items>
                   </RibbonGroup>
 
-                  <RibbonGroup Text="Icon Labels">
+                  <RibbonGroup Text="Icon Labels" Alt="I">
                     <att.Items>
                       <RibbonButtons MaxSize="Small" MinSize="Icon">
                         <att.Buttons>
                           <RibbonIconLabel Text="Left" Image-uri="res://ToolbarImages/TextAlignLeft">
-                            <SinglelineTextBox>
+                            <SinglelineTextBox Alt="L">
                               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
                             </SinglelineTextBox>
                           </RibbonIconLabel>
                           <RibbonIconLabel Text="Center" Image-uri="res://ToolbarImages/TextAlignCenter">
-                            <SinglelineTextBox>
+                            <SinglelineTextBox Alt="C">
                               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
                             </SinglelineTextBox>
                           </RibbonIconLabel>
                           <RibbonIconLabel Text="Right" Image-uri="res://ToolbarImages/TextAlignRight">
-                            <SinglelineTextBox>
+                            <SinglelineTextBox Alt="R">
                               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
                             </SinglelineTextBox>
                           </RibbonIconLabel>
@@ -352,17 +352,17 @@
                       <RibbonButtons MaxSize="Small" MinSize="Icon">
                         <att.Buttons>
                           <RibbonIconLabel Text="Left" Image-uri="res://ToolbarImages/TextAlignLeft">
-                            <SinglelineTextBox>
+                            <SinglelineTextBox Alt="L">
                               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
                             </SinglelineTextBox>
                           </RibbonIconLabel>
                           <RibbonIconLabel Text="Center" Image-uri="res://ToolbarImages/TextAlignCenter">
-                            <SinglelineTextBox>
+                            <SinglelineTextBox Alt="C">
                               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
                             </SinglelineTextBox>
                           </RibbonIconLabel>
                           <RibbonIconLabel Text="Right" Image-uri="res://ToolbarImages/TextAlignRight">
-                            <SinglelineTextBox>
+                            <SinglelineTextBox Alt="R">
                               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
                             </SinglelineTextBox>
                           </RibbonIconLabel>
@@ -371,7 +371,7 @@
                     </att.Items>
                   </RibbonGroup>
 
-                  <RibbonGroup Text="Style" LargeImage-uri="res://ToolbarImages/EditableLarge">
+                  <RibbonGroup Text="Style" LargeImage-uri="res://ToolbarImages/EditableLarge" Alt="S">
                     <att.Items>
                       <BindableRibbonGalleryList ref.Name="styleGallery" ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" VisibleItemCount="5" env.ItemType="demo::StyleGroup^">
                         <att.ItemSource-bind>self.StyleGroups</att.ItemSource-bind>
@@ -407,15 +407,15 @@
                 </att.Groups>
               </RibbonTabPage>
 
-              <RibbonTabPage Text="Insert" Highlighted="true">
+              <RibbonTabPage Text="Insert" Highlighted="true" Alt="I">
                 <att.Groups>
                   <RibbonGroup Text="Object">
                     <att.Items>
                       <RibbonButtons MaxSize="Large" MinSize="Small">
                         <att.Buttons>
-                          <ToolstripButton Command-eval="self.commandInsertImage"/>
-                          <ToolstripButton Command-eval="self.commandEditHyperlink"/>
-                          <ToolstripButton Command-eval="self.commandRemoveHyperlink"/>
+                          <ToolstripButton Command-eval="self.commandInsertImage" Alt="I"/>
+                          <ToolstripButton Command-eval="self.commandEditHyperlink" Alt="L"/>
+                          <ToolstripButton Command-eval="self.commandRemoveHyperlink" Alt="R"/>
                         </att.Buttons>
                       </RibbonButtons>
                     </att.Items>
