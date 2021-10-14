@@ -292,9 +292,10 @@ WindowsForm
 						switch (uMsg)
 						{
 						case WM_ACTIVATE:
-							if (wParam == WA_INACTIVE && windowMode == Normal)
+							if (LOWORD(wParam) == WA_INACTIVE && windowMode == Normal)
 							{
 								closeChildPopups = true;
+								// TODO: this value is not updated if the activated window is not owned by this thread.
 								activeHwnd = GetActiveWindow();
 							}
 							break;
