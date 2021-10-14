@@ -283,20 +283,48 @@ WindowsForm
 					ImmReleaseContext(handle, imc);
 				}
 
+				bool supressClosePopups = false;
+
+				static void ClosePopupsOf(WindowsForm* owner, SortedList<WindowsForm*>& exceptions)
+				{
+					for (vint i = 0; i < owner->childWindows.Count(); i++)
+					{
+						auto popup = owner->childWindows[i];
+						{
+							if (!exceptions.Contains(popup))
+							{
+								popup->Hide(false);
+							}
+						}
+						ClosePopupsOf(owner, exceptions);
+					}
+				}
+
 				bool HandleMessageInternal(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
-					// handling popup windows
+					if (!supressClosePopups)
 					{
-						bool closeChildPopups = false;
-						HWND activeHwnd = NULL;
+						bool closePopups = false;
+						WindowsForm* activatedWindow = nullptr;
+						WindowsForm* rootWindow = nullptr;
+						SortedList<WindowsForm*> exceptions;
+
 						switch (uMsg)
 						{
-						case WM_ACTIVATE:
-							if (LOWORD(wParam) == WA_INACTIVE && windowMode == Normal)
+						case WM_ACTIVATEAPP:
+							if (wParam == FALSE)
 							{
-								closeChildPopups = true;
-								// TODO: this value is not updated if the activated window is not owned by this thread.
-								activeHwnd = GetActiveWindow();
+								closePopups = true;
+							}
+							break;
+						case WM_ACTIVATE:
+							switch (LOWORD(wParam))
+							{
+							case WA_ACTIVE:
+							case WA_CLICKACTIVE:
+								activatedWindow = this;
+								closePopups = true;
+								break;
 							}
 							break;
 						case WM_LBUTTONDOWN:
@@ -305,46 +333,32 @@ WindowsForm
 						case WM_NCLBUTTONDOWN:
 						case WM_NCMBUTTONDOWN:
 						case WM_NCRBUTTONDOWN:
-							closeChildPopups = true;
+							activatedWindow = this;
+							closePopups = true;
 							break;
 						}
 
-						if (closeChildPopups && activeHwnd != NULL)
+						if (activatedWindow)
 						{
-							if (auto activeWindow = GetWindowsFormFromHandle(activeHwnd))
+							rootWindow = activatedWindow;
+							exceptions.Add(rootWindow);
+							while (auto parentWindow = rootWindow->parentWindow)
 							{
-								auto current = dynamic_cast<INativeWindow*>(activeWindow);
-								while (current)
-								{
-									if (current == this)
-									{
-										closeChildPopups = false;
-										break;
-									}
-									current = current->GetParent();
-								}
+								rootWindow = parentWindow;
+								exceptions.Add(parentWindow);
 							}
 						}
 
-						if (closeChildPopups)
+						if (closePopups)
 						{
-							List<WindowsForm*> childPopups;
-							childPopups.Add(this);
-							for (vint i = 0; i < childPopups.Count(); i++)
-							{
-								auto popup = childPopups[i];
-								for (vint j = 0; j < popup->childWindows.Count(); j++)
-								{
-									auto childPopup = popup->childWindows[j];
-									if (childPopup->windowMode != Normal)
-									{
-										childPopups.Add(childPopup);
-									}
-								}
+							List<IWindowsForm*> allRootWindows;
+							GetAllCreatedWindows(allRootWindows, true);
 
-								if (popup != this && popup->IsVisible())
+							for (vint i = 0; i < allRootWindows.Count(); i++)
+							{
+								if (auto windowsForm = dynamic_cast<WindowsForm*>(allRootWindows[i]))
 								{
-									popup->Hide(false);
+									ClosePopupsOf(windowsForm, exceptions);
 								}
 							}
 						}
@@ -1727,6 +1741,24 @@ WindowsController
 					return windows.Values()[index];
 				}
 
+				void GetAllCreatedWindows(collections::List<IWindowsForm*>& createdWindows, bool rootWindowOnly)
+				{
+					if (rootWindowOnly)
+					{
+						FOREACH(WindowsForm*, window, windows.Values())
+						{
+							if (window->GetWindowMode() == INativeWindow::Normal)
+							{
+								createdWindows.Add(window);
+							}
+						}
+					}
+					else
+					{
+						CopyFrom(createdWindows, windows.Values());
+					}
+				}
+
 				bool HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
 					bool skipDefaultProcedure=false;
@@ -1967,12 +1999,21 @@ Windows Platform Native Controller
 				{
 					return controller->GetWindowsFormFromHandle(hwnd);
 				}
-				return 0;
+				return nullptr;
 			}
 
 			IWindowsForm* GetWindowsForm(INativeWindow* window)
 			{
 				return dynamic_cast<WindowsForm*>(window);
+			}
+
+			void GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly)
+			{
+				auto controller = dynamic_cast<WindowsController*>(GetCurrentController());
+				if (controller)
+				{
+					controller->GetAllCreatedWindows(windows, rootWindowOnly);
+				}
 			}
 
 			void DestroyWindowsNativeController(INativeController* controller)

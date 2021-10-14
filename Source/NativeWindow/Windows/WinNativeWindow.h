@@ -44,6 +44,7 @@ Windows Platform Native Controller
 			extern INativeController*						CreateWindowsNativeController(HINSTANCE hInstance);
 			extern IWindowsForm*							GetWindowsFormFromHandle(HWND hwnd);
 			extern IWindowsForm*							GetWindowsForm(INativeWindow* window);
+			extern void										GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly);
 			extern void										DestroyWindowsNativeController(INativeController* controller);
 			extern void										EnableCrossKernelCrashing();
 		}
