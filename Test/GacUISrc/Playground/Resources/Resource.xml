@@ -47,17 +47,17 @@
       {
         class StyleItem
         {
-          prop Color : ItemColor = cast Color "#000000" {not observe}
+          prop ItemColor: Color = cast Color "#000000" {not observe}
 
-          new(itemColor : Color) { this.ItemColor = itemColor; }
+          new(itemColor: Color) { this.ItemColor = itemColor; }
         }
 
         class StyleGroup
         {
-          prop Name : string = "" {not observe}
-          prop Items : observe StyleItem^[] = null {not observe}
+          prop Name: string = "" {not observe}
+          prop Items: observe StyleItem^[] = null {not observe}
 
-          new(name : string, items : observe StyleItem^[]) { this.Name = name; this.Items = items; }
+          new(name: string, items: observe StyleItem^[]) { this.Name = name; this.Items = items; }
         }
       }
     ]]></Workflow>
@@ -79,7 +79,8 @@
 
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
-      <ref.Members><![CDATA[
+      <ref.Members>
+                <![CDATA[
         var styleGroups : observe StyleGroup^[] = {
           new StyleGroup^(
             "First",
@@ -91,7 +92,7 @@
               new StyleItem^(cast Color "#00FF80");
               new StyleItem^(cast Color "#0000FF");
               new StyleItem^(cast Color "#FF00FF");
-            }
+            } as observe StyleItem^[]
           );
           new StyleGroup^(
             "Second",
@@ -100,21 +101,22 @@
               new StyleItem^(cast Color "#800000");
               new StyleItem^(cast Color "#808080");
               new StyleItem^(cast Color "#FFFFFF");
-            }
+            } as observe StyleItem^[]
           );
         };
       ]]></ref.Members>
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:320 y:240"/>
           <RibbonTab>
-            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
             <att.Pages>
               <RibbonTabPage Text="Edit">
                 <att.ContainerComposition-set PreferredMinSize="y:110"/>
                 <att.Groups>
-                  <RibbonGroup Text="Style" LargeImage-uri="res://ToolbarImages/EditableLarge">
+                  <RibbonGroup Text="Style">
                     <att.Items>
-                      <BindableRibbonGalleryList ref.Name="styleGallery" ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" VisibleItemCount="5" env.ItemType="demo::StyleGroup^">
+                      <BindableRibbonGalleryList ref.Name="styleGallery" ItemTemplate="demo::StyleItemTemplate" MinCount="2" MaxCount="5" VisibleItemCount="5" env.ItemType="demo::StyleGroup^">
+                        <att.BoundsComposition-set PreferredMinSize="x:160"/>
                         <att.ItemSource-bind>self.styleGroups</att.ItemSource-bind>
                         <att.GroupTitleProperty>Name</att.GroupTitleProperty>
                         <att.GroupChildrenProperty>Items</att.GroupChildrenProperty>
