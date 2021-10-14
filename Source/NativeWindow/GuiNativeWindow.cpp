@@ -14,7 +14,7 @@ INativeWindowListener
 			return INativeWindowListener::NoDecision;
 		}
 
-		void INativeWindowListener::Moving(NativeRect& bounds, bool fixSizeOnly)
+		void INativeWindowListener::Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
 		{
 		}
 

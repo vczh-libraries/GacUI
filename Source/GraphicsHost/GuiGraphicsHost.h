@@ -112,7 +112,7 @@ Host
 				
 			private:
 				INativeWindowListener::HitTestResult	HitTest(NativePoint location)override;
-				void									Moving(NativeRect& bounds, bool fixSizeOnly)override;
+				void									Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)override;
 				void									Moved()override;
 				void									DpiChanged()override;
 				void									Paint()override;

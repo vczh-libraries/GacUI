@@ -360,7 +360,7 @@ WindowsForm
 							NativeRect bounds(rawBounds->left, rawBounds->top, rawBounds->right, rawBounds->bottom);
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->Moving(bounds, false);
+								listeners[i]->Moving(bounds, (uMsg == WM_SIZING), (uMsg == WM_SIZING));
 							}
 							if(		rawBounds->left!=bounds.Left().value
 								||	rawBounds->top!=bounds.Top().value
@@ -1089,7 +1089,7 @@ WindowsForm
 					NativeRect newBounds=bounds;
 					for(vint i=0;i<listeners.Count();i++)
 					{
-						listeners[i]->Moving(newBounds, true);
+						listeners[i]->Moving(newBounds, true, false);
 					}
 					MoveWindow(handle, (int)newBounds.Left().value, (int)newBounds.Top().value, (int)newBounds.Width().value, (int)newBounds.Height().value, FALSE);
 				}

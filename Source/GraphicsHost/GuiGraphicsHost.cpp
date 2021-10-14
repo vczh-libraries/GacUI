@@ -265,7 +265,7 @@ GuiGraphicsHost
 				return INativeWindowListener::NoDecision;
 			}
 
-			void GuiGraphicsHost::Moving(NativeRect& bounds, bool fixSizeOnly)
+			void GuiGraphicsHost::Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
 			{
 				NativeRect oldBounds = hostRecord.nativeWindow->GetBounds();
 				minSize = windowComposition->GetPreferredBounds().GetSize();

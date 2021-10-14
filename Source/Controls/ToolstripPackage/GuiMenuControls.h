@@ -94,6 +94,7 @@ Menu
 			private:
 				IGuiMenuService*						parentMenuService = nullptr;
 				bool									hideOnDeactivateAltHost = true;
+				Size									preferredMenuClientSizeBeforeUpdating;
 				Size									preferredMenuClientSize;
 
 				IGuiMenuService*						GetParentMenuService()override;
@@ -102,6 +103,7 @@ Menu
 				bool									IsSubMenuActivatedByMouseDown()override;
 				void									MenuItemExecuted()override;
 
+				void									Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)override;
 				void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)override;
 			protected:
 				GuiControl*								owner;

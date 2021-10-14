@@ -94,6 +94,23 @@ GuiMenu
 				Hide();
 			}
 
+			void GuiMenu::Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
+			{
+				GuiPopup::Moving(bounds, fixSizeOnly, draggingBorder);
+				if (fixSizeOnly && draggingBorder)
+				{
+					if (auto nativeWindow = GetNativeWindow())
+					{
+						auto newSize = bounds.GetSize();
+						auto nativeOffset = (nativeWindow->GetBounds().GetSize() - nativeWindow->GetClientSize());
+						auto preferredNativeSize = nativeWindow->Convert(preferredMenuClientSizeBeforeUpdating) + nativeOffset;
+						if (newSize.x < preferredNativeSize.x) newSize.x = preferredNativeSize.x;
+						if (newSize.y < preferredNativeSize.y) newSize.y = preferredNativeSize.y;
+						preferredMenuClientSize = nativeWindow->Convert(newSize - nativeOffset);
+					}
+				}
+			}
+
 			void GuiMenu::UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)
 			{
 				auto size = preferredSize;
@@ -183,6 +200,7 @@ GuiMenu
 			void GuiMenu::SetPreferredMenuClientSize(Size value)
 			{
 				preferredMenuClientSize = value;
+				preferredMenuClientSizeBeforeUpdating = value;
 			}
 
 /***********************************************************************

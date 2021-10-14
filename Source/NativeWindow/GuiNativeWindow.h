@@ -847,8 +847,9 @@ Native Window
 			/// Called when the window is moving.
 			/// </summary>
 			/// <param name="bounds">The bounds. Message handler can change the bounds.</param>
-			/// <param name="fixSizeOnly">True if the message raise only want the message handler to change the size.</param>
-			virtual void				Moving(NativeRect& bounds, bool fixSizeOnly);
+			/// <param name="fixSizeOnly">True if the message raise only want the message handler to change the size, and keep the position unchanged.</param>
+			/// <param name="draggingBorder">True if the message raise because the user is dragging the border to change the size.</param>
+			virtual void				Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder);
 			/// <summary>
 			/// Called when the window is moved.
 			/// </summary>
