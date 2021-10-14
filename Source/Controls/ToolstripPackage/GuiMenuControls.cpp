@@ -97,7 +97,7 @@ GuiMenu
 			void GuiMenu::Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
 			{
 				GuiPopup::Moving(bounds, fixSizeOnly, draggingBorder);
-				if (fixSizeOnly && draggingBorder)
+				if (draggingBorder)
 				{
 					if (auto nativeWindow = GetNativeWindow())
 					{

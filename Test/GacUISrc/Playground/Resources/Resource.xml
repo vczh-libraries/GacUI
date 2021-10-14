@@ -76,37 +76,37 @@
       ]]></ref.Members>
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:320 y:240"/>
-          <RibbonTab>
-            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
-            <att.Pages>
-              <RibbonTabPage Text="Edit">
-                <att.ContainerComposition-set PreferredMinSize="y:110"/>
-                <att.Groups>
-                  <RibbonGroup Text="Style">
-                    <att.Items>
-                      <BindableRibbonGalleryList ref.Name="styleGallery" ItemTemplate="demo::StyleItemTemplate" MinCount="2" MaxCount="5" VisibleItemCount="5" env.ItemType="demo::StyleGroup^">
-                        <att.BoundsComposition-set PreferredMinSize="x:160"/>
-                        <att.ItemSource-bind>self.styleGroups</att.ItemSource-bind>
-                        <att.GroupTitleProperty>Name</att.GroupTitleProperty>
-                        <att.GroupChildrenProperty>Items</att.GroupChildrenProperty>
+        <RibbonTab>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
+          <att.Pages>
+            <RibbonTabPage Text="Edit">
+              <att.ContainerComposition-set PreferredMinSize="y:110"/>
+              <att.Groups>
+                <RibbonGroup Text="Style">
+                  <att.Items>
+                    <BindableRibbonGalleryList ref.Name="styleGallery" ItemTemplate="demo::StyleItemTemplate" MinCount="2" MaxCount="5" VisibleItemCount="5" env.ItemType="demo::StyleGroup^">
+                      <att.BoundsComposition-set PreferredMinSize="x:160"/>
+                      <att.ItemSource-bind>self.styleGroups</att.ItemSource-bind>
+                      <att.GroupTitleProperty>Name</att.GroupTitleProperty>
+                      <att.GroupChildrenProperty>Items</att.GroupChildrenProperty>
 
-                        <att.SubMenu-set>
-                          <RibbonToolstripHeader Text="Header A"/>
-                          <MenuItemButton Text="Item A1"/>
-                          <MenuItemButton Text="Item A2"/>
-                          <MenuItemButton Text="Item A3"/>
-                          <RibbonToolstripHeader Text="Header B"/>
-                          <MenuItemButton Text="Item B1"/>
-                          <MenuItemButton Text="Item B2"/>
-                          <MenuItemButton Text="Item B3"/>
-                        </att.SubMenu-set>
-                      </BindableRibbonGalleryList>
-                    </att.Items>
-                  </RibbonGroup>
-                </att.Groups>
-              </RibbonTabPage>
-            </att.Pages>
-          </RibbonTab>
+                      <att.SubMenu-set>
+                        <RibbonToolstripHeader Text="Header A"/>
+                        <MenuItemButton Text="Item A1"/>
+                        <MenuItemButton Text="Item A2"/>
+                        <MenuItemButton Text="Item A3"/>
+                        <RibbonToolstripHeader Text="Header B"/>
+                        <MenuItemButton Text="Item B1"/>
+                        <MenuItemButton Text="Item B2"/>
+                        <MenuItemButton Text="Item B3"/>
+                      </att.SubMenu-set>
+                    </BindableRibbonGalleryList>
+                  </att.Items>
+                </RibbonGroup>
+              </att.Groups>
+            </RibbonTabPage>
+          </att.Pages>
+        </RibbonTab>
       </Window>
     </Instance>
   </Instance>

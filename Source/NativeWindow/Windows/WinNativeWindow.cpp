@@ -376,7 +376,7 @@ WindowsForm
 							NativeRect bounds(rawBounds->left, rawBounds->top, rawBounds->right, rawBounds->bottom);
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->Moving(bounds, (uMsg == WM_SIZING), (uMsg == WM_SIZING));
+								listeners[i]->Moving(bounds, false, (uMsg == WM_SIZING));
 							}
 							if(		rawBounds->left!=bounds.Left().value
 								||	rawBounds->top!=bounds.Top().value
