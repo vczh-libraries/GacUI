@@ -6,37 +6,6 @@
     </Instance>
   </Instance>
 
-  <Doc name="DocLetters">
-    <Doc>
-      <Content>
-        <p>
-          <font size="36">
-            <nop>abcdefg</nop><sp/>
-            <nop>hijklmn</nop><sp/>
-            <nop>opqrst</nop><sp/>
-            <nop>uvwxyz</nop><sp/>
-          </font>
-        </p>
-        <p>
-          <font size="36">
-            <nop>abcdefg</nop><sp/>
-            <nop>hijklmn</nop><sp/>
-            <nop>opqrst</nop><sp/>
-            <nop>uvwxyz</nop><sp/>
-          </font>
-        </p>
-        <p>
-          <font size="36">
-            <nop>abcdefg</nop><sp/>
-            <nop>hijklmn</nop><sp/>
-            <nop>opqrst</nop><sp/>
-            <nop>uvwxyz</nop><sp/>
-          </font>
-        </p>
-      </Content>
-    </Doc>
-  </Doc>
-
   <Script name="ViewModel">
     <Workflow><![CDATA[
       module viewmodel;
@@ -92,7 +61,7 @@
               new StyleItem^(cast Color "#00FF80");
               new StyleItem^(cast Color "#0000FF");
               new StyleItem^(cast Color "#FF00FF");
-            } as observe StyleItem^[]
+            } of observe StyleItem^[]
           );
           new StyleGroup^(
             "Second",
@@ -101,7 +70,7 @@
               new StyleItem^(cast Color "#800000");
               new StyleItem^(cast Color "#808080");
               new StyleItem^(cast Color "#FFFFFF");
-            } as observe StyleItem^[]
+            } of observe StyleItem^[]
           );
         };
       ]]></ref.Members>

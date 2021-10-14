@@ -288,12 +288,14 @@ WindowsForm
 					// handling popup windows
 					{
 						bool closeChildPopups = false;
+						HWND activeHwnd = NULL;
 						switch (uMsg)
 						{
 						case WM_ACTIVATE:
 							if (wParam == WA_INACTIVE && windowMode == Normal)
 							{
 								closeChildPopups = true;
+								activeHwnd = GetActiveWindow();
 							}
 							break;
 						case WM_LBUTTONDOWN:
@@ -304,6 +306,23 @@ WindowsForm
 						case WM_NCRBUTTONDOWN:
 							closeChildPopups = true;
 							break;
+						}
+
+						if (closeChildPopups && activeHwnd != NULL)
+						{
+							if (auto activeWindow = GetWindowsFormFromHandle(activeHwnd))
+							{
+								auto current = dynamic_cast<INativeWindow*>(activeWindow);
+								while (current)
+								{
+									if (current == this)
+									{
+										closeChildPopups = false;
+										break;
+									}
+									current = current->GetParent();
+								}
+							}
 						}
 
 						if (closeChildPopups)
