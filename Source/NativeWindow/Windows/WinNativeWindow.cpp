@@ -290,13 +290,14 @@ WindowsForm
 					for (vint i = 0; i < owner->childWindows.Count(); i++)
 					{
 						auto popup = owner->childWindows[i];
+						if (popup->windowMode != Normal && popup->IsVisible())
 						{
 							if (!exceptions.Contains(popup))
 							{
 								popup->Hide(false);
 							}
 						}
-						ClosePopupsOf(owner, exceptions);
+						ClosePopupsOf(popup, exceptions);
 					}
 				}
 
