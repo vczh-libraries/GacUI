@@ -8,6 +8,12 @@
 
   <Folder name="Images" content="Link">../../../Resources/App/FullControlTest/ToolbarImages/Images.xml</Folder>
 
+  <Instance name="MenuToolBarControlTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::MenuToolBarControlTemplate">
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren"/>
+    </Instance>
+  </Instance>
+
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
@@ -23,7 +29,7 @@
         <ToolstripMenu ref.Name="menuEdit">
           <ToolstripGroupContainer>
             <ToolstripGroup>
-              <ToolstripToolBar>
+              <ToolstripToolBar ControlTemplate="demo::MenuToolBarControlTemplate">
                 <ToolstripButton Command-ref="commandCut"/>
                 <ToolstripButton Command-ref="commandCopy"/>
                 <ToolstripButton Command-ref="commandPaste"/>
