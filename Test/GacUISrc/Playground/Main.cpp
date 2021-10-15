@@ -81,7 +81,7 @@ void OpenMainWindow()
 	}
 	{
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::TestWindow"));
-		AttachDumpCompositionMenu(window);
+		//AttachDumpCompositionMenu(window);
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
 		GetApplication()->Run(window);
