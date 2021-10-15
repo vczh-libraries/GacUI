@@ -28,14 +28,12 @@
         <ToolstripCommand ref.Name="commandExportHtml" Text="Export as HTML" Image-uri="res://Images/FormatHtml"/>
         <ToolstripMenu ref.Name="menuEdit">
           <ToolstripGroupContainer>
-            <ToolstripGroup>
-              <ToolstripToolBar ControlTemplate="demo::MenuToolBarControlTemplate">
-                <ToolstripButton Command-ref="commandCut"/>
-                <ToolstripButton Command-ref="commandCopy"/>
-                <ToolstripButton Command-ref="commandPaste"/>
-                <ToolstripButton Command-ref="commandDelete"/>
-              </ToolstripToolBar>
-            </ToolstripGroup>
+            <ToolstripToolBar ControlTemplate="demo::MenuToolBarControlTemplate">
+              <ToolstripButton Command-ref="commandCut"/>
+              <ToolstripButton Command-ref="commandCopy"/>
+              <ToolstripButton Command-ref="commandPaste"/>
+              <ToolstripButton Command-ref="commandDelete"/>
+            </ToolstripToolBar>
             <ToolstripGroup>
               <MenuItemButton Command-ref="commandUndo"/>
               <MenuItemButton Command-ref="commandRedo"/>
