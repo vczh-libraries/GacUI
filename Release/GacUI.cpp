@@ -24010,7 +24010,8 @@ GuiToolstripNestedContainer
 
 			void GuiToolstripNestedContainer::UpdateLayout()
 			{
-				if (callback)
+				// It could happen if a GuiToolstripGroupContainer contains something other that GuiToolstripGroup
+				if (callback && callback != this)
 				{
 					callback->UpdateLayout();
 				}

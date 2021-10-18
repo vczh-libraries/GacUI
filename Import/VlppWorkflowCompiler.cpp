@@ -20724,7 +20724,6 @@ namespace vl
 				writer.WriteLine(L"#pragma warning(disable:4250)");
 				writer.WriteLine(L"#elif defined(__GNUC__)");
 				writer.WriteLine(L"#pragma GCC diagnostic push");
-				writer.WriteLine(L"#pragma GCC diagnostic ignored \"-Wparentheses-equality\"");
 				writer.WriteLine(L"#elif defined(__clang__)");
 				writer.WriteLine(L"#pragma clang diagnostic push");
 				writer.WriteLine(L"#pragma clang diagnostic ignored \"-Wparentheses-equality\"");
