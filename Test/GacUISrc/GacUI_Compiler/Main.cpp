@@ -7,6 +7,12 @@ using namespace vl::reflection::description;
 
 extern void UnitTestInGuiMain();
 
+#ifdef VCZH_64
+#define REFLECTION_BIN L"Metadata/Reflection64.bin"
+#else
+#define REFLECTION_BIN L"Metadata/Reflection32.bin"
+#endif
+
 #if defined VCZH_MSVC
 int wmain(vint argc, wchar_t* argv[])
 {
@@ -16,12 +22,6 @@ int wmain(vint argc, wchar_t* argv[])
 #endif
 	return result;
 }
-
-#ifdef VCZH_64
-#define REFLECTION_BIN L"Metadata/Reflection64.bin"
-#else
-#define REFLECTION_BIN L"Metadata/Reflection32.bin"
-#endif
 
 WString GetResourcePath()
 {

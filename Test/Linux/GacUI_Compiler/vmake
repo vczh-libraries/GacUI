@@ -1,0 +1,15 @@
+<#
+CPP_TARGET=./Bin/UnitTest
+CPP_VCXPROJS=(
+    "../../GacUISrc/Source_Import/Source_Import.vcxitems"
+    "../../GacUISrc/Source_Import_Reflection/Source_Import_Reflection.vcxitems"
+    "../../GacUISrc/Source_GacUI/Source_GacUI.vcxitems"
+    "../../GacUISrc/Source_GacUI_Reflection/Source_GacUI_Reflection.vcxitems"
+    "../../GacUISrc/Source_GacUI_Compiler/Source_GacUI_Compiler.vcxitems"
+    "../../GacUISrc/GacUI_Compiler/GacUI_Compiler.vcxproj"
+    )
+CPP_ADDS=("../../../Tools/GacGen/GacGen/NativeController.cpp")
+TARGETS=("${CPP_TARGET}")
+CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../../Source -DVCZH_DEBUG_METAONLY_REFLECTION"
+#>
+<#@ include "${VCPROOT}/vl/vmake-cpp" #>
