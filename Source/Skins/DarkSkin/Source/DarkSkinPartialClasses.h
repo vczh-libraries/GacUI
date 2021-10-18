@@ -17,7 +17,6 @@ https://github.com/vczh-libraries
 #pragma warning(disable:4250)
 #elif defined(__GNUC__)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wparentheses-equality"
 #elif defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wparentheses-equality"

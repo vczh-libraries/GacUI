@@ -1362,6 +1362,7 @@ Serizliation (Metadata)
 					case WfInsType::F4:				reader << value.f4Value; break;
 					case WfInsType::F8:				reader << value.f8Value; break;
 					case WfInsType::String:			reader << value.stringValue; break;
+					default:;
 					}
 				}
 					
@@ -1386,6 +1387,7 @@ Serizliation (Metadata)
 					case WfInsType::F4:				writer << value.f4Value; break;
 					case WfInsType::F8:				writer << value.f8Value; break;
 					case WfInsType::String:			writer << value.stringValue; break;
+					default:;
 					}
 				}
 			};
