@@ -3985,6 +3985,7 @@ MetaonlyTypeInfo
 					case SharedPtr: return elementType->GetTypeFriendlyName() + L"^";
 					case Nullable: return elementType->GetTypeFriendlyName() + L"?";
 					case TypeDescriptor: return GetTypeDescriptor()->GetTypeName();
+					default:;
 					}
 					WString result = elementType->GetTypeFriendlyName() + L"<";
 					FOREACH_INDEXER(Ptr<MetaonlyTypeInfo>, type, i, genericArguments)
@@ -4261,7 +4262,7 @@ IMethodInfo
 
 				// IMethodInfo
 
-				ICpp* GetCpp() override
+				IMethodInfo::ICpp* GetCpp() override
 				{
 					if (metadata->invokeTemplate.Length() + metadata->closureTemplate.Length() > 0)
 					{
@@ -4399,7 +4400,7 @@ IPropertyInfo
 
 				// IPropertyInfo
 
-				ICpp* GetCpp() override
+				IPropertyInfo::ICpp* GetCpp() override
 				{
 					if (metadata->referenceTemplate.Length() > 0)
 					{
@@ -4497,7 +4498,7 @@ IEventInfo
 
 				// IEventInfo
 
-				ICpp* GetCpp() override
+				IEventInfo::ICpp* GetCpp() override
 				{
 					if (metadata->attachTemplate.Length() + metadata->detachTemplate.Length() + metadata->invokeTemplate.Length() > 0)
 					{
@@ -4633,7 +4634,7 @@ ITypeDescriptor
 
 				// ITypeDescriptor
 
-				ICpp* GetCpp() override
+				ITypeDescriptor::ICpp* GetCpp() override
 				{
 					if (metadata->fullName.Length() > 0)
 					{
