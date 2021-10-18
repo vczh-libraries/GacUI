@@ -13,7 +13,6 @@ using namespace demo;
 
 void GuiMain()
 {
-	windows::SetWindowDefaultIcon(MAINICON);
 	theme::RegisterTheme(MakePtr<darkskin::Theme>());
 	{
 		demo::MainWindow window;
