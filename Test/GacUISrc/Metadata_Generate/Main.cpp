@@ -1,5 +1,7 @@
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
+#ifdef VCZH_MSVC
 #include <Windows.h>
+#endif
 
 using namespace vl;
 using namespace vl::filesystem;
@@ -23,6 +25,7 @@ namespace vl
 	}
 }
 
+#if defined VCZH_MSVC
 WString GetExePath()
 {
 	wchar_t buffer[65536];
@@ -48,6 +51,12 @@ WString GetTestOutputPath()
 	return GetExePath() + L"../../Resources/Metadata/";
 #endif
 }
+#elif defined VCZH_GCC
+WString GetTestOutputPath()
+{
+	return L"../../Resources/Metadata/";
+}
+#endif
 
 #ifdef VCZH_64
 #define REFLECTION_BIN L"Reflection64.bin"
@@ -63,7 +72,11 @@ void GuiMain()
 {
 }
 
+#if defined VCZH_MSVC
 int wmain(vint argc, wchar_t* argv[])
+#elif defined VCZH_GCC
+int main(int argc, char* argv[])
+#endif
 {
 	LoadPredefinedTypes();
 	LoadParsingTypes();
@@ -89,11 +102,4 @@ int wmain(vint argc, wchar_t* argv[])
 		LogTypeManager(writer);
 	}
 	return 0;
-}
-
-bool LoadPredefinedTypesForTestCase()
-{
-	auto result = LoadPredefinedTypes();
-	GetGlobalTypeManager()->Load();
-	return result;
 }

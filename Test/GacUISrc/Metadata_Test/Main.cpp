@@ -3,7 +3,9 @@
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #include "../../../Source/GacUI.h"
 #include <VlppReflection.h>
+#ifdef VCZH_MSVC
 #include <Windows.h>
+#endif
 
 using namespace vl;
 using namespace vl::filesystem;
@@ -11,6 +13,7 @@ using namespace vl::stream;
 using namespace vl::reflection;
 using namespace vl::reflection::description;
 
+#if defined VCZH_MSVC
 WString GetExePath()
 {
 	wchar_t buffer[65536];
@@ -36,6 +39,12 @@ WString GetTestOutputPath()
 	return GetExePath() + L"../../Resources/Metadata/";
 #endif
 }
+#elif defined VCZH_GCC
+WString GetTestOutputPath()
+{
+	return L"../../Resources/Metadata/";
+}
+#endif
 
 #ifdef VCZH_64
 #define REFLECTION_BIN L"Reflection64.bin"
@@ -54,7 +63,11 @@ void GuiMain()
 {
 }
 
+#if defined VCZH_MSVC
 int wmain(vint argc, wchar_t* argv[])
+#elif defined VCZH_GCC
+int main(int argc, char* argv[])
+#endif
 {
 	{
 		collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
@@ -81,11 +94,4 @@ int wmain(vint argc, wchar_t* argv[])
 		CHECK_ERROR(first == second, L"Metadata is not properly loaded!");
 	}
 	return 0;
-}
-
-bool LoadPredefinedTypesForTestCase()
-{
-	auto result = LoadPredefinedTypes();
-	GetGlobalTypeManager()->Load();
-	return result;
 }
