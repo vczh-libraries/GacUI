@@ -1,8 +1,7 @@
 #define GAC_HEADER_USE_NAMESPACE
-#include "..\..\..\Source\GacUI.h"
-#include "..\..\..\Source\NativeWindow\Windows\WinNativeWindow.h"
-#include "..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.h"
-#include "..\..\..\Source\Resources\GuiParserManager.h"
+#include "../../../Source/GacUI.h"
+#include "../../../Source/Compiler/InstanceQuery/GuiInstanceQuery.h"
+#include "../../../Source/Resources/GuiParserManager.h"
 
 using namespace vl::collections;
 using namespace vl::stream;

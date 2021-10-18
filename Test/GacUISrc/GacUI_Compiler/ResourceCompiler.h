@@ -2,13 +2,13 @@
 #define GACUISRC_RESOURCECOMPILER
 
 #define GAC_HEADER_USE_NAMESPACE
-#include "..\..\..\Source\GacUI.h"
-#include "..\..\..\Source\Compiler\GuiCppGen.h"
+#include "../../../Source/GacUI.h"
+#include "../../../Source/Compiler/GuiCppGen.h"
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-#include "..\..\..\Source\Compiler\GuiInstanceLoader.h"
-#include "..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h"
-#include "..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h"
+#include "../../../Source/Compiler/GuiInstanceLoader.h"
+#include "../../../Source/Reflection/GuiInstanceCompiledWorkflow.h"
+#include "../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
 
 using namespace vl;
 using namespace vl::workflow;
