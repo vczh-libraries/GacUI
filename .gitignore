@@ -4,7 +4,7 @@
 #Vczh Libraries
 .Output/
 Test/Output/
-Test/Linux/Coverage/
+Test/Linux/**/Coverage/
 Tools/*.exe
 Tools/*.dll
 Test/GacUISrc/*/*.UI.error.txt
