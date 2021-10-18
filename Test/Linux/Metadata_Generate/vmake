@@ -1,0 +1,13 @@
+<#
+CPP_TARGET=./Bin/UnitTest
+CPP_VCXPROJS=(
+    "../../GacUISrc/Source_Import/Source_Import.vcxitems"
+    "../../GacUISrc/Source_Import_Reflection/Source_Import_Reflection.vcxitems"
+    "../../GacUISrc/Source_GacUI/Source_GacUI.vcxitems"
+    "../../GacUISrc/Source_GacUI_Reflection/Source_GacUI_Reflection.vcxitems"
+    "../../GacUISrc/Metadata_Generate/Metadata_Generate.vcxproj"
+    )
+TARGETS=("${CPP_TARGET}")
+CPP_COMPILE_OPTIONS="-I ../../../Import"
+#>
+<#@ include "${VCPROOT}/vl/vmake-cpp" #>
