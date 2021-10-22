@@ -59,7 +59,7 @@
     - Command/Powershell Line in Windows (hosted)
     - GDI (hosted mode)
     - Direct2d (hosted mode)
-    - UWP (hosted mode + sync tree)
+    - UWP (hosted mode + sync tree, optional)
   - Linux
     - Ncurses on Ubuntu (hosted)
     - gGac repo: complete development process for release
