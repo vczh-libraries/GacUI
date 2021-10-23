@@ -503,7 +503,7 @@ GuiTextBoxCommonInterface
 						(arguments.code != (wchar_t)VKEY::_TAB || textControl->GetAcceptTabInput()) &&
 						!arguments.ctrl)
 					{
-						SetSelectionTextAsKeyInput(WString(arguments.code));
+						SetSelectionTextAsKeyInput(WString::FromChar(arguments.code));
 					}
 				}
 			}

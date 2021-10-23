@@ -32,7 +32,7 @@ namespace vl
 			{
 				static WString GetIdentifier()
 				{
-					return WString(T::Identifier, false);
+					return WString::Unmanaged(T::Identifier);
 				}
 			};
 

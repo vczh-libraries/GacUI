@@ -457,7 +457,7 @@ GuiDocumentCommonInterface
 						!arguments.ctrl)
 					{
 						Array<WString> text(1);
-						text[0] = WString(arguments.code);
+						text[0] = WString::FromChar(arguments.code);
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 					}
 				}

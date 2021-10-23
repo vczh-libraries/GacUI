@@ -166,7 +166,7 @@ Helpers
 					{\
 						auto manager = GetGuiGraphicsResourceManager();\
 						CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element types.");\
-						elementType = manager->RegisterElementType(WString(ELEMENT_TYPE_NAME, false));\
+						elementType = manager->RegisterElementType(WString::Unmanaged(ELEMENT_TYPE_NAME));\
 					}\
 					return elementType;\
 				}\

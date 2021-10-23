@@ -249,7 +249,7 @@ text::TextLines
 
 					if(start.row==end.row)
 					{
-						return WString(lines[start.row].text+start.column, end.column-start.column);
+						return WString::CopyFrom(lines[start.row].text+start.column, end.column-start.column);
 					}
 
 					vint count=0;
@@ -290,7 +290,7 @@ text::TextLines
 						memcpy(writing, text, chars*sizeof(wchar_t));
 						writing+=chars;
 					}
-					return WString(&buffer[0], buffer.Count());
+					return WString::CopyFrom(&buffer[0], buffer.Count());
 				}
 
 				WString TextLines::GetText()

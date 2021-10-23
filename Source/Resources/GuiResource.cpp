@@ -20,7 +20,7 @@ namespace vl
 			{
 				if (path[path.Length() - 1] != FilePath::Delimiter)
 				{
-					path += FilePath::Delimiter;
+					path += WString::FromChar(FilePath::Delimiter);
 				}
 			}
 			return path;
@@ -380,7 +380,7 @@ GuiResourceError
 			if (errors.Count() == 0) return;
 			SortLambda(&errors[0], errors.Count(), [](const GuiResourceError& a, const GuiResourceError& b)
 			{
-				vint result = 0;
+				vint64_t result = 0;
 				if (result == 0) result = WString::Compare(a.location.resourcePath, b.location.resourcePath);
 				if (result == 0) result = WString::Compare(a.location.filePath, b.location.filePath);
 				if (result == 0) result = WString::Compare(a.position.originalLocation.resourcePath, b.position.originalLocation.resourcePath);
@@ -1641,7 +1641,7 @@ GuiImportResourcePathResResolver
 					d1 < d2 ? d1 : d2;
 
 				if (!d) return nullptr;
-				WString resourceName(buffer, d - buffer);
+				WString resourceName = WString::CopyFrom(buffer, d - buffer);
 				WString resourcePath(path.Right(path.Length() - resourceName.Length() - 1));
 				if (auto resource = GetResourceManager()->GetResource(resourceName))
 				{

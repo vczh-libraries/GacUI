@@ -165,7 +165,7 @@ GuiAltActionManager
 
 			bool GuiAltActionManager::EnterAltKey(wchar_t key)
 			{
-				currentAltPrefix += key;
+				currentAltPrefix += WString::FromChar(key);
 				vint index = currentActiveAltActions.Keys().IndexOf(currentAltPrefix);
 				if (index == -1)
 				{

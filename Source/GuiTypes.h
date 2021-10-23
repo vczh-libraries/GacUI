@@ -696,30 +696,30 @@ Resources
 			{
 			}
 			
-			vint Compare(const FontProperties& value)const
+			vint64_t Compare(const FontProperties& value)const
 			{
-				vint result=0;
-				
-				result=WString::Compare(fontFamily, value.fontFamily);
-				if(result!=0) return result;
+				vint64_t result = 0;
 
-				result=size-value.size;
-				if(result!=0) return result;
+				result = WString::Compare(fontFamily, value.fontFamily);
+				if (result != 0) return result;
 
-				result=(vint)bold-(vint)value.bold;
-				if(result!=0) return result;
+				result = (vint64_t)size - (vint64_t)value.size;
+				if (result != 0) return result;
 
-				result=(vint)italic-(vint)value.italic;
-				if(result!=0) return result;
+				result = (vint64_t)bold - (vint64_t)value.bold;
+				if (result != 0) return result;
 
-				result=(vint)underline-(vint)value.underline;
-				if(result!=0) return result;
+				result = (vint64_t)italic - (vint64_t)value.italic;
+				if (result != 0) return result;
 
-				result=(vint)strikeline-(vint)value.strikeline;
-				if(result!=0) return result;
+				result = (vint64_t)underline - (vint64_t)value.underline;
+				if (result != 0) return result;
 
-				result=(vint)antialias-(vint)value.antialias;
-				if(result!=0) return result;
+				result = (vint64_t)strikeline - (vint64_t)value.strikeline;
+				if (result != 0) return result;
+
+				result = (vint64_t)antialias - (vint64_t)value.antialias;
+				if (result != 0) return result;
 
 				return 0;
 			}
