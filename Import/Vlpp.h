@@ -35,8 +35,18 @@ Licensed under https://github.com/vczh-libraries/License
 #endif
 #endif
 
-#if defined VCZH_CLANG_AST_DUMP
-#define abstract
+#if defined VCZH_MSVC
+#define VCZH_WCHAR_UTF16
+#elif defined VCZH_GCC
+#define VCZH_WCHAR_UTF32
+#endif
+
+#if defined VCZH_WCHAR_UTF16
+static_assert(sizeof(wchar_t) == sizeof(char16_t), "wchar_t is not UTF-16.");
+#elif defined VCZH_WCHAR_UTF32
+static_assert(sizeof(wchar_t) == sizeof(char32_t), "wchar_t is not UTF-32.");
+#else
+static_assert(false, "wchar_t configuration is not right.");
 #endif
 
 #if defined VCZH_MSVC
@@ -1937,979 +1947,6 @@ namespace vl
 		}
 	};
 }
-
-#endif
-
-
-/***********************************************************************
-.\STRING.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_STRING
-#define VCZH_STRING
-
-
-namespace vl
-{
-	/// <summary>
-	/// Immutable string. <see cref="AString"/> and <see cref="WString"/> is recommended instead.
-	/// Locale awared operations are in [T:vl.Locale], typically by using the "INVLOC" macro.
-	/// </summary>
-	/// <typeparam name="T">Type of code points.</typeparam>
-	template<typename T>
-	class ObjectString : public Object
-	{
-	private:
-		static const T				zero;
-
-		mutable T*					buffer;
-		mutable volatile vint*		counter;
-		mutable vint				start;
-		mutable vint				length;
-		mutable vint				realLength;
-
-		static vint CalculateLength(const T* buffer)
-		{
-			vint result=0;
-			while(*buffer++)result++;
-			return result;
-		}
-
-		static vint Compare(const T* bufA, const ObjectString<T>& strB)
-		{
-			const T* bufB=strB.buffer+strB.start;
-			const T* bufAOld=bufA;
-			vint length=strB.length;
-			while(length-- && *bufA)
-			{
-				vint diff=*bufA++-*bufB++;
-				if(diff!=0)
-				{
-					return diff;
-				}
-			};
-			return CalculateLength(bufAOld)-strB.length;
-		}
-
-	public:
-
-		static vint Compare(const ObjectString<T>& strA, const ObjectString<T>& strB)
-		{
-			const T* bufA=strA.buffer+strA.start;
-			const T* bufB=strB.buffer+strB.start;
-			vint length=strA.length<strB.length?strA.length:strB.length;
-			while(length--)
-			{
-				vint diff=*bufA++-*bufB++;
-				if(diff!=0)
-				{
-					return diff;
-				}
-			};
-			return strA.length-strB.length;
-		}
-
-	private:
-
-		void Inc()const
-		{
-			if(counter)
-			{
-				INCRC(counter);
-			}
-		}
-
-		void Dec()const
-		{
-			if(counter)
-			{
-				if(DECRC(counter)==0)
-				{
-					delete[] buffer;
-					delete counter;
-				}
-			}
-		}
-
-		ObjectString(const ObjectString<T>& string, vint _start, vint _length)
-		{
-			if(_length<=0)
-			{
-				buffer=(T*)&zero;
-				counter=0;
-				start=0;
-				length=0;
-				realLength=0;
-			}
-			else
-			{
-				buffer=string.buffer;
-				counter=string.counter;
-				start=string.start+_start;
-				length=_length;
-				realLength=string.realLength;
-				Inc();
-			}
-		}
-
-		ObjectString(const ObjectString<T>& dest, const ObjectString<T>& source, vint index, vint count)
-		{
-			if(index==0 && count==dest.length && source.length==0)
-			{
-				buffer=(T*)&zero;
-				counter=0;
-				start=0;
-				length=0;
-				realLength=0;
-			}
-			else
-			{
-				counter=new vint(1);
-				start=0;
-				length=dest.length-count+source.length;
-				realLength=length;
-				buffer=new T[length+1];
-				memcpy(buffer, dest.buffer+dest.start, sizeof(T)*index);
-				memcpy(buffer+index, source.buffer+source.start, sizeof(T)*source.length);
-				memcpy(buffer+index+source.length, (dest.buffer+dest.start+index+count), sizeof(T)*(dest.length-index-count));
-				buffer[length]=0;
-			}
-		}
-	public:
-		static ObjectString<T>	Empty;
-
-		/// <summary>Create an empty string.</summary>
-		ObjectString()
-		{
-			buffer=(T*)&zero;
-			counter=0;
-			start=0;
-			length=0;
-			realLength=0;
-		}
-
-		/// <summary>Create a string continaing one code point.</summary>
-		/// <param name="_char">The code point.</param>
-		ObjectString(const T& _char)
-		{
-			counter=new vint(1);
-			start=0;
-			length=1;
-			buffer=new T[2];
-			buffer[0]=_char;
-			buffer[1]=0;
-			realLength=length;
-		}
-
-		/// <summary>Copy a string.</summary>
-		/// <param name="_buffer">Memory to copy. It is not required to be zero terminated.</param>
-		/// <param name="_length">Size of the content in code points.</param>
-		ObjectString(const T* _buffer, vint _length)
-		{
-			if(_length<=0)
-			{
-				buffer=(T*)&zero;
-				counter=0;
-				start=0;
-				length=0;
-				realLength=0;
-			}
-			else
-			{
-				buffer=new T[_length+1];
-				memcpy(buffer, _buffer, _length*sizeof(T));
-				buffer[_length]=0;
-				counter=new vint(1);
-				start=0;
-				length=_length;
-				realLength=_length;
-			}
-		}
-		
-		/// <summary>Copy a string.</summary>
-		/// <param name="_buffer">Memory to copy. It must be zero terminated.</param>
-		/// <param name="copy">Set to true to copy the memory. Set to false to use the memory directly.</param>
-		ObjectString(const T* _buffer, bool copy = true)
-		{
-			CHECK_ERROR(_buffer!=0, L"ObjectString<T>::ObjectString(const T*, bool)#Cannot construct a string from nullptr.");
-			if(copy)
-			{
-				counter=new vint(1);
-				start=0;
-				length=CalculateLength(_buffer);
-				buffer=new T[length+1];
-				memcpy(buffer, _buffer, sizeof(T)*(length+1));
-				realLength=length;
-			}
-			else
-			{
-				buffer=(T*)_buffer;
-				counter=0;
-				start=0;
-				length=CalculateLength(_buffer);
-				realLength=length;
-			}
-		}
-		
-		/// <summary>Copy a string.</summary>
-		/// <param name="string">The string to copy.</param>
-		ObjectString(const ObjectString<T>& string)
-		{
-			buffer=string.buffer;
-			counter=string.counter;
-			start=string.start;
-			length=string.length;
-			realLength=string.realLength;
-			Inc();
-		}
-		
-		/// <summary>Move a string.</summary>
-		/// <param name="string">The string to move.</param>
-		ObjectString(ObjectString<T>&& string)
-		{
-			buffer=string.buffer;
-			counter=string.counter;
-			start=string.start;
-			length=string.length;
-			realLength=string.realLength;
-			
-			string.buffer=(T*)&zero;
-			string.counter=0;
-			string.start=0;
-			string.length=0;
-			string.realLength=0;
-		}
-
-		~ObjectString()
-		{
-			Dec();
-		}
-
-		/// <summary>
-		/// Get the zero terminated buffer in the string.
-		/// Copying parts of a string does not necessarily create a new buffer,
-		/// so in some situation the string will not actually points to a zero terminated buffer.
-		/// In this case, this function will copy the content to a new buffer with a zero terminator and return.
-		/// </summary>
-		/// <returns>The zero terminated buffer.</returns>
-		const T* Buffer()const
-		{
-			if(start+length!=realLength)
-			{
-				T* newBuffer=new T[length+1];
-				memcpy(newBuffer, buffer+start, sizeof(T)*length);
-				newBuffer[length]=0;
-				Dec();
-				buffer=newBuffer;
-				counter=new vint(1);
-				start=0;
-				realLength=length;
-			}
-			return buffer+start;
-		}
-
-		/// <summary>Replace the string by copying another string.</summary>
-		/// <returns>The string itself.</returns>
-		/// <param name="string">The string to copy.</param>
-		ObjectString<T>& operator=(const ObjectString<T>& string)
-		{
-			if(this!=&string)
-			{
-				Dec();
-				buffer=string.buffer;
-				counter=string.counter;
-				start=string.start;
-				length=string.length;
-				realLength=string.realLength;
-				Inc();
-			}
-			return *this;
-		}
-
-		/// <summary>Replace the string by moving another string.</summary>
-		/// <returns>The string itself.</returns>
-		/// <param name="string">The string to move.</param>
-		ObjectString<T>& operator=(ObjectString<T>&& string)
-		{
-			if(this!=&string)
-			{
-				Dec();
-				buffer=string.buffer;
-				counter=string.counter;
-				start=string.start;
-				length=string.length;
-				realLength=string.realLength;
-			
-				string.buffer=(T*)&zero;
-				string.counter=0;
-				string.start=0;
-				string.length=0;
-				string.realLength=0;
-			}
-			return *this;
-		}
-
-		/// <summary>Replace the string by appending another string.</summary>
-		/// <returns>The string itself.</returns>
-		/// <param name="string">The string to append.</param>
-		ObjectString<T>& operator+=(const ObjectString<T>& string)
-		{
-			return *this=*this+string;
-		}
-
-		/// <summary>Create a new string by concatenating two strings.</summary>
-		/// <returns>The new string.</returns>
-		/// <param name="string">The string to append.</param>
-		ObjectString<T> operator+(const ObjectString<T>& string)const
-		{
-			return ObjectString<T>(*this, string, length, 0);
-		}
-
-		bool operator==(const ObjectString<T>& string)const
-		{
-			return Compare(*this, string)==0;
-		}
-
-		bool operator!=(const ObjectString<T>& string)const
-		{
-			return Compare(*this, string)!=0;
-		}
-
-		bool operator>(const ObjectString<T>& string)const
-		{
-			return Compare(*this, string)>0;
-		}
-
-		bool operator>=(const ObjectString<T>& string)const
-		{
-			return Compare(*this, string)>=0;
-		}
-
-		bool operator<(const ObjectString<T>& string)const
-		{
-			return Compare(*this, string)<0;
-		}
-
-		bool operator<=(const ObjectString<T>& string)const
-		{
-			return Compare(*this, string)<=0;
-		}
-
-		bool operator==(const T* buffer)const
-		{
-			return Compare(buffer, *this)==0;
-		}
-
-		bool operator!=(const T* buffer)const
-		{
-			return Compare(buffer, *this)!=0;
-		}
-
-		bool operator>(const T* buffer)const
-		{
-			return Compare(buffer, *this)<0;
-		}
-
-		bool operator>=(const T* buffer)const
-		{
-			return Compare(buffer, *this)<=0;
-		}
-
-		bool operator<(const T* buffer)const
-		{
-			return Compare(buffer, *this)>0;
-		}
-
-		bool operator<=(const T* buffer)const
-		{
-			return Compare(buffer, *this)>=0;
-		}
-
-		/// <summary>Get a code point in the specified position.</summary>
-		/// <returns>Returns the code point. It will crash when the specified position is out of range.</returns>
-		/// <param name="index"></param>
-		T operator[](vint index)const
-		{
-			CHECK_ERROR(index>=0 && index<length, L"ObjectString:<T>:operator[](vint)#Argument index not in range.");
-			return buffer[start+index];
-		}
-
-		/// <summary>Get the size of the string in code points.</summary>
-		/// <returns>The size, not including the zero terminator.</returns>
-		vint Length()const
-		{
-			return length;
-		}
-
-		/// <summary>Find a code point.</summary>
-		/// <returns>The position of the code point. Returns -1 if it does not exist.</returns>
-		/// <param name="c">The code point to find.</param>
-		vint IndexOf(T c)const
-		{
-			const T* reading=buffer+start;
-			for(vint i=0;i<length;i++)
-			{
-				if(reading[i]==c)
-					return i;
-			}
-			return -1;
-		}
-
-		/// <summary>Get the prefix of the string.</summary>
-		/// <returns>The prefix. It will crash when the specified size is out of range.</returns>
-		/// <param name="count">Size of the prefix.</param>
-		/// <example><![CDATA[
-		/// int main()
-		/// {
-		///     WString s = L"Hello, world!";
-		///     Console::WriteLine(s.Left(5));
-		/// }
-		/// ]]></example>
-		ObjectString<T> Left(vint count)const
-		{
-			CHECK_ERROR(count>=0 && count<=length, L"ObjectString<T>::Left(vint)#Argument count not in range.");
-			return ObjectString<T>(*this, 0, count);
-		}
-		
-		/// <summary>Get the postfix of the string.</summary>
-		/// <returns>The postfix. It will crash when the specified size is out of range.</returns>
-		/// <param name="count">Size of the prefix.</param>
-		/// <example><![CDATA[
-		/// int main()
-		/// {
-		///     WString s = L"Hello, world!";
-		///     Console::WriteLine(s.Right(6));
-		/// }
-		/// ]]></example>
-		ObjectString<T> Right(vint count)const
-		{
-			CHECK_ERROR(count>=0 && count<=length, L"ObjectString<T>::Right(vint)#Argument count not in range.");
-			return ObjectString<T>(*this, length-count, count);
-		}
-		
-		/// <summary>Get a sub string.</summary>
-		/// <returns>The sub string. It will crash when the specified position or size is out of range.</returns>
-		/// <param name="index">The position of the first code point of the sub string.</param>
-		/// <param name="count">The size of the sub string.</param>
-		/// <example><![CDATA[
-		/// int main()
-		/// {
-		///     WString s = L"Hello, world!";
-		///     Console::WriteLine(s.Sub(7, 5));
-		/// }
-		/// ]]></example>
-		ObjectString<T> Sub(vint index, vint count)const
-		{
-			CHECK_ERROR(index>=0 && index<=length, L"ObjectString<T>::Sub(vint, vint)#Argument index not in range.");
-			CHECK_ERROR(index+count>=0 && index+count<=length, L"ObjectString<T>::Sub(vint, vint)#Argument count not in range.");
-			return ObjectString<T>(*this, index, count);
-		}
-
-		/// <summary>Get a string by removing a sub string.</summary>
-		/// <returns>The string without the sub string. It will crash when the specified position or size is out of range.</returns>
-		/// <param name="index">The position of the first code point of the sub string.</param>
-		/// <param name="count">The size of the sub string.</param>
-		/// <example><![CDATA[
-		/// int main()
-		/// {
-		///     WString s = L"Hello, world!";
-		///     Console::WriteLine(s.Remove(5, 7));
-		/// }
-		/// ]]></example>
-		ObjectString<T> Remove(vint index, vint count)const
-		{
-			CHECK_ERROR(index>=0 && index<length, L"ObjectString<T>::Remove(vint, vint)#Argument index not in range.");
-			CHECK_ERROR(index+count>=0 && index+count<=length, L"ObjectString<T>::Remove(vint, vint)#Argument count not in range.");
-			return ObjectString<T>(*this, ObjectString<T>(), index, count);
-		}
-
-		/// <summary>Get a string by inserting another string.</summary>
-		/// <returns>The string with another string inserted. It will crash when the specified position is out of range.</returns>
-		/// <param name="index">The position to insert.</param>
-		/// <param name="string">The string to insert.</param>
-		/// <example><![CDATA[
-		/// int main()
-		/// {
-		///     WString s = L"Hello, world!";
-		///     Console::WriteLine(s.Insert(7, L"a great "));
-		/// }
-		/// ]]></example>
-		ObjectString<T> Insert(vint index, const ObjectString<T>& string)const
-		{
-			CHECK_ERROR(index>=0 && index<=length, L"ObjectString<T>::Insert(vint)#Argument count not in range.");
-			return ObjectString<T>(*this, string, index, 0);
-		}
-
-		friend bool operator<(const T* left, const ObjectString<T>& right)
-		{
-			return Compare(left, right)<0;
-		}
-
-		friend bool operator<=(const T* left, const ObjectString<T>& right)
-		{
-			return Compare(left, right)<=0;
-		}
-
-		friend bool operator>(const T* left, const ObjectString<T>& right)
-		{
-			return Compare(left, right)>0;
-		}
-
-		friend bool operator>=(const T* left, const ObjectString<T>& right)
-		{
-			return Compare(left, right)>=0;
-		}
-
-		friend bool operator==(const T* left, const ObjectString<T>& right)
-		{
-			return Compare(left, right)==0;
-		}
-
-		friend bool operator!=(const T* left, const ObjectString<T>& right)
-		{
-			return Compare(left, right)!=0;
-		}
-
-		friend ObjectString<T> operator+(const T* left, const ObjectString<T>& right)
-		{
-			return ObjectString<T>(left, false)+right;
-		}
-	};
-
-	template<typename T>
-	ObjectString<T> ObjectString<T>::Empty=ObjectString<T>();
-	template<typename T>
-	const T ObjectString<T>::zero=0;
-
-	/// <summary>Ansi string in local code page.</summary>
-	typedef ObjectString<char>		AString;
-	/// <summary>
-	/// Unicode string, UTF-16 on Windows, UTF-32 on Linux and macOS.
-	/// </summary>
-	typedef ObjectString<wchar_t>	WString;
-
-	/// <summary>Convert a string to a signed integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <param name="success">Returns true if this operation succeeded.</param>
-	extern vint					atoi_test(const AString& string, bool& success);
-	/// <summary>Convert a string to a signed integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <param name="success">Returns true if this operation succeeded.</param>
-	extern vint					wtoi_test(const WString& string, bool& success);
-	/// <summary>Convert a string to a signed 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <param name="success">Returns true if this operation succeeded.</param>
-	extern vint64_t				atoi64_test(const AString& string, bool& success);
-	/// <summary>Convert a string to a signed 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <param name="success">Returns true if this operation succeeded.</param>
-	extern vint64_t				wtoi64_test(const WString& string, bool& success);
-	/// <summary>Convert a string to an unsigned integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <param name="success">Returns true if this operation succeeded.</param>
-	extern vuint				atou_test(const AString& string, bool& success);
-	/// <summary>Convert a string to an unsigned integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <param name="success">Returns true if this operation succeeded.</param>
-	extern vuint				wtou_test(const WString& string, bool& success);
-	/// <summary>Convert a string to an unsigned 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <param name="success">Returns true if this operation succeeded.</param>
-	extern vuint64_t			atou64_test(const AString& string, bool& success);
-	/// <summary>Convert a string to an unsigned 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <param name="success">Returns true if this operation succeeded.</param>
-	extern vuint64_t			wtou64_test(const WString& string, bool& success);
-	/// <summary>Convert a string to a 64-bits floating point number.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <param name="success">Returns true if this operation succeeded.</param>
-	extern double				atof_test(const AString& string, bool& success);
-	/// <summary>Convert a string to a 64-bits floating point number.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <param name="success">Returns true if this operation succeeded.</param>
-	extern double				wtof_test(const WString& string, bool& success);
-
-	/// <summary>Convert a string to a signed integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atoi_test"/> instead.</remarks>
-	extern vint					atoi(const AString& string);
-	/// <summary>Convert a string to a signed integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtoi_test"/> instead.</remarks>
-	extern vint					wtoi(const WString& string);
-	/// <summary>Convert a string to a signed 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atoi64_test"/> instead.</remarks>
-	extern vint64_t				atoi64(const AString& string);
-	/// <summary>Convert a string to a signed 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtoi64_test"/> instead.</remarks>
-	extern vint64_t				wtoi64(const WString& string);
-	/// <summary>Convert a string to an usigned integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atou_test"/> instead.</remarks>
-	extern vuint				atou(const AString& string);
-	/// <summary>Convert a string to an usigned integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtou_test"/> instead.</remarks>
-	extern vuint				wtou(const WString& string);
-	/// <summary>Convert a string to an usigned 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atou64_test"/> instead.</remarks>
-	extern vuint64_t			atou64(const AString& string);
-	/// <summary>Convert a string to an usigned 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtou64_test"/> instead.</remarks>
-	extern vuint64_t			wtou64(const WString& string);
-	/// <summary>Convert a string to a 64-bits floating point number.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atof_test"/> instead.</remarks>
-	extern double				atof(const AString& string);
-	/// <summary>Convert a string to a 64-bits floating point number.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
-	/// <param name="string">The string to convert.</param>
-	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtof_test"/> instead.</remarks>
-	extern double				wtof(const WString& string);
-
-	/// <summary>Convert a signed interger to a string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="number">The number to convert.</param>
-	extern AString				itoa(vint number);
-	/// <summary>Convert a signed interger to a string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="number">The number to convert.</param>
-	extern WString				itow(vint number);
-	/// <summary>Convert a signed 64-bits interger to a string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="number">The number to convert.</param>
-	extern AString				i64toa(vint64_t number);
-	/// <summary>Convert a signed 64-bits interger to a string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="number">The number to convert.</param>
-	extern WString				i64tow(vint64_t number);
-	/// <summary>Convert an unsigned interger to a string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="number">The number to convert.</param>
-	extern AString				utoa(vuint number);
-	/// <summary>Convert an unsigned interger to a string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="number">The number to convert.</param>
-	extern WString				utow(vuint number);
-	/// <summary>Convert an unsigned 64-bits interger to a string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="number">The number to convert.</param>
-	extern AString				u64toa(vuint64_t number);
-	/// <summary>Convert an unsigned 64-bits interger to a string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="number">The number to convert.</param>
-	extern WString				u64tow(vuint64_t number);
-	/// <summary>Convert a 64-bits floating pointer number to a string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="number">The number to convert.</param>
-	extern AString				ftoa(double number);
-	/// <summary>Convert a 64-bits floating pointer number to a string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="number">The number to convert.</param>
-	extern WString				ftow(double number);
-
-	extern vint					_wtoa(const wchar_t* w, char* a, vint chars);
-	/// <summary>Convert a Unicode string to an Ansi string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="string">The string to convert.</param>
-	extern AString				wtoa(const WString& string);
-	extern vint					_atow(const char* a, wchar_t* w, vint chars);
-	/// <summary>Convert an Ansi string to an Unicode string.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="string">The string to convert.</param>
-	extern WString				atow(const AString& string);
-	/// <summary>Convert all letters to lower case letters.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="string">The string to convert.</param>
-	extern AString				alower(const AString& string);
-	/// <summary>Convert all letters to lower case letters.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="string">The string to convert.</param>
-	extern WString				wlower(const WString& string);
-	/// <summary>Convert all letters to upper case letters.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="string">The string to convert.</param>
-	extern AString				aupper(const AString& string);
-	/// <summary>Convert all letters to upper case letters.</summary>
-	/// <returns>The converted string.</returns>
-	/// <param name="string">The string to convert.</param>
-	extern WString				wupper(const WString& string);
-
-#if defined VCZH_GCC
-	extern void					_itoa_s(vint32_t value, char* buffer, size_t size, vint radix);
-	extern void					_itow_s(vint32_t value, wchar_t* buffer, size_t size, vint radix);
-	extern void					_i64toa_s(vint64_t value, char* buffer, size_t size, vint radix);
-	extern void					_i64tow_s(vint64_t value, wchar_t* buffer, size_t size, vint radix);
-	extern void					_uitoa_s(vuint32_t value, char* buffer, size_t size, vint radix);
-	extern void					_uitow_s(vuint32_t value, wchar_t* buffer, size_t size, vint radix);
-	extern void					_ui64toa_s(vuint64_t value, char* buffer, size_t size, vint radix);
-	extern void					_ui64tow_s(vuint64_t value, wchar_t* buffer, size_t size, vint radix);
-	extern void					_gcvt_s(char* buffer, size_t size, double value, vint numberOfDigits);
-	extern void					_strlwr_s(char* buffer, size_t size);
-	extern void					_strupr_s(char* buffer, size_t size);
-	extern void					_wcslwr_s(wchar_t* buffer, size_t size);
-	extern void					_wcsupr_s(wchar_t* buffer, size_t size);
-	extern void					wcscpy_s(wchar_t* buffer, size_t size, const wchar_t* text);
-#endif
-
-	/// <summary>Style of the random text.</summary>
-	enum class LoremIpsumCasing
-	{
-		/// <summary>First letters of all words are lower cased.</summary>
-		AllWordsLowerCase,
-		/// <summary>first letters of first words of all sentences are upper cased.</summary>
-		FirstWordUpperCase,
-		/// <summary>First letters of all words are upper cased.</summary>
-		AllWordsUpperCase,
-	};
-
-	/// <summary>Get some random text.</summary>
-	/// <returns>The generated random text. It may not exactly in the expected size.</returns>
-	/// <param name="bestLength">The expected size.</param>
-	/// <param name="casing">The expected casing.</param>
-	extern WString				LoremIpsum(vint bestLength, LoremIpsumCasing casing);
-	/// <summary>Get some random text for a title, first letters of all words are upper cased.</summary>
-	/// <returns>The generated random text. It may not be exactly in the expected size.</returns>
-	/// <param name="bestLength">The expected size.</param>
-	extern WString				LoremIpsumTitle(vint bestLength);
-	/// <summary>Get some random sentences. The first letter of the first word is uppder cased.</summary>
-	/// <returns>The generated random text with a period character ".". It may not be exactly in the expected size.</returns>
-	/// <param name="bestLength">The expected size.</param>
-	extern WString				LoremIpsumSentence(vint bestLength);
-	/// <summary>Get some random paragraphs. First letters of first words of all sentences are upper cased.</summary>
-	/// <returns>The generated random text with multiple sentences ending with period characters ".". It may not be exactly in the expected size.</returns>
-	/// <param name="bestLength">The expected size.</param>
-	extern WString				LoremIpsumParagraph(vint bestLength);
-}
-
-#endif
-
-
-/***********************************************************************
-.\CONSOLE.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_CONSOLE
-#define VCZH_CONSOLE
-
-
-namespace vl
-{
-	namespace console
-	{
-		/// <summary>Basic I/O for command-line applications.</summary>
-		class Console abstract
-		{
-		public:
-			/// <summary>Write a string to the command-line window.</summary>
-			/// <param name="string">Content to write.</param>
-			/// <param name="length">Size of the content in wchar_t, not including the zero terminator.</param>
-			static void Write(const wchar_t* string, vint length);
-
-			/// <summary>Write a string to the command-line window.</summary>
-			/// <param name="string">Content to write, must be zero terminated.</param>
-			static void Write(const wchar_t* string);
-
-			/// <summary>Write a string to the command-line window.</summary>
-			/// <param name="string">Content to write.</param>
-			static void Write(const WString& string);
-
-			/// <summary>Write to the command-line window, following CR/LF characters.</summary>
-			/// <param name="string">Content to write.</param>
-			static void WriteLine(const WString& string);
-
-			/// <summary>Read a string from the command-line window.</summary>
-			/// <returns>The whole line read from the command-line window.</returns>
-			static WString Read();
-
-			static void SetColor(bool red, bool green, bool blue, bool light);
-			static void SetTitle(const WString& string);
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\EXCEPTION.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_EXCEPTION
-#define VCZH_EXCEPTION
-
-
-namespace vl
-{
-	/// <summary>Base type of all exceptions.</summary>
-	class Exception : public Object
-	{
-	protected:
-		WString						message;
-
-	public:
-		Exception(const WString& _message=WString::Empty);
-
-		const WString&				Message()const;
-	};
-
-	class ArgumentException : public Exception
-	{
-	protected:
-		WString						function;
-		WString						name;
-
-	public:
-		ArgumentException(const WString& _message=WString::Empty, const WString& _function=WString::Empty, const WString& _name=WString::Empty);
-
-		const WString&				GetFunction()const;
-		const WString&				GetName()const;
-	};
-
-	class ParsingException : public Exception
-	{
-	protected:
-		vint						position;
-		WString						expression;
-
-	public:
-		ParsingException(const WString& _message, const WString& _expression, vint _position);
-
-		const WString&				GetExpression()const;
-		vint						GetPosition()const;
-	};
-}
-
-#endif
-
-/***********************************************************************
-.\GLOBALSTORAGE.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_GLOBALSTORAGE
-#define VCZH_GLOBALSTORAGE
-
-
-namespace vl
-{
-	/// <summary>
-	/// Base type of all global storages.
-	/// A global storage stores multiple values using a name.
-	/// The "BEGIN_GLOBAL_STOREGE_CLASS" macro is recommended to create a global storage.
-	/// </summary>
-	/// <remarks>
-	/// All values are shared like global variables, but they are created at the first time when they need to be accessed.
-	/// <see cref="FinalizeGlobalStorage"/> is recommended after you don't need any global storages any more, it frees memory.
-	/// </remarks>
-	/// <example><![CDATA[
-	/// BEGIN_GLOBAL_STORAGE_CLASS(MyStorage)
-	///     Ptr<vint> data;
-	/// INITIALIZE_GLOBAL_STORAGE_CLASS
-	///     data = new vint(100);
-	/// FINALIZE_GLOBAL_STORAGE_CLASS
-	///     data = nullptr;
-	/// END_GLOBAL_STORAGE_CLASS(MyStorage)
-	///
-	/// int main()
-	/// {
-	///     // GetMyStorage is generated by defining MyStorage
-	///     Console::WriteLine(itow(*GetMyStorage().data.Obj()));
-	///     FinalizeGlobalStorage();
-	/// }
-	/// ]]></example>
-	class GlobalStorage : public Object, private NotCopyable
-	{
-	private:
-		bool					cleared = false;
-	public:
-		GlobalStorage(const wchar_t* key);
-		~GlobalStorage();
-
-		bool					Cleared();
-		virtual void			ClearResource() = 0;
-	};
-
-	extern GlobalStorage* GetGlobalStorage(const wchar_t* key);
-	extern GlobalStorage* GetGlobalStorage(const WString& key);
-
-	extern void InitializeGlobalStorage();
-	/// <summary>Free all memories used by global storages.</summary>
-	extern void FinalizeGlobalStorage();
-}
-
-#define BEGIN_GLOBAL_STORAGE_CLASS(NAME)		\
-	class NAME : public vl::GlobalStorage		\
-	{											\
-	public:										\
-		NAME()									\
-			:vl::GlobalStorage(L ## #NAME)		\
-		{										\
-			InitializeClearResource();			\
-		}										\
-		~NAME()									\
-		{										\
-			if(!Cleared())ClearResource();		\
-		}										\
-
-#define INITIALIZE_GLOBAL_STORAGE_CLASS			\
-		void InitializeClearResource()			\
-		{										\
-
-#define FINALIZE_GLOBAL_STORAGE_CLASS			\
-		}										\
-		void ClearResource()					\
-		{										\
-
-#define END_GLOBAL_STORAGE_CLASS(NAME)			\
-		}										\
-	};											\
-	NAME& Get##NAME()							\
-	{											\
-		static NAME __global_storage_##NAME;	\
-		return __global_storage_##NAME;			\
-	}											\
-
-#define EXTERN_GLOBAL_STORAGE_CLASS(NAME)\
-	class NAME;\
-	extern NAME& Get##NAME();\
 
 #endif
 
@@ -6421,61 +5458,6 @@ Intersect/Except
 #endif
 
 /***********************************************************************
-.\COLLECTIONS\OPERATIONSTRING.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_COLLECTIONS_OPERATIONSTRING
-#define VCZH_COLLECTIONS_OPERATIONSTRING
-
-
-namespace vl
-{
-	namespace collections
-	{
-		/// <summary>Copy containers.</summary>
-		/// <typeparam name="Ds">Type of the target container.</typeparam>
-		/// <typeparam name="S">Type of code points in the source string.</typeparam>
-		/// <param name="ds">The target container.</param>
-		/// <param name="ss">The source string.</param>
-		/// <param name="append">Set to true to perform appending instead of replacing.</param>
-		template<typename Ds, typename S>
-		void CopyFrom(Ds& ds, const ObjectString<S>& ss, bool append = false)
-		{
-			const S* buffer = ss.Buffer();
-			vint count = ss.Length();
-			CopyFrom(ds, buffer, count, append);
-		}
-
-		/// <summary>Copy containers.</summary>
-		/// <typeparam name="D">Type of code points in the target string.</typeparam>
-		/// <typeparam name="Ss">Type of the source container.</typeparam>
-		/// <param name="ds">The target string.</param>
-		/// <param name="ss">The source container.</param>
-		/// <param name="append">Set to true to perform appending instead of replacing.</param>
-		template<typename D, typename Ss>
-		void CopyFrom(ObjectString<D>& ds, const Ss& ss, bool append = false)
-		{
-			Array<D> da(ds.Buffer(), ds.Length());
-			CopyFrom(da, ss, append);
-			if (da.Count() == 0)
-			{
-				ds = ObjectString<D>();
-			}
-			else
-			{
-				ds = ObjectString<D>(&da[0], da.Count());
-			}
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\COLLECTIONS\OPERATIONWHERE.H
 ***********************************************************************/
 /***********************************************************************
@@ -6550,6 +5532,1422 @@ Where
 				index=-1;
 			}
 		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\EVENT.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+#ifndef VCZH_EVENT
+#define VCZH_EVENT
+
+
+namespace vl
+{
+	template<typename T>
+	class Event;
+ 
+	class EventHandler : public Object
+	{
+	public:
+		virtual bool							IsAttached() = 0;
+	};
+
+	/// <summary>An event for being subscribed using multiple callbacks. A callback is any functor that returns void.</summary>
+	/// <typeparam name="TArgs">Types of callback parameters.</typeparam>
+	template<typename ...TArgs>
+	class Event<void(TArgs...)> : public Object, private NotCopyable
+	{
+	protected:
+		class EventHandlerImpl : public EventHandler
+		{
+		public:
+			bool								attached;
+			Func<void(TArgs...)>				function;
+
+			EventHandlerImpl(const Func<void(TArgs...)>& _function)
+				:attached(true)
+				, function(_function)
+			{
+			}
+ 
+			bool IsAttached()override
+			{
+				return attached;
+			}
+		};
+ 
+		collections::SortedList<Ptr<EventHandlerImpl>>	handlers;
+	public:
+		/// <summary>Add a callback to the event.</summary>
+		/// <returns>The event handler representing the callback.</returns>
+		/// <param name="function">The callback.</param>
+		Ptr<EventHandler> Add(const Func<void(TArgs...)>& function)
+		{
+			Ptr<EventHandlerImpl> handler = new EventHandlerImpl(function);
+			handlers.Add(handler);
+			return handler;
+		}
+ 
+		/// <summary>Add a callback to the event.</summary>
+		/// <returns>The event handler representing the callback.</returns>
+		/// <param name="function">The callback.</param>
+		Ptr<EventHandler> Add(void(*function)(TArgs...))
+		{
+			return Add(Func<void(TArgs...)>(function));
+		}
+ 
+		/// <summary>Add a method callback to the event.</summary>
+		/// <typeparam name="C">Type of the class that the callback belongs to.</typeparam>
+		/// <returns>The event handler representing the callback.</returns>
+		/// <param name="sender">The object that the callback belongs to.</param>
+		/// <param name="function">The method callback.</param>
+		template<typename C>
+		Ptr<EventHandler> Add(C* sender, void(C::*function)(TArgs...))
+		{
+			return Add(Func<void(TArgs...)>(sender, function));
+		}
+ 
+		/// <summary>Remove a callback by an event handler returns from <see cref="Add"/>.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="handler">The event handler representing the callback.</param>
+		bool Remove(Ptr<EventHandler> handler)
+		{
+			auto impl = handler.Cast<EventHandlerImpl>();
+			if (!impl) return false;
+			vint index = handlers.IndexOf(impl.Obj());
+			if (index == -1) return false;
+			impl->attached = false;
+			handlers.RemoveAt(index);
+			return true;
+		}
+ 
+		/// <summary>Invoke all callbacks in the event.</summary>
+		/// <param name="args">Arguments to invoke all callbacks.</param>
+		void operator()(TArgs ...args)const
+		{
+			for(vint i = 0; i < handlers.Count(); i++)
+			{
+				handlers[i]->function(args...);
+			}
+		}
+	};
+}
+#endif
+
+
+/***********************************************************************
+.\COLLECTIONS\PARTIALORDERING.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_COLLECTIONS_PARTIALORDERING
+#define VCZH_COLLECTIONS_PARTIALORDERING
+
+
+namespace vl
+{
+	namespace collections
+	{
+/***********************************************************************
+Partial Ordering
+***********************************************************************/
+
+		namespace po
+		{
+			/// <summary>
+			/// Node contains extra information for sorted objects.
+			/// </summary>
+			struct Node
+			{
+				bool					visited = false;
+
+				/// <summary>The index used in [F:vl.collections.PartialOrderingProcessor.components], specifying the component that contain this node.</summary>
+				vint					component = -1;
+				/// <summary>All nodes that this node depends on.</summary>
+				const List<vint>*		ins = nullptr;
+				/// <summary>All nodes that this node is depended by.</summary>
+				const List<vint>*		outs = nullptr;
+				/// <summary>
+				/// If [M:vl.collections.PartialOrderingProcessor.InitWithSubClass`2] is used,
+				/// a node becomes a sub class representing objects.
+				/// An object will not be shared by different sub classes.
+				/// In this case, this field is a pointer to an array of indexes of objects.
+				/// The index is used in "items" argument in [M:vl.collections.PartialOrderingProcessor.InitWithSubClass`2]
+				/// </summary>
+				const vint*				firstSubClassItem = nullptr;
+				/// <summary>
+				/// When <see cref="firstSubClassItem"/> is available,
+				/// this field is the number of indexes in the array.
+				/// </summary>
+				vint					subClassItemCount = 0;
+			};
+
+			/// <summary>
+			/// Component is a unit in sorting result.
+			/// If a component contains more than one node,
+			/// it means that nodes in this component depend on each other by the given relationship.
+			/// It is not possible to tell which node should be place before others for all nodes in this component.
+			/// If all nodes are completely partial ordered,
+			/// there should be only one node in all components.
+			/// </summary>
+			struct Component
+			{
+				/// <summary>
+				/// Pointer to the array of all indexes of nodes in this component.
+				/// Index is used in [F:vl.collections.PartialOrderingProcessor.nodes].
+				/// </summary>
+				const vint*				firstNode = nullptr;
+				/// <summary>The number of nodes in this component.</summary>
+				vint					nodeCount = 0;
+			};
+		}
+	}
+
+	namespace collections
+	{
+		/// <summary>
+		/// PartialOrderingProcessor is used to sort objects by given relationships among them.
+		/// The relationship is defined by dependance.
+		/// If A depends on B, then B will be place before A after sorting.
+		/// If a group of objects depends on each other by the given relationship,
+		/// they will be grouped together in the sorting result.
+		/// </summary>
+		class PartialOrderingProcessor : public Object
+		{
+			template<typename TList>
+			using GroupOf = Group<typename TList::ElementType, typename TList::ElementType>;
+		protected:
+			List<vint>					emptyList;				// make a pointer to an empty list available
+			Group<vint, vint>			ins;					// if a depends on b, ins.Contains(a, b)
+			Group<vint, vint>			outs;					// if a depends on b, outs.Contains(b, a)
+			Array<vint>					firstNodesBuffer;		// one buffer for all Component::firstNode
+			Array<vint>					subClassItemsBuffer;	// one buffer for all Node::firstSubClassItem
+
+			void						InitNodes(vint itemCount);
+			void						VisitUnvisitedNode(po::Node& node, Array<vint>& reversedOrder, vint& used);
+			void						AssignUnassignedNode(po::Node& node, vint componentIndex, vint& used);
+		public:
+			/// <summary>After <see cref="Sort"/> is called, this field stores all nodes referenced by sorted components.</summary>
+			/// <remarks>
+			/// The same order is kept as the "items" argument in <see cref="InitWithGroup`1"/>, and <see cref="InitWithFunc`2"/>.
+			/// If sub classing is enabled by calling <see cref="InitWithSubClass`2"/>,
+			/// a node represents a sub class of objects.
+			/// In this case, the order in this field does not matter,
+			/// [F:vl.collections.po.Node.firstSubClassItem] stores indexes of objects in this sub class.
+			/// </remarks>
+			Array<po::Node>				nodes;
+
+			/// <summary>After <see cref="Sort"/> is called, this field stores all sorted components in order.</summary>
+			List<po::Component>			components;
+
+			/// <summary>
+			/// Sort objects by given relationships. It will crash if this method is called for more than once.
+			/// </summary>
+			/// <remarks>
+			/// One and only one of <see cref="InitWithGroup`1"/>, <see cref="InitWithFunc`2"/> or <see cref="InitWithSubClass`2"/> must be called to set data for sorting.
+			/// And then call <see cref="Sort"/> to sort objects and store the result in <see cref="components"/>.
+			/// </remarks>
+			void						Sort();
+
+			/// <summary>Set data for sorting, by providing a list for objects, and a group for their relationship.</summary>
+			/// <typeparam name="TList">Type of the list for objects. <see cref="Array`*"/>, <see cref="List`*"/> or <see cref="SortedList`*"/> are recommended.</typeparam>
+			/// <param name="items">List of objects for sorting.</param>
+			/// <param name="depGroup">Relationship of objects for sorting in <see cref="Group`*"/>. Both keys and values are elements in "items". To say that a depends on b, do depGroup.Add(a, b).</param>
+			/// <example><![CDATA[
+			/// int main()
+			/// {
+			///     //         apple
+			///     //           ^
+			///     //           |
+			///     //         ball
+			///     //         ^  \
+			///     //        /    V
+			///     //     cat <-- dog
+			///     //       ^     ^
+			///     //      /       \
+			///     //  elephant   fish
+			/// 
+			///     List<WString> items;
+			///     items.Add(L"elephant");
+			///     items.Add(L"fish");
+			///     items.Add(L"ball");
+			///     items.Add(L"cat");
+			///     items.Add(L"dog");
+			///     items.Add(L"apple");
+			/// 
+			///     Group<WString, WString> depGroup;
+			///     depGroup.Add(L"ball", L"apple");
+			///     depGroup.Add(L"cat", L"ball");
+			///     depGroup.Add(L"ball", L"dog");
+			///     depGroup.Add(L"dog", L"cat");
+			///     depGroup.Add(L"elephant", L"cat");
+			///     depGroup.Add(L"fish", L"dog");
+			/// 
+			///     PartialOrderingProcessor pop;
+			///     pop.InitWithGroup(items, depGroup);
+			///     pop.Sort();
+			/// 
+			///     for (vint i = 0; i < pop.components.Count(); i++)
+			///     {
+			///         auto& c = pop.components[i];
+			///         Console::WriteLine(
+			///             L"Component " + itow(i) + L": " +
+			///             Range<vint>(0, c.nodeCount)
+			///                 .Select([&](vint ni){ return items[c.firstNode[ni]]; })
+			///                 .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
+			///         );
+			///     }
+			/// 
+			///     for (vint i = 0; i < pop.nodes.Count(); i++)
+			///     {
+			///         auto& n = pop.nodes[i];
+			///         if(n.outs->Count() > 0)
+			///         {
+			///             Console::WriteLine(
+			///                 L"Node " + items[i] + L" <- " +
+			///                 From(*n.outs)
+			///                     .Select([&](vint ni){ return items[ni]; })
+			///                     .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
+			///             );
+			///         }
+			///     }
+			/// }
+			/// ]]></example>
+			template<typename TList>
+			void InitWithGroup(const TList& items, const GroupOf<TList>& depGroup)
+			{
+				CHECK_ERROR(nodes.Count() == 0, L"PartialOrdering::InitWithGroup(items, depGroup)#Initializing twice is not allowed.");
+
+				for (vint i = 0; i < depGroup.Count(); i++)
+				{
+					vint fromNode = items.IndexOf(KeyType<typename TList::ElementType>::GetKeyValue(depGroup.Keys()[i]));
+					CHECK_ERROR(fromNode != -1, L"PartialOrdering::InitWithGroup(items, depGroup)#The key in outsGroup does not exist in items.");
+
+					auto& edges = depGroup.GetByIndex(i);
+					for (vint j = 0; j < edges.Count(); j++)
+					{
+						vint toNode = items.IndexOf(KeyType<typename TList::ElementType>::GetKeyValue(edges[j]));
+						CHECK_ERROR(toNode != -1, L"PartialOrdering::InitWithGroup(items, depGroup)#The value in outsGroup does not exist in items.");
+
+						ins.Add(fromNode, toNode);
+						outs.Add(toNode, fromNode);
+					}
+				}
+
+				InitNodes(items.Count());
+			}
+
+			/// <summary>Set data for sorting, by providing a list for objects, and a function for their relationship.</summary>
+			/// <typeparam name="TList">Type of the list for objects. <see cref="Array`*"/>, <see cref="List`*"/> or <see cref="SortedList`*"/> are recommended.</typeparam>
+			/// <typeparam name="TFunc">Type of the function that defines relationships of objects.</typeparam>
+			/// <param name="items">List of objects for sorting.</param>
+			/// <param name="depFunc">Relationship of objects for sorting, both arguments are elements in "items". To say that a depends on b, depFunc(a, b) must returns true.</param>
+			/// <example><![CDATA[
+			/// int main()
+			/// {
+			///     //         apple
+			///     //           ^
+			///     //           |
+			///     //         ball
+			///     //         ^  \
+			///     //        /    V
+			///     //     cat <-- dog
+			///     //       ^     ^
+			///     //      /       \
+			///     //  elephant   fish
+			/// 
+			///     List<WString> items;
+			///     items.Add(L"elephant");
+			///     items.Add(L"fish");
+			///     items.Add(L"ball");
+			///     items.Add(L"cat");
+			///     items.Add(L"dog");
+			///     items.Add(L"apple");
+			/// 
+			///     auto depFunc = [](const WString& a, const WString& b)
+			///     {
+			///         return
+			///             (a == L"ball" && b == L"apple") ||
+			///             (a == L"cat" && b == L"ball") ||
+			///             (a == L"ball" && b == L"dog") ||
+			///             (a == L"dog" && b == L"cat") ||
+			///             (a == L"elephant" && b == L"cat") ||
+			///             (a == L"fish" && b == L"dog")
+			///             ;
+			///     };
+			/// 
+			///     PartialOrderingProcessor pop;
+			///     pop.InitWithFunc(items, depFunc);
+			///     pop.Sort();
+			/// 
+			///     for (vint i = 0; i < pop.components.Count(); i++)
+			///     {
+			///         auto& c = pop.components[i];
+			///         Console::WriteLine(
+			///             L"Component " + itow(i) + L": " +
+			///             Range<vint>(0, c.nodeCount)
+			///                 .Select([&](vint ni){ return items[c.firstNode[ni]]; })
+			///                 .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
+			///         );
+			///     }
+			/// 
+			///     for (vint i = 0; i < pop.nodes.Count(); i++)
+			///     {
+			///         auto& n = pop.nodes[i];
+			///         if(n.outs->Count() > 0)
+			///         {
+			///             Console::WriteLine(
+			///                 L"Node " + items[i] + L" <- " +
+			///                 From(*n.outs)
+			///                     .Select([&](vint ni){ return items[ni]; })
+			///                     .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
+			///             );
+			///         }
+			///     }
+			/// }
+			/// ]]></example>
+			template<typename TList, typename TFunc>
+			void InitWithFunc(const TList& items, TFunc&& depFunc)
+			{
+				GroupOf<TList> depGroup;
+				for (vint i = 0; i < items.Count(); i++)
+				{
+					for (vint j = 0; j < items.Count(); j++)
+					{
+						if (depFunc(items[i], items[j]))
+						{
+							depGroup.Add(items[i], items[j]);
+						}
+					}
+				}
+				InitWithGroup(items, depGroup);
+			}
+
+			/// <summary>Set data for sorting, by providing a list for objects, and a group for their relationship, and a dictionary for sub classing objects.</summary>
+			/// <typeparam name="TList">Type of the list for objects. <see cref="Array`*"/>, <see cref="List`*"/> or <see cref="SortedList`*"/> are recommended.</typeparam>
+			/// <typeparam name="TSubClass">Type of a sub class.</typeparam>
+			/// <param name="items">List of objects for sorting.</param>
+			/// <param name="depGroup">Relationship of objects for sorting in <see cref="Group`*"/>. Both keys and values are elements in "items". To say that a depends on b, do depGroup.Add(a, b).</param>
+			/// <param name="subClasses">Sub classing objects. Keys are elements in "items". If multiple keys have the same value in this dictionary, then these objects are in the same sub class.</param>
+			/// <remarks>
+			/// Relationships are defined on objects.
+			/// By sub classing objects,
+			/// relationships of sub classes are calculated from "depGroup".
+			/// If object A in sub class X depends on object B in sub class Y, then sub class X depends on sub class Y.
+			/// It is allowed that relatipnships on sub classes are not completely partial ordered,
+			/// in this case, some components may contain multiple sub classes.
+			/// </remarks>
+			/// <example><![CDATA[
+			/// int main()
+			/// {
+			///     //         apple
+			///     //           ^
+			///     //           |
+			///     //         ball
+			///     //         ^  \
+			///     //        /    V
+			///     //     cat <-- dog
+			///     //       ^     ^
+			///     //      /       \
+			///     //  elephant   fish
+			/// 
+			///     List<WString> items;
+			///     for (vint i = 1; i <= 2; i++)
+			///     {
+			///         items.Add(L"apple_" + itow(i));
+			///         items.Add(L"ball_" + itow(i));
+			///         items.Add(L"cat_" + itow(i));
+			///         items.Add(L"dog_" + itow(i));
+			///         items.Add(L"elephant_" + itow(i));
+			///         items.Add(L"fish_" + itow(i));
+			///     }
+			/// 
+			///     Group<WString, WString> depGroup;
+			///     depGroup.Add(L"ball_2", L"apple_1");
+			///     depGroup.Add(L"cat_2", L"ball_1");
+			///     depGroup.Add(L"ball_2", L"dog_1");
+			///     depGroup.Add(L"dog_2", L"cat_1");
+			///     depGroup.Add(L"elephant_2", L"cat_1");
+			///     depGroup.Add(L"fish_2", L"dog_1");
+			/// 
+			///     Dictionary<WString, vint> subClass;
+			///     for (vint i = 1; i <= 2; i++)
+			///     {
+			///         subClass.Add(L"apple_" + itow(i), 1);
+			///         subClass.Add(L"ball_" + itow(i), 2);
+			///         subClass.Add(L"cat_" + itow(i), 3);
+			///         subClass.Add(L"dog_" + itow(i), 4);
+			///         subClass.Add(L"elephant_" + itow(i), 5);
+			///         subClass.Add(L"fish_" + itow(i), 6);
+			///     }
+			/// 
+			///     PartialOrderingProcessor pop;
+			///     pop.InitWithSubClass(items, depGroup, subClass);
+			///     pop.Sort();
+			/// 
+			///     for (vint i = 0; i < pop.components.Count(); i++)
+			///     {
+			///         auto& c = pop.components[i];
+			///         Console::WriteLine(
+			///             L"Component " + itow(i) + L": sub classes" +
+			///             Range<vint>(0, c.nodeCount)
+			///                 .Select([&](vint ni) { return c.firstNode[ni]; })
+			///                 .Aggregate<WString>(L"", [](const WString& a, vint b) { return a + L" " + itow(b); })
+			///         );
+			///     }
+			/// 
+			///     for (vint i = 0; i < pop.nodes.Count(); i++)
+			///     {
+			///         auto& n = pop.nodes[i];
+			///         Console::WriteLine(L"Sub class " + itow(i));
+			/// 
+			///         Console::WriteLine(
+			///             Range<vint>(0, n.subClassItemCount)
+			///                 .Select([&](vint si) { return n.firstSubClassItem[si]; })
+			///                 .Aggregate<WString>(L"    :", [&](const WString& a, vint b) { return a + L" " + items[b]; })
+			///         );
+			/// 
+			///         if (n.outs->Count() > 0)
+			///         {
+			///             Console::WriteLine(
+			///                 From(*n.outs)
+			///                     .Aggregate<WString>(L"    <- sub classes", [](const WString& a, vint b) { return a + L" " + itow(b); })
+			///             );
+			///         }
+			///     }
+			/// }
+			/// ]]></example>
+			template<typename TList, typename TSubClass>
+			void InitWithSubClass(const TList& items, const GroupOf<TList>& depGroup, const Dictionary<typename TList::ElementType, TSubClass>& subClasses)
+			{
+				CHECK_ERROR(nodes.Count() == 0, L"PartialOrdering::InitWithSubClass(items, degGroup, subClasses)#Initializing twice is not allowed.");
+				using ElementType = typename TList::ElementType;
+				using ElementKeyType = KeyType<ElementType>;
+
+				Group<TSubClass, ElementType> scItems;
+				SortedList<ElementType> singleItems;
+
+				for (vint i = 0; i < subClasses.Count(); i++)
+				{
+					const auto& key = subClasses.Keys()[i];
+					const auto& value = subClasses.Values()[i];
+					scItems.Add(value, key);
+				}
+
+				for (vint i = 0; i < items.Count(); i++)
+				{
+					const auto& item = items[i];
+					if (!subClasses.Keys().Contains(ElementKeyType::GetKeyValue(item)))
+					{
+						singleItems.Add(item);
+					}
+				}
+
+				auto getSubClass = [&](const ElementType& item)
+				{
+					vint index = subClasses.Keys().IndexOf(ElementKeyType::GetKeyValue(item));
+					if (index != -1)
+					{
+						index = scItems.Keys().IndexOf(KeyType<TSubClass>::GetKeyValue(subClasses.Values()[index]));
+						CHECK_ERROR(index != -1, L"PartialOrdering::InitWithSubClass(items, degGroup, subClasses)#Internal Error.");
+						return index;
+					}
+					else
+					{
+						index = singleItems.IndexOf(ElementKeyType::GetKeyValue(item));
+						CHECK_ERROR(index != -1, L"PartialOrdering::InitWithSubClass(items, degGroup, subClasses)#Internal Error.");
+						return scItems.Count() + index;
+					}
+				};
+
+				for (vint i = 0; i < depGroup.Count(); i++)
+				{
+					const auto& key = depGroup.Keys()[i];
+					vint keyIndex = getSubClass(key);
+					const auto& values = depGroup.GetByIndex(i);
+
+					for (vint j = 0; j < values.Count(); j++)
+					{
+						const auto& value = values[j];
+						vint valueIndex = getSubClass(value);
+
+						if (!ins.Contains(keyIndex, valueIndex))
+						{
+							ins.Add(keyIndex, valueIndex);
+						}
+					}
+				}
+
+				for (vint i = 0; i < ins.Count(); i++)
+				{
+					vint key = ins.Keys()[i];
+					const auto& values = ins.GetByIndex(i);
+					for (vint j = 0; j < values.Count(); j++)
+					{
+						outs.Add(values[j], key);
+					}
+				}
+
+				InitNodes(scItems.Count() + singleItems.Count());
+				subClassItemsBuffer.Resize(items.Count());
+				
+				vint used = 0;
+				vint scItemCount = scItems.Keys().Count();
+				for (vint i = 0; i < nodes.Count(); i++)
+				{
+					auto& node = nodes[i];
+					node.firstSubClassItem = &subClassItemsBuffer[used];
+					if (i < scItemCount)
+					{
+						const auto& values = scItems.GetByIndex(i);
+						for (vint j = 0; j < values.Count(); j++)
+						{
+							subClassItemsBuffer[used++] = items.IndexOf(ElementKeyType::GetKeyValue(values[j]));
+						}
+						node.subClassItemCount = values.Count();
+					}
+					else
+					{
+						subClassItemsBuffer[used++] = items.IndexOf(ElementKeyType::GetKeyValue(singleItems[i - scItemCount]));
+						node.subClassItemCount = 1;
+					}
+				}
+			}
+		};
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\STRINGS\STRING.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_STRINGS_STRING
+#define VCZH_STRINGS_STRING
+
+
+namespace vl
+{
+	/// <summary>
+	/// Immutable string. <see cref="AString"/> and <see cref="WString"/> is recommended instead.
+	/// Locale awared operations are in [T:vl.Locale], typically by using the "INVLOC" macro.
+	/// </summary>
+	/// <typeparam name="T">Type of code points.</typeparam>
+	template<typename T>
+	class ObjectString : public Object
+	{
+		template<typename T2>
+		friend class ObjectString;
+	private:
+		static const T				zero;
+
+		mutable T*					buffer = (T*)&zero;
+		mutable volatile vint*		counter = nullptr;
+		mutable vint				start = 0;
+		mutable vint				length = 0;
+		mutable vint				realLength = 0;
+
+		static vint CalculateLength(const T* buffer)
+		{
+			vint result=0;
+			while(*buffer++)result++;
+			return result;
+		}
+
+		static vint64_t Compare(const T* bufA, const ObjectString<T>& strB)
+		{
+			const T* bufB = strB.buffer + strB.start;
+			const T* bufAOld = bufA;
+			vint length = strB.length;
+			while (true)
+			{
+				if (*bufA && length)
+				{
+					length--;
+					vint64_t diff = (vint64_t)(*bufA++) - (vint64_t)(*bufB++);
+					if (diff != 0)
+					{
+						return diff;
+					}
+				}
+				else if (*bufA)
+				{
+					return CalculateLength(bufA);
+				}
+				else if (length)
+				{
+					return -length;
+				}
+				else
+				{
+					return 0;
+				}
+			};
+		}
+
+	public:
+
+		static vint64_t Compare(const ObjectString<T>& strA, const ObjectString<T>& strB)
+		{
+			const T* bufA = strA.buffer + strA.start;
+			const T* bufB = strB.buffer + strB.start;
+			vint length = strA.length < strB.length ? strA.length : strB.length;
+			while (length--)
+			{
+				vint64_t diff = (vint64_t)(*bufA++) - (vint64_t)(*bufB++);
+				if (diff != 0)
+				{
+					return diff;
+				}
+			};
+			return strA.length - strB.length;
+		}
+
+	private:
+
+		void Inc()const
+		{
+			if(counter)
+			{
+				INCRC(counter);
+			}
+		}
+
+		void Dec()const
+		{
+			if(counter)
+			{
+				if(DECRC(counter)==0)
+				{
+					delete[] buffer;
+					delete counter;
+				}
+			}
+		}
+
+		ObjectString<T> SubUnsafe(vint _start, vint _length)const
+		{
+			if (_length <= 0) return {};
+			ObjectString<T> str;
+			str.buffer = buffer;
+			str.counter = counter;
+			str.start = start + _start;
+			str.length = _length;
+			str.realLength = realLength;
+			Inc();
+			return MoveValue(str);
+		}
+
+		ObjectString<T> ReplaceUnsafe(const ObjectString<T>& source, vint index, vint count)const
+		{
+			if (source.length == 0 && count == 0) return *this;
+			if (index == 0 && count == length) return source;
+
+			ObjectString<T> str;
+			str.counter = new vint(1);
+			str.start = 0;
+			str.length = length - count + source.length;
+			str.realLength = str.length;
+			str.buffer = new T[str.length + 1];
+			memcpy(str.buffer, buffer + start, sizeof(T) * index);
+			memcpy(str.buffer + index, source.buffer + source.start, sizeof(T) * source.length);
+			memcpy(str.buffer + index + source.length, (buffer + start + index + count), sizeof(T) * (length - index - count));
+			str.buffer[str.length] = 0;
+			return MoveValue(str);
+		}
+	public:
+		static ObjectString<T>	Empty;
+
+		/// <summary>Create an empty string.</summary>
+		ObjectString() = default;
+
+		/// <summary>Copy a string.</summary>
+		/// <param name="string">The string to copy.</param>
+		ObjectString(const ObjectString<T>&string)
+		{
+			buffer = string.buffer;
+			counter = string.counter;
+			start = string.start;
+			length = string.length;
+			realLength = string.realLength;
+			Inc();
+		}
+
+		/// <summary>Move a string.</summary>
+		/// <param name="string">The string to move.</param>
+		ObjectString(ObjectString<T> && string)
+		{
+			buffer = string.buffer;
+			counter = string.counter;
+			start = string.start;
+			length = string.length;
+			realLength = string.realLength;
+
+			string.buffer = (T*)&zero;
+			string.counter = nullptr;
+			string.start = 0;
+			string.length = 0;
+			string.realLength = 0;
+		}
+
+		~ObjectString()
+		{
+			Dec();
+		}
+
+		/// <summary>Copy a string.</summary>
+		/// <param name="_buffer">Memory to copy. It must be zero terminated.</param>
+		ObjectString(const T* _buffer)
+		{
+			CHECK_ERROR(_buffer != 0, L"ObjectString<T>::ObjectString(const T*)#Cannot construct a string from nullptr.");
+			counter = new vint(1);
+			start = 0;
+			length = CalculateLength(_buffer);
+			buffer = new T[length + 1];
+			memcpy(buffer, _buffer, sizeof(T) * (length + 1));
+			realLength = length;
+		}
+
+		/// <summary>Take over a character pointer with known length.</summary>
+		/// <returns>The created string.</returns>
+		/// <param name="_buffer">The zero-terminated character buffer which should be created using the global operator new[].</param>
+		/// <param name="_length">The number of available characters in the buffer.</param>
+		static ObjectString<T> TakeOver(T* _buffer, vint _length)
+		{
+			CHECK_ERROR(_length >= 0, L"ObjectString<T>::TakeOver(T*, vint)#Length should not be negative.");
+			CHECK_ERROR(_buffer[_length] == 0, L"ObjectString<T>::TakeOver(T*, vint)#Buffer is not properly zero-terminated.");
+			ObjectString<T> str;
+			str.counter = new vint(1);
+			str.length = _length;
+			str.realLength = _length;
+			str.buffer = _buffer;
+			return MoveValue(str);
+		}
+
+		/// <summary>Create a string continaing one code point.</summary>
+		/// <returns>The created string.</returns>
+		/// <param name="_char">The code point.</param>
+		static ObjectString<T> FromChar(const T& _char)
+		{
+			T buffer[2];
+			buffer[0] = _char;
+			buffer[1] = 0;
+			return buffer;
+		}
+
+		/// <summary>Copy a string.</summary>
+		/// <param name="_buffer">Memory to copy. It is not required to be zero terminated.</param>
+		/// <returns>The created string.</returns>
+		/// <param name="_length">Size of the content in code points.</param>
+		static ObjectString<T> CopyFrom(const T* _buffer, vint _length)
+		{
+			CHECK_ERROR(_length >= 0, L"ObjectString<T>::CopyFrom(const T*, vint)#Length should not be negative.");
+			if (_length > 0)
+			{
+				ObjectString<T> str;
+				str.buffer = new T[_length + 1];
+				memcpy(str.buffer, _buffer, _length * sizeof(T));
+				str.buffer[_length] = 0;
+				str.counter = new vint(1);
+				str.start = 0;
+				str.length = _length;
+				str.realLength = _length;
+				return MoveValue(str);
+			}
+			return {};
+		}
+		
+		/// <summary>
+		/// Create an unmanaged string.
+		/// Such string uses a piece of unmanaged memory,
+		/// hereby it doesn't release the memory when the string is destroyed.
+		/// </summary>
+		/// <returns>The created string.</returns>
+		/// <param name="_buffer">Unmanaged memory. It must be zero terminated.</param>
+		static ObjectString<T> Unmanaged(const T* _buffer)
+		{
+			CHECK_ERROR(_buffer != 0, L"ObjectString<T>::Unmanaged(const T*)#Cannot construct a string from nullptr.");
+			ObjectString<T> str;
+			str.buffer = (T*)_buffer;
+			str.length = CalculateLength(_buffer);
+			str.realLength = str.length;
+			return MoveValue(str);
+		}
+
+		/// <summary>
+		/// Unsafe convert one string to another if their character components are in the same size.
+		/// </summary>
+		/// <typeparam name="T2">The type of the character component of the string to cast.</typeparam>
+		/// <returns>The created string</returns>
+		/// <param name="_string">The string to cast</param>
+		template<typename T2>
+		static ObjectString<T> UnsafeCastFrom(const ObjectString<T2>& _string)
+		{
+			static_assert(sizeof(T) == sizeof(T2), "ObjectString<T>::UnsafeCastFrom<T2> cannot be used on a string with a different size of the character component.");
+			if (_string.Length() == 0) return {};
+			ObjectString<T> str;
+			str.buffer = (T*)_string.buffer;
+			str.counter = _string.counter;
+			str.start = _string.start;
+			str.length = _string.length;
+			str.realLength = _string.realLength;
+			str.Inc();
+			return MoveValue(str);
+		}
+
+		/// <summary>
+		/// Get the zero terminated buffer in the string.
+		/// Copying parts of a string does not necessarily create a new buffer,
+		/// so in some situation the string will not actually points to a zero terminated buffer.
+		/// In this case, this function will copy the content to a new buffer with a zero terminator and return.
+		/// </summary>
+		/// <returns>The zero terminated buffer.</returns>
+		const T* Buffer()const
+		{
+			if(start+length!=realLength)
+			{
+				T* newBuffer=new T[length+1];
+				memcpy(newBuffer, buffer+start, sizeof(T)*length);
+				newBuffer[length]=0;
+				Dec();
+				buffer=newBuffer;
+				counter=new vint(1);
+				start=0;
+				realLength=length;
+			}
+			return buffer+start;
+		}
+
+		/// <summary>Replace the string by copying another string.</summary>
+		/// <returns>The string itself.</returns>
+		/// <param name="string">The string to copy.</param>
+		ObjectString<T>& operator=(const ObjectString<T>& string)
+		{
+			if(this!=&string)
+			{
+				Dec();
+				buffer=string.buffer;
+				counter=string.counter;
+				start=string.start;
+				length=string.length;
+				realLength=string.realLength;
+				Inc();
+			}
+			return *this;
+		}
+
+		/// <summary>Replace the string by moving another string.</summary>
+		/// <returns>The string itself.</returns>
+		/// <param name="string">The string to move.</param>
+		ObjectString<T>& operator=(ObjectString<T>&& string)
+		{
+			if(this!=&string)
+			{
+				Dec();
+				buffer=string.buffer;
+				counter=string.counter;
+				start=string.start;
+				length=string.length;
+				realLength=string.realLength;
+			
+				string.buffer=(T*)&zero;
+				string.counter=0;
+				string.start=0;
+				string.length=0;
+				string.realLength=0;
+			}
+			return *this;
+		}
+
+		/// <summary>Replace the string by appending another string.</summary>
+		/// <returns>The string itself.</returns>
+		/// <param name="string">The string to append.</param>
+		ObjectString<T>& operator+=(const ObjectString<T>& string)
+		{
+			return *this=*this+string;
+		}
+
+		/// <summary>Create a new string by concatenating two strings.</summary>
+		/// <returns>The new string.</returns>
+		/// <param name="string">The string to append.</param>
+		ObjectString<T> operator+(const ObjectString<T>& string)const
+		{
+			return ReplaceUnsafe(string, length, 0);
+		}
+
+		bool operator==(const ObjectString<T>& string)const
+		{
+			return Compare(*this, string)==0;
+		}
+
+		bool operator!=(const ObjectString<T>& string)const
+		{
+			return Compare(*this, string)!=0;
+		}
+
+		bool operator>(const ObjectString<T>& string)const
+		{
+			return Compare(*this, string)>0;
+		}
+
+		bool operator>=(const ObjectString<T>& string)const
+		{
+			return Compare(*this, string)>=0;
+		}
+
+		bool operator<(const ObjectString<T>& string)const
+		{
+			return Compare(*this, string)<0;
+		}
+
+		bool operator<=(const ObjectString<T>& string)const
+		{
+			return Compare(*this, string)<=0;
+		}
+
+		bool operator==(const T* buffer)const
+		{
+			return Compare(buffer, *this)==0;
+		}
+
+		bool operator!=(const T* buffer)const
+		{
+			return Compare(buffer, *this)!=0;
+		}
+
+		bool operator>(const T* buffer)const
+		{
+			return Compare(buffer, *this)<0;
+		}
+
+		bool operator>=(const T* buffer)const
+		{
+			return Compare(buffer, *this)<=0;
+		}
+
+		bool operator<(const T* buffer)const
+		{
+			return Compare(buffer, *this)>0;
+		}
+
+		bool operator<=(const T* buffer)const
+		{
+			return Compare(buffer, *this)>=0;
+		}
+
+		/// <summary>Get a code point in the specified position.</summary>
+		/// <returns>Returns the code point. It will crash when the specified position is out of range.</returns>
+		/// <param name="index"></param>
+		T operator[](vint index)const
+		{
+			CHECK_ERROR(index>=0 && index<length, L"ObjectString:<T>:operator[](vint)#Argument index not in range.");
+			return buffer[start+index];
+		}
+
+		/// <summary>Get the size of the string in code points.</summary>
+		/// <returns>The size, not including the zero terminator.</returns>
+		vint Length()const
+		{
+			return length;
+		}
+
+		/// <summary>Find a code point.</summary>
+		/// <returns>The position of the code point. Returns -1 if it does not exist.</returns>
+		/// <param name="c">The code point to find.</param>
+		vint IndexOf(T c)const
+		{
+			const T* reading=buffer+start;
+			for(vint i=0;i<length;i++)
+			{
+				if(reading[i]==c)
+					return i;
+			}
+			return -1;
+		}
+
+		/// <summary>Get the prefix of the string.</summary>
+		/// <returns>The prefix. It will crash when the specified size is out of range.</returns>
+		/// <param name="count">Size of the prefix.</param>
+		/// <example><![CDATA[
+		/// int main()
+		/// {
+		///     WString s = L"Hello, world!";
+		///     Console::WriteLine(s.Left(5));
+		/// }
+		/// ]]></example>
+		ObjectString<T> Left(vint count)const
+		{
+			CHECK_ERROR(count>=0 && count<=length, L"ObjectString<T>::Left(vint)#Argument count not in range.");
+			return SubUnsafe(0, count);
+		}
+		
+		/// <summary>Get the postfix of the string.</summary>
+		/// <returns>The postfix. It will crash when the specified size is out of range.</returns>
+		/// <param name="count">Size of the prefix.</param>
+		/// <example><![CDATA[
+		/// int main()
+		/// {
+		///     WString s = L"Hello, world!";
+		///     Console::WriteLine(s.Right(6));
+		/// }
+		/// ]]></example>
+		ObjectString<T> Right(vint count)const
+		{
+			CHECK_ERROR(count>=0 && count<=length, L"ObjectString<T>::Right(vint)#Argument count not in range.");
+			return SubUnsafe(length-count, count);
+		}
+		
+		/// <summary>Get a sub string.</summary>
+		/// <returns>The sub string. It will crash when the specified position or size is out of range.</returns>
+		/// <param name="index">The position of the first code point of the sub string.</param>
+		/// <param name="count">The size of the sub string.</param>
+		/// <example><![CDATA[
+		/// int main()
+		/// {
+		///     WString s = L"Hello, world!";
+		///     Console::WriteLine(s.Sub(7, 5));
+		/// }
+		/// ]]></example>
+		ObjectString<T> Sub(vint index, vint count)const
+		{
+			CHECK_ERROR(index>=0 && index<=length, L"ObjectString<T>::Sub(vint, vint)#Argument index not in range.");
+			CHECK_ERROR(index+count>=0 && index+count<=length, L"ObjectString<T>::Sub(vint, vint)#Argument count not in range.");
+			return SubUnsafe(index, count);
+		}
+
+		/// <summary>Get a string by removing a sub string.</summary>
+		/// <returns>The string without the sub string. It will crash when the specified position or size is out of range.</returns>
+		/// <param name="index">The position of the first code point of the sub string.</param>
+		/// <param name="count">The size of the sub string.</param>
+		/// <example><![CDATA[
+		/// int main()
+		/// {
+		///     WString s = L"Hello, world!";
+		///     Console::WriteLine(s.Remove(5, 7));
+		/// }
+		/// ]]></example>
+		ObjectString<T> Remove(vint index, vint count)const
+		{
+			CHECK_ERROR(index>=0 && index<length, L"ObjectString<T>::Remove(vint, vint)#Argument index not in range.");
+			CHECK_ERROR(index+count>=0 && index+count<=length, L"ObjectString<T>::Remove(vint, vint)#Argument count not in range.");
+			return ReplaceUnsafe(ObjectString<T>(), index, count);
+		}
+
+		/// <summary>Get a string by inserting another string.</summary>
+		/// <returns>The string with another string inserted. It will crash when the specified position is out of range.</returns>
+		/// <param name="index">The position to insert.</param>
+		/// <param name="string">The string to insert.</param>
+		/// <example><![CDATA[
+		/// int main()
+		/// {
+		///     WString s = L"Hello, world!";
+		///     Console::WriteLine(s.Insert(7, L"a great "));
+		/// }
+		/// ]]></example>
+		ObjectString<T> Insert(vint index, const ObjectString<T>& string)const
+		{
+			CHECK_ERROR(index>=0 && index<=length, L"ObjectString<T>::Insert(vint)#Argument count not in range.");
+			return ReplaceUnsafe(string, index, 0);
+		}
+
+		friend bool operator<(const T* left, const ObjectString<T>& right)
+		{
+			return Compare(left, right)<0;
+		}
+
+		friend bool operator<=(const T* left, const ObjectString<T>& right)
+		{
+			return Compare(left, right)<=0;
+		}
+
+		friend bool operator>(const T* left, const ObjectString<T>& right)
+		{
+			return Compare(left, right)>0;
+		}
+
+		friend bool operator>=(const T* left, const ObjectString<T>& right)
+		{
+			return Compare(left, right)>=0;
+		}
+
+		friend bool operator==(const T* left, const ObjectString<T>& right)
+		{
+			return Compare(left, right)==0;
+		}
+
+		friend bool operator!=(const T* left, const ObjectString<T>& right)
+		{
+			return Compare(left, right)!=0;
+		}
+
+		friend ObjectString<T> operator+(const T* left, const ObjectString<T>& right)
+		{
+			return ObjectString<T>::Unmanaged(left)+right;
+		}
+	};
+
+	template<typename T>
+	ObjectString<T> ObjectString<T>::Empty=ObjectString<T>();
+	template<typename T>
+	const T ObjectString<T>::zero=0;
+
+	/// <summary>Ansi string in local code page.</summary>
+	typedef ObjectString<char>		AString;
+	/// <summary>Unicode string, UTF-16 on Windows, UTF-32 on Linux and macOS.</summary>
+	typedef ObjectString<wchar_t>	WString;
+	/// <summary>Utf-8 String.</summary>
+	typedef ObjectString<char8_t>	U8String;
+	/// <summary>Utf-16 String.</summary>
+	typedef ObjectString<char16_t>	U16String;
+	/// <summary>Utf-32 String.</summary>
+	typedef ObjectString<char32_t>	U32String;
+
+	/// <summary>Convert a string to a signed integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
+	extern vint					atoi_test(const AString& string, bool& success);
+	/// <summary>Convert a string to a signed integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
+	extern vint					wtoi_test(const WString& string, bool& success);
+	/// <summary>Convert a string to a signed 64-bits integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
+	extern vint64_t				atoi64_test(const AString& string, bool& success);
+	/// <summary>Convert a string to a signed 64-bits integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
+	extern vint64_t				wtoi64_test(const WString& string, bool& success);
+	/// <summary>Convert a string to an unsigned integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
+	extern vuint				atou_test(const AString& string, bool& success);
+	/// <summary>Convert a string to an unsigned integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
+	extern vuint				wtou_test(const WString& string, bool& success);
+	/// <summary>Convert a string to an unsigned 64-bits integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
+	extern vuint64_t			atou64_test(const AString& string, bool& success);
+	/// <summary>Convert a string to an unsigned 64-bits integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
+	extern vuint64_t			wtou64_test(const WString& string, bool& success);
+	/// <summary>Convert a string to a 64-bits floating point number.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
+	extern double				atof_test(const AString& string, bool& success);
+	/// <summary>Convert a string to a 64-bits floating point number.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
+	extern double				wtof_test(const WString& string, bool& success);
+
+	/// <summary>Convert a string to a signed integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atoi_test"/> instead.</remarks>
+	extern vint					atoi(const AString& string);
+	/// <summary>Convert a string to a signed integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtoi_test"/> instead.</remarks>
+	extern vint					wtoi(const WString& string);
+	/// <summary>Convert a string to a signed 64-bits integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atoi64_test"/> instead.</remarks>
+	extern vint64_t				atoi64(const AString& string);
+	/// <summary>Convert a string to a signed 64-bits integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtoi64_test"/> instead.</remarks>
+	extern vint64_t				wtoi64(const WString& string);
+	/// <summary>Convert a string to an usigned integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atou_test"/> instead.</remarks>
+	extern vuint				atou(const AString& string);
+	/// <summary>Convert a string to an usigned integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtou_test"/> instead.</remarks>
+	extern vuint				wtou(const WString& string);
+	/// <summary>Convert a string to an usigned 64-bits integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atou64_test"/> instead.</remarks>
+	extern vuint64_t			atou64(const AString& string);
+	/// <summary>Convert a string to an usigned 64-bits integer.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtou64_test"/> instead.</remarks>
+	extern vuint64_t			wtou64(const WString& string);
+	/// <summary>Convert a string to a 64-bits floating point number.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atof_test"/> instead.</remarks>
+	extern double				atof(const AString& string);
+	/// <summary>Convert a string to a 64-bits floating point number.</summary>
+	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtof_test"/> instead.</remarks>
+	extern double				wtof(const WString& string);
+
+	/// <summary>Convert a signed interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
+	extern AString				itoa(vint number);
+	/// <summary>Convert a signed interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
+	extern WString				itow(vint number);
+	/// <summary>Convert a signed 64-bits interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
+	extern AString				i64toa(vint64_t number);
+	/// <summary>Convert a signed 64-bits interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
+	extern WString				i64tow(vint64_t number);
+	/// <summary>Convert an unsigned interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
+	extern AString				utoa(vuint number);
+	/// <summary>Convert an unsigned interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
+	extern WString				utow(vuint number);
+	/// <summary>Convert an unsigned 64-bits interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
+	extern AString				u64toa(vuint64_t number);
+	/// <summary>Convert an unsigned 64-bits interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
+	extern WString				u64tow(vuint64_t number);
+	/// <summary>Convert a 64-bits floating pointer number to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
+	extern AString				ftoa(double number);
+	/// <summary>Convert a 64-bits floating pointer number to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
+	extern WString				ftow(double number);
+	/// <summary>Convert all letters to lower case letters.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="string">The string to convert.</param>
+	extern AString				alower(const AString& string);
+	/// <summary>Convert all letters to lower case letters.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="string">The string to convert.</param>
+	extern WString				wlower(const WString& string);
+	/// <summary>Convert all letters to upper case letters.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="string">The string to convert.</param>
+	extern AString				aupper(const AString& string);
+	/// <summary>Convert all letters to upper case letters.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="string">The string to convert.</param>
+	extern WString				wupper(const WString& string);
+
+#if defined VCZH_GCC
+	extern void					_itoa_s(vint32_t value, char* buffer, size_t size, vint radix);
+	extern void					_itow_s(vint32_t value, wchar_t* buffer, size_t size, vint radix);
+	extern void					_i64toa_s(vint64_t value, char* buffer, size_t size, vint radix);
+	extern void					_i64tow_s(vint64_t value, wchar_t* buffer, size_t size, vint radix);
+	extern void					_uitoa_s(vuint32_t value, char* buffer, size_t size, vint radix);
+	extern void					_uitow_s(vuint32_t value, wchar_t* buffer, size_t size, vint radix);
+	extern void					_ui64toa_s(vuint64_t value, char* buffer, size_t size, vint radix);
+	extern void					_ui64tow_s(vuint64_t value, wchar_t* buffer, size_t size, vint radix);
+	extern void					_gcvt_s(char* buffer, size_t size, double value, vint numberOfDigits);
+	extern void					_strlwr_s(char* buffer, size_t size);
+	extern void					_strupr_s(char* buffer, size_t size);
+	extern void					_wcslwr_s(wchar_t* buffer, size_t size);
+	extern void					_wcsupr_s(wchar_t* buffer, size_t size);
+	extern void					wcscpy_s(wchar_t* buffer, size_t size, const wchar_t* text);
+#endif
+}
+
+#endif
+
+
+/***********************************************************************
+.\COLLECTIONS\OPERATIONSTRING.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_COLLECTIONS_OPERATIONSTRING
+#define VCZH_COLLECTIONS_OPERATIONSTRING
+
+
+namespace vl
+{
+	namespace collections
+	{
+		/// <summary>Copy containers.</summary>
+		/// <typeparam name="Ds">Type of the target container.</typeparam>
+		/// <typeparam name="S">Type of code points in the source string.</typeparam>
+		/// <param name="ds">The target container.</param>
+		/// <param name="ss">The source string.</param>
+		/// <param name="append">Set to true to perform appending instead of replacing.</param>
+		template<typename Ds, typename S>
+		void CopyFrom(Ds& ds, const ObjectString<S>& ss, bool append = false)
+		{
+			const S* buffer = ss.Buffer();
+			vint count = ss.Length();
+			CopyFrom(ds, buffer, count, append);
+		}
+
+		/// <summary>Copy containers.</summary>
+		/// <typeparam name="D">Type of code points in the target string.</typeparam>
+		/// <typeparam name="Ss">Type of the source container.</typeparam>
+		/// <param name="ds">The target string.</param>
+		/// <param name="ss">The source container.</param>
+		/// <param name="append">Set to true to perform appending instead of replacing.</param>
+		template<typename D, typename Ss>
+		void CopyFrom(ObjectString<D>& ds, const Ss& ss, bool append = false)
+		{
+			Array<D> da(ds.Buffer(), ds.Length());
+			CopyFrom(da, ss, append);
+			if (da.Count() == 0)
+			{
+				ds = {};
+			}
+			else
+			{
+				ds = ObjectString<D>::CopyFrom(&da[0], da.Count());
+			}
+		}
 	}
 }
 
@@ -7414,593 +7812,561 @@ LazyList
 
 
 /***********************************************************************
-.\EVENT.H
+.\CONSOLE.H
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
-#ifndef VCZH_EVENT
-#define VCZH_EVENT
+
+#ifndef VCZH_CONSOLE
+#define VCZH_CONSOLE
 
 
 namespace vl
 {
-	template<typename T>
-	class Event;
- 
-	class EventHandler : public Object
+	namespace console
 	{
-	public:
-		virtual bool							IsAttached() = 0;
-	};
-
-	/// <summary>An event for being subscribed using multiple callbacks. A callback is any functor that returns void.</summary>
-	/// <typeparam name="TArgs">Types of callback parameters.</typeparam>
-	template<typename ...TArgs>
-	class Event<void(TArgs...)> : public Object, private NotCopyable
-	{
-	protected:
-		class EventHandlerImpl : public EventHandler
+		/// <summary>Basic I/O for command-line applications.</summary>
+		class Console abstract
 		{
 		public:
-			bool								attached;
-			Func<void(TArgs...)>				function;
+			/// <summary>Write a string to the command-line window.</summary>
+			/// <param name="string">Content to write.</param>
+			/// <param name="length">Size of the content in wchar_t, not including the zero terminator.</param>
+			static void Write(const wchar_t* string, vint length);
 
-			EventHandlerImpl(const Func<void(TArgs...)>& _function)
-				:attached(true)
-				, function(_function)
-			{
-			}
- 
-			bool IsAttached()override
-			{
-				return attached;
-			}
+			/// <summary>Write a string to the command-line window.</summary>
+			/// <param name="string">Content to write, must be zero terminated.</param>
+			static void Write(const wchar_t* string);
+
+			/// <summary>Write a string to the command-line window.</summary>
+			/// <param name="string">Content to write.</param>
+			static void Write(const WString& string);
+
+			/// <summary>Write to the command-line window, following CR/LF characters.</summary>
+			/// <param name="string">Content to write.</param>
+			static void WriteLine(const WString& string);
+
+			/// <summary>Read a string from the command-line window.</summary>
+			/// <returns>The whole line read from the command-line window.</returns>
+			static WString Read();
+
+			static void SetColor(bool red, bool green, bool blue, bool light);
+			static void SetTitle(const WString& string);
 		};
- 
-		collections::SortedList<Ptr<EventHandlerImpl>>	handlers;
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\EXCEPTION.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_EXCEPTION
+#define VCZH_EXCEPTION
+
+
+namespace vl
+{
+	/// <summary>Base type of all exceptions.</summary>
+	class Exception : public Object
+	{
+	protected:
+		WString						message;
+
 	public:
-		/// <summary>Add a callback to the event.</summary>
-		/// <returns>The event handler representing the callback.</returns>
-		/// <param name="function">The callback.</param>
-		Ptr<EventHandler> Add(const Func<void(TArgs...)>& function)
-		{
-			Ptr<EventHandlerImpl> handler = new EventHandlerImpl(function);
-			handlers.Add(handler);
-			return handler;
-		}
- 
-		/// <summary>Add a callback to the event.</summary>
-		/// <returns>The event handler representing the callback.</returns>
-		/// <param name="function">The callback.</param>
-		Ptr<EventHandler> Add(void(*function)(TArgs...))
-		{
-			return Add(Func<void(TArgs...)>(function));
-		}
- 
-		/// <summary>Add a method callback to the event.</summary>
-		/// <typeparam name="C">Type of the class that the callback belongs to.</typeparam>
-		/// <returns>The event handler representing the callback.</returns>
-		/// <param name="sender">The object that the callback belongs to.</param>
-		/// <param name="function">The method callback.</param>
-		template<typename C>
-		Ptr<EventHandler> Add(C* sender, void(C::*function)(TArgs...))
-		{
-			return Add(Func<void(TArgs...)>(sender, function));
-		}
- 
-		/// <summary>Remove a callback by an event handler returns from <see cref="Add"/>.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="handler">The event handler representing the callback.</param>
-		bool Remove(Ptr<EventHandler> handler)
-		{
-			auto impl = handler.Cast<EventHandlerImpl>();
-			if (!impl) return false;
-			vint index = handlers.IndexOf(impl.Obj());
-			if (index == -1) return false;
-			impl->attached = false;
-			handlers.RemoveAt(index);
-			return true;
-		}
- 
-		/// <summary>Invoke all callbacks in the event.</summary>
-		/// <param name="args">Arguments to invoke all callbacks.</param>
-		void operator()(TArgs ...args)const
-		{
-			for(vint i = 0; i < handlers.Count(); i++)
-			{
-				handlers[i]->function(args...);
-			}
-		}
+		Exception(const WString& _message=WString::Empty);
+
+		const WString&				Message()const;
+	};
+
+	class ArgumentException : public Exception
+	{
+	protected:
+		WString						function;
+		WString						name;
+
+	public:
+		ArgumentException(const WString& _message=WString::Empty, const WString& _function=WString::Empty, const WString& _name=WString::Empty);
+
+		const WString&				GetFunction()const;
+		const WString&				GetName()const;
+	};
+
+	class ParsingException : public Exception
+	{
+	protected:
+		vint						position;
+		WString						expression;
+
+	public:
+		ParsingException(const WString& _message, const WString& _expression, vint _position);
+
+		const WString&				GetExpression()const;
+		vint						GetPosition()const;
 	};
 }
+
+#endif
+
+/***********************************************************************
+.\GLOBALSTORAGE.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_GLOBALSTORAGE
+#define VCZH_GLOBALSTORAGE
+
+
+namespace vl
+{
+	/// <summary>
+	/// Base type of all global storages.
+	/// A global storage stores multiple values using a name.
+	/// The "BEGIN_GLOBAL_STOREGE_CLASS" macro is recommended to create a global storage.
+	/// </summary>
+	/// <remarks>
+	/// All values are shared like global variables, but they are created at the first time when they need to be accessed.
+	/// <see cref="FinalizeGlobalStorage"/> is recommended after you don't need any global storages any more, it frees memory.
+	/// </remarks>
+	/// <example><![CDATA[
+	/// BEGIN_GLOBAL_STORAGE_CLASS(MyStorage)
+	///     Ptr<vint> data;
+	/// INITIALIZE_GLOBAL_STORAGE_CLASS
+	///     data = new vint(100);
+	/// FINALIZE_GLOBAL_STORAGE_CLASS
+	///     data = nullptr;
+	/// END_GLOBAL_STORAGE_CLASS(MyStorage)
+	///
+	/// int main()
+	/// {
+	///     // GetMyStorage is generated by defining MyStorage
+	///     Console::WriteLine(itow(*GetMyStorage().data.Obj()));
+	///     FinalizeGlobalStorage();
+	/// }
+	/// ]]></example>
+	class GlobalStorage : public Object, private NotCopyable
+	{
+	private:
+		bool					cleared = false;
+	public:
+		GlobalStorage(const wchar_t* key);
+		~GlobalStorage();
+
+		bool					Cleared();
+		virtual void			ClearResource() = 0;
+	};
+
+	extern GlobalStorage* GetGlobalStorage(const wchar_t* key);
+	extern GlobalStorage* GetGlobalStorage(const WString& key);
+
+	extern void InitializeGlobalStorage();
+	/// <summary>Free all memories used by global storages.</summary>
+	extern void FinalizeGlobalStorage();
+}
+
+#define BEGIN_GLOBAL_STORAGE_CLASS(NAME)		\
+	class NAME : public vl::GlobalStorage		\
+	{											\
+	public:										\
+		NAME()									\
+			:vl::GlobalStorage(L ## #NAME)		\
+		{										\
+			InitializeClearResource();			\
+		}										\
+		~NAME()									\
+		{										\
+			if(!Cleared())ClearResource();		\
+		}										\
+
+#define INITIALIZE_GLOBAL_STORAGE_CLASS			\
+		void InitializeClearResource()			\
+		{										\
+
+#define FINALIZE_GLOBAL_STORAGE_CLASS			\
+		}										\
+		void ClearResource()					\
+		{										\
+
+#define END_GLOBAL_STORAGE_CLASS(NAME)			\
+		}										\
+	};											\
+	NAME& Get##NAME()							\
+	{											\
+		static NAME __global_storage_##NAME;	\
+		return __global_storage_##NAME;			\
+	}											\
+
+#define EXTERN_GLOBAL_STORAGE_CLASS(NAME)\
+	class NAME;\
+	extern NAME& Get##NAME();\
+
 #endif
 
 
 /***********************************************************************
-.\COLLECTIONS\PARTIALORDERING.H
+.\STRINGS\CONVERSION.H
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#ifndef VCZH_COLLECTIONS_PARTIALORDERING
-#define VCZH_COLLECTIONS_PARTIALORDERING
+#ifndef VCZH_STRINGS_CONVERSION
+#define VCZH_STRINGS_CONVERSION
 
 
 namespace vl
 {
-	namespace collections
+	namespace encoding
 	{
+
 /***********************************************************************
-Partial Ordering
+UtfConversion<T>
 ***********************************************************************/
 
-		namespace po
+		template<typename T>
+		struct UtfConversion;
+
+		template<>
+		struct UtfConversion<wchar_t>
 		{
-			/// <summary>
-			/// Node contains extra information for sorted objects.
-			/// </summary>
-			struct Node
-			{
-				bool					visited = false;
+#if defined VCZH_WCHAR_UTF16
+			static const vint		BufferLength = 2;
+#elif defined VCZH_WCHAR_UTF32
+			static const vint		BufferLength = 1;
+#endif
 
-				/// <summary>The index used in [F:vl.collections.PartialOrderingProcessor.components], specifying the component that contain this node.</summary>
-				vint					component = -1;
-				/// <summary>All nodes that this node depends on.</summary>
-				const List<vint>*		ins = nullptr;
-				/// <summary>All nodes that this node is depended by.</summary>
-				const List<vint>*		outs = nullptr;
-				/// <summary>
-				/// If [M:vl.collections.PartialOrderingProcessor.InitWithSubClass`2] is used,
-				/// a node becomes a sub class representing objects.
-				/// An object will not be shared by different sub classes.
-				/// In this case, this field is a pointer to an array of indexes of objects.
-				/// The index is used in "items" argument in [M:vl.collections.PartialOrderingProcessor.InitWithSubClass`2]
-				/// </summary>
-				const vint*				firstSubClassItem = nullptr;
-				/// <summary>
-				/// When <see cref="firstSubClassItem"/> is available,
-				/// this field is the number of indexes in the array.
-				/// </summary>
-				vint					subClassItemCount = 0;
-			};
+			static vint				From32(char32_t source, wchar_t(&dest)[BufferLength]);
+			static vint				To32(const wchar_t* source, vint sourceLength, char32_t& dest);
+		};
 
-			/// <summary>
-			/// Component is a unit in sorting result.
-			/// If a component contains more than one node,
-			/// it means that nodes in this component depend on each other by the given relationship.
-			/// It is not possible to tell which node should be place before others for all nodes in this component.
-			/// If all nodes are completely partial ordered,
-			/// there should be only one node in all components.
-			/// </summary>
-			struct Component
-			{
-				/// <summary>
-				/// Pointer to the array of all indexes of nodes in this component.
-				/// Index is used in [F:vl.collections.PartialOrderingProcessor.nodes].
-				/// </summary>
-				const vint*				firstNode = nullptr;
-				/// <summary>The number of nodes in this component.</summary>
-				vint					nodeCount = 0;
-			};
-		}
-	}
-
-	namespace collections
-	{
-		/// <summary>
-		/// PartialOrderingProcessor is used to sort objects by given relationships among them.
-		/// The relationship is defined by dependance.
-		/// If A depends on B, then B will be place before A after sorting.
-		/// If a group of objects depends on each other by the given relationship,
-		/// they will be grouped together in the sorting result.
-		/// </summary>
-		class PartialOrderingProcessor : public Object
+		template<>
+		struct UtfConversion<char8_t>
 		{
-			template<typename TList>
-			using GroupOf = Group<typename TList::ElementType, typename TList::ElementType>;
-		protected:
-			List<vint>					emptyList;				// make a pointer to an empty list available
-			Group<vint, vint>			ins;					// if a depends on b, ins.Contains(a, b)
-			Group<vint, vint>			outs;					// if a depends on b, outs.Contains(b, a)
-			Array<vint>					firstNodesBuffer;		// one buffer for all Component::firstNode
-			Array<vint>					subClassItemsBuffer;	// one buffer for all Node::firstSubClassItem
+			static const vint		BufferLength = 6;
 
-			void						InitNodes(vint itemCount);
-			void						VisitUnvisitedNode(po::Node& node, Array<vint>& reversedOrder, vint& used);
-			void						AssignUnassignedNode(po::Node& node, vint componentIndex, vint& used);
+			static vint				From32(char32_t source, char8_t(&dest)[BufferLength]);
+			static vint				To32(const char8_t* source, vint sourceLength, char32_t& dest);
+		};
+
+		template<>
+		struct UtfConversion<char16_t>
+		{
+			static const vint		BufferLength = 2;
+
+			static vint				From32(char32_t source, char16_t(&dest)[BufferLength]);
+			static vint				To32(const char16_t* source, vint sourceLength, char32_t& dest);
+		};
+
+/***********************************************************************
+Utfto32ReaderBase<T> and UtfFrom32ReaerBase<T>
+***********************************************************************/
+
+		template<typename T, typename TBase>
+		class UtfFrom32ReaderBase : public Object
+		{
+			static const vint		BufferLength = UtfConversion<T>::BufferLength;
+			vint					read = 0;
+			vint					available = 0;
+			T						buffer[BufferLength];
+			bool					error = false;
 		public:
-			/// <summary>After <see cref="Sort"/> is called, this field stores all nodes referenced by sorted components.</summary>
-			/// <remarks>
-			/// The same order is kept as the "items" argument in <see cref="InitWithGroup`1"/>, and <see cref="InitWithFunc`2"/>.
-			/// If sub classing is enabled by calling <see cref="InitWithSubClass`2"/>,
-			/// a node represents a sub class of objects.
-			/// In this case, the order in this field does not matter,
-			/// [F:vl.collections.po.Node.firstSubClassItem] stores indexes of objects in this sub class.
-			/// </remarks>
-			Array<po::Node>				nodes;
-
-			/// <summary>After <see cref="Sort"/> is called, this field stores all sorted components in order.</summary>
-			List<po::Component>			components;
-
-			/// <summary>
-			/// Sort objects by given relationships. It will crash if this method is called for more than once.
-			/// </summary>
-			/// <remarks>
-			/// One and only one of <see cref="InitWithGroup`1"/>, <see cref="InitWithFunc`2"/> or <see cref="InitWithSubClass`2"/> must be called to set data for sorting.
-			/// And then call <see cref="Sort"/> to sort objects and store the result in <see cref="components"/>.
-			/// </remarks>
-			void						Sort();
-
-			/// <summary>Set data for sorting, by providing a list for objects, and a group for their relationship.</summary>
-			/// <typeparam name="TList">Type of the list for objects. <see cref="Array`*"/>, <see cref="List`*"/> or <see cref="SortedList`*"/> are recommended.</typeparam>
-			/// <param name="items">List of objects for sorting.</param>
-			/// <param name="depGroup">Relationship of objects for sorting in <see cref="Group`*"/>. Both keys and values are elements in "items". To say that a depends on b, do depGroup.Add(a, b).</param>
-			/// <example><![CDATA[
-			/// int main()
-			/// {
-			///     //         apple
-			///     //           ^
-			///     //           |
-			///     //         ball
-			///     //         ^  \
-			///     //        /    V
-			///     //     cat <-- dog
-			///     //       ^     ^
-			///     //      /       \
-			///     //  elephant   fish
-			/// 
-			///     List<WString> items;
-			///     items.Add(L"elephant");
-			///     items.Add(L"fish");
-			///     items.Add(L"ball");
-			///     items.Add(L"cat");
-			///     items.Add(L"dog");
-			///     items.Add(L"apple");
-			/// 
-			///     Group<WString, WString> depGroup;
-			///     depGroup.Add(L"ball", L"apple");
-			///     depGroup.Add(L"cat", L"ball");
-			///     depGroup.Add(L"ball", L"dog");
-			///     depGroup.Add(L"dog", L"cat");
-			///     depGroup.Add(L"elephant", L"cat");
-			///     depGroup.Add(L"fish", L"dog");
-			/// 
-			///     PartialOrderingProcessor pop;
-			///     pop.InitWithGroup(items, depGroup);
-			///     pop.Sort();
-			/// 
-			///     for (vint i = 0; i < pop.components.Count(); i++)
-			///     {
-			///         auto& c = pop.components[i];
-			///         Console::WriteLine(
-			///             L"Component " + itow(i) + L": " +
-			///             Range<vint>(0, c.nodeCount)
-			///                 .Select([&](vint ni){ return items[c.firstNode[ni]]; })
-			///                 .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
-			///         );
-			///     }
-			/// 
-			///     for (vint i = 0; i < pop.nodes.Count(); i++)
-			///     {
-			///         auto& n = pop.nodes[i];
-			///         if(n.outs->Count() > 0)
-			///         {
-			///             Console::WriteLine(
-			///                 L"Node " + items[i] + L" <- " +
-			///                 From(*n.outs)
-			///                     .Select([&](vint ni){ return items[ni]; })
-			///                     .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
-			///             );
-			///         }
-			///     }
-			/// }
-			/// ]]></example>
-			template<typename TList>
-			void InitWithGroup(const TList& items, const GroupOf<TList>& depGroup)
+			T Read()
 			{
-				CHECK_ERROR(nodes.Count() == 0, L"PartialOrdering::InitWithGroup(items, depGroup)#Initializing twice is not allowed.");
-
-				for (vint i = 0; i < depGroup.Count(); i++)
+				if (available == -1) return 0;
+				if (read == available)
 				{
-					vint fromNode = items.IndexOf(KeyType<typename TList::ElementType>::GetKeyValue(depGroup.Keys()[i]));
-					CHECK_ERROR(fromNode != -1, L"PartialOrdering::InitWithGroup(items, depGroup)#The key in outsGroup does not exist in items.");
-
-					auto& edges = depGroup.GetByIndex(i);
-					for (vint j = 0; j < edges.Count(); j++)
+					char32_t c = static_cast<TBase*>(this)->Consume();
+					if (c)
 					{
-						vint toNode = items.IndexOf(KeyType<typename TList::ElementType>::GetKeyValue(edges[j]));
-						CHECK_ERROR(toNode != -1, L"PartialOrdering::InitWithGroup(items, depGroup)#The value in outsGroup does not exist in items.");
-
-						ins.Add(fromNode, toNode);
-						outs.Add(toNode, fromNode);
-					}
-				}
-
-				InitNodes(items.Count());
-			}
-
-			/// <summary>Set data for sorting, by providing a list for objects, and a function for their relationship.</summary>
-			/// <typeparam name="TList">Type of the list for objects. <see cref="Array`*"/>, <see cref="List`*"/> or <see cref="SortedList`*"/> are recommended.</typeparam>
-			/// <typeparam name="TFunc">Type of the function that defines relationships of objects.</typeparam>
-			/// <param name="items">List of objects for sorting.</param>
-			/// <param name="depFunc">Relationship of objects for sorting, both arguments are elements in "items". To say that a depends on b, depFunc(a, b) must returns true.</param>
-			/// <example><![CDATA[
-			/// int main()
-			/// {
-			///     //         apple
-			///     //           ^
-			///     //           |
-			///     //         ball
-			///     //         ^  \
-			///     //        /    V
-			///     //     cat <-- dog
-			///     //       ^     ^
-			///     //      /       \
-			///     //  elephant   fish
-			/// 
-			///     List<WString> items;
-			///     items.Add(L"elephant");
-			///     items.Add(L"fish");
-			///     items.Add(L"ball");
-			///     items.Add(L"cat");
-			///     items.Add(L"dog");
-			///     items.Add(L"apple");
-			/// 
-			///     auto depFunc = [](const WString& a, const WString& b)
-			///     {
-			///         return
-			///             (a == L"ball" && b == L"apple") ||
-			///             (a == L"cat" && b == L"ball") ||
-			///             (a == L"ball" && b == L"dog") ||
-			///             (a == L"dog" && b == L"cat") ||
-			///             (a == L"elephant" && b == L"cat") ||
-			///             (a == L"fish" && b == L"dog")
-			///             ;
-			///     };
-			/// 
-			///     PartialOrderingProcessor pop;
-			///     pop.InitWithFunc(items, depFunc);
-			///     pop.Sort();
-			/// 
-			///     for (vint i = 0; i < pop.components.Count(); i++)
-			///     {
-			///         auto& c = pop.components[i];
-			///         Console::WriteLine(
-			///             L"Component " + itow(i) + L": " +
-			///             Range<vint>(0, c.nodeCount)
-			///                 .Select([&](vint ni){ return items[c.firstNode[ni]]; })
-			///                 .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
-			///         );
-			///     }
-			/// 
-			///     for (vint i = 0; i < pop.nodes.Count(); i++)
-			///     {
-			///         auto& n = pop.nodes[i];
-			///         if(n.outs->Count() > 0)
-			///         {
-			///             Console::WriteLine(
-			///                 L"Node " + items[i] + L" <- " +
-			///                 From(*n.outs)
-			///                     .Select([&](vint ni){ return items[ni]; })
-			///                     .Aggregate([](const WString& a, const WString& b){ return a + L" " + b; })
-			///             );
-			///         }
-			///     }
-			/// }
-			/// ]]></example>
-			template<typename TList, typename TFunc>
-			void InitWithFunc(const TList& items, TFunc&& depFunc)
-			{
-				GroupOf<TList> depGroup;
-				for (vint i = 0; i < items.Count(); i++)
-				{
-					for (vint j = 0; j < items.Count(); j++)
-					{
-						if (depFunc(items[i], items[j]))
-						{
-							depGroup.Add(items[i], items[j]);
-						}
-					}
-				}
-				InitWithGroup(items, depGroup);
-			}
-
-			/// <summary>Set data for sorting, by providing a list for objects, and a group for their relationship, and a dictionary for sub classing objects.</summary>
-			/// <typeparam name="TList">Type of the list for objects. <see cref="Array`*"/>, <see cref="List`*"/> or <see cref="SortedList`*"/> are recommended.</typeparam>
-			/// <typeparam name="TSubClass">Type of a sub class.</typeparam>
-			/// <param name="items">List of objects for sorting.</param>
-			/// <param name="depGroup">Relationship of objects for sorting in <see cref="Group`*"/>. Both keys and values are elements in "items". To say that a depends on b, do depGroup.Add(a, b).</param>
-			/// <param name="subClasses">Sub classing objects. Keys are elements in "items". If multiple keys have the same value in this dictionary, then these objects are in the same sub class.</param>
-			/// <remarks>
-			/// Relationships are defined on objects.
-			/// By sub classing objects,
-			/// relationships of sub classes are calculated from "depGroup".
-			/// If object A in sub class X depends on object B in sub class Y, then sub class X depends on sub class Y.
-			/// It is allowed that relatipnships on sub classes are not completely partial ordered,
-			/// in this case, some components may contain multiple sub classes.
-			/// </remarks>
-			/// <example><![CDATA[
-			/// int main()
-			/// {
-			///     //         apple
-			///     //           ^
-			///     //           |
-			///     //         ball
-			///     //         ^  \
-			///     //        /    V
-			///     //     cat <-- dog
-			///     //       ^     ^
-			///     //      /       \
-			///     //  elephant   fish
-			/// 
-			///     List<WString> items;
-			///     for (vint i = 1; i <= 2; i++)
-			///     {
-			///         items.Add(L"apple_" + itow(i));
-			///         items.Add(L"ball_" + itow(i));
-			///         items.Add(L"cat_" + itow(i));
-			///         items.Add(L"dog_" + itow(i));
-			///         items.Add(L"elephant_" + itow(i));
-			///         items.Add(L"fish_" + itow(i));
-			///     }
-			/// 
-			///     Group<WString, WString> depGroup;
-			///     depGroup.Add(L"ball_2", L"apple_1");
-			///     depGroup.Add(L"cat_2", L"ball_1");
-			///     depGroup.Add(L"ball_2", L"dog_1");
-			///     depGroup.Add(L"dog_2", L"cat_1");
-			///     depGroup.Add(L"elephant_2", L"cat_1");
-			///     depGroup.Add(L"fish_2", L"dog_1");
-			/// 
-			///     Dictionary<WString, vint> subClass;
-			///     for (vint i = 1; i <= 2; i++)
-			///     {
-			///         subClass.Add(L"apple_" + itow(i), 1);
-			///         subClass.Add(L"ball_" + itow(i), 2);
-			///         subClass.Add(L"cat_" + itow(i), 3);
-			///         subClass.Add(L"dog_" + itow(i), 4);
-			///         subClass.Add(L"elephant_" + itow(i), 5);
-			///         subClass.Add(L"fish_" + itow(i), 6);
-			///     }
-			/// 
-			///     PartialOrderingProcessor pop;
-			///     pop.InitWithSubClass(items, depGroup, subClass);
-			///     pop.Sort();
-			/// 
-			///     for (vint i = 0; i < pop.components.Count(); i++)
-			///     {
-			///         auto& c = pop.components[i];
-			///         Console::WriteLine(
-			///             L"Component " + itow(i) + L": sub classes" +
-			///             Range<vint>(0, c.nodeCount)
-			///                 .Select([&](vint ni) { return c.firstNode[ni]; })
-			///                 .Aggregate<WString>(L"", [](const WString& a, vint b) { return a + L" " + itow(b); })
-			///         );
-			///     }
-			/// 
-			///     for (vint i = 0; i < pop.nodes.Count(); i++)
-			///     {
-			///         auto& n = pop.nodes[i];
-			///         Console::WriteLine(L"Sub class " + itow(i));
-			/// 
-			///         Console::WriteLine(
-			///             Range<vint>(0, n.subClassItemCount)
-			///                 .Select([&](vint si) { return n.firstSubClassItem[si]; })
-			///                 .Aggregate<WString>(L"    :", [&](const WString& a, vint b) { return a + L" " + items[b]; })
-			///         );
-			/// 
-			///         if (n.outs->Count() > 0)
-			///         {
-			///             Console::WriteLine(
-			///                 From(*n.outs)
-			///                     .Aggregate<WString>(L"    <- sub classes", [](const WString& a, vint b) { return a + L" " + itow(b); })
-			///             );
-			///         }
-			///     }
-			/// }
-			/// ]]></example>
-			template<typename TList, typename TSubClass>
-			void InitWithSubClass(const TList& items, const GroupOf<TList>& depGroup, const Dictionary<typename TList::ElementType, TSubClass>& subClasses)
-			{
-				CHECK_ERROR(nodes.Count() == 0, L"PartialOrdering::InitWithSubClass(items, degGroup, subClasses)#Initializing twice is not allowed.");
-				using ElementType = typename TList::ElementType;
-				using ElementKeyType = KeyType<ElementType>;
-
-				Group<TSubClass, ElementType> scItems;
-				SortedList<ElementType> singleItems;
-
-				for (vint i = 0; i < subClasses.Count(); i++)
-				{
-					const auto& key = subClasses.Keys()[i];
-					const auto& value = subClasses.Values()[i];
-					scItems.Add(value, key);
-				}
-
-				for (vint i = 0; i < items.Count(); i++)
-				{
-					const auto& item = items[i];
-					if (!subClasses.Keys().Contains(ElementKeyType::GetKeyValue(item)))
-					{
-						singleItems.Add(item);
-					}
-				}
-
-				auto getSubClass = [&](const ElementType& item)
-				{
-					vint index = subClasses.Keys().IndexOf(ElementKeyType::GetKeyValue(item));
-					if (index != -1)
-					{
-						index = scItems.Keys().IndexOf(KeyType<TSubClass>::GetKeyValue(subClasses.Values()[index]));
-						CHECK_ERROR(index != -1, L"PartialOrdering::InitWithSubClass(items, degGroup, subClasses)#Internal Error.");
-						return index;
+						available = UtfConversion<T>::From32(c, buffer);
+						if (available == -1) return 0;
 					}
 					else
 					{
-						index = singleItems.IndexOf(ElementKeyType::GetKeyValue(item));
-						CHECK_ERROR(index != -1, L"PartialOrdering::InitWithSubClass(items, degGroup, subClasses)#Internal Error.");
-						return scItems.Count() + index;
+						available = -1;
+						return 0;
 					}
-				};
-
-				for (vint i = 0; i < depGroup.Count(); i++)
-				{
-					const auto& key = depGroup.Keys()[i];
-					vint keyIndex = getSubClass(key);
-					const auto& values = depGroup.GetByIndex(i);
-
-					for (vint j = 0; j < values.Count(); j++)
-					{
-						const auto& value = values[j];
-						vint valueIndex = getSubClass(value);
-
-						if (!ins.Contains(keyIndex, valueIndex))
-						{
-							ins.Add(keyIndex, valueIndex);
-						}
-					}
+					read = 0;
 				}
+				return buffer[read++];
+			}
 
-				for (vint i = 0; i < ins.Count(); i++)
-				{
-					vint key = ins.Keys()[i];
-					const auto& values = ins.GetByIndex(i);
-					for (vint j = 0; j < values.Count(); j++)
-					{
-						outs.Add(values[j], key);
-					}
-				}
+			bool HasIllegalChar() const
+			{
+				return error;
+			}
+		};
 
-				InitNodes(scItems.Count() + singleItems.Count());
-				subClassItemsBuffer.Resize(items.Count());
-				
-				vint used = 0;
-				vint scItemCount = scItems.Keys().Count();
-				for (vint i = 0; i < nodes.Count(); i++)
+		template<typename T, typename TBase>
+		class UtfTo32ReaderBase : public Object
+		{
+			static const vint		BufferLength = UtfConversion<T>::BufferLength;
+			vint					available = 0;
+			T						buffer[BufferLength];
+			bool					error = false;
+		public:
+			char32_t Read()
+			{
+				if (available == -1) return 0;
+				while (available < BufferLength)
 				{
-					auto& node = nodes[i];
-					node.firstSubClassItem = &subClassItemsBuffer[used];
-					if (i < scItemCount)
+					T c = static_cast<TBase*>(this)->Consume();
+					if (c)
 					{
-						const auto& values = scItems.GetByIndex(i);
-						for (vint j = 0; j < values.Count(); j++)
-						{
-							subClassItemsBuffer[used++] = items.IndexOf(ElementKeyType::GetKeyValue(values[j]));
-						}
-						node.subClassItemCount = values.Count();
+						buffer[available++] = c;
 					}
 					else
 					{
-						subClassItemsBuffer[used++] = items.IndexOf(ElementKeyType::GetKeyValue(singleItems[i - scItemCount]));
-						node.subClassItemCount = 1;
+						if (available == 0)
+						{
+							available = -1;
+							return 0;
+						}
+						break;
 					}
 				}
+
+				char32_t dest = 0;
+				vint result = UtfConversion<T>::To32(buffer, available, dest);
+				if (result == -1)
+				{
+					available = -1;
+					return 0;
+				}
+				available -= result;
+				for (vint i = 0; i < available; i++)
+				{
+					buffer[i] = buffer[i + result];
+				}
+				return dest;
+			}
+
+			bool HasIllegalChar() const
+			{
+				return error;
+			}
+		};
+
+/***********************************************************************
+UtfStringTo32Reader<T> and UtfStringFrom32Reader<T>
+***********************************************************************/
+
+		template<typename T, typename TBase>
+		class UtfStringConsumer : public TBase
+		{
+		protected:
+			const T*				starting = nullptr;
+			const T*				consuming = nullptr;
+
+			T Consume()
+			{
+				T c = *consuming;
+				if (c) consuming++;
+				return c;
+			}
+		public:
+			UtfStringConsumer(const T* _starting)
+				: starting(_starting)
+				, consuming(_starting)
+			{
+			}
+
+			const T* Starting() const
+			{
+				return starting;
+			}
+
+			const T* Current() const
+			{
+				return consuming;
+			}
+		};
+
+		template<typename T>
+		class UtfStringFrom32Reader : public UtfStringConsumer<char32_t, UtfFrom32ReaderBase<T, UtfStringFrom32Reader<T>>>
+		{
+			template<typename T2, typename TBase>
+			friend class UtfFrom32ReaderBase;
+		public:
+			UtfStringFrom32Reader(const char32_t* _starting)
+				: UtfStringConsumer<char32_t, UtfFrom32ReaderBase<T, UtfStringFrom32Reader<T>>>(_starting)
+			{
+			}
+		};
+
+		template<typename T>
+		class UtfStringTo32Reader : public UtfStringConsumer<T, UtfTo32ReaderBase<T, UtfStringTo32Reader<T>>>
+		{
+			template<typename T2, typename TBase>
+			friend class UtfTo32ReaderBase;
+		public:
+			UtfStringTo32Reader(const T* _starting)
+				: UtfStringConsumer<T, UtfTo32ReaderBase<T, UtfStringTo32Reader<T>>>(_starting)
+			{
+			}
+		};
+
+		template<typename TFrom, typename TTo>
+		class UtfStringToStringReader : public UtfFrom32ReaderBase<TTo, UtfStringToStringReader<TFrom, TTo>>
+		{
+			template<typename T, typename TBase>
+			friend class UtfFrom32ReaderBase;
+		protected:
+			UtfStringTo32Reader<TFrom>		internalReader;
+
+			char32_t Consume()
+			{
+				return internalReader.Read();
+			}
+		public:
+			UtfStringToStringReader(const TFrom* _starting)
+				: internalReader(_starting)
+			{
+			}
+
+			const TFrom* Starting() const
+			{
+				return internalReader.Starting();
+			}
+
+			const TFrom* Current() const
+			{
+				return internalReader.Current();
+			}
+
+			bool HasIllegalChar() const
+			{
+				return UtfFrom32ReaderBase<TTo, UtfStringToStringReader<TFrom, TTo>>::HasIllegalChar() || internalReader.HasIllegalChar();
 			}
 		};
 	}
+
+/***********************************************************************
+String Conversions (buffer walkthrough)
+***********************************************************************/
+
+	extern vint					_wtoa(const wchar_t* w, char* a, vint chars);
+	extern vint					_atow(const char* a, wchar_t* w, vint chars);
+
+	template<typename T>
+	vint						_utftou32(const T* s, char32_t* d, vint chars);
+	template<typename T>
+	vint						_u32toutf(const char32_t* s, T* d, vint chars);
+
+	extern template vint		_utftou32<wchar_t>(const wchar_t* s, char32_t* d, vint chars);
+	extern template vint		_utftou32<char8_t>(const char8_t* s, char32_t* d, vint chars);
+	extern template vint		_utftou32<char16_t>(const char16_t* s, char32_t* d, vint chars);
+	extern template vint		_u32toutf<wchar_t>(const char32_t* s, wchar_t* d, vint chars);
+	extern template vint		_u32toutf<char8_t>(const char32_t* s, char8_t* d, vint chars);
+	extern template vint		_u32toutf<char16_t>(const char32_t* s, char16_t* d, vint chars);
+
+/***********************************************************************
+String Conversions (direct)
+***********************************************************************/
+
+	extern AString				wtoa	(const WString& source);
+	extern WString				atow	(const AString& source);
+	extern U32String			wtou32	(const WString& source);
+	extern WString				u32tow	(const U32String& source);
+	extern U32String			u8tou32	(const U8String& source);
+	extern U8String				u32tou8	(const U32String& source);
+	extern U32String			u16tou32(const U16String& source);
+	extern U16String			u32tou16(const U32String& source);
+
+/***********************************************************************
+String Conversions (buffer walkthrough indirect)
+***********************************************************************/
+
+	template<typename TFrom, typename TTo>
+	vint						_utftoutf(const TFrom* s, TTo* d, vint chars);
+
+	extern template vint		_utftoutf<wchar_t, char8_t>(const wchar_t* s, char8_t* d, vint chars);
+	extern template vint		_utftoutf<wchar_t, char16_t>(const wchar_t* s, char16_t* d, vint chars);
+	extern template vint		_utftoutf<char8_t, wchar_t>(const char8_t* s, wchar_t* d, vint chars);
+	extern template vint		_utftoutf<char8_t, char16_t>(const char8_t* s, char16_t* d, vint chars);
+	extern template vint		_utftoutf<char16_t, wchar_t>(const char16_t* s, wchar_t* d, vint chars);
+	extern template vint		_utftoutf<char16_t, char8_t>(const char16_t* s, char8_t* d, vint chars);
+
+/***********************************************************************
+String Conversions (unicode indirect)
+***********************************************************************/
+
+	extern U8String				wtou8	(const WString& source);
+	extern WString				u8tow	(const U8String& source);
+	extern U16String			wtou16	(const WString& source);
+	extern WString				u16tow	(const U16String& source);
+	extern U16String			u8tou16	(const U8String& source);
+	extern U8String				u16tou8	(const U16String& source);
+
+/***********************************************************************
+String Conversions (ansi indirect)
+***********************************************************************/
+
+	inline U8String				atou8	(const AString& source)		{ return wtou8(atow(source)); }
+	inline U16String			atou16	(const AString& source)		{ return wtou16(atow(source)); }
+	inline U32String			atou32	(const AString& source)		{ return wtou32(atow(source)); }
+
+	inline AString				u8toa	(const U8String& source)	{ return wtoa(u8tow(source)); }
+	inline AString				u16toa	(const U16String& source)	{ return wtoa(u16tow(source)); }
+	inline AString				u32toa	(const U32String& source)	{ return wtoa(u32tow(source)); }
+}
+
+#endif
+
+
+/***********************************************************************
+.\STRINGS\LOREMIPSUM.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_STRINGS_LOREMIPSUM
+#define VCZH_STRINGS_LOREMIPSUM
+
+
+namespace vl
+{
+	/// <summary>Style of the random text.</summary>
+	enum class LoremIpsumCasing
+	{
+		/// <summary>First letters of all words are lower cased.</summary>
+		AllWordsLowerCase,
+		/// <summary>first letters of first words of all sentences are upper cased.</summary>
+		FirstWordUpperCase,
+		/// <summary>First letters of all words are upper cased.</summary>
+		AllWordsUpperCase,
+	};
+
+	/// <summary>Get some random text.</summary>
+	/// <returns>The generated random text. It may not exactly in the expected size.</returns>
+	/// <param name="bestLength">The expected size.</param>
+	/// <param name="casing">The expected casing.</param>
+	extern WString				LoremIpsum(vint bestLength, LoremIpsumCasing casing);
+	/// <summary>Get some random text for a title, first letters of all words are upper cased.</summary>
+	/// <returns>The generated random text. It may not be exactly in the expected size.</returns>
+	/// <param name="bestLength">The expected size.</param>
+	extern WString				LoremIpsumTitle(vint bestLength);
+	/// <summary>Get some random sentences. The first letter of the first word is uppder cased.</summary>
+	/// <returns>The generated random text with a period character ".". It may not be exactly in the expected size.</returns>
+	/// <param name="bestLength">The expected size.</param>
+	extern WString				LoremIpsumSentence(vint bestLength);
+	/// <summary>Get some random paragraphs. First letters of first words of all sentences are upper cased.</summary>
+	/// <returns>The generated random text with multiple sentences ending with period characters ".". It may not be exactly in the expected size.</returns>
+	/// <param name="bestLength">The expected size.</param>
+	extern WString				LoremIpsumParagraph(vint bestLength);
 }
 
 #endif

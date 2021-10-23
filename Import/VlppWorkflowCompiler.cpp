@@ -1443,7 +1443,7 @@ BuildGlobalNameFromTypeDescriptors
 						const wchar_t* delimiter = wcsstr(reading, L"::");
 						if (delimiter)
 						{
-							fragment = WString(reading, vint(delimiter - reading));
+							fragment = WString::CopyFrom(reading, vint(delimiter - reading));
 							reading = delimiter + 2;
 						}
 						else
@@ -3139,7 +3139,7 @@ ContextFreeModuleDesugar
 						{
 							Ptr<WfStringExpression> expression = new WfStringExpression;
 							expression->codeRange = node->codeRange;
-							expression->value.value = WString(reading, vint(begin - reading));
+							expression->value.value = WString::CopyFrom(reading, vint(begin - reading));
 							expressions.Add(expression);
 						}
 						else
@@ -3175,7 +3175,7 @@ ContextFreeModuleDesugar
 						}
 						else
 						{
-							WString input(begin + 2, vint(end - begin - 3));
+							WString input = WString::CopyFrom(begin + 2, vint(end - begin - 3));
 							List<Ptr<ParsingError>> errors;
 							if (auto expression = WfParseExpression(input, manager->parsingTable, errors))
 							{
@@ -9831,7 +9831,7 @@ GetTypeFragments
 					const wchar_t* delimiter = wcsstr(reading, L"::");
 					if (delimiter)
 					{
-						fragments.Add(WString(reading, vint(delimiter - reading)));
+						fragments.Add(WString::CopyFrom(reading, vint(delimiter - reading)));
 						reading = delimiter + 2;
 					}
 					else
@@ -16711,7 +16711,7 @@ WfCppConfig
 
 			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix, ITypeInfo* expectedType)
 			{
-				GenerateStatement(this, MakePtr<FunctionRecord>(), writer, stat, prefix, WString(L"\t", false), expectedType);
+				GenerateStatement(this, MakePtr<FunctionRecord>(), writer, stat, prefix, WString::Unmanaged(L"\t"), expectedType);
 			}
 
 			WString WfCppConfig::CppNameToHeaderEnumStructName(const WString& fullName, const WString& type)
@@ -16752,7 +16752,7 @@ WfCppConfig
 
 			WString WfCppConfig::ConvertName(const WString& name)
 			{
-				return ConvertNameInternal(name, WString(L"__vwsn_", false), false);
+				return ConvertNameInternal(name, WString::Unmanaged(L"__vwsn_"), false);
 			}
 
 			WString WfCppConfig::ConvertName(const WString& name, const WString& specialNameCategory)
@@ -17072,7 +17072,7 @@ WfCppConfig
 				WString prefix;
 				for (vint i = 0; i < nss.Count(); i++)
 				{
-					prefix += L'\t';
+					prefix += WString::FromChar(L'\t');
 				}
 
 				for (vint i = commonPrefix; i < nss2.Count(); i++)
@@ -17085,7 +17085,7 @@ WfCppConfig
 					writer.WriteLine(L"{");
 
 					nss.Add(nss2[i]);
-					prefix += L'\t';
+					prefix += WString::FromChar(L'\t');
 				}
 
 				return prefix;
@@ -17327,7 +17327,7 @@ WfCppConfig::Collect
 									tds.Add(globalDep.allTds.Values()[indexKey]);
 								}
 
-								Sort<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
+								SortLambda<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
 								{
 									return WString::Compare(a->GetTypeName(), b->GetTypeName());
 								});
@@ -17419,7 +17419,7 @@ WfCppConfig::Collect
 									}
 								}
 
-								Sort<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
+								SortLambda<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
 								{
 									return WString::Compare(a->GetTypeName(), b->GetTypeName());
 								});
@@ -19613,7 +19613,7 @@ WfGenerateExpressionVisitor
 
 				void Visit(WfStringExpression* node)override
 				{
-					writer.WriteString(L"::vl::WString(L\"");
+					writer.WriteString(L"::vl::WString::Unmanaged(L\"");
 					for (vint i = 0; i < node->value.value.Length(); i++)
 					{
 						auto c = node->value.value[i];
@@ -19627,7 +19627,7 @@ WfGenerateExpressionVisitor
 						default: writer.WriteChar(c);
 						}
 					}
-					writer.WriteString(L"\", false)");
+					writer.WriteString(L"\")");
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -21376,7 +21376,7 @@ namespace vl
 				{
 				}
 
-				void Call(Ptr<WfStatement> node, WString prefixDelta = WString(L"\t", false))
+				void Call(Ptr<WfStatement> node, WString prefixDelta = WString::Unmanaged(L"\t"))
 				{
 					GenerateStatement(config, functionRecord, writer, node, prefix, prefixDelta, returnType);
 				}
@@ -21511,7 +21511,7 @@ namespace vl
 						writer.WriteString(L"auto ");
 						writer.WriteString(blockName);
 						writer.WriteLine(L" = [&]()");
-						GenerateStatement(config, functionRecord, writer, node->finallyStatement, tryPrefix, WString(L"\t", false), returnType);
+						GenerateStatement(config, functionRecord, writer, node->finallyStatement, tryPrefix, WString::Unmanaged(L"\t"), returnType);
 						writer.WriteString(tryPrefix);
 						writer.WriteLine(L";");
 
@@ -21530,7 +21530,7 @@ namespace vl
 					writer.WriteLine(L"try");
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"{");
-					GenerateStatement(config, functionRecord, writer, node->protectedStatement, bodyPrefix, WString(L"\t", false), returnType);
+					GenerateStatement(config, functionRecord, writer, node->protectedStatement, bodyPrefix, WString::Unmanaged(L"\t"), returnType);
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"}");
 
@@ -21552,7 +21552,7 @@ namespace vl
 						writer.WriteString(L" = ::vl::reflection::description::IValueException::Create(");
 						writer.WriteString(exName);
 						writer.WriteLine(L".Message());");
-						GenerateStatement(config, functionRecord, writer, node->catchStatement, bodyPrefix, WString(L"\t", false), returnType);
+						GenerateStatement(config, functionRecord, writer, node->catchStatement, bodyPrefix, WString::Unmanaged(L"\t"), returnType);
 					}
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"}");
@@ -22188,7 +22188,7 @@ namespace vl
 						{
 							return scope->symbols.GetByIndex(index)[0]->name;
 						})
-						.OrderBy((vint(*)(const WString&, const WString&))&WString::Compare)
+						.OrderBy((vint64_t(*)(const WString&, const WString&))&WString::Compare)
 					);
 
 				return WriteFunctionHeader(writer, typeInfo, arguments, name, writeReturnType);
@@ -23217,7 +23217,7 @@ namespace vl
 									if (methodCount > 1)
 									{
 										writer.WriteString(L", ");
-										auto typeDecorator = methodInfo->IsStatic() ? WString(L"(*)", false) : L"(" + ConvertType(td) + L"::*)";
+										auto typeDecorator = methodInfo->IsStatic() ? WString::Unmanaged(L"(*)") : L"(" + ConvertType(td) + L"::*)";
 										writer.WriteString(ConvertFunctionType(methodInfo, typeDecorator));
 									}
 									writer.WriteLine(L")");
@@ -23822,7 +23822,7 @@ MergeCpp
 							if (wcsncmp(reading32, reading64, digitCount) == 0 && reading64[digitCount] == L'L' && reading32[digitCount] == L')')
 							{
 								writer.WriteString(L"static_cast<::vl::vint>(");
-								writer.WriteString(WString(reading32, digitCount));
+								writer.WriteString(WString::CopyFrom(reading32, digitCount));
 								writer.WriteChar(L')');
 								reading64 += digitCount + 1;
 								reading32 += digitCount + 1;
@@ -23837,7 +23837,7 @@ MergeCpp
 							if (wcsncmp(reading64, reading32, digitCount) == 0 && reading64[digitCount] == L'L' && reading64[digitCount + 1] == L')')
 							{
 								writer.WriteString(L"static_cast<::vl::vint>(");
-								writer.WriteString(WString(reading64, digitCount));
+								writer.WriteString(WString::CopyFrom(reading64, digitCount));
 								writer.WriteChar(L')');
 								reading64 += digitCount + 2;
 								reading32 += digitCount;

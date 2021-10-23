@@ -1412,6 +1412,661 @@ namespace vl
 #endif
 
 /***********************************************************************
+.\STREAM\CHARFORMAT.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_STREAM_CHARFORMAT
+#define VCZH_STREAM_CHARFORMAT
+
+
+namespace vl
+{
+	namespace stream
+	{
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+		template<typename T>
+		__forceinline void SwapByteForUtf16BE(T& c)
+		{
+			vuint8_t* bytes = (vuint8_t*)&c;
+			vuint8_t t = bytes[0];
+			bytes[0] = bytes[1];
+			bytes[1] = t;
+		}
+
+		template<typename T>
+		void SwapBytesForUtf16BE(T* _buffer, vint chars)
+		{
+			static_assert(sizeof(T) == sizeof(char16_t));
+			for (vint i = 0; i < chars; i++)
+			{
+				vuint8_t* bytes = (vuint8_t*)(_buffer + i);
+				vuint8_t t = bytes[0];
+				bytes[0] = bytes[1];
+				bytes[1] = t;
+			}
+		}
+
+/***********************************************************************
+WCharToUtfReader
+***********************************************************************/
+
+		class WCharTo32Reader : public encoding::UtfTo32ReaderBase<wchar_t, WCharTo32Reader>
+		{
+			template<typename T, typename TBase>
+			friend class encoding::UtfTo32ReaderBase;
+		protected:
+			const wchar_t* starting = nullptr;
+			const wchar_t* ending = nullptr;
+			const wchar_t* consuming = nullptr;
+
+			wchar_t Consume()
+			{
+				if (consuming == ending) return 0;
+				return *consuming++;
+			}
+
+		public:
+			WCharTo32Reader(const wchar_t* _starting, vint count)
+			{
+				starting = _starting;
+				ending = _starting + count;
+				consuming = _starting;
+			}
+		};
+
+		template<typename TTo>
+		class WCharToUtfReader : public encoding::UtfFrom32ReaderBase<TTo, WCharToUtfReader<TTo>>
+		{
+			template<typename T, typename TBase>
+			friend class encoding::UtfFrom32ReaderBase;
+		protected:
+			WCharTo32Reader internalReader;
+
+			char32_t Consume()
+			{
+				return internalReader.Read();
+			}
+		public:
+			WCharToUtfReader(const wchar_t* _starting, vint count)
+				: internalReader(_starting, count)
+			{
+			}
+
+			bool HasIllegalChar() const
+			{
+				return encoding::UtfFrom32ReaderBase<TTo, WCharToUtfReader<TTo>>::HasIllegalChar() || internalReader.HasIllegalChar();
+			}
+		};
+
+/***********************************************************************
+StreamToWCharReader
+***********************************************************************/
+
+		template<typename TFrom>
+		class StreamToWCharReader : public encoding::UtfFrom32ReaderBase<wchar_t, StreamToWCharReader<TFrom>>
+		{
+			template<typename T, typename TBase>
+			friend class encoding::UtfFrom32ReaderBase;
+
+			class InternalReader : public encoding::UtfTo32ReaderBase<TFrom, InternalReader>
+			{
+			public:
+				IStream* stream = nullptr;
+
+				TFrom Consume()
+				{
+					TFrom c;
+					vint size = stream->Read(&c, sizeof(c));
+					if (size != sizeof(c)) return 0;
+					return c;
+				}
+			};
+		protected:
+			InternalReader internalReader;
+
+			char32_t Consume()
+			{
+				return internalReader.Read();
+			}
+		public:
+
+			void Setup(IStream* _stream)
+			{
+				internalReader.stream = _stream;
+			}
+
+			bool HasIllegalChar() const
+			{
+				return encoding::UtfFrom32ReaderBase<wchar_t, StreamToWCharReader<TFrom>>::HasIllegalChar() || internalReader.HasIllegalChar();
+			}
+		};
+
+		template<>
+		class StreamToWCharReader<char32_t> : public encoding::UtfFrom32ReaderBase<wchar_t, StreamToWCharReader<char32_t>>
+		{
+			template<typename T, typename TBase>
+			friend class encoding::UtfFrom32ReaderBase;
+		protected:
+			IStream* stream = nullptr;
+
+			char32_t Consume()
+			{
+				char32_t c;
+				vint size = stream->Read(&c, sizeof(c));
+				if (size != sizeof(c)) return 0;
+				return c;
+			}
+		public:
+
+			void Setup(IStream* _stream)
+			{
+				stream = _stream;
+			}
+		};
+
+/***********************************************************************
+Utf16BEStreamToWCharReader
+***********************************************************************/
+
+		class Utf16BEStreamToWCharReader : public encoding::UtfFrom32ReaderBase<wchar_t, Utf16BEStreamToWCharReader>
+		{
+			template<typename T, typename TBase>
+			friend class encoding::UtfFrom32ReaderBase;
+
+			class InternalReader : public encoding::UtfTo32ReaderBase<char16_t, InternalReader>
+			{
+			public:
+				IStream* stream = nullptr;
+
+				char16_t Consume()
+				{
+					char16_t c;
+					vint size = stream->Read(&c, sizeof(c));
+					if (size != sizeof(c)) return 0;
+					SwapByteForUtf16BE(c);
+					return c;
+				}
+			};
+		protected:
+			InternalReader internalReader;
+
+			char32_t Consume()
+			{
+				return internalReader.Read();
+			}
+		public:
+
+			void Setup(IStream* _stream)
+			{
+				internalReader.stream = _stream;
+			}
+
+			bool HasIllegalChar() const
+			{
+				return encoding::UtfFrom32ReaderBase<wchar_t, Utf16BEStreamToWCharReader>::HasIllegalChar() || internalReader.HasIllegalChar();
+			}
+		};
+
+/***********************************************************************
+Char Encoder and Decoder
+***********************************************************************/
+
+		/// <summary>Base type of all character encoder.</summary>
+		class CharEncoder : public Object, public IEncoder
+		{
+		protected:
+			IStream*						stream = nullptr;
+			vuint8_t						cacheBuffer[sizeof(char32_t)];
+			vint							cacheSize = 0;
+
+			virtual vint					WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate) = 0;
+		public:
+
+			void							Setup(IStream* _stream);
+			void							Close();
+			vint							Write(void* _buffer, vint _size);
+		};
+		
+		/// <summary>Base type of all character decoder.</summary>
+		class CharDecoder : public Object, public IDecoder
+		{
+		protected:
+			IStream*						stream = nullptr;
+			vuint8_t						cacheBuffer[sizeof(wchar_t)];
+			vint							cacheSize = 0;
+
+			virtual vint					ReadString(wchar_t* _buffer, vint chars) = 0;
+		public:
+
+			void							Setup(IStream* _stream);
+			void							Close();
+			vint							Read(void* _buffer, vint _size);
+		};
+
+/***********************************************************************
+Mbcs
+***********************************************************************/
+		
+		/// <summary>Encoder to write text in the local code page.</summary>
+		class MbcsEncoder : public CharEncoder
+		{
+		protected:
+			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate);
+		};
+		
+		/// <summary>Decoder to read text in the local code page.</summary>
+		class MbcsDecoder : public CharDecoder
+		{
+		protected:
+			vint							ReadString(wchar_t* _buffer, vint chars);
+		};
+
+/***********************************************************************
+Utf-16
+***********************************************************************/
+		
+		/// <summary>Encoder to write UTF-16 text.</summary>
+		class Utf16Encoder : public CharEncoder
+		{
+		protected:
+			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate);
+		};
+		
+		/// <summary>Decoder to read UTF-16 text.</summary>
+		class Utf16Decoder : public CharDecoder
+		{
+		protected:
+#if defined VCZH_WCHAR_UTF32
+			StreamToWCharReader<char16_t>	reader;
+#endif
+
+			vint							ReadString(wchar_t* _buffer, vint chars);
+		};
+
+/***********************************************************************
+Utf-16-be
+***********************************************************************/
+		
+		/// <summary>Encoder to write big endian UTF-16 to.</summary>
+		class Utf16BEEncoder : public CharEncoder
+		{
+		protected:
+			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate);
+		};
+		
+		/// <summary>Decoder to read big endian UTF-16 text.</summary>
+		class Utf16BEDecoder : public CharDecoder
+		{
+		protected:
+			Utf16BEStreamToWCharReader		reader;
+
+			vint							ReadString(wchar_t* _buffer, vint chars);
+		};
+
+/***********************************************************************
+Utf-8
+***********************************************************************/
+		
+		/// <summary>Encoder to write UTF-8 text.</summary>
+		class Utf8Encoder : public CharEncoder
+		{
+		protected:
+			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate);
+		};
+		
+		/// <summary>Decoder to read UTF-8 text.</summary>
+		class Utf8Decoder : public CharDecoder
+		{
+		protected:
+			StreamToWCharReader<char8_t>	reader;
+
+			vint							ReadString(wchar_t* _buffer, vint chars);
+		public:
+		};
+
+/***********************************************************************
+Utf-32
+***********************************************************************/
+		
+		/// <summary>Encoder to write UTF-8 text.</summary>
+		class Utf32Encoder : public CharEncoder
+		{
+		protected:
+			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate);
+		};
+		
+		/// <summary>Decoder to read UTF-8 text.</summary>
+		class Utf32Decoder : public CharDecoder
+		{
+		protected:
+#if defined VCZH_WCHAR_UTF16
+			StreamToWCharReader<char32_t>	reader;
+#endif
+
+			vint							ReadString(wchar_t* _buffer, vint chars);
+		public:
+		};
+
+/***********************************************************************
+Bom
+***********************************************************************/
+		
+		/// <summary>Encoder to write text in a specified encoding. A BOM will be added at the beginning.</summary>
+		class BomEncoder : public Object, public IEncoder
+		{
+		public:
+			/// <summary>Text encoding.</summary>
+			enum Encoding
+			{
+				/// <summary>Multi-bytes character string.</summary>
+				Mbcs,
+				/// <summary>UTF-8. EF, BB, BF will be written before writing any text.</summary>
+				Utf8,
+				/// <summary>UTF-16. FF FE will be written before writing any text.</summary>
+				Utf16,
+				/// <summary>Big endian UTF-16. FE FF, BF will be written before writing any text.</summary>
+				Utf16BE
+			};
+		protected:
+			Encoding						encoding;
+			IEncoder*						encoder;
+		public:
+			/// <summary>Create an encoder with a specified encoding.</summary>
+			/// <param name="_encoding">The specified encoding.</param>
+			BomEncoder(Encoding _encoding);
+			~BomEncoder();
+
+			void							Setup(IStream* _stream);
+			void							Close();
+			vint							Write(void* _buffer, vint _size);
+		};
+		
+		/// <summary>Decoder to read text. This decoder depends on BOM at the beginning to decide the format of the input.</summary>
+		class BomDecoder : public Object, public IDecoder
+		{
+		private:
+			class BomStream : public Object, public IStream
+			{
+			protected:
+				IStream*					stream;
+				char						bom[3];
+				vint						bomLength;
+				vint						bomPosition;
+			public:
+				BomStream(IStream* _stream, char* _bom, vint _bomLength);
+
+				bool						CanRead()const;
+				bool						CanWrite()const;
+				bool						CanSeek()const;
+				bool						CanPeek()const;
+				bool						IsLimited()const;
+				bool						IsAvailable()const;
+				void						Close();
+				pos_t						Position()const;
+				pos_t						Size()const;
+				void						Seek(pos_t _size);
+				void						SeekFromBegin(pos_t _size);
+				void						SeekFromEnd(pos_t _size);
+				vint						Read(void* _buffer, vint _size);
+				vint						Write(void* _buffer, vint _size);
+				vint						Peek(void* _buffer, vint _size);
+			};
+		protected:
+			IDecoder*						decoder;
+			IStream*						stream;
+
+		public:
+			/// <summary>Create an decoder, BOM will be consumed before reading any text.</summary>
+			BomDecoder();
+			~BomDecoder();
+
+			void							Setup(IStream* _stream);
+			void							Close();
+			vint							Read(void* _buffer, vint _size);
+		};
+
+/***********************************************************************
+Encoding Test
+***********************************************************************/
+
+		/// <summary>Guess the text encoding in a buffer.</summary>
+		/// <param name="buffer">The buffer to guess.</param>
+		/// <param name="size">Size of the buffer in bytes.</param>
+		/// <param name="encoding">Returns the most possible encoding.</param>
+		/// <param name="containsBom">Returns true if the BOM information is at the beginning of the buffer.</param>
+		extern void							TestEncoding(unsigned char* buffer, vint size, BomEncoder::Encoding& encoding, bool& containsBom);
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\FILESYSTEM.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_FILESYSTEM
+#define VCZH_FILESYSTEM
+
+
+namespace vl
+{
+	namespace filesystem
+	{
+		/// <summary>Absolute file path.</summary>
+		class FilePath : public Object
+		{
+		protected:
+			WString						fullPath;
+
+			void						Initialize();
+
+			static void					GetPathComponents(WString path, collections::List<WString>& components);
+			static WString				ComponentsToPath(const collections::List<WString>& components);
+		public:
+#if defined VCZH_MSVC
+			/// <summary>The delimiter character used in a file path</summary>
+			/// <remarks>
+			/// In Windows, it is "\".
+			/// In Linux and macOS, it is "/".
+			/// But you can always use "/", it is also supported in Windows.
+			/// </remarks>
+			static const wchar_t		Delimiter = L'\\';
+#elif defined VCZH_GCC
+			static const wchar_t		Delimiter = L'/';
+#endif
+
+			/// <summary>Create a root path.</summary>
+			/// <remarks><see cref="GetFullPath"/> returns different values for root path on different platforms. Do not rely on the value.</remarks>
+			FilePath();
+			/// <summary>Create a file path.</summary>
+			/// <param name="_filePath">Content of the file path. If it is a relative path, it will be converted to an absolute path.</param>
+			FilePath(const WString& _filePath);
+			/// <summary>Create a file path.</summary>
+			/// <param name="_filePath">Content of the file path. If it is a relative path, it will be converted to an absolute path.</param>
+			FilePath(const wchar_t* _filePath);
+			/// <summary>Copy a file path.</summary>
+			/// <param name="_filePath">The file path to copy.</param>
+			FilePath(const FilePath& _filePath);
+			~FilePath();
+
+			static vint					Compare(const FilePath& a, const FilePath& b);
+			bool						operator==(const FilePath& filePath)const{ return Compare(*this, filePath) == 0; }
+			bool						operator!=(const FilePath& filePath)const{ return Compare(*this, filePath) != 0; }
+			bool						operator< (const FilePath& filePath)const{ return Compare(*this, filePath) <  0; }
+			bool						operator<=(const FilePath& filePath)const{ return Compare(*this, filePath) <= 0; }
+			bool						operator> (const FilePath& filePath)const{ return Compare(*this, filePath) >  0; }
+			bool						operator>=(const FilePath& filePath)const{ return Compare(*this, filePath) >= 0; }
+
+			/// <summary>Concat an absolute path and a relative path.</summary>
+			/// <returns>The result absolute path.</returns>
+			/// <param name="relativePath">The relative path to concat.</param>
+			FilePath					operator/(const WString& relativePath)const;
+
+			/// <summary>Test if the file path is a file.</summary>
+			/// <returns>Returns true if the file path is a file.</returns>
+			bool						IsFile()const;
+			/// <summary>Test if the file path is a folder.</summary>
+			/// <returns>Returns true if the file path is a folder.</returns>
+			/// <remarks>In Windows, a drive is also considered a folder.</remarks>
+			bool						IsFolder()const;
+			/// <summary>Test if the file path is a the root of all file system objects.</summary>
+			/// <returns>Returns true if the file path is the root of all file system objects.</returns>
+			bool						IsRoot()const;
+
+			/// <summary>Get the last piece of names in the file path.</summary>
+			/// <returns>The last piece of names in the file path.</returns>
+			WString						GetName()const;
+			/// <summary>Get the containing folder of this file path.</summary>
+			/// <returns>The containing folder.</returns>
+			FilePath					GetFolder()const;
+			/// <summary>Get the content of the file path.</summary>
+			/// <returns>The content of the file path.</returns>
+			WString						GetFullPath()const;
+			/// <summary>Calculate the relative path based on a specified referencing folder.</summary>
+			/// <returns>The relative path.</returns>
+			/// <param name="_filePath">The referencing folder.</param>
+			WString						GetRelativePathFor(const FilePath& _filePath);
+
+		};
+
+		/// <summary>A file.</summary>
+		class File : public Object
+		{
+		private:
+			FilePath					filePath;
+
+		public:
+			/// <summary>Create an empty reference. An empty reference does not refer to any file.</summary>
+			File();
+			/// <summary>Create a reference to a specified file. The file is not required to exist.</summary>
+			/// <param name="_filePath">The specified file.</param>
+			File(const FilePath& _filePath);
+			~File();
+
+			/// <summary>Get the file path of the file.</summary>
+			/// <returns>The file path.</returns>
+			const FilePath&				GetFilePath()const;
+
+			/// <summary>Get the content of a text file with encoding testing.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="text">Returns the content of the file.</param>
+			/// <param name="encoding">Returns the encoding of the file.</param>
+			/// <param name="containsBom">Returns true if there is a BOM in the file.</param>
+			bool						ReadAllTextWithEncodingTesting(WString& text, stream::BomEncoder::Encoding& encoding, bool& containsBom);
+			/// <summary>Get the content of a text file. If there is no BOM in the file, the encoding is assumed to be aligned to the current code page.</summary>
+			/// <returns>The content of the file.</returns>
+			WString						ReadAllTextByBom()const;
+			/// <summary>Get the content of a text file.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="text">The content of the file.</param>
+			bool						ReadAllTextByBom(WString& text)const;
+			/// <summary>Get the content of a text file by lines.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="lines">The content of the file by lines.</param>
+			/// <remarks>
+			/// Lines could be separated by either CRLF or LF.
+			/// A text file is not required to ends with CRLF.
+			/// If the last character of the file is LF,
+			/// the last line is the line before LF.
+			/// </remarks>
+			bool						ReadAllLinesByBom(collections::List<WString>& lines)const;
+
+			/// <summary>Write text to the file.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="text">The text to write.</param>
+			/// <param name="bom">Set to true to add a corresponding BOM at the beginning of the file according to the encoding, the default value is true.</param>
+			/// <param name="encoding">The text encoding, the default encoding is UTF-16.</param>
+			bool						WriteAllText(const WString& text, bool bom = true, stream::BomEncoder::Encoding encoding = stream::BomEncoder::Utf16);
+			/// <summary>Write text to the file.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="lines">The text to write, with CRLF appended after all lines.</param>
+			/// <param name="bom">Set to true to add a corresponding BOM at the beginning of the file according to the encoding, the default value is true.</param>
+			/// <param name="encoding">The text encoding, the default encoding is UTF-16.</param>
+			bool						WriteAllLines(collections::List<WString>& lines, bool bom = true, stream::BomEncoder::Encoding encoding = stream::BomEncoder::Utf16);
+			
+			/// <summary>Test does the file exist or not.</summary>
+			/// <returns>Returns true if the file exists.</returns>
+			bool						Exists()const;
+			/// <summary>Delete the file.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <remarks>This function could return before the file is actually deleted.</remarks>
+			bool						Delete()const;
+			/// <summary>Rename the file.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="newName">The new file name.</param>
+			bool						Rename(const WString& newName)const;
+		};
+		
+		/// <summary>A folder.</summary>
+		/// <remarks>In Windows, a drive is also considered a folder.</remarks>
+		class Folder : public Object
+		{
+		private:
+			FilePath					filePath;
+
+		public:
+			/// <summary>Create a reference to the root folder.</summary>
+			Folder();
+			/// <summary>Create a reference to a specified folder. The folder is not required to exist.</summary>
+			/// <param name="_filePath">The specified folder.</param>
+			Folder(const FilePath& _filePath);
+			~Folder();
+			
+			/// <summary>Get the file path of the folder.</summary>
+			/// <returns>The file path.</returns>
+			const FilePath&				GetFilePath()const;
+			/// <summary>Get all folders in this folder.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="folders">All folders.</param>
+			/// <remarks>In Windows, drives are considered sub folders in the root folder.</remarks>
+			bool						GetFolders(collections::List<Folder>& folders)const;
+			/// <summary>Get all files in this folder.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="files">All files.</param>
+			bool						GetFiles(collections::List<File>& files)const;
+			
+			/// <summary>Test does the folder exist or not.</summary>
+			/// <returns>Returns true if the folder exists.</returns>
+			bool						Exists()const;
+			/// <summary>Create the folder.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="recursively">Set to true to create all levels of containing folders if they do not exist.</param>
+			/// <remarks>
+			/// This function could return before the folder is actually created.
+			/// If "recursively" is false, this function will only attempt to create the specified folder directly,
+			/// it fails if the containing folder does not exist.
+			/// </remarks>
+			bool						Create(bool recursively)const;
+			/// <summary>Delete the folder.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="recursively">Set to true to delete everything in the folder.</param>
+			/// <remarks>This function could return before the folder is actually deleted.</remarks>
+			bool						Delete(bool recursively)const;
+			/// <summary>Rename the folder.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="newName">The new folder name.</param>
+			bool						Rename(const WString& newName)const;
+		};
+	}
+}
+
+#endif
+
+
+/***********************************************************************
 .\STREAM\COMPRESSIONSTREAM.H
 ***********************************************************************/
 /***********************************************************************
@@ -1626,6 +2281,94 @@ Helper Functions
 		/// }
 		/// ]]></example>
 		extern void						DecompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\STREAM\ENCODINGSTREAM.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_STREAM_ENCODINGSTREAM
+#define VCZH_STREAM_ENCODINGSTREAM
+
+
+namespace vl
+{
+	namespace stream
+	{
+/***********************************************************************
+Encoding Related
+***********************************************************************/
+
+		/// <summary>Encoder stream, a <b>writable</b> and potentially <b>finite</b> stream using [T:vl.stream.IEncoder] to transform content.</summary>
+		class EncoderStream : public virtual IStream
+		{
+		protected:
+			IStream*					stream;
+			IEncoder*					encoder;
+			pos_t						position;
+
+		public:
+			/// <summary>Create en encoder stream.</summary>
+			/// <param name="_stream">The output stream to write.</param>
+			/// <param name="_encoder">The encoder to transform content.</param>
+			EncoderStream(IStream& _stream, IEncoder& _encoder);
+			~EncoderStream();
+
+			bool						CanRead()const;
+			bool						CanWrite()const;
+			bool						CanSeek()const;
+			bool						CanPeek()const;
+			bool						IsLimited()const;
+			bool						IsAvailable()const;
+			void						Close();
+			pos_t						Position()const;
+			pos_t						Size()const;
+			void						Seek(pos_t _size);
+			void						SeekFromBegin(pos_t _size);
+			void						SeekFromEnd(pos_t _size);
+			vint						Read(void* _buffer, vint _size);
+			vint						Write(void* _buffer, vint _size);
+			vint						Peek(void* _buffer, vint _size);
+		};
+		
+		/// <summary>Decoder stream, a <b>readable</b> and potentially <b>finite</b> stream using [T:vl.stream.IDecoder] to transform content.</summary>
+		class DecoderStream : public virtual IStream
+		{
+		protected:
+			IStream*					stream;
+			IDecoder*					decoder;
+			pos_t						position;
+
+		public:
+			/// <summary>Create a decoder stream.</summary>
+			/// <param name="_stream">The input stream to read.</param>
+			/// <param name="_decoder">The decoder to transform content.</param>
+			DecoderStream(IStream& _stream, IDecoder& _decoder);
+			~DecoderStream();
+
+			bool						CanRead()const;
+			bool						CanWrite()const;
+			bool						CanSeek()const;
+			bool						CanPeek()const;
+			bool						IsLimited()const;
+			bool						IsAvailable()const;
+			void						Close();
+			pos_t						Position()const;
+			pos_t						Size()const;
+			void						Seek(pos_t _size);
+			void						SeekFromBegin(pos_t _size);
+			void						SeekFromEnd(pos_t _size);
+			vint						Read(void* _buffer, vint _size);
+			vint						Write(void* _buffer, vint _size);
+			vint						Peek(void* _buffer, vint _size);
+		};
 	}
 }
 
@@ -1911,74 +2654,6 @@ Text Related
 		};
 
 /***********************************************************************
-Encoding Related
-***********************************************************************/
-
-		/// <summary>Encoder stream, a <b>writable</b> and potentially <b>finite</b> stream using [T:vl.stream.IEncoder] to transform content.</summary>
-		class EncoderStream : public virtual IStream
-		{
-		protected:
-			IStream*					stream;
-			IEncoder*					encoder;
-			pos_t						position;
-
-		public:
-			/// <summary>Create en encoder stream.</summary>
-			/// <param name="_stream">The output stream to write.</param>
-			/// <param name="_encoder">The encoder to transform content.</param>
-			EncoderStream(IStream& _stream, IEncoder& _encoder);
-			~EncoderStream();
-
-			bool						CanRead()const;
-			bool						CanWrite()const;
-			bool						CanSeek()const;
-			bool						CanPeek()const;
-			bool						IsLimited()const;
-			bool						IsAvailable()const;
-			void						Close();
-			pos_t						Position()const;
-			pos_t						Size()const;
-			void						Seek(pos_t _size);
-			void						SeekFromBegin(pos_t _size);
-			void						SeekFromEnd(pos_t _size);
-			vint						Read(void* _buffer, vint _size);
-			vint						Write(void* _buffer, vint _size);
-			vint						Peek(void* _buffer, vint _size);
-		};
-		
-		/// <summary>Decoder stream, a <b>readable</b> and potentially <b>finite</b> stream using [T:vl.stream.IDecoder] to transform content.</summary>
-		class DecoderStream : public virtual IStream
-		{
-		protected:
-			IStream*					stream;
-			IDecoder*					decoder;
-			pos_t						position;
-
-		public:
-			/// <summary>Create a decoder stream.</summary>
-			/// <param name="_stream">The input stream to read.</param>
-			/// <param name="_decoder">The decoder to transform content.</param>
-			DecoderStream(IStream& _stream, IDecoder& _decoder);
-			~DecoderStream();
-
-			bool						CanRead()const;
-			bool						CanWrite()const;
-			bool						CanSeek()const;
-			bool						CanPeek()const;
-			bool						IsLimited()const;
-			bool						IsAvailable()const;
-			void						Close();
-			pos_t						Position()const;
-			pos_t						Size()const;
-			void						Seek(pos_t _size);
-			void						SeekFromBegin(pos_t _size);
-			void						SeekFromEnd(pos_t _size);
-			vint						Read(void* _buffer, vint _size);
-			vint						Write(void* _buffer, vint _size);
-			vint						Peek(void* _buffer, vint _size);
-		};
-
-/***********************************************************************
 Helper Functions
 ***********************************************************************/
 
@@ -2074,242 +2749,84 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\STREAM\CHARFORMAT.H
+.\STREAM\RECORDERSTREAM.H
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#ifndef VCZH_STREAM_CHARFORMAT
-#define VCZH_STREAM_CHARFORMAT
+#ifndef VCZH_STREAM_RECORDERSTREAM
+#define VCZH_STREAM_RECORDERSTREAM
 
 
 namespace vl
 {
 	namespace stream
 	{
-
-		/*
-		How UCS-4 translates to UTF-8
-			U-00000000 - U-0000007F:  0xxxxxxx
-			U-00000080 - U-000007FF:  110xxxxx 10xxxxxx
-			U-00000800 - U-0000FFFF:  1110xxxx 10xxxxxx 10xxxxxx
-			U-00010000 - U-001FFFFF:  11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-			U-00200000 - U-03FFFFFF:  111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-			U-04000000 - U-7FFFFFFF:  1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-		BOM:
-			FFFE	=Unicode
-			FEFF	=Unicode Big Endian
-			EFBBBF	=UTF-8
-			other	=MBCS(GBK)
-		*/
-
-/***********************************************************************
-Char Encoder and Decoder
-***********************************************************************/
-
-		/// <summary>Base type of all character encoder.</summary>
-		class CharEncoder : public Object, public IEncoder
+		/// <summary>
+		/// A readable stream that, reads from one stream, and copy everything that is read to another stream.
+		/// The stream is <b>unavailable</b> if one of the input stream or the output stream is <b>unavailable</b>.
+		/// The stream is <b>readable</b>, and potentially <b>finite</b>.
+		/// </summary>
+		/// <remarks>
+		/// When reading happens, the recorder stream will only performance one write attempt to the output stream.
+		/// </remarks>
+		class RecorderStream : public Object, public virtual IStream
 		{
 		protected:
-			IStream*						stream;
-			vuint8_t						cacheBuffer[sizeof(wchar_t)];
-			vint							cacheSize;
-
-			virtual vint					WriteString(wchar_t* _buffer, vint chars)=0;
+			IStream*				in;
+			IStream*				out;
 		public:
-			CharEncoder();
+			/// <summary>Create a recorder stream.</summary>
+			/// <param name="_in">
+			/// The input stream.
+			/// This recorder stream is <b>readable</b> only when the input stream is <b>readable</b>
+			/// This recorder stream is <b>finite</b> only when the input stream is <b>finite</b>
+			/// </param>
+			/// <param name="_out">
+			/// The output stream.
+			/// </param>
+			RecorderStream(IStream& _in, IStream& _out);
+			~RecorderStream();
 
-			void							Setup(IStream* _stream);
-			void							Close();
-			vint							Write(void* _buffer, vint _size);
+			bool					CanRead()const;
+			bool					CanWrite()const;
+			bool					CanSeek()const;
+			bool					CanPeek()const;
+			bool					IsLimited()const;
+			bool					IsAvailable()const;
+			void					Close();
+			pos_t					Position()const;
+			pos_t					Size()const;
+			void					Seek(pos_t _size);
+			void					SeekFromBegin(pos_t _size);
+			void					SeekFromEnd(pos_t _size);
+			vint					Read(void* _buffer, vint _size);
+			vint					Write(void* _buffer, vint _size);
+			vint					Peek(void* _buffer, vint _size);
 		};
-		
-		/// <summary>Base type of all character decoder.</summary>
-		class CharDecoder : public Object, public IDecoder
-		{
-		protected:
-			IStream*						stream;
-			vuint8_t						cacheBuffer[sizeof(wchar_t)];
-			vint							cacheSize;
+	}
+}
 
-			virtual vint					ReadString(wchar_t* _buffer, vint chars)=0;
-		public:
-			CharDecoder();
-
-			void							Setup(IStream* _stream);
-			void							Close();
-			vint							Read(void* _buffer, vint _size);
-		};
-
-/***********************************************************************
-Mbcs
-***********************************************************************/
-		
-		/// <summary>Encoder to write text in the local code page.</summary>
-		class MbcsEncoder : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars);
-		};
-		
-		/// <summary>Decoder to read text in the local code page.</summary>
-		class MbcsDecoder : public CharDecoder
-		{
-		protected:
-			vint							ReadString(wchar_t* _buffer, vint chars);
-		};
-
-/***********************************************************************
-Utf-16
-***********************************************************************/
-		
-		/// <summary>Encoder to write UTF-16 text.</summary>
-		class Utf16Encoder : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars);
-		};
-		
-		/// <summary>Decoder to read UTF-16 text.</summary>
-		class Utf16Decoder : public CharDecoder
-		{
-		protected:
-			vint							ReadString(wchar_t* _buffer, vint chars);
-		};
-
-/***********************************************************************
-Utf-16-be
-***********************************************************************/
-		
-		/// <summary>Encoder to write big endian UTF-16 to.</summary>
-		class Utf16BEEncoder : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars);
-		};
-		
-		/// <summary>Decoder to read big endian UTF-16 text.</summary>
-		class Utf16BEDecoder : public CharDecoder
-		{
-		protected:
-			vint							ReadString(wchar_t* _buffer, vint chars);
-		};
-
-/***********************************************************************
-Utf-8
-***********************************************************************/
-		
-		/// <summary>Encoder to write UTF-8 text.</summary>
-		class Utf8Encoder : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars);
-		};
-		
-		/// <summary>Decoder to read UTF-8 text.</summary>
-		class Utf8Decoder : public CharDecoder
-		{
-		protected:
-#if defined VCZH_MSVC
-			wchar_t							cache;
-			bool							cacheAvailable;
 #endif
-			vint							ReadString(wchar_t* _buffer, vint chars);
-		public:
-			Utf8Decoder();
-		};
 
 /***********************************************************************
-Bom
+.\STREAM\SERIALIZATION.H
 ***********************************************************************/
-		
-		/// <summary>Encoder to write text in a specified encoding. A BOM will be added at the beginning.</summary>
-		class BomEncoder : public Object, public IEncoder
-		{
-		public:
-			/// <summary>Text encoding.</summary>
-			enum Encoding
-			{
-				/// <summary>Multi-bytes character string.</summary>
-				Mbcs,
-				/// <summary>UTF-8. EF, BB, BF will be written before writing any text.</summary>
-				Utf8,
-				/// <summary>UTF-16. FF FE will be written before writing any text.</summary>
-				Utf16,
-				/// <summary>Big endian UTF-16. FE FF, BF will be written before writing any text.</summary>
-				Utf16BE
-			};
-		protected:
-			Encoding						encoding;
-			IEncoder*						encoder;
-		public:
-			/// <summary>Create an encoder with a specified encoding.</summary>
-			/// <param name="_encoding">The specified encoding.</param>
-			BomEncoder(Encoding _encoding);
-			~BomEncoder();
-
-			void							Setup(IStream* _stream);
-			void							Close();
-			vint							Write(void* _buffer, vint _size);
-		};
-		
-		/// <summary>Decoder to read text. This decoder depends on BOM at the beginning to decide the format of the input.</summary>
-		class BomDecoder : public Object, public IDecoder
-		{
-		private:
-			class BomStream : public Object, public IStream
-			{
-			protected:
-				IStream*					stream;
-				char						bom[3];
-				vint						bomLength;
-				vint						bomPosition;
-			public:
-				BomStream(IStream* _stream, char* _bom, vint _bomLength);
-
-				bool						CanRead()const;
-				bool						CanWrite()const;
-				bool						CanSeek()const;
-				bool						CanPeek()const;
-				bool						IsLimited()const;
-				bool						IsAvailable()const;
-				void						Close();
-				pos_t						Position()const;
-				pos_t						Size()const;
-				void						Seek(pos_t _size);
-				void						SeekFromBegin(pos_t _size);
-				void						SeekFromEnd(pos_t _size);
-				vint						Read(void* _buffer, vint _size);
-				vint						Write(void* _buffer, vint _size);
-				vint						Peek(void* _buffer, vint _size);
-			};
-		protected:
-			IDecoder*						decoder;
-			IStream*						stream;
-
-		public:
-			/// <summary>Create an decoder, BOM will be consumed before reading any text.</summary>
-			BomDecoder();
-			~BomDecoder();
-
-			void							Setup(IStream* _stream);
-			void							Close();
-			vint							Read(void* _buffer, vint _size);
-		};
-
 /***********************************************************************
-Encoding Test
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-		/// <summary>Guess the text encoding in a buffer.</summary>
-		/// <param name="buffer">The buffer to guess.</param>
-		/// <param name="size">Size of the buffer in bytes.</param>
-		/// <param name="encoding">Returns the most possible encoding.</param>
-		/// <param name="containsBom">Returns true if the BOM information is at the beginning of the buffer.</param>
-		extern void							TestEncoding(unsigned char* buffer, vint size, BomEncoder::Encoding& encoding, bool& containsBom);
+#ifndef VCZH_STREAM_SERIALIZATION
+#define VCZH_STREAM_SERIALIZATION
 
+
+namespace vl
+{
+	namespace stream
+	{
 /***********************************************************************
 Serialization
 ***********************************************************************/
@@ -2366,35 +2883,15 @@ Serialization
 				return writer;
 			}
 
-			//---------------------------------------------
+/***********************************************************************
+Serialization (integers)
+***********************************************************************/
 
-			template<>
-			struct Serialization<vint64_t>
+			template<typename T>
+			struct Serialization_POD
 			{
 				template<typename TContext>
-				static void IO(Reader<TContext>& reader, vint64_t& value)
-				{
-					if (reader.input.Read(&value, sizeof(value)) != sizeof(value))
-					{
-						CHECK_FAIL(L"Deserialization failed.");
-					}
-				}
-				
-				template<typename TContext>
-				static void IO(Writer<TContext>& writer, vint64_t& value)
-				{
-					if (writer.output.Write(&value, sizeof(value)) != sizeof(value))
-					{
-						CHECK_FAIL(L"Serialization failed.");
-					}
-				}
-			};
-
-			template<>
-			struct Serialization<vuint64_t>
-			{
-				template<typename TContext>
-				static void IO(Reader<TContext>& reader, vuint64_t& value)
+				static void IO(Reader<TContext>& reader, T& value)
 				{
 					if (reader.input.Read(&value, sizeof(value)) != sizeof(value))
 					{
@@ -2403,7 +2900,7 @@ Serialization
 				}
 
 				template<typename TContext>
-				static void IO(Writer<TContext>& writer, vuint64_t& value)
+				static void IO(Writer<TContext>& writer, T& value)
 				{
 					if (writer.output.Write(&value, sizeof(value)) != sizeof(value))
 					{
@@ -2412,115 +2909,190 @@ Serialization
 				}
 			};
 
-			template<>
-			struct Serialization<vint32_t>
+			template<typename TValue, typename TData>
+			struct Serialization_DefaultConversion
+			{
+				static TValue ToValue(TData data)
+				{
+					return (TValue)data;
+				}
+
+				static TData FromValue(TValue value)
+				{
+					return (TData)value;
+				}
+			};
+
+			template<typename TValue, typename TData, typename TConversion = Serialization_DefaultConversion<TValue, TData>>
+			struct Serialization_Conversion
 			{
 				template<typename TContext>
-				static void IO(Reader<TContext>& reader, vint32_t& value)
+				static void IO(Reader<TContext>& reader, TValue& value)
 				{
-					vint64_t v = 0;
-					Serialization<vint64_t>::IO(reader, v);
-					value = (vint32_t)v;
+					TData data;
+					Serialization<TData>::IO(reader, data);
+					value = TConversion::ToValue(data);
 				}
-					
+
 				template<typename TContext>
-				static void IO(Writer<TContext>& writer, vint32_t& value)
+				static void IO(Writer<TContext>& writer, TValue& value)
 				{
-					vint64_t v = (vint64_t)value;
-					Serialization<vint64_t>::IO(writer, v);
+					TData data = TConversion::FromValue(value);
+					Serialization<TData>::IO(writer, data);
 				}
 			};
 
 			template<>
-			struct Serialization<vuint32_t>
+			struct Serialization<vint64_t> : Serialization_POD<vint64_t> {};
+
+			template<>
+			struct Serialization<vuint64_t> : Serialization_POD<vuint64_t> {};
+
+			template<>
+			struct Serialization<vint32_t> : Serialization_Conversion<vint32_t, vint64_t> {};
+
+			template<>
+			struct Serialization<vuint32_t> : Serialization_Conversion<vuint32_t, vuint64_t> {};
+
+			template<>
+			struct Serialization<vint16_t> : Serialization_POD<vint16_t> {};
+
+			template<>
+			struct Serialization<vuint16_t> : Serialization_POD<vuint16_t> {};
+
+			template<>
+			struct Serialization<vint8_t> : Serialization_POD<vint8_t> {};
+
+			template<>
+			struct Serialization<vuint8_t> : Serialization_POD<vuint8_t> {};
+
+/***********************************************************************
+Serialization (chars)
+***********************************************************************/
+
+			template<>
+			struct Serialization<char> : Serialization_Conversion<char, vint64_t> {};
+
+			template<>
+			struct Serialization<wchar_t> : Serialization_Conversion<wchar_t, vint64_t> {};
+
+			template<>
+			struct Serialization<char8_t> : Serialization_Conversion<char8_t, vint64_t> {};
+
+			template<>
+			struct Serialization<char16_t> : Serialization_Conversion<char16_t, vint64_t> {};
+
+			template<>
+			struct Serialization<char32_t> : Serialization_Conversion<char32_t, vint64_t> {};
+
+/***********************************************************************
+Serialization (floats)
+***********************************************************************/
+
+			template<>
+			struct Serialization<double> : Serialization_POD<double> {};
+
+			template<>
+			struct Serialization<float> : Serialization_POD<float> {};
+
+			template<>
+			struct Serialization<bool> : Serialization_Conversion<bool, vint8_t, Serialization<bool>>
 			{
-				template<typename TContext>
-				static void IO(Reader<TContext>& reader, vint32_t& value)
+				static bool ToValue(vint8_t data)
 				{
-					vuint64_t v = 0;
-					Serialization<vuint64_t>::IO(reader, v);
-					value = (vuint32_t)v;
+					return data == -1;
 				}
 
-				template<typename TContext>
-				static void IO(Writer<TContext>& writer, vint32_t& value)
+				static vint8_t FromValue(bool value)
 				{
-					vuint64_t v = (vuint64_t)value;
-					Serialization<vuint64_t>::IO(writer, v);
+					return value ? -1 : 0;
 				}
 			};
 
-			template<>
-			struct Serialization<double>
-			{
-				template<typename TContext>
-				static void IO(Reader<TContext>& reader, double& value)
-				{
-					if (reader.input.Read(&value, sizeof(value)) != sizeof(value))
-					{
-						CHECK_FAIL(L"Deserialization failed.");
-					}
-				}
-
-				template<typename TContext>
-				static void IO(Writer<TContext>& writer, double& value)
-				{
-					if (writer.output.Write(&value, sizeof(value)) != sizeof(value))
-					{
-						CHECK_FAIL(L"Serialization failed.");
-					}
-				}
-			};
+/***********************************************************************
+Serialization (strings)
+***********************************************************************/
 
 			template<>
-			struct Serialization<float>
+			struct Serialization<U8String>
 			{
 				template<typename TContext>
-				static void IO(Reader<TContext>& reader, float& value)
+				static void IO(Reader<TContext>& reader, U8String& value)
 				{
-					if (reader.input.Read(&value, sizeof(value)) != sizeof(value))
+					vint count = -1;
+					reader << count;
+					if (count > 0)
 					{
-						CHECK_FAIL(L"Deserialization failed.");
-					}
-				}
-
-				template<typename TContext>
-				static void IO(Writer<TContext>& writer, float& value)
-				{
-					if (writer.output.Write(&value, sizeof(value)) != sizeof(value))
-					{
-						CHECK_FAIL(L"Serialization failed.");
-					}
-				}
-			};
-
-			template<>
-			struct Serialization<bool>
-			{
-				template<typename TContext>
-				static void IO(Reader<TContext>& reader, bool& value)
-				{
-					vint8_t v = 0;
-					if (reader.input.Read(&v, sizeof(v)) != sizeof(v))
-					{
-						CHECK_FAIL(L"Deserialization failed.");
+						char8_t* buffer = new char8_t[count + 1];
+						MemoryWrapperStream stream(buffer, count);
+						reader << (IStream&)stream;
+						buffer[count] = 0;
+						value = U8String::TakeOver(buffer, count);
 					}
 					else
 					{
-						value = v == -1;
+						value = {};
 					}
 				}
-					
+
 				template<typename TContext>
-				static void IO(Writer<TContext>& writer, bool& value)
+				static void IO(Writer<TContext>& writer, U8String& value)
 				{
-					vint8_t v = value ? -1 : 0;
-					if (writer.output.Write(&v, sizeof(v)) != sizeof(v))
+					vint count = value.Length();
+					writer << count;
+					if (count > 0)
 					{
-						CHECK_FAIL(L"Serialization failed.");
+						MemoryWrapperStream stream((void*)value.Buffer(), count);
+						writer << (IStream&)stream;
 					}
 				}
 			};
+
+			template<>
+			struct Serialization<WString> : Serialization_Conversion<WString, U8String, Serialization<WString>>
+			{
+				static WString ToValue(const U8String& data)
+				{
+					return u8tow(data);
+				}
+
+				static U8String FromValue(const WString& value)
+				{
+					return wtou8(value);
+				}
+			};
+
+			template<>
+			struct Serialization<U16String> : Serialization_Conversion<U16String, U8String, Serialization<U16String>>
+			{
+				static U16String ToValue(const U8String& data)
+				{
+					return u8tou16(data);
+				}
+
+				static U8String FromValue(const U16String& value)
+				{
+					return u16tou8(value);
+				}
+			};
+
+			template<>
+			struct Serialization<U32String> : Serialization_Conversion<U32String, U8String, Serialization<U32String>>
+			{
+				static U32String ToValue(const U8String& data)
+				{
+					return u8tou32(data);
+				}
+
+				static U8String FromValue(const U32String& value)
+				{
+					return u32tou8(value);
+				}
+			};
+
+/***********************************************************************
+Serialization (generic types)
+***********************************************************************/
 
 			template<typename T>
 			struct Serialization<Ptr<T>>
@@ -2586,50 +3158,9 @@ Serialization
 				}
 			};
 
-			template<>
-			struct Serialization<WString>
-			{
-				template<typename TContext>
-				static void IO(Reader<TContext>& reader, WString& value)
-				{
-					vint count = -1;
-					reader << count;
-					if (count > 0)
-					{
-						MemoryStream stream;
-						reader << (IStream&)stream;
-						Utf8Decoder decoder;
-						decoder.Setup(&stream);
-
-						collections::Array<wchar_t> stringBuffer(count + 1);
-						vint stringSize = decoder.Read(&stringBuffer[0], count * sizeof(wchar_t));
-						stringBuffer[stringSize / sizeof(wchar_t)] = 0;
-
-						value = &stringBuffer[0];
-					}
-					else
-					{
-						value = L"";
-					}
-				}
-					
-				template<typename TContext>
-				static void IO(Writer<TContext>& writer, WString& value)
-				{
-					vint count = value.Length();
-					writer << count;
-					if (count > 0)
-					{
-						MemoryStream stream;
-						{
-							Utf8Encoder encoder;
-							encoder.Setup(&stream);
-							encoder.Write((void*)value.Buffer(), count * sizeof(wchar_t));
-						}
-						writer << (IStream&)stream;
-					}
-				}
-			};
+/***********************************************************************
+Serialization (collections)
+***********************************************************************/
 
 			template<typename T>
 			struct Serialization<collections::List<T>>
@@ -2754,6 +3285,10 @@ Serialization
 				}
 			};
 
+/***********************************************************************
+Serialization (MISC)
+***********************************************************************/
+
 			template<>
 			struct Serialization<stream::IStream>
 			{
@@ -2808,24 +3343,26 @@ Serialization
 				}
 			};
 
-			//---------------------------------------------
+/***********************************************************************
+Serialization (macros)
+***********************************************************************/
 
 #define BEGIN_SERIALIZATION(TYPE)\
-				template<>\
-				struct Serialization<TYPE>\
+			template<>\
+			struct Serialization<TYPE>\
+			{\
+				template<typename TIO>\
+				static void IO(TIO& op, TYPE& value)\
 				{\
-					template<typename TIO>\
-					static void IO(TIO& op, TYPE& value)\
-					{\
-						op\
+					op\
 
 #define SERIALIZE(FIELD)\
-						<< value.FIELD\
+					<< value.FIELD\
 
 #define END_SERIALIZATION\
-						;\
-					}\
-				};\
+					;\
+				}\
+			};\
 
 #define SERIALIZE_ENUM(TYPE)\
 			template<>\
@@ -2852,283 +3389,3 @@ Serialization
 
 #endif
 
-
-/***********************************************************************
-.\FILESYSTEM.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_FILESYSTEM
-#define VCZH_FILESYSTEM
-
-
-namespace vl
-{
-	namespace filesystem
-	{
-		/// <summary>Absolute file path.</summary>
-		class FilePath : public Object
-		{
-		protected:
-			WString						fullPath;
-
-			void						Initialize();
-
-			static void					GetPathComponents(WString path, collections::List<WString>& components);
-			static WString				ComponentsToPath(const collections::List<WString>& components);
-		public:
-#if defined VCZH_MSVC
-			/// <summary>The delimiter character used in a file path</summary>
-			/// <remarks>
-			/// In Windows, it is "\".
-			/// In Linux and macOS, it is "/".
-			/// But you can always use "/", it is also supported in Windows.
-			/// </remarks>
-			static const wchar_t		Delimiter = L'\\';
-#elif defined VCZH_GCC
-			static const wchar_t		Delimiter = L'/';
-#endif
-
-			/// <summary>Create a root path.</summary>
-			/// <remarks><see cref="GetFullPath"/> returns different values for root path on different platforms. Do not rely on the value.</remarks>
-			FilePath();
-			/// <summary>Create a file path.</summary>
-			/// <param name="_filePath">Content of the file path. If it is a relative path, it will be converted to an absolute path.</param>
-			FilePath(const WString& _filePath);
-			/// <summary>Create a file path.</summary>
-			/// <param name="_filePath">Content of the file path. If it is a relative path, it will be converted to an absolute path.</param>
-			FilePath(const wchar_t* _filePath);
-			/// <summary>Copy a file path.</summary>
-			/// <param name="_filePath">The file path to copy.</param>
-			FilePath(const FilePath& _filePath);
-			~FilePath();
-
-			static vint					Compare(const FilePath& a, const FilePath& b);
-			bool						operator==(const FilePath& filePath)const{ return Compare(*this, filePath) == 0; }
-			bool						operator!=(const FilePath& filePath)const{ return Compare(*this, filePath) != 0; }
-			bool						operator< (const FilePath& filePath)const{ return Compare(*this, filePath) <  0; }
-			bool						operator<=(const FilePath& filePath)const{ return Compare(*this, filePath) <= 0; }
-			bool						operator> (const FilePath& filePath)const{ return Compare(*this, filePath) >  0; }
-			bool						operator>=(const FilePath& filePath)const{ return Compare(*this, filePath) >= 0; }
-
-			/// <summary>Concat an absolute path and a relative path.</summary>
-			/// <returns>The result absolute path.</returns>
-			/// <param name="relativePath">The relative path to concat.</param>
-			FilePath					operator/(const WString& relativePath)const;
-
-			/// <summary>Test if the file path is a file.</summary>
-			/// <returns>Returns true if the file path is a file.</returns>
-			bool						IsFile()const;
-			/// <summary>Test if the file path is a folder.</summary>
-			/// <returns>Returns true if the file path is a folder.</returns>
-			/// <remarks>In Windows, a drive is also considered a folder.</remarks>
-			bool						IsFolder()const;
-			/// <summary>Test if the file path is a the root of all file system objects.</summary>
-			/// <returns>Returns true if the file path is the root of all file system objects.</returns>
-			bool						IsRoot()const;
-
-			/// <summary>Get the last piece of names in the file path.</summary>
-			/// <returns>The last piece of names in the file path.</returns>
-			WString						GetName()const;
-			/// <summary>Get the containing folder of this file path.</summary>
-			/// <returns>The containing folder.</returns>
-			FilePath					GetFolder()const;
-			/// <summary>Get the content of the file path.</summary>
-			/// <returns>The content of the file path.</returns>
-			WString						GetFullPath()const;
-			/// <summary>Calculate the relative path based on a specified referencing folder.</summary>
-			/// <returns>The relative path.</returns>
-			/// <param name="_filePath">The referencing folder.</param>
-			WString						GetRelativePathFor(const FilePath& _filePath);
-
-		};
-
-		/// <summary>A file.</summary>
-		class File : public Object
-		{
-		private:
-			FilePath					filePath;
-
-		public:
-			/// <summary>Create an empty reference. An empty reference does not refer to any file.</summary>
-			File();
-			/// <summary>Create a reference to a specified file. The file is not required to exist.</summary>
-			/// <param name="_filePath">The specified file.</param>
-			File(const FilePath& _filePath);
-			~File();
-
-			/// <summary>Get the file path of the file.</summary>
-			/// <returns>The file path.</returns>
-			const FilePath&				GetFilePath()const;
-
-			/// <summary>Get the content of a text file with encoding testing.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="text">Returns the content of the file.</param>
-			/// <param name="encoding">Returns the encoding of the file.</param>
-			/// <param name="containsBom">Returns true if there is a BOM in the file.</param>
-			bool						ReadAllTextWithEncodingTesting(WString& text, stream::BomEncoder::Encoding& encoding, bool& containsBom);
-			/// <summary>Get the content of a text file. If there is no BOM in the file, the encoding is assumed to be aligned to the current code page.</summary>
-			/// <returns>The content of the file.</returns>
-			WString						ReadAllTextByBom()const;
-			/// <summary>Get the content of a text file.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="text">The content of the file.</param>
-			bool						ReadAllTextByBom(WString& text)const;
-			/// <summary>Get the content of a text file by lines.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="lines">The content of the file by lines.</param>
-			/// <remarks>
-			/// Lines could be separated by either CRLF or LF.
-			/// A text file is not required to ends with CRLF.
-			/// If the last character of the file is LF,
-			/// the last line is the line before LF.
-			/// </remarks>
-			bool						ReadAllLinesByBom(collections::List<WString>& lines)const;
-
-			/// <summary>Write text to the file.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="text">The text to write.</param>
-			/// <param name="bom">Set to true to add a corresponding BOM at the beginning of the file according to the encoding, the default value is true.</param>
-			/// <param name="encoding">The text encoding, the default encoding is UTF-16.</param>
-			bool						WriteAllText(const WString& text, bool bom = true, stream::BomEncoder::Encoding encoding = stream::BomEncoder::Utf16);
-			/// <summary>Write text to the file.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="lines">The text to write, with CRLF appended after all lines.</param>
-			/// <param name="bom">Set to true to add a corresponding BOM at the beginning of the file according to the encoding, the default value is true.</param>
-			/// <param name="encoding">The text encoding, the default encoding is UTF-16.</param>
-			bool						WriteAllLines(collections::List<WString>& lines, bool bom = true, stream::BomEncoder::Encoding encoding = stream::BomEncoder::Utf16);
-			
-			/// <summary>Test does the file exist or not.</summary>
-			/// <returns>Returns true if the file exists.</returns>
-			bool						Exists()const;
-			/// <summary>Delete the file.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <remarks>This function could return before the file is actually deleted.</remarks>
-			bool						Delete()const;
-			/// <summary>Rename the file.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="newName">The new file name.</param>
-			bool						Rename(const WString& newName)const;
-		};
-		
-		/// <summary>A folder.</summary>
-		/// <remarks>In Windows, a drive is also considered a folder.</remarks>
-		class Folder : public Object
-		{
-		private:
-			FilePath					filePath;
-
-		public:
-			/// <summary>Create a reference to the root folder.</summary>
-			Folder();
-			/// <summary>Create a reference to a specified folder. The folder is not required to exist.</summary>
-			/// <param name="_filePath">The specified folder.</param>
-			Folder(const FilePath& _filePath);
-			~Folder();
-			
-			/// <summary>Get the file path of the folder.</summary>
-			/// <returns>The file path.</returns>
-			const FilePath&				GetFilePath()const;
-			/// <summary>Get all folders in this folder.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="folders">All folders.</param>
-			/// <remarks>In Windows, drives are considered sub folders in the root folder.</remarks>
-			bool						GetFolders(collections::List<Folder>& folders)const;
-			/// <summary>Get all files in this folder.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="files">All files.</param>
-			bool						GetFiles(collections::List<File>& files)const;
-			
-			/// <summary>Test does the folder exist or not.</summary>
-			/// <returns>Returns true if the folder exists.</returns>
-			bool						Exists()const;
-			/// <summary>Create the folder.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="recursively">Set to true to create all levels of containing folders if they do not exist.</param>
-			/// <remarks>
-			/// This function could return before the folder is actually created.
-			/// If "recursively" is false, this function will only attempt to create the specified folder directly,
-			/// it fails if the containing folder does not exist.
-			/// </remarks>
-			bool						Create(bool recursively)const;
-			/// <summary>Delete the folder.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="recursively">Set to true to delete everything in the folder.</param>
-			/// <remarks>This function could return before the folder is actually deleted.</remarks>
-			bool						Delete(bool recursively)const;
-			/// <summary>Rename the folder.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="newName">The new folder name.</param>
-			bool						Rename(const WString& newName)const;
-		};
-	}
-}
-
-#endif
-
-
-/***********************************************************************
-.\STREAM\RECORDERSTREAM.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_STREAM_RECORDERSTREAM
-#define VCZH_STREAM_RECORDERSTREAM
-
-
-namespace vl
-{
-	namespace stream
-	{
-		/// <summary>
-		/// A readable stream that, reads from one stream, and copy everything that is read to another stream.
-		/// The stream is <b>unavailable</b> if one of the input stream or the output stream is <b>unavailable</b>.
-		/// The stream is <b>readable</b>, and potentially <b>finite</b>.
-		/// </summary>
-		/// <remarks>
-		/// When reading happens, the recorder stream will only performance one write attempt to the output stream.
-		/// </remarks>
-		class RecorderStream : public Object, public virtual IStream
-		{
-		protected:
-			IStream*				in;
-			IStream*				out;
-		public:
-			/// <summary>Create a recorder stream.</summary>
-			/// <param name="_in">
-			/// The input stream.
-			/// This recorder stream is <b>readable</b> only when the input stream is <b>readable</b>
-			/// This recorder stream is <b>finite</b> only when the input stream is <b>finite</b>
-			/// </param>
-			/// <param name="_out">
-			/// The output stream.
-			/// </param>
-			RecorderStream(IStream& _in, IStream& _out);
-			~RecorderStream();
-
-			bool					CanRead()const;
-			bool					CanWrite()const;
-			bool					CanSeek()const;
-			bool					CanPeek()const;
-			bool					IsLimited()const;
-			bool					IsAvailable()const;
-			void					Close();
-			pos_t					Position()const;
-			pos_t					Size()const;
-			void					Seek(pos_t _size);
-			void					SeekFromBegin(pos_t _size);
-			void					SeekFromEnd(pos_t _size);
-			vint					Read(void* _buffer, vint _size);
-			vint					Write(void* _buffer, vint _size);
-			vint					Peek(void* _buffer, vint _size);
-		};
-	}
-}
-
-#endif

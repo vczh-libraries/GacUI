@@ -2511,7 +2511,7 @@ Helper Functions
 			}
 			else
 			{
-				name=WString(input, vint(read-input));
+				name=WString::CopyFrom(input, vint(read-input));
 				input=read;
 				return true;
 			}
@@ -3022,7 +3022,7 @@ Helper Functions
 				case L'\\':case L'/':case L'(':case L')':case L'+':case L'*':case L'?':case L'|':
 				case L'{':case L'}':case L'[':case L']':case L'<':case L'>':
 				case L'^':case L'$':case L'!':case L'=':
-					result+=WString(L"\\")+c;
+					result+=WString(L"\\")+WString::FromChar(c);
 					break;
 				case L'\r':
 					result+=L"\\r";
@@ -3034,7 +3034,7 @@ Helper Functions
 					result+=L"\\t";
 					break;
 				default:
-					result+=c;
+					result+=WString::FromChar(c);
 				}
 			}
 			return result;
@@ -3064,12 +3064,12 @@ Helper Functions
 							result+=L"\t";
 							break;
 						default:
-							result+=c;
+							result+=WString::FromChar(c);
 						}
 						continue;
 					}
 				}
-				result+=c;
+				result+=WString::FromChar(c);
 			}
 			return result;
 		}
@@ -3086,11 +3086,11 @@ Helper Functions
 					{
 						i++;
 						c=escapedText[i];
-						result+=WString(L"\\")+c;
+						result+=WString(L"\\")+WString::FromChar(c);
 						continue;
 					}
 				}
-				result+=c;
+				result+=WString::FromChar(c);
 			}
 			return result;
 		}

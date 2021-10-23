@@ -4849,7 +4849,7 @@ namespace vl
 				template<typename T>
 				void SortDeclsByName(collections::List<Ptr<T>>& decls)
 				{
-					collections::Sort<Ptr<T>>(&decls[0], decls.Count(), [=](Ptr<T> a, Ptr<T> b)
+					collections::SortLambda<Ptr<T>>(&decls[0], decls.Count(), [=](Ptr<T> a, Ptr<T> b)
 					{
 						auto tdA = manager->declarationTypes[a.Obj()].Obj();
 						auto tdB = manager->declarationTypes[b.Obj()].Obj();

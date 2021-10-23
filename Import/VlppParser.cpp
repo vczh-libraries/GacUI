@@ -56,7 +56,7 @@ ParsingGeneralParser
 					const RegexToken* token=&state.GetTokens().Get(i);
 					if(token->token==-1 || !token->completeToken)
 					{
-						errors.Add(new ParsingError(token, L"Unrecognizable token: \""+WString(token->reading, token->length)+L"\"."));
+						errors.Add(new ParsingError(token, L"Unrecognizable token: \""+WString::CopyFrom(token->reading, token->length)+L"\"."));
 					}
 				}
 
@@ -7730,7 +7730,7 @@ ParsingTreeBuilder
 										}
 										else
 										{
-											value=new ParsingTreeToken(WString(result.token->reading, result.token->length), result.tokenIndexInStream);
+											value=new ParsingTreeToken(WString::CopyFrom(result.token->reading, result.token->length), result.tokenIndexInStream);
 											value->SetCodeRange(ParsingTextRange(result.token, result.token));
 										}
 										operationTarget->SetMember(ins.nameParameter, value);
@@ -7761,7 +7761,7 @@ ParsingTreeBuilder
 										}
 										else
 										{
-											value=new ParsingTreeToken(WString(result.token->reading, result.token->length), result.tokenIndexInStream);
+											value=new ParsingTreeToken(WString::CopyFrom(result.token->reading, result.token->length), result.tokenIndexInStream);
 											value->SetCodeRange(ParsingTextRange(result.token, result.token));
 											itemRange=value->GetCodeRange();
 										}
@@ -10166,7 +10166,7 @@ Unescaping Function Foward Declarations
 						const RegexToken& endToken=tokens.Get(tokenEnd);
 						const wchar_t* textBegin=beginToken.reading;
 						const wchar_t* textEnd=endToken.reading+endToken.length;
-						WString text(textBegin, vint(textEnd-textBegin));
+						WString text=WString::CopyFrom(textBegin, vint(textEnd-textBegin));
 						ParsingTextRange range(&beginToken, &endToken);
 
 						Ptr<XmlText> xmlText=new XmlText;
@@ -10311,7 +10311,7 @@ API
 						result+=L"&quot;";
 						break;
 					default:
-						result+=c;
+						result+=WString::FromChar(c);
 					}
 				}
 				return result;
@@ -10325,32 +10325,32 @@ API
 				{
 					if(wcsncmp(reading, L"&lt;", 4)==0)
 					{
-						result+=L'<';
+						result+=WString::FromChar(L'<');
 						reading+=4;
 					}
 					else if(wcsncmp(reading, L"&gt;", 4)==0)
 					{
-						result+=L'>';
+						result+=WString::FromChar(L'>');
 						reading+=4;
 					}
 					else if(wcsncmp(reading, L"&amp;", 5)==0)
 					{
-						result+=L'&';
+						result+=WString::FromChar(L'&');
 						reading+=5;
 					}
 					else if(wcsncmp(reading, L"&apos;", 6)==0)
 					{
-						result+=L'\'';
+						result+=WString::FromChar(L'\'');
 						reading+=6;
 					}
 					else if(wcsncmp(reading, L"&quot;", 6)==0)
 					{
-						result+=L'\"';
+						result+=WString::FromChar(L'\"');
 						reading+=6;
 					}
 					else
 					{
-						result+=*reading++;
+						result+=WString::FromChar(*reading++);
 					}
 				}
 				return result;
