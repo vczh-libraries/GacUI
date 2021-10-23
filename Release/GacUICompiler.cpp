@@ -2583,13 +2583,13 @@ Helper Functions
 				WString pattern;
 				if (attSemicolon)
 				{
-					pattern = WString(attValue, vint(attSemicolon - attValue));
+					pattern = WString::CopyFrom(attValue, vint(attSemicolon - attValue));
 					attValue = attSemicolon + delimiter.Length();
 				}
 				else
 				{
 					vint len = wcslen(attValue);
-					pattern = WString(attValue, len);
+					pattern = WString::CopyFrom(attValue, len);
 					attValue += len;
 				}
 
@@ -3541,7 +3541,7 @@ GuiItemPropertyDeserializer
 				};
 
 				vint indexItemName = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemName"));
-				WString itemName(L"item", false);
+				WString itemName = WString::Unmanaged(L"item");
 				if (indexItemName != -1)
 				{
 					const auto& values = resolvingResult.envVars.GetByIndex(indexItemName);
@@ -5033,7 +5033,7 @@ GuiInstanceLocalizedStrings
 				const wchar_t* begin = wcsstr(reading, L"$(");
 				if (begin)
 				{
-					auto text = WString(reading, vint(begin - reading));
+					auto text = WString::CopyFrom(reading, vint(begin - reading));
 					if (addedParameter)
 					{
 						textDesc->texts.Add(text);
@@ -5096,7 +5096,7 @@ GuiInstanceLocalizedStrings
 					{
 						if (end - numberEnd > 1)
 						{
-							function = WString(numberEnd + 1, (vint)(end - numberEnd - 1));
+							function = WString::CopyFrom(numberEnd + 1, (vint)(end - numberEnd - 1));
 							if (function == L"ShortDate" || function == L"LongDate" || function == L"YearMonthDate" || function == L"ShortTime" || function == L"LongTime")
 							{
 								type = TypeInfoRetriver<DateTime>::CreateTypeInfo();
@@ -5132,7 +5132,7 @@ GuiInstanceLocalizedStrings
 						type = TypeInfoRetriver<WString>::CreateTypeInfo();
 					}
 					textDesc->parameters.Add({ type,function });
-					textDesc->positions.Add(wtoi(WString(number, (vint)(numberEnd - number))));
+					textDesc->positions.Add(wtoi(WString::CopyFrom(number, (vint)(numberEnd - number))));
 				}
 				reading = end + 1;
 			}
@@ -12800,7 +12800,7 @@ Workflow_CreateModuleWithUsings
 							{
 								auto fragment = MakePtr<WfModuleUsingNameFragment>();
 								item->fragments.Add(fragment);
-								fragment->name.value = WString(begin, vint(wildcard - begin));
+								fragment->name.value = WString::CopyFrom(begin, vint(wildcard - begin));
 							}
 							{
 								auto fragment = MakePtr<WfModuleUsingWildCardFragment>();
@@ -12810,14 +12810,14 @@ Workflow_CreateModuleWithUsings
 							{
 								auto fragment = MakePtr<WfModuleUsingNameFragment>();
 								item->fragments.Add(fragment);
-								fragment->name.value = WString(wildcard + 1, vint(end - wildcard - 1));
+								fragment->name.value = WString::CopyFrom(wildcard + 1, vint(end - wildcard - 1));
 							}
 						}
 						else if (begin < end)
 						{
 							auto fragment = MakePtr<WfModuleUsingNameFragment>();
 							item->fragments.Add(fragment);
-							fragment->name.value = WString(begin, vint(end - begin));
+							fragment->name.value = WString::CopyFrom(begin, vint(end - begin));
 						}
 
 						if (delimiter)
@@ -12848,7 +12848,7 @@ Workflow_InstallClass
 				if (delimiter)
 				{
 					auto ns = MakePtr<WfNamespaceDeclaration>();
-					ns->name.value = WString(reading, delimiter - reading);
+					ns->name.value = WString::CopyFrom(reading, delimiter - reading);
 					decls->Add(ns);
 					decls = &ns->declarations;
 				}

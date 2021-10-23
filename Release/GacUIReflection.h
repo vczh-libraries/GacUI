@@ -607,11 +607,11 @@ GuiEventInfoImpl
 			};
 
 			template<typename T>
-			WString GuiEventInfoImpl<T>::attachTemplate(L"::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)", false);
+			WString GuiEventInfoImpl<T>::attachTemplate = WString::Unmanaged(L"::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)");
 			template<typename T>
-			WString GuiEventInfoImpl<T>::detachTemplate(L"::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)", false);
+			WString GuiEventInfoImpl<T>::detachTemplate = WString::Unmanaged(L"::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)");
 			template<typename T>
-			WString GuiEventInfoImpl<T>::invokeTemplate(L"::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)", false);
+			WString GuiEventInfoImpl<T>::invokeTemplate = WString::Unmanaged(L"::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)");
 
 			template<typename T>
 			struct GuiEventArgumentTypeRetriver

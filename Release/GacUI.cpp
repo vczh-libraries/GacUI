@@ -15526,7 +15526,7 @@ GuiDocumentCommonInterface
 						!arguments.ctrl)
 					{
 						Array<WString> text(1);
-						text[0] = WString(arguments.code);
+						text[0] = WString::FromChar(arguments.code);
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 					}
 				}
@@ -16906,7 +16906,7 @@ GuiTextBoxCommonInterface
 						(arguments.code != (wchar_t)VKEY::_TAB || textControl->GetAcceptTabInput()) &&
 						!arguments.ctrl)
 					{
-						SetSelectionTextAsKeyInput(WString(arguments.code));
+						SetSelectionTextAsKeyInput(WString::FromChar(arguments.code));
 					}
 				}
 			}
@@ -31035,7 +31035,7 @@ text::TextLines
 
 					if(start.row==end.row)
 					{
-						return WString(lines[start.row].text+start.column, end.column-start.column);
+						return WString::CopyFrom(lines[start.row].text+start.column, end.column-start.column);
 					}
 
 					vint count=0;
@@ -31076,7 +31076,7 @@ text::TextLines
 						memcpy(writing, text, chars*sizeof(wchar_t));
 						writing+=chars;
 					}
-					return WString(&buffer[0], buffer.Count());
+					return WString::CopyFrom(&buffer[0], buffer.Count());
 				}
 
 				WString TextLines::GetText()
@@ -32612,7 +32612,7 @@ GuiAltActionManager
 
 			bool GuiAltActionManager::EnterAltKey(wchar_t key)
 			{
-				currentAltPrefix += key;
+				currentAltPrefix += WString::FromChar(key);
 				vint index = currentActiveAltActions.Keys().IndexOf(currentAltPrefix);
 				if (index == -1)
 				{
@@ -38336,7 +38336,7 @@ namespace vl
 			{
 				if (path[path.Length() - 1] != FilePath::Delimiter)
 				{
-					path += FilePath::Delimiter;
+					path += WString::FromChar(FilePath::Delimiter);
 				}
 			}
 			return path;
@@ -38696,7 +38696,7 @@ GuiResourceError
 			if (errors.Count() == 0) return;
 			SortLambda(&errors[0], errors.Count(), [](const GuiResourceError& a, const GuiResourceError& b)
 			{
-				vint result = 0;
+				vint64_t result = 0;
 				if (result == 0) result = WString::Compare(a.location.resourcePath, b.location.resourcePath);
 				if (result == 0) result = WString::Compare(a.location.filePath, b.location.filePath);
 				if (result == 0) result = WString::Compare(a.position.originalLocation.resourcePath, b.position.originalLocation.resourcePath);
@@ -39957,7 +39957,7 @@ GuiImportResourcePathResResolver
 					d1 < d2 ? d1 : d2;
 
 				if (!d) return nullptr;
-				WString resourceName(buffer, d - buffer);
+				WString resourceName = WString::CopyFrom(buffer, d - buffer);
 				WString resourcePath(path.Right(path.Length() - resourceName.Length() - 1));
 				if (auto resource = GetResourceManager()->GetResource(resourceName))
 				{
