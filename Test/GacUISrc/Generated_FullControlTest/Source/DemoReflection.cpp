@@ -14,7 +14,6 @@ https://github.com/vczh-libraries
 #pragma warning(disable:4250)
 #elif defined(__GNUC__)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wparentheses-equality"
 #elif defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wparentheses-equality"
@@ -448,6 +447,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::demo::DocumentEditorBaseConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::DocumentEditorBase*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(CancelWindowClose, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetEditModeCommand, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetHasEditableSelection, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetHasEditableSelectionInSingleParagraph, NO_PARAMETER)
@@ -520,7 +520,9 @@ namespace vl
 				CLASS_MEMBER_FIELD(dialogNotImpl)
 				CLASS_MEMBER_FIELD(dialogOpen)
 				CLASS_MEMBER_FIELD(dialogOpenDoc)
+				CLASS_MEMBER_FIELD(dialogQueryClose)
 				CLASS_MEMBER_FIELD(dialogSaveDoc)
+				CLASS_MEMBER_FIELD(dialogSaveDocPrivate)
 				CLASS_MEMBER_FIELD(document)
 				CLASS_MEMBER_FIELD(menuContainer)
 				CLASS_MEMBER_FIELD(self)

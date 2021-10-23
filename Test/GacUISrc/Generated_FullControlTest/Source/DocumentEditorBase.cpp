@@ -20,7 +20,6 @@ https://github.com/vczh-libraries
 #pragma warning(disable:4250)
 #elif defined(__GNUC__)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wparentheses-equality"
 #elif defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wparentheses-equality"
@@ -152,6 +151,7 @@ namespace demo
 				if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(0)))
 				{
 					::vl::__vwsn::This(this->self)->SaveAsPrivateFormat(::vl::__vwsn::This(this->dialogSaveDoc)->GetFileName());
+					::vl::__vwsn::This(this->document)->NotifyModificationSaved();
 				}
 				else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(1)))
 				{
@@ -165,13 +165,47 @@ namespace demo
 		}
 	}
 
+	bool DocumentEditorBase::CancelWindowClose()
+	{
+		if (::vl::__vwsn::This(this->document)->GetModified())
+		{
+			{
+				auto __vwsn_switch_4 = ::vl::__vwsn::This(this->dialogQueryClose)->ShowDialog();
+				if ((__vwsn_switch_4 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectYes))
+				{
+					if (::vl::__vwsn::This(this->dialogSaveDocPrivate)->ShowDialog())
+					{
+						::vl::__vwsn::This(this->self)->SaveAsPrivateFormat(::vl::__vwsn::This(this->dialogSaveDocPrivate)->GetFileName());
+						return false;
+					}
+					else
+					{
+						return true;
+					}
+				}
+				else if ((__vwsn_switch_4 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectNo))
+				{
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	DocumentEditorBase::DocumentEditorBase()
 		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
 		, __vwsn_prop_EditModeCommand(static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr))
 		, __vwsn_prop_HasEditableSelection(false)
 		, __vwsn_prop_HasEditableSelectionInSingleParagraph(false)
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::DocumentEditorBase", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"demo::DocumentEditorBase"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_demo_DocumentEditorBase_Initialize(this);

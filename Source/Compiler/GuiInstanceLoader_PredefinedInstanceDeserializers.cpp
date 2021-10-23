@@ -493,7 +493,7 @@ GuiItemPropertyDeserializer
 				};
 
 				vint indexItemName = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemName"));
-				WString itemName(L"item", false);
+				WString itemName = WString::Unmanaged(L"item");
 				if (indexItemName != -1)
 				{
 					const auto& values = resolvingResult.envVars.GetByIndex(indexItemName);

@@ -17,7 +17,6 @@ https://github.com/vczh-libraries
 #pragma warning(disable:4250)
 #elif defined(__GNUC__)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wparentheses-equality"
 #elif defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wparentheses-equality"
@@ -1256,6 +1255,8 @@ namespace demo
 		::vl::presentation::controls::GuiOpenFileDialog* dialogOpen;
 		::vl::presentation::controls::GuiOpenFileDialog* dialogOpenDoc;
 		::vl::presentation::controls::GuiSaveFileDialog* dialogSaveDoc;
+		::vl::presentation::controls::GuiSaveFileDialog* dialogSaveDocPrivate;
+		::vl::presentation::controls::GuiMessageDialog* dialogQueryClose;
 		::vl::presentation::compositions::GuiCellComposition* menuContainer;
 		::vl::presentation::compositions::GuiCellComposition* toolstripContainer;
 		::vl::presentation::controls::GuiDocumentViewer* document;

@@ -1037,13 +1037,13 @@ Helper Functions
 				WString pattern;
 				if (attSemicolon)
 				{
-					pattern = WString(attValue, vint(attSemicolon - attValue));
+					pattern = WString::CopyFrom(attValue, vint(attSemicolon - attValue));
 					attValue = attSemicolon + delimiter.Length();
 				}
 				else
 				{
 					vint len = wcslen(attValue);
-					pattern = WString(attValue, len);
+					pattern = WString::CopyFrom(attValue, len);
 					attValue += len;
 				}
 

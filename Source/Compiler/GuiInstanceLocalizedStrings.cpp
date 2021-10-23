@@ -238,7 +238,7 @@ GuiInstanceLocalizedStrings
 				const wchar_t* begin = wcsstr(reading, L"$(");
 				if (begin)
 				{
-					auto text = WString(reading, vint(begin - reading));
+					auto text = WString::CopyFrom(reading, vint(begin - reading));
 					if (addedParameter)
 					{
 						textDesc->texts.Add(text);
@@ -301,7 +301,7 @@ GuiInstanceLocalizedStrings
 					{
 						if (end - numberEnd > 1)
 						{
-							function = WString(numberEnd + 1, (vint)(end - numberEnd - 1));
+							function = WString::CopyFrom(numberEnd + 1, (vint)(end - numberEnd - 1));
 							if (function == L"ShortDate" || function == L"LongDate" || function == L"YearMonthDate" || function == L"ShortTime" || function == L"LongTime")
 							{
 								type = TypeInfoRetriver<DateTime>::CreateTypeInfo();
@@ -337,7 +337,7 @@ GuiInstanceLocalizedStrings
 						type = TypeInfoRetriver<WString>::CreateTypeInfo();
 					}
 					textDesc->parameters.Add({ type,function });
-					textDesc->positions.Add(wtoi(WString(number, (vint)(numberEnd - number))));
+					textDesc->positions.Add(wtoi(WString::CopyFrom(number, (vint)(numberEnd - number))));
 				}
 				reading = end + 1;
 			}
