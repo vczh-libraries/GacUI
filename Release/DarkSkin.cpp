@@ -3761,7 +3761,7 @@ Closures
 				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::darkskin::TabHeaderTemplate(::vl::__vwsn::Unbox<::vl::presentation::controls::GuiTabPage*>(__vwsn_viewModel_)));
 			}
 		}
-		throw ::vl::Exception(::vl::WString(L"Cannot find a matched control template to create.", false));
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
 	}
 
 	//-------------------------------------------------------------------
@@ -6382,7 +6382,7 @@ Closures
 
 	void __vwsnc101_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString(L"#00000000", false) : ::vl::WString(L"#007ACC", false)); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString::Unmanaged(L"#00000000") : ::vl::WString::Unmanaged(L"#007ACC")); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -6461,7 +6461,7 @@ Closures
 
 	void __vwsnc102_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -6796,7 +6796,7 @@ Closures
 
 	void __vwsnc107_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#F1F1F1") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -6936,7 +6936,7 @@ Closures
 
 	void __vwsnc109_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -7090,7 +7090,7 @@ Closures
 
 	void __vwsnc110_DarkSkin_darkskin_RibbonLargeDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -7181,7 +7181,7 @@ Closures
 
 	void __vwsnc111_DarkSkin_darkskin_RibbonLargeSplitButtonTemplateConstructor___vwsn_darkskin_RibbonLargeSplitButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString(L"#00000000", false) : ::vl::WString(L"#007ACC", false)); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString::Unmanaged(L"#00000000") : ::vl::WString::Unmanaged(L"#007ACC")); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -7260,7 +7260,7 @@ Closures
 
 	void __vwsnc112_DarkSkin_darkskin_RibbonLargeSplitButtonTemplateConstructor___vwsn_darkskin_RibbonLargeSplitButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -7534,7 +7534,7 @@ Closures
 
 	void __vwsnc116_DarkSkin_darkskin_RibbonLargeSplitButtonTemplateConstructor___vwsn_darkskin_RibbonLargeSplitButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#54545C", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#54545C") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -7733,7 +7733,7 @@ Closures
 
 	void __vwsnc119_DarkSkin_darkskin_RibbonSmallButtonTemplateConstructor___vwsn_darkskin_RibbonSmallButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString(L"#00000000", false) : ::vl::WString(L"#007ACC", false)); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString::Unmanaged(L"#00000000") : ::vl::WString::Unmanaged(L"#007ACC")); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -7873,7 +7873,7 @@ Closures
 
 	void __vwsnc120_DarkSkin_darkskin_RibbonSmallButtonTemplateConstructor___vwsn_darkskin_RibbonSmallButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -8208,7 +8208,7 @@ Closures
 
 	void __vwsnc125_DarkSkin_darkskin_RibbonSmallButtonTemplateConstructor___vwsn_darkskin_RibbonSmallButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#F1F1F1") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -8346,7 +8346,7 @@ Closures
 
 	void __vwsnc127_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString(L"#00000000", false) : ::vl::WString(L"#007ACC", false)); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString::Unmanaged(L"#00000000") : ::vl::WString::Unmanaged(L"#007ACC")); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -8425,7 +8425,7 @@ Closures
 
 	void __vwsnc128_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -8821,7 +8821,7 @@ Closures
 
 	void __vwsnc133_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#F1F1F1") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -8961,7 +8961,7 @@ Closures
 
 	void __vwsnc135_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -9054,7 +9054,7 @@ Closures
 
 	void __vwsnc136_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -9147,7 +9147,7 @@ Closures
 
 	void __vwsnc137_DarkSkin_darkskin_RibbonSmallDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -9358,7 +9358,7 @@ Closures
 
 	void __vwsnc13_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ::vl::WString(L"#F1F1F1", false)));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ::vl::WString::Unmanaged(L"#F1F1F1")));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -9541,7 +9541,7 @@ Closures
 
 	void __vwsnc142_DarkSkin_darkskin_RibbonSmallIconLabelTemplateConstructor___vwsn_darkskin_RibbonSmallIconLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ::vl::WString(L"#F1F1F1", false)));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ::vl::WString::Unmanaged(L"#F1F1F1")));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -9665,7 +9665,7 @@ Closures
 
 	void __vwsnc144_DarkSkin_darkskin_RibbonSmallSplitButtonTemplateConstructor___vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString(L"#00000000", false) : ::vl::WString(L"#007ACC", false)); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString::Unmanaged(L"#00000000") : ::vl::WString::Unmanaged(L"#007ACC")); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -9744,7 +9744,7 @@ Closures
 
 	void __vwsnc145_DarkSkin_darkskin_RibbonSmallSplitButtonTemplateConstructor___vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10140,7 +10140,7 @@ Closures
 
 	void __vwsnc150_DarkSkin_darkskin_RibbonSmallSplitButtonTemplateConstructor___vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#F1F1F1") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10278,7 +10278,7 @@ Closures
 
 	void __vwsnc152_DarkSkin_darkskin_RibbonSmallSplitButtonTemplateConstructor___vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#54545C", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#54545C") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10538,7 +10538,7 @@ Closures
 
 	void __vwsnc156_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_darkskin_BottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10615,7 +10615,7 @@ Closures
 
 	void __vwsnc157_DarkSkin_darkskin_BottomScrollButtonTemplateConstructor___vwsn_darkskin_BottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10692,7 +10692,7 @@ Closures
 
 	void __vwsnc158_DarkSkin_darkskin_HScrollHandleTemplateConstructor___vwsn_darkskin_HScrollHandleTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#9E9E9E", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#EFEBEF", false) : ::vl::WString(L"#686868", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#9E9E9E") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#EFEBEF") : ::vl::WString::Unmanaged(L"#686868")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10769,7 +10769,7 @@ Closures
 
 	void __vwsnc159_DarkSkin_darkskin_HScrollTemplateConstructor___vwsn_darkskin_HScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10846,7 +10846,7 @@ Closures
 
 	void __vwsnc15_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_darkskin_RadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#252526", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#3F3F46", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#252526") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#3F3F46")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -11077,7 +11077,7 @@ Closures
 
 	void __vwsnc162_DarkSkin_darkskin_HTrackerTemplateConstructor___vwsn_darkskin_HTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -11231,7 +11231,7 @@ Closures
 
 	void __vwsnc164_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_darkskin_LeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -11308,7 +11308,7 @@ Closures
 
 	void __vwsnc165_DarkSkin_darkskin_LeftScrollButtonTemplateConstructor___vwsn_darkskin_LeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -11478,7 +11478,7 @@ Closures
 
 	void __vwsnc167_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_darkskin_RightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -11555,7 +11555,7 @@ Closures
 
 	void __vwsnc168_DarkSkin_darkskin_RightScrollButtonTemplateConstructor___vwsn_darkskin_RightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -11632,7 +11632,7 @@ Closures
 
 	void __vwsnc169_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_darkskin_TopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -11709,7 +11709,7 @@ Closures
 
 	void __vwsnc16_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_darkskin_RadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#6A6A75", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#6A6A75") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -11786,7 +11786,7 @@ Closures
 
 	void __vwsnc170_DarkSkin_darkskin_TopScrollButtonTemplateConstructor___vwsn_darkskin_TopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -11863,7 +11863,7 @@ Closures
 
 	void __vwsnc171_DarkSkin_darkskin_VScrollHandleTemplateConstructor___vwsn_darkskin_VScrollHandleTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#9E9E9E", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#EFEBEF", false) : ::vl::WString(L"#686868", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#9E9E9E") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#EFEBEF") : ::vl::WString::Unmanaged(L"#686868")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -11940,7 +11940,7 @@ Closures
 
 	void __vwsnc172_DarkSkin_darkskin_VScrollTemplateConstructor___vwsn_darkskin_VScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -12171,7 +12171,7 @@ Closures
 
 	void __vwsnc175_DarkSkin_darkskin_VTrackerTemplateConstructor___vwsn_darkskin_VTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -12329,7 +12329,7 @@ Closures
 
 	void __vwsnc177_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_darkskin_TabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetHighlighted() ? (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected() ? ::vl::WString(L"#CC7ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#EA97EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#EA97EA", false) : ::vl::WString(L"#604360", false)))) : (::vl::__vwsn::This(__vwsn_bind_cache_3)->GetSelected() ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1C97EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#434346", false))))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetHighlighted() ? (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected() ? ::vl::WString::Unmanaged(L"#CC7ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#EA97EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#EA97EA") : ::vl::WString::Unmanaged(L"#604360")))) : (::vl::__vwsn::This(__vwsn_bind_cache_3)->GetSelected() ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1C97EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#434346"))))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -12572,7 +12572,7 @@ Closures
 
 	void __vwsnc17_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_darkskin_RadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#F1F1F1") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -12649,7 +12649,7 @@ Closures
 
 	void __vwsnc180_DarkSkin_darkskin_TabHeaderButtonTemplateConstructor___vwsn_darkskin_TabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#F1F1F1") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -13197,7 +13197,7 @@ Closures
 
 	void __vwsnc188_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetHighlighted() ? ::vl::WString(L"#CC7ACC", false) : ::vl::WString(L"#007ACC", false)));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetHighlighted() ? ::vl::WString::Unmanaged(L"#CC7ACC") : ::vl::WString::Unmanaged(L"#007ACC")));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -13405,7 +13405,7 @@ Closures
 
 	void __vwsnc190_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -13482,7 +13482,7 @@ Closures
 
 	void __vwsnc191_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -13561,7 +13561,7 @@ Closures
 
 	void __vwsnc192_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#1B1B1C", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#3D3D40", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#1B1B1C") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#3D3D40") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -13711,7 +13711,7 @@ Closures
 
 	void __vwsnc194_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ::vl::WString(L"#F1F1F1", false)));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ::vl::WString::Unmanaged(L"#F1F1F1")));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -13837,7 +13837,7 @@ Closures
 
 	void __vwsnc196_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_darkskin_MenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#3D3D40", false) : (((state == ::vl::presentation::controls::ButtonState::Active) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#3D3D40", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#3D3D40") : (((state == ::vl::presentation::controls::ButtonState::Active) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#3D3D40") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -14172,7 +14172,7 @@ Closures
 
 	void __vwsnc1_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_darkskin_ButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#252526", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#3F3F46", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#252526") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#3F3F46")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -14308,7 +14308,7 @@ Closures
 
 	void __vwsnc201_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_darkskin_MenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ::vl::WString(L"#F1F1F1", false)));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ::vl::WString::Unmanaged(L"#F1F1F1")));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -14491,7 +14491,7 @@ Closures
 
 	void __vwsnc204_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_darkskin_MenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ::vl::WString(L"#F1F1F1", false)));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ::vl::WString::Unmanaged(L"#F1F1F1")));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -14617,7 +14617,7 @@ Closures
 
 	void __vwsnc206_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_darkskin_MenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Active) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Active) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -14710,7 +14710,7 @@ Closures
 
 	void __vwsnc207_DarkSkin_darkskin_MenuItemButtonTemplateConstructor___vwsn_darkskin_MenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Active) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Active) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -14864,7 +14864,7 @@ Closures
 
 	void __vwsnc209_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_darkskin_ToolstripSplitArrowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -15018,7 +15018,7 @@ Closures
 
 	void __vwsnc210_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_darkskin_ToolstripSplitArrowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -15111,7 +15111,7 @@ Closures
 
 	void __vwsnc211_DarkSkin_darkskin_ToolstripSplitArrowTemplateConstructor___vwsn_darkskin_ToolstripSplitArrowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -15202,7 +15202,7 @@ Closures
 
 	void __vwsnc212_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_darkskin_ToolstripButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString(L"#00000000", false) : ::vl::WString(L"#007ACC", false)); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString::Unmanaged(L"#00000000") : ::vl::WString::Unmanaged(L"#007ACC")); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -15281,7 +15281,7 @@ Closures
 
 	void __vwsnc213_DarkSkin_darkskin_ToolstripButtonTemplateConstructor___vwsn_darkskin_ToolstripButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -15555,7 +15555,7 @@ Closures
 
 	void __vwsnc217_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString(L"#00000000", false) : ::vl::WString(L"#007ACC", false)); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString::Unmanaged(L"#00000000") : ::vl::WString::Unmanaged(L"#007ACC")); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -15634,7 +15634,7 @@ Closures
 
 	void __vwsnc218_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -15784,7 +15784,7 @@ Closures
 
 	void __vwsnc21_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_darkskin_RadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ::vl::WString(L"#F1F1F1", false)));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ::vl::WString::Unmanaged(L"#F1F1F1")));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -15971,7 +15971,7 @@ Closures
 
 	void __vwsnc222_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -16064,7 +16064,7 @@ Closures
 
 	void __vwsnc223_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -16157,7 +16157,7 @@ Closures
 
 	void __vwsnc224_DarkSkin_darkskin_ToolstripDropdownButtonTemplateConstructor___vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -16248,7 +16248,7 @@ Closures
 
 	void __vwsnc225_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString(L"#00000000", false) : ::vl::WString(L"#007ACC", false)); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString::Unmanaged(L"#00000000") : ::vl::WString::Unmanaged(L"#007ACC")); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -16327,7 +16327,7 @@ Closures
 
 	void __vwsnc226_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -16662,7 +16662,7 @@ Closures
 
 	void __vwsnc230_DarkSkin_darkskin_ToolstripSplitButtonTemplateConstructor___vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#54545C", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#54545C") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -16804,7 +16804,7 @@ Closures
 
 	void __vwsnc232_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto margin){ return (((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetBorder()) || ((((margin.left + margin.top) + margin.right) + margin.bottom) == static_cast<::vl::vint>(0))) ? ::vl::WString(L"#00000000", false) : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetVisuallyEnabled() && ::vl::__vwsn::This(__vwsn_bind_cache_3)->GetActivated()) ? ::vl::WString(L"#017ACC", false) : ::vl::WString(L"#434346", false))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetCustomFramePadding()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto margin){ return (((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetBorder()) || ((((margin.left + margin.top) + margin.right) + margin.bottom) == static_cast<::vl::vint>(0))) ? ::vl::WString::Unmanaged(L"#00000000") : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetVisuallyEnabled() && ::vl::__vwsn::This(__vwsn_bind_cache_3)->GetActivated()) ? ::vl::WString::Unmanaged(L"#017ACC") : ::vl::WString::Unmanaged(L"#434346"))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetCustomFramePadding()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -17106,7 +17106,7 @@ Closures
 
 	void __vwsnc236_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetMaximized() ? ::vl::WString(L" 1 ", false) : ::vl::WString(L" 2 ", false));
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetMaximized() ? ::vl::WString::Unmanaged(L" 1 ") : ::vl::WString::Unmanaged(L" 2 "));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -17368,7 +17368,7 @@ Closures
 
 	void __vwsnc23_DarkSkin_darkskin_DocumentTextBoxTemplateConstructor___vwsn_darkskin_DocumentTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -17737,7 +17737,7 @@ Closures
 
 	void __vwsnc244_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled() && ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetActivated()) ? ::vl::WString(L"#999999", false) : ::vl::WString(L"#6D6D6D", false)));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled() && ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetActivated()) ? ::vl::WString::Unmanaged(L"#999999") : ::vl::WString::Unmanaged(L"#6D6D6D")));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -17875,7 +17875,7 @@ Closures
 
 	void __vwsnc24_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_darkskin_DocumentViewerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -17954,7 +17954,7 @@ Closures
 
 	void __vwsnc25_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#2D2D30", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#3F3F46", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#3F3F46", false) : ::vl::WString(L"#333337", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#2D2D30") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#3F3F46") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#3F3F46") : ::vl::WString::Unmanaged(L"#333337")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -18045,7 +18045,7 @@ Closures
 
 	void __vwsnc26_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -18181,7 +18181,7 @@ Closures
 
 	void __vwsnc28_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ::vl::WString(L"#F1F1F1", false)));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ::vl::WString::Unmanaged(L"#F1F1F1")));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -18305,7 +18305,7 @@ Closures
 
 	void __vwsnc2_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_darkskin_ButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#6A6A75", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#6A6A75") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -18445,7 +18445,7 @@ Closures
 
 	void __vwsnc31_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1F1F20", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1F1F20") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -18538,7 +18538,7 @@ Closures
 
 	void __vwsnc32_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#2D2D30", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#3F3F46", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#3F3F46", false) : ::vl::WString(L"#434346", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#2D2D30") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#3F3F46") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#3F3F46") : ::vl::WString::Unmanaged(L"#434346")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -18631,7 +18631,7 @@ Closures
 
 	void __vwsnc33_DarkSkin_darkskin_ComboBoxTemplateConstructor___vwsn_darkskin_ComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#999999", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#999999") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -18724,7 +18724,7 @@ Closures
 
 	void __vwsnc34_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_darkskin_ExpandingDecoratorTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString(L"#00000000", false) : ((! ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#0A75B9", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#0A75B9", false) : ::vl::WString(L"#F1F1F1", false))))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString::Unmanaged(L"#00000000") : ((! ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#0A75B9") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#0A75B9") : ::vl::WString::Unmanaged(L"#F1F1F1"))))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -18815,7 +18815,7 @@ Closures
 
 	void __vwsnc35_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_darkskin_ExpandingDecoratorTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#0A75B9", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#0A75B9", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#0A75B9") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#0A75B9") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -18955,7 +18955,7 @@ Closures
 
 	void __vwsnc37_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_darkskin_ExpandingDecoratorTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString(L"#00000000", false) : ((! ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#0A75B9", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#0A75B9", false) : ::vl::WString(L"#F1F1F1", false))))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString::Unmanaged(L"#00000000") : ((! ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#0A75B9") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#0A75B9") : ::vl::WString::Unmanaged(L"#F1F1F1"))))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -19046,7 +19046,7 @@ Closures
 
 	void __vwsnc38_DarkSkin_darkskin_ExpandingDecoratorTemplateConstructor___vwsn_darkskin_ExpandingDecoratorTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#0A75B9", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#0A75B9", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#0A75B9") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#0A75B9") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -19247,7 +19247,7 @@ Closures
 
 	void __vwsnc40_DarkSkin_darkskin_ItemBackgroundTemplateConstructor___vwsn_darkskin_ItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected() || (state == ::vl::presentation::controls::ButtonState::Pressed)) ? ::vl::WString(L"#3399FF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#3F3F46", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected() || (state == ::vl::presentation::controls::ButtonState::Pressed)) ? ::vl::WString::Unmanaged(L"#3399FF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#3F3F46") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -19340,7 +19340,7 @@ Closures
 
 	void __vwsnc41_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#3E3E40", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#3E3E40", false) : ::vl::WString(L"#252527", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#3E3E40") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#3E3E40") : ::vl::WString::Unmanaged(L"#252527")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -19433,7 +19433,7 @@ Closures
 
 	void __vwsnc42_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -19526,7 +19526,7 @@ Closures
 
 	void __vwsnc43_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -19680,7 +19680,7 @@ Closures
 
 	void __vwsnc45_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -19773,7 +19773,7 @@ Closures
 
 	void __vwsnc46_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -19986,7 +19986,7 @@ Closures
 
 	void __vwsnc49_DarkSkin_darkskin_ListViewColumnHeaderTemplateConstructor___vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#F1F1F1") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -20307,7 +20307,7 @@ Closures
 
 	void __vwsnc53_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_darkskin_ListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -20384,7 +20384,7 @@ Closures
 
 	void __vwsnc54_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_darkskin_TextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -20461,7 +20461,7 @@ Closures
 
 	void __vwsnc55_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_darkskin_TreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -20540,7 +20540,7 @@ Closures
 
 	void __vwsnc56_DarkSkin_darkskin_DateButtonTemplateConstructor___vwsn_darkskin_DateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected() || (state == ::vl::presentation::controls::ButtonState::Pressed)) ? ::vl::WString(L"#3399FF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#3F3F46", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected() || (state == ::vl::presentation::controls::ButtonState::Pressed)) ? ::vl::WString::Unmanaged(L"#3399FF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#3F3F46") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -20814,7 +20814,7 @@ Closures
 
 	void __vwsnc5_DarkSkin_darkskin_ButtonTemplateConstructor___vwsn_darkskin_ButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#F1F1F1") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -21379,7 +21379,7 @@ Closures
 
 	void __vwsnc68_DarkSkin_darkskin_LabelTemplateConstructor___vwsn_darkskin_LabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTextColor())));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTextColor())));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -21763,7 +21763,7 @@ Closures
 
 	void __vwsnc73_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_darkskin_RibbonSplitArrowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -21915,7 +21915,7 @@ Closures
 
 	void __vwsnc75_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_darkskin_RibbonSplitArrowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#F1F1F1") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -22055,7 +22055,7 @@ Closures
 
 	void __vwsnc77_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_darkskin_RibbonSplitArrowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -22148,7 +22148,7 @@ Closures
 
 	void __vwsnc78_DarkSkin_darkskin_RibbonSplitArrowTemplateConstructor___vwsn_darkskin_RibbonSplitArrowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString(L"#FFFFFF", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected()) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -22239,7 +22239,7 @@ Closures
 
 	void __vwsnc79_DarkSkin_darkskin_RibbonGalleryDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonGalleryDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -22316,7 +22316,7 @@ Closures
 
 	void __vwsnc7_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#252526", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#3F3F46", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#252526") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#3F3F46")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -22393,7 +22393,7 @@ Closures
 
 	void __vwsnc80_DarkSkin_darkskin_RibbonGalleryDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonGalleryDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -22470,7 +22470,7 @@ Closures
 
 	void __vwsnc81_DarkSkin_darkskin_RibbonGalleryDropdownButtonTemplateConstructor___vwsn_darkskin_RibbonGalleryDropdownButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#555558", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#1997EA", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#999999", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#555558") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#1997EA") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#007ACC") : ::vl::WString::Unmanaged(L"#999999")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -22547,7 +22547,7 @@ Closures
 
 	void __vwsnc82_DarkSkin_darkskin_RibbonGalleryTemplateConstructor___vwsn_darkskin_RibbonGalleryTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -22746,7 +22746,7 @@ Closures
 
 	void __vwsnc85_DarkSkin_darkskin_RibbonGroupExpandButtonTemplateConstructor___vwsn_darkskin_RibbonGroupExpandButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#004879", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#A0D0FF", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#004879") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#A0D0FF") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -22823,7 +22823,7 @@ Closures
 
 	void __vwsnc86_DarkSkin_darkskin_RibbonGroupExpandButtonTemplateConstructor___vwsn_darkskin_RibbonGroupExpandButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#A0D0FF", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#004879", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#A0D0FF", false) : ::vl::WString(L"#A0D0FF", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#A0D0FF") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#004879") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#A0D0FF") : ::vl::WString::Unmanaged(L"#A0D0FF")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -23083,7 +23083,7 @@ Closures
 
 	void __vwsnc8_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#6A6A75", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#6A6A75") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -23343,7 +23343,7 @@ Closures
 
 	void __vwsnc93_DarkSkin_darkskin_RibbonLargeButtonTemplateConstructor___vwsn_darkskin_RibbonLargeButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString(L"#00000000", false) : ::vl::WString(L"#007ACC", false)); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected()) ? ::vl::WString::Unmanaged(L"#00000000") : ::vl::WString::Unmanaged(L"#007ACC")); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -23422,7 +23422,7 @@ Closures
 
 	void __vwsnc94_DarkSkin_darkskin_RibbonLargeButtonTemplateConstructor___vwsn_darkskin_RibbonLargeButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#00000000", false) : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString(L"#007ACC", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#54545C", false) : ::vl::WString(L"#00000000", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#00000000") : (((state == ::vl::presentation::controls::ButtonState::Pressed) || ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSubMenuOpening()) ? ::vl::WString::Unmanaged(L"#007ACC") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#54545C") : ::vl::WString::Unmanaged(L"#00000000")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -23757,7 +23757,7 @@ Closures
 
 	void __vwsnc99_DarkSkin_darkskin_RibbonLargeButtonTemplateConstructor___vwsn_darkskin_RibbonLargeButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#F1F1F1") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -23834,7 +23834,7 @@ Closures
 
 	void __vwsnc9_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#6D6D6D") : ((state == ::vl::presentation::controls::ButtonState::Active) ? ::vl::WString::Unmanaged(L"#F1F1F1") : ((state == ::vl::presentation::controls::ButtonState::Pressed) ? ::vl::WString::Unmanaged(L"#FFFFFF") : ::vl::WString::Unmanaged(L"#F1F1F1")))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -23972,7 +23972,7 @@ Class (::darkskin::BottomScrollButtonTemplate)
 
 	BottomScrollButtonTemplate::BottomScrollButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::BottomScrollButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::BottomScrollButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_BottomScrollButtonTemplate_Initialize(this);
@@ -24109,7 +24109,7 @@ Class (::darkskin::ButtonTemplate)
 
 	ButtonTemplate::ButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ButtonTemplate_Initialize(this);
@@ -24192,10 +24192,10 @@ Class (::darkskin::CheckBoxTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint>(16); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"Webdings"); __vwsn_temp__.size = static_cast<::vl::vint>(16); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetText(::vl::WString(L"a", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetText(::vl::WString::Unmanaged(L"a"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_7));
@@ -24341,7 +24341,7 @@ Class (::darkskin::CheckBoxTemplate)
 
 	CheckBoxTemplate::CheckBoxTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::CheckBoxTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::CheckBoxTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_CheckBoxTemplate_Initialize(this);
@@ -24533,7 +24533,7 @@ Class (::darkskin::ComboBoxTemplate)
 
 	ComboBoxTemplate::ComboBoxTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ComboBoxTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ComboBoxTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ComboBoxTemplate_Initialize(this);
@@ -24567,7 +24567,7 @@ Class (::darkskin::CustomControlTemplate)
 
 	CustomControlTemplate::CustomControlTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::CustomControlTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::CustomControlTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_CustomControlTemplate_Initialize(this);
@@ -24646,7 +24646,7 @@ Class (::darkskin::DateButtonTemplate)
 
 	DateButtonTemplate::DateButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::DateButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::DateButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_DateButtonTemplate_Initialize(this);
@@ -24667,7 +24667,7 @@ Class (::darkskin::DatePickerTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
-		(this->look = new ::vl::presentation::templates::GuiCommonDatePickerLook(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)), ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)), ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#999999", false))));
+		(this->look = new ::vl::presentation::templates::GuiCommonDatePickerLook(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2D2D30")), ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")), ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#999999"))));
 		{
 			::vl::__vwsn::This(this->look)->SetDateTextListTemplate(LAMBDA(::vl_workflow_global::__vwsnf132_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_darkskin_DatePickerTemplate_Initialize_(this)));
 		}
@@ -24722,7 +24722,7 @@ Class (::darkskin::DatePickerTemplate)
 
 	DatePickerTemplate::DatePickerTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::DatePickerTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::DatePickerTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_DatePickerTemplate_Initialize(this);
@@ -24741,13 +24741,13 @@ Class (::darkskin::DocumentLabelTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBaselineDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"DarkSkin/Document/BaselineDocument", false), true).Obj())));
+			::vl::__vwsn::This(this->self)->SetBaselineDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString::Unmanaged(L"res"), ::vl::WString::Unmanaged(L"DarkSkin/Document/BaselineDocument"), true).Obj())));
 		}
 	}
 
@@ -24762,7 +24762,7 @@ Class (::darkskin::DocumentLabelTemplate)
 
 	DocumentLabelTemplate::DocumentLabelTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::DocumentLabelTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::DocumentLabelTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_DocumentLabelTemplate_Initialize(this);
@@ -24781,14 +24781,14 @@ Class (::darkskin::DocumentTextBoxTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#252526", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#252526")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -24819,7 +24819,7 @@ Class (::darkskin::DocumentTextBoxTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->container));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBaselineDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"DarkSkin/Document/BaselineDocument", false), true).Obj())));
+			::vl::__vwsn::This(this->self)->SetBaselineDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString::Unmanaged(L"res"), ::vl::WString::Unmanaged(L"DarkSkin/Document/BaselineDocument"), true).Obj())));
 		}
 	}
 
@@ -24837,7 +24837,7 @@ Class (::darkskin::DocumentTextBoxTemplate)
 
 	DocumentTextBoxTemplate::DocumentTextBoxTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::DocumentTextBoxTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::DocumentTextBoxTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_DocumentTextBoxTemplate_Initialize(this);
@@ -24856,14 +24856,14 @@ Class (::darkskin::DocumentViewerTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#252526", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#252526")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -24907,7 +24907,7 @@ Class (::darkskin::DocumentViewerTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetContainerComposition(::vl::__vwsn::This(this->look)->GetContainerComposition());
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBaselineDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"DarkSkin/Document/BaselineDocument", false), true).Obj())));
+			::vl::__vwsn::This(this->self)->SetBaselineDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString::Unmanaged(L"res"), ::vl::WString::Unmanaged(L"DarkSkin/Document/BaselineDocument"), true).Obj())));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetHorizontalScroll(::vl::__vwsn::This(this->look)->GetHScroll());
@@ -24932,7 +24932,7 @@ Class (::darkskin::DocumentViewerTemplate)
 
 	DocumentViewerTemplate::DocumentViewerTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::DocumentViewerTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::DocumentViewerTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_DocumentViewerTemplate_Initialize(this);
@@ -25062,7 +25062,7 @@ Class (::darkskin::ExpandingDecoratorTemplate)
 
 	ExpandingDecoratorTemplate::ExpandingDecoratorTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ExpandingDecoratorTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ExpandingDecoratorTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ExpandingDecoratorTemplate_Initialize(this);
@@ -25085,7 +25085,7 @@ Class (::darkskin::GroupBoxTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2D2D30")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -25096,7 +25096,7 @@ Class (::darkskin::GroupBoxTemplateConstructor)
 		}
 		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3F3F46", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3F3F46")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
@@ -25120,7 +25120,7 @@ Class (::darkskin::GroupBoxTemplateConstructor)
 		}
 		(this->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2D2D30")));
 		}
 		{
 			::vl::__vwsn::This(this->titleBounds)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
@@ -25137,7 +25137,7 @@ Class (::darkskin::GroupBoxTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#C7C7C7", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#C7C7C7")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_5));
@@ -25192,7 +25192,7 @@ Class (::darkskin::GroupBoxTemplate)
 
 	GroupBoxTemplate::GroupBoxTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::GroupBoxTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::GroupBoxTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_GroupBoxTemplate_Initialize(this);
@@ -25247,7 +25247,7 @@ Class (::darkskin::HScrollHandleTemplate)
 
 	HScrollHandleTemplate::HScrollHandleTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::HScrollHandleTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::HScrollHandleTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_HScrollHandleTemplate_Initialize(this);
@@ -25274,7 +25274,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3D3D42", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3D3D42")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -25423,7 +25423,7 @@ Class (::darkskin::HScrollTemplate)
 
 	HScrollTemplate::HScrollTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::HScrollTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::HScrollTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_HScrollTemplate_Initialize(this);
@@ -25459,7 +25459,7 @@ Class (::darkskin::HTrackerTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3F3F47", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3F3F47")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -25495,7 +25495,7 @@ Class (::darkskin::HTrackerTemplateConstructor)
 		}
 		(this->__vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#55545A", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#55545A")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_5));
@@ -25571,7 +25571,7 @@ Class (::darkskin::HTrackerTemplate)
 
 	HTrackerTemplate::HTrackerTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::HTrackerTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::HTrackerTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_HTrackerTemplate_Initialize(this);
@@ -25636,7 +25636,7 @@ Class (::darkskin::ItemBackgroundTemplate)
 
 	ItemBackgroundTemplate::ItemBackgroundTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ItemBackgroundTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ItemBackgroundTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ItemBackgroundTemplate_Initialize(this);
@@ -25655,7 +25655,7 @@ Class (::darkskin::LabelTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetDefaultTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#F1F1F1", false)));
+			::vl::__vwsn::This(this->self)->SetDefaultTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#F1F1F1")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -25693,7 +25693,7 @@ Class (::darkskin::LabelTemplate)
 
 	LabelTemplate::LabelTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::LabelTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::LabelTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_LabelTemplate_Initialize(this);
@@ -25776,7 +25776,7 @@ Class (::darkskin::LeftScrollButtonTemplate)
 
 	LeftScrollButtonTemplate::LeftScrollButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::LeftScrollButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::LeftScrollButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_LeftScrollButtonTemplate_Initialize(this);
@@ -25816,7 +25816,7 @@ Class (::darkskin::ListViewColumnHeaderTemplateConstructor)
 		}
 		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#404042", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#404042")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
@@ -25836,7 +25836,7 @@ Class (::darkskin::ListViewColumnHeaderTemplateConstructor)
 		}
 		(this->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#404042", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#404042")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_4));
@@ -26058,7 +26058,7 @@ Class (::darkskin::ListViewColumnHeaderTemplate)
 
 	ListViewColumnHeaderTemplate::ListViewColumnHeaderTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ListViewColumnHeaderTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ListViewColumnHeaderTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize(this);
@@ -26077,7 +26077,7 @@ Class (::darkskin::ListViewTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetItemSeparatorColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#F1F1F1", false)));
+			::vl::__vwsn::This(this->self)->SetItemSeparatorColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#F1F1F1")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetColumnHeaderTemplate(LAMBDA(::vl_workflow_global::__vwsnf114_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_darkskin_ListViewTemplate_Initialize_(this)));
@@ -26089,14 +26089,14 @@ Class (::darkskin::ListViewTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetSecondaryTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#F1F1F1", false)));
+			::vl::__vwsn::This(this->self)->SetSecondaryTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#F1F1F1")));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetPrimaryTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#F1F1F1", false)));
+			::vl::__vwsn::This(this->self)->SetPrimaryTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#F1F1F1")));
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#252526", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#252526")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -26162,7 +26162,7 @@ Class (::darkskin::ListViewTemplate)
 
 	ListViewTemplate::ListViewTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ListViewTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ListViewTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ListViewTemplate_Initialize(this);
@@ -26246,7 +26246,7 @@ Class (::darkskin::MenuBarButtonTemplate)
 
 	MenuBarButtonTemplate::MenuBarButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::MenuBarButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::MenuBarButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_MenuBarButtonTemplate_Initialize(this);
@@ -26319,7 +26319,7 @@ Class (::darkskin::MenuItemButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSharedWidth(true);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetGroup(::vl::WString(L"MenuItem-Text", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetGroup(::vl::WString::Unmanaged(L"MenuItem-Text"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
@@ -26349,7 +26349,7 @@ Class (::darkskin::MenuItemButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetSharedWidth(true);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetGroup(::vl::WString(L"MenuItem-Shortcut", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetGroup(::vl::WString::Unmanaged(L"MenuItem-Shortcut"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
@@ -26480,7 +26480,7 @@ Class (::darkskin::MenuItemButtonTemplate)
 
 	MenuItemButtonTemplate::MenuItemButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::MenuItemButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::MenuItemButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_MenuItemButtonTemplate_Initialize(this);
@@ -26503,7 +26503,7 @@ Class (::darkskin::MenuSplitterTemplateConstructor)
 		}
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#1B1B1C", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#1B1B1C")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
@@ -26520,7 +26520,7 @@ Class (::darkskin::MenuSplitterTemplateConstructor)
 		}
 		(this->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#333337", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#333337")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
@@ -26544,7 +26544,7 @@ Class (::darkskin::MenuSplitterTemplate)
 
 	MenuSplitterTemplate::MenuSplitterTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::MenuSplitterTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::MenuSplitterTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_MenuSplitterTemplate_Initialize(this);
@@ -26563,17 +26563,17 @@ Class (::darkskin::MultilineTextBoxTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetTextColor([&](){ ::vl::presentation::elements::text::ColorEntry __vwsn_temp__; __vwsn_temp__.normal = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#00000000", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedFocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedUnfocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->self)->SetTextColor([&](){ ::vl::presentation::elements::text::ColorEntry __vwsn_temp__; __vwsn_temp__.normal = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#00000000")); return __vwsn_temp__; }(); __vwsn_temp__.selectedFocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")); return __vwsn_temp__; }(); __vwsn_temp__.selectedUnfocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")); return __vwsn_temp__; }(); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#252526", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#252526")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -26639,7 +26639,7 @@ Class (::darkskin::MultilineTextBoxTemplate)
 
 	MultilineTextBoxTemplate::MultilineTextBoxTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::MultilineTextBoxTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::MultilineTextBoxTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_MultilineTextBoxTemplate_Initialize(this);
@@ -26662,7 +26662,7 @@ Class (::darkskin::ProgressBarTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3F3F47", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3F3F47")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -26676,7 +26676,7 @@ Class (::darkskin::ProgressBarTemplateConstructor)
 		}
 		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#55545A", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#55545A")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
@@ -26691,7 +26691,7 @@ Class (::darkskin::ProgressBarTemplateConstructor)
 		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiPartialViewComposition());
 		(this->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#07B023", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#07B023")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_4));
@@ -26732,7 +26732,7 @@ Class (::darkskin::ProgressBarTemplate)
 
 	ProgressBarTemplate::ProgressBarTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ProgressBarTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ProgressBarTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ProgressBarTemplate_Initialize(this);
@@ -26961,7 +26961,7 @@ Class (::darkskin::RadioButtonTemplate)
 
 	RadioButtonTemplate::RadioButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RadioButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RadioButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RadioButtonTemplate_Initialize(this);
@@ -26995,7 +26995,7 @@ Class (::darkskin::RibbonButtonsTemplate)
 
 	RibbonButtonsTemplate::RibbonButtonsTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonButtonsTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonButtonsTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonButtonsTemplate_Initialize(this);
@@ -27098,7 +27098,7 @@ Class (::darkskin::RibbonGalleryDropdownButtonTemplate)
 
 	RibbonGalleryDropdownButtonTemplate::RibbonGalleryDropdownButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonGalleryDropdownButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonGalleryDropdownButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonGalleryDropdownButtonTemplate_Initialize(this);
@@ -27132,7 +27132,7 @@ Class (::darkskin::RibbonGalleryItemListTemplate)
 
 	RibbonGalleryItemListTemplate::RibbonGalleryItemListTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonGalleryItemListTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonGalleryItemListTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonGalleryItemListTemplate_Initialize(this);
@@ -27343,7 +27343,7 @@ Class (::darkskin::RibbonGalleryTemplate)
 
 	RibbonGalleryTemplate::RibbonGalleryTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonGalleryTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonGalleryTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonGalleryTemplate_Initialize(this);
@@ -27409,7 +27409,7 @@ Class (::darkskin::RibbonGroupExpandButtonTemplate)
 
 	RibbonGroupExpandButtonTemplate::RibbonGroupExpandButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonGroupExpandButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonGroupExpandButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonGroupExpandButtonTemplate_Initialize(this);
@@ -27432,7 +27432,7 @@ Class (::darkskin::RibbonGroupMenuTemplateConstructor)
 		}
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2D2D30")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
@@ -27449,7 +27449,7 @@ Class (::darkskin::RibbonGroupMenuTemplateConstructor)
 		}
 		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#333337", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#333337")));
 		}
 		{
 			::vl::__vwsn::This(this->container)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
@@ -27476,7 +27476,7 @@ Class (::darkskin::RibbonGroupMenuTemplate)
 
 	RibbonGroupMenuTemplate::RibbonGroupMenuTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonGroupMenuTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonGroupMenuTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonGroupMenuTemplate_Initialize(this);
@@ -27515,7 +27515,7 @@ Class (::darkskin::RibbonGroupTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3F3F46", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3F3F46")));
 		}
 		{
 			::vl::__vwsn::This(this->table)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -27569,7 +27569,7 @@ Class (::darkskin::RibbonGroupTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#6D6D6D", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#6D6D6D")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_5));
@@ -27651,7 +27651,7 @@ Class (::darkskin::RibbonGroupTemplate)
 
 	RibbonGroupTemplate::RibbonGroupTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonGroupTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonGroupTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonGroupTemplate_Initialize(this);
@@ -27750,7 +27750,7 @@ Class (::darkskin::RibbonIconLabelTemplate)
 
 	RibbonIconLabelTemplate::RibbonIconLabelTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonIconLabelTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonIconLabelTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonIconLabelTemplate_Initialize(this);
@@ -27926,7 +27926,7 @@ Class (::darkskin::RibbonLargeButtonTemplate)
 
 	RibbonLargeButtonTemplate::RibbonLargeButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonLargeButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonLargeButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonLargeButtonTemplate_Initialize(this);
@@ -28160,7 +28160,7 @@ Class (::darkskin::RibbonLargeDropdownButtonTemplate)
 
 	RibbonLargeDropdownButtonTemplate::RibbonLargeDropdownButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonLargeDropdownButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonLargeDropdownButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize(this);
@@ -28351,7 +28351,7 @@ Class (::darkskin::RibbonLargeSplitButtonTemplate)
 
 	RibbonLargeSplitButtonTemplate::RibbonLargeSplitButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonLargeSplitButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonLargeSplitButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonLargeSplitButtonTemplate_Initialize(this);
@@ -28515,7 +28515,7 @@ Class (::darkskin::RibbonSmallButtonTemplate)
 
 	RibbonSmallButtonTemplate::RibbonSmallButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonSmallButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonSmallButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonSmallButtonTemplate_Initialize(this);
@@ -28741,7 +28741,7 @@ Class (::darkskin::RibbonSmallDropdownButtonTemplate)
 
 	RibbonSmallDropdownButtonTemplate::RibbonSmallDropdownButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonSmallDropdownButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonSmallDropdownButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize(this);
@@ -28808,7 +28808,7 @@ Class (::darkskin::RibbonSmallIconLabelTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetSharedWidth(true);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetGroup(::vl::WString(L"MenuItem-Text", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetGroup(::vl::WString::Unmanaged(L"MenuItem-Text"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
@@ -28889,7 +28889,7 @@ Class (::darkskin::RibbonSmallIconLabelTemplate)
 
 	RibbonSmallIconLabelTemplate::RibbonSmallIconLabelTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonSmallIconLabelTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonSmallIconLabelTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonSmallIconLabelTemplate_Initialize(this);
@@ -29111,7 +29111,7 @@ Class (::darkskin::RibbonSmallSplitButtonTemplate)
 
 	RibbonSmallSplitButtonTemplate::RibbonSmallSplitButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonSmallSplitButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonSmallSplitButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize(this);
@@ -29250,7 +29250,7 @@ Class (::darkskin::RibbonSplitArrowTemplate)
 
 	RibbonSplitArrowTemplate::RibbonSplitArrowTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonSplitArrowTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonSplitArrowTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonSplitArrowTemplate_Initialize(this);
@@ -29286,7 +29286,7 @@ Class (::darkskin::RibbonToolstripHeaderTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#6D6D6D", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#6D6D6D")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
@@ -29319,7 +29319,7 @@ Class (::darkskin::RibbonToolstripHeaderTemplate)
 
 	RibbonToolstripHeaderTemplate::RibbonToolstripHeaderTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonToolstripHeaderTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonToolstripHeaderTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonToolstripHeaderTemplate_Initialize(this);
@@ -29345,7 +29345,7 @@ Class (::darkskin::RibbonToolstripMenuTemplateConstructor)
 		}
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#1B1B1C", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#1B1B1C")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
@@ -29359,7 +29359,7 @@ Class (::darkskin::RibbonToolstripMenuTemplateConstructor)
 		}
 		(this->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#333337", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#333337")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
@@ -29400,7 +29400,7 @@ Class (::darkskin::RibbonToolstripMenuTemplateConstructor)
 		}
 		(this->__vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#333337", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#333337")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_7));
@@ -29430,7 +29430,7 @@ Class (::darkskin::RibbonToolstripMenuTemplateConstructor)
 		}
 		(this->__vwsn_precompile_9 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_9.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_9.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_9));
@@ -29447,7 +29447,7 @@ Class (::darkskin::RibbonToolstripMenuTemplateConstructor)
 		}
 		(this->__vwsn_precompile_11 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_11.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_11));
@@ -29493,7 +29493,7 @@ Class (::darkskin::RibbonToolstripMenuTemplate)
 
 	RibbonToolstripMenuTemplate::RibbonToolstripMenuTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonToolstripMenuTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonToolstripMenuTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonToolstripMenuTemplate_Initialize(this);
@@ -29527,7 +29527,7 @@ Class (::darkskin::RibbonToolstripsTemplate)
 
 	RibbonToolstripsTemplate::RibbonToolstripsTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RibbonToolstripsTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RibbonToolstripsTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RibbonToolstripsTemplate_Initialize(this);
@@ -29610,7 +29610,7 @@ Class (::darkskin::RightScrollButtonTemplate)
 
 	RightScrollButtonTemplate::RightScrollButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::RightScrollButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::RightScrollButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_RightScrollButtonTemplate_Initialize(this);
@@ -29633,7 +29633,7 @@ Class (::darkskin::ScrollViewTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#252526", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#252526")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -29650,7 +29650,7 @@ Class (::darkskin::ScrollViewTemplateConstructor)
 		}
 		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3F3F46", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3F3F46")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
@@ -29697,7 +29697,7 @@ Class (::darkskin::ScrollViewTemplate)
 
 	ScrollViewTemplate::ScrollViewTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ScrollViewTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ScrollViewTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ScrollViewTemplate_Initialize(this);
@@ -29716,14 +29716,14 @@ Class (::darkskin::ShortcutKeyTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetDefaultTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#F1F1F1", false)));
+			::vl::__vwsn::This(this->self)->SetDefaultTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#F1F1F1")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3F3F46", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3F3F46")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -29737,7 +29737,7 @@ Class (::darkskin::ShortcutKeyTemplateConstructor)
 		}
 		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#252526", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#252526")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
@@ -29792,7 +29792,7 @@ Class (::darkskin::ShortcutKeyTemplate)
 
 	ShortcutKeyTemplate::ShortcutKeyTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ShortcutKeyTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ShortcutKeyTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ShortcutKeyTemplate_Initialize(this);
@@ -29811,17 +29811,17 @@ Class (::darkskin::SinglelineTextBoxTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetTextColor([&](){ ::vl::presentation::elements::text::ColorEntry __vwsn_temp__; __vwsn_temp__.normal = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#00000000", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedFocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedUnfocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->self)->SetTextColor([&](){ ::vl::presentation::elements::text::ColorEntry __vwsn_temp__; __vwsn_temp__.normal = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#00000000")); return __vwsn_temp__; }(); __vwsn_temp__.selectedFocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")); return __vwsn_temp__; }(); __vwsn_temp__.selectedUnfocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")); return __vwsn_temp__; }(); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#252526", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#252526")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -29867,7 +29867,7 @@ Class (::darkskin::SinglelineTextBoxTemplate)
 
 	SinglelineTextBoxTemplate::SinglelineTextBoxTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::SinglelineTextBoxTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::SinglelineTextBoxTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_SinglelineTextBoxTemplate_Initialize(this);
@@ -30007,7 +30007,7 @@ Class (::darkskin::TabHeaderButtonTemplate)
 		: __vwsn_prop_Highlighted(false)
 		, __vwsn_prop_TabFocused(false)
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::TabHeaderButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::TabHeaderButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_TabHeaderButtonTemplate_Initialize(this);
@@ -30107,7 +30107,7 @@ Class (::darkskin::TabHeaderTemplate)
 		, __vwsn_parameter_CurrentTabPage(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
 	{
 		(this->__vwsn_parameter_CurrentTabPage = __vwsn_ctor_parameter_CurrentTabPage);
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::TabHeaderTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::TabHeaderTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_TabHeaderTemplate_Initialize(this);
@@ -30149,7 +30149,7 @@ Class (::darkskin::TabTemplateConstructor)
 		}
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2D2D30")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
@@ -30208,7 +30208,7 @@ Class (::darkskin::TabTemplateConstructor)
 		}
 		(this->__vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#434346", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#434346")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_6));
@@ -30327,7 +30327,7 @@ Class (::darkskin::TabTemplate)
 	TabTemplate::TabTemplate()
 		: __vwsn_prop_Highlighted(false)
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::TabTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::TabTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_TabTemplate_Initialize(this);
@@ -30352,7 +30352,7 @@ Class (::darkskin::TextListTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetCheckBulletTemplate(LAMBDA(::vl_workflow_global::__vwsnf120_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_darkskin_TextListTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#F1F1F1", false)));
+			::vl::__vwsn::This(this->self)->SetTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#F1F1F1")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(LAMBDA(::vl_workflow_global::__vwsnf121_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_darkskin_TextListTemplate_Initialize_(this)));
@@ -30362,7 +30362,7 @@ Class (::darkskin::TextListTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#252526", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#252526")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -30428,7 +30428,7 @@ Class (::darkskin::TextListTemplate)
 
 	TextListTemplate::TextListTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::TextListTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::TextListTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_TextListTemplate_Initialize(this);
@@ -30612,7 +30612,7 @@ Class (::darkskin::ThemeConstructor)
 			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Window = LAMBDA(::vl_workflow_global::__vwsnf55_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Name = ::vl::WString(L"DarkSkin", false));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Name = ::vl::WString::Unmanaged(L"DarkSkin"));
 		}
 	}
 
@@ -30627,7 +30627,7 @@ Class (::darkskin::Theme)
 
 	Theme::Theme()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::Theme", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::Theme"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_Theme_Initialize(this);
@@ -30740,7 +30740,7 @@ Class (::darkskin::ToolstripButtonTemplate)
 
 	ToolstripButtonTemplate::ToolstripButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ToolstripButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ToolstripButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ToolstripButtonTemplate_Initialize(this);
@@ -30915,7 +30915,7 @@ Class (::darkskin::ToolstripDropdownButtonTemplate)
 
 	ToolstripDropdownButtonTemplate::ToolstripDropdownButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ToolstripDropdownButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ToolstripDropdownButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize(this);
@@ -30938,7 +30938,7 @@ Class (::darkskin::ToolstripMenuTemplateConstructor)
 		}
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#1B1B1C", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#1B1B1C")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
@@ -30955,7 +30955,7 @@ Class (::darkskin::ToolstripMenuTemplateConstructor)
 		}
 		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#333337", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#333337")));
 		}
 		{
 			::vl::__vwsn::This(this->container)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
@@ -30982,7 +30982,7 @@ Class (::darkskin::ToolstripMenuTemplate)
 
 	ToolstripMenuTemplate::ToolstripMenuTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ToolstripMenuTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ToolstripMenuTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ToolstripMenuTemplate_Initialize(this);
@@ -31078,7 +31078,7 @@ Class (::darkskin::ToolstripSplitArrowTemplate)
 
 	ToolstripSplitArrowTemplate::ToolstripSplitArrowTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ToolstripSplitArrowTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ToolstripSplitArrowTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ToolstripSplitArrowTemplate_Initialize(this);
@@ -31249,7 +31249,7 @@ Class (::darkskin::ToolstripSplitButtonTemplate)
 
 	ToolstripSplitButtonTemplate::ToolstripSplitButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ToolstripSplitButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ToolstripSplitButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize(this);
@@ -31272,7 +31272,7 @@ Class (::darkskin::ToolstripSplitterTemplateConstructor)
 		}
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2D2D30")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
@@ -31286,10 +31286,10 @@ Class (::darkskin::ToolstripSplitterTemplateConstructor)
 		}
 		(this->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::Gui3DSplitterElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::Gui3DSplitterElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#464648", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#464648")));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#222224", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#222224")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetDirection(::vl::presentation::elements::Gui3DSplitterElement::Direction::Vertical);
@@ -31316,7 +31316,7 @@ Class (::darkskin::ToolstripSplitterTemplate)
 
 	ToolstripSplitterTemplate::ToolstripSplitterTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ToolstripSplitterTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ToolstripSplitterTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ToolstripSplitterTemplate_Initialize(this);
@@ -31342,7 +31342,7 @@ Class (::darkskin::ToolstripTemplateConstructor)
 		}
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2D2D30")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
@@ -31361,7 +31361,7 @@ Class (::darkskin::ToolstripTemplate)
 
 	ToolstripTemplate::ToolstripTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ToolstripTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::ToolstripTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_ToolstripTemplate_Initialize(this);
@@ -31384,7 +31384,7 @@ Class (::darkskin::TooltipTemplateConstructor)
 		}
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2D2D30")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
@@ -31398,7 +31398,7 @@ Class (::darkskin::TooltipTemplateConstructor)
 		}
 		(this->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#017ACC", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#017ACC")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
@@ -31436,7 +31436,7 @@ Class (::darkskin::TooltipTemplate)
 
 	TooltipTemplate::TooltipTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::TooltipTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::TooltipTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_TooltipTemplate_Initialize(this);
@@ -31519,7 +31519,7 @@ Class (::darkskin::TopScrollButtonTemplate)
 
 	TopScrollButtonTemplate::TopScrollButtonTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::TopScrollButtonTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::TopScrollButtonTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_TopScrollButtonTemplate_Initialize(this);
@@ -31541,7 +31541,7 @@ Class (::darkskin::TreeViewTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetExpandingDecoratorTemplate(LAMBDA(::vl_workflow_global::__vwsnf125_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_darkskin_TreeViewTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#F1F1F1", false)));
+			::vl::__vwsn::This(this->self)->SetTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#F1F1F1")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(LAMBDA(::vl_workflow_global::__vwsnf126_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_darkskin_TreeViewTemplate_Initialize_(this)));
@@ -31551,7 +31551,7 @@ Class (::darkskin::TreeViewTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#252526", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#252526")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -31617,7 +31617,7 @@ Class (::darkskin::TreeViewTemplate)
 
 	TreeViewTemplate::TreeViewTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::TreeViewTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::TreeViewTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_TreeViewTemplate_Initialize(this);
@@ -31672,7 +31672,7 @@ Class (::darkskin::VScrollHandleTemplate)
 
 	VScrollHandleTemplate::VScrollHandleTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::VScrollHandleTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::VScrollHandleTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_VScrollHandleTemplate_Initialize(this);
@@ -31699,7 +31699,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3D3D42", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3D3D42")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -31848,7 +31848,7 @@ Class (::darkskin::VScrollTemplate)
 
 	VScrollTemplate::VScrollTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::VScrollTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::VScrollTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_VScrollTemplate_Initialize(this);
@@ -31884,7 +31884,7 @@ Class (::darkskin::VTrackerTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3F3F47", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3F3F47")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -31920,7 +31920,7 @@ Class (::darkskin::VTrackerTemplateConstructor)
 		}
 		(this->__vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#55545A", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#55545A")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_5));
@@ -31996,7 +31996,7 @@ Class (::darkskin::VTrackerTemplate)
 
 	VTrackerTemplate::VTrackerTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::VTrackerTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::VTrackerTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_VTrackerTemplate_Initialize(this);
@@ -32032,7 +32032,7 @@ Class (::darkskin::WindowTemplateConstructor)
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2D2D30")));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
@@ -32173,13 +32173,13 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetFont(::vl::Nullable<::vl::presentation::FontProperties>([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint>(16); return __vwsn_temp__; }()));
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetFont(::vl::Nullable<::vl::presentation::FontProperties>([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"Webdings"); __vwsn_temp__.size = static_cast<::vl::vint>(16); return __vwsn_temp__; }()));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetText(::vl::WString(L" 0 ", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetText(::vl::WString::Unmanaged(L" 0 "));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf358_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_(this)));
@@ -32202,7 +32202,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetFont(::vl::Nullable<::vl::presentation::FontProperties>([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint>(16); return __vwsn_temp__; }()));
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetFont(::vl::Nullable<::vl::presentation::FontProperties>([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"Webdings"); __vwsn_temp__.size = static_cast<::vl::vint>(16); return __vwsn_temp__; }()));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAutoFocus(false);
@@ -32231,13 +32231,13 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetFont(::vl::Nullable<::vl::presentation::FontProperties>([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = static_cast<::vl::vint>(16); return __vwsn_temp__; }()));
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetFont(::vl::Nullable<::vl::presentation::FontProperties>([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"Webdings"); __vwsn_temp__.size = static_cast<::vl::vint>(16); return __vwsn_temp__; }()));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetText(::vl::WString(L" r ", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetText(::vl::WString::Unmanaged(L" r "));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetControlTemplate(LAMBDA(::vl_workflow_global::__vwsnf360_DarkSkin_darkskin_WindowTemplateConstructor___vwsn_darkskin_WindowTemplate_Initialize_(this)));
@@ -32308,7 +32308,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetEllipse(true);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Segoe WP SemiLight", false); __vwsn_temp__.size = static_cast<::vl::vint>(14); __vwsn_temp__.antialias = true; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"Segoe WP SemiLight"); __vwsn_temp__.size = static_cast<::vl::vint>(14); __vwsn_temp__.antialias = true; return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_25)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_26));
@@ -32470,7 +32470,7 @@ Class (::darkskin::WindowTemplate)
 
 	WindowTemplate::WindowTemplate()
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::WindowTemplate", false));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::WindowTemplate"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_darkskin_WindowTemplate_Initialize(this);
