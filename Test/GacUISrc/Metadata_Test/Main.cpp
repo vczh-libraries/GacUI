@@ -28,7 +28,7 @@ WString GetExePath()
 		}
 		index++;
 	}
-	return WString(buffer, pos + 1);
+	return WString::CopyFrom(buffer, pos + 1);
 }
 
 WString GetTestOutputPath()
@@ -64,7 +64,7 @@ void GuiMain()
 }
 
 #if defined VCZH_MSVC
-int wmain(vint argc, wchar_t* argv[])
+int wmain(int argc, wchar_t* argv[])
 #elif defined VCZH_GCC
 int main(int argc, char* argv[])
 #endif
