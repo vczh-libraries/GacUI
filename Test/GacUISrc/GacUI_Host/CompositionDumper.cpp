@@ -100,7 +100,7 @@ WString PointerToHex(T* pointer)
 	vuint64_t value = (vuint64_t)pointer;
 	while (value)
 	{
-		result = WString(L"0123456789ABCDEF"[value % 16]) + result;
+		result = WString::FromChar(L"0123456789ABCDEF"[value % 16]) + result;
 		value /= 16;
 	}
 	return result;
